@@ -1316,8 +1316,10 @@ append_options(argc, argv)
 	newargv[i] = NULL;
 	argv = newargv;
 	*argc = i;
+#ifdef DEBUG
 	for (i = 0; i < *argc; i++)
 		fprintf(stderr, "argv[%d] = '%s'\n", i, argv[i]);
+#endif
 	/* doesn't close string buffer. */
 
 	return argv;
