@@ -288,6 +288,7 @@ $'meta_generator = "<META NAME='GENERATOR' CONTENT='GLOBAL-$version'>";
 # Titles
 $'title_define_index = 'DEFINITIONS';
 $'title_file_index = 'FILES';
+$'title_included_from = 'INCLUDED FROM';
 
 # Anchor image
 @anchor_label = ('&lt;', '&gt;', '^', 'v', 'top', 'bottom', 'index', 'help');
@@ -343,9 +344,10 @@ $'SRCS   = 'S';				# source file directory.
 $'DEFS   = 'D';				# object definition directory.
 $'REFS   = 'R';				# object reference directory.
 $'INCS   = 'I';				# include file directory.
+$'INCREFS = 'J';			# include file reference directory.
 $'SYMS   = 'Y';				# symbols directory.
 sub get_dirlist {
-	local(@dir) = (files, defines, $'SRCS, $'INCS);
+	local(@dir) = (files, defines, $'SRCS, $'INCS, $'INCREFS);
 	if (!$'dynamic) {
 		push(@dir, $'DEFS, $'REFS);
 		push(@dir, $'SYMS) if ($'symbol);
@@ -517,15 +519,18 @@ sub list_body {
 	local($name, $lno, $filename, $line) = ($s =~ /^(\S+)\s+(\d+)\s+\.\/(\S+) (.*)$/);
 	local($html) = &'path2url($filename);
 
-	$s =~ s/\.\///;
-	$s =~ s/&/&amp;/g;
-	$s =~ s/</&lt;/g;
-	$s =~ s/>/&gt;/g;
 	if ($'table_list) {
+		$line =~ s/&/&amp;/g;
+		$line =~ s/</&lt;/g;
+		$line =~ s/>/&gt;/g;
 		$line =~ s/ /&nbsp;&nbsp;/g;
 		$line =~ s/	/&nbsp;&nbsp;&nbsp;&nbsp;/g;
 		$s = "<TR><TD NOWRAP><A HREF=$srcdir\/$html#$lno>$name</A></TD><TD NOWRAP ALIGN=right>$lno</TD><TD NOWRAP ALIGN=left>$filename</TD><TD NOWRAP>$line</TD></TR>";
 	} else {
+		$s =~ s/\.\///;
+		$s =~ s/&/&amp;/g;
+		$s =~ s/</&lt;/g;
+		$s =~ s/>/&gt;/g;
 		$s =~ s/^($name)/<A HREF=$srcdir\/$html#$lno>$1<\/A>/;
 	}
 	$s . "\n";
@@ -1719,8 +1724,29 @@ sub makefileindex {
         close(FILES);
 	$'file_count++;
 
+	local($command) = "global -gnx '^[ \t]*#[ \t]*include'";
+	open(PIPE, "$command |") || &'error("cannot fork.");
+	while (<PIPE>) {
+		chop;
+		local($nouse, $lno, $filename, $image) = split(/\s+/, $_, 4);
+		local($last, $sep) = ($image =~ m![</"]([^</"]+)([">])!);
+		if (! defined $includes{$last}) {
+			next;
+		}
+		s/\^\[%20%09]\*#\[%20%09]\*include/$last/;
+		if (! defined $included_from{$last}) {
+			$included_from{$last} = "$_";
+		} else {
+			$included_from{$last} = "$included_from{$last}\n$_";
+		}
+	}
+	close(PIPE);
+
 	select($org);
 	foreach $last (keys %includes) {
+		if (! defined $included_from{$last}) {
+			next;
+		}
 		local($no, @incs) = split(/\n/, $includes{$last});
 		if (@incs > 1) {
 			local($path) = "$incdir/$no.$'HTML";
@@ -1744,6 +1770,32 @@ sub makefileindex {
 			$'file_count++;
 			# '' means that information already written to file.
 			$includes{$last} = $no;
+		}
+		local(@refs) = split(/\n/, $included_from{$last});
+		if (@refs == 1) {
+			local($nouse, $lno, $filename, $image) = split(/\s+/, $refs[0], 4);
+			local($url) = &'path2url($filename);
+			$included_from{$last} = "$url#$lno";
+		} else {
+			local($path) = "$dist/$'INCREFS/$no.$'HTML";
+			if ($'cflag) {
+				open(INCLUDE, "| gzip -c >$path") || &'error("cannot open file '$path'.");
+			} else {
+				open(INCLUDE, ">$path") || &'error("cannot open file '$path'.");
+			}
+			print INCLUDE $'html_begin, "\n";
+			print INCLUDE &'set_header($last);
+			print INCLUDE $'body_begin, "\n";
+			print INCLUDE &'list_begin();
+			foreach $line (@refs) {
+				print INCLUDE &'list_body("../$'SRCS", $line);
+			}
+			print INCLUDE &'list_end;
+			print INCLUDE $'body_end, "\n";
+			print INCLUDE $'html_end, "\n";
+			close(INCLUDE);
+			$'file_count++;
+			$included_from{$last} = "../$'INCREFS/$no.$'HTML";
 		}
 	}
 	$count;
@@ -2060,6 +2112,13 @@ sub src2html {
 		}
 		print "</OL>\n";
 		print "<HR>\n";
+
+		local($basename) = ($file =~ /([^\/]+)$/);
+		if (defined $'included_from{$basename}) {
+			print "<H2><A HREF=$'included_from{$basename}>$'title_included_from</A></H2>\n";
+			print "<HR>\n";
+		}
+
 		#
 		# print source code
 		#
