@@ -25,7 +25,7 @@ gctags_DEPENDENCIES = $(LDADD)
 
 man_MANS = gctags.1
 
-EXTRA_DIST = $(man_MANS) const.h manual.in reserved.pl HACKING htags_res.pl \
+EXTRA_DIST = $(man_MANS) const.h manual.in reserved.pl HACKING \
 		c_res.in c_res.gpf \
 		cpp_res.in cpp_res.gpf \
 		java_res.in java_res.gpf \
