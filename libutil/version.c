@@ -57,7 +57,7 @@ version(name, verbose)
 	if (name == NULL)
 		name = progname;
 	if (verbose) {
-		fprintf(stdout, "%s - GNU GLOBAL %s\n", name, VERSION);
+		fprintf(stdout, "%s - %s\n", name, PACKAGE_STRING);
 		fprintf(stdout, "%s", copy);
 	} else {
 		fprintf(stdout, "%s\n", VERSION);

@@ -20,10 +20,11 @@ dnl You should have received a copy of the GNU General Public License
 dnl along with this program; if not, write to the Free Software
 dnl Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 dnl
-AC_INIT(global/global.c)
+AC_INIT(GNU GLOBAL, 4.8.2)
+AC_CONFIG_SRCDIR(global/global.c)
 AM_CONFIG_HEADER(config.h:config-h.in)
-AM_INIT_AUTOMAKE(global, 4.8.2)
-AC_PREREQ(2.57)
+AC_PREREQ(2.59)
+AM_INIT_AUTOMAKE([1.9.3 gnu])
 
 dnl Checks for programs.
 AC_PROG_CC
@@ -50,30 +51,38 @@ fi
 AC_HEADER_STDC
 AC_HEADER_STAT
 AC_HEADER_TIME
-AC_C_BIGENDIAN
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 AC_TYPE_OFF_T
 AC_TYPE_SIZE_T
 AC_STRUCT_ST_BLKSIZE
-AC_CHECK_TYPE(int8_t, signed char)
-AC_CHECK_TYPE(int16_t, short)
-AC_CHECK_TYPE(int32_t, int)
-AC_CHECK_TYPE(u_int8_t, unsigned char)
-AC_CHECK_TYPE(u_int16_t, unsigned short)
-AC_CHECK_TYPE(u_int32_t, unsigned int)
-AC_CHECK_TYPE(ssize_t, int)
-AC_CHECK_TYPE(caddr_t, char *)
-AC_CHECK_SIZEOF(int, 4)
+AC_C_BIGENDIAN
+AC_CHECK_TYPE([int8_t],,[AC_DEFINE_UNQUOTED([int8_t], [signed char],
+		[Define to `signed char' if <sys/types.h> does not define.])])
+AC_CHECK_TYPE([int16_t],,[AC_DEFINE_UNQUOTED([int16_t], [short],
+		[Define to `short' if <sys/types.h> does not define.])])
+AC_CHECK_TYPE([int32_t],,[AC_DEFINE_UNQUOTED([int32_t], [int],
+		[Define to `int' if <sys/types.h> does not define.])])
+AC_CHECK_TYPE([u_int8_t],,[AC_DEFINE_UNQUOTED([u_int8_t], [unsigned char],
+		[Define to `unsigned char' if <sys/types.h> does not define.])])
+AC_CHECK_TYPE([u_int16_t],,[AC_DEFINE_UNQUOTED([u_int16_t], [unsigned short],
+		[Define to `unsigned short' if <sys/types.h> does not define.])])
+AC_CHECK_TYPE([u_int32_t],,[AC_DEFINE_UNQUOTED([u_int32_t], [unsigned int],
+		[Define to `unsigned int' if <sys/types.h> does not define.])])
+AC_CHECK_TYPE([ssize_t],,[AC_DEFINE_UNQUOTED([ssize_t], [int],
+		[Define to `int' if <sys/types.h> does not define.])])
+AC_CHECK_TYPE([caddr_t],,[AC_DEFINE_UNQUOTED([caddr_t], [char *],
+		[Define to `char *' if <sys/types.h> does not define.])])
+AC_CHECK_SIZEOF(int)
 if test ${ac_cv_sizeof_int} != 4; then
 	AC_MSG_ERROR([Integer size isn't 32 bit.])
 fi
-AC_CHECK_SIZEOF(short, 2)
+AC_CHECK_SIZEOF(short)
 if test ${ac_cv_sizeof_short} != 2; then
 	AC_MSG_ERROR([Short integer size isn't 16 bit.])
 fi
-AC_CHECK_SIZEOF(char, 1)
+AC_CHECK_SIZEOF(char)
 if test ${ac_cv_sizeof_char} != 1; then
 	AC_MSG_ERROR([Char size isn't 8 bit.])
 fi
