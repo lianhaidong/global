@@ -865,8 +865,9 @@ if ($form{'id'}) {
 		exit 0;
 	}
 }
-$pattern =~ s/"//g;			# to shut security hole
-unless (open(PIPE, "@globalpath@ -x$flag \"$pattern\" |")) {
+$secure_pattern = $pattern;
+$secure_pattern =~ s/[^0-9a-zA-Z_-]//g;		# to shut security hole
+unless (open(PIPE, "@globalpath@ -x$flag \"$secure_pattern\" |")) {
 	print "<H1><FONT COLOR=#cc0000>Error</FONT></H1>\n";
 	print "<H3>Cannot execute global. <A HREF=$htmlbase/mains.@normal_suffix@>[return]</A></H3>\n";
 	print "@body_end@\n";
