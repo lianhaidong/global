@@ -1546,7 +1546,14 @@ sub src2html {
 	print &'set_header($file);
 	print $'body_begin, "\n";
 	print "<A NAME=TOP><H2>$file</H2>\n";
-	printf "$'comment_begin/* %s */$'comment_end", &link_format(&anchor'getlinks(0));
+	print "$'comment_begin/* ";
+	print &link_format(&anchor'getlinks(0));
+	print " */$'comment_end";
+	if ($'show_position) {
+		print $'position_begin;
+		print "[+1 $file]";
+		print $'position_end;
+	}
 	print "\n<HR>\n";
 	print "<H2>$'title_define_index</H2>\n";
 	print "This source file includes following functions.\n";
@@ -1680,7 +1687,14 @@ sub src2html {
 	print "</PRE>\n";
 	print "<HR>\n";
 	print "<A NAME=BOTTOM>\n";
-	printf "$'comment_begin/* %s */$'comment_end", &link_format(&anchor'getlinks(-1));
+	print "$'comment_begin/* ";
+	print &link_format(&anchor'getlinks(-1));
+	if ($'show_position) {
+		print $'position_begin;
+		print "[+$. $file]";
+		print $'position_end;
+	}
+	print " */$'comment_end";
 	print "\n";
 	print $'body_end, "\n";
 	print $'html_end, "\n";
