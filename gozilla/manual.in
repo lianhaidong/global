@@ -25,10 +25,11 @@
 #       o man format reference manual.
 #       o texinfo format reference manual.
 #
-@HEADER GOZILLA,1,February 2002,GNU Project
+@HEADER GOZILLA,1,May 2002,GNU Project
 @NAME   gozilla - force mozilla to display specified source file.
 @SYNOPSIS
-	@name{gozilla} [+no][-b browser][-p] file
+	@name{gozilla} [-b browser][-p][+no] file
+	@name{gozilla} [-b browser][-p] -f name
 @DESCRIPTION
 	@name{Gozilla} force mozilla to display specified source
 	file as a hypertext.
@@ -37,7 +38,13 @@
 	and @xref{htags,1} at the root directory of the source tree
 	to make tag files, and [2] execute mozilla in you computer.
 	Then you can execute gozilla at anywhere in the source tree.
+
+	First form:@br
 	You can specify source file and the line number optionally.
+
+	Second form:@br
+	You can specify function name directly.
+	
 @OPTIONS
 	The following options are available:
 	@begin_itemize
@@ -53,6 +60,8 @@
 		just print generated target URL.
 	@item{@arg{file}}
 		path of source file or alias name.
+	@item{@option{-f} @arg{name}}
+		print function.
 	@item{@option{-q}, @option{--quiet}}
 		Quiet mode.
 	@item{@option{-v}, @option{--verbose}}

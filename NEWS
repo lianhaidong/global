@@ -26,6 +26,7 @@ Current version - **** ** ****, by Shigio Yamaguchi
 * htags: --style-sheet=<style file> option added.
 * htags: -g(--gtags) option added.
 * gctags: --langmap option added.
+* gozilla: -f option added.
 
 Version 4.4 - March 30 2002, by Shigio Yamaguchi
 
