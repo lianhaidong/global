@@ -137,6 +137,7 @@ extern char *epilog_script;
 extern int use_javascript;
 extern int show_position;
 extern int table_list;
+extern int colorize_warned_line;
 extern char *script_alias;
 extern char *gzipped_suffix;
 extern char *normal_suffix;

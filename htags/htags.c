@@ -179,6 +179,7 @@ char *epilog_script = NULL;		/* include script at last	*/
 int use_javascript = 1;			/* 1: use javascript		*/
 int show_position = 0;			/* show current position	*/
 int table_list = 0;			/* tag list using table tag	*/
+int colorize_warned_line = 0;		/* colorize warned line		*/
 char *script_alias = "/cgi-bin";	/* script alias of WWW server	*/
 char *gzipped_suffix = "ghtml";		/* suffix of gzipped html file	*/
 char *normal_suffix = "html";		/* suffix of normal html file	*/
@@ -1007,6 +1008,8 @@ configuration(argc, argv)
 		use_javascript = 0;
 	if (getconfb("show_position"))
 		show_position = 1;
+	if (getconfb("colorize_warned_line"))
+		colorize_warned_line = 1;
 	strbuf_reset(sb);
 	if (getconfs("script_alias", sb)) {
 		p = strdup(strbuf_value(sb));
@@ -1148,6 +1151,21 @@ configuration(argc, argv)
 				die("short of memory.");
 			position_begin = p;
 			position_end = q;
+		} else {
+			free(p);
+		}
+	}
+	if (getconfs("warned_line_begin", sb)) {
+		p = strdup(strbuf_value(sb));
+		if (p == NULL)
+			die("short of memory.");
+		strbuf_reset(sb);
+		if (getconfs("warned_line_end", sb)) {
+			q = strdup(strbuf_value(sb));
+			if (q == NULL)
+				die("short of memory.");
+			warned_line_begin = p;
+			warned_line_end = q;
 		} else {
 			free(p);
 		}

@@ -107,18 +107,18 @@ WORD		{ALPHA}{ALPHANUM}*
 			unput(c);
 		else if (c) {
 			char path[MAXPATHLEN+1], *p = path;
-			struct data *inc;
 			int sep = 0;
 
-			if (c == '"' || c == '\'') {
+			if (c == '"' || c == '\'')
 				sep = c;
-				echoc(c);
-			}
+			echoc(c);
+
 			/* pick up path name */
 			while ((c = input()) && c != '\n' && c != sep)
 				*p++ = c;
 			*p = '\0';
 			if (c == sep) {
+				struct data *inc;
 				char *basename = locatestring(path, "/", MATCH_LAST);
 
 				if (basename)
@@ -126,21 +126,14 @@ WORD		{ALPHA}{ALPHANUM}*
 				else
 					basename = path;
 				inc = get_inc(basename);
-				if (inc) {
-					echos("<A HREF=");
-					if (inc->count == 1)
-						echos(path2url(strbuf_value(inc->contents)));
-					else
-						echo("../%s/%d.%s", INCS, inc->id, HTML);
-					echoc('>');
-				}
-				echos(path);
 				if (inc)
-					echos("</A>");
+					put_include_anchor(inc, path);
+				else
+					echos(path);
 				echoc(sep);
 			} else {
 				echos(path);
-				if (c == '\n')
+				if (c)
 					unput(c);
 			}
 		}

@@ -20,6 +20,8 @@
 #ifndef _LEXCOMMON_H
 #define _LEXCOMMON_H
 
+#include "strbuf.h"
+#include "incop.h"
 /*
  * The default action for line control.
  * These can be applicable to most languages.
@@ -52,7 +54,7 @@ static int begin_line;
 		echos(comment_end);					\
 	if (YY_START == CPP_COMMENT || YY_START == SHELL_COMMENT)	\
 		yy_pop_state();						\
-        put_end_of_line();                                              \
+        put_end_of_line(lineno);                                        \
         /* for the next line */                                         \
         lineno++;                                                       \
         begin_line = 1;                                                 \
@@ -66,11 +68,11 @@ extern FILE *yyin;
 /*
  * Output routine.
  */
-extern void echo(const char *s, ...);
 extern void echoc(int);
 extern void echos(const char *s);
 extern char *generate_guide(int);
 extern void put_anchor(char *, int, int);
+extern void put_include_anchor(struct data *, char *);
 extern void put_reserved_word(char *);
 extern void put_macro(char *);
 extern void put_char(int);
@@ -78,6 +80,6 @@ extern void put_string(char *);
 extern void put_brace(char *);
 extern void put_lineno(int);
 extern void put_begin_of_line(int);
-extern void put_end_of_line(void);
+extern void put_end_of_line(int);
 
 #endif /* ! _LEXCOMMON_H */

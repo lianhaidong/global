@@ -40,7 +40,10 @@
 FILE *out;
 FILE *in;
 
+static STRBUF *outbuf;
 static char *curpfile;
+static int warned;
+static int last_lineno;
 
 /*
  * IO routine.
@@ -57,6 +60,7 @@ char *file;
 	if (!ip)
 		die("cannot execute '%s'.", command);
 	curpfile = file;
+	warned = 0;
 	return ip;
 }
 static void
@@ -83,6 +87,10 @@ open_output_file(file)
 		if (!op)
 			die("cannot create file '%s'.", file);
 	}
+	if (!outbuf)
+		outbuf = strbuf_open(0);
+	else
+		strbuf_reset(outbuf);
 	return op;
 }
 static void
@@ -109,22 +117,14 @@ itoa(n)
 	return buf;
 }
 void
-echo(const char *s, ...)
-{
-        va_list ap;
-        va_start(ap, s);
-        (void)vfprintf(out, s, ap);
-        va_end(ap);
-}
-void
 echoc(int c)
 {
-        fputc(c, out);
+        strbuf_putc(outbuf, c);
 }
 void
 echos(const char *s)
 {
-        fputs(s, out);
+        strbuf_puts(outbuf, s);
 }
 
 /*
@@ -216,9 +216,11 @@ link_format(ref)
 		}
 		if (icon_list) {
 			strbuf_puts(sb, "<IMG SRC=../icons/");
-			if (ref[i] || i > 5)
+			if (i != A_INDEX && i != A_HELP && ref[i] == 0)
 				strbuf_puts(sb, "n_");
 			strbuf_puts(sb, icons[i]);
+			strbuf_putc(sb, '.');
+			strbuf_puts(sb, icon_suffix);
 			strbuf_sprintf(sb, " ALT=[%s] %s>", label[i], icon_spec);
 		} else {
 			strbuf_sprintf(sb, "[%s]", label[i]);
@@ -338,16 +340,19 @@ put_anchor(name, type, lineno)
 		db = GRTAGS;
 	line = cache_get(db, name);
 	if (line == NULL) {
-		if ((type == 'R' || type == 'Y') && wflag)
+		if ((type == 'R' || type == 'Y') && wflag) {
 			warning("%s %d %s(%c) found but not defined.",
 				curpfile, lineno, name, type);
-		echos(name);
+			if (colorize_warned_line)
+				warned = 1;
+		}
+		strbuf_puts(outbuf, name);
 	} else {
 		if (*line == ' ') {
 			int id = atoi(++line);
 			char *count = locatestring(line, " ", MATCH_FIRST) + 1;
 
-			echos("<A HREF=");
+			strbuf_puts(outbuf, "<A HREF=");
 			if (dynamic) {
 				char *dir = (*action == '/') ? "" : "../";
 				char *s;
@@ -358,7 +363,7 @@ put_anchor(name, type, lineno)
 					s = "reference";
 				else
 					s = "symbol";
-				echo("%s%s?pattern=%s&type=%s",
+				strbuf_sprintf(outbuf, "%s%s?pattern=%s&type=%s",
 					dir, action, name, s);
 			} else {
 				char *dir;
@@ -369,18 +374,38 @@ put_anchor(name, type, lineno)
 					dir = SYMS;
 				else	/* 'D', 'M' or 'T' */
 					dir = REFS;
-				echo("../%s/%d.%s", dir, id, HTML);
+				strbuf_sprintf(outbuf, "../%s/%d.%s", dir, id, HTML);
 			}
-			echo(" TITLE=\"%s\">%s</A>", tooltip(type, -1, count), name);
+			strbuf_sprintf(outbuf, " TITLE=\"%s\">%s</A>", tooltip(type, -1, count), name);
 		} else {
 			int lno = atoi(line);
 			char *filename = strmake(locatestring(line, " ", MATCH_FIRST) + 1, " ");
 			filename += 2;			/* remove './' */
 			char *url = path2url(filename);
-			echo("<A HREF=../%s/%s#%d TITLE=\"%s\">%s</A>",
+			strbuf_sprintf(outbuf, "<A HREF=../%s/%s#%d TITLE=\"%s\">%s</A>",
 				SRCS, url, lno, tooltip(type, lno, filename), name);
 		}
 	}
+}
+/*
+ * put_include_anchor: output HTML anchor.
+ *
+ *	i)	inc	inc structure
+ *	i)	path	path name for display
+ */
+void
+put_include_anchor(inc, path)
+	struct data *inc;
+	char *path;
+{
+	strbuf_puts(outbuf, "<A HREF=");
+	if (inc->count == 1)
+		strbuf_puts(outbuf, path2url(strbuf_value(inc->contents)));
+	else
+		strbuf_sprintf(outbuf, "../%s/%d.%s", INCS, inc->id, HTML);
+	strbuf_putc(outbuf, '>');
+	strbuf_puts(outbuf, path);
+	strbuf_puts(outbuf, "</A>");
 }
 /*
  * Tag level output functions.
@@ -389,26 +414,30 @@ void
 put_reserved_word(word)
         char *word;
 {
-        echo("%s%s%s", reserved_begin, word, reserved_end);
+	strbuf_puts(outbuf, reserved_begin);
+	strbuf_puts(outbuf, word);
+	strbuf_puts(outbuf, reserved_end);
 }
 void
 put_macro(word)
         char *word;
 {
-        echo("%s%s%s", sharp_begin, word, sharp_end);
+	strbuf_puts(outbuf, sharp_begin);
+	strbuf_puts(outbuf, word);
+	strbuf_puts(outbuf, sharp_end);
 }
 void
 put_char(c)
         int c;
 {
         if (c == '<')
-                echos(quote_little);
+		strbuf_puts(outbuf, quote_little);
         else if (c == '>')
-                echos(quote_great);
+		strbuf_puts(outbuf, quote_great);
         else if (c == '&')
-                echos(quote_amp);
+		strbuf_puts(outbuf, quote_amp);
         else
-                echo("%c", c);
+		strbuf_putc(outbuf, c);
 }
 void
 put_string(s)
@@ -421,7 +450,9 @@ void
 put_brace(text)
         char *text;
 {
-        echo("%s%s%s", brace_begin, text, brace_end);
+	strbuf_puts(outbuf, brace_begin);
+	strbuf_puts(outbuf, text);
+	strbuf_puts(outbuf, brace_end);
 }
 
 static char lineno_format[32];
@@ -441,27 +472,44 @@ put_begin_of_line(lineno)
                 else
                         guide = NULL;
         }
-        echo("<A NAME=%d>", lineno);
         if (guide && definition_header == BEFORE_HEADER) {
-                echo("%s\n", guide);
+                fputs(guide, out);
+                fputc('\n', out);
                 guide = NULL;
         }
-        if (nflag)
-                echo(lineno_format, lineno);
 }
 void
-put_end_of_line()
+put_end_of_line(lineno)
+	int lineno;
 {
+	fprintf(out, "<A NAME=%d>", lineno);
+        if (nflag)
+                fprintf(out, lineno_format, lineno);
+	if (warned)
+		fputs(warned_line_begin, out);
+
+	/* flush output buffer */
+	fputs(strbuf_value(outbuf), out);
+	strbuf_reset(outbuf);
+
+	if (warned)
+		fputs(warned_line_end, out);
 	if (guide == NULL)
-        	echoc('\n');
+        	fputc('\n', out);
 	else {
 		if (definition_header == RIGHT_HEADER)
-			echos(guide);
-		echoc('\n');
-		if (definition_header == AFTER_HEADER)
-			echo("%s\n", guide);
+			fputs(guide, out);
+		fputc('\n', out);
+		if (definition_header == AFTER_HEADER) {
+			fputs(guide, out);
+			fputc('\n', out);
+		}
 		guide = NULL;
 	}
+	warned = 0;
+
+	/* save for the other job in this module */
+	last_lineno = lineno;
 }
 /*
  *
@@ -482,9 +530,8 @@ src2html(src, html, notsource)
 	char *html;
 	int notsource;
 {
-	int line_number = 1;
 	char indexlink[128];
-	int clex(void), javalex(void), phplex(void);
+	int clex(void), cpplex(void), javalex(void), phplex(void);
 
 	/*
 	 * setup lineno format.
@@ -504,14 +551,14 @@ src2html(src, html, notsource)
 	if (!notsource) {
 		anchor_load(src);
 	}
-        echo("%s\n", html_begin);
-        echos(set_header(src));
-        echo("%s\n", body_begin);
+        fprintf(out, "%s\n", html_begin);
+        fputs(set_header(src), out);
+        fprintf(out, "%s\n", body_begin);
 	/*
          * print the header
          */
-        echos("<A NAME=TOP><H2>");
-        echos(fill_anchor(indexlink, src));
+        fputs("<A NAME=TOP><H2>", out);
+        fputs(fill_anchor(indexlink, src), out);
 	if (cvsweb_url) {
 		static STRBUF *sb = NULL;
 		char *p;
@@ -528,20 +575,20 @@ src2html(src, html, notsource)
 			else
 				strbuf_sprintf(sb, "%%%02x", c);
 		}
-        	echo("%s<A HREF=%s%s", quote_space, cvsweb_url, strbuf_value(sb));
+        	fprintf(out, "%s<A HREF=%s%s", quote_space, cvsweb_url, strbuf_value(sb));
 		if (cvsweb_cvsroot)
-        		echo("?cvsroot=%s", cvsweb_cvsroot);
-        	echo("><FONT SIZE=-1>[CVS]</FONT></A>\n");
+        		fprintf(out, "?cvsroot=%s", cvsweb_cvsroot);
+        	fprintf(out, "><FONT SIZE=-1>[CVS]</FONT></A>\n");
 		/* doesn't close string buffer */
 	}
-	echos("</H2>\n");
-        echo("%s/* ", comment_begin);
+	fprintf(out, "</H2>\n");
+        fprintf(out, "%s/* ", comment_begin);
 
-	echos(link_format(anchor_getlinks(0)));
+	fputs(link_format(anchor_getlinks(0)), out);
 	if (show_position)
-		echo("%s[+1 %s]%s", position_begin, src, position_end);
-	echo(" */%s", comment_end);
-	echo("\n%s\n", hr);
+		fprintf(out, "%s[+1 %s]%s", position_begin, src, position_end);
+	fprintf(out, " */%s", comment_end);
+	fprintf(out, "\n%s\n", hr);
         /*
          * It is not source file.
          */
@@ -549,24 +596,25 @@ src2html(src, html, notsource)
 		STRBUF *sb = strbuf_open(0);
 		char *_;
 
-		echo("%s\n", verbatim_begin);
+		fprintf(out, "%s\n", verbatim_begin);
+		last_lineno = 0;
 		while ((_ = strbuf_fgets(sb, in, STRBUF_NOCRLF)) != NULL) {
-			echo("<A NAME=%d>", line_number++);
+			fprintf(out, "<A NAME=%d>", ++last_lineno);
 			for (; *_; _++) {
 				int c = *_;
 
 				if (c == '&')
-					echos(quote_amp);
+					fputs(quote_amp, out);
 				else if (c == '<')
-					echos(quote_little);
+					fputs(quote_little, out);
 				else if (c == '>')
-					echos(quote_great);
+					fputs(quote_great, out);
 				else
-					echoc(c);
+					fputc(c, out);
 			}
-			echoc('\n');
+			fputc('\n', out);
 		}
-		echo("%s\n", verbatim_end);
+		fprintf(out, "%s\n", verbatim_end);
         }
 	/*
 	 * It's source code.
@@ -587,10 +635,10 @@ src2html(src, html, notsource)
 			basename = src;
 		incref = get_included(basename);
 		if (incref) {
-			echos("<H2><A HREF=");
+			fputs("<H2><A HREF=", out);
 			if (incref->count > 1) {
-				echo("../%s/%d.%s", INCREFS, incref->id, HTML);
-				echo(" TITLE='%s'>", tooltip('I', -1, itoa(incref->count)));
+				fprintf(out, "../%s/%d.%s", INCREFS, incref->id, HTML);
+				fprintf(out, " TITLE='%s'>", tooltip('I', -1, itoa(incref->count)));
 			} else {
 				char *lno, *filename, *save;
 				char *p = strbuf_value(incref->contents);
@@ -603,12 +651,12 @@ src2html(src, html, notsource)
 				filename = p;
 				if (filename[0] == '.' && filename[1] == '/')
 					filename += 2;
-				echo("%s#%s", path2url(filename), lno);
-				echo(" TITLE='%s'>", tooltip('I', atoi(lno), filename));
+				fprintf(out, "%s#%s", path2url(filename), lno);
+				fprintf(out, " TITLE='%s'>", tooltip('I', atoi(lno), filename));
 				*save = ' ';
 			}
-			echo("%s</A></H2>\n", title_included_from);
-			echo("%s\n", hr);
+			fprintf(out, "%s</A></H2>\n", title_included_from);
+			fprintf(out, "%s\n", hr);
 		}
 		/*
 		 * DEFINITIONS index.
@@ -626,17 +674,17 @@ src2html(src, html, notsource)
 			}
 		}
 		if (strbuf_getlen(define_index) > 0) {
-			echo("<H2>%s</H2>\n", title_define_index);
-			echos("This source file includes following definitions.\n");
-			echos("<OL>\n");
-			echos(strbuf_value(define_index));
-			echos("</OL>\n");
-			echo("%s\n", hr);
+			fprintf(out, "<H2>%s</H2>\n", title_define_index);
+			fputs("This source file includes following definitions.\n", out);
+			fputs("<OL>\n", out);
+			fputs(strbuf_value(define_index), out);
+			fputs("</OL>\n", out);
+			fprintf(out, "%s\n", hr);
 		}
 		/*
 		 * print source code
 		 */
-        	echo("%s\n", verbatim_begin);
+        	fprintf(out, "%s\n", verbatim_begin);
 		if (locatestring(src, ".java", MATCH_AT_LAST)) {
 			java_parser_init(in);
 			while (javalex())
@@ -664,17 +712,17 @@ src2html(src, html, notsource)
 			while (clex())
 				;
 		}
-        	echo("%s\n", verbatim_end);
+        	fprintf(out, "%s\n", verbatim_end);
 	}
-	echo("%s\n", hr);
-	echos("<A NAME=BOTTOM>\n");
-        echo("%s/* ", comment_begin);
-	echos(link_format(anchor_getlinks(-1)));
+	fprintf(out, "%s\n", hr);
+	fputs("<A NAME=BOTTOM>\n", out);
+        fprintf(out, "%s/* ", comment_begin);
+	fputs(link_format(anchor_getlinks(-1)), out);
 	if (show_position)
-		echo("%s[+%d %s]%s", position_begin, line_number, src, position_end);
-        echo(" */%s\n", comment_end);
-        echo("%s\n", body_end);
-        echo("%s\n", html_end);
+		fprintf(out, "%s[+%d %s]%s", position_begin, last_lineno, src, position_end);
+        fprintf(out, " */%s\n", comment_end);
+        fprintf(out, "%s\n", body_end);
+        fprintf(out, "%s\n", html_end);
 
 	if (!notsource)
 		anchor_close();
