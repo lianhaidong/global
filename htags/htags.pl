@@ -1011,8 +1011,7 @@ sub makedupindex {
 				if ($writing) {
 					print FILE &'list_end;
 					print FILE $'body_end, "\n";
-					print FILE $'html_end;
-					print FILE "\n";
+					print FILE $'html_end, "\n";
 					close(FILE);
 					$writing = 0;
 				}
@@ -1047,9 +1046,8 @@ sub makedupindex {
 		if ($?) { &'error("'$command' failed."); }
 		if ($writing) {
 			print FILE &'list_end;
-			print FILE $'body_end;
-			print FILE $'html_end;
-			print FILE "\n";
+			print FILE $'body_end, "\n";
+			print FILE $'html_end, "\n";
 			close(FILE);
 		}
 		if ($first_line) {
@@ -1102,9 +1100,8 @@ sub makedefineindex {
 				print ALPHA "<A HREF=$indexlink>";
 				print ALPHA $'icon_list ? "<IMG SRC=../icons/$'back_icon ALT='[index]' HSPACE=3 BORDER=0>" : "[index]";
 				print ALPHA "</A>\n";
-				print ALPHA $'body_end;
-				print ALPHA $'html_end;
-				print ALPHA "\n";
+				print ALPHA $'body_end, "\n";
+				print ALPHA $'html_end, "\n";
 				close(ALPHA);
 			}
 			# for multi-byte code
@@ -1217,9 +1214,8 @@ sub makefileindex {
 				print "<A HREF=$parent>" .
 					($'icon_list ? "<IMG SRC=../icons/$'back_icon ALT='[..]' HSPACE=3 BORDER=0>" : "[..]") .
 					"</A>\n";
-				print $'body_end;
-				print $'html_end;
-				print "\n";
+				print $'body_end, "\n";
+				print $'html_end, "\n";
 				$path = pop(@fdstack);
 				close($path);
 				select($fdstack[$#fdstack]) if (@fdstack);
@@ -1303,9 +1299,8 @@ sub makefileindex {
 		print "<A HREF=$parent>" .
 			($'icon_list ? "<IMG SRC=../icons/$'back_icon ALT='[..]' HSPACE=3 BORDER=0>" : "[..]") .
 			"</A>\n";
-		print $'body_end;
-		print $'html_end;
-		print "\n";
+		print $'body_end, "\n";
+		print $'html_end, "\n";
 		$path = pop(@fdstack);
 		close($path);
 		select($fdstack[$#fdstack]) if (@fdstack);
