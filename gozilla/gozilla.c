@@ -343,10 +343,7 @@ STRBUF *URL;
 	if (status == -1)
 		die("definition %s not found.", arg);
 	strbuf_reset(URL);
-	strbuf_puts(URL, "file:");
-	strbuf_puts(URL, htmldir);
-	strbuf_putc(URL, '/');
-	strbuf_puts(URL, ptable.part[1].start);
+	strbuf_sprintf(URL, "file:%s/%s", htmldir, ptable.part[1].start);
 	recover(&ptable);
 }
 /*
@@ -392,18 +389,11 @@ STRBUF *URL;
 		p = abspath + strlen(root);
 		if (convertpath(dbpath, htmldir, p, sb) == -1)
 			die("cannot find the hypertext.");
-		if (linenumber) {
-			strbuf_puts(URL, "file:");
-			strbuf_puts(URL, strbuf_value(sb));
-			strbuf_putc(URL, '#');
-			strbuf_putn(URL, linenumber);
-		} else {
-			strbuf_puts(URL, "file:");
-			strbuf_puts(URL, strbuf_value(sb));
-		}
+		strbuf_sprintf(URL, "file:%s", strbuf_value(sb));
+		if (linenumber)
+			strbuf_sprintf(URL, "#%d", linenumber);
 	} else {
-		strbuf_puts(URL, "file:");
-		strbuf_puts(URL, abspath);
+		strbuf_sprintf(URL, "file:%s", abspath);
 	}
 }
 /*
