@@ -589,7 +589,7 @@ if (!$title) {
 # load style sheet.
 #
 if ($style_sheet) {
-	my $style_path = $style_sheet;
+	local($style_path) = $style_sheet;
 	$style_sheet = '';
 	if (open(SHEET, $style_path)) {
 		while (<SHEET>) {
