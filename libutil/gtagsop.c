@@ -481,6 +481,8 @@ gtags_add(gtop, comline, path, flags)
 				p++;
 			else if ((p = locatestring(tag, "::", MATCH_LAST)) != NULL)
 				p += 2;
+			else
+				p = tag;
 		}
 		gtags_put(gtop, p, ctags_x);
 	}
