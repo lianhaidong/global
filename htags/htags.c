@@ -609,7 +609,6 @@ makeindex(file, title, index)
 	char *index;
 {
 	FILE *op;
-	char *name = enable_xhtml ? "id" : "name";
 
 	op = fopen(makepath(distpath, file, NULL), "w");
 	if (!op)

@@ -568,7 +568,7 @@ gen_input(name, value, type)
 	const char *value;
 	const char *type;
 {
-	return gen_input_with_title_checked(name, value, type, NULL, 0);
+	return gen_input_with_title_checked(name, value, type, 0, NULL);
 }
 /*
  * Generate input radiobox tag
