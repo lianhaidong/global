@@ -88,7 +88,7 @@ int	flag;
 	flag &= ~IGNORE_CASE;
 
 	if (flag == MATCH_COMPLETE) {
-		if (strlen(string) == slen && !(*cmpfunc)(string, pattern, plen))
+		if (strlen(string) == plen && !(*cmpfunc)(string, pattern, plen))
 			return (char *)string;
 		else
 			return NULL;
