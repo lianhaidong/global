@@ -35,6 +35,7 @@ David Brownlee		advice about fine coding style of C.
 Dunford, Martin		advice about Windows 32 version of GLOBAL.
 Dirk Schultheis		advice about compat.h for Solaris.
 Emile Heyns		advice about writing code for generic UNIX.
+Eric Paire		bug report about gctags's memory violation.
 Gary Kline		advice about the name of parser.
 Hideaki Okada		idea about -g option of global(1).
 Hideki Mori		advice about the name of parser.

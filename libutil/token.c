@@ -152,8 +152,10 @@ nexttoken(interested, reserved)
 		} else if (c == '/') {			/* comment */
 			if ((c = nextchar()) == '/') {
 				while ((c = nextchar()) != EOF)
-					if (c == '\n')
+					if (c == '\n') {
+						pushbackchar();
 						break;
+					}
 			} else if (c == '*') {
 				while ((c = nextchar()) != EOF) {
 					if (c == '*') {

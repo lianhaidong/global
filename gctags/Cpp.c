@@ -438,15 +438,25 @@ condition_macro(cc)
 		level = cur->start;
 		cur->if0only = 0;
 	} else if (cc == CP_ENDIF) {
-		if (cur->if0only)
-			level = cur->start;
-		else if (cur->end != -1) {
-			if (cur->end != level && wflag)
-				fprintf(stderr, "Warning: uneven level. [+%d %s]\n", lineno, curfile);
-			level = cur->end;
-		}
+		int	minus = 0;
+
 		--piflevel;
+		if (piflevel < 0) {
+			minus = 1;
+			piflevel = 0;
+		}
 		DBG_PRINT(piflevel, "#endif");
+		if (minus) {
+			fprintf(stderr, "Warning: #if block unmatched. reseted. [+%d %s]\n", lineno, curfile);
+		} else {
+			if (cur->if0only)
+				level = cur->start;
+			else if (cur->end != -1) {
+				if (cur->end != level && wflag)
+					fprintf(stderr, "Warning: uneven level. [+%d %s]\n", lineno, curfile);
+				level = cur->end;
+			}
+		}
 	}
 }
 		/* sorted by alphabet */

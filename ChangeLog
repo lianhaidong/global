@@ -32,6 +32,7 @@ ChangeLog about GNU GLOBAL
 	* Copyright notice added for short files that are not important
 	  enough to worry about copylefting.
 	* libdb/db.h: typdefs pgno_t, indx_t and recno_t changed into macros.
+	* gctags/{C.c,Cpp.c}: memory violation fixed.
 
 September 26 2000, Shigio Yamaguchi  <shigio@tamacom.com>
 
