@@ -33,7 +33,6 @@
 #include "asm_res.h"
 #include "die.h"
 #include "gctags.h"
-#include "gparam.h"
 #include "linetable.h"
 #include "strbuf.h"
 
