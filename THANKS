@@ -26,6 +26,7 @@ Emile Heyns		advice about writing code for generic UNIX.
 Gary Kline		advice about the name of parser.
 Hideaki Okada		idea about -g option of global(1).
 Hideki Mori		advice about the name of parser.
+Hidetaka KOIE		advice about configure.in for Solaris7.
 Hiroshi MIURA		idea about printing file name on browser's status bar.
 Jeff Trawick		idea about -l option of htags(1).
 Jordan K. Hubbard	idea about supporting BSD's obj directory.

@@ -9,7 +9,7 @@ ChangeLog about GNU GLOBAL
 
 ********* 2000, Shigio Yamaguchi  <shigio@tamacom.com>
 
-	* config variable HAVE_SNPRINTF added.
+	* config variable HAVE_SNPRINTF and AC_FUNC_ALLOCA added.
 	* htags.pl: the value of id changed from src directory
 	  to HTML directory.
 	* libutil/conf.c: error check added.
