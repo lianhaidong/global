@@ -27,6 +27,14 @@
 #endif
 #include <stdio.h>
 #include <stdarg.h>
+#ifdef STDC_HEADERS
+#include <stdlib.h>
+#endif
+#ifdef HAVE_STRING_H
+#include <string.h>
+#else
+#include <strings.h>
+#endif
 
 #include "defined.h"
 #include "die.h"
@@ -45,6 +53,8 @@
 #define PHP_RPAREN		')'
 #define PHP_LBRACE		'{'
 #define PHP_RBRACE		'}'
+#define PHP_LBRACK		'['
+#define PHP_RBRACK		']'
 
 static void debug_print(const char *, ...);
 
@@ -54,6 +64,39 @@ extern int vflag;
 extern int wflag;
 extern int debug;
 
+/*
+ * Lookup reserved array.
+ */
+static struct words words[] = {
+	{"GLOBALS", 0},
+	{"HTTP_COOKIE_VARS", 0},
+	{"HTTP_ENV_VARS", 0},
+	{"HTTP_GET_VARS", 0},
+	{"HTTP_POST_FILES", 0},
+	{"HTTP_POST_VARS", 0},
+	{"HTTP_SERVER_VARS", 0},
+	{"HTTP_SESSION_VARS", 0},
+	{"_COOKIE", 0},
+	{"_ENV", 0},
+	{"_FILES", 0},
+	{"_GET", 0},
+	{"_POST", 0},
+	{"_REQUEST", 0},
+	{"_SERVER", 0},
+	{"_SESSION", 0},
+};
+
+static int
+reserved_array_variable(word)
+        char *word;
+{
+	struct words tmp;
+	struct words *result;
+
+	tmp.name = word;
+	result = (struct words *)bsearch(&tmp, words, sizeof(words)/sizeof(struct words), sizeof(struct words), cmp);
+	return (result != NULL) ? 1 : 0;
+}
 /*
  * For debug.
  */
@@ -113,7 +156,7 @@ WORD		{ALPHA}{ALPHANUM}*
  /* Start PHP */
 <INITIAL>"<?="		ECHO; BEGIN PHP;
 <INITIAL>"<?"		ECHO; BEGIN PHP;
-<INITIAL>"<php?"	ECHO; BEGIN PHP;
+<INITIAL>"<?php"	ECHO; BEGIN PHP;
 <INITIAL>"<%"		ECHO; BEGIN PHP;
 <INITIAL>"<script[ \t]+language=(\")?php(\")?>"	ECHO; BEGIN PHP;
  /* Ignore HTML */
@@ -212,7 +255,7 @@ WORD		{ALPHA}{ALPHANUM}*
  /* Operator */
 <PHP>[{}]		{
 				int c = phptext[0];
-				if (c == '{')	/* } */
+				if (c == PHP_LBRACE)
 					level++;
 				else
 					level--;
@@ -220,7 +263,7 @@ WORD		{ALPHA}{ALPHANUM}*
 
 				return c;
 			}
-<PHP>[()]		{
+<PHP>[][()]		{
 				return phptext[0];
 			}
 <PHP>[-+*/%&~^]=?	ECHO;
@@ -271,8 +314,22 @@ const char *file;
 				PUT(phptext, phplineno, file);
 			break;
 		case PHP_VARIABLE:
-			if (target == SYM)
-				PUT(phptext, phplineno, file);
+			if (reserved_array_variable(phptext)) {
+				if (target == SYM)
+					PUT(phptext, phplineno, file);
+				if (phplex() == PHP_LBRACK && phplex() == PHP_STRING && phplex() == PHP_RBRACK) {
+					char *str = strbuf_value(string);
+
+					if (strchr(str, '$') == 0)
+						if (target == SYM)
+							PUT(str, phplineno, file);
+				}
+			} else if (!strcmp(phptext, "this")) {
+				;
+			} else {
+				if (target == SYM)
+					PUT(phptext, phplineno, file);
+			}
 			break;
 		case PHP_POINTER:
 			if (phplex() != PHP_TOKEN)

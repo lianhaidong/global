@@ -91,6 +91,14 @@ if ($perl) {
 			print '|';
 		}
 		print;
+		if (!/^_/ && $prefix eq 'php') {
+			$upper = $_;
+			$upper =~ tr/a-z/A-Z/;
+			$cap = substr($_, 0, 1);
+			$cap =~ tr/a-z/A-Z/;
+			$cap .= substr($_, 1);
+			print '|', $upper, '|', $cap;
+		}
 	}
 	print ")\";\n";
 	print "# end of generated part.\n";
@@ -135,6 +143,13 @@ while(<IP>) {
 	$upper = $_;
 	$upper =~ tr/a-z/A-Z/;
 	print "$_, ${PRE}_${upper}\n";
+	if (!/^_/ && $prefix eq 'php') {
+		$cap = substr($_, 0, 1);
+		$cap =~ tr/a-z/A-Z/;
+		$cap .= substr($_, 1);
+		print "${upper}, ${PRE}_${upper}\n";
+		print "${cap}, ${PRE}_${upper}\n";
+	}
 }
 close(IP);
 print "%%\n";
