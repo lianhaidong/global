@@ -35,7 +35,7 @@
 #include "path2url.h"
 #include "common.h"
 #include "htags.h"
-#include "../gctags/asm_res.h"
+#include "../gtags-parser/asm_res.h"
 #include "lexcommon.h"
 
 #define LEXTEXT	asmtext

@@ -273,7 +273,7 @@
 	the second it 1 and so on. All the message has level numbers leading
 	blanks.
 @SEE ALSO
-	@xref{gctags,1},
+	@xref{gtags-parser,1},
 	@xref{global,1},
 	@xref{gtags,1}.
 

@@ -10,20 +10,20 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
-bin_PROGRAMS= gctags
+bin_PROGRAMS= gtags-parser
 
 noinst_HEADERS = gctags.h c_res.h cpp_res.h java_res.h php_res.h asm_res.h \
 		asm_parse.h
 
-gctags_SOURCES = gctags.c C.c Cpp.c asm_parse.c asm_scan.c java.c php.c
+gtags_parser_SOURCES = gctags.c C.c Cpp.c asm_parse.c asm_scan.c java.c php.c
 
 INCLUDES = @INCLUDES@
 
 LDADD = @LDADD@
 
-gctags_DEPENDENCIES = $(LDADD)
+gtags_parser_DEPENDENCIES = $(LDADD)
 
-man_MANS = gctags.1
+man_MANS = gtags-parser.1
 
 EXTRA_DIST = $(man_MANS) const.h manual.in reserved.pl HACKING \
 		c_res.in c_res.gpf \

@@ -33,7 +33,7 @@
 #include "anchor.h"
 #include "common.h"
 #include "htags.h"
-#include "../gctags/java_res.h"
+#include "../gtags-parser/java_res.h"
 #include "lexcommon.h"
 
 #define LEXTEXT	javatext

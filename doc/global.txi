@@ -2048,7 +2048,7 @@ Or if you would like to use exuberant ctags (included by Vim editor),
 @end example
 
 @file{GRTAGS} and @file{GSYMS} don't exist, simply because
-these parsers don't support the @samp{-r} option and @samp{-s} option like gctags(1) does.
+these parsers don't support the @samp{-r} option and @samp{-s} option like gtags-parser(1) does.
 @opindex -r
 @opindex -s
 All plugged-in parsers must print tag information to standard output

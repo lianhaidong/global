@@ -123,9 +123,9 @@ dbname(db)
  *	o)	sb	command line
  *
  * command skeleton is like this:
- *	'gctags -r %s'
+ *	'gtags-parser -r %s'
  * following skeleton is allowed too.
- *	'gctags -r'
+ *	'gtags-parser -r'
  */
 void
 makecommand(comline, path, sb)

@@ -30,7 +30,7 @@
 # You can specify target with GTAGSLABEL environment variable.
 #
 default:\
-	:tc=gctags:tc=htags:
+	:tc=gtags:tc=htags:
 #---------------------------------------------------------------------
 # Configuration for gtags(1)
 # See gtags(1).
@@ -39,23 +39,23 @@ common:\
 	:skip=@DEFAULTSKIP@:\
 	:format=standard:
 #
-# [gctags]
+# [gtags-parser]
 #
 # This command is distributed as part of GLOBAL.
 #
 # If you want to treat file.x, file.y and file.z as C source files then
 #
 #	:suffixes=x,y,z:				<- pick up x,y,z
-#	:GTAGS=gctags --langmap=c\:.x.y.z -dt %s:	<- treat as C source
-#	:GRTAGS=gctags --langmap=c\:.x.y.z -dt %s:
-#	:GSYMS=gctags --langmap=c\:.x.y.z -dt %s:
+#	:GTAGS=gtags-parser --langmap=c\:.x.y.z -dt %s:	<- treat as C source
+#	:GRTAGS=gtags-parser --langmap=c\:.x.y.z -dt %s:
+#	:GSYMS=gtags-parser --langmap=c\:.x.y.z -dt %s:
 #
-gctags|tag command for GLOBAL:\
+gtags:\
 	:tc=common:\
 	:suffixes=@DEFAULTSUFFIXES@:\
-	:GTAGS=gctags -dt %s:\
-	:GRTAGS=gctags -dtr %s:\
-	:GSYMS=gctags -dts %s:
+	:GTAGS=gtags-parser -dt %s:\
+	:GRTAGS=gtags-parser -dtr %s:\
+	:GSYMS=gtags-parser -dts %s:
 #
 # [Emacs's ctags]
 #

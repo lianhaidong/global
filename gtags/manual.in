@@ -119,13 +119,13 @@
 	@begin_itemize
 	@item{@code{GTAGS}(string)}
 		If this variable is set, its value is used as the
-		command line of parser for GTAGS. The default is @file{gctags -dt %s}.
+		command line of parser for GTAGS. The default is @file{gtags-parser -dt %s}.
 	@item{@code{GRTAGS}(string)}
 		If this variable is set, its value is used as the
-		command line of parser for GRTAGS. The default is @file{gctags -dtr %s}.
+		command line of parser for GRTAGS. The default is @file{gtags-parser -dtr %s}.
 	@item{@code{GSYMS}(string)}
 		If this variable is set, its value is used as the
-		command line of parser for GSYMS. The default is @file{gctags -dts %s}.
+		command line of parser for GSYMS. The default is @file{gtags-parser -dts %s}.
 	@item{@code{skip}(comma separated list)}
 		@name{Gtags} skips files which listed in this list.
 		As a special exception, @name{gtags} collect values from multiple @code{skip} variables.
@@ -148,7 +148,7 @@
 	the second is 1 and so on. All the message has level numbers leading
 	blanks.
 @SEE ALSO
-	@xref{gctags,1},
+	@xref{gtags-parser,1},
 	@xref{global,1},
 	@xref{htags,1}.
 

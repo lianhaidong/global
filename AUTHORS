@@ -37,7 +37,7 @@ Port to Windows 32 (for Borland C++ Compiler) by Dan Fandrich.
 Port to DJGPP by Jason Hood.
 (libutil/is_unixy.[ch] and most of #ifdef __DJGPP__.)
 
-Improvements to htags and gctags by Hideki IWAMOTO.
+Improvements to htags and gtags-parser by Hideki IWAMOTO.
 * INCLUDED FROM index(htags)
 * CVS REPOSITORY link(htags)
 * Real support of Yacc source code(htags)

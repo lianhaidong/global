@@ -40,7 +40,7 @@
 #include "incop.h"
 #include "htags.h"
 #include "path2url.h"
-#include "../gctags/php_res.h"
+#include "../gtags-parser/php_res.h"
 #include "lexcommon.h"
 
 #define LEXTEXT	phptext

@@ -35,7 +35,7 @@
 #include "path2url.h"
 #include "common.h"
 #include "htags.h"
-#include "../gctags/c_res.h"
+#include "../gtags-parser/c_res.h"
 #include "lexcommon.h"
 
 #define LEXTEXT	ctext

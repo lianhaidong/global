@@ -76,20 +76,7 @@ A3. Emacs's ctags cannot locate function referencies. So, gtags cannot make
 ----------------------------------------------------------------------------
 Q4. Deleted.
 ----------------------------------------------------------------------------
-Q5. I invoked gtags but it failed with a message like this:
-
-	gctags: no input files specified
-
-    What should I do?
-
-A5. Please check what is the gctags? You can check it with this command like.
-
-	$ which gctags
-	$ gctags --version
-
-    If the gctags is not the GLOBAL's one then you should set your PATH
-    so that GLOBAL's gctags will be invoked.
-
+Q5. Deleted.
 ----------------------------------------------------------------------------
 Q6. It seems that gtags cannot treat files which include blanks in the path.
     Why?

@@ -385,7 +385,7 @@ sub gen {
 		$infile = "$dir/manual.in";
 		open(INFILE, $infile) || die("cannot open '$infile'\n");
 		while (<INFILE>) {
-			if (/^\@NAME\s+((\w+)\s+\-\s+.*)$/) {
+			if (/^\@NAME\s+((\S+)\s+\-\s+.*)$/) {
 				$line = $1;
 				$name = $2;
 				last;

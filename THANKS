@@ -24,7 +24,7 @@ A.E. Brouwer		advice about writing code for generic UNIX.
 Andrew Gallatin		bug report about generating wrong path.
 Andrs Azar		Cygwin trouble report.
 Andy Newman		bug report about treating tab character.
-Andy Zhou		bug report about gctags overlook 'extern' prefixed function.
+Andy Zhou		bug report about gtags-parser overlook 'extern' prefixed function.
 Bakken, Luke		bug fix method about stat() in htags(1).
 Bert Gijsbers		investigation about mandoc macro and a bug report.
 Bob Bentley		bug report about bless.sh and gtags.
@@ -37,12 +37,12 @@ David Brownlee		advice about fine coding style of C.
 Dunford, Martin		advice about Windows 32 version of GLOBAL.
 Dirk Schultheis		advice about compat.h for Solaris.
 Emile Heyns		advice about writing code for generic UNIX.
-Eric Paire		bug report about gctags's memory violation.
+Eric Paire		bug report about gtags-parser's memory violation.
 Gary Kline		advice about the name of parser.
 Giuseppe Corbelli	Global.py for glimmer code editor and an advice about vim.
-Hageseter, Trond E.	bug report about gctags.
+Hageseter, Trond E.	bug report about gtags-parser.
 Hideaki Okada		idea about -g option of global(1).
-Hideki Iwamoto		many bug reports and improvements about gctags(1), htags(1).
+Hideki Iwamoto		many bug reports and improvements about gtags-parser(1), htags(1).
 Hideki Mori		advice about the name of parser.
 Hidetaka KOIE		bug report and advice about configure.in for Solaris7.
 Hiroshi MIURA		idea about printing file name on browser's status bar.

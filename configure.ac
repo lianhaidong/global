@@ -150,7 +150,7 @@ AC_OUTPUT([Makefile
 	libutil/Makefile
 	gtags/Makefile
 	htags/Makefile
-	gctags/Makefile
+	gtags-parser/Makefile
 	gnusort/Makefile
 	libdb/Makefile
 	global/Makefile

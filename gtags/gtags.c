@@ -505,22 +505,6 @@ main(argc, argv)
 			die("mkid not found.");
 	}
 
-	/*
-	 * Check whether or not your system has GLOBAL's gctags.
-	 * Some GNU/Linux distributions rename emacs's ctags to gctags!
-	 */
-	{
-		FILE *ip = popen("gctags --check", "r");
-		STRBUF *ib = strbuf_open(MAXBUFLEN);
-		if (strbuf_fgets(ib, ip, STRBUF_NOCRLF) == NULL || strcmp(strbuf_value(ib), "Part of GLOBAL")) {
-			if (!qflag) {
-				warning("gctags in your system is not GLOBAL's one.");
-				fprintf(stderr, "Please type 'gctags --version'\n");
-			}
-		}
-		strbuf_close(ib);
-		pclose(ip);		/* don't check error status */
-	}
 	if (!getcwd(cwd, MAXPATHLEN))
 		die("cannot get current directory.");
 	canonpath(cwd);
@@ -564,7 +548,7 @@ main(argc, argv)
 	if (cflag == 0 && getconfs("format", sb) && !strcmp(strbuf_value(sb), "compact"))
 		cflag++;
 	/*
-	 * teach gctags(1) where is dbpath by environment variable.
+	 * teach gtags-parser(1) where is dbpath by environment variable.
 	 */
 	set_env("GTAGSDBPATH", dbpath);
 
@@ -601,7 +585,7 @@ main(argc, argv)
 			continue;
 		strbuf_reset(sb);
 		/*
-		 * get parser for db. (gctags by default)
+		 * get parser for db. (gtags-parser by default)
 		 */
 		if (!getconfs(dbname(db), sb))
 			continue;

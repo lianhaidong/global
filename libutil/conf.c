@@ -319,16 +319,14 @@ openconf()
 		char *path;
 
 		/*
-		 * Some GNU/Linux has gctags as '/usr/bin/gctags', that is
-		 * different from GLOBAL's one.
 		 * usable search in BINDIR at first.
 		 */
 #if defined(_WIN32) || defined(__DJGPP__)
-		path = "gctags.exe";
+		path = "gtags-parser.exe";
 #else
-		path = usable("gctags");
+		path = usable("gtags-parser");
 		if (!path)
-			path = "gctags";
+			path = "gtags-parser";
 #endif /* _WIN32 */
 		strbuf_puts(sb, ":GTAGS=");
 		strbuf_puts(sb, path);

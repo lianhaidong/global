@@ -13,6 +13,6 @@
 info_TEXINFOS = global.txi
 
 global_TEXINFOS = fdl.txi reference.txi \
-	global.ref gtags.ref htags.ref gctags.ref gozilla.ref
+	global.ref gtags.ref htags.ref gtags-parser.ref gozilla.ref
 
 EXTRA_DIST = texinfo.tex
