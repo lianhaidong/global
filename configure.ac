@@ -2,7 +2,7 @@ dnl
 dnl Configuration script for GLOBAL.
 dnl Process this file with autoconf to produce a configure script.
 dnl
-dnl Copyright (c) 2000, 2001, 2002, 2003 Tama Communications Corporation
+dnl Copyright (c) 2000, 2001, 2002, 2003, 2004 Tama Communications Corporation
 dnl
 dnl This file is part of GNU GLOBAL.
 dnl
@@ -121,14 +121,44 @@ AC_ARG_WITH(postgres,
                 fi
                 INCLUDES="$INCLUDES -I$POSTGRES/include"
                 CFLAGS="$CFLAGS -DUSE_POSTGRES"
-                LDADD="$LDADD $POSTGRES/lib/libpq.a -lcrypt"
+                LDFLAGS="$LDFLAGS -L$POSTGRES/lib -lpq -lcrypt"
                 AC_MSG_RESULT([yes, using $POSTGRES])
         fi
 ],[
         AC_MSG_RESULT(no)
 ])
+dnl
+dnl for home-etc support
+dnl
+AC_MSG_CHECKING(for home-etc support)
+AC_ARG_WITH(home-etc,
+[  --with-home-etc[=DIR]     include home-etc support ],
+[
+        if test "$withval" = 'no'; then
+                AC_MSG_RESULT(no)
+        else
+                case $withval in
+                ''|yes) HOMEETC=/usr/local;;
+                *)      HOMEETC=$withval;;
+                esac
+                if ! test -d $HOMEETC; then
+                        AC_MSG_ERROR([directory '$HOMEETC' not found.])
+                fi
+		if ! test -f $HOMEETC/include/home_etc.h; then
+                        AC_MSG_ERROR([header '$HOMEETC/include/home_etc.h' not found.])
+                fi
+                INCLUDES="$INCLUDES -I$HOMEETC/include"
+                CFLAGS="$CFLAGS -DHAVE_HOME_ETC_H"
+		LDFLAGS="$LDFLAGS -L$HOMEETC/lib -lhome_etc"
+                AC_MSG_RESULT([yes, using $HOMEETC])
+        fi
+],[
+        AC_MSG_RESULT(no)
+])
+
 AC_SUBST(INCLUDES)
 AC_SUBST(LDADD)
+AC_SUBST(LDFLAGS)
 
 dnl
 dnl The definition of config variable skip and suffixes.

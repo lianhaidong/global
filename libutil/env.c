@@ -29,6 +29,9 @@
 #else
 #include <strings.h>
 #endif
+#ifdef HAVE_HOME_ETC_H
+#include <home_etc.h>
+#endif
 
 #include "die.h"
 #include "env.h"
@@ -62,5 +65,19 @@ set_env(var, val)
 	/* Don't free memory. putenv(3) require it. */
 #else
 	setenv(var, val, 1);
+#endif
+}
+/*
+ * get_home_directory: get environment dependent home directory.
+ *
+ *	r)	home directory
+ */
+char *
+get_home_directory()
+{
+#ifdef HAVE_HOME_ETC_H
+	return _HEdir;
+#else
+	return getenv("HOME");
 #endif
 }

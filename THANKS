@@ -4,7 +4,7 @@ ___________________________________
 |  |   |  |  |  |  |     |     |  |
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Copyright (c) 2000, 2001, 2002, 2003 Tama Communications Corporation
+ Copyright (c) 2000, 2001, 2002, 2003, 2004 Tama Communications Corporation
 
  This file is free software; as a special exception the author gives
  unlimited permission to copy and/or distribute it, with or without
@@ -70,6 +70,7 @@ Oleg Checkulaev		advice about writing code for generic UNIX.
 Oliver Paukstadt	idea about -c (gzipped html) option of htags(1).
 Patrick Strasser	bug report about the --caution and --style-sheet option of htags(1).
 Paul Lew		advice about compat.h for Solaris.
+Pawel Wilk		idea about home_etc facility on PLD Linux/GNU.
 Philippe Defert		building on many plathomes and the problem report.
 Richard Stallman	advice about gtags.el and GNU style packaging.
 Rob Fitzgerald		bug fix patch for global(1).

@@ -36,6 +36,7 @@
 #include "gparam.h"
 #include "conf.h"
 #include "die.h"
+#include "env.h"
 #include "locatestring.h"
 #include "makepath.h"
 #include "path.h"
@@ -213,10 +214,10 @@ configpath() {
 	/*
 	 * if GTAGSCONF not set then check standard config files.
 	 */
-	else if ((p = getenv("HOME")) && test("r", makepath(p, GTAGSRC, NULL)))
+	else if ((p = get_home_directory()) && test("r", makepath(p, GTAGSRC, NULL)))
 		strlimcpy(config, makepath(p, GTAGSRC, NULL), sizeof(config));
 #ifdef __DJGPP__
-	else if ((p = getenv("HOME")) && test("r", makepath(p, DOS_GTAGSRC, NULL)))
+	else if ((p = get_home_directory()) && test("r", makepath(p, DOS_GTAGSRC, NULL)))
 		strlimcpy(config, makepath(p, DOS_GTAGSRC, NULL), sizeof(config));
 #endif
 	else if (test("r", GTAGSCONF))

@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1997, 1998, 1999 Shigio Yamaguchi
- * Copyright (c) 1999, 2000, 2002, 2003 Tama Communications Corporation
+ * Copyright (c) 1999, 2000, 2002, 2003, 2004 Tama Communications Corporation
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -102,7 +102,7 @@ alias(alias_name)
 	char *p, *alias = NULL;
 	int flag = STRBUF_NOCRLF;
 
-	if (!(p = getenv("HOME")))
+	if (!(p = get_home_directory()))
 		goto end;
 	if (!test("r", makepath(p, gozillarc, NULL)))
 #ifdef __DJGPP__

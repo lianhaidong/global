@@ -1,7 +1,7 @@
 #
 # GloBash --- Global facility for Bash
 #
-# Copyright (c) 2001, 2002 Tama Communications Corporation
+# Copyright (c) 2001, 2002, 2004 Tama Communications Corporation
 #
 # This file is part of GNU GLOBAL.
 #
@@ -36,7 +36,15 @@ unset bash_minorversion
 # Global variables and utilities.
 ###########################################################################
 ### Working directory
-GHOME=$HOME/.globash
+#
+# The HOME_ETC environment variable is used by home-etc facility
+# in PLD Linux/GNU. Globash obey this method if the variable defined.
+#
+if [ -n "$HOME_ETC" ]; then
+        GHOME=$HOME_ETC/.globash
+else
+        GHOME=$HOME/.globash
+fi
 if [ ! -d $GHOME ]; then
 	echo
 	echo "GloBash --- Global facility for Bash"
@@ -73,9 +81,14 @@ declare -r STACK=$GHOME/stack-$$		# stack for tags command
 declare -r MARKER=$GHOME/marker-$$		# marker
 declare -r TMP1=$GHOME/tmp1-$$			# temporary file
 __gtags_clean() {
+	if [ -n "$HOME_ETC" ]; then
+		home=$HOME_ETC
+	else
+		home=$HOME
+	fi
 	for d in $XREF $STACK $MARKER $TMP1; do
 		case $d in
-		$HOME/.globash/*-$$) rm -f $d;;
+		$home/.globash/*-$$) rm -f $d;;
 		esac
 	done
 }
