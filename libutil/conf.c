@@ -296,7 +296,11 @@ openconf()
 		 * different from GLOBAL's one.
 		 * BINDIR is defined in Makefile.
 		 */
-		path = makepath(BINDIR, "gctags", NULL);;
+#ifdef _WIN32
+		path = "gctags";
+#else
+		path = makepath(BINDIR, "gctags", NULL);
+#endif /* _WIN32 */
 		strbuf_puts(sb, ":GTAGS=");
 		strbuf_puts(sb, path);
 		strbuf_puts(sb, " %s");
