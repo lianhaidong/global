@@ -305,7 +305,12 @@ C(yacc)
 				int	typedef_savelevel = level;
 
 				savetok[0] = 0;
-				c = nexttoken("{}(),;", reserved);
+
+				/* skip type qualifiers */
+				do {
+					c = nexttoken("{}(),;", reserved);
+				} while (IS_TYPE_QUALIFIER(c));
+
 				if (wflag && c == EOF) {
 					fprintf(stderr, "Warning: unexpected eof. [+%d %s]\n", lineno, curfile);
 					break;

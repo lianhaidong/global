@@ -101,3 +101,5 @@ enum {
 #define IS_CTOKEN(c)	((c) > CTOKEN_BASE && (c) < CTOKEN_BASE + 1000)
 #define IS_CPTOKEN(c)	((c) > CPTOKEN_BASE && (c) < CPTOKEN_BASE + 1000)
 #define IS_YACCTOKEN(c)	((c) > YACCTOKEN_BASE && (c) < YACCTOKEN_BASE + 1000)
+
+#define IS_TYPE_QUALIFIER(c)	((c) == C_CONST || (c) == C_RESTRICT || (c) == C_VOLATILE)
