@@ -104,9 +104,9 @@ AC_TYPE_SIGNAL
 AC_FUNC_STRFTIME
 AC_CHECK_FUNCS(getcwd putenv strdup lstat snprintf utimes)
 
-INCLUDES='-I$(top_srcdir)/libutil -I$(top_srcdir)/libdb -I$(top_srcdir)/libregex'
+INCLUDES='-I$(top_srcdir)/libutil -I$(top_srcdir)/libdb -I$(top_srcdir)/libglibc'
 AC_SUBST(INCLUDES)
-LDADD='../libutil/libgloutil.a ../libdb/libglodb.a ../libregex/libgloregex.a'
+LDADD='../libutil/libgloutil.a ../libdb/libglodb.a ../libglibc/libgloglibc.a'
 AC_SUBST(LDADD)
 
 AC_ARG_ENABLE(statistics,dnl
@@ -122,7 +122,7 @@ AC_OUTPUT([Makefile
 	libdb/Makefile
 	btreeop/Makefile
 	global/Makefile
-	libregex/Makefile
+	libglibc/Makefile
 	machine/Makefile
 	doc/Makefile
 ])

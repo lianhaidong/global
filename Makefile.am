@@ -11,7 +11,7 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
-SUBDIRS= libdb libregex libutil btreeop gctags global gtags htags machine doc
+SUBDIRS= libdb libglibc libutil btreeop gctags global gtags htags machine doc
 
 EXTRA_DIST = VERSION FAQ LICENSE global.conf gtags.el nvi-1.79-gtags.diff w32 reconf.sh
 

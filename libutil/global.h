@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999
  *             Shigio Yamaguchi. All rights reserved.
- * Copyright (c) 1999, 2000
+ * Copyright (c) 1999, 2000, 2001
  *             Tama Communications Corporation. All rights reserved.
  *
  * This file is part of GNU GLOBAL.
@@ -24,7 +24,6 @@
 #ifndef _GLOBAL_H_
 #define _GLOBAL_H_
 
-#include "getopt.h"
 #include "gparam.h"
 #include "conf.h"
 #include "dbop.h"

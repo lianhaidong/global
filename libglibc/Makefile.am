@@ -11,10 +11,10 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
-noinst_LIBRARIES = libgloregex.a
+noinst_LIBRARIES = libgloglibc.a
 
-noinst_HEADERS = regex.h
+noinst_HEADERS = regex.h getopt.h
 
-libgloregex_a_SOURCES = regex.c
+libgloglibc_a_SOURCES = regex.c getopt.c getopt1.c
 
-libgloregex_a_DEPENDENCIES = $(libgloregex_a_LIBADD)
+libgloglibc_a_DEPENDENCIES = $(libgloglibc_a_LIBADD)

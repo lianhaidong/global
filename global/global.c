@@ -41,6 +41,7 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
+#include "getopt.h"
 
 #include "global.h"
 #include "regex.h"
