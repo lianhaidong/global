@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999
  *             Shigio Yamaguchi. All rights reserved.
- * Copyright (c) 1999, 2000, 2001
+ * Copyright (c) 1999, 2000, 2001, 2002
  *             Tama Communications Corporation. All rights reserved.
  *
  * This file is part of GNU GLOBAL.
@@ -361,6 +361,8 @@ int	flags;
  *	i)	tag	tag name
  *	i)	record	ctags -x image
  *	i)	fid	file id.
+ *
+ * NOTE: If format is GTAGS_COMPACT then this function is destructive.
  */
 void
 gtags_put(gtop, tag, record, fid)
@@ -369,9 +371,9 @@ char	*tag;
 char	*record;
 char	*fid;
 {
-	char	*p, *q;
-	char	lno[32];
-	char	path[MAXPATHLEN+1];
+#define PARTS 4
+	char *line, *path;
+	char *parts[PARTS];
 
 	if (gtop->format == GTAGS_STANDARD) {
 		/* entab(record); */
@@ -381,21 +383,10 @@ char	*fid;
 	/*
 	 * gtop->format & GTAGS_COMPACT
 	 */
-	p = record;				/* ignore $1 */
-	while (*p && !isspace(*p))
-		p++;
-	while (*p && isspace(*p))
-		p++;
-	q = lno;				/* lno = $2 */
-	while (*p && !isspace(*p))
-		*q++ = *p++;
-	*q = 0;
-	while (*p && isspace(*p))
-		p++;
-	q = path;				/* path = $3 */
-	while (*p && !isspace(*p))
-		*q++ = *p++;
-	*q = 0;
+	if (split(record, '\t', PARTS, parts) != PARTS)
+		die("illegal format.");
+	line = parts[1];
+	path = parts[2];
 	/*
 	 * First time, it occurs, because 'prev_tag' and 'prev_path' are NULL.
 	 */
@@ -414,10 +405,10 @@ char	*fid;
 		strbuf_putc(gtop->sb, ' ');
 		strbuf_puts(gtop->sb, path);
 		strbuf_putc(gtop->sb, ' ');
-		strbuf_puts(gtop->sb, lno);
+		strbuf_puts(gtop->sb, line);
 	} else {
 		strbuf_putc(gtop->sb, ',');
-		strbuf_puts(gtop->sb, lno);
+		strbuf_puts(gtop->sb, line);
 	}
 }
 /*

@@ -43,32 +43,26 @@ char *parts[];
 	int count = 0;
 
 	if (sep == ' ' || sep == '\t') {
-		while (count < max) {
-			for (p = s; *p && !isspace(*p); p++)
-				;
-			if (*p == '\0') {
-				parts[count++] = s;
+		while (1) {
+			while (*s && isspace(*s))
+				s++;
+			if (*s == '\0')
 				break;
-			}
-			*p++ = '\0';
 			parts[count++] = s;
-			for (; *p && isspace(*p); p++)
-				;
-			if (*p == '\0')
-				return count;
-			s = p;
+			while (*s && !isspace(*s))
+				s++;
+			if (*s == '\0' || count >= max)
+				break;
+			*s++ = '\0';
 		}
 	} else {
-		while (count < max) {
-			for (p = s; *p && *p != sep; p++)
-				;
-			if (*p == '\0') {
-				parts[count++] = s;
-				break;
-			}
-			*p++ = '\0';
+		while (1) {
 			parts[count++] = s;
-			s = p;
+			while (*s && *s != sep)
+				s++;
+			if (*s == '\0' || count >= max)
+				break;
+			*s++ = '\0';
 		}
 	}
 	return count;
