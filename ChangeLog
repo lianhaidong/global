@@ -22,6 +22,7 @@ ChangeLog about GNU GLOBAL
 **** ** 2001, Shigio Yamaguchi  <shigio@tamacom.com>
 
 	* gtags: format char for strftime() changed (%e -> %d).
+	* gtags: the path of gctags changed from 'gctags' to '$bindir/gctags'.
 	* htags: use gtags --date and gtags --pwd instead of date and pwd.
 	  Above changes are for Windows 32 environment.
 	* rename file: pathop.[ch] -> gpathop.[ch].

@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999
  *             Shigio Yamaguchi. All rights reserved.
- * Copyright (c) 1999, 2000
+ * Copyright (c) 1999, 2000, 2001
  *             Tama Communications Corporation. All rights reserved.
  *
  * This file is part of GNU GLOBAL.
@@ -244,9 +244,23 @@ openconf()
 	 * (Otherwise, nothing to do for gtags.)
 	 */
 	if (!getconfs("GTAGS", NULL) && !getconfs("GRTAGS", NULL) && !getconfs("GSYMS", NULL)) {
-		strbuf_puts(sb, ":GTAGS=gctags %s");
-		strbuf_puts(sb, ":GRTAGS=gctags -r %s");
-		strbuf_puts(sb, ":GSYMS=gctags -s %s");
+		char *path;
+
+		/*
+		 * Some GNU/Linux has gctags as '/usr/bin/gctags', that is
+		 * different from GLOBAL's one.
+		 * BINDIR is defined in Makefile.
+		 */
+		path = makepath(BINDIR, "gctags", NULL);;
+		strbuf_puts(sb, ":GTAGS=");
+		strbuf_puts(sb, path);
+		strbuf_puts(sb, " %s");
+		strbuf_puts(sb, ":GRTAGS=");
+		strbuf_puts(sb, path);
+		strbuf_puts(sb, " -r %s");
+		strbuf_puts(sb, ":GSYMS=");
+		strbuf_puts(sb, path);
+		strbuf_puts(sb, " -s %s");
 	}
 	if (!getconfs("sort_command", NULL))
 		strbuf_puts(sb, ":sort_command=sort");
