@@ -224,6 +224,7 @@ static struct option const long_options[] = {
         {"title", required_argument, NULL, 't'},
         {"verbose", no_argument, NULL, 'v'},
         {"warning", no_argument, NULL, 'w'},
+        {"xhtml", no_argument, NULL, 'x'},
 
         /* long name only */
         {"action", required_argument, NULL, 1},
@@ -238,7 +239,6 @@ static struct option const long_options[] = {
         {"no-map-file", no_argument, &no_map_file, 1},
         {"statistics", no_argument, &statistics, 1},
         {"style-sheet", required_argument, NULL, 1},
-        {"xhtml", no_argument, &enable_xhtml, 1},
         {"version", no_argument, &show_version, 1},
         {"help", no_argument, &show_help, 1},
         { 0 }
@@ -1019,8 +1019,6 @@ configuration(argc, argv)
 					if (*p++ == '=' && *p)
 						label = p;
 				}
-			} else if (!strcmp(argv[i], "--xhtml")) {
-				enable_xhtml = 1;
 			}
 		}
 		if (confpath) {
@@ -1035,13 +1033,6 @@ configuration(argc, argv)
 		if (label)
 			set_env("GTAGSLABEL", label);
 	}
-	/*
-	 * Setup parts.
-	 */
-	if (enable_xhtml)
-		setup_xhtml();
-	else
-		setup_html();
 	/*
 	 * Config variables.
 	 */
@@ -1490,7 +1481,7 @@ main(argc, argv)
 	if (htags_options)
 		argv = append_options(&argc, argv);
 
-	while ((optchar = getopt_long(argc, argv, "acd:DfFgm:noqsS:t:vw", long_options, &option_index)) != EOF) {
+	while ((optchar = getopt_long(argc, argv, "acd:DfFgm:noqsS:t:vwx", long_options, &option_index)) != EOF) {
 		switch (optchar) {
                 case 0:
                 case 1:
@@ -1510,8 +1501,6 @@ main(argc, argv)
 				;	/* --gtagslabel is estimated only once. */
 			else if (!strcmp("style-sheet", long_options[option_index].name))
                                 style_sheet = optarg;
-			else if (!strcmp("xhtml", long_options[option_index].name))
-				;	/* --xhtml is estimated only once. */
                         break;
                 case 'a':
                         aflag++;
@@ -1563,6 +1552,9 @@ main(argc, argv)
                 case 'w':
                         wflag++;
                         break;
+		case 'x':
+			enable_xhtml = 1;
+                        break;
                 default:
                         usage();
                         break;
@@ -1581,6 +1573,13 @@ main(argc, argv)
                 setquiet();
 		vflag = 0;
 	}
+	/*
+	 * If the --xhtml option is specified then all HTML tags which
+	 * are defined in configuration file are ignored. Instead, you can
+	 * customize XHTML tag using style sheet (See 'style.css').
+	 */
+	if (enable_xhtml)
+		setup_xhtml();
 	/*
 	 * If copy_files is true then htags copy tag files instead of linking.
 	 * Since Windows 32 environment doesn't have link system call

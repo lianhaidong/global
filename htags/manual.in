@@ -26,7 +26,7 @@
 @HEADER	HTAGS,1,March 2005,GNU Project
 @NAME	htags - generate hypertext from source code.
 @SYNOPSIS
-	@name{htags} [-a][-c][-D][-f][-F][-g][-n][-o][-s][-v][-w][-d @arg{dbpath}][-m @arg{name}][-S @arg{cgidir}][-t @arg{title}][@arg{htmldir}]
+	@name{htags} [-a][-c][-D][-f][-F][-g][-n][-o][-s][-v][-w][-x][-d @arg{dbpath}][-m @arg{name}][-S @arg{cgidir}][-t @arg{title}][@arg{htmldir}]
 @DESCRIPTION
 	@name{Htags} makes hypertext from C, C++, Yacc, Java, PHP and Assembly source code.
 
@@ -113,7 +113,7 @@
 		Verbose mode.
 	@item{@option{-w}, @option{--warning}}
 		Print warning messages.
-	@item{@option{--xhtml}}
+	@item{@option{-x}, @option{--xhtml}}
 		Generate XHTML-1.1 hypertext instead of HTML.
 		If the @option{--frame} option is specified then
 		generate XHTML-1.0 Frameset.
@@ -177,6 +177,8 @@
 	@end_itemize
 @CONFIGURATION
 	The following configuration variables affect the execution of @name{htags}:
+	If the @option{--xhtml} option is specified then all definitions of
+	HTML tag are ignored.
 	@begin_itemize
 	@item{@code{datadir}(string)}
 		Shared data directory. The default is '/usr/local/share' but

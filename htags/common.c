@@ -46,135 +46,73 @@
 #include "htags.h"
 
 /*
+ * Tag definitions
+ *
+ * Htags generates HTML tag by default.
+ */
+char *html_begin	= "<html>";
+char *html_end		= "</html>";
+char *html_head_begin	= "<head>";
+char *html_head_end	= "</head>";
+char *html_title_begin	= "<title>";
+char *html_title_end	= "</title>";
+char *body_begin	= "<body>";
+char *body_end		= "</body>";
+char *title_begin	= "<h1><font color='#cc0000'>";
+char *title_end		= "</font></h1>";
+char *header_begin	= "<h2>";
+char *header_end	= "</h2>";
+char *cvslink_begin	= "<font size='-1'>";
+char *cvslink_end	= "</font>";
+char *caution_begin	= "<center>\n<blockquote>";
+char *caution_end	= "</blockquote>\n</center>";
+char *list_begin	= "<ol>";
+char *list_end		= "</ol>";
+char *item_begin	= "<li>";
+char *item_end		= "";
+char *define_list_begin = "<dl>";
+char *define_list_end   = "</dl>";
+char *define_term_begin = "<dt>";
+char *define_term_end   = "";
+char *define_desc_begin	= "<dd>";
+char *define_desc_end	= "";
+char *table_begin	= "<table>";
+char *table_end		= "</table>";
+char *comment_begin	= "<i><font color='green'>";
+char *comment_end	= "</font></i>";
+char *sharp_begin	= "<font color='darkred'>";
+char *sharp_end		= "</font>";
+char *brace_begin	= "<font color='blue'>";
+char *brace_end		= "</font>";
+char *verbatim_begin	= "<pre>";
+char *verbatim_end	= "</pre>";
+char *reserved_begin	= "<b>";
+char *reserved_end	= "</b>";
+char *position_begin	= "<font color='gray'>";
+char *position_end	= "</font>";
+char *warned_line_begin = "<span style='background-color:yellow'>";
+char *warned_line_end   = "</span>";
+char *error_begin	= "<h1><font color='#cc0000'>";
+char *error_end		= "</font></h1>";
+char *message_begin	= "<h3>";
+char *message_end	= "</h3>";
+char *string_begin	= "<u>";
+char *string_end	= "</u>";
+char *quote_great	= "&gt;";
+char *quote_little	= "&lt;";
+char *quote_amp		= "&amp;";
+char *quote_space	= "&nbsp;";
+char *hr		= "<hr>";
+char *br		= "<br>";
+char *empty_element	= "";
+
+/*
  * XHTML support.
  *
  * If the --xhtml option is specified then we take 'XHTML 1.1'.
  * If both of the --xhtml and the --frame option are specified
  * then we take 'XHTML 1.0 Frameset'.
  * We define each style for the tags in 'style.css' in this directory.
- */
-/*----------------------------------------------------------------------*/
-/* Tag definitions							*/
-/*----------------------------------------------------------------------*/
-char *html_begin;
-char *html_end;
-char *html_head_begin;
-char *html_head_end;
-char *html_title_begin;
-char *html_title_end;
-char *body_begin;
-char *body_end;
-char *title_begin;
-char *title_end;
-char *header_begin;
-char *header_end;
-char *cvslink_begin;
-char *cvslink_end;
-char *caution_begin;
-char *caution_end;
-char *list_begin;
-char *list_end;
-char *item_begin;
-char *item_end;
-char *define_list_begin;
-char *define_list_end;
-char *define_term_begin;
-char *define_term_end;
-char *define_desc_begin;
-char *define_desc_end;
-char *table_begin;
-char *table_end;
-char *comment_begin;
-char *comment_end;
-char *sharp_begin;
-char *sharp_end;
-char *brace_begin;
-char *brace_end;
-char *verbatim_begin;
-char *verbatim_end;
-char *reserved_begin;
-char *reserved_end;
-char *position_begin;
-char *position_end;
-char *warned_line_begin;
-char *warned_line_end;
-char *error_begin;
-char *error_end;
-char *message_begin;
-char *message_end;
-char *string_begin;
-char *string_end;
-char *quote_great;
-char *quote_little;
-char *quote_amp;
-char *quote_space;
-char *hr;
-char *br;
-char *empty_element;
-/*
- * Set up HTML tags.
- */
-void
-setup_html()
-{
-	html_begin	= "<html>";
-	html_end	= "</html>";
-	html_head_begin	= "<head>";
-	html_head_end	= "</head>";
-	html_title_begin= "<title>";
-	html_title_end	= "</title>";
-	body_begin	= "<body>";
-	body_end	= "</body>";
-	title_begin	= "<h1><font color='#cc0000'>";
-	title_end	= "</font></h1>";
-	header_begin	= "<h2>";
-	header_end	= "</h2>";
-	cvslink_begin	= "<font size='-1'>";
-	cvslink_end	= "</font>";
-	caution_begin	= "<center>\n<blockquote>";
-	caution_end	= "</blockquote>\n</center>";
-	list_begin	= "<ol>";
-	list_end	= "</ol>";
-	item_begin	= "<li>";
-	item_end	= "";
-	define_list_begin = "<dl>";
-	define_list_end   = "</dl>";
-	define_term_begin = "<dt>";
-	define_term_end   = "";
-	define_desc_begin  = "<dd>";
-	define_desc_end    = "";
-	table_begin	= "<table>";
-	table_end	= "</table>";
-	comment_begin	= "<i><font color='green'>";
-	comment_end	= "</font></i>";
-	sharp_begin	= "<font color='darkred'>";
-	sharp_end	= "</font>";
-	brace_begin	= "<font color='blue'>";
-	brace_end	= "</font>";
-	verbatim_begin	= "<pre>";
-	verbatim_end	= "</pre>";
-	reserved_begin	= "<b>";
-	reserved_end	= "</b>";
-	position_begin	= "<font color='gray'>";
-	position_end	= "</font>";
-	warned_line_begin = "<span style='background-color:yellow'>";
-	warned_line_end   = "</span>";
-	error_begin     = "<h1><font color='#cc0000'>";
-	error_end       = "</font></h1>";
-	message_begin   = "<h3>";
-	message_end     = "</h3>";
-	string_begin	= "<u>";
-	string_end	= "</u>";
-	quote_great	= "&gt;";
-	quote_little	= "&lt;";
-	quote_amp	= "&amp;";
-	quote_space	= "&nbsp;";
-	hr              = "<hr>";
-	br              = "<br>";
-	empty_element	= "";
-}
-/*
- * Set up XHTML tags.
  */
 void
 setup_xhtml()
