@@ -19,16 +19,17 @@ ___________________________________
 Frequentry Asked Questions about GLOBAL.
 
 ----------------------------------------------------------------------------
-Q1. Htags(1) aborts by short of memory. Why? Any workaround?
+Q1. Htags.pl (perl version of htags(1)) aborts by short of memory.
+    Why? Any workaround?
 
-	% htags
+	% htags.pl
 	Out of memory!
 	% _
 
 A1. It seems that Perl4 and some Perl5 leaks memory.
     Please replace it with the latest Perl(currently 5.6.0) and retry.
+    But now, you had better use the C version of htags(1) instead.
 
-    If it occurs with Perl-5.6.0 or later, please let me know.
 ----------------------------------------------------------------------------
 Q2. GLOBAL skip some functions.
     For example, GLOBAL skip the function 'func' in this example.
