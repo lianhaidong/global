@@ -1,4 +1,4 @@
-## Process this file with gengperf.pl to create gperf source.
+## Process this file with reserved.pl to create gperf source.
 #
 # Copyright (c) 2003 Tama Communications Corporation
 #
