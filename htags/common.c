@@ -408,6 +408,7 @@ gen_list_begin()
 	STATIC_STRBUF(sb);
 
 	if (strbuf_empty(sb)) {
+		strbuf_clear(sb);
 		if (table_list) {
 			if (enable_xhtml) {
 				strbuf_sprintf(sb, "%s\n%s%s%s%s",
@@ -535,6 +536,7 @@ gen_div_begin(align)
 	STATIC_STRBUF(sb);
 
 	if (strbuf_empty(sb)) {
+		strbuf_clear(sb);
 		if (align) {
 			/*
 			 * In XHTML, alignment is defined in the file 'style.css'.
