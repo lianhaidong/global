@@ -352,12 +352,13 @@ makebless(file)
 	action = save;
 }
 static void
-makeghtml(file)
+makeghtml(cgidir, file)
+	char *cgidir;
 	char *file;
 {
 	FILE *op;
 
-	op = fopen(makepath(distpath, file, NULL), "w");
+	op = fopen(makepath(cgidir, file, NULL), "w");
 	if (!op)
 		die("cannot make unzip script.");
 	fprintf(op, "#!/bin/sh\n");
