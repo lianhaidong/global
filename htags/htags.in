@@ -1462,7 +1462,8 @@ sub makedupindex {
 					#
 					# cache record: " <file id> <entry number>"
 					#
-					&cache'put($db, $prev, &cache'get($db, $prev) . " $entry_count");
+					local($prev_count) = $count - 1;
+					&cache'put($db, $prev, " $prev_count $entry_count");
 				}
 				# single entry
 				if ($first_line) {
@@ -1475,7 +1476,6 @@ sub makedupindex {
 			} else {
 				# duplicate entry
 				if ($first_line) {
-					&cache'put($db, $tag, " $count");
 					local($dir) = $dir{$db};
 					#
 					# Protocol:
@@ -1512,7 +1512,7 @@ sub makedupindex {
 			#
 			# cache record: " <file id> <entry number>"
 			#
-			&cache'put($db, $prev, &cache'get($db, $prev) . " $entry_count");
+			&cache'put($db, $prev, " $count $entry_count");
 		}
 		if ($first_line) {
 			local($nouse, $lno, $filename) = split(/[ \t]+/, $first_line);
