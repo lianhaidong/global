@@ -183,12 +183,13 @@ char	*argv[];
 				else
 #ifdef HAVE_PUTENV
 				{
-					STRBUF *env = strbuf_open(0);
+					char *env = (char *)malloc(strlen("GTAGSCONF=")+strlen(optarg)+1);
 
-					strbuf_puts(env, "GTAGSCONF=");
-					strbuf_puts(env, optarg);
-					putenv(strbuf_value(env));
-					strbuf_close(env);
+					if (!env)	
+						die("short of memory.");
+					strcpy(env, "GTAGSCONF=");
+					strcat(env, optarg);
+					putenv(env);
 				}
 #else
 				setenv("GTAGSCONF", optarg, 1);
@@ -311,12 +312,13 @@ char	*argv[];
 	 */
 #ifdef HAVE_PUTENV
 	{
-		STRBUF *env = strbuf_open(0);
+		char *env = (char *)malloc(strlen("GTAGSDBPATH=")+strlen(dbpath)+1);
 
-		strbuf_puts(env, "GTAGSDBPATH=");
-		strbuf_puts(env, dbpath);
-		putenv(strbuf_value(env));
-		strbuf_close(env);
+		if (!env)	
+			die("short of memory.");
+		strcpy(env, "GTAGSDBPATH=");
+		strcat(env, dbpath);
+		putenv(env);
 	}
 #else
 	setenv("GTAGSDBPATH", dbpath, 1);
