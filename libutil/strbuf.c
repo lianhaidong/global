@@ -299,6 +299,36 @@ int	flags;
 	return sb->sbuf;
 }
 /*
+ * strbuf_sprintf: do sprintf into string buffer.
+ *
+ *	i)	sb	STRBUF structure
+ *	i)	s	same with sprintf()
+ *
+ * Node: Generated string is limited to 1024 bytes.
+ */
+void
+#ifdef HAVE_STDARG_H
+strbuf_sprintf(STRBUF *sb, const char *s, ...)
+#else
+strbuf_sprintf(sb, s, va_alist)
+	STRBUF *sb;
+	char *s;
+	va_dcl;
+#endif
+{
+	static char buf[1024];
+	va_list ap;
+
+#ifdef HAVE_STDARG_H
+	va_start(ap, s);
+#else
+	va_start(ap);
+#endif
+	(void)vsnprintf(buf, sizeof(buf), s, ap);
+	va_end(ap);
+	strbuf_puts(sb, buf);
+}
+/*
  * strbuf_close: close string buffer.
  *
  *	i)	sb	STRBUF structure

@@ -28,6 +28,11 @@
 #else
 #include <strings.h>
 #endif
+#ifdef HAVE_STDARG_H 
+#include <stdarg.h>
+#else
+#include <varargs.h>
+#endif
 
 /* #define STRBUF_LINK */
 
@@ -98,6 +103,11 @@ char	*strbuf_value(STRBUF *);
 void	strbuf_trim(STRBUF *);
 void	strbuf_close(STRBUF *);
 char    *strbuf_fgets(STRBUF *, FILE *, int);
+#ifdef HAVE_STDARG_H
+void	strbuf_sprintf(STRBUF *sb, const char *s, ...);
+#else
+void	strbuf_sprintf();
+#endif
 #ifdef STRBUF_LINK
 void	strbuf_setname(STRBUF *, char *);
 STRBUF	*strbuf_getbuf(char *);
