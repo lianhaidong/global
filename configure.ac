@@ -122,23 +122,6 @@ AC_ARG_WITH(postgres,
 ],[
         AC_MSG_RESULT(no)
 ])
-dnl
-dnl for CFLAGS
-dnl
-AC_MSG_CHECKING(for optional CFLAGS)
-AC_ARG_WITH(cflags,
-[  --with-cflags[=VAL]       additional CFLAGS value ],
-[
-        if test "$withval" = 'no'; then
-        	AC_MSG_RESULT(no)
-        else
-		VAL=$withval
-                CFLAGS="$CFLAGS $VAL"
-                AC_MSG_RESULT([yes, using $VAL])
-        fi
-],[
-        AC_MSG_RESULT(no)
-])
 
 AC_SUBST(INCLUDES)
 AC_SUBST(LDADD)
