@@ -4,23 +4,11 @@ ___________________________________
 |  |   |  |  |  |  |     |     |  |
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Copyright (c) 2000, 2001, 2002, 2003, 2004
-		Tama Communications Corporation
-
- This file is free software; as a special exception the author gives
- unlimited permission to copy and/or distribute it, with or without
- modifications, as long as this notice is preserved.
-
- This program is distributed in the hope that it will be useful, but
- WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
- implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-		----------------------------------
 
 Copyright holder of GNU GLOBAL
 ==============================
 
-Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004
+Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
 	Tama Communications Corporation. All rights reserved.
 
 Contributers of GNU GLOBAL
@@ -42,7 +30,7 @@ Improvements to htags and gtags-parser by Hideki IWAMOTO.
 * CVS REPOSITORY link(htags)
 * Real support of Yacc source code(htags)
 * Rewrite parser for assembly language using Yacc(asm_scan.l,asm_parse.y)
-* Config variable 'langmap'.
+* Config variable 'langmap'(htags)
 Besides he has contributed many improvements to GLOBAL.
 
 There are also many others who have contributed patches and fixes.
