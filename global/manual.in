@@ -105,7 +105,7 @@
 		Print the locations of object references.
 		By default, print object definitions.
 		With the @option{-p} option, print the root directory of source tree.
-	@item{@option{-s}, @option{--symbol} @arg{pattern}}
+	@item{@option{-s}, @option{--symbol}}
 		Print the locations of specified symbol other than function names.
 		You need @file{GSYMS} tags file. See @xref{gtags,1}.
 	@item{@option{-t}, @option{--tags}}
