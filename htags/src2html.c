@@ -433,6 +433,15 @@ unexpected_eof(lineno)
 		warned = 1;
 }
 void
+unknown_yacc_directive(word, lineno)
+	char *word;
+	int lineno;
+{
+	warning("unknown yacc directive '%s'. [+%d %s]", word, lineno, curpfile);
+	if (colorize_warned_line)
+		warned = 1;
+}
+void
 put_char(c)
         int c;
 {
@@ -529,6 +538,7 @@ void cpp_parser_init(FILE *);
 void java_parser_init(FILE *);
 void php_parser_init(FILE *);
 void asm_parser_init(FILE *);
+void yacc_parser_init(FILE *);
 
 int clex(void);
 int cpplex(void);
@@ -721,7 +731,10 @@ src2html(src, html, notsource)
 			while (asmlex())
 				;
 		} else {
-			c_parser_init(in);
+			if (!strcmp(lang, "yacc"))
+				yacc_parser_init(in);
+			else
+				c_parser_init(in);
 			while (clex())
 				;
 		}

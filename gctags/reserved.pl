@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# Copyright (c) 2003 Tama Communications Corporation
+# Copyright (c) 2003, 2004 Tama Communications Corporation
 #
 # This file is part of GNU GLOBAL.
 #
@@ -178,6 +178,7 @@ while(<IP>) {
 	} elsif ($type eq 'yacc') {
 		$upper =~ s/(%%|%{|%})/$yacctab{$1}/ge;
 		$upper =~ s/%//g;
+		$upper =~ s/-/_/g;
 		print "#define YACC_${upper}\t${n_yacc}\n";
 		$n_yacc++;
 	}
@@ -214,6 +215,7 @@ while(<IP>) {
 		} elsif ($type eq 'yacc') {
 			$upper =~ s/(%%|%{|%})/$yacctab{$1}/ge;
 			$upper =~ s/%//g;
+			$upper =~ s/-/_/g;
 			print "\"${name}\", YACC_${upper}\n";
 		}
 	}

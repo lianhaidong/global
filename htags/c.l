@@ -60,26 +60,36 @@ NUMBER		-?({L}|{D1}|{D2})
 ALPHA		[a-zA-Z_\x80-\xff]
 ALPHANUM	[a-zA-Z_\x80-\xff0-9]
 WORD		{ALPHA}{ALPHANUM}*
+YACC_DIRECTIVE	%{ALPHA}({ALPHANUM}|-)*
 
 %start	C C_COMMENT CPP_COMMENT SHELL_COMMENT STRING LITERAL PREPROCESSING_DIRECTIVE
+%start	YACC_DECLARATIONS YACC_RULES
 %option 8bit noyywrap noyy_top_state stack prefix="c"
 %%
  /* Backslash-newline */
 \\\n		DEFAULT_BACKSLASH_NEWLINE_ACTION
 
  /* Comment */
-<C,PREPROCESSING_DIRECTIVE>"/*"	{ echos(comment_begin); ECHO; yy_push_state(C_COMMENT); }
+<C,PREPROCESSING_DIRECTIVE,YACC_DECLARATIONS,YACC_RULES>{
+	"/*"	{ echos(comment_begin); ECHO; yy_push_state(C_COMMENT); }
+}
 <C_COMMENT>"*/"	{ ECHO; echos(comment_end); yy_pop_state(); }
 <C_COMMENT>.	{ put_char(LEXTEXT[0]); }
-<C,PREPROCESSING_DIRECTIVE>"//"	{ echos(comment_begin); ECHO; yy_push_state(CPP_COMMENT); }
+<C,PREPROCESSING_DIRECTIVE,YACC_DECLARATIONS,YACC_RULES>{
+	"//"	{ echos(comment_begin); ECHO; yy_push_state(CPP_COMMENT); }
+}
 
  /* String */
-<C,PREPROCESSING_DIRECTIVE>\"	{ ECHO; yy_push_state(STRING); }
+<C,PREPROCESSING_DIRECTIVE,YACC_DECLARATIONS,YACC_RULES>{
+	\"	{ ECHO; yy_push_state(STRING); }
+}
 <STRING>\"	{ ECHO; yy_pop_state(); }
 <STRING>\\.	{ put_char(LEXTEXT[0]); put_char(LEXTEXT[1]); }
 
  /* Literal */
-<C,PREPROCESSING_DIRECTIVE>\'	{ ECHO; yy_push_state(LITERAL); }
+<C,PREPROCESSING_DIRECTIVE,YACC_DECLARATIONS,YACC_RULES>{
+	\'	{ ECHO; yy_push_state(LITERAL); }
+}
 <LITERAL>\'	{ ECHO; yy_pop_state(); }
 <LITERAL>\\.	{ put_char(LEXTEXT[0]); put_char(LEXTEXT[1]); }
 
@@ -90,7 +100,8 @@ WORD		{ALPHA}{ALPHANUM}*
 	}
 
  /* Preprocessing directive */
-<C>^[ \t]*\#[ \t]*(include|include_next) {
+<C,YACC_DECLARATIONS,YACC_RULES>{
+	^[ \t]*\#[ \t]*(include|include_next) {
 		int c;
 
 		put_macro(LEXTEXT);
@@ -137,7 +148,7 @@ WORD		{ALPHA}{ALPHANUM}*
 			}
 		}
 	}
-<C>^[ \t]*\#[ \t]*{WORD} {
+	^[ \t]*\#[ \t]*{WORD} {
 		int i = 0;
 		char *p;
 
@@ -170,11 +181,35 @@ WORD		{ALPHA}{ALPHANUM}*
 		}
 		yy_push_state(PREPROCESSING_DIRECTIVE);
 	}
- /* Null directive */
-<C>^[ \t]*\#	{ put_macro(LEXTEXT); }
+	/* Null directive */
+	^[ \t]*\#	{ put_macro(LEXTEXT); }
+}
 
-<C,PREPROCESSING_DIRECTIVE>{NUMBER}	ECHO;
-<C,PREPROCESSING_DIRECTIVE>{WORD} {
+ /* Yacc directive */
+<YACC_DECLARATIONS,YACC_RULES>{
+	{YACC_DIRECTIVE} {
+		if (reserved_yacc(LEXTEXT, LEXLENG))
+			put_reserved_word(LEXTEXT);
+		else {
+			ECHO;
+			if (wflag)
+				unknown_yacc_directive(LEXTEXT, LINENO);
+		}
+	}
+	"%{"	|
+	"%}"	{ put_reserved_word(LEXTEXT); }
+}
+<YACC_DECLARATIONS>"%%"	{ put_reserved_word(LEXTEXT); BEGIN YACC_RULES; }
+<YACC_RULES>"%%"	{ put_reserved_word(LEXTEXT); BEGIN C; }
+<YACC_DECLARATIONS><<EOF>> {
+		if (wflag)
+			unexpected_eof(LINENO);
+		yyterminate();
+	}
+
+<C,PREPROCESSING_DIRECTIVE,YACC_DECLARATIONS,YACC_RULES>{
+	{NUMBER}	ECHO;
+	{WORD} {
 		if (reserved_word(LEXTEXT, LEXLENG))
 			put_reserved_word(LEXTEXT);
 		else if (YY_START == PREPROCESSING_DIRECTIVE
@@ -191,7 +226,9 @@ WORD		{ALPHA}{ALPHANUM}*
 			}
 		}
 	}
-<C,PREPROCESSING_DIRECTIVE>[{}]	{ put_brace(LEXTEXT); }
+	[{}]	{ put_brace(LEXTEXT); }
+}
+
  /* New line */
 \n		DEFAULT_END_OF_LINE_ACTION
 .		{ put_char(LEXTEXT[0]); }
@@ -203,4 +240,12 @@ c_parser_init(ip)
 {
 	DEFAULT_BEGIN_OF_FILE_ACTION
 	BEGIN C;
+}
+
+void
+yacc_parser_init(ip)
+	FILE *ip;
+{
+	DEFAULT_BEGIN_OF_FILE_ACTION
+	BEGIN YACC_DECLARATIONS;
 }

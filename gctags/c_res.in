@@ -1,6 +1,6 @@
 ;; Process this file with reserved.pl to create gperf source.
 ;
-; Copyright (c) 2003 Tama Communications Corporation
+; Copyright (c) 2003, 2004 Tama Communications Corporation
 ;
 ; This file is free software; as a special exception the author gives
 ; unlimited permission to copy and/or distribute it, with or without
@@ -79,17 +79,36 @@ while			word
 ; Yacc reserved word.
 ;
 %%			yacc
+%debug			yacc
+%define			yacc
+%defines		yacc
+%destructor		yacc
+%dprec			yacc
+%error_verbose,%error-verbose	yacc
+%expect			yacc
+%file-prefix		yacc
+%glr-parser		yacc
 %left			yacc
-%nonassoc		yacc
+%lex-param		yacc
+%locations		yacc
+%merge			yacc
+%name_prefix,%name-prefix	yacc
+%no_lines,%no-lines	yacc
+%nonassoc,%binary	yacc
+%nterm			yacc
+%output			yacc
+%parse-param		yacc
+%prec			yacc
+%printer		yacc
+%pure_parser,%pure-parser	yacc
 %right			yacc
+%skeleton		yacc
 %start			yacc
-%term			yacc
-%token			yacc
+%token,%term		yacc
+%token_table,%token-table	yacc
 %type			yacc
 %union			yacc
-%expect			yacc
-%pure_parser		yacc
-%no_lines		yacc
-%token_table		yacc
+%verbose		yacc
+%yacc,%fixed_output_files,%fixed-output_files,%fixed_output-files,%fixed-output-files	yacc
 %{			yacc
 %}			yacc
