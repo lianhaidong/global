@@ -1443,6 +1443,7 @@ sub makefileindex {
 		}
 	}
 	close(FIND);
+	if ($?) { &'error("cannot traverse directory.($findcom)"); }
 	while (@dirstack) {
 		pop(@dirstack);
 		local($parent) = (@dirstack) ? &'path2url(join('/', @dirstack)) : $indexlink;
@@ -1705,7 +1706,7 @@ sub makehtml {
 		&convert'src2html($_, "$dist/$'SRCS/$path", $notsource);
 	}
 	close(FIND);
-	if ($?) { &'error("cannot traverse directory."); }
+	if ($?) { &'error("cannot traverse directory.($findcom)"); }
 }
 #=========================================================================
 # CONVERT PACKAGE
