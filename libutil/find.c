@@ -377,7 +377,7 @@ STRBUF  *sb;
 		else if (dp->d_type == DT_REG)
 			strbuf_putc(sb, 'f');
 		else if (dp->d_type == DT_LNK)
-			strbuf_putc(sb, 'l');
+			continue;	/* strbuf_putc(sb, 'l'); */
 		else
 			strbuf_putc(sb, ' ');
 		strbuf_puts(sb, dp->d_name);
@@ -399,7 +399,7 @@ STRBUF  *sb;
 			strbuf_putc(sb, 'f');
 #ifdef S_ISLNK
 		else if (S_ISLNK(st.st_mode))
-			strbuf_putc(sb, 'l');
+			continue;	/* strbuf_putc(sb, 'l'); */
 #endif
 		else
 			strbuf_putc(sb, ' ');
