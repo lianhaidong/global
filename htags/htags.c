@@ -180,7 +180,6 @@ char *icon_suffix = "png";		/* icon suffix (jpg, png etc)	*/
 char *icon_spec = "BORDER=0 ALIGN=top";	/* parameter in IMG tag		*/
 char *prolog_script = NULL;		/* include script at first	*/
 char *epilog_script = NULL;		/* include script at last	*/
-int use_javascript = 1;			/* 1: use javascript		*/
 int show_position = 0;			/* show current position	*/
 int table_list = 0;			/* tag list using table tag	*/
 int colorize_warned_line = 0;		/* colorize warned line		*/
@@ -1017,8 +1016,6 @@ configuration(argc, argv)
 			die("short of memory.");
 		epilog_script = p;
 	}
-	if (getconfb("no_javascript"))
-		use_javascript = 0;
 	if (getconfb("show_position"))
 		show_position = 1;
 	if (getconfb("colorize_warned_line"))

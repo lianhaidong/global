@@ -41,7 +41,6 @@ extern int rflag;
 extern int sflag;
 extern int tflag;
 extern int wflag;
-extern int yaccfile;
 
 #define PUT(tag, lno, line) do {					\
 	DBG_PRINT(level, line);						\

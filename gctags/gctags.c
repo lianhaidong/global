@@ -76,8 +76,6 @@ int show_version;
 int show_help;
 int debug;
 
-int yaccfile;		/* yacc file */
-
 static void
 usage()
 {

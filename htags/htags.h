@@ -133,7 +133,6 @@ extern char *icon_suffix;
 extern char *icon_spec;
 extern char *prolog_script;
 extern char *epilog_script;
-extern int use_javascript;
 extern int show_position;
 extern int table_list;
 extern int colorize_warned_line;
