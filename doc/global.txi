@@ -475,8 +475,29 @@ but at least it is useful.
 
 @end example
 
-@item You can use the -c command with tcsh's complete command.
+@item You can use the -c command with complete command in shell.
 
+In bash:
+@example
+
+    $ funcs()
+    > @{
+    >         local cur
+    >         cur=$@{COMP_WORDS[COMP_CWORD]@}
+    >         COMPREPLY=(`global -c $cur`)
+    > @}
+    $ complete -F funcs global
+    $ global kmem_@kbd{TAB}@kbd{TAB}
+    kmem_alloc           kmem_alloc_wait      kmem_init
+    kmem_alloc_nofault   kmem_free            kmem_malloc
+    kmem_alloc_pageable  kmem_free_wakeup     kmem_suballoc
+    $ global kmem_s@kbd{TAB}
+    $ global kmem_suballoc
+    ../vm/vm_kern.c
+
+@end example
+
+In tcsh:
 @example
 
     % set funcs=(`global -c`)
