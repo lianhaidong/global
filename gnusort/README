@@ -27,10 +27,10 @@ o Multi-language version of sort is often very slow. Since GLOBAL doesn't
   support multi-language, the slowness is quite meaningless.
 o In the past, the specification of sort command was changed.
 
-These files were derived from GNU textutil-2.0 and 2.1
+These files were derived from GNU textutils-2.0 and 2.1
 with fixing the usage of HAVE_DECL_XXX in sys2.h.
 
 File name		Drived from
 ------------------------------------
-xmalloc.c, xalloc.h	textutil-2.1
-the rest		textutil-2.0
+xmalloc.c, xalloc.h	textutils-2.1
+the rest		textutils-2.0

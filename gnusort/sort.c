@@ -44,7 +44,7 @@
  * to include this command into GNU GLOBAL package.
  */
 #undef GNU_PACKAGE
-#define GNU_PACKAGE "GNU Textutil"
+#define GNU_PACKAGE "GNU Textutils"
 #undef VERSION
 #define VERSION "2.0"
 
