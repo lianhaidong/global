@@ -658,7 +658,7 @@ show()	{
 		case $1 in
 		-v|-vi)		local EDITOR=vi; shift;;
 		-l|-less)	local EDITOR=less; shift;;
-		-e|-emacs)	local EDITOR=emacsclient; shift;;
+		-e|-emacs)	local EDITOR='emacsclient --no-wait'; shift;;
 		-g|-gozilla)	local EDITOR=gozilla; shift;;
 		-n|-noedit)	local EDITOR=noedit; shift;;
 		*)		echo "invalid option $1."
