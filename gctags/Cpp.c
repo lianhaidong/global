@@ -707,7 +707,6 @@ static struct words words[] = {
 	{"namespace",	CPP_NAMESPACE},
 	{"new",		CPP_NEW},
 	{"operator",	CPP_OPERATOR},
-	{"overload",	CPP_OVERLOAD},
 	{"private",	CPP_PRIVATE},
 	{"protected",	CPP_PROTECTED},
 	{"public",	CPP_PUBLIC},
