@@ -410,6 +410,22 @@ char	*argv[];
 			die("mkid not found.");
 	}
 
+	/*
+	 * Check whether or not your system has GLOBAL's gctags.
+	 * Some GNU/Linux distributions rename emacs's ctags to gctags!
+	 */
+	{
+		FILE *ip = popen("gctags --check", "r");
+		STRBUF *ib = strbuf_open(MAXBUFLEN);
+		if (strbuf_fgets(ib, ip, STRBUF_NOCRLF) == NULL || strcmp(strbuf_value(ib), "Part of GLOBAL")) {
+			if (!qflag) {
+				fprintf(stderr, "Warning: gctags in your system is not GLOBAL's one.\n");
+				fprintf(stderr, "Please type 'gctags --version'\n");
+			}
+		}
+		strbuf_close(ib);
+		pclose(ip);
+	}
 	if (!getcwd(cwd, MAXPATHLEN))
 		die("cannot get current directory.");
 	canonpath(cwd);

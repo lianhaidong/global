@@ -73,6 +73,7 @@ int	sflag;			/* -s: collect symbols */
 int	tflag;			/* -t: treat typedefs, structs, unions, and enums. */
 int	wflag;			/* -w: warning message */
 int	vflag;			/* -v: verbose mode */
+int	do_check;
 int	show_version;
 int	show_help;
 int	debug;
@@ -94,6 +95,7 @@ help()
 }
 static struct option const long_options[] = {
 	{"begin-block", no_argument, NULL, 'b'},
+	{"check", no_argument, &do_check, 1},
 	{"define", no_argument, NULL, 'd'},
 	{"end-block", no_argument, NULL, 'e'},
 	{"no-tags", no_argument, NULL, 'n'},
@@ -166,6 +168,10 @@ main(argc, argv)
 		version(NULL, 0);
 	else if (show_help)
 		help();
+	else if (do_check) {
+		fprintf(stdout, "Part of GLOBAL\n");
+		exit(0);
+	}
 	/*
 	 * construct language map.
 	 */
