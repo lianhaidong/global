@@ -41,7 +41,7 @@ const char *const source;
 const int limit;
 {
 	int n = (int)limit;
-	char *s = source;
+	const char *s = source;
 
 	while (n--)
 		if (!(*dest++ = *s++))
