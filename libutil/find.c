@@ -19,10 +19,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/*
- * If find(1) is available, then use it to traverse directory tree.
- * Otherwise use dirent(3).
- */
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
