@@ -221,8 +221,6 @@
 		List tags using table tag. The default is false.
 	@item{@code{normal_suffix}(string)}
 		Suffix for normal html file. The default is 'html'.
-	@item{@code{no_javascript}(boolean)}
-		Doesn't generate javascript code. By default, @name{htags} generates javascript code.
 	@item{@code{no_map_file}(boolean)}
 		Doesn't generate @file{MAP} file. The default is false.
 	@item{@code{gzipped_suffix}(string)}
