@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999
  *             Shigio Yamaguchi. All rights reserved.
- * Copyright (c) 1999, 2000
+ * Copyright (c) 1999, 2000, 2002
  *             Tama Communications Corporation. All rights reserved.
  *
  * This file is part of GNU GLOBAL.
@@ -47,6 +47,7 @@ static int      reserved(char *);
 #define A_SYMBOL_NAME	1007
 #define A_C_LABEL	1008
 #define A_GLOBAL_ENTRY	1009
+#define A_JSBENTRY	1010
 
 void
 assembler()
@@ -88,12 +89,15 @@ assembler()
 		case A_ALTENTRY:
 		case A_NENTRY:
 		case A_GLOBAL_ENTRY:
+		case A_JSBENTRY:
 			if (!startline || target != DEF)
 				break;
-			if ((c = nexttoken(interested, reserved)) == '('/* ) */)
+			if ((c = nexttoken(interested, reserved)) == '('/* ) */) {
 				if ((c = nexttoken(interested, reserved)) == SYMBOL)
-					if (peekc(1) == /* ( */ ')')
-						PUT(token, lineno, sp);
+					PUT(token, lineno, sp);
+				while ((c = nexttoken(interested, reserved)) != EOF && c != '\n' && c != /* ( */ ')')
+					;
+			}
 			break;
 		case A_DEFINE:
 			if (!startline || target != DEF)
@@ -139,6 +143,10 @@ reserved(word)
 	case 'G':
 		if (!strcmp(word, "GLOBAL_ENTRY"))
 			return A_GLOBAL_ENTRY;
+		break;
+	case 'J':
+		if (!strcmp(word, "JSBENTRY"))
+			return A_JSBENTRY;
 		break;
 	case 'N':
 		if (!strcmp(word, "NENTRY"))
