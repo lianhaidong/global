@@ -65,7 +65,7 @@ done
 echo "- Preparing parser source ..."
 (cd gctags; set -x; for lang in php; do
 	name=${lang}_res
-	perl ./reserved.pl --prefix=$lang --regex ${name}.in > ${name}.pl
+	perl ./reserved.pl --prefix=$lang --perl ${name}.in > ${name}.pl
 	perl ./reserved.pl --prefix=$lang ${lang}_res.in > ${name}.gpf
 	option=`perl ./reserved.pl --prefix=$lang --option`
 	gperf $option < ${name}.gpf > ${name}.h

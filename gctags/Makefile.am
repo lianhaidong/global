@@ -42,4 +42,4 @@ RESERVED = $(srcdir)/reserved.pl
 	gperf $$option < $< > $@
 .in.pl:
 	prefix=`echo $* | sed 's/_res//'` && \
-	perl $(RESERVED) --prefix=$$prefix --regex $< > $@
+	perl $(RESERVED) --prefix=$$prefix --perl $< > $@

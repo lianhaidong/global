@@ -33,14 +33,14 @@ $com =~ s/.*\///;
 
 sub usage {
 	print STDERR "usage: $com --prefix=prefix --option\n";
-	print STDERR "       $com --prefix=prefix --regex keyword_file\n";
+	print STDERR "       $com --prefix=prefix --perl keyword_file\n";
 	print STDERR "       $com --prefix=prefix keyword_file\n";
 	exit(1);
 }
 
 $slot_name = 'name';
 $option = 0;
-$regex = 0;
+$perl = 0;
 $prefix = '';
 $keyword_file = '';
 while ($ARGV[0] =~ /^-/) {
@@ -49,8 +49,8 @@ while ($ARGV[0] =~ /^-/) {
 		$prefix = $1;
 	} elsif ($opt =~ /^--option$/) {
 		$option = 1;
-	} elsif ($opt =~ /^--regex$/) {
-		$regex = 1;
+	} elsif ($opt =~ /^--perl$/) {
+		$perl = 1;
 	} else {
 		usage();
 	}
@@ -77,7 +77,7 @@ if (!$keyword_file) {
 #
 # [2] Generate regular expression which means reserved words for htags(1).
 #
-if ($regex) {
+if ($perl) {
 	open(IP, $keyword_file) || die("$com: cannot open file '$keyword_file'.\n");
 	print "# This part is generated automatically by $com from '$keyword_file'.\n";
 	print "\$'${prefix}_reserved_words = \"(";
