@@ -45,7 +45,7 @@
 #include "token.h"
 
 static	void	process_attribute(int);
-static	int	function_definition(int);
+static	int	function_definition(int, char *);
 static	void	condition_macro(int, int);
 static	int	seems_datatype(const char *);
 static	void	inittable();
@@ -114,14 +114,31 @@ C(yacc)
 					if (target == REF && defined(token))
 						PUT(token, lineno, sp);
 				} else if (level == 0 && !startmacro && !startsharp) {
-					char	savetok[MAXTOKEN], *saveline;
+					char	arg1[MAXTOKEN], savetok[MAXTOKEN], *saveline;
 					int	savelineno = lineno;
 
 					strlimcpy(savetok, token, sizeof(savetok));
 					strbuf_reset(sb);
 					strbuf_puts(sb, sp);
 					saveline = strbuf_value(sb);
-					if (function_definition(target)) {
+					arg1[0] = '\0';
+					/*
+					 * Guile function entry using guile-snarf is like follows:
+					 *
+					 * SCM_DEFINE (scm_list, "list", 0, 0, 1, 
+					 *           (SCM objs),
+					 *            "Return a list containing OBJS, the arguments to `list'.")
+					 * #define FUNC_NAME s_scm_list
+					 * {
+					 *   return objs;
+					 * }
+					 * #undef FUNC_NAME
+					 *
+					 * We should assume the first argument as a function name instead of 'SCM_DEFINE'.
+					 */
+					if (function_definition(target, arg1)) {
+						if (!strcmp(savetok, "SCM_DEFINE") && *arg1)
+							strcpy(savetok, arg1);
 						if (target == DEF)
 							PUT(savetok, savelineno, saveline);
 					} else {
@@ -472,14 +489,18 @@ int target;
 /*
  * function_definition: return if function definition or not.
  *
+ *	i)	target	DEF, REF, SYMBOL
+ *	o)	arg1	the first argument
  *	r)	target type
  */
 static int
-function_definition(target)
+function_definition(target, arg1)
 int	target;
+char	arg1[MAXTOKEN];
 {
 	int	c;
 	int     brace_level, isdefine;
+	int	accept_arg1 = 0;
 
 	brace_level = isdefine = 0;
 	while ((c = nexttoken("()", reserved)) != EOF) {
@@ -503,6 +524,10 @@ int	target;
 		}
 		/* pick up symbol */
 		if (c == SYMBOL) {
+			if (accept_arg1 == 0) {
+				accept_arg1 = 1;
+				strlimcpy(arg1, token, MAXTOKEN);
+			}
 			if (target == REF) {
 				if (seems_datatype(token) && defined(token))
 					PUT(token, lineno, sp);
