@@ -41,7 +41,7 @@ Gary Kline		advice about the name of parser.
 Giuseppe Corbelli	Global.py for glimmer code editor.
 Hageseter, Trond E.	bug report about gctags.
 Hideaki Okada		idea about -g option of global(1).
-Hideki Iwamoto		many bug reports about gctags(1), htags(1) and otheres.
+Hideki Iwamoto		many bug reports and improvements about gctags(1), htags(1).
 Hideki Mori		advice about the name of parser.
 Hidetaka KOIE		bug report and advice about configure.in for Solaris7.
 Hiroshi MIURA		idea about printing file name on browser's status bar.
