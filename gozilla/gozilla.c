@@ -443,6 +443,9 @@ char	*url;
 	if ((pid = fork()) < 0) {
 		die("cannot load mozilla (fork).");
 	} else if (pid == 0) {
+		(void)close(0);
+		(void)close(1);
+		(void)close(2);
 		execlp(path, name, "-remote", com, NULL);
 		die("cannot load mozilla (execlp).");
 	}
