@@ -214,6 +214,9 @@ if ($var1 = &'getconf('script_alias')) {
 	$'script_alias = $var1;
 	$'script_alias =~ s!/$!!;
 }
+if (&'getconf('symbols')) {
+	$'sflag = 's';
+}
 if (($var1 = &'getconf('body_begin')) && ($var2 = &'getconf('body_end'))) {
 	$'body_begin  = $var1;
 	$'body_end    = $var2;
@@ -296,28 +299,32 @@ $'status_line  =
 "	self.status = msg;\n" .
 "}\n";
 #-------------------------------------------------------------------------
-# DEFINITION
+# DIRECTORIES
 #-------------------------------------------------------------------------
 # unit for a path
 $'SRCS   = 'S';				# source file directory.
 $'DEFS   = 'D';				# object definition directory.
 $'REFS   = 'R';				# object reference directory.
 $'INCS   = 'I';				# include file directory.
-sub set_header {
-	local($title) = @_;
-	local($head) = '';
-	$head .= "<HEAD>\n";
-	$head .= "<TITLE>$title</TITLE>\n";
-	$head .= "$'meta_robots\n$'meta_generator\n";
-	if ($'use_javascript) {
-		$head .= $'begin_script;
-		$head .= "self.defaultStatus = '$title'\n";
-		$head .= $'status_line;
-		$head .= $'end_script;	
-	}
-	$head .= $'style_sheet if ($'style_sheet);
-	$head .= "</HEAD>\n";
-	$head;
+$'SYMS   = 'B';				# symbols directory.
+sub get_dirlist {
+	local(@dir) = (files, defines, $'SRCS, $'INCS, $'DEFS, ,$'REFS);
+	push(@dir, $'SYMS) if ($'sflag);
+	@dir;
+}
+sub get_taglist {
+	local(@tags) = ('GTAGS', 'GRTAGS');
+	push(@tags, 'GSYMS') if ($'sflag);
+	@tags;
+}
+sub get_dirhash {
+	local(%dir) = ('GTAGS', $'DEFS, 'GRTAGS', $'REFS, 'GSYMS', $'SYMS);
+	%dir;
+}
+sub get_option {
+	local($db) = @_;
+	local(%option) = ('GTAGS', '', 'GRTAGS', 'r', 'GSYMS', 's');
+	$option{$db};
 }
 #-------------------------------------------------------------------------
 # UTILITIES
@@ -440,6 +447,25 @@ sub path2url {
 	}
 	$'GPATH{$path} . '.' . $'HTML;
 }
+#
+# return header.
+#
+sub set_header {
+	local($title) = @_;
+	local($head) = '';
+	$head .= "<HEAD>\n";
+	$head .= "<TITLE>$title</TITLE>\n";
+	$head .= "$'meta_robots\n$'meta_generator\n";
+	if ($'use_javascript) {
+		$head .= $'begin_script;
+		$head .= "self.defaultStatus = '$title'\n";
+		$head .= $'status_line;
+		$head .= $'end_script;	
+	}
+	$head .= $'style_sheet if ($'style_sheet);
+	$head .= "</HEAD>\n";
+	$head;
+}
 #-------------------------------------------------------------------------
 # LIST PROCEDURE
 #-------------------------------------------------------------------------
@@ -501,7 +527,7 @@ if ($'htags_options) {
 #
 # options check.
 #
-$'aflag = $'cflag = $'fflag = $'Fflag = $'gflag = $'nflag = $'Sflag = $'vflag = $'wflag = '';
+$'aflag = $'cflag = $'fflag = $'Fflag = $'gflag = $'nflag = $'sflag = $'Sflag = $'vflag = $'wflag = '';
 $show_version = 0;
 $show_help = 0;
 $map_file = 1;
@@ -547,6 +573,8 @@ while ($ARGV[0] =~ /^-/) {
 		$'style_sheet = $1;
 	} elsif ($opt =~ /^--style-sheet$/) {
 		$'style_sheet = shift;
+	} elsif ($opt =~ /^--symbols$/) {
+		$'sflag = 's';
 	} elsif ($opt =~ /^--no-javascript$/) {
 		$'use_javascript = 0;
 	} elsif ($opt =~ /^--verbose$/) {
@@ -588,6 +616,7 @@ while ($ARGV[0] =~ /^-/) {
 		if ($opt =~ /g/) { $'gflag = 'g'; }
 		if ($opt =~ /n/) { $'nflag = 'n'; }
 		if ($opt =~ /o/) { $'oflag = 'o'; }
+		if ($opt =~ /s/) { $'sflag = 's'; }
 		if ($opt =~ /v/) { $'vflag = 'v'; }
 		if ($opt =~ /w/) { $'wflag = 'w'; }
 		if ($opt =~ /t/) {
@@ -689,6 +718,9 @@ if (!$dbpath) {
 unless (-r "$dbpath/GTAGS" && -r "$dbpath/GRTAGS") {
 	&'error("GTAGS and/or GRTAGS not found. Htags needs both of them.");
 }
+if ($'sflag && ! -r "$dbpath/GSYMS") {
+	&'error("-s(--symbols) option needs GSYMS tag file.");
+}
 $dbpath = &'realpath($dbpath);
 #
 # for global(1)
@@ -751,7 +783,7 @@ if ($?) { &'error("cannot traverse directory."); }
 #
 print STDERR "[", &'date, "] ", "(0) making directories ...\n" if ($'vflag);
 mkdir($dist, 0777) || &'error("cannot make directory '$dist'.") if (! -d $dist);
-foreach $d ($SRCS, $INCS, $DEFS, $REFS, 'files', 'defines') {
+foreach $d (&'get_dirlist()) {
 	mkdir("$dist/$d", 0775) || &'error("cannot make HTML directory") if (! -d "$dist/$d");
 }
 if ($'cgi && ($'fflag || $'cflag)) {
@@ -1208,7 +1240,7 @@ sub makehelp {
 	$'file_count++;
 }
 #
-# makedupindex: make duplicate entries index ($DEFS/* and $REFS/*)
+# makedupindex: make duplicate entries index (D/*, R/* and S/*)
 #
 #	go)	tag cache
 #	r)	$count
@@ -1217,14 +1249,12 @@ sub makedupindex {
 	local($dist) = @_;
 	local($count) = 0;
 	local($srcdir) = "../$'SRCS";
-	local(%kind) = ('GTAGS', 'definitions', 'GRTAGS', 'references');
-	local(%option) = ('GTAGS', '', 'GRTAGS', 'r');
-	local(%dir) = ('GTAGS', $'DEFS, 'GRTAGS', $'REFS);
+	local(%kind) = ('GTAGS', 'definitions', 'GRTAGS', 'references', 'GSYMS', 'symbols');
+	local(%dir) = &'get_dirhash();
 
-
-	foreach $db ('GRTAGS', 'GTAGS') {
+	foreach $db (&'get_taglist()) {
 		local($kind) = $kind{$db};
-		local($option) = $option{$db};
+		local($option) = &'get_option($db);
 		local($prev) = '';
 		local($first_line);
 		local($writing) = 0;
@@ -1967,15 +1997,28 @@ sub src2html {
 			print "<A NAME=$.>";
 			for (; int($LNO) == $.; ($LNO, $TAG, $TYPE) = &anchor'next()) {
 				$define_line = $LNO if ($TYPE eq 'D');
-				$db = ($TYPE eq 'R') ? 'GTAGS' : 'GRTAGS';
+				if ($TYPE eq 'R') {
+					$db = 'GTAGS';
+				} elsif ($TYPE eq 'S') {
+					$db = 'GSYMS';
+				} else {	# 'D' or 'M'
+					$db = 'GRTAGS';
+				}
 				local($line) = &cache'get($db, $TAG);
 				if (defined($line)) {
 					local($href);
 					if ($line =~ /^ (.*)/) {
-						local($type) = ($TYPE eq 'R') ? $'DEFS : $'REFS;
+						local($dir);
+						if ($TYPE eq 'R') {
+							$dir = $'DEFS;
+						} elsif ($TYPE eq 'S') {
+							$dir = $'SYMS;
+						} else {	# 'D' or 'M'
+							$dir = $'REFS;
+						}
 						local($msg) = 'Multiple ';
 						$msg .= ($TYPE eq 'R') ? 'defined.' : 'refered.';
-						$href = "<A HREF=../$type/$1.$'HTML";
+						$href = "<A HREF=../$dir/$1.$'HTML";
 						$href .= " onMouseOver=\"show('$TYPE',-1,'')\"" if ($'use_javascript);
 						$href .= ">$TAG</A>";
 					} else {
@@ -2223,8 +2266,9 @@ sub create {
 	open(ANCH, "| $command") || &'error("cannot fork.");
 	local($fcount) = 1;
 	local($fnumber);
-	foreach $db ('GTAGS', 'GRTAGS') {
-		local($option) = ($db eq 'GTAGS') ? '' : 'r';
+
+	foreach $db (&'get_taglist()) {
+		local($option) = &'get_option($db);
 		local($command) = "global -nnx$option \".*\"";
 		open(PIPE, "$command |") || &'error("cannot fork.");
 		while (<PIPE>) {
@@ -2235,8 +2279,10 @@ sub create {
 			}
 			if ($db eq 'GTAGS') {
 				$type = ($image =~ /^#[ \t]*define/) ? 'M' : 'D';
-			} else {
+			} elsif ($db eq 'GRTAGS') {
 				$type = 'R';
+			} else {
+				$type = 'S';
 			}
 			print ANCH "$fnumber $lno $tag $type\n";
 		}
@@ -2396,7 +2442,7 @@ package cache;
 #
 sub open {
 	$CACH  = "$'tmp/CACH$$";
-	%map = ('GTAGS', 'D', 'GRTAGS', 'R');
+	%map = &'get_dirhash();
 	dbmopen(%CACH, $CACH, 0600) || &'error("cannot make cache database.");
 }
 #

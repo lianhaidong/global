@@ -79,6 +79,9 @@
 		binary files.
 	@item{@option{--style-sheet} @arg{file}}
 		Load style sheet file and insert it into <HEAD> tag.
+	@item{@option{-s}, @option{--symbols}}
+		Make anchors not only for functions but also other symbols.
+		@file{GSYMS} tag file needed.
 	@item{@option{-S}, @option{--secure-cgi} @arg{dir}}
 		write cgi script into @arg{dir} to realize a centralised
 		cgi script. Script alias is @file{/cgi-bin} by default.
@@ -185,6 +188,9 @@
 		Script alias for safe cgi script (@option{-S}).
 	@item{@code{show_position}(boolean)}
 		Show position per function definition. The default is false.
+	@item{@code{symbols}(boolean)}
+		Make anchors not only for functions but also other symbols.
+		@file{GSYMS} tag file needed.
 	@item{@code{definition_header}(no|before|after)}
 		Position of link header. The default is after.
 	@item{@code{other_files}(boolean)}
