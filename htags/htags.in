@@ -134,7 +134,11 @@ $'java_reserved_words =~ s/,/|/g;
 $'sharp_macros        =~ s/,/|/g;
 {
 	#
-	# extract --gtagsconf=<config file> and --gtagslabel=<label>.
+	# Setup the GTAGSCONF environment variable according to
+	# the --gtagsconf option.
+	#
+	# --gtagsconf=<config file> or <config value itself>
+	# --gtagslabel=<label>.
 	#
 	local(@a, $confpath, $label);
 	for ($i = 0; $i < @ARGV; $i++) {
@@ -147,10 +151,7 @@ $'sharp_macros        =~ s/,/|/g;
 				}
 				$confpath = $ARGV[$i];
 			}
-			if (! -f $confpath) {
-				&'error("config file '$confpath' not found.");
-			}
-			$ENV{'GTAGSCONF'} = &realpath($confpath);
+			$ENV{'GTAGSCONF'} = (-f $confpath) ? &realpath($confpath) : $confpath;
 		} elsif ($ARGV[$i] =~ /^--gtagslabel/) {
 			if ($ARGV[$i] =~ /^--gtagslabel=(.*)$/) {
 				$label = $1;
