@@ -58,7 +58,7 @@ static int tablesize;
  *
  * By default, default_map is used.
  */
-static const char *default_map = "c:.c.h,yacc:.y,asm:.s.S,java:.java,cpp:.c++.cc.cpp.cxx.hxx.C.H";
+static const char *default_map = "c:.c.h,yacc:.y,asm:.s.S,java:.java,cpp:.c++.cc.cpp.cxx.hxx.C.H,php:.php.php3.phtml";
 static char *langmap;
 static STRBUF *active_map;
 
@@ -271,9 +271,12 @@ main(argc, argv)
 		if (vflag)
 			fprintf(stderr, "suffix '%s' assumed language '%s'.\n", suffix, lang);
 
-		/* initialize token parser. */
-		if (!opentoken(argv[0]))
-			die("'%s' cannot open.", argv[0]);
+		/*
+		 * Initialize token parser. Php() use different parser.
+		 */
+		if (strcmp(lang, "php"))
+			if (!opentoken(argv[0]))
+				die("'%s' cannot open.", argv[0]);
 		/*
 		 * call language specific parser.
 		 */
@@ -290,8 +293,11 @@ main(argc, argv)
 			java();
 		} else if (!strcmp(lang, "cpp")) {
 			Cpp();
+		} else if (!strcmp(lang, "php")) {
+			php(argv[0]);
 		}
-		closetoken();
+		if (strcmp(lang, "php"))
+			closetoken();
 	}
 	return 0;
 }

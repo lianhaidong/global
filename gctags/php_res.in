@@ -1,0 +1,76 @@
+## Process this file with gengperf.pl to create gperf source.
+#
+# Copyright (c) 2003 Tama Communications Corporation
+#
+# This file is free software; as a special exception the author gives
+# unlimited permission to copy and/or distribute it, with or without
+# modifications, as long as this notice is preserved.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
+# implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+#
+# PHP reserved word list.
+#
+__FILE__
+__LINE__
+__FUNCTION__
+__CLASS__
+and
+array
+as
+break
+case
+cfunction
+class
+const
+continue
+declare
+default
+define
+do
+die
+each
+echo
+else
+elseif
+empty
+enddeclare
+endfor
+endforeach
+endif
+endwhile
+endswitch
+eval
+exit
+failure
+false
+for
+foreach
+function
+global
+header
+list
+if
+include
+include_once
+is_array
+is_set
+new
+old_function
+or
+print
+printf
+return
+require
+require_once
+setcookie
+success
+static
+switch
+true
+var
+while
+unset
+xor

@@ -1,0 +1,74 @@
+___________________________________
+|      |  |  |     |  _  |     |  |
+|  |___|  |  |  |  |    _|  |  |  |    GNU GLOBAL source code tag system
+|  |   |  |  |  |  |     |     |  |
+|  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Copyright (c) 2003 Tama Communications Corporation
+
+ This file is free software; as a special exception the author gives
+ unlimited permission to copy and/or distribute it, with or without
+ modifications, as long as this notice is preserved.
+
+ This program is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
+ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+                ----------------------------------
+
+*** At present, this description is applied only to the PHP parser.
+
+1. Outline of generating parsers.
+
+You need to have the following package installed:
+
+	- GNU flex
+	- GNU gperf
+
+(1) Generate gperf(1) source from each reserved word file.
+
+	<prefix>_res.in		reserved word file
+		|
+	    [reserved.pl]
+		|
+		v
+	<prefix>_res.gpf	gperf source file
+
+(2) Generate include file from gperf source.
+
+	<prefix>_res.gpf	gperf source file
+		|
+	    [gperf(1)]
+		|
+		v
+	<prefix>_res.h		include file
+
+(3) Include above file from lex source and you can use reserved() function.
+
+	Lex source file
+	+-------------------------------------
+	|...
+	|#include "<prefix>_res.h"
+	|...
+	|WORD	{
+	|		if (reserved(yytext, yyleng)) {
+	|		    ~~~~~~~~~~~~~~~~~~~~~~~~
+	|			...
+	+-------------------------------------
+
+
+2. The format of resreved word file.
+
+	o One word a line.
+	o Null line and the line start with '#' is skipped.
+	o You need not sort words by alphabetical order.
+
+	[Example]
+	+---------------------
+	|# This is comment.
+	|
+	|int
+	|auto
+	|...
+	|foreach
+	+---------------------

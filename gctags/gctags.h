@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 1999 Shigio Yamaguchi
- * Copyright (c) 1999, 2000, 2001 Tama Communications Corporation
+ * Copyright (c) 1999, 2000, 2001, 2003 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -66,3 +66,4 @@ void	Cpp(void);
 int	isCpp(void);
 void	assembler(void);
 void	java(void);
+void	php(const char *);
