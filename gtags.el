@@ -23,7 +23,7 @@
 ;; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 ;;
 
-;; GLOBAL home page is at: http://www.tamacom.com/global/
+;; GLOBAL home page is at: http://www.gnu.org/software/global/
 ;; Author: Shigio Yamaguchi
 ;; Version: 2.0
 ;; Keywords: tools

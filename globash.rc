@@ -20,7 +20,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #
-# GLOBAL home page is at: http://www.tamacom.com/global/
+# GLOBAL home page is at: http://www.gnu.org/software/global/
 # Author: Shigio Yamaguchi
   version=0.1
 # Usage:
@@ -680,7 +680,7 @@ ghelp() {
 	echo
 	echo "Copyright (c) 2001"
 	echo "Tama Communications Corporation. All rights reserved."
-	echo "GLOBAL WWW: http://tamacom.com/global/"
+	echo "GLOBAL WWW: http://www.gnu.org/software/global/"
 	echo
 	echo "Prompt:"
 	echo

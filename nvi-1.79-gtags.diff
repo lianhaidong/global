@@ -422,7 +422,7 @@ diff -c -r -N ../nvi-1.79.org/ex/ex_tag.c ./ex/ex_tag.c
 +  * The following commands write this format.
 +  *	o Traditinal Ctags with -x option
 +  *	o Global with -x option
-+  *		See <http://www.tamacom.com/global>
++  *		See <http://www.gnu.org/software/global>
 +  *
 +  * [extended format]
 +  * <tag>   <type>  <lineno>   <file>        <image>
