@@ -1641,12 +1641,15 @@ and execute gtags-mode function in it.
 
 @enumerate
 @item Write the autoload function to the @file{$HOME/.emacs}, start emacs
-       and execute the gtags-mode function.
+       and execute the gtags-mode function. If you don't put @file{gtags.el}
+       in standard macro directory, you need to add the directory to
+       @code{load-path}.
 
 @example
 
     $HOME/.emacs
     +------------------------------------------------------
+    |(setq load-path (cons "/home/owner/global" load-path))
     |(autoload 'gtags-mode "gtags" "" t)
     
     % emacs
