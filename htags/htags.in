@@ -211,8 +211,11 @@ if ($var1 = &'getconf('script_alias')) {
 	$'script_alias = $var1;
 	$'script_alias =~ s!/$!!;
 }
-if (&'getconf('symbols')) {
-	$'symbols = 1;
+if (&'getconf('symbol')) {
+	$'symbol = 1;
+}
+if (&'getconf('symbols')) {		# for backward compatibility
+	$'symbol = 1;
 }
 if (&'getconf('dynamic')) {
 	$'dynamic = 1;
@@ -319,12 +322,12 @@ $'INCS   = 'I';				# include file directory.
 $'SYMS   = 'Y';				# symbols directory.
 sub get_dirlist {
 	local(@dir) = (files, defines, $'SRCS, $'INCS, $'DEFS, ,$'REFS);
-	push(@dir, $'SYMS) if ($'symbols);
+	push(@dir, $'SYMS) if ($'symbol);
 	@dir;
 }
 sub get_taglist {
 	local(@tags) = ('GTAGS', 'GRTAGS');
-	push(@tags, 'GSYMS') if ($'symbols);
+	push(@tags, 'GSYMS') if ($'symbol);
 	@tags;
 }
 sub get_dirhash {
@@ -585,8 +588,10 @@ while ($ARGV[0] =~ /^-/) {
 		$'style_sheet = $1;
 	} elsif ($opt =~ /^--style-sheet$/) {
 		$'style_sheet = shift;
-	} elsif ($opt =~ /^--symbols$/) {
-		$'symbols = 1;
+	} elsif ($opt =~ /^--symbol$/) {
+		$'symbol = 1;
+	} elsif ($opt =~ /^--symbols$/) {	# for backward compatibility
+		$'symbol = 1;
 	} elsif ($opt =~ /^--no-javascript$/) {
 		$'use_javascript = 0;
 	} elsif ($opt =~ /^--verbose$/) {
@@ -679,7 +684,7 @@ if ($'oflag) {
 	$'other_files = 1;
 }
 if ($'sflag) {
-	$'symbols = 1;
+	$'symbol = 1;
 }
 if (!$title) {
 	@cwd = split('/', &'getcwd);
@@ -740,8 +745,8 @@ if (!$dbpath) {
 unless (-r "$dbpath/GTAGS" && -r "$dbpath/GRTAGS") {
 	&'error("GTAGS and/or GRTAGS not found. Htags needs both of them.");
 }
-if ($'symbols && ! -r "$dbpath/GSYMS") {
-	&'error("-s(--symbols) option needs GSYMS tag file.");
+if ($'symbol && ! -r "$dbpath/GSYMS") {
+	&'error("-s(--symbol) option needs GSYMS tag file.");
 }
 $dbpath = &'realpath($dbpath);
 #
@@ -2537,7 +2542,7 @@ sub open {
 	dbmopen(%GTAGS, $GTAGS, 0600) || &'error("cannot make cache file '$GTAGS'.");
 	$GRTAGS = "$'tmp/htagr$$";
 	dbmopen(%GRTAGS, $GRTAGS, 0600) || &'error("cannot make cache file '$GRTAGS'.");
-	if ($'symbols) {
+	if ($'symbol) {
 		$GSYMS  = "$'tmp/htagy$$";
 		dbmopen(%GSYMS, $GSYMS, 0600) || &'error("cannot make cache file '$GSYMS'.");
 	}

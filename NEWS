@@ -21,6 +21,12 @@ At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
 Version 4.* - **** * 2002, by Shigio Yamaguchi
 
+[INCOMPATIBLE CHANGES]
+
+* htags: --symbols option and symbols config variable was renamed to 'symbol'.
+
+[OTHER CHANGES]
+
 * htags: -D(--dynamic) option added.
 
 Version 4.5 - July 4 2002, by Shigio Yamaguchi
