@@ -29,7 +29,7 @@
 @NAME   gozilla - force mozilla to display specified source file.
 @SYNOPSIS
 	@name{gozilla} [-b browser][-p][+no] file
-	@name{gozilla} [-b browser][-p] -f name
+	@name{gozilla} [-b browser][-p] -d name
 @DESCRIPTION
 	@name{Gozilla} force mozilla to display specified source
 	file as a hypertext.
@@ -43,7 +43,8 @@
 	You can specify source file and the line number optionally.
 
 	Second form:@br
-	You can specify function name directly.
+	You can specify definition name directly. Definition name must exist 
+	in @file{GTAGS} tag file.
 	
 @OPTIONS
 	The following options are available:
@@ -60,7 +61,7 @@
 		just print generated target URL.
 	@item{@arg{file}}
 		path of source file or alias name.
-	@item{@option{-f} @arg{name}}
+	@item{@option{-d} @arg{name}}
 		print function.
 	@item{@option{-q}, @option{--quiet}}
 		Quiet mode.

@@ -28,7 +28,7 @@ Current version - **** ** ****, by Shigio Yamaguchi
 * htags: -g(--gtags) option added.
 * htags: -s(--symbols) option added.
 * gctags: --langmap option added.
-* gozilla: -f option added.
+* gozilla: -d option added.
 * gctags: assumes __attribute__, const, volatile, wchar_t as a reserved word
   in C language. assumes __attribute__, explicit, mutable, namespace,
   overload, typename, using as a reserved word in C++ language.

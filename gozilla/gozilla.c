@@ -41,7 +41,7 @@ const char *gozillarc = ".gozillarc";
 
 static char *alias(char *);
 int	main(int, char **);
-void	getfunctionURL(char *, STRBUF *);
+void	getdefinitionURL(char *, STRBUF *);
 void	getURL(char *, STRBUF *);
 int	isprotocol(char *);
 int	issource(char *);
@@ -151,7 +151,7 @@ char	*argv[];
 	char	c, *p, *q;
 	char	*browser = NULL;
 	char	*command = NULL;
-	char	*function = NULL;
+	char	*definition = NULL;
 	STRBUF	*arg = strbuf_open(0);
 	STRBUF	*URL = strbuf_open(0);
 	int	status;
@@ -182,8 +182,8 @@ char	*argv[];
 			browser = argv[1];
 			--argc; ++argv;
 			break;
-		case 'f':
-			function = argv[1];
+		case 'd':
+			definition = argv[1];
 			--argc; ++argv;
 			break;
 		case 'p':
@@ -206,7 +206,7 @@ char	*argv[];
 		browser = getenv("BROWSER");
 	if (!browser)
 		browser = "mozilla";
-	if (function == NULL) {
+	if (definition == NULL) {
 		if (argc == 0)
 			usage();
 		strbuf_puts(arg, argv[0]);
@@ -221,8 +221,8 @@ char	*argv[];
 	/*
 	 * Get URL.
 	 */
-	if (function)
-		getfunctionURL(function, URL);
+	if (definition)
+		getdefinitionURL(definition, URL);
 	else if (isprotocol(strbuf_value(arg)))
 		strbuf_puts(URL, strbuf_value(arg));
 	else
@@ -255,13 +255,13 @@ char	*argv[];
 }
 
 /*
- * getfunctionURL: get URL includes specified function.
+ * getdefinitionURL: get URL includes specified definition.
  *
- *	i)	arg	function name
+ *	i)	arg	definition name
  *	o)	URL	URL begin with 'file:'
  */
 void
-getfunctionURL(arg, URL)
+getdefinitionURL(arg, URL)
 char *arg;
 STRBUF *URL;
 {
@@ -320,7 +320,7 @@ STRBUF *URL;
 		strbuf_close(sb);
 	}
 	if (status == -1)
-		die("function %s not found.", arg);
+		die("definition %s not found.", arg);
 	strbuf_reset(URL);
 	strbuf_puts(URL, "file:");
 	strbuf_puts(URL, htmldir);
@@ -330,7 +330,7 @@ STRBUF *URL;
 /*
  * getURL: get specified URL.
  *
- *	i)	arg	function name
+ *	i)	arg	definition name
  *	o)	URL	URL begin with 'file:'
  */
 void
