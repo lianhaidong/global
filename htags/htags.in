@@ -1923,28 +1923,28 @@ sub makesearchpart {
 	$index .= "<INPUT TYPE=hidden NAME=id VALUE=$id>\n";
 	$index .= "<INPUT TYPE=submit VALUE=Search>\n";
 	$index .= "<INPUT TYPE=reset VALUE=Reset><BR>\n";
-	$index .= "<INPUT TYPE=radio NAME=type VALUE=definition CHECKED>";
+	$index .= "<INPUT TYPE=radio NAME=type VALUE=definition CHECKED TITLE='Retrieve the definition place of the specified symbol.'>";
 	$index .= ($target) ? "Def" : "Definition";
-	$index .= "\n<INPUT TYPE=radio NAME=type VALUE=reference>";
+	$index .= "\n<INPUT TYPE=radio NAME=type VALUE=reference TITLE='Retrieve the reference place of the specified symbol.'>";
 	$index .= ($target) ? "Ref" : "Reference";
 	if (-f "$dbpath/GSYMS") {
-		$index .= "\n<INPUT TYPE=radio NAME=type VALUE=symbol>";
+		$index .= "\n<INPUT TYPE=radio NAME=type VALUE=symbol TITLE='Retrieve the place of the specified symbol is used.'>";
 		$index .= ($target) ? "Sym" : "Other symbol";
 	}
-	$index .= "\n<INPUT TYPE=radio NAME=type VALUE=path>";
+	$index .= "\n<INPUT TYPE=radio NAME=type VALUE=path TITLE='Look for path name which matches to the specified pattern.'>";
 	$index .= ($target) ? "Path" : "Path name";
 	if ($'enable_grep) {
-		$index .= "\n<INPUT TYPE=radio NAME=type VALUE=grep>";
+		$index .= "\n<INPUT TYPE=radio NAME=type VALUE=grep TITLE='Retrieve lines which matches to the specified pattern.'>";
 		$index .= ($target) ? "Grep" : "Grep pattern";
 	}
 	if ($'enable_idutils && -f "$dbpath/ID") {
-		$index .= "\n<INPUT TYPE=radio NAME=type VALUE=idutils>";
+		$index .= "\n<INPUT TYPE=radio NAME=type VALUE=idutils TITLE='Retrieve lines which matches to the specified pattern using idutils(1).'>";
 		$index .= ($target) ? "Id" : "Id pattern";
 	}
-	$index .= "<BR>\n<INPUT TYPE=checkbox NAME=icase VALUE=1>";
+	$index .= "<BR>\n<INPUT TYPE=checkbox NAME=icase VALUE=1 TITLE='Ignore case distinctions in the pattern.'>";
 	$index .= ($target) ? "Icase" : "Ignore case";
 	if ($'enable_grep && $'other_files) {
-		$index .= "\n<INPUT TYPE=checkbox NAME=other VALUE=1>";
+		$index .= "\n<INPUT TYPE=checkbox NAME=other VALUE=1 TITLE='Files other than the source code are also retrieved.'>";
 		$index .= ($target) ? "Other" : "Other files";
 	}
 	$index .= "\n</FORM>\n";
