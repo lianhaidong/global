@@ -861,7 +861,7 @@ sub makebless {
 pattern='INPUT TYPE=hidden NAME=id VALUE='
 [ $1 ] && verbose=1
 id=`pwd`
-for f in index.html search.html; do
+for f in mains.html index.html search.html; do
 	if [ -f $f ]; then
 		sed "s!<$pattern.*>!<$pattern$id>!" $f > $f.new;
 		if ! cmp $f $f.new >/dev/null; then
