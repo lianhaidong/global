@@ -85,7 +85,9 @@ int	total;
 static void
 usage()
 {
-	die_with_code(2, "%s", usage_const);
+	if (!qflag)
+		fputs(usage_const, stderr);
+	exit(2);
 }
 static void
 help()
