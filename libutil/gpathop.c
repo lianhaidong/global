@@ -38,7 +38,7 @@
 #include "dbop.h"
 #include "gtagsop.h"
 #include "makepath.h"
-#include "pathop.h"
+#include "gpathop.h"
 
 static DBOP	*dbop;
 static int	_nextkey;

@@ -469,7 +469,7 @@ char	*root;
 		die("stat failed '%s'.", path);
 	gtags_mtime = statp.st_mtime;
 
-	if (pathopen(dbpath, 0) < 0)
+	if (gpath_open(dbpath, 0) < 0)
 		die("GPATH not found.");
 	/*
 	 * make add list and update list.
@@ -482,7 +482,7 @@ char	*root;
 		}
 		if (stat(path, &statp) < 0)
 			die("stat failed '%s'.", path);
-		if (!path2id(path))
+		if (!gpath_path2id(path))
 			strbuf_puts0(addlist, path);
 		else if (gtags_mtime < statp.st_mtime)
 			strbuf_puts0(updatelist, path);
@@ -492,16 +492,16 @@ char	*root;
 	 * make delete list.
 	 */
 	{
-		int i, limit = nextkey();
+		int i, limit = gpath_nextkey();
 
 		for (i = 0; i < limit; i++) {
-			if ((path = id2path(i)) == NULL)
+			if ((path = gpath_id2path(i)) == NULL)
 				continue;
 			if (!test("f", path))
 				strbuf_puts0(deletelist, path);
 		}
 	}
-	pathclose();
+	gpath_close();
 	if (strbuf_getlen(addlist) + strbuf_getlen(deletelist) + strbuf_getlen(updatelist))
 		updated = 1;
 	/*
@@ -543,13 +543,13 @@ char	*root;
 				exit(1);
 		}
 
-		pathopen(dbpath, 2);
+		gpath_open(dbpath, 2);
 		for (p = start; p < end; p += strlen(p) + 1) {
 			if (exitflag)
 				break;
-			pathdel(p);
+			gpath_del(p);
 		}
-		pathclose();
+		gpath_close();
 		updated = 1;
 	}
 	if (exitflag)

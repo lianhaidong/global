@@ -47,7 +47,7 @@
 #include "locatestring.h"
 #include "makepath.h"
 #include "path.h"
-#include "pathop.h"
+#include "gpathop.h"
 #include "strbuf.h"
 #include "strmake.h"
 #include "tab.h"
