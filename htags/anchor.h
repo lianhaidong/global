@@ -22,6 +22,11 @@
 
 /*
  * Anchor table.
+ *
+ * Most names are written to tag[] directly.
+ * Long name whose length > ANCHOR_NAMELEN are written to newly allocated
+ * memory and are linked to reserve. It is necessary to clear the variable
+ * which is not used.
  */
 #define ANCHOR_NAMELEN	32
 struct anchor {
@@ -36,12 +41,14 @@ struct anchor {
 #define gettag(a)	(a->tag[0] ? a->tag : a->reserve)
 #define settag(a, tag)	do {						\
 	(a)->length = strlen(tag);					\
-	if ((a)->length < ANCHOR_NAMELEN)				\
+	if ((a)->length < ANCHOR_NAMELEN) {				\
 		strlimcpy((a)->tag, tag, sizeof((a)->tag));		\
-	else {								\
+		(a)->reserve = NULL;					\
+	} else {							\
 		(a)->reserve = strdup(tag);				\
 		if ((a)->reserve == NULL)				\
 			die("short of memory.");			\
+		(a)->tag[0] = '\0';					\
 	}								\
 } while (0)
 

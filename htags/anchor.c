@@ -144,8 +144,6 @@ anchor_load(file)
 			a->lineno = atoi(lineno);
 			a->type = type;
 			a->done = 0;
-			a->tag[0] = '\0';
-			a->reserve = NULL;
 			settag(a, tag);
 			recover(&ptable);
 		}
