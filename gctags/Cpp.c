@@ -166,6 +166,7 @@ Cpp()
 				}
 			} else
 				pushbacktoken();
+			/* FALLTHROUGH */
 		case CPP_NAMESPACE:
 			if (peekc(0) != '{') /* } */ {
 				if ((c = nexttoken(interested, reserved_word)) == SYMBOL)
