@@ -187,7 +187,7 @@ int full_path = 0;			/* file index format		*/
 int map_file = 1;			/* 1: create MAP file		*/
 char *icon_list = NULL;			/* use icon list		*/
 char *icon_suffix = "png";		/* icon suffix (jpg, png etc)	*/
-char *icon_spec = "BORDER=0 ALIGN=top";	/* parameter in IMG tag		*/
+char *icon_spec = "border=0 align=top";	/* parameter in IMG tag		*/
 char *prolog_script = NULL;		/* include script at first	*/
 char *epilog_script = NULL;		/* include script at last	*/
 int show_position = 0;			/* show current position	*/
@@ -486,11 +486,11 @@ makehelp(file)
 	fprintf(op, "%s\n", html_begin);
 	fprintf(op, "%s", set_header("HELP"));
 	fprintf(op, "%s\n", body_begin);
-	fprintf(op, "<H2>Usage of Links</H2>\n");
+	fprintf(op, "<h2>Usage of Links</h2>\n");
 	fprintf(op, "%s/* ", verbatim_begin);
 	for (n = 0; n <= last; n++) {
 		if (icon_list) {
-			fprintf(op, "<IMG SRC=icons/%s.%s ALT=[%s] %s>",
+			fprintf(op, "<img src='icons/%s.%s' alt='[%s]' %s>",
 					icons[n], icon_suffix, label[n], icon_spec);
 			if (n < last)
 				fputc(' ', op);
@@ -501,22 +501,22 @@ makehelp(file)
 	if (show_position)
 		fprintf(op, "[+line file]");
 	fprintf(op, " */%s\n", verbatim_end);
-	fprintf(op, "<DL>\n");
+	fprintf(op, "<dl>\n");
 	for (n = 0; n <= last; n++) {
-		fprintf(op, "<DT>");
+		fprintf(op, "<dt>");
 		if (icon_list) {
-			fprintf(op, "<IMG SRC=icons/%s.%s ALT=[%s] %s>",
+			fprintf(op, "<img src='icons/%s.%s' alt='[%s]' %s>",
 					icons[n], icon_suffix, label[n], icon_spec);
 		} else {
 			fprintf(op, "[%s]", label[n]);
 		}
-		fprintf(op, "<DD>%s\n", msg[n]);
+		fprintf(op, "<dd>%s\n", msg[n]);
 	}
 	if (show_position) {
-		fprintf(op, "<DT>[+line file]");
-		fprintf(op, "<DD>Current position (line number and file name).\n");
+		fprintf(op, "<dt>[+line file]");
+		fprintf(op, "<dd>Current position (line number and file name).\n");
 	}
-	fprintf(op, "</DL>\n");
+	fprintf(op, "</dl>\n");
 	fprintf(op, "%s\n", body_end);
 	fprintf(op, "%s\n", html_end);
 	fclose(op);
@@ -538,54 +538,48 @@ makesearchpart(action, id, target)
 {
 	STRBUF *sb = strbuf_open(0);
 
-	if (Fflag) {
-		strbuf_puts(sb, "<A HREF=search.");
-		strbuf_puts(sb, normal_suffix);
-		strbuf_puts(sb, "><H2>SEARCH</H2></A>\n");
-	} else {
-		strbuf_puts(sb, "<H2>SEARCH</H2>\n");
-	}
+	if (Fflag)
+		strbuf_sprintf(sb, "<a href='search.%s'><h2>SEARCH</h2></a>\n", normal_suffix);
+	else
+		strbuf_puts(sb, "<h2>SEARCH</h2>\n");
 	if (!target)
-		strbuf_puts(sb, "Please input object name and select [Search]. POSIX's regular expression is allowed.<P>\n"); 
-	strbuf_puts(sb, "<FORM METHOD=GET ACTION=");
-	strbuf_puts(sb, action);
-	if (target) {
-		strbuf_puts(sb, " TARGET=");
-		strbuf_puts(sb, target);
-	}
+		strbuf_puts(sb, "Please input object name and select [Search]. POSIX's regular expression is allowed.<p>\n"); 
+	strbuf_sprintf(sb, "<form method='get' action='%s'", action);
+	if (target)
+		strbuf_sprintf(sb, " target='%s'", target);
 	strbuf_puts(sb, ">\n");
-	strbuf_puts(sb, "<INPUT NAME=pattern>\n");
-	strbuf_puts(sb, "<INPUT TYPE=hidden NAME=id VALUE=");
+	strbuf_puts(sb, "<input name='pattern'>\n");
+	strbuf_puts(sb, "<input type='hidden' name='id' value='");
 	if (id)
 		strbuf_puts(sb, id);
-	strbuf_puts(sb, ">\n");
-	strbuf_puts(sb, "<INPUT TYPE=submit VALUE=Search>\n");
-	strbuf_puts(sb, "<INPUT TYPE=reset VALUE=Reset><BR>\n");
-	strbuf_puts(sb, "<INPUT TYPE=radio NAME=type VALUE=definition CHECKED TITLE='Retrieve the definition place of the specified symbol.'>");
+	strbuf_puts(sb, "'>\n");
+	strbuf_puts(sb, "<input type='submit' value='Search'>\n");
+	strbuf_puts(sb, "<input type='reset' value='Reset'><br>\n");
+	strbuf_puts(sb, "<input type='radio' name='type' value='definition' checked title='Retrieve the definition place of the specified symbol.'>");
 	strbuf_puts(sb, target ? "Def" : "Definition");
-	strbuf_puts(sb, "\n<INPUT TYPE=radio NAME=type VALUE=reference TITLE='Retrieve the reference place of the specified symbol.'>");
+	strbuf_puts(sb, "\n<input type='radio' name='type' value='reference' title='Retrieve the reference place of the specified symbol.'>");
 	strbuf_puts(sb, target ? "Ref" : "Reference");
 	if (test("f", makepath(dbpath, dbname(GSYMS), NULL))) {
-		strbuf_puts(sb, "\n<INPUT TYPE=radio NAME=type VALUE=symbol TITLE='Retrieve the place of the specified symbol is used.'>");
+		strbuf_puts(sb, "\n<input type='radio' name='type' value='symbol' title='Retrieve the place of the specified symbol is used.'>");
 		strbuf_puts(sb, target ? "Sym" : "Other symbol");
 	}
-	strbuf_puts(sb, "\n<INPUT TYPE=radio NAME=type VALUE=path TITLE='Look for path name which matches to the specified pattern.'>");
+	strbuf_puts(sb, "\n<input type='radio' name='type' value='path' title='Look for path name which matches to the specified pattern.'>");
 	strbuf_puts(sb, target ? "Path" : "Path name");
 	if (enable_grep) {
-		strbuf_puts(sb, "\n<INPUT TYPE=radio NAME=type VALUE=grep TITLE='Retrieve lines which matches to the specified pattern.'>");
+		strbuf_puts(sb, "\n<input type='radio' name='type' value='grep' title='Retrieve lines which matches to the specified pattern.'>");
 		strbuf_puts(sb, target ? "Grep" : "Grep pattern");
 	}
 	if (enable_idutils && test("f", makepath(dbpath, "ID", NULL))) {
-		strbuf_puts(sb, "\n<INPUT TYPE=radio NAME=type VALUE=idutils TITLE='Retrieve lines which matches to the specified pattern using idutils(1).'>");
+		strbuf_puts(sb, "\n<input type='radio' name='type' value='idutils' title='Retrieve lines which matches to the specified pattern using idutils(1).'>");
 		strbuf_puts(sb, target ? "Id" : "Id pattern");
 	}
-	strbuf_puts(sb, "<BR>\n<INPUT TYPE=checkbox NAME=icase VALUE=1 TITLE='Ignore case distinctions in the pattern.'>");
+	strbuf_puts(sb, "<br>\n<input type='checkbox' name='icase' value='1' title='Ignore case distinctions in the pattern.'>");
 	strbuf_puts(sb, target ? "Icase" : "Ignore case");
 	if (other_files) {
-		strbuf_puts(sb, "\n<INPUT TYPE=checkbox NAME=other VALUE=1 TITLE='Files other than the source code are also retrieved.'>");
+		strbuf_puts(sb, "\n<input type='checkbox' name='other' value='1' title='Files other than the source code are also retrieved.'>");
 		strbuf_puts(sb, target ? "Other" : "Other files");
 	}
-	strbuf_puts(sb, "\n</FORM>\n");
+	strbuf_puts(sb, "\n</form>\n");
 
 	return strbuf_value(sb);
 	/* doesn't close string buffer */
@@ -610,28 +604,28 @@ makeindex(file, title, index)
 		die("cannot make file '%s'.", file);
 	if (Fflag) {
 		fprintf(op, "%s\n", html_begin);
-		fprintf(op, "<HEAD>\n<TITLE>%s</TITLE>\n", title);
+		fprintf(op, "<head>\n<title>%s</title>\n", title);
 		fprintf(op, "%s", meta_record());
 		if (style_sheet)
 			fprintf(op, "%s", style_sheet);
-		fprintf(op, "</HEAD>\n");
-		fprintf(op, "<FRAMESET COLS='200,*'>\n");
+		fprintf(op, "</head>\n");
+		fprintf(op, "<frameset cols='200,*'>\n");
 		if (fflag) {
-			fprintf(op, "<FRAMESET ROWS='33%%,33%%,*'>\n");
-			fprintf(op, "<FRAME NAME=search SRC=search.%s>\n", normal_suffix);
+			fprintf(op, "<frameset rows='33%%,33%%,*'>\n");
+			fprintf(op, "<frame name='search' src='search.%s'>\n", normal_suffix);
 		} else {
-			fprintf(op, "<FRAMESET ROWS='50%%,*'>\n");
+			fprintf(op, "<frameset rows='50%%,*'>\n");
 		}
-		fprintf(op, "<FRAME NAME=defines SRC=defines.%s>\n", normal_suffix);
-		fprintf(op, "<FRAME NAME=files SRC=files.%s>\n", normal_suffix);
-		fprintf(op, "</FRAMESET>\n");
-		fprintf(op, "<FRAME NAME=mains SRC=mains.%s>\n", normal_suffix);
-		fprintf(op, "<NOFRAMES>\n");
+		fprintf(op, "<frame name='defines' src='defines.%s'>\n", normal_suffix);
+		fprintf(op, "<frame name='files' src='files.%s'>\n", normal_suffix);
+		fprintf(op, "</frameset>\n");
+		fprintf(op, "<frame name='mains' src='mains.%s'>\n", normal_suffix);
+		fprintf(op, "<noframes>\n");
 		fprintf(op, "%s\n", body_begin);
 		fputs(index, op);
 		fprintf(op, "%s\n", body_end);
-		fprintf(op, "</NOFRAMES>\n");
-		fprintf(op, "</FRAMESET>\n");
+		fprintf(op, "</noframes>\n");
+		fprintf(op, "</frameset>\n");
 		fprintf(op, "%s\n", html_end);
 	} else {
 		fprintf(op, "%s\n", html_begin);
@@ -844,30 +838,30 @@ makecommonpart(title, defines, files)
 	strbuf_puts(sb, title);
 	strbuf_puts(sb, title_end);
 	strbuf_putc(sb, '\n');
-	strbuf_puts(sb, "<DIV ALIGN=right>\n");
-	strbuf_sprintf(sb, "Last updated %s<BR>\n", now());
-	strbuf_sprintf(sb, "This hypertext was generated by <A HREF=%s TARGET=_top TITLE='Go to the GLOBAL project page.'>GLOBAL-%s</A>.<BR>\n", www, get_version());
-	strbuf_puts(sb, "</DIV>\n");
+	strbuf_puts(sb, "<div align='right'>\n");
+	strbuf_sprintf(sb, "Last updated %s<br>\n", now());
+	strbuf_sprintf(sb, "This hypertext was generated by <a href='%s' target='_top' title='Go to the GLOBAL project page.'>GLOBAL-%s</a>.<br>\n", www, get_version());
+	strbuf_puts(sb, "</div>\n");
 	strbuf_sprintf(sb, "%s\n", hr);
 	if (caution) {
-		strbuf_puts(sb, "<CENTER>\n");
-		strbuf_puts(sb, "<BLOCKQUOTE>\n");
-		strbuf_puts(sb, "<FONT SIZE=+2 COLOR=red>CAUTION</FONT><BR>\n");
+		strbuf_puts(sb, "<center>\n");
+		strbuf_puts(sb, "<blockquote>\n");
+		strbuf_puts(sb, "<font size='+2' color='red'>CAUTION</font><br>\n");
 		strbuf_sprintf(sb, "This hypertext consist of %d files.\n", file_count);
 		strbuf_puts(sb, "Please don't download whole hypertext using hypertext copy tools.\n");
 		strbuf_puts(sb, "Our network cannot afford such traffic.\n");
 		strbuf_puts(sb, "Instead, you can generate same thing in your computer using\n");
-		strbuf_sprintf(sb, "<A HREF=%s TARGET=_top>GLOBAL source code tag system</A>.\n", www);
+		strbuf_sprintf(sb, "<a href='%s' target='_top'>GLOBAL source code tag system</a>.\n", www);
 		strbuf_puts(sb, "Thank you. \n");
-		strbuf_puts(sb, "</BLOCKQUOTE>\n");
-		strbuf_puts(sb, "</CENTER>\n");
+		strbuf_puts(sb, "</blockquote>\n");
+		strbuf_puts(sb, "</center>\n");
 		strbuf_sprintf(sb, "\n%s\n", hr);
 	}
 	if (fflag) {
 		strbuf_puts(sb, makesearchpart(action, id, NULL));
 		strbuf_sprintf(sb, "%s\n", hr);
 	}
-	strbuf_puts(sb, "<H2>MAINS</H2>\n");
+	strbuf_puts(sb, "<h2>MAINS</h2>\n");
 
 	snprintf(command, sizeof(command), "%s -nx %s | gnusort -k 1,1 -k 3,3 -k 2,2n", global_path, main_func);
         ip = popen(command, "r");
@@ -885,23 +879,23 @@ makecommonpart(title, defines, files)
 		die("cannot execute command '%s'.", command);
 	strbuf_sprintf(sb, "%s\n", hr);
 	if (aflag && !Fflag) {
-		strbuf_sprintf(sb, "<H2>%s</H2>\n", title_define_index);
+		strbuf_sprintf(sb, "<h2>%s</h2>\n", title_define_index);
 		strbuf_puts(sb, defines);
 	} else {
-		strbuf_sprintf(sb, "<H2><A HREF=defines.%s>%s</A></H2>\n", normal_suffix, title_define_index);
+		strbuf_sprintf(sb, "<h2><a href='defines.%s'>%s</a></h2>\n", normal_suffix, title_define_index);
 	}
 	strbuf_sprintf(sb, "%s\n", hr);
 	if (Fflag) {
-		strbuf_sprintf(sb, "<H2><A HREF=files.%s>%s</A></H2>\n", normal_suffix, title_file_index);
+		strbuf_sprintf(sb, "<h2><a href='files.%s'>%s</a></h2>\n", normal_suffix, title_file_index);
 	} else {
-		strbuf_sprintf(sb, "<H2>%s</H2>\n", title_file_index);
+		strbuf_sprintf(sb, "<h2>%s</h2>\n", title_file_index);
 		if (!no_order_list)
-			strbuf_puts(sb, "<OL>\n");
+			strbuf_puts(sb, "<ol>\n");
 		strbuf_puts(sb, files);
 		if (!no_order_list) {
-			strbuf_puts(sb, "</OL>\n");
+			strbuf_puts(sb, "</ol>\n");
 		} else {
-			strbuf_puts(sb, "<BR>\n");
+			strbuf_puts(sb, "<br>\n");
 		}
 		strbuf_sprintf(sb, "%s\n", hr);
 	}

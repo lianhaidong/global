@@ -679,12 +679,12 @@ makefileindex(file, files)
 					fprintf(STDOUT, "%s\n", br);
 				else
 					fprintf(STDOUT, "%s\n", list_end);
-				fprintf(STDOUT, "<A HREF=%s TITLE='Parent Directory'>", parent);
+				fprintf(STDOUT, "<a href='%s' title='Parent Directory'>", parent);
 				if (icon_list)
-					fprintf(STDOUT, "<IMG SRC=../icons/%s.%s ALT='[..]' %s>", back_icon, icon_suffix, icon_spec);
+					fprintf(STDOUT, "<img src='../icons/%s.%s' alt='[..]' %s>", back_icon, icon_suffix, icon_spec);
 				else
 					fprintf(STDOUT, "[..]");
-				fprintf(STDOUT, "</A>\n");
+				fprintf(STDOUT, "</a>\n");
 				fprintf(STDOUT, "%s\n", body_end);
 				fprintf(STDOUT, "%s\n", html_end);
 				path = pop_stack(fdstack);	
@@ -708,15 +708,15 @@ makefileindex(file, files)
 				if (!no_order_list)
 					strbuf_puts(sb, list_item);
 
-				strbuf_sprintf(sb, "<A HREF=%s%s TITLE='%s/'>",
+				strbuf_sprintf(sb, "<a href='%s%s' title='%s/'>",
 					count_stack(dirstack) == 1 ? "files/" : "",
 					path2url(path),
 					path);
 				if (icon_list) {
-					strbuf_sprintf(sb, "<IMG SRC=%sicons/%s.%s ALT=[%s/] HSPACE=3 %s>",
+					strbuf_sprintf(sb, "<img src='%sicons/%s.%s' alt='[%s/]' hspace=3 %s>",
 						count_stack(dirstack) == 1 ? "" : "../", dir_icon, icon_suffix, path, icon_spec);
 				}
-				strbuf_sprintf(sb, "%s/</A>\n", last);
+				strbuf_sprintf(sb, "%s/</a>\n", last);
 				if (no_order_list)
 					strbuf_puts(sb, br);
 				if (count_stack(dirstack) == 1)
@@ -732,8 +732,8 @@ makefileindex(file, files)
 				strbuf_putc(sb, '/');
 				fprintf(STDOUT, set_header(strbuf_value(sb)));
 				fprintf(STDOUT, "%s\n", body_begin);
-				fprintf(STDOUT, "<H2>");
-				fprintf(STDOUT, "<A HREF=%s>root</A>/", indexlink);
+				fprintf(STDOUT, "<h2>");
+				fprintf(STDOUT, "<a href='%s'>root</a>/", indexlink);
 				{
 					struct dirstack *p = make_stack("tmp");
 					char *s;
@@ -743,21 +743,21 @@ makefileindex(file, files)
 						push_stack(p, s);
 						anchor = count_stack(p) < count_stack(dirstack) ? 1 : 0;
 						if (anchor)
-							fprintf(STDOUT, "<A HREF=%s>", path2url(join_stack(p)));
+							fprintf(STDOUT, "<a href='%s'>", path2url(join_stack(p)));
 						fprintf(STDOUT, s);
 						if (anchor)
-							fprintf(STDOUT, "</A>");
+							fprintf(STDOUT, "</a>");
 						fprintf(STDOUT, "/");
 					}
 					delete_stack(p);
 				}
-				fprintf(STDOUT, "</H2>\n");
-				fprintf(STDOUT, "<A HREF=%s TITLE='Parent Directory'>", parent);
+				fprintf(STDOUT, "</h2>\n");
+				fprintf(STDOUT, "<a href='%s' title='Parent Directory'>", parent);
 				if (icon_list)
-					fprintf(STDOUT, "<IMG SRC=../icons/%s.%s ALT='[..]' %s>", back_icon, icon_suffix, icon_spec);
+					fprintf(STDOUT, "<img src='../icons/%s.%s' alt='[..]' %s>", back_icon, icon_suffix, icon_spec);
 				else
 					fprintf(STDOUT, "[..]");
-				fprintf(STDOUT, "</A>\n");
+				fprintf(STDOUT, "</a>\n");
 				if (!no_order_list)
 					fprintf(STDOUT, "%s\n", list_begin);
 				else
@@ -775,11 +775,9 @@ makefileindex(file, files)
 		if (regexec(&is_include_file, _, 0, 0, 0) == 0)
 			put_inc(fname, _, count);
 		strbuf_reset(sb);
-		if (!no_order_list) {
+		if (!no_order_list)
 			strbuf_puts(sb, list_item);
-			strbuf_putc(sb, '\n');
-		}
-		strbuf_puts(sb, "<A HREF=");
+		strbuf_puts(sb, "<a href='");
 		if (notsource && dynamic) {
 			if (!(*action == '/' || count_stack(dirstack) == 0))
 				strbuf_puts(sb, "../");
@@ -790,7 +788,7 @@ makefileindex(file, files)
 				strbuf_puts(sb, "../");
 			strbuf_sprintf(sb, "%s/%s", SRCS, path2url(_));
 		}
-		strbuf_sprintf(sb, " TARGET=%s TITLE='%s'>", target, _);
+		strbuf_sprintf(sb, "' target='%s' title='%s'>", target, _);
 		if (icon_list) {
 			const char *lang, *suffix, *text_icon;
 
@@ -801,10 +799,10 @@ makefileindex(file, files)
 				text_icon = c_icon;
 			else
 				text_icon = file_icon;
-			strbuf_puts(sb, "<IMG SRC=");
+			strbuf_puts(sb, "<img src='");
 			if (count_stack(dirstack))
 				strbuf_puts(sb, "../");
-			strbuf_sprintf(sb, "icons/%s.%s ALT=[%s] HSPACE=3 %s>",
+			strbuf_sprintf(sb, "icons/%s.%s' alt='[%s]' hspace='3' %s>",
 				text_icon, icon_suffix, _, icon_spec);
 		}
 		if (full_path) {
@@ -817,7 +815,7 @@ makefileindex(file, files)
 				last = _;
 			strbuf_puts(sb, last);
 		}
-		strbuf_puts(sb, "</A>\n");
+		strbuf_puts(sb, "</a>\n");
 		if (no_order_list)
 			strbuf_sprintf(sb, "%s\n", br);
 		if (map_file)
@@ -840,12 +838,12 @@ makefileindex(file, files)
 			fprintf(STDOUT, "%s\n", br);
 		else
 			fprintf(STDOUT, "%s\n", list_end);
-		fprintf(STDOUT, "<A HREF=%s TITLE='Parent Directory'>", parent);
+		fprintf(STDOUT, "<a href='%s' title='Parent Directory'>", parent);
 		if (icon_list)
-			fprintf(STDOUT, "<IMG SRC=../icons/%s.%s ALT='[..]' %s>", back_icon, icon_suffix, icon_spec);
+			fprintf(STDOUT, "<img src='../icons/%s.%s' alt='[..]' %s>", back_icon, icon_suffix, icon_spec);
 		else
 			fprintf(STDOUT, "[..]");
-		fprintf(STDOUT, "</A>\n");
+		fprintf(STDOUT, "</a>\n");
 		fprintf(STDOUT, "%s\n", body_end);
 		fprintf(STDOUT, "%s\n", html_end);
 		close_file_queue(pop_stack(fdstack));
@@ -955,7 +953,7 @@ makeincludeindex()
 				int count = inc->count;
 
 				for (; count; filename += strlen(filename) + 1, count--)
-					fprintf(INCLUDE, "<A HREF=../%s/%s TARGET=%s>%s</A>\n", SRCS, path2url(filename), target, filename);
+					fprintf(INCLUDE, "<a href='../%s/%s' target='%s'>%s</a>\n", SRCS, path2url(filename), target, filename);
 			}
 			fprintf(INCLUDE, "%s\n", verbatim_end);
 			fprintf(INCLUDE, "%s\n", body_end);

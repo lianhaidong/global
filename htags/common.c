@@ -89,41 +89,41 @@ char *br;
 void
 setup_html()
 {
-	html_begin	= "<HTML>";
-	html_end	= "</HTML>";
-	body_begin	= "<BODY>";
-	body_end	= "</BODY>";
-	head_begin	= "<HEAD>";
-	head_end	= "</HEAD>";
-	title_begin	= "<H1><FONT COLOR=#cc0000>";
-	title_end	= "</FONT></H1>";
-	list_begin	= "<OL>";
-	list_item	= "<LI>";
-	list_end	= "</OL>";
-	table_begin	= "<TABLE>";
-	table_end	= "</TABLE>";
-	comment_begin	= "<I><FONT COLOR=green>";
-	comment_end	= "</FONT></I>";
-	sharp_begin	= "<FONT COLOR=darkred>";
-	sharp_end	= "</FONT>";
-	brace_begin	= "<FONT COLOR=blue>";
-	brace_end	= "</FONT>";
-	verbatim_begin	= "<PRE>";
-	verbatim_end	= "</PRE>";
-	reserved_begin	= "<B>";
-	reserved_end	= "</B>";
-	position_begin	= "<FONT COLOR=gray>";
-	position_end	= "</FONT>";
-	warned_line_begin = "<SPAN STYLE=\"background-color:yellow\">";
-	warned_line_end   = "</SPAN>";
-	string_begin	= "<U>";
-	string_end	= "</U>";
+	html_begin	= "<html>";
+	html_end	= "</html>";
+	body_begin	= "<body>";
+	body_end	= "</body>";
+	head_begin	= "<head>";
+	head_end	= "</head>";
+	title_begin	= "<h1><font color='#cc0000'>";
+	title_end	= "</font></h1>";
+	list_begin	= "<ol>";
+	list_item	= "<li>";
+	list_end	= "</ol>";
+	table_begin	= "<table>";
+	table_end	= "</table>";
+	comment_begin	= "<i><font color='green'>";
+	comment_end	= "</font></i>";
+	sharp_begin	= "<font color='darkred'>";
+	sharp_end	= "</font>";
+	brace_begin	= "<font color='blue'>";
+	brace_end	= "</font>";
+	verbatim_begin	= "<pre>";
+	verbatim_end	= "</pre>";
+	reserved_begin	= "<b>";
+	reserved_end	= "</b>";
+	position_begin	= "<font color='gray'>";
+	position_end	= "</font>";
+	warned_line_begin = "<span style='background-color:yellow'>";
+	warned_line_end   = "</span>";
+	string_begin	= "<u>";
+	string_end	= "</u>";
 	quote_great	= "&gt;";
 	quote_little	= "&lt;";
 	quote_amp	= "&amp;";
 	quote_space	= "&nbsp;";
-	hr              = "<HR>";
-	br              = "<BR>";
+	hr              = "<hr>";
+	br              = "<br>";
 }
 /*
  * Set up XHTML tags.
@@ -150,14 +150,14 @@ char *
 meta_record()
 {
 	static char buf[512];
-	char *s1 = "META NAME='ROBOTS' CONTENT='NOINDEX,NOFOLLOW'";
-	char *s2 = "META NAME='GENERATOR'";
+	char *s1 = "meta name='robots' content='noindex,nofollow'";
+	char *s2 = "meta name='generator'";
 
-	snprintf(buf, sizeof(buf), "<%s>\n<%s CONTENT='GLOBAL-%s'>\n", s1, s2, get_version());
+	snprintf(buf, sizeof(buf), "<%s>\n<%s content='GLOBAL-%s'>\n", s1, s2, get_version());
 	return buf;
 }
 /*
- * Generate <Hn> ... </Hn> tag.
+ * Generate <hn> ... </hn> tag.
  */
 char *
 Hn(n, label)
@@ -169,7 +169,7 @@ Hn(n, label)
 		n = 1;
 	if (n > 5)
 		n = 5;
-	snprintf(buf, sizeof(buf), "<H%d>%s</H%d>", n, label, n);
+	snprintf(buf, sizeof(buf), "<h%d>%s</h%d>", n, label, n);
 	return buf;
 }
 /*
@@ -181,7 +181,7 @@ anchor(label, link)
 	char *link;
 {
 	static char buf[512];
-	snprintf(buf, sizeof(buf), "<A HREF=%s>%s</A>", link, label);
+	snprintf(buf, sizeof(buf), "<a href='%s'>%s</a>", link, label);
 	return buf;
 }
 static STRBUF *
@@ -205,13 +205,13 @@ set_header(title)
 {
 	STRBUF *sb = edit_buffer();
 
-	strbuf_puts(sb, "<HEAD>\n<TITLE>");
+	strbuf_puts(sb, "<head>\n<title>");
 	strbuf_puts(sb, title);
-	strbuf_puts(sb, "</TITLE>\n");
+	strbuf_puts(sb, "</title>\n");
 	strbuf_puts(sb, meta_record());
 	if (style_sheet)
 		strbuf_puts(sb, style_sheet);
-	strbuf_puts(sb, "</HEAD>\n");
+	strbuf_puts(sb, "</head>\n");
 	return strbuf_value(sb);
 }
 
@@ -226,12 +226,12 @@ gen_list_begin()
 	if (table_list) {
 		strbuf_puts(sb, table_begin);
 		strbuf_putc(sb, '\n');
-		strbuf_puts(sb, "<TR><TH NOWRAP ALIGN=left>tag</TH>");
-		strbuf_puts(sb, "<TH NOWRAP ALIGN=right>line</TH>");
-		strbuf_puts(sb, "<TH NOWRAP ALIGN=center>file</TH>");
-		strbuf_puts(sb, "<TH NOWRAP ALIGN=left>source code</TH></TR>");
+		strbuf_puts(sb, "<tr><th nowrap align='left'>tag</th>");
+		strbuf_puts(sb, "<th nowrap align='right'>line</th>");
+		strbuf_puts(sb, "<th nowrap align='center'>file</th>");
+		strbuf_puts(sb, "<th nowrap align='left'>source code</th></tr>");
 	} else {
-		strbuf_puts(sb, "<PRE>");
+		strbuf_puts(sb, "<pre>");
 	}
 	return strbuf_value(sb);
 }
@@ -262,9 +262,9 @@ gen_list_body(srcdir, string)
 	html = path2url(filename);
 
 	if (table_list) {
-		strbuf_sprintf(sb, "<TR><TD NOWRAP><A HREF=%s/%s#%s>%s</A></TD>",
+		strbuf_sprintf(sb, "<tr><td nowrap><a href='%s/%s#%s'>%s</a></td>",
 			srcdir, html, lno, name);
-		strbuf_sprintf(sb, "<TD NOWRAP ALIGN=right>%s</TD><TD NOWRAP ALIGN=left>%s</TD><TD NOWRAP>",
+		strbuf_sprintf(sb, "<td nowrap align='right'>%s</td><td nowrap align='left'>%s</td><td nowrap>",
 			lno, filename);
 
 		for (p = line; *p; p++) {
@@ -284,12 +284,12 @@ gen_list_body(srcdir, string)
 			} else
 				strbuf_putc(sb, c);
 		}
-		strbuf_puts(sb, "</TD></TR>");
+		strbuf_puts(sb, "</td></tr>");
 		recover(&ptable);
 	} else {
 		int done = 0;
 
-		strbuf_sprintf(sb, "<A HREF=%s/%s#%s>%s</A>",
+		strbuf_sprintf(sb, "<a href='%s/%s#%s'>%s</a>",
 			srcdir, html, lno, name);
 		p = string + strlen(name);
 		recover(&ptable);
@@ -325,7 +325,7 @@ gen_list_end()
 	if (table_list)
 		strbuf_puts(sb, table_end);
 	else
-		strbuf_puts(sb, "</PRE>");
+		strbuf_puts(sb, "</pre>");
 	return strbuf_value(sb);
 }
 
