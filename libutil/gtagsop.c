@@ -503,14 +503,15 @@ gtags_add(gtop, comline, path, flags)
 	if (!(ip = popen(strbuf_value(sb), "r")))
 		die("cannot execute '%s'.", strbuf_value(sb));
 	while ((ctags_x = strbuf_fgets(ib, ip, STRBUF_NOCRLF)) != NULL) {
-		char	*tag, *p;
+		char tag[MAXTOKEN], *p;
 
 		strbuf_trim(ib);
 #ifdef DEBUG
 		if (flags & GTAGS_DEBUG)
 			formatcheck(ctags_x, gtop->format);
 #endif
-		tag = strmake(ctags_x, " \t");		 /* tag = $1 */
+		/* tag = $1 */
+		strlimcpy(tag, strmake(ctags_x, " \t"), sizeof(tag));
 		/*
 		 * extract method when class method definition.
 		 *
@@ -519,13 +520,14 @@ gtags_add(gtop, comline, path, flags)
 		 * key	= 'method'
 		 * data = 'Class::method  103 ./class.cpp ...'
 		 */
+		p = tag;
 		if (flags & GTAGS_EXTRACTMETHOD) {
 			if ((p = locatestring(tag, ".", MATCH_LAST)) != NULL)
-				tag = p + 1;
+				p++;
 			else if ((p = locatestring(tag, "::", MATCH_LAST)) != NULL)
-				tag = p + 2;
+				p += 2;
 		}
-		gtags_put(gtop, tag, ctags_x, fid);
+		gtags_put(gtop, p, ctags_x, fid);
 	}
 	if (pclose(ip) < 0)
 		die("terminated abnormally.");
