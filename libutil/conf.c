@@ -335,8 +335,10 @@ openconf()
 		/*
 		 * usable search in BINDIR at first.
 		 */
-#if defined(_WIN32) || defined(__DJGPP__)
+#if defined(_WIN32)
 		path = "gtags-parser.exe";
+#elif defined(__DJGPP__)
+		path = usable("gtags-parser") ? "gtags-parser.exe" : "gtags-~1.exe";
 #else
 		path = usable("gtags-parser");
 		if (!path)

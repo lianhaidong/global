@@ -280,10 +280,6 @@ main(argc, argv)
 		const char *lang, *suffix;
 		struct lang_entry *ent;
 
-#if defined(_WIN32) || defined(__DJGPP__)
-		/* Lower case the file name since names are case insensitive */
-		strlwr(argv[0]);
-#endif
 		/* get suffix of the path. */
 		suffix = locatestring(argv[0], ".", MATCH_LAST);
 		if (!suffix)

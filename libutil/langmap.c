@@ -105,7 +105,11 @@ match_suffix_list(suffix, list)
 	const char *list;
 {
 	while (*list) {
-		if (locatestring(list, suffix, MATCH_AT_FIRST))
+		if (locatestring(list, suffix, MATCH_AT_FIRST
+#if defined(_WIN32) || defined(__DJGPP__)
+							     |IGNORE_CASE
+#endif
+									 ))
 			return 1;
 		for (list++; *list && *list != '.'; list++)
 			;

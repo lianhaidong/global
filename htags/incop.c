@@ -26,6 +26,13 @@
 #include "queue.h"
 #include "global.h"
 #include "incop.h"
+
+#if defined(_WIN32) || defined(__DJGPP__)
+# define STRCMP stricmp
+#else
+# define STRCMP strcmp
+#endif
+
 /*----------------------------------------------------------------------*/
 /* Pool									*/
 /*----------------------------------------------------------------------*/
@@ -65,7 +72,7 @@ put_pool(head, name, contents, id)
 	if (strlen(name) > MAXPATHLEN)
 		die("name is too long.");
 	SLIST_FOREACH(data, head, next) {
-		if (!strcmp(data->name, name))
+		if (!STRCMP(data->name, name))
 			break;
 	}
 	if (!data) {
@@ -95,7 +102,7 @@ get_pool(head, name)
 	struct data *data;
 
 	SLIST_FOREACH(data, head, next) {
-		if (!strcmp(data->name, name))
+		if (!STRCMP(data->name, name))
 			break;
 	}
 	return data;
