@@ -1303,8 +1303,7 @@ sub makefileindex {
 	local($indexlink) = ($'Fflag) ? "../files.$'normal_suffix" : "../mains.$'normal_suffix";
 	local($target) = ($'Fflag) ? 'mains' : '_top';
 	local(@dirstack, @fdstack);
-	local($command) = "$'findcom | sort";
-	open(FIND, "$command |") || &'error("cannot fork.");
+	open(FIND, "$'findcom |") || &'error("cannot fork.");
 	open(FILES, ">$file") || &'error("cannot make file '$file'.");
 	print FILES $'html_begin, "\n";
 	print FILES &'set_header($'title_file_index);
