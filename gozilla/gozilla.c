@@ -254,6 +254,12 @@ char	*argv[];
 	exit(0);
 }
 
+/*
+ * getfunctionURL: get URL includes specified function.
+ *
+ *	i)	arg	function name
+ *	o)	URL	URL begin with 'file:'
+ */
 void
 getfunctionURL(arg, URL)
 char *arg;
@@ -321,6 +327,12 @@ STRBUF *URL;
 	strbuf_putc(URL, '/');
 	strbuf_puts(URL, args[1]);
 }
+/*
+ * getURL: get specified URL.
+ *
+ *	i)	arg	function name
+ *	o)	URL	URL begin with 'file:'
+ */
 void
 getURL(arg, URL)
 char *arg;
