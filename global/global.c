@@ -807,7 +807,11 @@ char	*dbpath;
 		else {
 			char	buf[MAXPATHLEN+1];
 
+#ifdef HAVE_SNPRINTF
 			snprintf(buf, sizeof(buf), "./%s", path);
+#else
+			sprintf(buf, "./%s", path);
+#endif /* HAVE_SNPRINTF */
 			if (editlen >= 16 && linenum >= 1000)
 				fprintf(op, "%-16s %4d %-16s %s\n",
 					edit, linenum, buf, p);
@@ -1080,11 +1084,15 @@ int	db;
 	 * teach parser where is dbpath.
 	 */
 #ifdef HAVE_PUTENV
+#ifdef HAVE_SNPRINTF
 	snprintf(env, sizeof(env), "GTAGSDBPATH=%s", dbpath);
+#else
+	sprintf(env, "GTAGSDBPATH=%s", dbpath);
+#endif /* HAVE_SNPRINTF */
 	putenv(env);
 #else
 	setenv("GTAGSDBPATH", dbpath, 1);
-#endif
+#endif /* HAVE_PUTENV */
 
 	/*
 	 * get parser.
@@ -1250,7 +1258,11 @@ char	*from;
 		if (*p == '%' || *p == ' ' || *p == '\t') {
 			if (size <= 3)
 				break;
+#ifdef HAVE_SNPRINTF
 			snprintf(e, size, "%%%02x", *p);
+#else
+			sprintf(e, "%%%02x", *p);
+#endif /* HAVE_SNPRINTF */
 			e += 3;
 			size -= 3;
 		} else {

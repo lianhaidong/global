@@ -70,31 +70,55 @@ int	size;
 {
 	char	path[MAXPATHLEN+1];
 
+#ifdef HAVE_SNPRINTF
 	snprintf(path, sizeof(path), "%s/%s", candidate, dbname(GTAGS));
+#else
+	sprintf(path, "%s/%s", candidate, dbname(GTAGS));
+#endif /* HAVE_SNPRINTF */
 	if (verbose)
 		fprintf(stderr, "checking %s\n", path);
 	if (test("fr", path)) {
 		if (verbose)
 			fprintf(stderr, "GTAGS found at '%s'.\n", path);
+#ifdef HAVE_SNPRINTF
 		snprintf(dbpath, size, "%s", candidate);
+#else
+		sprintf(dbpath, "%s", candidate);
+#endif /* HAVE_SNPRINTF */
 		return 1;
 	}
+#ifdef HAVE_SNPRINTF
 	snprintf(path, sizeof(path), "%s/%s/%s", candidate, makeobjdir, dbname(GTAGS));
+#else
+	sprintf(path, "%s/%s/%s", candidate, makeobjdir, dbname(GTAGS));
+#endif /* HAVE_SNPRINTF */
 	if (verbose)
 		fprintf(stderr, "checking %s\n", path);
 	if (test("fr", path)) {
 		if (verbose)
 			fprintf(stderr, "GTAGS found at '%s'.\n", path);
+#ifdef HAVE_SNPRINTF
 		snprintf(dbpath, size, "%s/%s", candidate, makeobjdir);
+#else
+		sprintf(dbpath, "%s/%s", candidate, makeobjdir);
+#endif /* HAVE_SNPRINTF */
 		return 1;
 	}
+#ifdef HAVE_SNPRINTF
 	snprintf(path, sizeof(path), "%s%s/%s", makeobjdirprefix, candidate, dbname(GTAGS));
+#else
+	sprintf(path, "%s%s/%s", makeobjdirprefix, candidate, dbname(GTAGS));
+#endif /* HAVE_SNPRINTF */
 	if (verbose)
 		fprintf(stderr, "checking %s\n", path);
 	if (test("fr", path)) {
 		if (verbose)
 			fprintf(stderr, "GTAGS found at '%s'.\n", path);
+#ifdef HAVE_SNPRINTF
 		snprintf(dbpath, size, "%s%s", makeobjdirprefix, candidate);
+#else
+		sprintf(dbpath, "%s%s", makeobjdirprefix, candidate);
+#endif /* HAVE_SNPRINTF */
 		return 1;
 	}
 	return 0;

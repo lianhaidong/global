@@ -234,7 +234,11 @@ int	*num;
 
 	if (!opened)
 		openconf();
+#ifdef HAVE_SNPRINTF
 	snprintf(buf, sizeof(buf), ":%s#", name);
+#else
+	sprintf(buf, ":%s#", name);
+#endif /* HAVE_SNPRINTF */
 	if ((p = locatestring(line, buf, MATCH_FIRST)) != NULL) {
 		p += strlen(buf);
 		if (num != NULL)
@@ -264,7 +268,11 @@ STRBUF	*sb;
 		openconf();
 	if (!strcmp(name, "suffixes") || !strcmp(name, "skip"))
 		all = 1;
+#ifdef HAVE_SNPRINTF
 	snprintf(buf, sizeof(buf), ":%s=", name);
+#else
+	sprintf(buf, ":%s=", name);
+#endif /* HAVE_SNPRINTF */
 	p = line;
 	while ((p = locatestring(p, buf, MATCH_FIRST)) != NULL) {
 		if (exist && sb)
@@ -316,7 +324,11 @@ const char *name;
 
 	if (!opened)
 		openconf();
+#ifdef HAVE_SNPRINTF
 	snprintf(buf, sizeof(buf), ":%s:", name);
+#else
+	sprintf(buf, ":%s:", name);
+#endif /* HAVE_SNPRINTF */
 	if (locatestring(line, buf, MATCH_FIRST) != NULL)
 		return 1;
 	return 0;

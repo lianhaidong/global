@@ -60,3 +60,6 @@
 
 /* Define for current machine architecture. */
 #undef WORDS_BIGENDIAN
+
+/* Define if your system have snprintf(3).  */
+#undef HAVE_SNPRINTF

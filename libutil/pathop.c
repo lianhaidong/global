@@ -93,7 +93,11 @@ const char *path;
 		return;
 	if (dbop_get(dbop, path) != NULL)
 		return;
+#ifdef HAVE_SNPRINTF
 	snprintf(buf, sizeof(buf), "%d", _nextkey++);
+#else
+	sprintf(buf, "%d", _nextkey++);
+#endif /* HAVE_SNPRINTF */
 	dbop_put(dbop, path, buf);
 	dbop_put(dbop, buf, path);
 }
@@ -110,7 +114,11 @@ int	n;
 {
 	char	key[80];
 	assert(opened == 1);
+#ifdef HAVE_SNPRINTF
 	snprintf(key, sizeof(key), "%d", n);
+#else
+	sprintf(key, "%d", n);
+#endif /* HAVE_SNPRINTF */
 	return dbop_get(dbop, key);
 }
 void
@@ -145,7 +153,11 @@ pathclose(void)
 		dbop_close(dbop);
 		return;
 	}
+#ifdef HAVE_SNPRINTF
 	snprintf(buf, sizeof(buf), "%d", _nextkey);
+#else
+	sprintf(buf, "%d", _nextkey);
+#endif /* HAVE_SNPRINTF */
 	if (_mode == 1 || _mode == 2)
 		dbop_put(dbop, NEXTKEY, buf);
 	dbop_close(dbop);

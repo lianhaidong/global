@@ -268,14 +268,22 @@ char	*argv[];
 	 * teach gctags(1) where is dbpath.
 	 */
 #ifdef HAVE_PUTENV
+#ifdef HAVE_SNPRINTF
         snprintf(env, sizeof(env), "GTAGSDBPATH=%s", dbpath);
+#else
+        sprintf(env, "GTAGSDBPATH=%s", dbpath);
+#endif /* HAVE_SNPRINTF */
         putenv(env);
 #else
         setenv("GTAGSDBPATH", dbpath, 1);
 #endif
 	if (wflag) {
 #ifdef HAVE_PUTENV
+#ifdef HAVE_SNPRINTF
 		snprintf(env, sizeof(env), "GTAGSWARNING=1");
+#else
+		sprintf(env, "GTAGSWARNING=1");
+#endif /* HAVE_SNPRINTF */
 		putenv(env);
 #else
         	setenv("GTAGSWARNING", "1", 1);

@@ -264,7 +264,11 @@ int	flags;
 			char	buf[80];
 
 			gtop->format_version = 2;
+#ifdef HAVE_SNPRINTF
 			snprintf(buf, sizeof(buf), "%s %d", VERSIONKEY, gtop->format_version);
+#else
+			sprintf(buf, "%s %d", VERSIONKEY, gtop->format_version);
+#endif /* HAVE_SNPRINTF */
 			dbop_put(gtop->dbop, VERSIONKEY, buf);
 			gtop->format |= GTAGS_COMPACT;
 			dbop_put(gtop->dbop, COMPACTKEY, COMPACTKEY);
@@ -711,9 +715,17 @@ GTOP	*gtop;
 		gtop->lnop = p;			/* gtop->lnop = $3 */
 
 		if (gtop->root)
+#ifdef HAVE_SNPRINTF
 			snprintf(path, sizeof(path), "%s/%s", gtop->root, &gtop->path[2]);
+#else
+			sprintf(path, "%s/%s", gtop->root, &gtop->path[2]);
+#endif /* HAVE_SNPRINTF */
 		else
+#ifdef HAVE_SNPRINTF
 			snprintf(path, sizeof(path), "%s", &gtop->path[2]);
+#else
+			sprintf(path, "%s", &gtop->path[2]);
+#endif /* HAVE_SNPRINTF */
 		if (!(gtop->flags & GTOP_NOSOURCE)) {
 			if ((gtop->fp = fopen(path, "r")) != NULL)
 				gtop->lno = 0;
@@ -739,11 +751,21 @@ GTOP	*gtop;
 			}
 		}
 		if (strlen(gtop->tag) >= 16 && tagline >= 1000)
+#ifdef HAVE_SNPRINTF
 			snprintf(output, sizeof(output), "%-16s %4d %-16s %s",
 					gtop->tag, tagline, gtop->path, buffer);
+#else
+			sprintf(output, "%-16s %4d %-16s %s",
+					gtop->tag, tagline, gtop->path, buffer);
+#endif /* HAVE_SNPRINTF */
 		else
+#ifdef HAVE_SNPRINTF
 			snprintf(output, sizeof(output), "%-16s%4d %-16s %s",
 					gtop->tag, tagline, gtop->path, buffer);
+#else
+			sprintf(output, "%-16s%4d %-16s %s",
+					gtop->tag, tagline, gtop->path, buffer);
+#endif /* HAVE_SNPRINTF */
 		return output;
 	}
 	if (gtop->opened && gtop->fp != NULL) {

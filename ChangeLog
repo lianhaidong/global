@@ -7,6 +7,10 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+September 29 2000, Shigio Yamaguchi  <shigio@tamacom.com>
+
+	* config variable HAVE_SNPRINTF added.
+
 September 26 2000, Shigio Yamaguchi  <shigio@tamacom.com>
 
 	* htags.pl: use generated path of perl for global.cgi.
