@@ -2297,8 +2297,7 @@ sub protect_line {
 		if (s!^([^*]*\*+([^/*][^*]*\*+)*/)!\004!) {
 			push(@comments, $1);
 			$INCOMMENT = 0;
-		}
-		else {
+		} else {
 			s/^(.*)$/\004/;
 			push(@comments, $1);
 		}
@@ -2306,8 +2305,7 @@ sub protect_line {
 		if (s/^(([^$quote\\]|\\.)*$quote)/\003/) {
 			push(@quoted_strings, $1);
 			$quote = '';
-		}
-		else {
+		} else {
 			s/^(.*)$/\003/;
 			push(@quoted_strings, $1);
 		}
@@ -2316,28 +2314,25 @@ sub protect_line {
 		if ($1 eq '//') {
 			s/(\/\/.*$)/\004/;
 			push(@comments, $1);
-		}
-		elsif ($1 eq '/*') {
+		} elsif ($1 eq '/*') {
 			# This regular expression was drived from
 			# perl FAQ 4.27 (ftp://ftp.cis.ufl.edu/pub/perl/faq/FAQ)
 			if (s!(/\*[^*]*\*+([^/*][^*]*\*+)*/)!\004!) {
 				push(@comments, $1);
-			}
-			else {
+			} else {
 				s/(\/\*.*)$/\004/;
 				push(@comments, $1);
 				$INCOMMENT = 1;
 			}
-		}
-		else {
+		} else {
 			$quote = $1;
 			if (s/($quote([^$quote\\]|\\.)*$quote)/\003/) {
 				push(@quoted_strings, $1);
 				$quote = '';
-			}
-			else {
-				push(@quoted_strings, $1);
+			} else {
 				s/($quote.*)$/\003/;
+				push(@quoted_strings, $1);
+				$quote = '' if ($quote eq "'");
 			}
 		}
 	}
