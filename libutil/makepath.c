@@ -33,7 +33,6 @@
 #include "makepath.h"
 #include "strbuf.h"
 
-static STRBUF	*sb;
 /*
  * makepath: make path from directory and file.
  *

@@ -101,7 +101,6 @@ static regex_t reg;
  */
 static int support_version = 3;	/* acceptable format version   */
 static const char *tagslist[] = {"GPATH", "GTAGS", "GRTAGS", "GSYMS"};
-static STRBUF *output;
 /*
  * dbname: return db name
  *
@@ -702,6 +701,7 @@ static char *
 unpack_pathindex(line)
 	char *line;
 {
+	STATIC_STRBUF(output);
 	SPLIT ptable;
 	int n;
 	char *path;
@@ -721,10 +721,7 @@ unpack_pathindex(line)
 	/*
 	 * copy line with converting.
 	 */
-	if (output == NULL)
-		output = strbuf_open(MAXBUFLEN);
-	else
-		strbuf_reset(output);
+	strbuf_init(output);
 	strbuf_nputs(output, line, ptable.part[2].start - line);
 	strbuf_puts(output, path);
 	strbuf_puts(output, ptable.part[2].end);
