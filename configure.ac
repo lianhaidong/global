@@ -58,20 +58,13 @@ fi
 AC_HEADER_STDC
 AC_HEADER_STAT
 AC_HEADER_TIME
-AG_BYTE_ORDER
+AC_C_BIGENDIAN
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 AC_TYPE_OFF_T
 AC_TYPE_SIZE_T
 AC_STRUCT_ST_BLKSIZE
-dnl
-dnl In GNU/Linux, struct dirent has d_type but the value is always 0.
-dnl So, we decided not to use these macros for the time being.
-dnl
-dnl AG_STRUCT_DP_D_NAMLEN
-dnl AG_STRUCT_DP_D_TYPE
-dnl
 AC_CHECK_TYPE(int8_t, signed char)
 AC_CHECK_TYPE(int16_t, short)
 AC_CHECK_TYPE(int32_t, int)
