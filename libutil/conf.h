@@ -37,7 +37,7 @@
 #endif
 #define DEFAULTLABEL    "default"
 #define DEFAULTSUFFIXES "c,h,y,c++,cc,cpp,cxx,hxx,C,H,s,S,java"
-#define DEFAULTSKIP     "GPATH,GTAGS,GRTAGS,GSYMS,HTML/,tags,TAGS,ID,y.tab.c,y.tab.h,SCCS/,RCS/,CVS/,CVSROOT/,.deps/"
+#define DEFAULTSKIP     "GPATH,GTAGS,GRTAGS,GSYMS,HTML/,tags,TAGS,ID,y.tab.c,y.tab.h,.notfunction,SCCS/,RCS/,CVS/,CVSROOT/,.deps/,{arch}/"
 
 void	openconf(void);
 int	getconfn(const char *, int *);
