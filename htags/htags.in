@@ -1198,7 +1198,7 @@ if ($?) {
 }
 $pattern =~ s/([&<>])/$ctab{$1}/ge;
 print "<H1><FONT COLOR=#cc0000>" . $pattern . "</FONT></H1>\n";
-print "Following $words are matched to above pattern.$'hr\n";
+print "Following $words are matched to above pattern.@hr@\n";
 $cnt = 0;
 local($tag, $lno, $filename, $fileno);
 print "<PRE>\n";
@@ -1249,6 +1249,7 @@ END_OF_SCRIPT
 	$script =~ s/\@SRCS\@/$'SRCS/g;
 	$script =~ s/\@HTML\@/$'HTML/g;
 	$script =~ s/\@tabs\@/$'tabs/g;
+	$script =~ s/\@hr\@/$'hr/g;
 	$script =~ s/\@globalpath\@/$globalpath/g;
 	$script =~ s/\@gtagspath\@/$gtagspath/g;
 	print PROGRAM $script;
