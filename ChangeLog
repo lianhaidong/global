@@ -25,6 +25,7 @@ Current, Shigio Yamaguchi  <shigio@gnu.org>
 	* find.c: decrease dependency on find(1).
 	  remove length argument from find_read().
 	* global.texi: reconstuct documentation.
+	* globash.rc: --no-wait option added to emacsclient.
 
 Jan 22 2002, Shigio Yamaguchi  <shigio@gnu.org>
 
