@@ -521,6 +521,15 @@ unknown_yacc_directive(word, lineno)
 		warned = 1;
 }
 void
+missing_left(word, lineno)
+	char *word;
+	int lineno;
+{
+	warning("missing left '%s'. [+%d %s]", word, lineno, curpfile);
+	if (colorize_warned_line)
+		warned = 1;
+}
+void
 put_char(c)
         int c;
 {
