@@ -2118,12 +2118,12 @@ If you mistake the value then program may abort with core dump.
 @c ***************************************************************************
 @node Reference
 @chapter Reference manual
-@include reference.texi
+@include reference.txi
 
 @c ***************************************************************************
 @c FDL
 @c ***************************************************************************
-@include fdl.texi
+@include fdl.txi
 
 @node Index
 @unnumbered Option Index

@@ -10,9 +10,9 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
-info_TEXINFOS = global.texi
+info_TEXINFOS = global.txi
 
-global_TEXINFOS = fdl.texi reference.texi \
+global_TEXINFOS = fdl.txi reference.txi \
 	global.ref gtags.ref htags.ref gctags.ref gozilla.ref
 
 EXTRA_DIST = texinfo.tex

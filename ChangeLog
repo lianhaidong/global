@@ -28,6 +28,7 @@ ChangeLog about GNU GLOBAL
 	* acconfig.h: removed because it is considered to be obsoleted.
 	* gctags: inittable() added for each parser, which set up reserved
 	  word table.
+	* doc/*.texi: renamed from *.texi to *.txi for djgpp.
 
 July 4 2002, Shigio Yamaguchi  <shigio@gnu.org>
 
