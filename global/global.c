@@ -345,7 +345,7 @@ char	*argv[];
 	 * if GTAGS not found, getdbpath doesn't return.
 	 */
 	getdbpath(cwd, root, dbpath, (pflag && vflag));
-	if (Iflag && strcmp(root, dbpath))
+	if (Iflag && !test("f", makepath(root, "ID", NULL)))
 		die("You must have idutils's index at the root of source tree.");
 	/*
 	 * print dbpath or rootdir.
