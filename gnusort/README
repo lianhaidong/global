@@ -33,3 +33,5 @@ File name		Drived from
 ------------------------------------
 xmalloc.c, xalloc.h	textutil-2.1
 the rest		textutil-2.0
+
+The usage of HAVE_DECL_XXX in sys2.h was fixed.
