@@ -21,6 +21,7 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+#include <ctype.h>
 #include <stdio.h>
 #ifdef HAVE_STRING_H
 #include <string.h>
@@ -108,6 +109,7 @@ makedefineindex(file, total, defines)
 		message(" [%d/%d] adding %s", count, total, tag);
 		if (aflag && (alpha[0] == '\0' || strncmp(tag, alpha, strlen(alpha)))) {
 			char *msg = (alpha_count == 1) ? "definition is contained." : "definitions are contained.";
+			int c;
 
 			if (alpha[0]) {
 				strbuf_sprintf(defines, "<a href='defines/%s.%s' title='%d %s'>[%s]</a>\n",
@@ -137,8 +139,8 @@ makedefineindex(file, total, defines)
 			 * alpha is used for display.
 			 * alpha_f is used for part of path.
 			 */
-			if (*(unsigned char *)tag > 127) {
-				int i1 = *tag & 0xff;
+			c = (unsigned char)*tag;
+			if (c > 127) {
 				int i2 = *(tag + 1) & 0xff;
 				/*
 				 * for multi-byte(EUC) code.
@@ -146,15 +148,14 @@ makedefineindex(file, total, defines)
 				alpha[0] = *tag;
 				alpha[1] = *(tag + 1);
 				alpha[2] = '\0';
-				snprintf(alpha_f, sizeof(alpha_f), "%03d%03d", i1, i2);
-			} else {
+				snprintf(alpha_f, sizeof(alpha_f), "%03d%03d", c, i2);
+			} else if (isalpha(c) || c == '_') {
 				alpha[0] = *tag;
 				alpha[1] = '\0';
 				/*
 				 * for CD9660 or FAT file system
-				 * 97 == 'a', 122 == 'z'
 				 */
-				if (*tag >= 'a' && *tag <= 'z') {
+				if (islower(c)) {
 					alpha_f[0] = 'l';
 					alpha_f[1] = *tag;
 					alpha_f[2] = '\0';
@@ -162,6 +163,10 @@ makedefineindex(file, total, defines)
 					alpha_f[0] = *tag;
 					alpha_f[1] = '\0';
 				}
+			} else {
+				alpha[0] = *tag;
+				alpha[1] = '\0';
+				snprintf(alpha_f, sizeof(alpha_f), "%03d", c);
 			}
 			if (cflag) {
 				snprintf(buf, sizeof(buf), "gzip -c >%s/defines/%s.%s", distpath, alpha_f, HTML);
