@@ -21,9 +21,7 @@ environments. It supports C, C++, Yacc, Java, PHP and assembler source code.
 
 * Installation
 
-	If you use a UNIX, CYGWIN or DJGPP then please see 'INSTALL'.
-	If you want to use Borland C++ compiler on Windows32 environment
-	then please see 'w32/INSTALL'.
+	Please see 'INSTALL'.
 
 * Documentation
 

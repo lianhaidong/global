@@ -16,6 +16,17 @@ ___________________________________
 
                 ----------------------------------
 
+			<<<CAUTION>>>
+
+Borland C++ compiler support in Windows32 was finished because
+  - Now, Cygwin environment is widely used.
+  - Borland C++ compiler is not free software.
+
+  The w32/ directory is leaved in this release but will be removed in the
+  future release.
+
+                ----------------------------------
+
 Installation of GNU GLOBAL under Windows 32.
 
 1. Required programs.
