@@ -328,13 +328,13 @@ openconf()
 #endif /* _WIN32 */
 		strbuf_puts(sb, ":GTAGS=");
 		strbuf_puts(sb, path);
-		strbuf_puts(sb, " %s");
+		strbuf_puts(sb, " -d %s");
 		strbuf_puts(sb, ":GRTAGS=");
 		strbuf_puts(sb, path);
-		strbuf_puts(sb, " -r %s");
+		strbuf_puts(sb, " -dr %s");
 		strbuf_puts(sb, ":GSYMS=");
 		strbuf_puts(sb, path);
-		strbuf_puts(sb, " -s %s");
+		strbuf_puts(sb, " -ds %s");
 	}
 	if (!getconfs("sort_command", NULL))
 		strbuf_puts(sb, ":sort_command=sort");

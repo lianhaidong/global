@@ -28,7 +28,7 @@
 @HEADER	GCTAGS,18,April 2002,GNU Project
 @NAME	gctags - print cross reference list for gtags.
 @SYNOPSIS
-	@name{gctags} [-benrsvw] @arg{file} ...
+	@name{gctags} [-bdenrsvw] @arg{file} ...
 @DESCRIPTION
 	@name{Gctags} print cross reference list for @xref{gtags,1}
 	from the specified C, C++, YACC, JAVA and assembler source
@@ -63,6 +63,9 @@
 	@item{@option{-b}, @option{--begin-block}}
 		Force level 1 block to begin when reach a left brace at the first column.
 		(C only)
+	@item{@option{-d}, @option{--define}}
+		Pick up not only function but also macro without argument
+		as a definition.
 	@item{@option{-e}, @option{--end-block}}
 		Force level 1 block to end when reach a right brace at the first column.
 		(C only)
