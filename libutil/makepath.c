@@ -37,7 +37,7 @@ static STRBUF	*sb;
 /*
  * makepath: make path from directory and file.
  *
- *	i)	dir	directory
+ *	i)	dir	directory(optional)
  *	i)	file	file
  *	i)	suffix	suffix(optional)
  *	r)		path
@@ -60,23 +60,24 @@ makepath(dir, file, suffix)
 	const char *file;
 	const char *suffix;
 {
+	STATIC_STRBUF(sb);
 	int length;
 	char sep = '/';
 
-	if (sb == NULL)
-		sb = strbuf_open(0);
-	strbuf_reset(sb);
-	if ((length = strlen(dir)) > MAXPATHLEN)
-		die("path name too long. '%s'\n", dir);
+	strbuf_init(sb);
+	if (dir != NULL) {
+		if ((length = strlen(dir)) > MAXPATHLEN)
+			die("path name too long. '%s'\n", dir);
 
 #if defined(_WIN32) || defined(__DJGPP__)
-	/* follows native way. */
-	if (dir[0] == '\\' || dir[2] == '\\')
-		sep = '\\';
+		/* follows native way. */
+		if (dir[0] == '\\' || dir[2] == '\\')
+			sep = '\\';
 #endif
-	strbuf_puts(sb, dir);
-	strbuf_unputc(sb, sep);
-	strbuf_putc(sb, sep);
+		strbuf_puts(sb, dir);
+		strbuf_unputc(sb, sep);
+		strbuf_putc(sb, sep);
+	}
 	strbuf_puts(sb, file);
 	if (suffix) {
 		if (*suffix != '.')
