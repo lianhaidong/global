@@ -106,6 +106,10 @@ echo "- Generating configure items..."
 case $1 in
 '')	echo "You are ready to execute ./configure"
 	;;
+--debug)
+	./configure CFLAGS='-g -p -Wall -DDEBUG'
+	make | tee make.log 2>&1
+	;;
 -c|--configure|--make|--install)
 	./configure
 	;;
