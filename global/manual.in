@@ -26,13 +26,13 @@
 @HEADER	GLOBAL,1,Jul 2002,GNU Project
 @NAME	global - print the locations of specified object.
 @SYNOPSIS
-	@name{global} [-ailnqrstTvx] @arg{pattern}
+	@name{global} [-ailnqrstTvx][-e] @arg{pattern}
 	@name{global} -c[qsv] @arg{prefix}
 	@name{global} -f[anqrstvx] @arg{files}
-	@name{global} -g[ailnoqtvx] @arg{pattern}
-	@name{global} -I[ailnqtvx] @arg{pattern}
+	@name{global} -g[ailnoqtvx][-e] @arg{pattern}
+	@name{global} -I[ailnqtvx][-e] @arg{pattern}
 	@name{global} -p[qrv]
-	@name{global} -P[ailnqtvx] @arg{pattern}
+	@name{global} -P[ailnqtvx][-e] @arg{pattern}
 	@name{global} -u[qv]
 @DESCRIPTION
 	@name{Global} find the locations of specified object
@@ -52,7 +52,6 @@
 	@begin_itemize
 	@item{@arg{pattern}}
 		Print object which match to the @arg{pattern}.
-		It can include POSIX 1003.2 regular expression.
 		Extended regular expressions which are the same as those
 		accepted by @xref{egrep,1} are available.
 	@item{@option{-c}, @option{--completion} [@arg{prefix}]}
