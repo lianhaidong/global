@@ -303,10 +303,6 @@ C(yacc)
 				int	typedef_savelevel = level;
 
 				savetok[0] = 0;
-				if (level != 0) {
-					fprintf(stderr, "Warning: typedef in brace level > 0. [+%d %s]\n", lineno, curfile);
-					break;
-				}
 				c = nexttoken("{}(),;", reserved);
 				if (wflag && c == EOF) {
 					fprintf(stderr, "Warning: unexpected eof. [+%d %s]\n", lineno, curfile);
