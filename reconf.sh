@@ -20,7 +20,7 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #
 prog='autoconf automake aclocal autoheader'	# required programs
-file='configure.in Makefile.am'			# required files
+file='convert.pl configure.in Makefile.am'	# required files
 
 echo "- File existent checking..."
 for f in `echo $file`; do
@@ -49,10 +49,20 @@ for p in `echo $prog`; do
 	esac
 done
 
+echo "- Collecting reference manuals ..."
+for d in btreeop gctags global gtags htags; do
+	perl ./convert.pl --info $d/manual.in > doc/$d.ref
+	perl ./convert.pl --man  $d/manual.in > $d/$d.1
+	if [ $d = 'htags' ]; then
+		perl ./convert.pl --perl $d/manual.in > $d/const.pl
+	else
+		perl ./convert.pl --c $d/manual.in > $d/const.h
+	fi
+done
+
 echo "- Clean up config.cache..."
 rm -f config.cache
 
-# do the job
 echo "- Generating configure items..."
 (set -x; aclocal && autoheader && automake --add-missing && automake && autoconf) &&
 if [ "$1" = "-c" ]; then

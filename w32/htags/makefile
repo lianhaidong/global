@@ -15,8 +15,8 @@ PROG   = htags
 
 all: $(PROG)
 
-$(PROG):
-	sed -e "s/@PERL@/perl/g" $(PROG).in > $(PROG)
+$(PROG): const.pl htags.in
+	copy const.pl+htags.in $(PROG)
 install:
 	copy $(PROG) $(BINDIR)
 	copy $(PROG).bat $(BINDIR)

@@ -1,6 +1,6 @@
 ## Process this file with automake to create Makefile.in
 #
-# Copyright (c) 2000
+# Copyright (c) 2000, 2001
 #        Tama Communications Corporation. All rights reserved.
 #
 # This file is free software; as a special exception the author gives
@@ -25,4 +25,4 @@ gctags_DEPENDENCIES = $(LDADD)
 
 man_MANS = gctags.1
 
-EXTRA_DIST = ${man_MANS}
+EXTRA_DIST = $(man_MANS) const.h manual.in

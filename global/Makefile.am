@@ -21,4 +21,4 @@ global_DEPENDENCIES = $(LDADD)
 
 man_MANS = global.1
 
-EXTRA_DIST = ${man_MANS}
+EXTRA_DIST = $(man_MANS) const.h manual.in

@@ -46,8 +46,7 @@
 #include "global.h"
 #include "regex.h"
 #include "usable.h"
-
-const char *progname  = "global";		/* command name */
+#include "const.h"
 
 static void	usage(void);
 static void	help(void);
@@ -96,62 +95,6 @@ int	show_filter;			/* undocumented command */
 int	use_tagfiles;
 int	debug;
 char	*extra_options;
-const char *usage_const = "\
-Usage: global [-ailnqrstTvx] pattern\n\
-       global -c[qsv] [prefix]\n\
-       global -f[anqrstvx] files\n\
-       global -g[ailnqtvx] pattern\n\
-       global -I[ailnqtvx] pattern\n\
-       global -p[qrv]\n\
-       global -P[ailnqtvx] [pattern]\n\
-       global -u[qv]\n";
-const char *help_const = "\
-Pattern accept POSIX 1003.2 regular expression.\n\
-Commands:\n\
-     (none) pattern\n\
-             print the locations of specified functions.\n\
-     -c, --completion [prefix]\n\
-             print candidate function names which start with prefix.\n\
-     -f, --file files\n\
-             print all functions in the files.\n\
-     -g, --grep pattern\n\
-             print all lines which match to the pattern.\n\
-     -I, --idutils\n\
-             print all lines which match to the pattern using idutils.\n\
-     -p, --print-dbpath\n\
-             print the location of tag files.\n\
-     -P, --path [pattern]\n\
-             print the path which match to the pattern.\n\
-     -s, --symbol pattern\n\
-             print the locations of specified symbol other than function.\n\
-     -u, --update\n\
-             locate tag files and update them incrementally.\n\
-     --version\n\
-             show version number.\n\
-     --help  show help.\n\
-Options:\n\
-     -a, --absolute\n\
-             print absolute path name.\n\
-     -i, --ignore-case\n\
-             ignore case distinctions in pattern.\n\
-     -l, --local\n\
-             print just objects which exist under the current directory.\n\
-     -n, --nofilter\n\
-             suppress sort filter and path conversion filter.\n\
-     -q, --quiet\n\
-             quiet mode.\n\
-     -r, --reference (--rootdir)\n\
-             print the locations of object references.\n\
-             with the -p option print the root directory of source tree.\n\
-     -t, --tags\n\
-             print with standard ctags format.\n\
-     -T, --through\n\
-             go through all the tag files listed in GTAGSLIBPATH.\n\
-     -v, --verbose\n\
-             verbose mode.\n\
-     -x, --cxref\n\
-             produce the line number and the line contents.\n\
-";
 
 static void
 usage()

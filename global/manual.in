@@ -1,0 +1,188 @@
+#
+# Copyright (c) 1996, 1997, 1998, 1999
+#             Shigio Yamaguchi. All rights reserved.
+# Copyright (c) 1999, 2000, 2001
+#             Tama Communications Corporation. All rights reserved.
+#
+# This file is part of GNU GLOBAL.
+#
+# GNU GLOBAL is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+#
+# GNU GLOBAL is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+#
+# global.doc - common source file for various purpose.
+#
+# This file is converted to the following files:
+#	o command source file(for usage and help).
+#	o man format reference manual.
+#	o texinfo format reference manual.
+#
+@HEADER	GLOBAL,1,December 2001,GNU GLOBAL-4.2
+@NAME	global - print the locations of specified object.
+@SYNOPSIS
+	@name{global} [-ailnqrstTvx] @arg{pattern}
+	@name{global} -c[qsv] @arg{prefix}
+	@name{global} -f[anqrstvx] @arg{files}
+	@name{global} -g[ailnqtvx] @arg{pattern}
+	@name{global} -I[ailnqtvx] @arg{pattern}
+	@name{global} -p[qrv]
+	@name{global} -P[ailnqtvx] @arg{pattern}
+	@name{global} -u[qv]
+@DESCRIPTION
+	@name{Global} find the locations of specified object
+	in C, C++, Yacc, Java and assembler source files.
+	@name{Global} can treat a source tree, that is, a directory that
+	has subdirectories and source files.
+	You can get the relative path of objects from anywhere within the tree.
+	@name{Global} can locate not only function definitions but also
+	function references and other symbols.
+	Duplicate entries are allowed.
+
+	In advance of using this command, you must execute @xref{gtags,1}
+	at the root directory of the source tree to make tag files.
+	Then you can execute at anywhere in the source tree.
+@COMMANDS
+	The following commands are available:
+	@begin_itemize
+	@item{@arg{pattern}}
+		Print object which match to the @arg{pattern}.
+		It can include POSIX 1003.2 regular expression.
+	@item{@option{-c}, @option{--completion} [@arg{prefix}]}
+		Print candidate function names which start with specified
+		@arg{prefix}. @arg{Prefix} is not specified,
+		print all function names.
+	@item{@option{-f}, @option{--file} @arg{files}}
+		Print all function definitions in the @arg{files}.
+		This option implies -x option.
+	@item{@option{-g}, @option{--grep} @arg{pattern}}
+		Print all lines which match to the @arg{pattern}.
+		This function use @xref{grep,1} as a search engine.
+	@item{@option{-I}, @option{--idutils} @arg{pattern}}
+		Print all lines which match to the @arg{pattern}.
+		This function use @xref{id-utils,1} as a search engine.
+		To use this command, you need to install @xref{id-utils,1}
+		in your system and you must execute @xref{gtags,1}
+		with @option{-I} option.
+	@item{@option{-p}, @option{--print-dbpath}}
+		Print the location of @file{GTAGS}.
+	@item{@option{-P}, @option{--path} [@arg{pattern}]}
+		Print the path which match to the @arg{pattern}.
+		If no pattern specified, print all.
+	@item{@option{-u}, @option{--update}}
+		Locate tag files and update them incrementally.
+	@item{@option{--version}}
+		Show version number.
+	@item{@option{--help}}
+		Show help.
+	@end_itemize
+@OPTIONS
+	The following options are available.
+	@begin_itemize
+	@item{@option{-a}, @option{--absolute}}
+		Print absolute path name. By default, print relative path name.
+	@item{@option{-i}, @option{--ignore-case}}
+		ignore case distinctions in pattern.
+	@item{@option{-l}, @option{--local}}
+		Print just objects which exist under the current directory.
+	@item{@option{-n}, @option{--nofilter}}
+		Suppress sort filter and path conversion filter.
+	@item{@option{-q}, @option{--quiet}}
+		Quiet mode.
+	@item{@option{-r}, @option{--reference}, @option{--rootdir}}
+		Print the locations of object references.
+		By default, print object definitions.
+		With the @option{-p} option, print the root directory of source tree.
+	@item{@option{-s}, @option{--symbol} @arg{pattern}}
+		Print the locations of specified symbol other than function names.
+		You need @file{GSYMS} tags file. See @xref{gtags,1}.
+	@item{@option{-t}, @option{--tags}}
+		Print with standard ctags format.
+	@item{@option{-T}, @option{--through}}
+		Go through all the tag files listed in @var{GTAGSLIBPATH}.
+		By default, stop searching when tag is found.
+		This option is ignored when either @option{-s}, @option{-r}
+		or @option{-l} option is specified.
+	@item{@option{-v}, @option{--verbose}}
+		Verbose mode.
+	@item{@option{-x}, @option{--cxref}}
+		In addition to the default output, produce the line number and
+		the line contents.
+	@end_itemize
+@FILES
+	@begin_itemize
+	@item{@file{GTAGS}}
+		Tag file for function definitions.
+	@item{@file{GRTAGS}}
+		Tag file for function references.
+	@item{@file{GSYMS}}
+		Tag file for other symbols.
+	@item{@file{GPATH}}
+		Tag file for path of source files.
+	@item{@file{/etc/gtags.conf $HOME/.globalrc}}
+		Configuration file.
+	@end_itemize
+@ENVIRONMENT
+	The following environment variables affect the execution of @name{global}.
+	@begin_itemize
+	@item{@var{GTAGSROOT}}
+		The directory which is the root of source tree.
+	@item{@var{GTAGSDBPATH}}
+		The directory on which gtags database exist.
+		This value is ignored when @var{GTAGSROOT} is not defined.
+	@item{@var{GTAGSLIBPATH}}
+		If this variable is set, it is used as the path to search
+		for library functions. If the specified function is not
+		found in a source tree, @name{global} also search in these paths.
+	@end_itemize
+@EXAMPLES
+	% ls -F
+	Makefile      src/    lib/
+	% gtags
+	% global main
+	src/main.c
+	% global -x main
+	main              10 src/main.c  main (argc, argv) @{
+	% global -x '^[sg]et'
+	set_num           20 lib/util.c  set_num(values)
+	get_num           30 lib/util.c  get_num() @{
+	% global -rx '^[sg]et'
+	set_num          113 src/op.c            set_num(32);
+	set_num          225 src/opop.c               if (set_num(0) > 0) @{
+	get_num           90 src/op.c            while (get_num() > 0) @{
+	% cd lib
+	% global -rx '^[sg]et'
+	set_num          113 ../src/op.c            set_num(32);
+	set_num          225 ../src/opop.c               if (set_num(0) > 0) @{
+	get_num           90 ../src/op.c            while (get_num() > 0) @{
+	% global strlen
+	% (cd /usr/src/sys; gtags)
+	% setenv GTAGSLIBPATH /usr/src/sys
+	% global strlen
+	../../../usr/src/sys/libkern/strlen.c
+	% (cd /usr/src/lib; gtags)
+	% setenv GTAGSLIBPATH /usr/src/lib:/usr/src/sys
+	% global strlen
+	../../../usr/src/lib/libc/string/strlen.c
+@DIAGNOSTICS
+	@name{Global} exits with a non 0 value if an error occurred, 0 otherwise.
+@SEE ALSO
+	@xref{btreeop,1},
+	@xref{gctags,1},
+	@xref{gozilla,1},
+	@xref{gtags,1},
+	@xref{htags,1},
+	@xref{vi,1}.
+@AUTHORS
+	Shigio Yamaguchi
+@HISTORY
+	The gtags command appeared in FreeBSD 2.2.2.

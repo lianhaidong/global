@@ -24,6 +24,8 @@ ChangeLog about GNU GLOBAL
 	* DJGPP support code added.
 	  Jason Hood ported Global-4.0.1 into DJGPP environment.
 	  I have merged his code into this version.
+	* Convert.pl added. From now on, usage, help, man, info are
+	  generated automatically by this script from */manual.in files.
 
 Nov 23 2001, Shigio Yamaguchi  <shigio@tamacom.com>
 

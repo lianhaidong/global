@@ -46,8 +46,7 @@
 #include "getopt.h"
 
 #include "global.h"
-
-const char *progname  = "gtags";		/* command name */
+#include "const.h"
 
 static void	usage(void);
 void	signal_setup(void);
@@ -82,32 +81,6 @@ char	*info_string;
 
 int	extractmethod;
 int	total;
-const char *usage_const = "Usage: gtags [-c][-i][-I][-o][-P][-q][-v][-w][dbpath]\n";
-const char *help_const = "\
-Options:\n\
-     -c, --compact\n\
-             make tag files with compact format.\n\
-     -i, --incremental\n\
-             update tag files incrementally.\n\
-     --gtagsconf file\n\
-             load configuration file.\n\
-     -I, --idutils\n\
-             make index files for idutils(1).\n\
-     --info info\n\
-             info string is passed to external system as is.\n\
-             currently you can use it with -P option.\n\
-     -o, --omit-gsyms\n\
-             suppress making GSYMS file.\n\
-     -P, --postgres\n\
-             use postgres database.\n\
-             you can pass info string to PQconnectdb(3) using --info option.\n\
-     -q, --quiet\n\
-             quiet mode.\n\
-     -v, --verbose\n\
-             verbose mode.\n\
-     -w, --warning\n\
-             print warning messages.\n\
-";
 
 static void
 usage()

@@ -1,0 +1,99 @@
+#
+# Copyright (c) 1996, 1997, 1998, 1999
+#             Shigio Yamaguchi. All rights reserved.
+# Copyright (c) 1999, 2000, 2001
+#             Tama Communications Corporation. All rights reserved.
+#
+# This file is part of GNU GLOBAL.
+#
+# GNU GLOBAL is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+#
+# GNU GLOBAL is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+#
+# gctags.doc - common source file for various purpose.
+#
+# This file is converted to the following files:
+#	o command source file(for usage and help).
+#	o man format reference manual.
+#	o texinfo format reference manual.
+#
+@HEADER	GCTAGS,1,December 2001,GNU GLOBAL-4.2
+@NAME	gctags - print cross reference list for gtags.
+@SYNOPSIS
+	@name{gctags} [-benrsw] @arg{file} ...
+@DESCRIPTION
+	@name{Gctags} print cross reference list for @xref{gtags,1}
+	from the specified C, C++, YACC, JAVA and assembler source
+	to standard output.
+	Each line of output contains the object name,
+	the line number which it appears, the file in which it is defined,
+	and a line image separated by white-space.
+	It's same with the output of @xref{ctags,1} with @option{-x} option.
+
+	Depending upon the options provided to @name{gctags},
+	objects will consist of function definitions, function references
+	and other symbols.
+
+	Files whose names end in @file{.c} or @file{.h} are assumed to be C
+	source files and are searched for C style routine and macro definitions.
+	Files whose names end in @file{.c++} @file{.cc} @file{.cpp}
+	@file{.cxx} @file{.hxx} @file{.C} @file{.H} are assumed to be C++
+	source files.
+	Files whose names end in @file{.y} are assumed to be YACC source files.
+	Files whose names end in @file{.java} are assumed to be Java source files.
+	Files whose names end in @file{.s} or @file{.S} are assumed to be
+	Assembler source files.
+	Other files are searched for C style definitions.
+
+	Yacc files each have a special tag. @name{yyparse} is the start
+	of the second section of the yacc file.
+
+	This command is the default parser of GLOBAL source code tag system.
+@OPTIONS
+	The following options are available.
+	@begin_itemize
+	@item{@option{-b}, @option{--begin-block}}
+		Force level 1 block to begin when reach a '@{' at the first column.
+		(C only)
+	@item{@option{-e}, @option{--end-block}}
+		Force level 1 block to end when reach a '@}' at the first column.
+		(C only)
+	@item{@option{-n}, @option{--no-tags}}
+		Suppress output of tags. It is useful to use with @option{-w} option.
+	@item{@option{-r}, @option{--reference}}
+		Locate function references instead of function definitions.
+		@file{GTAGS} is needed at the current directory.
+		(C, C++ and Java source only)
+		By default, locate function definitions.
+	@item{@option{-s}, @option{--symbol}}
+		Collect symbols other than functions.
+		By default, locate function definitions.
+	@item{@option{-w}, @option{--warning}}
+		Print warning message.
+	@end_itemize
+	The @option{-r} and @option{-s} options override each other;
+	the last one specified determines the method used.
+@DIAGNOSTICS
+	@name{Gctags} exits with a non 0 value if an error occurred, 0 otherwise.
+	Duplicate objects are not considered errors.
+@BUG
+	@name{Gctags} relies on the input being well formed,
+	and any syntactical errors will completely confuse it.
+
+	Assembler support is far from complete.  It extracts only ENTRY()
+	and ALTENTRY() from source file.
+	Probably valid only for FreeBSD and Linux kernel source.
+@AUTHORS
+	Shigio Yamaguchi
+@HISTORY
+	The @name{gctags} command appeared in FreeBSD 2.2.2.

@@ -46,9 +46,10 @@
 #include "strbuf.h"
 #include "tab.h"
 #include "version.h"
+#include "const.h"
 
 const char *dbdefault = "btree";   	/* default database name */
-const char *progname  = "btreeop";		/* command name */
+
 int vflag;
 int debug;
 static void	usage(void);
@@ -67,9 +68,15 @@ void	dbbysecondkey(DBOP *, int, char *, int);
 static void
 usage()
 {
-	fprintf(stderr, "%s\n",
-		"usage: btreeop [-A][-C][-D[n] key][-K[n] key][-L[2]][-k prefix][dbname]");
+	fputs(usage_const, stderr);
 	exit(2);
+}
+static void
+help()
+{
+	fputs(usage_const, stdout);
+	fputs(help_const, stdout);
+	exit(0);
 }
 
 /*
@@ -116,6 +123,8 @@ char	*argv[];
 	for (i = 1; i < argc && argv[i][0] == '-'; ++i) {
 		if (!strcmp(argv[i], "--version"))
 			version(NULL, 0);
+		else if (!strcmp(argv[i], "--help"))
+			help();
 		switch (c = argv[i][1]) {
 		case 'D':
 		case 'K':

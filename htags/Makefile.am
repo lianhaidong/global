@@ -19,14 +19,13 @@ endif
 
 PERL = @PERL@
 
-SUFFIXES = .in
-
-.in:
-	sed -e 's,@''PERL''@,$(PERL),g' $< >$@.tmp && \
-	chmod +x $@.tmp && mv $@.tmp $@
+htags: $(srcdir)/htags.in $(srcdir)/const.pl
+	echo "#! $(PERL)" | cat - const.pl $(srcdir)/htags.in > htags.tmp && \
+	chmod +x htags.tmp && mv htags.tmp htags
+	rm -f htags.tmp
 
 man_MANS = htags.1
 
-EXTRA_DIST = ${man_MANS} htags.in htags.bat.in
+EXTRA_DIST = $(man_MANS) htags.in manual.in const.pl htags.bat
 
-CLEANFILES = ${bin_SCRIPTS}
+CLEANFILES = htags

@@ -43,12 +43,13 @@
 
 #include "global.h"
 #include "gctags.h"
+#include "const.h"
 
-const char *progname = "gctags";	/* program name */
 char	*notfunction;
 
 int	main(int, char **);
 static	void usage(void);
+static	void help(void);
 
 struct words *words;
 static int tablesize;
@@ -71,10 +72,16 @@ int	yaccfile;		/* yacc file */
 static void
 usage()
 {
-	(void)fprintf(stderr, "usage: gctags [-bdenrstw] file ...\n");
+	fputs(usage_const, stderr);
 	exit(2);
 }
-
+static void
+help()
+{
+	fputs(usage_const, stdout);
+	fputs(help_const, stdout);
+	exit(0);
+}
 static struct option const long_options[] = {
 	{"begin-block", no_argument, NULL, 'b'},
 	{"define", no_argument, NULL, 'd'},
@@ -138,7 +145,7 @@ main(argc, argv)
 	if (show_version)
 		version(NULL, 0);
 	else if (show_help)
-		usage();
+		help();
 
         argc -= optind;
         argv += optind;
