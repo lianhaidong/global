@@ -257,9 +257,7 @@ success:
 	return (RET_SUCCESS);
 }
 
-#ifdef STATISTICS
 u_long bt_cache_hit, bt_cache_miss;
-#endif
 
 /*
  * BT_FAST -- Do a quick check for sorted data.
