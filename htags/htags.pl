@@ -223,6 +223,18 @@ if (($var1 = &'getconf('position_begin')) && ($var2 = &'getconf('position_end'))
 	$'position_begin  = $var1;
 	$'position_end    = $var2;
 }
+# insert htags_options into the head of ARGSV array.
+if (($var1 = &'getconf('htags_options'))) {
+	local($a) = $var1;
+	local(@a);
+	while ($a) {
+		$a =~ s/^[ \t]+//;
+		if ($a =~ s/^'([^']*)'// || $a =~ s/^"([^']*)"// || $a =~ s/^([^ \t]+)//) {
+			push(@a, $1);
+		}
+	}
+	@ARGV = (@a, @ARGV);
+}
 }
 # HTML tag
 $'html_begin  = '<HTML>';
@@ -534,7 +546,7 @@ if ($id_value) {
 # If $dbpath is not specified then listen to global(1).
 if (!$dbpath) {
 	local($cwd) = &'getcwd();
-	local($root) = `global -pr`;
+	local($root) = `global -pr 2>/dev/null`;
 	chop($root);
 	if ($cwd eq $root) {
 		$dbpath = `global -p`;

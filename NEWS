@@ -39,6 +39,7 @@ other changes
 * global, gtags: make icase_path allways enable in Windows32 environment.
 * global: the -T(--through) option added.
 * gtags, htags: --gtagsconf option added.
+* global.conf: 'htags_options' added.
 
 Version 4.0.1 - September 26, 2000, by Shigio Yamaguchi
 
