@@ -23,6 +23,8 @@
 #include <stdio.h>
 
 /*
+ * drived from GNU C Library and modified at 2001/10/09.
+ *
  * This is the simplest version of snprintf, that is, it just exits after
  * writing over MAXLEN characters. It is used in the system which doesn't
  * have snprintf(3).
