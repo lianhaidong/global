@@ -84,7 +84,7 @@ This manual documents version @value{VERSION} of the GNU GLOBAL source code tag 
 
 GNU GLOBAL is a source code tag system that works the same way
 across diverse environments.
-You can locate a specified function in the source files and move there easily.
+You can locate a specified object in the source files and move there easily.
 It is useful for hacking a large project containing many subdirectories,
 many @code{#ifdef} and many @code{main()} functions.
 
@@ -177,9 +177,9 @@ the source tree.
 
 @itemize @bullet
 @item @file{GTAGS}
-        database of function definitions
+        database of object definitions
 @item @file{GRTAGS}
-        database of function references
+        database of object references
 @item @file{GSYMS}
         database of other symbols
 @item @file{GPATH}
@@ -243,7 +243,7 @@ Global will locate the tag file by itself.
 
 @end example
 
-@item The @samp{-r} option locates function references.
+@item The @samp{-r} option locates object references.
 @opindex -r
 
 @example
@@ -288,7 +288,7 @@ It is similar to the @samp{-x} option in ctags(1).
 
 @end example
 
-@item The -s command locates any symbols other than functions.
+@item The -s command locates any symbols which are not defined in @file{GTAGS}.
 @opindex -s
 
 @example
@@ -327,7 +327,7 @@ string.
 
 @end example
 
-@item The -f command enables you see the list of functions of specified file.
+@item The -f command enables you see the list of objects of specified file.
 @opindex -f
 
 @example
@@ -369,7 +369,7 @@ For example, you can execute gtags at ROOT/, version1.0/ and version2.0/.
 @end example
 
 @itemize @bullet
-@item When you are in the version1.0 directory, global will only locate functions
+@item When you are in the version1.0 directory, global will only locate objects
 that are in version1.0.
 
 @example
@@ -380,7 +380,7 @@ that are in version1.0.
 
 @end example
 
-@item When you are in the version2.0, global will only locate functions that
+@item When you are in the version2.0, global will only locate objects that
 are in version2.0.
 
 @example
@@ -392,7 +392,7 @@ are in version2.0.
 @end example
 
 @item If you are at ROOT/, or you set the @code{GTAGSROOT} environment variable to ROOT,
-then global will locate functions in both directories.
+then global will locate objects in both directories.
 
 @example
 
@@ -424,7 +424,7 @@ In such cases, please do the following:
 
 @end example
 
-@item If you want all references to a function that is not defined in the source
+@item If you want all references to an object that is not defined in the source
 tree to be treated as calls to library functions or system calls, then
 you can specify library directories with the @code{GTAGSLIBPATH} environment
 variable.
@@ -456,7 +456,7 @@ Of course, the user program does not call kernel functions directly,
 but at least it is useful.
 
 
-@item If you forget a function name, you can use the -c (complete) command.
+@item If you forget a object name, you can use the -c (complete) command.
 @opindex -c
 
 @example
@@ -492,7 +492,7 @@ but at least it is useful.
 
 @end example
 
-@item You can edit all files that include a specified function by typing
+@item You can edit all files that include a specified object by typing
 one command, for example:
 
 @example
@@ -809,7 +809,7 @@ then please specify tag file explicitly like this.
 In the same way, you can use @file{GTAGS}, @file{GRTAGS}, @file{GSYMS},
 @file{GPATH} as tag file.
 
-@item If a number of functions are located, less goes to the first tag.
+@item If a number of objects are located, less goes to the first tag.
 You can go to next tag by typing @kbd{t} and back by typing @kbd{T}.
 
 @table @code
@@ -848,7 +848,7 @@ In the same way, you can use following command lines.
     # pattern match with idutils(1).
     % global -xI func | less -T-
 
-    # all function definitions in *.c.
+    # all objects definitions in *.c.
     % global -f *.c | less -T-
 
     # all files includes 'init' in its path.
@@ -990,7 +990,7 @@ instead of @file{tags}.
 
 Extended nvi use @file{GRTAGS}.
 
-@item If a number of functions are located, extended nvi goes to the first tag.
+@item If a number of objects are located, extended nvi goes to the first tag.
 You can go to next tag by typing @kbd{:tagnext} and back by typing @kbd{:tagprev}.
 
 @example
@@ -1009,8 +1009,8 @@ Otherwise, if you are in the first column of a line,
 it is equivalent to @kbd{:tag -r @var{current token}} else it is equivalent
 to @kbd{:tag @var{current token}}.
 
-@item You can use the @kbd{-s} option. It locates any symbols other than
-functions.
+@item You can use the @kbd{-s} option. It locates any symbols which are not
+defined in @file{GTAGS}.
 @example
 
     :tag -s pat
@@ -1052,7 +1052,7 @@ Display the tags stack.
 @end example
 You can browse all commands sequentially.
 
-@item When you want to check functions the name of which start with "set" or "get", use:
+@item When you want to check objects the name of which start with "set" or "get", use:
 @example
 
     % nvi -G -t '^[sg]et'
@@ -1079,7 +1079,7 @@ the following:
 
 @end example
 
-@item If you want all references to function that are not defined in the source
+@item If you want all references to an object that is not defined in the source
         tree to be treated as references to library functions or as system calls,
         do the following:
 @example
@@ -1182,7 +1182,7 @@ You must start nvi under the source tree described in @xref{Preparation}.
 
 @end example
 
-@item If a number of functions are located, nvi goes to the first tag.
+@item If a number of objects are located, nvi goes to the first tag.
 You can go to next tag by typing @kbd{:tagnext} and back by typing @kbd{:tagprev}.
 
 @example
@@ -1209,8 +1209,8 @@ to @kbd{:perl tag qw(@var{current token})}.
 
 It is similar to @kbd{CTL-]} command.
 
-@item You can use the @kbd{-s} option. It locates any symbols other than
-functions.
+@item You can use the @kbd{-s} option. It locates any symbols which are not
+defined in @file{GTAGS}.
 @example
 
     :perl tag qw(-s pat)
@@ -1225,7 +1225,7 @@ It works like command line.
 
 @end example
 
-@item When you want to check functions the name of which start with "set" or "get", use:
+@item When you want to check objects the name of which start with "set" or "get", use:
 @example
 
     :perl tag qw(^[sg]et)
@@ -1320,7 +1320,7 @@ internally and read it instead of tags file.
 
 Elvis executes command like @code{global -t -r func1} internally.
 
-@item To go to any symbols other than function, try this.
+@item To go to any symbols which are not defined in @file{GTAGS}, try this.
 @opindex -s
 @example
 
@@ -1358,11 +1358,11 @@ the point.
 
 @end example
 
-@item To get list of functions in a file, use -f command.
+@item To get list of objects in a file, use -f command.
 @opindex -f
 @example
 
-    :browse -f main.c               <- @r{locate functions in main.c}
+    :browse -f main.c               <- @r{locate definitions in main.c}
 
 @end example
 
@@ -1395,17 +1395,17 @@ the point.
 @opindex -g
 @example
 
-    :tag ^put_                  <- @r{locate functions start with 'put_'}
+    :tag ^put_                  <- @r{locate objects start with 'put_'}
     
     :browse -g 'fseek(.*L_SET)' <- @r{locate fseek() using L_SET argument}
 
 @end example
 
-@item You can browse functions list of many files.
+@item You can browse object list of many files.
 @opindex -f
 @example
 
-    :browse -f *.c              <- @r{locate functions in *.c}
+    :browse -f *.c              <- @r{locate objects in *.c}
 
 @end example
 
@@ -1433,8 +1433,8 @@ the point.
 
 Please select tag name with mouse cursor and double click on the left
 button and you go to the tag's point.
-In source screen, also select function name and double click on the
-left button and you can go to the point that the function is defined.
+In source screen, also select an object name and double click on the
+left button and you can go to the point that the object is defined.
 To come back, double click on the right button.
 @end itemize
 
@@ -1512,7 +1512,7 @@ objects. You can go to the first entry with @kbd{RET}.
 
 vim executes command like @code{global -t -r func1} internally.
 
-@item To go to any symbols other than function, try this.
+@item To go to any symbols which are not defined in @file{GTAGS}, try this.
 @opindex -s
 @example
 
@@ -1543,11 +1543,11 @@ Hit ENTER or type command to continue
 
 You can go to any entry with @kbd{cc}n command.
 
-@item To get list of functions in a file, use -f command.
+@item To get list of objects in a file, use -f command.
 @opindex -f
 @example
 
-    :grep -f main.c               <- @r{locate functions in main.c}
+    :grep -f main.c               <- @r{locate objects in main.c}
 
 @end example
 
@@ -1574,17 +1574,17 @@ You can go to any entry with @kbd{cc}n command.
 @opindex -g
 @example
 
-    :grep ^put_                  <- @r{locate functions start with 'put_'}
+    :grep ^put_                  <- @r{locate objects start with 'put_'}
     
     :grep -g 'fseek(.*L_SET)' <- @r{locate fseek() using L_SET argument}
 
 @end example
 
-@item You can browse functions list of many files.
+@item You can browse object list of many files.
 @opindex -f
 @example
 
-    :grep -f *.c              <- @r{locate functions in *.c}
+    :grep -f *.c              <- @r{locate objects in *.c}
 
 @end example
 
@@ -1713,7 +1713,7 @@ and you can see a prompt in mini-buffer. Then input the tag name.
 
 @end example
 
-@item If a number of functions are located, emacs goes into @dfn{GTAGS SELECT MODE}
+@item If a number of objects are located, emacs goes into @dfn{GTAGS SELECT MODE}
      like this:
 @example
 
@@ -1745,7 +1745,7 @@ If current token is a definition, it is equivalent to
 otherwise it is equivalent to @kbd{Find tag: @var{current token}RET}.
 (GLOBAL decides this intelligentlly, but may sometimes misunderstand.)
 
-@item To go to any symbols other than function, try @code{gtags-find-symbol}.
+@item To go to any symbols which are not defined in @file{GTAGS}, try @code{gtags-find-symbol}.
 @example
 
     Find symbol: lbolt		<- @r{'Find symbol:' is a prompt}
@@ -1785,7 +1785,7 @@ otherwise it is equivalent to @kbd{Find tag: @var{current token}RET}.
 
 @end example
 
-@item If you want all references to functions that are not defined in the
+@item If you want all references to an object that is not defined in the
      source tree to be treated as references to library functions or
      as system calls, do the following:
  
@@ -1804,8 +1804,8 @@ otherwise it is equivalent to @kbd{Find tag: @var{current token}RET}.
 
 If you use X version emacs, try the following
 
-Move the mouse cursor to a function name and click the middle button.
-You will then go to the function's definition, or to its references,
+Move the mouse cursor to an object name and click the middle button.
+You will then go to the object's definition, or to its references,
 depending on the context. In 'GTAGS SELECT MODE', move the mouse cursor
 to a line and click the center button.
 
