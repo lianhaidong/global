@@ -19,6 +19,10 @@ ___________________________________
 GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 4.* - **** * 2002, by Shigio Yamaguchi
+
+* htags: -D(--dynamic) option added.
+
 Version 4.5 - July 4 2002, by Shigio Yamaguchi
 
 * htags: -m(--main-func) option added.
