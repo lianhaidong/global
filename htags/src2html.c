@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004
+ * Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -304,13 +304,9 @@ link_format(ref)
 			strbuf_puts(sb, "'>");
 		}
 		if (icon_list) {
-			strbuf_puts(sb, "<img src='../icons/");
-			if (i != A_INDEX && i != A_HELP && ref[i] == 0)
-				strbuf_puts(sb, "n_");
-			strbuf_puts(sb, icons[i]);
-			strbuf_putc(sb, '.');
-			strbuf_puts(sb, icon_suffix);
-			strbuf_sprintf(sb, "' alt='[%s]' %s>", label[i], icon_spec);
+			char tmp[MAXPATHLEN];
+			snprintf(tmp, sizeof(tmp), "%s%s", (i != A_INDEX && i != A_HELP && ref[i] == 0) ? "n_" : "", icons[i]);
+			strbuf_puts(sb, gen_image(PARENT, tmp, label[i]));
 		} else {
 			strbuf_sprintf(sb, "[%s]", label[i]);
 		}

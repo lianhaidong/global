@@ -70,11 +70,18 @@ extern char *quote_space;
 extern char *hr;
 extern char *br;
 
+/*
+ * Parameter for gen_image();
+ */
+#define CURRENT	0
+#define PARENT 1
+
 void setup_html();
 void setup_xhtml();
 void setup_tex();
 char *meta_record();
 char *set_header(char *);
+char *gen_image(int, const char *, const char *);
 char *gen_list_begin();
 char *gen_list_body(char *, char *);
 char *gen_list_end();

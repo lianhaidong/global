@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004
+ * Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -679,9 +679,9 @@ makefileindex(file, files)
 					fprintf(STDOUT, "%s\n", list_end);
 				fprintf(STDOUT, "<a href='%s' title='Parent Directory'>", parent);
 				if (icon_list)
-					fprintf(STDOUT, "<img src='../icons/%s.%s' alt='[..]' %s>", back_icon, icon_suffix, icon_spec);
+					fputs(gen_image(PARENT, back_icon, ".."), STDOUT);
 				else
-					fprintf(STDOUT, "[..]");
+					fputs("[..]", STDOUT);
 				fprintf(STDOUT, "</a>\n");
 				fprintf(STDOUT, "%s\n", body_end);
 				fprintf(STDOUT, "%s\n", html_end);
@@ -710,8 +710,9 @@ makefileindex(file, files)
 					path2url(path),
 					path);
 				if (icon_list) {
-					strbuf_sprintf(sb, "<img src='%sicons/%s.%s' alt='[%s/]' %s>",
-						count_stack(dirstack) == 1 ? "" : "../", dir_icon, icon_suffix, path, icon_spec);
+					char tmp[MAXPATHLEN];
+					snprintf(tmp, sizeof(tmp), "%s/", path);
+					strbuf_puts(sb, gen_image(count_stack(dirstack) == 1 ? CURRENT : PARENT, dir_icon, tmp));
 					strbuf_puts(sb, quote_space);
 				}
 				strbuf_sprintf(sb, "%s/</a>", last);
@@ -754,9 +755,9 @@ makefileindex(file, files)
 				fprintf(STDOUT, "%s\n", header_end);
 				fprintf(STDOUT, "<a href='%s' title='Parent Directory'>", parent);
 				if (icon_list)
-					fprintf(STDOUT, "<img src='../icons/%s.%s' alt='[..]' %s>", back_icon, icon_suffix, icon_spec);
+					fputs(gen_image(PARENT, back_icon, ".."), STDOUT);
 				else
-					fprintf(STDOUT, "[..]");
+					fputs("[..]", STDOUT);
 				fprintf(STDOUT, "</a>\n");
 				if (!no_order_list)
 					fprintf(STDOUT, "%s\n", list_begin);
@@ -799,11 +800,7 @@ makefileindex(file, files)
 				text_icon = c_icon;
 			else
 				text_icon = file_icon;
-			strbuf_puts(sb, "<img src='");
-			if (count_stack(dirstack))
-				strbuf_puts(sb, "../");
-			strbuf_sprintf(sb, "icons/%s.%s' alt='[%s]' %s>",
-				text_icon, icon_suffix, _, icon_spec);
+			strbuf_puts(sb, gen_image(count_stack(dirstack) == 0 ? CURRENT : PARENT, text_icon, _));
 			strbuf_puts(sb, quote_space);
 		}
 		if (full_path) {
@@ -844,9 +841,9 @@ makefileindex(file, files)
 			fprintf(STDOUT, "%s\n", list_end);
 		fprintf(STDOUT, "<a href='%s' title='Parent Directory'>", parent);
 		if (icon_list)
-			fprintf(STDOUT, "<img src='../icons/%s.%s' alt='[..]' %s>", back_icon, icon_suffix, icon_spec);
+			fputs(gen_image(PARENT, back_icon, ".."), STDOUT);
 		else
-			fprintf(STDOUT, "[..]");
+			fputs("[..]", STDOUT);
 		fprintf(STDOUT, "</a>\n");
 		fprintf(STDOUT, "%s\n", body_end);
 		fprintf(STDOUT, "%s\n", html_end);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003
+ * Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -82,9 +82,9 @@ makedefineindex(file, total, defines)
 		snprintf(indexlink, sizeof(indexlink), "mains.%s", normal_suffix);
 		fprintf(DEFINES, "<a href='%s' title='%s'>", indexlink, index_string);
 		if (icon_list)
-			fprintf(DEFINES, "<img src='icons/%s.%s' alt='[..]' %s>", back_icon, icon_suffix, icon_spec);
+			fputs(gen_image(CURRENT, back_icon, ".."), DEFINES);
 		else
-			fprintf(DEFINES, "[..]");
+			fputs("[..]", DEFINES);
 		fprintf(DEFINES, "</a>\n");
 	}
 	if (!aflag) {
@@ -121,9 +121,9 @@ makedefineindex(file, total, defines)
 					fprintf(ALPHA, "%s\n", br);
 				fprintf(ALPHA, "<a href='%s' title='%s'>", indexlink, index_string);
 				if (icon_list)
-					fprintf(ALPHA, "<img src='../icons/%s.%s' alt='[..]' %s>", back_icon, icon_suffix, icon_spec);
+					fputs(gen_image(PARENT, back_icon, ".."), ALPHA);
 				else
-					fprintf(ALPHA, "[..]");
+					fputs("[..]", ALPHA);
 				fprintf(ALPHA, "</a>\n");
 				fprintf(ALPHA, "%s\n", body_end);
 				fprintf(ALPHA, "%s\n", html_end);
@@ -184,9 +184,9 @@ makedefineindex(file, total, defines)
 			fprintf(ALPHA, "%s[%s]%s\n", header_begin, alpha, header_end);
 			fprintf(ALPHA, "<a href='%s' title='%s'>", indexlink, index_string);
 			if (icon_list)
-				fprintf(ALPHA, "<img src='../icons/%s.%s' alt='[..]' %s>", back_icon, icon_suffix, icon_spec);
+				fputs(gen_image(PARENT, back_icon, ".."), ALPHA);
 			else
-				fprintf(ALPHA, "[..]");
+				fputs("[..]", ALPHA);
 			fprintf(ALPHA, "</a>\n");
 			if (!no_order_list)
 				fprintf(ALPHA, "%s\n", list_begin);
@@ -275,9 +275,9 @@ makedefineindex(file, total, defines)
 			fprintf(ALPHA, "%s\n", br);
 		fprintf(ALPHA, "<a href='%s' title='%s'>", indexlink, index_string);
 		if (icon_list)
-			fprintf(ALPHA, "<img src='../icons/%s.%s' alt='[..]' %s>", back_icon, icon_suffix, icon_spec);
+			fputs(gen_image(PARENT, back_icon, ".."), ALPHA);
 		else
-			fprintf(ALPHA, "[..]");
+			fputs("[..]", ALPHA);
 		fprintf(ALPHA, "</a>\n");
 		fprintf(ALPHA, "%s\n", body_end);
 		fprintf(ALPHA, "%s\n", html_end);
@@ -291,9 +291,9 @@ makedefineindex(file, total, defines)
 	if (!aflag && !Fflag) {
 		fprintf(DEFINES, "<a href='mains.%s' title='Index Page'>", normal_suffix);
 		if (icon_list)
-			fprintf(DEFINES, "<img src='icons/%s.%s' alt='[..]' %s>", back_icon, icon_suffix, icon_spec);
+			fputs(gen_image(CURRENT, back_icon, ".."), DEFINES);
 		else
-			fprintf(DEFINES, "[..]");
+			fputs("[..]", DEFINES);
 		fprintf(DEFINES, "</a>\n");
 	}
 	fprintf(DEFINES, "%s\n", body_end);

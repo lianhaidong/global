@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004 Tama Communications Corporation
+ * Copyright (c) 2004, 2005 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -201,6 +201,28 @@ set_header(title)
 	return strbuf_value(sb);
 }
 
+/*
+ * Generate image tag.
+ *
+ *	i)	where	Where is the icon directory?
+ *			CURRENT: current directory
+ *			PARENT: parent directory
+ *	i)	file	icon file without suffix.
+ *	i)	alt	alt string
+ */
+char *
+gen_image(where, file, alt)
+	int where;
+	const char *file;
+	const char *alt;
+{
+	static char buf[1024];
+	char *dir = (where == PARENT) ? "../icons" : "icons";
+		
+	snprintf(buf, sizeof(buf), "<img src='%s/%s.%s' alt='[%s]' %s>",
+		dir, file, icon_suffix, alt, icon_spec);
+	return buf;
+}
 /*
  * Generate list begin tag.
  */

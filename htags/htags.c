@@ -497,8 +497,7 @@ makehelp(file)
 	fprintf(op, "%s/* ", verbatim_begin);
 	for (n = 0; n <= last; n++) {
 		if (icon_list) {
-			fprintf(op, "<img src='icons/%s.%s' alt='[%s]' %s>",
-					icons[n], icon_suffix, label[n], icon_spec);
+			fputs(gen_image(CURRENT, icons[n], label[n]), op);
 			if (n < last)
 				fputc(' ', op);
 		} else {
@@ -512,8 +511,7 @@ makehelp(file)
 	for (n = 0; n <= last; n++) {
 		fprintf(op, "<dt>");
 		if (icon_list) {
-			fprintf(op, "<img src='icons/%s.%s' alt='[%s]' %s>",
-					icons[n], icon_suffix, label[n], icon_spec);
+			fputs(gen_image(CURRENT, icons[n], label[n]), op);
 		} else {
 			fprintf(op, "[%s]", label[n]);
 		}
