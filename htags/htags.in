@@ -398,7 +398,7 @@ sub path2url {
 # LIST PROCEDURE
 #-------------------------------------------------------------------------
 sub list_begin {
-	$'table_list ? "$'table_begin\n<TR ALIGN=center><TH NOWRAP>tag</TH><TH NOWRAP>line</TH><TH NOWRAP>file</TH><TH NOWRAP>source code</TH></TR>\n" :  "<PRE>\n";
+	$'table_list ? "$'table_begin\n<TR><TH NOWRAP ALIGN=left>tag</TH><TH NOWRAP ALIGN=right>line</TH><TH NOWRAP ALIGN=center>file</TH><TH NOWRAP ALIGN=left>source code</TH></TR>\n" :  "<PRE>\n";
 }
 sub list_body {
 	local($srcdir, $s) = @_;	# $s must be choped.
@@ -411,7 +411,8 @@ sub list_body {
 	$s =~ s/>/&gt;/g;
 	if ($'table_list) {
 		$line =~ s/ /&nbsp;&nbsp;/g;
-		$s = "<TR><TD NOWRAP><A HREF=$srcdir\/$html#$lno>$name</A></TD><TD NOWRAP>$lno</TD><TD NOWRAP>$filename</TD><TD NOWRAP>$line</TD></TR>";
+		$line =~ s/	/&nbsp;&nbsp;&nbsp;&nbsp;/g;
+		$s = "<TR><TD NOWRAP><A HREF=$srcdir\/$html#$lno>$name</A></TD><TD NOWRAP ALIGN=right>$lno</TD><TD NOWRAP ALIGN=left>$filename</TD><TD NOWRAP>$line</TD></TR>";
 	} else {
 		$s =~ s/^($name)/<A HREF=$srcdir\/$html#$lno>$1<\/A>/;
 	}
