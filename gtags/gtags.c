@@ -594,13 +594,8 @@ main(argc, argv)
 	 */
 	set_env("GTAGSDBPATH", dbpath);
 
-	if (wflag) {
-#ifdef HAVE_PUTENV
-		putenv("GTAGSWARNING=1");
-#else
-		setenv("GTAGSWARNING", "1", 1);
-#endif /* HAVE_PUTENV */
-	}
+	if (wflag)
+		set_env("GTAGSWARNING", "1");
 	/*
 	 * incremental update.
 	 */
