@@ -22,13 +22,17 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-#include <fcntl.h>
 #include <stdio.h>
 #ifdef STDC_HEADERS
 #include <stdlib.h>
 #endif
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
+#ifdef HAVE_FCNTL_H
+#include <fcntl.h>
+#else
+#include <sys/file.h>
 #endif
 #include <signal.h>
 #include <sys/types.h>
