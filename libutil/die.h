@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1997, 1998, 1999 Shigio Yamaguchi
- * Copyright (c) 1999, 2000, 2001 Tama Communications Corporation
+ * Copyright (c) 1999, 2000, 2001, 2002 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -44,6 +44,11 @@ void die();
 void die_with_code(int n, const char *s, ...);
 #else
 void die_with_code();
+#endif
+#ifdef HAVE_STDARG_H
+void verbose(const char *s, ...);
+#else
+void verbose();
 #endif
 
 #endif /* ! _DIE_H_ */

@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1997, 1998, 1999 Shigio Yamaguchi
- * Copyright (c) 1999, 2000, 2001 Tama Communications Corporation
+ * Copyright (c) 1999, 2000, 2001, 2002 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -83,4 +83,26 @@ die_with_code(int n, s, va_alist)
 		fputs("\n", stderr);
 	}
 	exit(n);
+}
+void
+#ifdef HAVE_STDARG_H
+verbose(const char *s, ...)
+#else
+verbose(s, va_alist)
+	char *s;
+	va_dcl;
+#endif
+{
+	va_list ap;
+
+	if (!quiet) {
+#ifdef HAVE_STDARG_H
+		va_start(ap, s);
+#else
+		va_start(ap);
+#endif
+		(void)vfprintf(stderr, s, ap);
+		va_end(ap);
+		fputs("\n", stderr);
+	}
 }
