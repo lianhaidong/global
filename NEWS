@@ -7,6 +7,10 @@ ___________________________________
 
 GLOBAL NEWS - User visible changes.
 
+Version 4.0.1 - September 26, 2000, by Shigio Yamaguchi
+
+* htags: shut a security hole in global.cgi.
+
 Version 4.0 - September 3, 2000, by Shigio Yamaguchi
 
 incompatible changes

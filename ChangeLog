@@ -7,6 +7,12 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+September 26 2000, Shigio Yamaguchi  <shigio@tamacom.com>
+
+	* htags.pl: use generated path of perl for global.cgi.
+	* global.1, htags.1, btreeop.1: fix missing .El.
+	* make version number 'major.minor.fixed'.
+
 September 3 2000, Shigio Yamaguchi  <shigio@tamacom.com>
 
 	* license changed from BSD-style to GPL.
