@@ -871,6 +871,7 @@ makeincludeindex()
 	char *command;
 	char *_;
 	struct data *inc;
+	char *target = (Fflag) ? "mains" : "_top";
 
 	/*
 	 * Pick up include pattern.

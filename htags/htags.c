@@ -190,7 +190,6 @@ char *HTML;
 char *action = "cgi-bin/global.cgi";	/* default action		*/
 char *saction;				/* safe action			*/
 char *id = NULL;			/* id (default non)		*/
-char *target = NULL;
 int cgi = 1;				/* 1: make cgi-bin/		*/
 int definition_header=NO_HEADER;	/* (NO|BEFORE|RIGHT|AFTER)_HEADER */
 char *htags_options = NULL;
@@ -788,7 +787,7 @@ makecommonpart(title, defines, files)
 		strbuf_sprintf(sb, "\n%s\n", hr);
 	}
 	if (fflag) {
-		strbuf_puts(sb, makesearchpart(action, id, target));
+		strbuf_puts(sb, makesearchpart(action, id, NULL));
 		strbuf_sprintf(sb, "%s\n", hr);
 	}
 	strbuf_puts(sb, "<H2>MAINS</H2>\n");

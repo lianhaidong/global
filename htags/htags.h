@@ -139,7 +139,6 @@ extern char *HTML;
 extern char *action;
 extern char *saction;
 extern char *id;
-extern char *target;
 extern int cgi;
 extern int definition_header;
 extern char *htags_options;
