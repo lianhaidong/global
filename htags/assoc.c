@@ -88,6 +88,7 @@ assoc_close(assoc)
 	if (assoc->dbop == NULL)
 		abort();
 	dbop_close(assoc->dbop);
+	free(assoc);
 }
 /*
  * assoc_put: put data into associate array.
