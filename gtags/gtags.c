@@ -434,9 +434,9 @@ main(argc, argv)
 		 * 'sed "s@<path>@fid@"'.
 		 */
 		STRBUF *ib = strbuf_open(MAXBUFLEN);
-		char *ctags_x, *p;
+		char *ctags_x;
 
-		while (ctags_x = strbuf_fgets(ib, stdin, 0)) {
+		while ((ctags_x = strbuf_fgets(ib, stdin, 0)) != NULL) {
 			char *p = locatestring(ctags_x, "./", MATCH_FIRST);
 			if (p == NULL)
 				die("gtags --sed: path name not found.");
