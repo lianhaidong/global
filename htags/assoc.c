@@ -105,7 +105,7 @@ assoc_put(assoc, name, value)
 {
 	if (assoc->dbop == NULL)
 		abort();
-	dbop_put(assoc->dbop, name, value, NULL);
+	dbop_put(assoc->dbop, name, value);
 }
 /*
  * assoc_get: get data from associate array.

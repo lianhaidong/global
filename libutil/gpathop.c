@@ -101,16 +101,8 @@ gpath_put(path)
 	if (dbop_get(dbop, path) != NULL)
 		return;
 	snprintf(fid, sizeof(fid), "%d", _nextkey++);
-#ifdef USE_POSTGRES
-	if (dbop->openflags & DBOP_POSTGRES) {
-		dbop_put(dbop, path, fid, fid);
-	} else {
-#endif
-		dbop_put(dbop, path, fid, "0");
-		dbop_put(dbop, fid, path, "0");
-#ifdef USE_POSTGRES
-	}
-#endif
+	dbop_put(dbop, path, fid);
+	dbop_put(dbop, fid, path);
 }
 /*
  * gpath_path2fid: convert path into id
@@ -135,10 +127,6 @@ char *
 gpath_fid2path(fid)
 	const char *fid;
 {
-#ifdef USE_POSTGRES
-	if (dbop->openflags & DBOP_POSTGRES)
-		return dbop_getkey_by_fid(dbop, fid);
-#endif
 	return dbop_get(dbop, fid);
 }
 /*
@@ -158,16 +146,8 @@ gpath_delete(path)
 	fid = dbop_get(dbop, path);
 	if (fid == NULL)
 		return;
-#ifdef USE_POSTGRES
-	if (dbop->openflags & DBOP_POSTGRES) {
-		dbop_delete_by_fid(dbop, fid);
-	} else {
-#endif
-		dbop_delete(dbop, fid);
-		dbop_delete(dbop, path);
-#ifdef USE_POSTGRES
-	}
-#endif
+	dbop_delete(dbop, fid);
+	dbop_delete(dbop, path);
 }
 /*
  * gpath_nextkey: return next key
@@ -196,7 +176,7 @@ gpath_close(void)
 	}
 	snprintf(fid, sizeof(fid), "%d", _nextkey);
 	if (_mode == 1 || _mode == 2)
-		dbop_update(dbop, NEXTKEY, fid, "0");
+		dbop_update(dbop, NEXTKEY, fid);
 	dbop_close(dbop);
 	if (_mode == 1)
 		created = 1;

@@ -73,7 +73,6 @@ int cflag;					/* compact format */
 int iflag;					/* incremental update */
 int Iflag;					/* make  id-utils index */
 int oflag;					/* suppress making GSYMS */
-int Pflag;					/* use postgres */
 int qflag;					/* quiet mode */
 int wflag;					/* warning message */
 int vflag;					/* verbose mode */
@@ -91,7 +90,6 @@ int do_expand;
 int gtagsconf;
 int gtagslabel;
 int other_files;
-int info;
 int debug;
 int secure_mode;
 char *extra_options;
@@ -135,9 +133,7 @@ static struct option const long_options[] = {
 	{"gtagsconf", required_argument, &gtagsconf, 1},
 	{"gtagslabel", required_argument, &gtagslabel, 1},
 	{"idutils", no_argument, NULL, 'I'},
-	{"info", required_argument, &info, 1},
 	{"other", no_argument, &other_files, 1},
-	{"postgres", optional_argument, NULL, 'P'},
 	{"relative", no_argument, &do_relative, 1},
 	{"secure", no_argument, &secure_mode, 1},
 	{"sed", required_argument, &do_sed, 1},
@@ -208,8 +204,6 @@ main(argc, argv)
 			p = long_options[option_index].name;
 			if (!strcmp(p, "expand")) {
 				settabs(atoi(optarg + 1));
-			} else if (!strcmp(p, "info")) {
-				info_string = optarg;
 			} else if (!strcmp(p, "config")) {
 				if (optarg)
 					info_string = optarg;
@@ -242,12 +236,6 @@ main(argc, argv)
 		case 'o':
 			oflag++;
 			break;
-		case 'P':
-			Pflag++;
-			/* pass info string to PQconnectdb(3) */
-			if (optarg)
-				gtags_setinfo(optarg);
-			break;
 		case 'q':
 			qflag++;
 			setquiet();
@@ -269,15 +257,6 @@ main(argc, argv)
 	}
 	if (qflag)
 		vflag = 0;
-#ifndef USE_POSTGRES
-	if (Pflag)
-		die_with_code(2, "The -P option not available. Please configure GLOBAL with --with-postgres and rebuild it.");
-#endif
-	if (Pflag) {
-		/* for backward compatibility */
-		if (info_string)
-			gtags_setinfo(info_string);
-	}
 	if (show_version)
 		version(NULL, vflag);
 	if (show_help)
@@ -570,11 +549,6 @@ main(argc, argv)
 		if (wflag)
 			warning("GTAGS or GPATH not found. -i option ignored.");
 		iflag = 0;
-	}
-	if (Pflag && iflag) {
-		if (wflag)
-			warning("existing tag files are used. -P option ignored.");
-		Pflag = 0;
 	}
 	if (!test("d", dbpath))
 		die("directory '%s' not found.", dbpath);
@@ -895,8 +869,6 @@ updatetags(dbpath, root, path, type)
 				gflags |= GTAGS_EXTRACTMETHOD;
 			if (debug)
 				gflags |= GTAGS_DEBUG;
-			if (Pflag)
-				gflags |= GTAGS_POSTGRES;
 			gtags_add(gtop, strbuf_value(sb), path, gflags);
 		}
 		gtags_close(gtop);
@@ -954,9 +926,6 @@ createtags(dbpath, root, db)
 		if (cflag == 1)
 			flags |= GTAGS_COMPACT;
 	}
-	if (Pflag) {
-		flags |= GTAGS_POSTGRES;
-	}
 	strbuf_reset(sb);
 	if (vflag > 1 && getconfs(dbname(db), sb))
 		fprintf(stderr, " using tag command '%s <path>'.\n", strbuf_value(sb));
@@ -1000,8 +969,6 @@ createtags(dbpath, root, db)
 			gflags |= GTAGS_EXTRACTMETHOD;
 		if (debug)
 			gflags |= GTAGS_DEBUG;
-		if (Pflag)
-			gflags |= GTAGS_POSTGRES;
 		gtags_add(gtop, comline, path, gflags);
 	}
 	total = count;				/* save total count */

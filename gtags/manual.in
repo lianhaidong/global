@@ -74,10 +74,6 @@
 	@item{@option{-o}, @option{--omit-gsyms}}
 		Suppress making @file{GSYMS} file.
 		Use this option if you don't use -s option of @xref{global,1}.
-	@item{@option{-P}, @option{--postgres}}
-		Use postgres database system instead of @xref{db,3}.
-		you can pass info string to @xref{PQconnectdb,3}
-		using @option{--info} option.
 	@item{@option{-q}, @option{--quiet}}
 		Quiet mode.
 	@item{@option{-v}, @option{--verbose}}
@@ -171,10 +167,6 @@
 	There is no concurrency control about tag files.
 
 	Symbols in Assembly source files are not extracted for @file{GSYMS}.
-
-	Please be careful of info string using @option{--info} option.
-	Info string is passed to external system as is.
-	If you mistake the value then program may abort with core dump.
 @AUTHOR
 	Tama Communications Corporation.
 @HISTORY

@@ -106,31 +106,6 @@ INCLUDES='-I$(top_srcdir)/libutil -I$(top_srcdir)/libdb -I$(top_srcdir)/libglibc
 LDADD='../libutil/libgloutil.a ../libdb/libglodb.a ../libglibc/libgloglibc.a'
 
 dnl
-dnl for Postgres support
-dnl
-AC_MSG_CHECKING(for postgres support)
-AC_ARG_WITH(postgres,
-[  --with-postgres[=DIR]     include postgres support ],
-[
-        if test "$withval" = 'no'; then
-                AC_MSG_RESULT(no)
-        else
-                case $withval in
-                ''|yes) POSTGRES=/usr/local/pgsql;;
-                *)      POSTGRES=$withval;;
-                esac
-                if ! test -d $POSTGRES; then
-                        AC_MSG_ERROR([directory '$POSTGRES' not found.])
-                fi
-                INCLUDES="$INCLUDES -I$POSTGRES/include"
-                LDFLAGS="$LDFLAGS -L$POSTGRES/lib -lpq -lcrypt"
-                AC_DEFINE(USE_POSTGRES,1,[Define if you use postgres.])
-                AC_MSG_RESULT([yes, using $POSTGRES])
-        fi
-],[
-        AC_MSG_RESULT(no)
-])
-dnl
 dnl for home-etc support
 dnl
 AC_MSG_CHECKING(for home-etc support)

@@ -25,9 +25,6 @@
 #include "gparam.h"
 #include "db.h"
 #include "regex.h"
-#ifdef USE_POSTGRES
-#include "libpq-fe.h"
-#endif
 #include "strbuf.h"
 
 #define DBOP_PAGESIZE	8192
@@ -50,24 +47,6 @@ typedef	struct {
 	int keylen;			/* key length */
 	char prev[MAXKEYLEN+1];		/* previous key value */
 	int perm;			/* file permission */
-#ifdef USE_POSTGRES
-	/*
-	 * (3) POSTGRES PART
-	 */
-	char tblname[80];		/* table name */
-	PGresult *res;			/* result structure */
-	/* SQL statement templete */
-	STRBUF *get_stmt;		/* pgop_get() */
-	int get_stmt_len;
-	STRBUF *getkey_stmt;		/* pgop_getkey_by_fid() */
-	int getkey_stmt_len;
-	STRBUF *put_stmt;		/* pgop_put() */
-	int put_stmt_len;
-	STRBUF *fetch_stmt;		/* pgop_first(), pgop_next() */
-	int fetch_stmt_len;
-	STRBUF *delete_stmt;		/* pgop_delete() */
-	int delete_stmt_len;
-#endif /* POSTGRES */
 } DBOP;
 
 /*
@@ -75,7 +54,6 @@ typedef	struct {
  */
 #define	DBOP_DUP	1		/* allow duplicate records	*/
 #define DBOP_REMOVE	2		/* remove file when closed	*/
-#define DBOP_POSTGRES	4		/* use postgres database	*/
 /*
  * ioflags
  */
@@ -85,11 +63,9 @@ typedef	struct {
 void dbop_setinfo(char *info);
 DBOP *dbop_open(const char *, int, int, int);
 char *dbop_get(DBOP *, const char *);
-void dbop_put(DBOP *, const char *, const char *, const char *);
+void dbop_put(DBOP *, const char *, const char *);
 void dbop_delete(DBOP *, const char *);
-char *dbop_getkey_by_fid(DBOP *, const char *);
-void dbop_delete_by_fid(DBOP *, const char *);
-void dbop_update(DBOP *, const char *, const char *, const char *);
+void dbop_update(DBOP *, const char *, const char *);
 char *dbop_first(DBOP *, const char *, regex_t *, int);
 char *dbop_next(DBOP *);
 char *dbop_lastdat(DBOP *);

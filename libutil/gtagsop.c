@@ -213,19 +213,6 @@ formatcheck(line, format)
 	recover(&ptable);
 }
 /*
- * gtags_setinfo: set info string.
- *
- *      i)      info    info string
- *
- * Currently this method is used for postgres.
- */
-void
-gtags_setinfo(info)
-	char *info;
-{
-	dbop_setinfo(info);
-}
-/*
  * gtags_open: open global tag.
  *
  *	i)	dbpath	dbpath directory
@@ -236,7 +223,6 @@ gtags_setinfo(info)
  *			GTAGS_MODIFY: modify tag
  *	i)	flags	GTAGS_COMPACT
  *			GTAGS_PATHINDEX
- *			GTAGS_POSTGRES
  *	r)		GTOP structure
  *
  * when error occurred, gtagopen doesn't return.
@@ -277,16 +263,12 @@ gtags_open(dbpath, root, db, mode, flags)
 	 * allow duplicate records.
 	 */
 	dbopflags = DBOP_DUP;
-	if (flags & GTAGS_POSTGRES)
-		dbopflags |= DBOP_POSTGRES;
 	gtop->dbop = dbop_open(makepath(dbpath, dbname(db), NULL), dbmode, 0644, dbopflags);
 	if (gtop->dbop == NULL) {
 		if (dbmode == 1)
 			die("cannot make %s.", dbname(db));
 		die("%s not found.", dbname(db));
 	}
-	if (gtop->dbop->openflags & DBOP_POSTGRES)
-		gtop->openflags |= GTAGS_POSTGRES;
 	/*
 	 * decide format version.
 	 */
@@ -301,11 +283,11 @@ gtags_open(dbpath, root, db, mode, flags)
 	if (gtop->mode == GTAGS_CREATE) {
 		if (flags & GTAGS_COMPACT) {
 			gtop->format |= GTAGS_COMPACT;
-			dbop_put(gtop->dbop, COMPACTKEY, COMPACTKEY, "0");
+			dbop_put(gtop->dbop, COMPACTKEY, COMPACTKEY);
 		}
 		if (flags & GTAGS_PATHINDEX) {
 			gtop->format |= GTAGS_PATHINDEX;
-			dbop_put(gtop->dbop, PATHINDEXKEY, PATHINDEXKEY, "0");
+			dbop_put(gtop->dbop, PATHINDEXKEY, PATHINDEXKEY);
 		}
 		if (gtop->format & (GTAGS_COMPACT|GTAGS_PATHINDEX)) {
 			char buf[80];
@@ -316,7 +298,7 @@ gtags_open(dbpath, root, db, mode, flags)
 				gtop->format_version = 2;
 			snprintf(buf, sizeof(buf),
 				"%s %d", VERSIONKEY, gtop->format_version);
-			dbop_put(gtop->dbop, VERSIONKEY, buf, "0");
+			dbop_put(gtop->dbop, VERSIONKEY, buf);
 		}
 	} else {
 		/*
@@ -368,23 +350,21 @@ gtags_open(dbpath, root, db, mode, flags)
  *	i)	gtop	descripter of GTOP
  *	i)	tag	tag name
  *	i)	record	ctags -x image
- *	i)	fid	file id.
  *
  * NOTE: If format is GTAGS_COMPACT then this function is destructive.
  */
 void
-gtags_put(gtop, tag, record, fid)
+gtags_put(gtop, tag, record)
 	GTOP *gtop;
 	char *tag;
 	char *record;
-	char *fid;
 {
 	char *line, *path;
 	SPLIT ptable;
 
 	if (gtop->format == GTAGS_STANDARD || gtop->format == GTAGS_PATHINDEX) {
 		/* entab(record); */
-		dbop_put(gtop->dbop, tag, record, fid);
+		dbop_put(gtop->dbop, tag, record);
 		return;
 	}
 	/*
@@ -401,11 +381,10 @@ gtags_put(gtop, tag, record, fid)
 	 */
 	if (strcmp(gtop->prev_tag, tag) || strcmp(gtop->prev_path, path)) {
 		if (gtop->prev_tag[0]) {
-			dbop_put(gtop->dbop, gtop->prev_tag, strbuf_value(gtop->sb), gtop->prev_fid);
+			dbop_put(gtop->dbop, gtop->prev_tag, strbuf_value(gtop->sb));
 		}
 		strlimcpy(gtop->prev_tag, tag, sizeof(gtop->prev_tag));
 		strlimcpy(gtop->prev_path, path, sizeof(gtop->prev_path));
-		strlimcpy(gtop->prev_fid, fid, sizeof(gtop->prev_fid));
 		/*
 		 * Start creating new record.
 		 */
@@ -465,7 +444,7 @@ gtags_add(gtop, comline, path, flags)
 	/*
 	 * get file id.
 	 */
-	if (gtop->format & GTAGS_PATHINDEX || gtop->openflags & GTAGS_POSTGRES) {
+	if (gtop->format & GTAGS_PATHINDEX) {
 		if (!(fid = gpath_path2fid(path)))
 			die("GPATH is corrupted.('%s' not found)", path);
 	} else
@@ -517,7 +496,7 @@ gtags_add(gtop, comline, path, flags)
 			else if ((p = locatestring(tag, "::", MATCH_LAST)) != NULL)
 				p += 2;
 		}
-		gtags_put(gtop, p, ctags_x, fid);
+		gtags_put(gtop, p, ctags_x);
 	}
 	if (pclose(ip) < 0)
 		die("terminated abnormally.");
@@ -582,16 +561,6 @@ gtags_delete(gtop, path)
 	if (gtop->format & GTAGS_PATHINDEX)
 		if ((path = gpath_fid2path(path)) == NULL)
 			die("GPATH is corrupted.('%s' not found)", path);
-#ifdef USE_POSTGRES
-	if (gtop->openflags & GTAGS_POSTGRES) {
-		char *fid;
-
-		if ((fid = gpath_path2fid(path)) == NULL)
-			die("GPATH is corrupted.('%s' not found)", path);
-		dbop_delete_by_fid(gtop->dbop, fid);
-		return;
-	}
-#endif
 	/*
 	 * read sequentially, because db(1) has just one index.
 	 */
@@ -729,7 +698,7 @@ gtags_close(gtop)
 	if (gtop->format & GTAGS_PATHINDEX || gtop->mode != GTAGS_READ)
 		gpath_close();
 	if (gtop->sb && gtop->prev_tag[0])
-		dbop_put(gtop->dbop, gtop->prev_tag, strbuf_value(gtop->sb), "0");
+		dbop_put(gtop->dbop, gtop->prev_tag, strbuf_value(gtop->sb));
 	if (gtop->sb)
 		strbuf_close(gtop->sb);
 	if (gtop->ib)

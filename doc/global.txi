@@ -134,7 +134,6 @@ GNU GLOBAL has following features:
 @item support incremental updating of tag files.
 @item support customizing with gtags.conf.
 @item generate completion list for completing input method.
-@item Postgres database system is available as a tag store.
 @end itemize
 
 @c ***************************************************************************
@@ -1965,7 +1964,6 @@ But in this case, you must not move HTML directory from the source directory.
 * Plugin::                              How to plug in a parser.
 * Compact format::                      Compact format.
 * Incremental updating::                Incremental updating.
-* Postgres::                            Using Postgres.
 @end menu
 
 @c ***************************************************************************
@@ -2137,33 +2135,6 @@ Instead, you can use incremental updating facility (@samp{-u} option).
     [Sun Dec  6 16:28:52 JST 1998] Done.
 
 @end example
-
-@c ***************************************************************************
-@node   Postgres
-@section Using Postgres.
-
-You can make tag files in postgres database instead of normal files.
-To do this, you must setup postgres database system, configure GLOBAL
-with @option{--with-postgres}, build it and make a database so that you can
-access to it. You need a database for a project.
-At the first time of creating tag files, you need specify info string with
-@option{--info}. The info string is passed to PQconnectdb(3) as is.
-@opindex -P
-@example
-
-    # setup postgres database system
-    % set DBNAME=gtagsdb
-    % createdb $DBNAME
-    % gtags -P --info="dbname=$DBNAME user=`whoami`"
-
-@end example
-
-Once tag files are created, you need not use @option{--info}.
-If info string is not specified then gtags load it from tag files.
-
-Please be careful of the value of info string.
-It is passed to Postgres system as is.
-If you mistake the value then program may abort with core dump.
 
 @c ***************************************************************************
 @c Reference manual.
