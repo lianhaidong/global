@@ -18,7 +18,7 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
-**** * 2002, Shigio Yamaguchi  <shigio@gnu.org>
+November 9 2002, Shigio Yamaguchi  <shigio@gnu.org>
 
 	* gtags.c: --convert/--createdb/--readdb/--scandb option added.
 	* btreeop: replaced with gtags and removed.

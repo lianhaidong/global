@@ -19,7 +19,7 @@ ___________________________________
 GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
-Version 4.* - **** * 2002, by Shigio Yamaguchi
+Version 4.5.1 - November 9 2002, by Shigio Yamaguchi
 
 [INCOMPATIBLE CHANGES]
 
@@ -29,6 +29,7 @@ Version 4.* - **** * 2002, by Shigio Yamaguchi
 
 * gtags,htags: --gtagslabel option added.
 * htags: -D(--dynamic) option added.
+* Some bugs fixed.
 
 Version 4.5 - July 4 2002, by Shigio Yamaguchi
 
