@@ -38,7 +38,6 @@
 #define DEFAULTSUFFIXES "c,h,y,c++,cc,cpp,cxx,hxx,C,H,s,S,java"
 #define DEFAULTSKIP     "y.tab.c,y.tab.h,SCCS/,RCS/,CVS/,.deps/"
 
-char	*configpath(void);
 void	openconf(void);
 int	getconfn(const char *, int *);
 int	getconfs(const char *, STRBUF *);
