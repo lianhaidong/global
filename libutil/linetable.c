@@ -130,6 +130,8 @@ int lineno;
 	if (total_lines <= lineno) {
 		total_lines += (lineno > EXPAND) ? lineno : EXPAND;
 		linetable = (int *)realloc(linetable, total_lines * sizeof(int));
+		if (linetable == NULL)
+			die("short of memory");
 	}
 	if (lineno > active_lines)
 		active_lines = lineno;
