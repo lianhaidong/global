@@ -74,8 +74,8 @@ abs2rel(path, base, result, size)
 	for (pp = path, bp = base; *pp && *bp && *pp == *bp; pp++, bp++)
 		if (*pp == '/')
 			branch = pp;
-	if ((*pp == 0 || *pp == '/' && *(pp + 1) == 0) &&
-	    (*bp == 0 || *bp == '/' && *(bp + 1) == 0)) {
+	if ((*pp == 0 || (*pp == '/' && *(pp + 1) == 0)) &&
+	    (*bp == 0 || (*bp == '/' && *(bp + 1) == 0))) {
 		rp = result;
 		*rp++ = '.';
 		if (*pp == '/' || *(pp - 1) == '/')
@@ -85,7 +85,7 @@ abs2rel(path, base, result, size)
 		*rp = 0;
 		goto finish;
 	}
-	if (*pp == 0 && *bp == '/' || *pp == '/' && *bp == 0)
+	if ((*pp == 0 && *bp == '/') || (*pp == '/' && *bp == 0))
 		branch = pp;
 	/*
 	 * up to root.

@@ -371,7 +371,7 @@ C(yacc)
 						fprintf(stderr, "Warning: unexpected eof. [+%d %s]\n", lineno, curfile);
 						break;
 					}
-					if (wflag && level != typedef_savelevel || c != '}') {
+					if ((wflag && level != typedef_savelevel) || c != '}') {
 						fprintf(stderr, "Warning: uneven {}. [+%d %s]\n", lineno, curfile);
 						break;
 					}

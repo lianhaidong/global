@@ -119,7 +119,7 @@ SPLIT *list;
 {
 	int i, c;
 	for (i = 0; i < list->npart; i++) {
-		if (c = list->part[i].savec)
+		if ((c = list->part[i].savec) != '\0')
 			*(list->part[i].end) = c;
 	}
 }

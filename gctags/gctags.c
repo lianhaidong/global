@@ -180,7 +180,7 @@ main(argc, argv)
 		/*
 		 * "c:.c.h,java:.java,cpp:.C.H"
 		 */
-		if (flag == 0 && *p == ',' || flag == 1 && *p == ':')
+		if ((flag == 0 && *p == ',') || (flag == 1 && *p == ':'))
 			die_with_code(2, "syntax error in --langmap option.");
 		if (*p == ':' || *p == ',') {
 			flag ^= 1;
