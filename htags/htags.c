@@ -83,17 +83,17 @@ char *tmpdir = "/tmp";
 /*
  * options
  */
-int aflag;
-int cflag;
-int fflag;
-int Fflag;
-int nflag;
-int gflag;
-int Sflag;
+int aflag;				/* --alphabet(-a) option	*/
+int cflag;				/* --compact(-c) option		*/
+int fflag;				/* --form(-f) option		*/
+int Fflag;				/* --frame(-F) option		*/
+int nflag;				/* --line-number(-n) option	*/
+int gflag;				/* --gtags(-g) option		*/
+int Sflag;				/* --secure-cgi(-S) option	*/
 int qflag;
-int vflag;
-int wflag;
-int debug;
+int vflag;				/* --verbose(-v) option		*/
+int wflag;				/* --warning(-w) option		*/
+int debug;				/* --debug option		*/
 
 int show_help;				/* --help command		*/
 int show_version;			/* --version command		*/
@@ -259,6 +259,11 @@ clean()
 	unload_gpath();
 	cache_close();
 }
+/*
+ * Signal handler.
+ *
+ * This handler is set up in signal_setup().
+ */
 static void
 suddenly(signo)
         int signo;
@@ -269,6 +274,9 @@ suddenly(signo)
 	exit(1);
 }
 
+/*
+ * Setup signal hander.
+ */
 static void
 signal_setup()
 {
@@ -282,6 +290,12 @@ signal_setup()
 #endif
 }
 
+/*
+ * generate_file: generate file with replacing macro.
+ *
+ *	i)	dist	directory where the file should be created
+ *	i)	file	file name
+ */
 static void
 generate_file(dist, file)
 	char *dist;
@@ -350,6 +364,9 @@ makeprogram(cgidir, file)
 {
 	generate_file(cgidir, file);
 }
+/*
+ * makebless: make bless.sh file.
+ */
 static void
 makebless(file)
 	char *file;
@@ -359,6 +376,12 @@ makebless(file)
 	generate_file(distpath, file);
 	action = save;
 }
+/*
+ * makeghtml: make ghtml.cgi file.
+ *
+ *	i)	cgidir	directory where the file should be created
+ *	i)	file	file name
+ */
 static void
 makeghtml(cgidir, file)
 	char *cgidir;
