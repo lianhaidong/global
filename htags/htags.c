@@ -1171,6 +1171,7 @@ configuration(argc, argv)
 			free(p);
 		}
 	}
+	strbuf_reset(sb);
 	if (getconfs("warned_line_begin", sb)) {
 		p = strdup(strbuf_value(sb));
 		if (p == NULL)
