@@ -22,7 +22,7 @@ body = $(srcdir)/const.pl $(srcdir)/../gctags/htags_res.pl $(srcdir)/htags.in
 
 htags: $(body)
 	echo "#! @PERL@" | cat - $(body) | \
-	sed -e 's,@''PERL''@,$(PERL),g' >htags.tmp && \
+	sed -e 's,@''PERL''@,$(PERL),g' -e 's,@''BINDIR''@,$(bindir),g' >htags.tmp && \
 	chmod +x htags.tmp && mv htags.tmp htags
 
 man_MANS = htags.1
