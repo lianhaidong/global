@@ -60,3 +60,29 @@ die(s, va_alist)
 	}
 	exit(1);
 }
+
+void
+#ifdef HAVE_STDARG_H
+die_with_code(int n, const char *s, ...)
+#else
+die_with_code(int n, s, va_alist)
+	int n;
+	char *s;
+	va_dcl;
+#endif
+{
+	va_list ap;
+
+	if (!quiet) {
+		fprintf(stderr, "%s: ", progname);
+#ifdef HAVE_STDARG_H
+		va_start(ap, s);
+#else
+		va_start(ap);
+#endif
+		(void)vfprintf(stderr, s, ap);
+		va_end(ap);
+		fputs("\n", stderr);
+	}
+	exit(n);
+}

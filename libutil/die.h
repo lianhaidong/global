@@ -42,5 +42,10 @@ void die(const char *s, ...);
 #else
 void die();
 #endif
+#ifdef HAVE_STDARG_H
+void die_with_code(int n, const char *s, ...);
+#else
+void die_with_code();
+#endif
 
 #endif /* ! _DIE_H_ */
