@@ -23,7 +23,7 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	GLOBAL,29,March 2002,GNU Project
+@HEADER	GLOBAL,17,Jul 2002,GNU Project
 @NAME	global - print the locations of specified object.
 @SYNOPSIS
 	@name{global} [-ailnqrstTvx] @arg{pattern}
@@ -193,7 +193,6 @@
 @DIAGNOSTICS
 	@name{Global} exits with a non 0 value if an error occurred, 0 otherwise.
 @SEE ALSO
-	@xref{btreeop,1},
 	@xref{gctags,1},
 	@xref{gtags,1},
 	@xref{htags,1}.

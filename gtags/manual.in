@@ -23,7 +23,7 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	GTAGS,29,March 2002,GNU Project
+@HEADER	GTAGS,17,Jul 2002,GNU Project
 @NAME	gtags - create tag files for global.
 @SYNOPSIS
 	@name{gtags} [-c][-i][-I][-o][-P][-q][-v][-w][@arg{dbpath}]
@@ -145,7 +145,6 @@
 @DIAGNOSTICS
 	@name{Gtags} exits with a non 0 value if an error occurred, 0 otherwise.
 @SEE ALSO
-	@xref{btreeop,1},
 	@xref{gctags,1},
 	@xref{global,1},
 	@xref{htags,1}.

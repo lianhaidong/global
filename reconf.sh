@@ -51,7 +51,7 @@ for p in `echo $prog`; do
 done
 
 echo "- Collecting reference manuals ..."
-commands="global gtags htags gctags gozilla btreeop";
+commands="global gtags htags gctags gozilla";
 perl ./convert.pl --menu $commands > doc/reference.texi
 for d in `echo $commands`; do
 	perl ./convert.pl --info $d/manual.in > doc/$d.ref

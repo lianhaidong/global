@@ -8,9 +8,6 @@ cd ..
 cd libutil
 make %1
 cd ..
-cd btreeop
-make %1
-cd ..
 cd global
 make %1
 cd ..

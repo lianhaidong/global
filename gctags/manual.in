@@ -23,7 +23,7 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	GCTAGS,18,April 2002,GNU Project
+@HEADER	GCTAGS,17,Jul 2002,GNU Project
 @NAME	gctags - print cross reference list for gtags.
 @SYNOPSIS
 	@name{gctags} [-bdenrsvw] @arg{file} ...
@@ -93,7 +93,6 @@
 	@name{Gctags} exits with a non 0 value if an error occurred, 0 otherwise.
 	Duplicate objects are not considered errors.
 @SEE ALSO
-	@xref{btreeop,1},
 	@xref{global,1},
 	@xref{gtags,1},
 	@xref{htags,1}.

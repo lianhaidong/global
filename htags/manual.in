@@ -23,7 +23,7 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	HTAGS,4,Jul 2002,GNU Project
+@HEADER	HTAGS,17,Jul 2002,GNU Project
 @NAME	htags - generate hypertext from source code.
 @SYNOPSIS
 	@name{htags} [-a][-c][-D][-f][-F][-g][-m][-n][-o][-s][-v][-w][-d @arg{dir}][-S @arg{dir}][-t @arg{title}][@arg{dir}]
@@ -203,7 +203,6 @@
 @DIAGNOSTICS
 	@name{Htags} exits with a non 0 value if an error occurred, 0 otherwise.
 @SEE ALSO
-	@xref{btreeop,1},
 	@xref{gctags,1},
 	@xref{global,1},
 	@xref{gtags,1}.

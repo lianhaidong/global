@@ -13,6 +13,6 @@
 info_TEXINFOS = global.texi
 
 global_TEXINFOS = fdl.texi reference.texi \
-	global.ref gtags.ref htags.ref gctags.ref gozilla.ref btreeop.ref
+	global.ref gtags.ref htags.ref gctags.ref gozilla.ref
 
 EXTRA_DIST = texinfo.tex

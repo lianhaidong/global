@@ -157,7 +157,6 @@ AC_OUTPUT([Makefile
 	htags/Makefile
 	gctags/Makefile
 	libdb/Makefile
-	btreeop/Makefile
 	global/Makefile
 	gozilla/Makefile
 	libglibc/Makefile
