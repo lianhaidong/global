@@ -98,5 +98,19 @@ A5. It seems that MS sort is executed. Please set your path so that unix
     sort will be executed.
 
 ----------------------------------------------------------------------------
+Q6. I invoked gtags but it failed with a message like this:
+
+	gctags: no input files specified
+
+    What should I do?
+
+A6. Please check what is the gctags? You can check it with this command like.
+
+	% which gctags
+	% gctags --version
+
+    If the gctags is not the GLOBAL's one then you should set your PATH
+    so that GLOBAL's gctags will be invoked.
+----------------------------------------------------------------------------
 
 Shigio Yamaguchi
