@@ -201,7 +201,7 @@ anchor_unload()
 struct anchor *
 anchor_first()
 {
-	if (!start)
+	if (!start || start == end)
 		return NULL;
 	CURRENT = start;
 	if (CURRENT->type == 'D')
