@@ -85,7 +85,7 @@ static int begin_line;
 		yy_pop_state();						\
 		break;							\
 	}								\
-	if (YY_START == PREPROCESSING_DIRECTIVE)			\
+	if (YY_START == PREPROCESSOR_LINE)				\
 		yy_pop_state();						\
 	put_end_of_line(lineno);					\
 	/* for the next line */						\
