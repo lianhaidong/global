@@ -39,8 +39,8 @@
 /*
  * Input/Output descriptor.
  */
-FILE *out;
-FILE *in;
+static FILE *out;
+static FILE *in;
 
 static STRBUF *outbuf;
 static char *curpfile;
@@ -116,12 +116,14 @@ itoa(n)
 	return buf;
 }
 void
-echoc(int c)
+echoc(c)
+	int c;
 {
         strbuf_putc(outbuf, c);
 }
 void
-echos(const char *s)
+echos(s)
+	const char *s;
 {
         strbuf_puts(outbuf, s);
 }
@@ -613,6 +615,7 @@ src2html(src, html, notsource)
 			fputc('\n', out);
 		}
 		fprintf(out, "%s\n", verbatim_end);
+		strbuf_close(sb);
         }
 	/*
 	 * It's source code.

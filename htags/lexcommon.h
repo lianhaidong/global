@@ -77,7 +77,6 @@ extern void put_macro(char *);
 extern void put_char(int);
 extern void put_string(char *);
 extern void put_brace(char *);
-extern void put_lineno(int);
 extern void put_begin_of_line(int);
 extern void put_end_of_line(int);
 
