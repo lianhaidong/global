@@ -595,9 +595,7 @@ const char *token;
 	int length = strlen(token);
 	const char *p = token + length;
 
-	if (length < 3)
-		return 0;
-	if (strcmp(p - 2, "_t"))
+	if (length > 2 && strcmp(p - 2, "_t") == 0)
 		return 1;
 	for (p = token; *p; p++)
 		if (islower(*p))
