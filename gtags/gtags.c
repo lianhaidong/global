@@ -85,7 +85,7 @@ int	total;
 static void
 usage()
 {
-	die_with_code(2, "%s\n", usage_const);
+	die_with_code(2, "%s", usage_const);
 }
 static void
 help()
