@@ -52,6 +52,7 @@ Silas S. Brown		proofreading about manuals.
 Steve Kirkendall	two commands of Elvis for external tag system.
 Takao Yamashita		advice about assembler parsing.
 Takeshi Hojo		idea about -c option of gtags(1).
+Thomas Klausner		report about groff's command error of *.1.
 Tomohiko Morioka	advice about deciding emacs version.
 Toshiyasu Kojima	advice about deciding emacs version.
 Van Trinh		bug report about db(3) and patch information.
