@@ -826,12 +826,7 @@ char	*dbpath;
 		else {
 			char	buf[MAXPATHLEN+1];
 
-#ifdef HAVE_SNPRINTF
-			snprintf(buf, sizeof(buf),
-#else
-			sprintf(buf,
-#endif /* HAVE_SNPRINTF */
-				"./%s", path);
+			snprintf(buf, sizeof(buf), "./%s", path);
 			fprintf(op, "%-16s %3d %-16s %s\n",
 					edit, linenum, buf, p);
 		}
@@ -1289,12 +1284,7 @@ char	*from;
 		if (*p == '%' || *p == ' ' || *p == '\t') {
 			if (size <= 3)
 				break;
-#ifdef HAVE_SNPRINTF
-			snprintf(e, size,
-#else
-			sprintf(e,
-#endif /* HAVE_SNPRINTF */
-				"%%%02x", *p);
+			snprintf(e, size, "%%%02x", *p);
 			e += 3;
 			size -= 3;
 		} else {

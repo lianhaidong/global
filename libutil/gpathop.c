@@ -98,12 +98,7 @@ const char *path;
 		return;
 	if (dbop_get(dbop, path) != NULL)
 		return;
-#ifdef HAVE_SNPRINTF
-	snprintf(buf, sizeof(buf),
-#else
-	sprintf(buf,
-#endif /* HAVE_SNPRINTF */
-		"%d", _nextkey++);
+	snprintf(buf, sizeof(buf), "%d", _nextkey++);
 	dbop_put(dbop, path, buf);
 	dbop_put(dbop, buf, path);
 }
@@ -146,12 +141,7 @@ int	id;
 {
 	char	ids[80];
 	assert(opened == 1);
-#ifdef HAVE_SNPRINTF
-	snprintf(ids, sizeof(ids),
-#else
-	sprintf(ids,
-#endif /* HAVE_SNPRINTF */
-		"%d", id);
+	snprintf(ids, sizeof(ids), "%d", id);
 	return gpath_ids2path(ids);
 }
 /*
@@ -199,12 +189,7 @@ gpath_close(void)
 		dbop_close(dbop);
 		return;
 	}
-#ifdef HAVE_SNPRINTF
-	snprintf(buf, sizeof(buf),
-#else
-	sprintf(buf,
-#endif /* HAVE_SNPRINTF */
-		"%d", _nextkey);
+	snprintf(buf, sizeof(buf), "%d", _nextkey);
 	if (_mode == 1 || _mode == 2)
 		dbop_put(dbop, NEXTKEY, buf);
 	dbop_close(dbop);

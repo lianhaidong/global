@@ -412,12 +412,8 @@ tmp()
 	envtmp = getenv("TMPDIR");
 	if (envtmp && strlen(envtmp) + strlen("/bt.XXXXXX") >= sizeof(path))
 		return -1;
-#ifdef HAVE_SNPRINTF
 	(void)snprintf(path, sizeof(path),
-#else
-	(void)sprintf(path,
-#endif /* HAVE_SNPRINTF */
-		"%s/bt.XXXXXX", envtmp ? envtmp : "/tmp");
+				"%s/bt.XXXXXX", envtmp ? envtmp : "/tmp");
 
 #ifndef _WIN32
 	(void)sigfillset(&set);

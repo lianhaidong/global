@@ -273,11 +273,7 @@ int	flags;
 			char	buf[80];
 
 			gtop->format_version = 2;
-#ifdef HAVE_SNPRINTF
 			snprintf(buf, sizeof(buf),
-#else
-			sprintf(buf,
-#endif /* HAVE_SNPRINTF */
 				"%s %d", VERSIONKEY, gtop->format_version);
 			dbop_put(gtop->dbop, VERSIONKEY, buf);
 			gtop->format |= GTAGS_COMPACT;
@@ -729,19 +725,10 @@ GTOP	*gtop;
 		gtop->lnop = p;			/* gtop->lnop = $3 */
 
 		if (gtop->root)
-#ifdef HAVE_SNPRINTF
 			snprintf(path, sizeof(path),
-#else
-			sprintf(path,
-#endif /* HAVE_SNPRINTF */
 				"%s/%s", gtop->root, &gtop->path[2]);
 		else
-#ifdef HAVE_SNPRINTF
-			snprintf(path, sizeof(path),
-#else
-			sprintf(path,
-#endif /* HAVE_SNPRINTF */
-				"%s", &gtop->path[2]);
+			snprintf(path, sizeof(path), "%s", &gtop->path[2]);
 		if (!(gtop->flags & GTOP_NOSOURCE)) {
 			if ((gtop->fp = fopen(path, "r")) != NULL)
 				gtop->lno = 0;
@@ -766,12 +753,7 @@ GTOP	*gtop;
 				gtop->lno++;
 			}
 		}
-#ifdef HAVE_SNPRINTF
-		snprintf(output, sizeof(output),
-#else
-		sprintf(output,
-#endif /* HAVE_SNPRINTF */
-			"%-16s %3d %-16s %s",
+		snprintf(output, sizeof(output), "%-16s %3d %-16s %s",
 			gtop->tag, tagline, gtop->path, buffer);
 		return output;
 	}

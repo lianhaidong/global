@@ -1,6 +1,6 @@
 ## Process this file with automake to create Makefile.in
 #
-# Copyright (c) 2000
+# Copyright (c) 2000, 2001
 #        Tama Communications Corporation. All rights reserved.
 #
 # This file is free software; as a special exception the author gives
@@ -15,6 +15,6 @@ noinst_LIBRARIES = libgloglibc.a
 
 noinst_HEADERS = regex.h getopt.h
 
-libgloglibc_a_SOURCES = regex.c getopt.c getopt1.c
+libgloglibc_a_SOURCES = regex.c getopt.c getopt1.c snprintf.c
 
 libgloglibc_a_DEPENDENCIES = $(libgloglibc_a_LIBADD)
