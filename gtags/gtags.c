@@ -655,7 +655,7 @@ main(argc, argv)
 	if (vflag)
 		fprintf(stderr, "[%s] Gtags started.\n", now());
 	/*
-	 * load .gtagsrc or /etc/gtags.conf
+	 * load .globalrc or /etc/gtags.conf
 	 */
 	openconf();
 	if (getconfb("extractmethod"))
