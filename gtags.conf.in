@@ -106,13 +106,13 @@ ctags-exuberant|Exuberant Ctags|ctags by Darren Hiebert:\
 # See htags(1).
 #---------------------------------------------------------------------
 htags:\
-	:body_begin=<BODY>:body_end=</BODY>:\
-	:table_begin=<TABLE>:table_end=</TABLE>:\
-	:title_begin=<H1><FONT COLOR=#cc0000>:title_end=</FONT></H1>:\
-	:comment_begin=<I><FONT COLOR=green>:comment_end=</FONT></I>:\
-	:sharp_begin=<FONT COLOR=darkred>:sharp_end=</FONT>:\
-	:brace_begin=<FONT COLOR=blue>:brace_end=</FONT>:\
-	:warned_line_begin=<SPAN STYLE="background-color\:yellow">:warned_line_end=</SPAN>:\
-	:reserved_begin=<B>:reserved_end=</B>:script_alias=/cgi-bin/:\
+	:body_begin=<body>:body_end=</body>:\
+	:table_begin=<table>:table_end=</table>:\
+	:title_begin=<h1><font color='#cc0000'>:title_end=</font></h1>:\
+	:comment_begin=<i><font color='green'>:comment_end=</font></i>:\
+	:sharp_begin=<font color='darkred'>:sharp_end=</font>:\
+	:brace_begin=<font color='blue'>:brace_end=</font>:\
+	:warned_line_begin=<span style='background-color\:yellow'>:warned_line_end=</span>:\
+	:reserved_begin=<b>:reserved_end=</b>:script_alias=/cgi-bin/:\
 	:ncol#4:tabs#8:normal_suffix=html:gzipped_suffix=ghtml:\
 	:definition_header=no:
