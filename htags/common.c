@@ -195,13 +195,10 @@ gen_page_begin(title, subdir)
 	char *title;
 	int subdir;
 {
-	static STRBUF *sb = NULL;
+	STATIC_STRBUF(sb);
 	char *dir = subdir ? "../" : "";
 
-	if (sb == NULL)
-		sb = strbuf_open(0);
-	else
-		strbuf_reset(sb);
+	strbuf_init(sb);
 	if (enable_xhtml) {
 		strbuf_puts(sb, "<?xml version='1.0' encoding='ISO-8859-1'?>\n");
 		strbuf_sprintf(sb, "<?xml-stylesheet type='text/css' href='%sstyle.css'?>\n", dir);
@@ -306,12 +303,9 @@ gen_href_begin_with_title_target(dir, file, suffix, key, title, target)
 	const char *title;
 	const char *target;
 {
-	static STRBUF *sb = NULL;
+	STATIC_STRBUF(sb);
 
-	if (sb == NULL)
-		sb = strbuf_open(0);
-	else
-		strbuf_reset(sb);
+	strbuf_init(sb);
 	/*
 	 * Construct URL.
 	 * href='dir/file.suffix#key'
@@ -421,15 +415,12 @@ gen_list_body(srcdir, string)
 	char *srcdir;
 	char *string;
 {
-	static STRBUF *sb = NULL;
+	STATIC_STRBUF(sb);
 	char *name, *lno, *filename, *line, *fid;
 	char *p;
 	SPLIT ptable;
 
-	if (sb == NULL)
-		sb = strbuf_open(0);
-	else
-		strbuf_reset(sb);
+	strbuf_init(sb);
 	if (split(string, 4, &ptable) < 4) {
 		recover(&ptable);
 		die("too small number of parts in list_body().\n'%s'", string);
@@ -585,13 +576,10 @@ char *
 encode(url)
         char *url;
 {
-	static STRBUF *sb = NULL;
+	STATIC_STRBUF(sb);
         char *p;
 
-	if (sb)
-		strbuf_reset(sb);
-	else
-		sb = strbuf_open(0);
+	strbuf_init(sb);
         for (p = url; *p; p++) {
 		int c = (unsigned char)*p;
 

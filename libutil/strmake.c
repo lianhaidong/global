@@ -47,12 +47,10 @@ strmake(p, lim)
 	const char *p;
 	const char *lim;
 {
-	static STRBUF *sb;
+	STATIC_STRBUF(sb);
 	const char *c;
 
-	if (sb == NULL)
-		sb = strbuf_open(0);
-	strbuf_reset(sb);
+	strbuf_init(sb);
 	for (; *p; p++) {
 		for (c = lim; *c; c++)
 			if (*p == *c)
@@ -90,12 +88,10 @@ strtrim(p, flag, len)
 	int flag;
 	int *len;
 {
-	static STRBUF *sb;
+	STATIC_STRBUF(sb);
 	int cut_off = -1;
 
-	if (sb == NULL)
-		sb = strbuf_open(0);
-	strbuf_reset(sb);
+	strbuf_init(sb);
 	/*
 	 * Delete blanks of the head.
 	 */

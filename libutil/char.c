@@ -82,12 +82,9 @@ char *
 quote_string(s)
 char *s;
 {
-	static STRBUF *sb = NULL;
+	STATIC_STRBUF(sb);
 
-	if (sb == NULL)
-		sb = strbuf_open(0);
-	else
-		strbuf_reset(sb);
+	strbuf_init(sb);
 	for (; *s; s++) {
 		strbuf_putc(sb, '\\');
 		strbuf_putc(sb, *s);

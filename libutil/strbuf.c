@@ -184,6 +184,32 @@ strbuf_open(init)
 	return sb;
 }
 /*
+ * strbuf_init: initialize static string buffer.
+ *
+ *	i)	sb	statically defined string buffer
+ *
+ * This function is used for the initializing of static string buffer.
+ * For the detail, see 'STATIC_STRBUF(sb)' macro in strbuf.h.
+ */
+void
+strbuf_init(sb)
+	STRBUF *sb;
+{
+	if (sb == NULL)
+		die("NULL string buffer. (strbuf_init)");
+	if (sb->sbufsize == 0) {
+		sb->sbufsize = INITIALSIZE;
+		if (!(sb->sbuf = (char *)malloc(sb->sbufsize + 1))) {
+			(*strbuf_alloc_failed_handler)();
+			return;
+		}
+		sb->curp = sb->sbuf;
+		sb->endp = sb->sbuf + sb->sbufsize;
+	} else {
+		strbuf_reset(sb);
+	}
+}
+/*
  * strbuf_putn: put digit string at the last of buffer.
  *
  *	i)	sb	STRBUF structure

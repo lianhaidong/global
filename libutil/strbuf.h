@@ -56,6 +56,28 @@ typedef struct _strbuf {
 	int alloc_failed;
 } STRBUF;
 
+/*
+ * STATIC_STRBUF(sb):
+ *
+ * This macro is used for static string buffer which is suitable for
+ * work area and(or) return value of function. The area allocated once
+ * is repeatedly used though the area is never released.
+ * You must call strbuf_init(sb) every time before using.
+ * You must not call strbuf_close(sb) for it.
+ *
+ * Usage:
+ *      function(...) {
+ *              STATIC_STRBUF(sb);
+ *
+ *              strbuf_init(sb);
+ *              ...
+ *		strbuf_puts(sb, "xxxxx");
+ *              ...
+ *              return strbuf_value(sb);
+ *      }
+ */
+#define STATIC_STRBUF(sb) static STRBUF __##sb, *sb = &__##sb
+
 #define strbuf_putc(sb, c)	do {\
 	if (!sb->alloc_failed) {\
 		if (sb->curp >= sb->endp)\
@@ -97,6 +119,7 @@ void strbuf_dump(char *);
 #endif
 void __strbuf_expandbuf(STRBUF *, int);
 STRBUF *strbuf_open(int);
+void strbuf_init(STRBUF *);
 void strbuf_putn(STRBUF *, int);
 int strbuf_unputc(STRBUF *, int);
 char *strbuf_value(STRBUF *);

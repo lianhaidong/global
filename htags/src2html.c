@@ -118,7 +118,7 @@ get_lang_entry(lang)
 static FILE *out;
 static FILE *in;
 
-static STRBUF *outbuf;
+STATIC_STRBUF(outbuf);
 static char *curpfile;
 static int warned;
 static int last_lineno;
@@ -177,10 +177,7 @@ open_output_file(file)
 		if (!op)
 			die("cannot create file '%s'.", file);
 	}
-	if (!outbuf)
-		outbuf = strbuf_open(0);
-	else
-		strbuf_reset(outbuf);
+	strbuf_init(outbuf);
 	return op;
 }
 /*
@@ -234,13 +231,10 @@ fill_anchor(root, path)
 	char *root;
 	char *path;
 {
-	static STRBUF *sb = NULL;
+	STATIC_STRBUF(sb);
 	char buf[MAXBUFLEN], *limit, *p;
 
-	if (sb)
-		strbuf_reset(sb);
-	else
-		sb = strbuf_open(0);
+	strbuf_init(sb);
 	strlimcpy(buf, path, sizeof(buf));
 	for (p = buf; *p; p++)
 		if (*p == sep)
@@ -282,15 +276,12 @@ char *
 link_format(ref)
         int ref[A_SIZE];
 {
-	static STRBUF *sb = NULL;
+	STATIC_STRBUF(sb);
 	char **label = icon_list ? anchor_comment : anchor_label;
 	char **icons = anchor_icons;
 	int i;
 
-	if (sb)
-		strbuf_reset(sb);
-	else
-		sb = strbuf_open(0);
+	strbuf_init(sb);
 	for (i = 0; i < A_LIMIT; i++) {
 		if (i == A_INDEX) {
 			strbuf_puts(sb, gen_href_begin("..", "mains", normal_suffix, NULL));
@@ -329,13 +320,10 @@ char *
 generate_guide(lineno)
 	int lineno;
 {
-	static STRBUF *sb = NULL;
+	STATIC_STRBUF(sb);
 	int i = 0;
 
-	if (!sb)
-		sb = strbuf_open(0);
-	else
-		strbuf_reset(sb);
+	strbuf_init(sb);
 	if (definition_header == RIGHT_HEADER)
 		i = 4;
 	else if (nflag)
@@ -366,12 +354,9 @@ tooltip(type, lno, opt)
 	int lno;
 	char *opt;
 {
-	static STRBUF *sb = NULL;
+	STATIC_STRBUF(sb);
 
-	if (!sb)
-		sb = strbuf_open(0);
-	else
-		strbuf_reset(sb);
+	strbuf_init(sb);
 	if (lno > 0) {
 		if (type == 'I')
 			strbuf_puts(sb, "Included from");
@@ -728,13 +713,10 @@ src2html(src, html, notsource)
 	fputs(header_begin, out);
         fputs(fill_anchor(indexlink, src), out);
 	if (cvsweb_url) {
-		static STRBUF *sb = NULL;
+		STATIC_STRBUF(sb);
 		char *p;
 
-		if (sb)
-			strbuf_reset(sb);
-		else
-			sb = strbuf_open(0);
+		strbuf_init(sb);
 		strbuf_puts(sb, cvsweb_url);
 		for (p = src; *p; p++) {
 			int c = (unsigned char)*p;
@@ -794,7 +776,7 @@ src2html(src, html, notsource)
 		char *basename;
 		struct data *incref;
 		struct anchor *ancref;
-		static STRBUF *define_index = NULL;
+		STATIC_STRBUF(define_index);
 
                 /*
                  * INCLUDED FROM index.
@@ -846,10 +828,7 @@ src2html(src, html, notsource)
 		/*
 		 * DEFINITIONS index.
 		 */
-		if (define_index)
-			strbuf_reset(define_index);
-		else
-			define_index = strbuf_open(0);
+		strbuf_init(define_index);
 		for (ancref = anchor_first(); ancref; ancref = anchor_next()) {
 			if (ancref->type == 'D') {
 				char tmp[32];
