@@ -295,7 +295,7 @@ char	*argv[];
 	if (!test("d", dbpath))
 		die("directory '%s' not found.", dbpath);
 	if (vflag)
-		fprintf(stderr, "[%s] Gtags started\n", now());
+		fprintf(stderr, "[%s] Gtags started.\n", now());
 	/*
 	 * load .gtagsrc or /etc/gtags.conf
 	 */
