@@ -80,7 +80,7 @@ char *quote_space;
 char *hr;
 char *br;
 /*
- * HTML tag.
+ * Set up HTML tags.
  */
 void
 setup_html()
@@ -122,7 +122,8 @@ setup_html()
 	br              = "<BR>";
 }
 /*
- * XHTML tag.
+ * Set up XHTML tags.
+ * (under construction)
  */
 void
 setup_xhtml()
@@ -130,23 +131,17 @@ setup_xhtml()
 	setup_html();
 }
 /*
- * TEX tag.
+ * Set up TEX tags.
+ * (under construction)
  */
 void
 setup_tex()
 {
 	setup_html();
 }
-char *
-header_record(title)
-	char *title;
-{
-	static char buf[1024];
-
-	snprintf(buf, sizeof(buf), "%s\n%s%s%s\n%s%s\n",
-		head_begin, title_begin, title, title_end, meta_record(), head_end);
-	return buf;
-}
+/*
+ * Generate meta record.
+ */
 char *
 meta_record()
 {
@@ -157,6 +152,9 @@ meta_record()
 	snprintf(buf, sizeof(buf), "<%s>\n<%s CONTENT='GLOBAL-%s'>\n", s1, s2, get_version());
 	return buf;
 }
+/*
+ * Generate <Hn> ... </Hn> tag.
+ */
 char *
 Hn(n, label)
 	int n;
@@ -170,6 +168,9 @@ Hn(n, label)
 	snprintf(buf, sizeof(buf), "<H%d>%s</H%d>", n, label, n);
 	return buf;
 }
+/*
+ * Generate anchor tag.
+ */
 char *
 anchor(label, link)
 	char *label;
@@ -191,6 +192,9 @@ edit_buffer()
 	return sb;
 }
 
+/*
+ * Generate header tag.
+ */
 char *
 set_header(title)
 	char *title;
@@ -207,9 +211,8 @@ set_header(title)
 	return strbuf_value(sb);
 }
 
-
 /*
- * list_begin:
+ * Generate list begin tag.
  */
 char *
 gen_list_begin()
@@ -229,7 +232,7 @@ gen_list_begin()
 	return strbuf_value(sb);
 }
 /*
- * list_body:
+ * Generate list body.
  *
  * s must be choped.
  */
@@ -308,7 +311,7 @@ gen_list_body(srcdir, string)
 	return p;
 }
 /*
- * list_end:
+ * Generate list end tag.
  */
 char *
 gen_list_end()
@@ -322,6 +325,12 @@ gen_list_end()
 	return strbuf_value(sb);
 }
 
+/*
+ * Decide whether or not the path is binary file.
+ *
+ *	i)	path
+ *	r)	0: is not binary, 1: is binary
+ */
 int
 is_binary(path)
 	char *path;
@@ -346,6 +355,12 @@ is_binary(path)
 	}
 	return 0;
 }
+/*
+ * Encode URL.
+ *
+ *	i)	url	URL
+ *	r)		encoded URL
+ */
 char *
 encode(url)
         char *url;

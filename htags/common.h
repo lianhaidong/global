@@ -63,7 +63,6 @@ void setup_html();
 void setup_xhtml();
 void setup_tex();
 char *meta_record();
-char *header_record();
 char *Hn(int, char *);
 char *anchor(char *, char *);
 char *set_header(char *);
