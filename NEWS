@@ -25,8 +25,8 @@ Version 4.1
 [INCOMPATIBLE CHANGES]
 
 * global: rename the -i(incremental) option to -u(update) and the new
-  -i(--ignore-case) option added. Sorry for my incompatible change from
-  the older version. But I believe it should be so.
+  -i(--ignore-case) option added because -i options is generally used
+  for this meaning by grep(1).
 * gtags.conf: rename global.conf into gtags.conf because the old name was
   too generic. (GLOBAL also accepts old name for compatibility.)
 
