@@ -248,7 +248,7 @@ char	*argv[];
 	}
 #ifndef USE_POSTGRES
 	if (Pflag)
-		die("The -P option not available. Please rebuild GLOBAL.");
+		die("The -P option not available. Please configure GLOBAL with --with-postgres and rebuild it.");
 #endif
 	/* pass info string to PQconnectdb(3) */
 	if (info_string) {

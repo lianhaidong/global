@@ -1740,8 +1740,9 @@ Instead, you can use incremental updating facility (@samp{-u} option).
 @section Using Postgres.
 
 You can make tag files in postgres database instead of normal files.
-To do this, you must setup postgres database system and make a database
-so that you can access to it. You need a database for a project.
+To do this, you must setup postgres database system, configure GLOBAL
+with @option{--with-postgres}, build it and make a database so that you can
+access to it. You need a database for a project.
 At the first time of creating tag files, you need specify info string with
 @option{--info}. The info string is passed to PQconnectdb(3) as is.
 @opindex -P
