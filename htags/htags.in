@@ -1505,7 +1505,9 @@ sub makedupindex {
 sub makedefineindex {
 	local($dist, $file, $total) = @_;
 	local($count) = 0;
+	local($alpha_count) = 0;
 	local($indexlink) = ($'Fflag) ? "../defines.$'normal_suffix" : "../mains.$'normal_suffix";
+	local($index_string) = 'Index Page';
 	local($target) = ($'Fflag) ? 'mains' : '_top';
 
 	if ($'map_file) {
@@ -1522,7 +1524,7 @@ sub makedefineindex {
 	}
 	if (!$'aflag && !$'Fflag) {
 		$indexlink = "mains.$'normal_suffix";
-		print DEFINES "<A HREF=$indexlink>[..]</A>\n";
+		print DEFINES "<A HREF=$indexlink TITLE='$index_string'>[..]</A>\n";
 	}
 	print DEFINES "<OL>\n" if (!$'aflag);
 	local($old) = select(DEFINES);
@@ -1537,8 +1539,11 @@ sub makedefineindex {
 		print STDERR " [$count/$total] adding $tag\n" if ($'vflag);
 		if ($'aflag && ($alpha eq '' || $tag !~ /^$alpha/)) {
 			if ($alpha) {
+				local($msg) = $alpha_count == 1 ? 'definition is containded.' : 'definitions are containded.';
+				push(@defines, "<A HREF=defines/$alpha_f.$'HTML TITLE='$alpha_count $msg'>[$alpha]</A>\n");
+				$alpha_count = 0;
 				print ALPHA "</OL>\n";
-				print ALPHA "<A HREF=$indexlink>";
+				print ALPHA "<A HREF=$indexlink TITLE='$index_string'>";
 				print ALPHA $'icon_list ? "<IMG SRC=../icons/$'back_icon ALT='[..]' $'icon_spec>" : "[..]";
 				print ALPHA "</A>\n";
 				print ALPHA $'body_end, "\n";
@@ -1561,7 +1566,6 @@ sub makedefineindex {
 					$alpha_f = "l$c0";
 				}
 			}
-			push(@defines, "<A HREF=defines/$alpha_f.$'HTML>[$alpha]</A>\n");
 			if ($'cflag) {
 				open(ALPHA, "| gzip -c >$dist/defines/$alpha_f.$'HTML") || &'error("cannot make alphabetical function index.");
 			} else {
@@ -1571,17 +1575,19 @@ sub makedefineindex {
 			print ALPHA &'set_header("[$alpha]");
 			print ALPHA $'body_begin, "\n";
 			print ALPHA "<H2>[$alpha]</H2>\n";
-			print ALPHA "<A HREF=$indexlink>";
+			print ALPHA "<A HREF=$indexlink TITLE='$index_string'>";
 			print ALPHA $'icon_list ? "<IMG SRC=../icons/$'back_icon ALT='[..]' $'icon_spec>" : "[..]";
 			print ALPHA "</A>\n";
 			print ALPHA "<OL>\n";
 			select(ALPHA);
 		}
+		$alpha_count++;
 		#
 		# generating url for function definition.
 		#
 		local($line) = &cache'get('GTAGS', $tag);
 		local($url);
+		local($guide);
 		if ($line =~ /^ (.*)/) {
 			$url = "$'DEFS/$1.$'HTML";
 			if ($'dynamic) {
@@ -1595,16 +1601,21 @@ sub makedefineindex {
 				if ($'aflag) {
 					$url = "../" . $url;
 				}
+				$guide = 'Multiple defined.';
 			}
 		} else {
-			local($lno, $filename) = split(/[ \t]+/, $line);
-			$filename = &'path2url($filename);
+			local($lno, $path) = split(/[ \t]+/, $line);
+			local($filename) = &'path2url($path);
+			$path =~ s!^\./!!;
 			$url = "$'SRCS/$filename#$lno";
 			if ($'aflag) {
 				$url = "../" . $url;
 			}
+			$guide = "Defined at $lno in $path.";
 		}
-		print "<LI><A HREF=$url TARGET=$target>$tag</A>\n";
+		print "<LI><A HREF=$url TARGET=$target";
+		print " TITLE='$guide'" if ($guide);
+		print ">$tag</A>\n";
 		if ($'map_file) {
 			print MAP "$tag\t$url\n";
 		}
@@ -1613,8 +1624,9 @@ sub makedefineindex {
 	if ($?) { &'error("'$command' failed."); }
 	select($old);
 	if ($'aflag) {
+		push(@defines, "<A HREF=defines/$alpha_f.$'HTML TITLE='$alpha_count definitions are containded.'>[$alpha]</A>\n");
 		print ALPHA "</OL>\n";
-		print ALPHA "<A HREF=$indexlink>";
+		print ALPHA "<A HREF=$indexlink TITLE='$index_string'>";
 		print ALPHA $'icon_list ? "<IMG SRC=../icons/$'back_icon ALT='[..]' $'icon_spec>" : "[..]";
 		print ALPHA "</A>\n";
 		print ALPHA $'body_end, "\n";
@@ -1626,7 +1638,7 @@ sub makedefineindex {
 	}
 	print DEFINES "</OL>\n" if (!$'aflag);
 	if (!$'aflag && !$'Fflag) {
-		print DEFINES "<A HREF=$indexlink>[..]</A>\n";
+		print DEFINES "<A HREF=$indexlink TITLE='$index_string'>[..]</A>\n";
 	}
 	print DEFINES $'body_end, "\n";
 	print DEFINES $'html_end, "\n";
@@ -1653,6 +1665,7 @@ sub makefileindex {
 	local($target) = ($'Fflag) ? 'mains' : '_top';
 	local(@dirstack, @fdstack);
 	local($findcom) = ($'other_files) ? "$'findcom --other | sort -t / +1" : $'findcom;
+	local($parent_string) = 'Parent Directory';
 
 	open(FIND, "$findcom |") || &'error("cannot fork.");
 	open(FILES, ">$file") || &'error("cannot make file '$file'.");
@@ -1689,7 +1702,7 @@ sub makefileindex {
 				pop(@dirstack);
 				local($parent) = (@dirstack) ? &'path2url(join('/', @dirstack)) : $indexlink;
 				print "</OL>\n";
-				print "<A HREF=$parent>" .
+				print "<A HREF=$parent TITLE='$parent_string'>" .
 					($'icon_list ? "<IMG SRC=../icons/$'back_icon ALT='[..]' $'icon_spec>" : "[..]") .
 					"</A>\n";
 				print $'body_end, "\n";
@@ -1710,7 +1723,7 @@ sub makefileindex {
 					$last =~ s!.*/!!;
 				}
 				local($li) = "<LI>" .
-					"<A HREF=" . (@dirstack == 1 ? 'files/' : '') . &path2url($path) . ">" .
+					"<A HREF=" . (@dirstack == 1 ? 'files/' : '') . &path2url($path) . " TITLE='$path/'>" .
 					($'icon_list ? "<IMG SRC=" . (@dirstack == 1 ? '' : '../') . "icons/$'dir_icon ALT=[$path/] HSPACE=3 $'icon_spec>" : '') .
 					"$last/</A>\n";
 				if (@dirstack == 1) {
@@ -1739,7 +1752,7 @@ sub makefileindex {
 					print "/";
 				}
 				print "</H2>\n";
-				print "<A HREF=$parent>" .
+				print "<A HREF=$parent TITLE='$parent_string'>" .
 					($'icon_list ? "<IMG SRC=../icons/$'back_icon ALT='[..]' $'icon_spec>" : "[..]") .
 					"</A>\n";
 				print "<OL>\n";
@@ -1767,7 +1780,7 @@ sub makefileindex {
 			$last =~ s!.*/!!;
 		}
 		local($li) = "<LI>" .
-			"<A HREF=$url TARGET=$target>" .
+			"<A HREF=$url TARGET=$target TITLE='$_'>" .
 			($'icon_list ? "<IMG SRC=" . (@dirstack == 0 ? '' : '../') . "icons/$'file_icon ALT=[$_] HSPACE=3 $'icon_spec>" : '') .
 			"$last</A>\n";
 		if (@dirstack == 0) {
@@ -1782,7 +1795,7 @@ sub makefileindex {
 		pop(@dirstack);
 		local($parent) = (@dirstack) ? &'path2url(join('/', @dirstack)) : $indexlink;
 		print "</OL>\n";
-		print "<A HREF=$parent>" .
+		print "<A HREF=$parent TITLE='$parent_string'>" .
 			($'icon_list ? "<IMG SRC=../icons/$'back_icon ALT='[..]' $'icon_spec>" : "[..]") .
 			"</A>\n";
 		print $'body_end, "\n";
@@ -1940,7 +1953,7 @@ sub makecommonpart {
 	$index .= "$'title_begin$'title$'title_end\n";
 	$index .= "<P ALIGN=right>\n";
 	$index .= "Last updated " . &'date . "<BR>\n";
-	$index .= "This hypertext was generated by <A HREF=$'www TARGET=_top>GLOBAL-$'version</A>.<BR>\n";
+	$index .= "This hypertext was generated by <A HREF=$'www TARGET=_top TITLE='Go to the GLOBAL project page.'>GLOBAL-$'version</A>.<BR>\n";
 	$index .= "</P>\n";
 	$index .= "<HR>\n";
 	if ($'include_caution) {
@@ -2188,7 +2201,7 @@ sub src2html {
 		for (($lno, $tag, $type) = &anchor'first(); $lno; ($lno, $tag, $type) = &anchor'next()) {
 			if ($type eq 'D') {
 				$define_index .= "<LI><A HREF=#$lno";
-				$define_index .= " title=\"" . &'show('R',$lno,'') . "\"";
+				$define_index .= " TITLE=\"" . &'show('R',$lno,'') . "\"";
 				$define_index .=  ">$tag</A>\n";
 			}
 		}
@@ -2306,14 +2319,14 @@ sub src2html {
 							$url = "../$dir/$1.$'HTML";
 						}
 						$href = "<A HREF=$url";
-						$href .= " title=\"" . &'show($TYPE,-1,'') . "\"";
+						$href .= " TITLE=\"" . &'show($TYPE,-1,'') . "\"";
 						$href .= ">$TAG</A>";
 					} else {
 						local($lno, $filename) = split(/[ \t]+/, $line);
 						local($url) = &'path2url($filename);
 						$filename =~ s!\./!!; 
 						$href = "<A HREF=../$'SRCS/$url#$lno";
-						$href .= " title=\"" . &'show($TYPE,$lno,$filename) . "\"";
+						$href .= " TITLE=\"" . &'show($TYPE,$lno,$filename) . "\"";
 						$href .= ">$TAG</A>";
 					}
 					# set tag marks and save hyperlink into @links
