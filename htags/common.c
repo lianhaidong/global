@@ -316,11 +316,11 @@ gen_image(where, file, alt)
 	char *dir = (where == PARENT) ? "../icons" : "icons";
 		
 	if (enable_xhtml)
-		snprintf(buf, sizeof(buf), "<img src='%s/%s.%s' alt='[%s]' %s%s>",
-			dir, file, icon_suffix, alt, icon_spec, empty_element);
-	else
 		snprintf(buf, sizeof(buf), "<img class='icon' src='%s/%s.%s' alt='[%s]'%s>",
 			dir, file, icon_suffix, alt, empty_element);
+	else
+		snprintf(buf, sizeof(buf), "<img src='%s/%s.%s' alt='[%s]' %s%s>",
+			dir, file, icon_suffix, alt, icon_spec, empty_element);
 	return buf;
 }
 /*
