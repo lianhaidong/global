@@ -14,7 +14,7 @@ LIB    = libgloutil.lib
 OBJS   = conf.obj dbop.obj defined.obj die.obj find.obj getdbpath.obj \
 	 gtagsop.obj locatestring.obj makepath.obj path.obj gpathop.obj \
 	 strbuf.obj strmake.obj tab.obj test.obj token.obj usable.obj \
-	 version.obj is_unixy.obj
+	 version.obj is_unixy.obj abs2rel.obj
 !include ..\makefile.inc
 
 all: $(LIB)

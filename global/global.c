@@ -56,7 +56,6 @@ void	makefilter(STRBUF *);
 FILE	*openfilter(void);
 void	closefilter(FILE *);
 void	completion(char *, char *, char *);
-void	relative_filter(STRBUF *, char *, char *);
 void	idutils(char *, char *);
 void	grep(char *, char *);
 void	pathlist(char *, char *);
@@ -163,6 +162,7 @@ char	*argv[];
 	char	cwd[MAXPATHLEN+1];		/* current directory	*/
 	char	root[MAXPATHLEN+1];		/* root of source tree	*/
 	char	dbpath[MAXPATHLEN+1];		/* dbpath directory	*/
+	char	*gtags;
 
 	while ((optchar = getopt_long(argc, argv, "acifgGIlnpPqrstTuvx", long_options, &option_index)) != EOF) {
 		switch (optchar) {
@@ -313,15 +313,14 @@ char	*argv[];
 	/*
 	 * incremental update of tag files.
 	 */
+	gtags = usable("gtags");
+	if (!gtags)
+		die("gtags command not found.");
 	if (uflag) {
-		char *gtags = usable("gtags");
 		STRBUF	*sb = strbuf_open(0);
 
-		if (!gtags)
-			die("gtags command not found.");
 		if (chdir(root) < 0)
 			die("cannot change directory to '%s'.", root);
-		
 		strbuf_puts(sb, gtags);
 		strbuf_puts(sb, " -i");
 		if (vflag)
@@ -402,21 +401,14 @@ char	*argv[];
 	 * make path filter.
 	 */
 	pathfilter = strbuf_open(0);
-	if (aflag) {				/* absolute path name */
-		strbuf_puts(pathfilter, sed_command);
-		strbuf_putc(pathfilter, ' ');
-		strbuf_puts(pathfilter, "-e \"s@\\.@");
-		strbuf_puts(pathfilter, root);
-		strbuf_puts(pathfilter, "@\"");
-	} else if (lflag) {
-		strbuf_puts(pathfilter, sed_command);
-		strbuf_putc(pathfilter, ' ');
-		strbuf_puts(pathfilter, "-e \"s@\\");
-		strbuf_puts(pathfilter, localprefix);
-		strbuf_puts(pathfilter, "@@\"");
-	} else {				/* relative path name */
-		relative_filter(pathfilter, root, cwd);
-	}
+	strbuf_puts(pathfilter, gtags);
+	if (aflag)	/* absolute path name */
+		strbuf_puts(pathfilter, " --absolute ");
+	else		/* relative path name */
+		strbuf_puts(pathfilter, " --relative ");
+	strbuf_puts(pathfilter, root);
+	strbuf_putc(pathfilter, ' ');
+	strbuf_puts(pathfilter, cwd);
 	/*
 	 * print filter.
 	 */
@@ -485,17 +477,15 @@ char	*argv[];
 				continue;
 			if (!test("f", makepath(libdbpath, dbname(db), NULL)))
 				continue;
-			if (aflag) {		/* absolute path name */
-				strbuf_reset(pathfilter);
-				strbuf_puts(pathfilter, sed_command);
-				strbuf_putc(pathfilter, ' ');
-				strbuf_puts(pathfilter, "-e \"s@\\.@");
-				strbuf_puts(pathfilter, lib);
-				strbuf_puts(pathfilter, "@\"");
-			} else {
-				strbuf_reset(pathfilter);
-				relative_filter(pathfilter, lib, cwd);
-			}
+			strbuf_reset(pathfilter);
+			strbuf_puts(pathfilter, gtags);
+			if (aflag)	/* absolute path name */
+				strbuf_puts(pathfilter, " --absolute ");
+			else		/* relative path name */
+				strbuf_puts(pathfilter, " --relative ");
+			strbuf_puts(pathfilter, lib);
+			strbuf_putc(pathfilter, ' ');
+			strbuf_puts(pathfilter, cwd);
 			count = search(av, lib, libdbpath, db);
 			if (count > 0 && !Tflag) {
 				strcpy(dbpath, libdbpath);
@@ -593,69 +583,6 @@ char	*prefix;
 	for (p = gtags_first(gtop, prefix, flags); p; p = gtags_next(gtop))
 		(void)fprintf(stdout, "%s\n", p);
 	gtags_close(gtop);
-}
-/*
- * relative_filter: make relative path filter
- *
- *	o)	sb	buffer for the result
- *	i)	root	the root directory of source tree
- *	i)	cwd	current directory
- */
-void
-relative_filter(sb, root, cwd)
-STRBUF	*sb;
-char	*root;
-char	*cwd;
-{
-	char	*p, *c, *branch;
-
-	/*
-	 * get branch point.
-	 */
-	branch = cwd;
-	for (p = root, c = cwd; *p && *c && *p == *c; p++, c++)
-		if (*c == '/')
-			branch = c;
-	if (*p == 0 && (*c == 0 || *c == '/'))
-		branch = c;
-	/*
-	 * forward to root.
-	 */
-	strbuf_puts(sb, sed_command);
-	strbuf_putc(sb, ' ');
-	strbuf_puts(sb, "-e \"s@\\./@");
-	for (c = branch; *c; c++)
-		if (*c == '/')
-			strbuf_puts(sb, "../");
-	p = root + (branch - cwd);
-	/*
-	 * backward to leaf.
-	 */
-	if (*p) {
-		p++;
-		strbuf_puts(sb, p);
-		strbuf_putc(sb, '/');
-	}
-	strbuf_puts(sb, "@\"");
-	/*
-	 * remove redundancy.
-	 */
-	if (*branch) {
-		STRBUF	*unit = strbuf_open(0);
-
-		for (c = branch + 1; ; c++) {
-			if (*c == 0 || *c == '/') {
-				strbuf_puts(sb, " -e \"s@\\.\\./");
-				strbuf_puts(sb, strbuf_value(unit));
-				strbuf_puts(sb, "/@@\"");
-				if (*c == 0)
-					break;
-				strbuf_reset(unit);
-			} else
-				strbuf_putc(unit, *c);
-		}
-		strbuf_close(unit);
-	}
 }
 /*
  * printtag: print a tag's line

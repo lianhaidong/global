@@ -27,6 +27,8 @@ Current, Shigio Yamaguchi  <shigio@gnu.org>
 	* global.texi: reconstuct documentation.
 	* globash.rc: --no-wait option added to emacsclient.
 	* gozilla: gozilla directory added.
+	* abs2rel.c: added for path conversion. pathfilter with sed(1)
+	  is replaced gtags(1) --relative or --absolute.
 
 Jan 22 2002, Shigio Yamaguchi  <shigio@gnu.org>
 

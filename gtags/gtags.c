@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999
  *             Shigio Yamaguchi. All rights reserved.
- * Copyright (c) 1999, 2000, 2001
+ * Copyright (c) 1999, 2000, 2001, 2002
  *             Tama Communications Corporation. All rights reserved.
  *
  * This file is part of GNU GLOBAL.
@@ -55,8 +55,10 @@ int	main(int, char **);
 int	incremental(char *, char *);
 void	updatetags(char *, char *, char *, int);
 void	createtags(char *, char *, int);
-int	printconf(char *);
 char	*now(void);
+int	printconf(char *);
+void	set_base_directory(char *, char *);
+void	put_with_convert(char *, int);
 
 int	cflag;					/* compact format */
 int	iflag;					/* incremental update */
@@ -70,6 +72,8 @@ int     show_version;
 int     show_help;
 int	show_config;
 int	do_find;
+int	do_relative;
+int	do_absolute;
 int	do_expand;
 int	do_date;
 int	do_pwd;
@@ -99,6 +103,7 @@ help()
 }
 
 static struct option const long_options[] = {
+	{"absolute", no_argument, &do_absolute, 1},
 	{"compact", no_argument, NULL, 'c'},
 	{"incremental", no_argument, NULL, 'i'},
 	{"omit-gsyms", no_argument, NULL, 'o'},
@@ -118,6 +123,7 @@ static struct option const long_options[] = {
 	{"other", no_argument, &other_files, 1},
 	{"postgres", no_argument, NULL, 'P'},
 	{"pwd", no_argument, &do_pwd, 1},
+	{"relative", no_argument, &do_relative, 1},
 	{"version", no_argument, &show_version, 1},
 	{"help", no_argument, &show_help, 1},
 	{ 0 }
@@ -295,6 +301,18 @@ char	*argv[];
 				fprintf(stdout, "%s\n", path);
 			gfind_close();
 		}
+		exit(0);
+	} else if (do_relative || do_absolute) {
+		STRBUF *ib = strbuf_open(MAXBUFLEN);
+		char	*root = argv[0];
+		char	*cwd = argv[1];
+
+		if (argc < 2)
+			die("do_relative: 2 arguments needed.");
+		set_base_directory(root, cwd);
+		while (strbuf_fgets(ib, stdin, 0) != NULL)
+			put_with_convert(strbuf_value(ib), do_absolute ? 1 : 0);
+		strbuf_close(ib);
 		exit(0);
 	} else if (Iflag) {
 		if (!usable("mkid"))
@@ -850,4 +868,54 @@ char	*name;
 		strbuf_close(sb);
 	}
 	return exist;
+}
+/*
+ * put_with_convert: convert path into relative or absolute and print.
+ *
+ *	i)	line	raw output from global(1)
+ *	i)	absolute 1: absolute, 0: relative
+ */
+static STRBUF *root_base;
+static char cwd_base[MAXPATHLEN+1];
+static int start_point;
+void
+set_base_directory(root, cwd)
+char	*root;
+char	*cwd;
+{
+	char *p;
+
+	root_base = strbuf_open(MAXPATHLEN);
+	strbuf_puts(root_base, root);
+	strbuf_unputc(root_base, '/');
+	start_point = strbuf_getlen(root_base);
+
+	if (strlen(cwd) > MAXPATHLEN)
+		die("current directory name too long.");
+	strcpy(cwd_base, cwd);
+}
+void
+put_with_convert(line, absolute)
+char	*line;
+int	absolute;
+{
+	char buf[MAXPATHLEN+1];
+	char *p, *q;
+	int i = 0;
+
+	for (p = line; *p && *p != '.'; p++)
+		(void)putc(*p, stdout);
+	if (*p++ == '\0')
+		return;
+	strbuf_setlen(root_base, start_point);
+	for (; *p && !isspace(*p); p++)
+		strbuf_putc(root_base, *p);
+	if (absolute) {
+		(void)fputs(strbuf_value(root_base), stdout);
+	} else {
+		if (!abs2rel(strbuf_value(root_base), cwd_base, buf, sizeof(buf)))
+			die("abs2rel failed. (path=%s, base=%s).", strbuf_value(root_base), cwd_base);
+		(void)fputs(buf, stdout);
+	}
+	(void)fputs(p, stdout);
 }

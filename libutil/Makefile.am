@@ -21,7 +21,7 @@ strmake.h tab.h test.h token.h usable.h version.h is_unixy.h
 libgloutil_a_SOURCES = \
 conf.c dbop.c defined.c die.c find.c getdbpath.c gtagsop.c locatestring.c \
 makepath.c path.c gpathop.c strbuf.c strmake.c tab.c test.c \
-token.c usable.c version.c is_unixy.c
+token.c usable.c version.c is_unixy.c abs2rel.c
 
 AM_CFLAGS = -DBINDIR='"$(bindir)"'
 
