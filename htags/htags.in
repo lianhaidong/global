@@ -1775,6 +1775,7 @@ sub makefileindex {
 				print &'set_header("$path/");
 				print $'body_begin, "\n";
 				print "<H2>";
+				print "<A HREF=$indexlink>root</A>/";
 				local(@p);
 				foreach $n (0 .. $#dirstack) {
 					push(@p, $dirstack[$n]);
@@ -2178,6 +2179,7 @@ sub src2html {
 	local($isjava) = ($file =~ /\.java$/) ? 1 : 0;
 	local($iscpp) = ($file =~ /\.(h|c\+\+|cc|cpp|cxx|hxx|C|H)$/) ? 1 : 0;
 	local($isphp) = ($file =~ /\.(php|php3|phtml)$/) ? 1 : 0;
+	local($indexlink) = ($'Fflag) ? "../files.$'normal_suffix" : "../mains.$'normal_suffix";
 	local($command);
 
 	if ($'cflag) {
@@ -2204,7 +2206,7 @@ sub src2html {
 	# print the header
 	#
 	print "<A NAME=TOP><H2>";
-	print &fill_anchor($file);
+	print &fill_anchor($indexlink, $file);
 	if ($'cvsweb_url) {
 		print "&nbsp;<A HREF=$'cvsweb_url$file";
 		print "?cvsroot=$'cvsweb_cvsroot" if ($'cvsweb_cvsroot);
@@ -2467,13 +2469,16 @@ sub src2html {
 #
 # fill_anchor: fill anchor into file name
 #
-#	i)	$file	file name
+#	i)	$root	root or index page
+#	i)	$path	path name
 #	r)		hypertext file name string
 #
 sub fill_anchor {
-	local(@file) = split(/\//, $_[0]);
+	local($root, $path) = @_;
+	local(@file) = split(/\//, $path);
 	local(@path, $url);
 
+	$url = "<A HREF=$root>root</A>/";
 	while (@file) {
 		local($unit) = shift(@file);
 		if (@file == 0) {
