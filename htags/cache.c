@@ -33,6 +33,28 @@
 #include "cache.h"
 
 static ASSOC *assoc[GTAGLIM];
+/*
+ * Cache file is used for duplicate object entry.
+ *
+ * If function 'func()' is defined more than once then the cache record
+ * of GTAGS has (1) the frequency and the name of duplicate object entry file,
+ * else it has (2) the tag definition.
+ * It can be distinguished the first character of the cache record.
+ * If it is a blank then it is the former else the latter.
+ *
+ * (1) The frequency and the name of duplicate object entry file.
+ *	+--------------------------+
+ *	|' '<file id>' '<frequency>|
+ *	+--------------------------+
+ *    The duplicate object entry file can be referred to as 'D/<file id>.html'.
+ *	
+ * (2) The tag definition.
+ *	+---------------------------+
+ *	|<line number>' '<file name>|
+ *	+---------------------------+
+ *    The tag entry is referred to as '<url>#<line number>'. The <url> can be
+ *    calculated by path2url(<file name>).
+ */
 
 /*
  * cache_open: open cache file.
