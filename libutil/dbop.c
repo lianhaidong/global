@@ -336,6 +336,18 @@ DBOP	*dbop;
 	return NULL;
 }
 /*
+ * dbop_lastdat: get last data
+ * 
+ *	i)	dbop	dbop descripter
+ *	r)		last data
+ */
+char *
+dbop_lastdat(dbop)
+DBOP	*dbop;
+{
+	return dbop->lastdat;
+}
+/*
  * dbop_close: close db
  * 
  *	i)	dbop	dbop descripter
