@@ -22,6 +22,8 @@ At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
 Version 4.1.1 - *******, 2001, by Shigio Yamaguchi
 
+* htags: bug fixed. bless.sh removed 'TARGET=mains' by mistake.
+* htags: bug fixed. bless.sh didn't work when config file not exist.
 * configure: bug fixed. now you can build project at any directory
   other than source directory.
 * htags: generates rebuild.sh to redo the job with the previous context.
