@@ -237,14 +237,15 @@ sub generate_procedure {
 	print "const char *str;\n";
 	print "int len;\n";
 	print "{\n";
+	print "\tstruct keyword *keyword;\n";
+	print "\n";
 	if ($type eq 'sharp') {
-		print "\tchar *p = strtrim(str, TRIM_ALL, &len);\n";
-		print "\tstruct keyword *keyword = ${pre}_lookup(p, len);\n";
-	} else {
-		print "\tstruct keyword *keyword = ${pre}_lookup(str, len);\n";
+		print "\t/* Delete blanks. Ex. ' # define ' => '#define' */\n";
+		print "\tstr = strtrim(str, TRIM_ALL, &len);\n";
+		print "\n";
 	}
-	print "\tint n = keyword ? keyword->token : 0;\n";
-	print "\treturn IS_RESERVED_${TYPE}(n) ? n : 0;\n";
+	print "\tkeyword = ${pre}_lookup(str, len);\n";
+	print "\treturn (keyword && IS_RESERVED_${TYPE}(keyword->token)) ? keyword->token : 0;\n";
 	print "}\n";
 }
 if ($n_word > $START_WORD) {
