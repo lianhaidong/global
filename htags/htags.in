@@ -2056,7 +2056,7 @@ sub src2html {
 			local($converted);
 			s/\r$//;
 			# make link for include file
-			if (!$INCOMMENT && /^#[ \t]*include/) {
+			if (!$INCOMMENT && /^[ \t]*#[ \t]*include/) {
 				local($last, $sep) = m![</"]([^</"]+)([">])!;
 				if (defined $'includes{$last}) {
 					local($link);
@@ -2081,7 +2081,7 @@ sub src2html {
 			&protect_line();	# protect quoted char, strings and comments
 			# painting source code
 			s/({|})/\016$1\017/g;
-			local($sharp) = s/^(#[ \t]*($'sharp_macros))// ? $1 : '';
+			local($sharp) = s/^([ \t]*#[ \t]*($'sharp_macros))// ? $1 : '';
 			if ($sharp !~ '#[ \t]*include') {
 				if ($isjava) {
 					s/\b($'java_reserved_words)\b/\022$1\023/go;
