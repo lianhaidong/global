@@ -414,11 +414,9 @@ sub duplicatefile {
 	local($file, $from, $to) = @_;
 	if ($'w32) {
 		&'copy("$from/$file", "$to/$file")
-			|| &'error("cannot copy $file.");
 	} else {
 		link("$from/$file", "$to/$file")
 			|| &'copy("$from/$file", "$to/$file")
-			|| &'error("cannot copy $file.");
 	}
 }
 #
@@ -426,11 +424,12 @@ sub duplicatefile {
 #
 sub copy {
 	local($from, $to) = @_;
-	open(FROM, $from) || return 0;
-	open(TO, ">$to") || return 0;
-	print TO <FROM>;
-	close(TO);
-	close(FROM);
+	local($command) = ($'w32) ? 'copy' : 'cp';
+	$command .= " $from $to";
+	system($command);
+	if ($? != 0) {
+		&'error("cannot execute '$command'.");
+	}
 	return 1;
 }
 #
