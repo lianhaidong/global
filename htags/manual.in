@@ -63,7 +63,7 @@
 		Use frame for each part of the contents.
 	@item{@option{-g}, @option{--gtags}}
 		Execute @xref{gtags,1} before creating hypertext.
-		The @option{-v}, @option{-w} and @arg{dbpath} are passwd to @name{gtags}.
+		The @option{-v}, @option{-w} and @arg{dbpath} are passed to @name{gtags}.
 	@item{@option{--gtagsconf} @arg{file}}
 		Load user's configuration from @arg{file}.
 	@item{@option{--gtagslabel} @arg{label}}
