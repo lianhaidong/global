@@ -162,6 +162,7 @@ int flags;
 				strbuf_putc(reg, '|');
 		}
 	}
+	strbuf_unputc(reg, '|');
 	strbuf_putc(reg, ')');
 	if (reg_count > 0) {
 		/*
