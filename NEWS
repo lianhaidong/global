@@ -7,10 +7,13 @@ ___________________________________
 
 GLOBAL NEWS - User visible changes.
 
+Version 4.*.* - September 30, 2000, by Shigio Yamaguchi
+
+* htags: create bless.sh when the -S option specified.
+
 Version 4.0.1 - September 26, 2000, by Shigio Yamaguchi
 
 * htags: shut a security hole in global.cgi.
-* htags: create bless.sh when the -S option specified.
 
 Version 4.0 - September 3, 2000, by Shigio Yamaguchi
 

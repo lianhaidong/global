@@ -456,10 +456,23 @@ if (!$title) {
 	@cwd = split('/', &'getcwd);
 	$title = $cwd[$#cwd];
 }
+#
+# decide directory in which we make hypertext.
+#
+$dist = &'getcwd() . '/HTML';
+if ($ARGV[0]) {
+	$cwd = &'getcwd();
+	unless (-w $ARGV[0]) {
+		 &'error("'$ARGV[0]' is not writable directory.");
+	}
+	chdir($ARGV[0]) || &'error("directory '$ARGV[0]' not found.");
+	$dist = &'getcwd() . '/HTML';
+	chdir($cwd) || &'error("cannot return to original directory.");
+}
 if ($'Sflag) {
 	$script_alias =~ s!/$!!;
 	$'action = "$script_alias/global.cgi";
-	chop($'id = `pwd`);
+	$'id = $dist;
 }
 # --action, --id overwrite Sflag's value.
 if ($action_value) {
@@ -485,16 +498,6 @@ delete $ENV{'GTAGSLIBPATH'};
 #
 # check directories
 #
-$dist = &'getcwd() . '/HTML';
-if ($ARGV[0]) {
-	$cwd = &'getcwd();
-	unless (-w $ARGV[0]) {
-		 &'error("'$ARGV[0]' is not writable directory.");
-	}
-	chdir($ARGV[0]) || &'error("directory '$ARGV[0]' not found.");
-	$dist = &'getcwd() . '/HTML';
-	chdir($cwd) || &'error("cannot return to original directory.");
-}
 if ($'fflag || $'cflag) {
 	if ($'cgidir && ! -d $'cgidir) {
 		&'error("'$'cgidir' not found.");
@@ -751,7 +754,7 @@ if ($form{'type'} eq 'reference') {
 	$words = 'symbols';
 }
 if ($form{'id'}) {
-	chdir("$form{'id'}/HTML/cgi-bin");
+	chdir("$form{'id'}/cgi-bin");
 	if ($?) {	
 		print "<H1><FONT COLOR=#cc0000>Error</FONT></H1>\n";
 		print "<H3>Couldn't find tag directory in secure mode. <A HREF=$htmlbase/mains.@normal_suffix@>[return]</A></H3>\n";
@@ -833,13 +836,6 @@ sub makebless {
 pattern='INPUT TYPE=hidden NAME=id VALUE='
 [ $1 ] && verbose=1
 id=`pwd`
-if grep -v <<! '/HTML$'; then
-$id
-!
-	echo 'You must execute update.sh in HTML directory.'
-	exit 1
-fi
-id=`echo $id | sed 's!/HTML!!'`
 for f in index.html search.html; do
 	if [ -f $f ]; then
 		sed "s!<$pattern.*>!<$pattern$id>!" $f > $f.new;

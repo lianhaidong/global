@@ -7,9 +7,11 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
-September 29 2000, Shigio Yamaguchi  <shigio@tamacom.com>
+********* 2000, Shigio Yamaguchi  <shigio@tamacom.com>
 
 	* config variable HAVE_SNPRINTF added.
+	* htags.pl: the value of id changed from src directory
+	  to HTML directory.
 
 September 26 2000, Shigio Yamaguchi  <shigio@tamacom.com>
 
