@@ -161,6 +161,7 @@ print "#define START_WORD\t$n_word\n";
 print "#define START_SHARP\t$n_sharp\n";
 print "#define START_YACC\t$n_yacc\n";
 print "#define IS_RESERVED(a)	((a) >= START_WORD)\n";
+print "#define IS_RESERVED_VARIABLE(a)	((a) >= START_VARIABLE && (a) < START_WORD)\n";
 print "\n";
 while(<IP>) {
 	chop;
@@ -243,7 +244,7 @@ if ($n_variable > $START_VARIABLE) {
 	print "{\n";
 	print "\tstruct keyword *keyword = ${pre}_lookup(str, len);\n";
 	print "\tint n = keyword ? keyword->token : 0;\n";
-	print "\treturn (n >= START_VARIABLE && n < START_WORD) ? n : 0;\n";
+	print "\treturn IS_RESERVED_VARIABLE(n) ? n : 0;\n";
 	print "}\n";
 }
 exit 0;
