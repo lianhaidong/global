@@ -199,7 +199,7 @@ int cgi = 1;				/* 1: make cgi-bin/		*/
 int definition_header=NO_HEADER;	/* (NO|BEFORE|RIGHT|AFTER)_HEADER */
 char *htags_options = NULL;
 char *include_file_suffixes = "h,hxx,hpp,H,inc.php";
-static char *htags_langmap = "c:.c,yacc:.y,asm:.s.S,java:.java,cpp:.c++.cc.cpp.cxx.h.hxx.hpp.C.H,php:.php.php3.phtml";
+static char *langmap = "c:.c,yacc:.y,asm:.s.S,java:.java,cpp:.c++.cc.cpp.cxx.h.hxx.hpp.C.H,php:.php.php3.phtml";
 
 static struct option const long_options[] = {
         {"alphabet", no_argument, NULL, 'a'},
@@ -1196,11 +1196,11 @@ configuration(argc, argv)
 		include_file_suffixes = p;
 	}
 	strbuf_reset(sb);
-	if (getconfs("htags_langmap", sb)) {
+	if (getconfs("langmap", sb)) {
 		p = strdup(strbuf_value(sb));
 		if (p == NULL)
 			die("short of memory.");
-		htags_langmap = p;
+		langmap = p;
 	}
 	/* insert htags_options into the head of ARGSV array. */
 	strbuf_reset(sb);
@@ -1366,7 +1366,7 @@ main(argc, argv)
 	basic_check();
 	setup_html();
 	configuration(argc, argv);
-	setup_langmap(htags_langmap);
+	setup_langmap(langmap);
 	save_environment(argc, argv);
 
 	/*
