@@ -27,7 +27,7 @@ environments. It supports C, C++, Yacc and Java source code.
 
 * Documentation
 
-	Please see 'doc/global.texi'(texinfo format) to know how to use GLOBAL.
+	Please see 'doc/global.txi'(texinfo format) to know how to use GLOBAL.
 	The real GLOBAL documentation is incomplete, and will be revised.
 	The descriptions about new facilities are added to 'NEWS'.  At least,
 	you had better read '[INCOMPATIBLE CHANGES]' for each version.
