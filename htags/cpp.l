@@ -46,7 +46,6 @@
 #endif
 #define ECHO	echos(LEXTEXT)
 
-#define YY_NO_TOP_STATE
 #define YY_USER_ACTION DEFAULT_YY_USER_ACTION
 
 %}
@@ -61,25 +60,29 @@ ALPHA		[a-zA-Z_\x80-\xff]
 ALPHANUM	[a-zA-Z_\x80-\xff0-9]
 WORD		{ALPHA}{ALPHANUM}*
 
-%start	CPP C_COMMENT CPP_COMMENT SHELL_COMMENT STRING LITERAL
-%option 8bit noyywrap stack prefix="cpp"
+%start	CPP C_COMMENT CPP_COMMENT SHELL_COMMENT STRING LITERAL PREPROCESSING_DIRECTIVE
+%option 8bit noyywrap noyy_top_state stack prefix="cpp"
 %%
+ /* Backslash-newline */
+\\\n		DEFAULT_BACKSLASH_NEWLINE_ACTION
+
  /* Comment */
-<CPP>"/*"	{ echos(comment_begin); ECHO; yy_push_state(C_COMMENT); }
+<CPP,PREPROCESSING_DIRECTIVE>"/*"	{ echos(comment_begin); ECHO; yy_push_state(C_COMMENT); }
 <C_COMMENT>"*/"	{ ECHO; echos(comment_end); yy_pop_state(); }
 <C_COMMENT>.	{ put_char(LEXTEXT[0]); }
-<CPP>"//"	{ echos(comment_begin); ECHO; yy_push_state(CPP_COMMENT); }
+<CPP,PREPROCESSING_DIRECTIVE>"//"	{ echos(comment_begin); ECHO; yy_push_state(CPP_COMMENT); }
 
  /* String */
-<CPP>\"		{ ECHO; yy_push_state(STRING); }
+<CPP,PREPROCESSING_DIRECTIVE>\"	{ ECHO; yy_push_state(STRING); }
 <STRING>\"	{ ECHO; yy_pop_state(); }
 <STRING>\\.	{ put_char(LEXTEXT[0]); put_char(LEXTEXT[1]); }
 
  /* Literal */
-<CPP>\'		{ ECHO; yy_push_state(LITERAL); }
+<CPP,PREPROCESSING_DIRECTIVE>\'	{ ECHO; yy_push_state(LITERAL); }
 <LITERAL>\'	{ ECHO; yy_pop_state(); }
 <LITERAL>\\.	{ put_char(LEXTEXT[0]); put_char(LEXTEXT[1]); }
 
+ /* Preprocessing directive */
 <CPP>^[ \t]*\#[ \t]*(include|include_next) {
 		int c;
 
@@ -153,11 +156,18 @@ WORD		{ALPHA}{ALPHANUM}*
 		}
 		if (i > 0 && reserved_sharp(p, i))
 			put_macro(LEXTEXT);
-		else
-			echos(LEXTEXT);
+		else {
+			ECHO;
+			if (wflag)
+				unknown_preprocessing_directive(p, LINENO);
+		}
+		yy_push_state(PREPROCESSING_DIRECTIVE);
 	}
-<CPP>{NUMBER}	ECHO;
-<CPP>{WORD} {
+ /* Null directive */
+<CPP>^[ \t]*\#	{ put_macro(LEXTEXT); }
+
+<CPP,PREPROCESSING_DIRECTIVE>{NUMBER}	ECHO;
+<CPP,PREPROCESSING_DIRECTIVE>{WORD} {
 		if (reserved_word(LEXTEXT, LEXLENG))
 			put_reserved_word(LEXTEXT);
 		else {
@@ -170,7 +180,7 @@ WORD		{ALPHA}{ALPHANUM}*
 			}
 		}
 	}
-<CPP>[{}]	{ put_brace(LEXTEXT); }
+<CPP,PREPROCESSING_DIRECTIVE>[{}]	{ put_brace(LEXTEXT); }
  /* New line */
 \n		DEFAULT_END_OF_LINE_ACTION
 .		{ put_char(LEXTEXT[0]); }

@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (c) 2001, 2003 Tama Communications Corporation
+# Copyright (c) 2001, 2003, 2004 Tama Communications Corporation
 #
 # This file is part of GNU GLOBAL.
 #
@@ -65,7 +65,7 @@ done
 echo "- Preparing parser source ..."
 (cd gctags; set -x
 perl ./reserved.pl --prefix=sharp --perl c_res.in >htags_res.pl
-for lang in c cpp java php; do
+for lang in c cpp java php asm; do
 	name=${lang}_res
 	perl ./reserved.pl --prefix=$lang --perl ${name}.in >>htags_res.pl
 	perl ./reserved.pl --prefix=$lang ${lang}_res.in > ${name}.gpf
@@ -77,7 +77,7 @@ for lang in c cpp java php; do
 done
 )
 (cd htags; set -x
-for lang in c cpp java php; do
+for lang in c cpp java php asm; do
 	flex -o$lang.c $lang.l
 done
 )

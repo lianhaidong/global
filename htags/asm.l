@@ -20,7 +20,7 @@
  */
 
 /*
- * scanner for C and yacc source code.
+ * scanner for assembly source code.
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -35,11 +35,11 @@
 #include "path2url.h"
 #include "common.h"
 #include "htags.h"
-#include "../gctags/c_res.h"
+#include "../gctags/asm_res.h"
 #include "lexcommon.h"
 
-#define LEXTEXT	ctext
-#define LEXLENG	cleng
+#define LEXTEXT	asmtext
+#define LEXLENG	asmleng
 
 #ifdef ECHO
 #undef ECHO
@@ -60,30 +60,30 @@ ALPHA		[a-zA-Z_\x80-\xff]
 ALPHANUM	[a-zA-Z_\x80-\xff0-9]
 WORD		{ALPHA}{ALPHANUM}*
 
-%start	C C_COMMENT CPP_COMMENT SHELL_COMMENT STRING LITERAL PREPROCESSING_DIRECTIVE
-%option 8bit noyywrap noyy_top_state stack prefix="c"
+%start	ASM C_COMMENT CPP_COMMENT SHELL_COMMENT STRING LITERAL PREPROCESSING_DIRECTIVE
+%option 8bit noyywrap noyy_top_state stack prefix="asm"
 %%
  /* Backslash-newline */
 \\\n		DEFAULT_BACKSLASH_NEWLINE_ACTION
 
  /* Comment */
-<C,PREPROCESSING_DIRECTIVE>"/*"	{ echos(comment_begin); ECHO; yy_push_state(C_COMMENT); }
+<ASM,PREPROCESSING_DIRECTIVE>"/*"	{ echos(comment_begin); ECHO; yy_push_state(C_COMMENT); }
 <C_COMMENT>"*/"	{ ECHO; echos(comment_end); yy_pop_state(); }
 <C_COMMENT>.	{ put_char(LEXTEXT[0]); }
-<C,PREPROCESSING_DIRECTIVE>"//"	{ echos(comment_begin); ECHO; yy_push_state(CPP_COMMENT); }
+<ASM,PREPROCESSING_DIRECTIVE>"//"	{ echos(comment_begin); ECHO; yy_push_state(CPP_COMMENT); }
 
  /* String */
-<C,PREPROCESSING_DIRECTIVE>\"	{ ECHO; yy_push_state(STRING); }
+<ASM,PREPROCESSING_DIRECTIVE>\"	{ ECHO; yy_push_state(STRING); }
 <STRING>\"	{ ECHO; yy_pop_state(); }
 <STRING>\\.	{ put_char(LEXTEXT[0]); put_char(LEXTEXT[1]); }
 
  /* Literal */
-<C,PREPROCESSING_DIRECTIVE>\'	{ ECHO; yy_push_state(LITERAL); }
+<ASM,PREPROCESSING_DIRECTIVE>\'	{ ECHO; yy_push_state(LITERAL); }
 <LITERAL>\'	{ ECHO; yy_pop_state(); }
 <LITERAL>\\.	{ put_char(LEXTEXT[0]); put_char(LEXTEXT[1]); }
 
  /* Preprocessing directive */
-<C>^[ \t]*\#[ \t]*(include|include_next) {
+<ASM>^[ \t]*\#[ \t]*(include|include_next) {
 		int c;
 
 		put_macro(LEXTEXT);
@@ -130,7 +130,7 @@ WORD		{ALPHA}{ALPHANUM}*
 			}
 		}
 	}
-<C>^[ \t]*\#[ \t]*{WORD} {
+<ASM>^[ \t]*\#[ \t]*{WORD} {
 		int i = 0;
 		char *p;
 
@@ -154,22 +154,26 @@ WORD		{ALPHA}{ALPHANUM}*
 			buf[i] = '\0';
 			p = buf;
 		}
-		if (i > 0 && reserved_sharp(p, i))
+		if (i > 0 && reserved_sharp(p, i)) {
 			put_macro(LEXTEXT);
-		else {
+			yy_push_state(PREPROCESSING_DIRECTIVE);
+		} else {
+			/*
+			 * Don't warn about unknown directive.
+			 * '#' may be used as the start of a comment.
+			 */
+			echos(comment_begin);
 			ECHO;
-			if (wflag)
-				unknown_preprocessing_directive(p, LINENO);
+			yy_push_state(SHELL_COMMENT);
 		}
-		yy_push_state(PREPROCESSING_DIRECTIVE);
 	}
  /* Null directive */
-<C>^[ \t]*\#	{ put_macro(LEXTEXT); }
+<ASM>^[ \t]*\#	{ put_macro(LEXTEXT); }
 
-<C,PREPROCESSING_DIRECTIVE>{NUMBER}	ECHO;
-<C,PREPROCESSING_DIRECTIVE>{WORD} {
+<ASM,PREPROCESSING_DIRECTIVE>{NUMBER}	ECHO;
+<ASM,PREPROCESSING_DIRECTIVE>{WORD} {
 		if (reserved_word(LEXTEXT, LEXLENG))
-			put_reserved_word(LEXTEXT);
+			ECHO;
 		else {
 			struct anchor *a = anchor_get(LEXTEXT, LEXLENG, 0, LINENO);
 			if (a) {
@@ -180,16 +184,16 @@ WORD		{ALPHA}{ALPHANUM}*
 			}
 		}
 	}
-<C,PREPROCESSING_DIRECTIVE>[{}]	{ put_brace(LEXTEXT); }
+<ASM,PREPROCESSING_DIRECTIVE>[{}]	{ put_brace(LEXTEXT); }
  /* New line */
 \n		DEFAULT_END_OF_LINE_ACTION
 .		{ put_char(LEXTEXT[0]); }
 
 %%
 void
-c_parser_init(ip)
+asm_parser_init(ip)
 	FILE *ip;
 {
 	DEFAULT_BEGIN_OF_FILE_ACTION
-	BEGIN C;
+	BEGIN ASM;
 }

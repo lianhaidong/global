@@ -24,7 +24,8 @@
 /*
  * The default action for line control.
  * These can be applicable to most languages.
- * You must define C_COMMENT, CPP_COMMENT and SHELL_COMMENT as %start values.
+ * You must define C_COMMENT, CPP_COMMENT, SHELL_COMMENT
+ * and PREPROCESSING_DIRECTIVE as %start values.
  * It assumed CPP_COMMENT and SHELL_COMMENT is one line comment.
  */
 static int lineno;
@@ -40,23 +41,50 @@ static int begin_line;
 }
 
 #define DEFAULT_YY_USER_ACTION {					\
-        if (begin_line) {                                               \
-                put_begin_of_line(lineno);                              \
-                if (YY_START == C_COMMENT)                              \
-                        echos(comment_begin);                           \
-                begin_line = 0;                                         \
-        }                                                               \
+	if (begin_line) {						\
+		put_begin_of_line(lineno);				\
+		switch (YY_START) {					\
+		case C_COMMENT:						\
+		case CPP_COMMENT:					\
+		case SHELL_COMMENT:					\
+			echos(comment_begin);				\
+			break;						\
+		}							\
+		begin_line = 0;						\
+	}								\
 }
 
-#define DEFAULT_END_OF_LINE_ACTION {                                    \
-	if (YY_START == CPP_COMMENT || YY_START == C_COMMENT || YY_START == SHELL_COMMENT) \
-		echos(comment_end);					\
-	if (YY_START == CPP_COMMENT || YY_START == SHELL_COMMENT)	\
+#define DEFAULT_END_OF_LINE_ACTION {					\
+	switch (YY_START) {						\
+	case CPP_COMMENT:						\
+	case SHELL_COMMENT:						\
 		yy_pop_state();						\
-        put_end_of_line(lineno);                                        \
-        /* for the next line */                                         \
-        lineno++;                                                       \
-        begin_line = 1;                                                 \
+		/* FALLTHROUGH */					\
+	case C_COMMENT:							\
+		echos(comment_end);					\
+		break;							\
+	}								\
+	if (YY_START == PREPROCESSING_DIRECTIVE)			\
+		yy_pop_state();						\
+	put_end_of_line(lineno);					\
+	/* for the next line */						\
+	lineno++;							\
+	begin_line = 1;							\
+}
+
+#define DEFAULT_BACKSLASH_NEWLINE_ACTION {				\
+	put_char(LEXTEXT[0]);						\
+	switch (YY_START) {						\
+	case CPP_COMMENT:						\
+	case C_COMMENT:							\
+	case SHELL_COMMENT:						\
+		echos(comment_end);					\
+		break;							\
+	}								\
+	put_end_of_line(lineno);					\
+	/* for the next line */						\
+	lineno++;							\
+	begin_line = 1;							\
 }
 
 /*
@@ -74,6 +102,7 @@ extern void put_anchor(char *, int, int);
 extern void put_include_anchor(struct data *, char *);
 extern void put_reserved_word(char *);
 extern void put_macro(char *);
+extern void unknown_preprocessing_directive(char *, int);
 extern void put_char(int);
 extern void put_string(char *);
 extern void put_brace(char *);

@@ -20,7 +20,7 @@ endif
 
 htags_SOURCES = htags.c defineindex.c dupindex.c fileindex.c src2html.c \
 		anchor.c cache.c common.c incop.c assoc.c path2url.c \
-		c.c cpp.c java.c php.c
+		c.c cpp.c java.c php.c asm.c
 
 noinst_HEADERS = htags.h anchor.h cache.h common.h incop.h assoc.h path2url.h \
 		lexcommon.h
@@ -44,7 +44,7 @@ man_MANS = htags.1
 
 EXTRA_DIST = $(man_MANS) htags.in manual.in const.pl htags.bat \
 		const.h global.cgi.tmpl.in bless.sh.tmpl \
-		c.l cpp.l java.l php.l 
+		c.l cpp.l java.l php.l asm.l
 const.h: manual.in
 	perl $(top_srcdir)/convert.pl --c $(srcdir)/manual.in >const.h
 

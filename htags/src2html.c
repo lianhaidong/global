@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999 Shigio Yamaguchi
- * Copyright (c) 1999, 2000, 2001, 2002, 2003 Tama Communications Corporation
+ * Copyright (c) 1999, 2000, 2001, 2002, 2003, 2004 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -416,6 +416,15 @@ put_macro(word)
 	strbuf_puts(outbuf, sharp_end);
 }
 void
+unknown_preprocessing_directive(word, lineno)
+	char *word;
+	int lineno;
+{
+	warning("unknown preprocessing directive '%s'. [+%d %s]", word, lineno, curpfile);
+	if (colorize_warned_line)
+		warned = 1;
+}
+void
 put_char(c)
         int c;
 {
@@ -511,6 +520,13 @@ void c_parser_init(FILE *);
 void cpp_parser_init(FILE *);
 void java_parser_init(FILE *);
 void php_parser_init(FILE *);
+void asm_parser_init(FILE *);
+
+int clex(void);
+int cpplex(void);
+int javalex(void);
+int phplex(void);
+int asmlex(void);
 
 void
 src2html(src, html, notsource)
@@ -519,7 +535,6 @@ src2html(src, html, notsource)
 	int notsource;
 {
 	char indexlink[128];
-	int clex(void), cpplex(void), javalex(void), phplex(void);
 
 	/*
 	 * setup lineno format.
@@ -692,6 +707,10 @@ src2html(src, html, notsource)
 		} else if (!strcmp(lang, "cpp")) {
 			cpp_parser_init(in);
 			while (cpplex())
+				;
+		} else if (!strcmp(lang, "asm")) {
+			asm_parser_init(in);
+			while (asmlex())
 				;
 		} else {
 			c_parser_init(in);

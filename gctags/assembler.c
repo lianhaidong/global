@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 1999 Shigio Yamaguchi
- * Copyright (c) 1999, 2000, 2002, 2003 Tama Communications Corporation
+ * Copyright (c) 1999, 2000, 2002, 2003, 2004 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -32,20 +32,9 @@
 
 #include "gctags.h"
 #include "defined.h"
+#include "die.h"
 #include "token.h"
-
-static int reserved_word(const char *, int);
-
-#define A_CALL		1001
-#define A_DEFINE	1002
-#define A_ENTRY		1003
-#define A_EXT		1004
-#define A_ALTENTRY	1005
-#define A_NENTRY	1006
-#define A_SYMBOL_NAME	1007
-#define A_C_LABEL	1008
-#define A_GLOBAL_ENTRY	1009
-#define A_JSBENTRY	1010
+#include "asm_res.h"
 
 void
 assembler()
@@ -54,9 +43,9 @@ assembler()
 	int target;
 	const char *interested = NULL;	/* get all token */
 	int startline = 1;
-	int level;				/* not used */
+	int level = 0;			/* not used */
+	int piflevel = 0;		/* condition macro level */
 
-	level = 0;				/* to satisfy compiler */
 	/* symbol search doesn't supported. */
 	if (sflag)
 		return;
@@ -70,10 +59,10 @@ assembler()
 		case '\n':
 			startline = 1;
 			continue;
-		case A_CALL:
+		case ASM_CALL:
 			if (!startline || target != REF)
 				break;
-			if ((c = nexttoken(interested, reserved_word)) == A_EXT || c == A_SYMBOL_NAME || c == A_C_LABEL) {
+			if ((c = nexttoken(interested, reserved_word)) == ASM_EXT || c == ASM_SYMBOL_NAME || c == ASM_C_LABEL) {
 				if ((c = nexttoken(interested, reserved_word)) == '('/* ) */)
 					if ((c = nexttoken(interested, reserved_word)) == SYMBOL)
 						if (defined(token))
@@ -82,85 +71,61 @@ assembler()
 				if (defined(&token[1]))
 					PUT(&token[1], lineno, sp);
 			}
+			if (c == '\n')
+				pushbacktoken();
 			break;
-		case A_ENTRY:
-		case A_ALTENTRY:
-		case A_NENTRY:
-		case A_GLOBAL_ENTRY:
-		case A_JSBENTRY:
+		case ASM_ENTRY:
+		case ASM_ALTENTRY:
+		case ASM_NENTRY:
+		case ASM_GLOBAL_ENTRY:
+		case ASM_JSBENTRY:
 			if (!startline || target != DEF)
 				break;
 			if ((c = nexttoken(interested, reserved_word)) == '('/* ) */) {
 				if ((c = nexttoken(interested, reserved_word)) == SYMBOL)
 					PUT(token, lineno, sp);
-				while ((c = nexttoken(interested, reserved_word)) != EOF && c != '\n' && c != /* ( */ ')')
-					;
 			}
+			if (c == '\n')
+				pushbacktoken();
 			break;
-		case A_DEFINE:
+		/*
+		 * #xxx
+		 */
+		case SHARP_DEFINE:
+		case SHARP_UNDEF:
 			if (!startline || target != DEF)
 				break;
 			if ((c = nexttoken(interested, reserved_word)) == SYMBOL) {
-				if (peekc(1) == '('/* ) */) {
+				if (peekc(1) == '('/* ) */ || dflag) {
 					PUT(token, lineno, sp);
-					while ((c = nexttoken(interested, reserved_word)) != EOF && c != '\n' && c != /* ( */ ')')
-						;
-					while ((c = nexttoken(interested, reserved_word)) != EOF && c != '\n')
-						;
 				}
 			}
+			if (c == '\n')
+				pushbacktoken();
+			break;
+		case SHARP_IFDEF:
+		case SHARP_IFNDEF:
+		case SHARP_IF:
+			DBG_PRINT(piflevel, "#if");
+			piflevel++;
+			break;
+		case SHARP_ELIF:
+		case SHARP_ELSE:
+			DBG_PRINT(piflevel - 1, "#else");
+			break;
+		case SHARP_ENDIF:
+			if (--piflevel < 0) {
+				piflevel = 0;
+				if (wflag)
+					warning("#if block unmatched. reseted. [+%d %s]", lineno, curfile);
+			}
+			DBG_PRINT(piflevel, "#endif");
+			break;
 		default:
 			break;
 		}
 		startline = 0;
 	}
-}
-static int
-reserved_word(word, length)
-        const char *word;
-	int length;
-{
-	switch (*word) {
-	case '#':
-		if (!strcmp(word, "#define"))
-			return A_DEFINE;
-		break;
-	case 'A':
-		if (!strcmp(word, "ALTENTRY"))
-			return A_ALTENTRY;
-		break;
-	case 'C':
-		if (!strcmp(word, "C_LABEL"))
-			return A_C_LABEL;
-		break;
-	case 'E':
-		if (!strcmp(word, "ENTRY"))
-			return A_ENTRY;
-		else if (!strcmp(word, "EXT"))
-			return A_EXT;
-		break;
-	case 'G':
-		if (!strcmp(word, "GLOBAL_ENTRY"))
-			return A_GLOBAL_ENTRY;
-		break;
-	case 'J':
-		if (!strcmp(word, "JSBENTRY"))
-			return A_JSBENTRY;
-		break;
-	case 'N':
-		if (!strcmp(word, "NENTRY"))
-			return A_NENTRY;
-		break;
-	case 'S':
-		if (!strcmp(word, "SYMBOL_NAME"))
-			return A_SYMBOL_NAME;
-		break;
-	case 'c':
-		if (!strcmp(word, "call"))
-			return A_CALL;
-		break;
-	default:
-		break;
-	}
-	return SYMBOL;
+	if (piflevel != 0 && wflag)
+		warning("#if block unmatched. (last at level %d.)[+%d %s]", piflevel, lineno, curfile);
 }

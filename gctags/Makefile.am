@@ -1,6 +1,6 @@
 ## Process this file with automake to create Makefile.in
 #
-# Copyright (c) 2000, 2001, 2003 Tama Communications Corporation
+# Copyright (c) 2000, 2001, 2003, 2004 Tama Communications Corporation
 #
 # This file is free software; as a special exception the author gives
 # unlimited permission to copy and/or distribute it, with or without
@@ -12,7 +12,7 @@
 #
 bin_PROGRAMS= gctags
 
-noinst_HEADERS = gctags.h c_res.h cpp_res.h java_res.h php_res.h
+noinst_HEADERS = gctags.h c_res.h cpp_res.h java_res.h php_res.h asm_res.h
 
 gctags_SOURCES = gctags.c C.c Cpp.c assembler.c java.c php.c
 
@@ -28,4 +28,5 @@ EXTRA_DIST = $(man_MANS) const.h manual.in reserved.pl HACKING htags_res.pl \
 		c_res.in c_res.gpf \
 		cpp_res.in cpp_res.gpf \
 		java_res.in java_res.gpf \
-		php_res.in php_res.gpf php.l
+		php_res.in php_res.gpf php.l \
+		asm_res.in asm_res.gpf
