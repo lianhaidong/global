@@ -103,6 +103,9 @@ AC_FUNC_STRFTIME
 AC_CHECK_FUNCS(getcwd putenv strdup lstat snprintf utimes)
 AG_DJGPP
 
+INCLUDES='-I$(top_srcdir)/libutil -I$(top_srcdir)/libdb -I$(top_srcdir)/libglibc'
+LDADD='../libutil/libgloutil.a ../libdb/libglodb.a ../libglibc/libgloglibc.a'
+
 AC_MSG_CHECKING(for postgres support)
 AC_ARG_WITH(postgres,
 [  --with-postgres[=DIR]     include postgres support ],
@@ -125,9 +128,6 @@ AC_ARG_WITH(postgres,
 ],[
         AC_MSG_RESULT(no)
 ])
-
-INCLUDES='-I$(top_srcdir)/libutil -I$(top_srcdir)/libdb -I$(top_srcdir)/libglibc'
-LDADD='../libutil/libgloutil.a ../libdb/libglodb.a ../libglibc/libgloglibc.a'
 
 AC_SUBST(INCLUDES)
 AC_SUBST(LDADD)
