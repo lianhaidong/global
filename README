@@ -4,7 +4,7 @@ ___________________________________
 |  |   |  |  |  |  |     |     |  |
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Copyright (c) 2000, 2001, 2002, 2003 Tama Communications Corporation
+ Copyright (c) 2000, 2001, 2002, 2003, 2004 Tama Communications Corporation
 
  This file is free software; as a special exception the author gives
  unlimited permission to copy and/or distribute it, with or without
@@ -26,21 +26,20 @@ environments. It supports C, C++, Yacc, Java, PHP4 and assembler source code.
 * Documentation
 
 	Please see 'doc/global.txi'(texinfo format) to know how to use GLOBAL.
-	The real GLOBAL documentation is incomplete, and will be revised.
 	The descriptions about new facilities are added to 'NEWS'.  At least,
 	you had better read '[INCOMPATIBLE CHANGES]' for each version.
 
 * License
 
 	You may redistribute copies of GNU GLOBAL under the terms of
-	the GNU General Public License.
-	For more information about these matters, see the files named COPYING.
+	the GNU General Public License.  For more information about
+	these matters, see the files named 'LICENSE' and 'COPYING'.
 
 * Latest information
 
 	You can see the latest information on GLOBAL's WWW.
 
-	http://www.gnu.org/software/global/
+	http://www.gnu.org/software/global/whatsnew.html
 
 * Mailing list
 
@@ -48,6 +47,6 @@ environments. It supports C, C++, Yacc, Java, PHP4 and assembler source code.
 	in GLOBAL or you need help about GLOBAL, then some mailing lists are
 	available. Please see GLOBAL's WWW.
 
-	http://www.gnu.org/software/global/
+	http://www.gnu.org/software/global/maillist.html
 
 Enjoy!
