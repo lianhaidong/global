@@ -44,7 +44,6 @@
 #include "die.h"
 #include "dbop.h"
 #include "strbuf.h"
-#include "strlimcpy.h"
 #include "tab.h"
 #include "version.h"
 #include "const.h"
