@@ -54,7 +54,7 @@ typedef	struct {
 
 DBOP	*dbop_open(const char *, int, int, int);
 char	*dbop_get(DBOP *, const char *);
-void	dbop_put(DBOP *, const char *, const char *);
+void	dbop_put(DBOP *, const char *, const char *, int);
 void	dbop_delete(DBOP *, const char *);
 char	*dbop_first(DBOP *, const char *, regex_t *, int);
 char	*dbop_next(DBOP *);

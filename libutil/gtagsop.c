@@ -275,12 +275,12 @@ int	flags;
 			gtop->format_version = 2;
 			snprintf(buf, sizeof(buf),
 				"%s %d", VERSIONKEY, gtop->format_version);
-			dbop_put(gtop->dbop, VERSIONKEY, buf);
+			dbop_put(gtop->dbop, VERSIONKEY, buf, 0);
 			gtop->format |= GTAGS_COMPACT;
-			dbop_put(gtop->dbop, COMPACTKEY, COMPACTKEY);
+			dbop_put(gtop->dbop, COMPACTKEY, COMPACTKEY, 0);
 			if (flags & GTAGS_PATHINDEX) {
 				gtop->format |= GTAGS_PATHINDEX;
-				dbop_put(gtop->dbop, PATHINDEXKEY, PATHINDEXKEY);
+				dbop_put(gtop->dbop, PATHINDEXKEY, PATHINDEXKEY, 0);
 			}
 		}
 	} else {
@@ -346,7 +346,7 @@ char	*record;
 
 	if (gtop->format == GTAGS_STANDARD) {
 		/* entab(record); */
-		dbop_put(gtop->dbop, tag, record);
+		dbop_put(gtop->dbop, tag, record, 0);
 		return;
 	}
 	/*
@@ -372,7 +372,7 @@ char	*record;
 	 */
 	if (strcmp(gtop->prev_tag, tag) || strcmp(gtop->prev_path, path)) {
 		if (gtop->prev_tag[0])
-			dbop_put(gtop->dbop, gtop->prev_tag, strbuf_value(gtop->sb));
+			dbop_put(gtop->dbop, gtop->prev_tag, strbuf_value(gtop->sb), 0);
 		strcpy(gtop->prev_tag, tag);
 		strcpy(gtop->prev_path, path);
 		/*
@@ -444,7 +444,7 @@ int	flags;
 	if (gtop->format & GTAGS_PATHINDEX) {
 		char	*pno;
 
-		if (!(pno = gpath_path2id(path)))
+		if (!(pno = gpath_path2ids(path)))
 			die("GPATH is corrupted.('%s' not found)", path);
 		strbuf_puts(sb, "| ");
 		strbuf_puts(sb, sed_command);
@@ -674,7 +674,7 @@ GTOP	*gtop;
 	if (gtop->format & GTAGS_PATHINDEX || gtop->mode != GTAGS_READ)
 		gpath_close();
 	if (gtop->sb && gtop->prev_tag[0])
-		dbop_put(gtop->dbop, gtop->prev_tag, strbuf_value(gtop->sb));
+		dbop_put(gtop->dbop, gtop->prev_tag, strbuf_value(gtop->sb), 0);
 	if (gtop->sb)
 		strbuf_close(gtop->sb);
 	if (gtop->ib)

@@ -148,12 +148,14 @@ const char *name;
  *	i)	dbop	descripter
  *	i)	name	key
  *	i)	data	data
+ *	i)	fid	(no use)
  */
 void
-dbop_put(dbop, name, data)
+dbop_put(dbop, name, data, fid)
 DBOP	*dbop;
 const char *name;
 const char *data;
+int fid;
 {
 	DB	*db = dbop->db;
 	DBT	key, dat;

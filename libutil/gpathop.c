@@ -99,17 +99,17 @@ const char *path;
 	if (dbop_get(dbop, path) != NULL)
 		return;
 	snprintf(buf, sizeof(buf), "%d", _nextkey++);
-	dbop_put(dbop, path, buf);
-	dbop_put(dbop, buf, path);
+	dbop_put(dbop, path, buf, 0);
+	dbop_put(dbop, buf, path, 0);
 }
 /*
- * gpath_path2id: convert path into id
+ * gpath_path2ids: convert path into id
  *
  *	i)	path	path name
  *	r)		path id
  */
 char *
-gpath_path2id(path)
+gpath_path2ids(path)
 const char *path;
 {
 	char	*id;
@@ -191,7 +191,7 @@ gpath_close(void)
 	}
 	snprintf(buf, sizeof(buf), "%d", _nextkey);
 	if (_mode == 1 || _mode == 2)
-		dbop_put(dbop, NEXTKEY, buf);
+		dbop_put(dbop, NEXTKEY, buf, 0);
 	dbop_close(dbop);
 	if (_mode == 1)
 		created = 1;

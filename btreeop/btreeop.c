@@ -269,7 +269,7 @@ DBOP	*dbop;
 			;
 		if (*c == 0)
 			die("data part is null.");
-		dbop_put(dbop, keybuf, p);
+		dbop_put(dbop, keybuf, p, 0);
 	}
 	strbuf_close(ib);
 }

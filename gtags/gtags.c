@@ -485,7 +485,7 @@ char	*root;
 		}
 		if (stat(path, &statp) < 0)
 			die("stat failed '%s'.", path);
-		if (!gpath_path2id(path))
+		if (!gpath_path2ids(path))
 			strbuf_puts0(addlist, path);
 		else if (gtags_mtime < statp.st_mtime)
 			strbuf_puts0(updatelist, path);
