@@ -500,6 +500,8 @@ while ($ARGV[0] =~ /^-/) {
 		;		# --gtagsconf is estimated only once.
 	} elsif ($opt =~ /^--gtagsconf$/) {
 		shift;		# --gtagsconf is estimated only once.
+	} elsif ($opt =~ /^--index$/) {
+		$'iflag = 'i';
 	} elsif ($opt =~ /^--line-number$/) {
 		$'nflag = 'n';
 	} elsif ($opt =~ /^--other$/) {
@@ -535,7 +537,7 @@ while ($ARGV[0] =~ /^-/) {
 	} elsif ($opt =~ /^--/) {
 		print STDERR $usage_const, "\n";
 		exit 1;
-	} elsif ($opt =~ /[^-acdfFlmnosStvwtd]/) {
+	} elsif ($opt =~ /[^-acdfFilmnosStvwtd]/) {
 				# include 'l' for backward compatibility.
 		print STDERR $usage_const, "\n";
 		exit 1;
@@ -544,6 +546,7 @@ while ($ARGV[0] =~ /^-/) {
 		if ($opt =~ /c/) { $'cflag = 'c'; }
 		if ($opt =~ /f/) { $'fflag = 'f'; }
 		if ($opt =~ /F/) { $'Fflag = 'F'; }
+		if ($opt =~ /i/) { $'iflag = 'i'; }
 		if ($opt =~ /n/) { $'nflag = 'n'; }
 		if ($opt =~ /o/) { $'oflag = 'o'; }
 		if ($opt =~ /v/) { $'vflag = 'v'; }
@@ -1251,6 +1254,10 @@ sub makedefineindex {
 	local($count) = 0;
 	local($indexlink) = ($'Fflag) ? "../defines.$'normal_suffix" : "../mains.$'normal_suffix";
 	local($target) = ($'Fflag) ? 'mains' : '_top';
+
+	if ($'iflag) {
+		open(INDEX, "|btreeop -C $'dist/INDEX") || &'error("cannot fork.");
+	}
 	open(DEFINES, ">$file") || &'error("cannot make function index '$file'.");
 	print DEFINES $'html_begin, "\n";
 	print DEFINES &'set_header($'title_define_index);
@@ -1316,13 +1323,21 @@ sub makedefineindex {
 			print ALPHA "<OL>\n";
 			select(ALPHA);
 		}
+		#
+		# generating url for function definition.
+		#
 		local($line) = &cache'get('GTAGS', $tag);
+		local($url);
 		if ($line =~ /^ (.*)/) {
-			print "<LI><A HREF=", ($'aflag) ? "../" : "", "$'DEFS/$1.$'HTML TARGET=$target>$tag</A>\n";
+			$url = "$'DEFS/$1.$'HTML";
 		} else {
 			local($tag, $lno, $filename) = split(/[ \t]+/, $line);
 			$filename = &'path2url($filename);
-			print "<LI><A HREF=", ($'aflag) ? "../" : "", "$'SRCS/$filename#$lno TARGET=$target>$tag</A>\n";
+			$url = "$'SRCS/$filename#$lno";
+		}
+		print "<LI><A HREF=", ($'aflag) ? "../" : "", $url, " TARGET=$target>$tag</A>\n";
+		if ($'iflag) {
+			print INDEX "$tag $url\n";
 		}
 	}
 	close(TAGS);
@@ -1346,6 +1361,9 @@ sub makedefineindex {
 	print DEFINES $'body_end, "\n";
 	print DEFINES $'html_end, "\n";
 	close(DEFINES);
+	if ($'iflag) {
+		close(INDEX);
+	}
 	$count;
 }
 #
