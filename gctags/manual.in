@@ -108,8 +108,7 @@
 	@name{Gctags} relies on the input being well formed,
 	and any syntactical errors will completely confuse it.
 
-	Assembler support is far from complete.  It extracts only ENTRY()
-	and ALTENTRY() from source file.
+	Assembler support is far from complete.
 	Probably valid only for FreeBSD and Linux kernel source.
 @AUTHOR
 	Tama Communications Corporation.
