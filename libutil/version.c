@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999
  *             Shigio Yamaguchi. All rights reserved.
- * Copyright (c) 1999, 2000
+ * Copyright (c) 1999, 2000, 2001
  *             Tama Communications Corporation. All rights reserved.
  *
  * This file is part of GNU GLOBAL.
@@ -32,7 +32,7 @@ extern int vflag;
 
 const char *copy = "\
 Copyright (c) 1996, 1997, 1998, 1999 Shigio Yamaguchi.\n\
-Copyright (c) 1999, 2000 Tama Communications Corporation.\n\
+Copyright (c) 1999, 2000, 2001 Tama Communications Corporation.\n\
 GNU GLOBAL comes with NO WARRANTY,\n\
 to the extent permitted by law.\n\
 You may redistribute copies of GNU GLOBAL\n\
