@@ -21,10 +21,10 @@ ChangeLog about GNU GLOBAL
 
 Current, Shigio Yamaguchi  <shigio@gnu.org>
 
-	* conf.c: add GPATH,GTAGS,GRTAGS,GSYMS,tags,TAGS,ID to DEFAULTSKIP.
-	* find.c: decrease dependency on find(1).
-	  remove length argument from find_read().
-	* global.texi: reconstuct documentation.
+	* conf.c: added GPATH,GTAGS,GRTAGS,GSYMS,tags,TAGS,ID to DEFAULTSKIP.
+	* find.c: decreased dependency on find(1).
+	  removed length argument from find_read().
+	* global.texi: documentation reconstucted.
 	* globash.rc: --no-wait option added to emacsclient.
 	* gozilla: gozilla directory added.
 	* abs2rel.c: added for path conversion. pathfilter with sed(1)
