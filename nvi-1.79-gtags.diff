@@ -2,7 +2,7 @@
  * This file is placed into the public domain by the author,
  * Shigio Yamaguchi <shigio@tamacom.com>
  */
-diff -c -r ../nvi-1.79.org/common/main.c ./common/main.c
+diff -c -r -N ../nvi-1.79.org/common/main.c ./common/main.c
 *** ../nvi-1.79.org/common/main.c	Mon Mar  6 16:24:39 2000
 --- ./common/main.c	Sun Jun 18 12:52:08 2000
 ***************
@@ -71,7 +71,7 @@ diff -c -r ../nvi-1.79.org/common/main.c ./common/main.c
   	if (secure)
   		*oargp++ = O_SECURE;
   	*oargp = -1;			/* Options initialization. */
-diff -c -r ../nvi-1.79.org/common/options.c ./common/options.c
+diff -c -r -N ../nvi-1.79.org/common/options.c ./common/options.c
 *** ../nvi-1.79.org/common/options.c	Mon Mar  6 16:24:39 2000
 --- ./common/options.c	Sun Jun 18 12:52:08 2000
 ***************
@@ -99,7 +99,7 @@ diff -c -r ../nvi-1.79.org/common/options.c ./common/options.c
   	{"ht",		O_HARDTABS},		/*     4BSD */
   	{"ic",		O_IGNORECASE},		/*     4BSD */
   	{"li",		O_LINES},		/*   4.4BSD */
-diff -c -r ../nvi-1.79.org/docs/USD.doc/vi.man/vi.1 ./docs/USD.doc/vi.man/vi.1
+diff -c -r -N ../nvi-1.79.org/docs/USD.doc/vi.man/vi.1 ./docs/USD.doc/vi.man/vi.1
 *** ../nvi-1.79.org/docs/USD.doc/vi.man/vi.1	Mon Mar  6 16:24:36 2000
 --- ./docs/USD.doc/vi.man/vi.1	Sun Jun 18 12:52:08 2000
 ***************
@@ -188,7 +188,7 @@ diff -c -r ../nvi-1.79.org/docs/USD.doc/vi.man/vi.1 ./docs/USD.doc/vi.man/vi.1
   .TP
   .B "hardtabs, ht [8]"
   Set the spacing between hardware tab settings.
-diff -c -r ../nvi-1.79.org/ex/ex.c ./ex/ex.c
+diff -c -r -N ../nvi-1.79.org/ex/ex.c ./ex/ex.c
 *** ../nvi-1.79.org/ex/ex.c	Mon Mar  6 16:24:40 2000
 --- ./ex/ex.c	Sun Jun 18 12:52:08 2000
 ***************
@@ -213,7 +213,7 @@ diff -c -r ../nvi-1.79.org/ex/ex.c ./ex/ex.c
   		/*
   		 * The force flag is sensitive to leading whitespace, i.e.
   		 * "next !" is different from "next!".  Handle it before
-diff -c -r ../nvi-1.79.org/ex/ex_argv.c ./ex/ex_argv.c
+diff -c -r -N ../nvi-1.79.org/ex/ex_argv.c ./ex/ex_argv.c
 *** ../nvi-1.79.org/ex/ex_argv.c	Mon Mar  6 16:24:39 2000
 --- ./ex/ex_argv.c	Sun Jun 18 12:52:08 2000
 ***************
@@ -254,9 +254,9 @@ diff -c -r ../nvi-1.79.org/ex/ex_argv.c ./ex/ex_argv.c
   		case '\\':
   			/*
   			 * QUOTING NOTE:
-diff -c -r ../nvi-1.79.org/ex/ex_tag.c ./ex/ex_tag.c
+diff -c -r -N ../nvi-1.79.org/ex/ex_tag.c ./ex/ex_tag.c
 *** ../nvi-1.79.org/ex/ex_tag.c	Mon Mar  6 16:24:40 2000
---- ./ex/ex_tag.c	Tue Jun 20 13:19:03 2000
+--- ./ex/ex_tag.c	Sun Jan 14 20:58:49 2001
 ***************
 *** 18,23 ****
 --- 18,26 ----
@@ -419,60 +419,113 @@ diff -c -r ../nvi-1.79.org/ex/ex_tag.c ./ex/ex_tag.c
   	 * Allocate all necessary memory before swapping screens.  Initialize
 ***************
 *** 969,974 ****
---- 1081,1244 ----
+--- 1081,1291 ----
   	return (0);
   }
   
 + /* #ifdef GTAGS */
 + /*
-+  * getentry --
-+  *	get tag information from current line.
++  * The getentry() parses both standard and extended ctags -x format.
 +  *
-+  * gtags temporary file format.
++  * [standard format]
 +  * <tag>   <lineno>  <file>         <image>
-+  *
-+  * sample.
 +  * +------------------------------------------------
 +  * |main     30      main.c         main(argc, argv)
 +  * |func     21      subr.c         func(arg)
++  *
++  * The following commands write this format.
++  *	o Traditinal Ctags with -x option
++  *	o Global with -x option
++  *		See <http://www.tamacom.com/global>
++  *
++  * [extended format]
++  * <tag>   <type>  <lineno>   <file>        <image>
++  * +----------------------------------------------------------
++  * |main     function 30      main.c         main(argc, argv)
++  * |func     function 21      subr.c         func(arg)
++  *
++  * The following commands write this format.
++  *	o Exuberant Ctags with -x option
++  *		See <http://ctags.sourceforge.net>
++  *
++  * The tag name and file name can include blanks using quote('"') like:
++  * "main and func"	30	"main file.c"	...
++  *
++  * Returns 0 on success, -1 on error.
++  * The tag, file, and line will each be NUL-terminated pointers
++  * into buf.
 +  */
 + static int
 + getentry(buf, tag, file, line)
-+ 	char *buf, **tag, **file, **line;
++ 	char *buf;	/* standard or extended ctags -x format data */
++ 	char **tag;	/* name of the tag we actually found */
++ 	char **file;	/* file in which to find this tag */
++ 	char **line;	/* line number of file where this tag is found */
 + {
 + 	char *p = buf;
 + 
-+ 	for (*tag = p; *p && !isblank(*p); p++)		/* tag name */
-+ 		;
++ 	/*
++ 	 * tag name format is:
++ 	 * "<tag name include blank>"
++ 	 * <tag name><blank>
++ 	 */
++ 	if (*p == '"') {
++ 		for (*tag = p + 1; *p && *p != '"'; p++)
++ 			;
++ 	} else {
++ 		for (*tag = p; *p && !isspace(*p); p++)	/* tag name */
++ 			;
++ 	}
 + 	if (*p == 0)
 + 		goto err;
 + 	*p++ = 0;
-+ 	for (; *p && isblank(*p); p++)			/* (skip blanks) */
++ 	for (; *p && isspace(*p); p++)			/* (skip blanks) */
 + 		;
 + 	if (*p == 0)
++ 		goto err;
++ 	/*
++ 	 * If the second part begin with other than digit,
++ 	 * it is assumed tag type. Skip it.
++ 	 */
++ 	if (!isdigit(*p)) {
++ 		for (; *p && !isspace(*p); p++)		/* (skip tag type) */
++ 			;
++ 		for (; *p && isspace(*p); p++)		/* (skip blanks) */
++ 			;
++ 	}
++ 	if (!isdigit(*p))
 + 		goto err;
 + 	*line = p;					/* line no */
-+ 	for (*line = p; *p && !isblank(*p); p++)
++ 	for (*line = p; *p && !isspace(*p); p++)
 + 		;
 + 	if (*p == 0)
 + 		goto err;
 + 	*p++ = 0;
-+ 	for (; *p && isblank(*p); p++)			/* (skip blanks) */
++ 	for (; *p && isspace(*p); p++)			/* (skip blanks) */
 + 		;
 + 	if (*p == 0)
 + 		goto err;
-+ 	*file = p;					/* file name */
-+ 	for (*file = p; *p && !isblank(*p); p++)
-+ 		;
++ 	/*
++ 	 * file name format is:
++ 	 * "<file name include blank>"
++ 	 * <file name><blank>
++ 	 */
++ 	if (*p == '"') {
++ 		for (*file = p + 1; *p && *p != '"'; p++)
++ 			;
++ 	} else {
++ 		for (*file = p; *p && !isspace(*p); p++)
++ 			;
++ 	}
 + 	if (*p == 0)
 + 		goto err;
 + 	*p = 0;
 + 
 + 	/* value check */
 + 	if (strlen(*tag) && strlen(*line) && strlen(*file) && atoi(*line) > 0)
-+ 		return 1;	/* OK */
++ 		return (0);	/* OK */
 + err:
-+ 	return 0;		/* ERROR */
++ 	return (-1);		/* ERROR */
 + }
 + 
 + /*
@@ -493,13 +546,12 @@ diff -c -r ../nvi-1.79.org/ex/ex_tag.c ./ex/ex_tag.c
 + 	TAGF *tfp;
 + 	TAGQ *tqp;
 + 	size_t len;
-+ 	int echk;
 + 	TAG *tp;
 + 	char *name, *file, *line;
 + 	char command[BUFSIZ];
 + 	char buf[BUFSIZ];
 + 	char tmp[30];
-+ 	char *tmpname;
++ 	char *tmpname, *com;
 + 	FILE *fp;
 + 
 + 	/* Allocate and initialize the tag queue structure. */
@@ -515,10 +567,8 @@ diff -c -r ../nvi-1.79.org/ex/ex_tag.c ./ex/ex_tag.c
 + 	 */
 + 	strcpy(tmp, "/tmp/.nvi+global.XXXX");
 + 	tmpname = mktemp(tmp);
-+ 	if (quote)
-+ 		snprintf(command, sizeof(command), "global -xa %s '%s' 2>%s", options, tag, tmpname);
-+ 	else
-+ 		snprintf(command, sizeof(command), "global -xa %s %s 2>%s", options, tag, tmpname);
++ 	com = (quote) ? "global -xa %s '%s' 2>%s" : "global -xa %s %s 2>%s";
++ 	snprintf(command, sizeof(command), com, options, tag, tmpname);
 + 	if (fp = popen(command, "r")) {
 + 		int status;
 + 		while (fgets(buf, sizeof(buf), fp)) {
@@ -527,11 +577,8 @@ diff -c -r ../nvi-1.79.org/ex/ex_tag.c ./ex/ex_tag.c
 + 			else
 + 				while (fgetc(fp) != '\n')
 + 					;
-+ 			if (getentry(buf, &name, &file, &line) == 0) {
-+ 				echk = 1;
-+ 				F_SET(tfp, TAGF_ERR);
++ 			if (getentry(buf, &name, &file, &line) < 0)
 + 				break;
-+ 			}
 + 			CALLOC_GOTO(sp, tp,
 + 			    TAG *, 1, sizeof(TAG) + strlen(file) + 1 + strlen(line) + 1);
 + 			tp->fname = tp->buf;
@@ -584,7 +631,7 @@ diff -c -r ../nvi-1.79.org/ex/ex_tag.c ./ex/ex_tag.c
   /*
    * ctag_slist --
    *	Search the list of tags files for a tag, and return tag queue.
-diff -c -r ../nvi-1.79.org/include/options_def.h ./include/options_def.h
+diff -c -r -N ../nvi-1.79.org/include/options_def.h ./include/options_def.h
 *** ../nvi-1.79.org/include/options_def.h	Mon Mar  6 16:24:37 2000
 --- ./include/options_def.h	Sun Jun 18 12:52:08 2000
 ***************
@@ -719,7 +766,7 @@ diff -c -r ../nvi-1.79.org/include/options_def.h ./include/options_def.h
 ! #define O_WRAPSCAN 77
 ! #define O_WRITEANY 78
 ! #define O_OPTIONCOUNT 79
-diff -c -r ../nvi-1.79.org/vi/v_ex.c ./vi/v_ex.c
+diff -c -r -N ../nvi-1.79.org/vi/v_ex.c ./vi/v_ex.c
 *** ../nvi-1.79.org/vi/v_ex.c	Mon Mar  6 16:24:38 2000
 --- ./vi/v_ex.c	Sun Jun 18 12:52:08 2000
 ***************
@@ -783,23 +830,3 @@ diff -c -r ../nvi-1.79.org/vi/v_ex.c ./vi/v_ex.c
   	return (v_exec_ex(sp, vp, &cmd));
   }
   
-diff -c -r ../nvi-1.79.org/vi/vs_refresh.c ./vi/vs_refresh.c
-*** ../nvi-1.79.org/vi/vs_refresh.c	Mon Mar  6 16:24:39 2000
---- ./vi/vs_refresh.c	Sun Jun 18 12:52:08 2000
-***************
-*** 595,601 ****
-  		 * for the number option offset.
-  		 */
-  		cnt = vs_columns(sp, NULL, LNO, &CNO, NULL);
-! 		if (O_ISSET(sp, O_NUMBER))
-  			cnt -= O_NUMBER_LENGTH;
-  
-  		/* Adjust the window towards the beginning of the line. */
---- 595,601 ----
-  		 * for the number option offset.
-  		 */
-  		cnt = vs_columns(sp, NULL, LNO, &CNO, NULL);
-! 		if (O_ISSET(sp, O_NUMBER) && cnt > O_NUMBER_LENGTH)
-  			cnt -= O_NUMBER_LENGTH;
-  
-  		/* Adjust the window towards the beginning of the line. */
