@@ -38,3 +38,16 @@ if test $ac_cv_struct_dp_d_type = yes; then
   AC_DEFINE(HAVE_DP_D_TYPE)
 fi
 ])
+
+AC_DEFUN(AG_DJGPP,
+[AC_CACHE_CHECK([whether we are using the GNU DJGPP compiler], ac_cv_djgpp,
+[AC_TRY_COMPILE([], [#ifdef __DJGPP__
+main() {}
+#else
+XXXXXX
+#endif],
+ac_cv_djgpp=yes, ac_cv_djgpp=no)])
+if test $ac_cv_djgpp = yes; then
+  AM_CONDITIONAL(DJGPP, true)
+fi
+])

@@ -101,9 +101,7 @@ AC_FUNC_MEMCMP
 AC_TYPE_SIGNAL
 AC_FUNC_STRFTIME
 AC_CHECK_FUNCS(getcwd putenv strdup lstat snprintf utimes)
-
-INCLUDES='-I$(top_srcdir)/libutil -I$(top_srcdir)/libdb -I$(top_srcdir)/libglibc'
-LDADD='../libutil/libgloutil.a ../libdb/libglodb.a ../libglibc/libgloglibc.a'
+AG_DJGPP
 
 AC_MSG_CHECKING(for postgres support)
 AC_ARG_WITH(postgres,
@@ -127,14 +125,9 @@ AC_ARG_WITH(postgres,
 ],[
         AC_MSG_RESULT(no)
 ])
-AC_MSG_CHECKING(for DJGPP support)
-if test $DJGPP && test -f $DJGPP; then
-        AM_CONDITIONAL(DJGPP, true)
-        AC_MSG_RESULT([yes, using $DJGPP])
-else
-        AM_CONDITIONAL(DJGPP, false)
-        AC_MSG_RESULT(no)
-fi
+
+INCLUDES='-I$(top_srcdir)/libutil -I$(top_srcdir)/libdb -I$(top_srcdir)/libglibc'
+LDADD='../libutil/libgloutil.a ../libdb/libglodb.a ../libglibc/libgloglibc.a'
 
 AC_SUBST(INCLUDES)
 AC_SUBST(LDADD)
