@@ -65,12 +65,12 @@ This manual documents version @value{VERSION} of the GLOBAL source code tag syst
 
 @menu
 * Introduction::                        Overview of the tools.
-* Global::                              Shell using GLOBAL.
+* Global::                              Command line GLOBAL.
 * Nvi editor::                          Extended nvi using GLOBAL.
-* Emacs editor::                        Extended emacs using GLOBAL.
-* Web browser::                         Hypertext generator.
 * Elvis editor::                        Elvis using GLOBAL.
 * Vim editor::                          Vim using GLOBAL.
+* Emacs editor::                        Extended emacs using GLOBAL.
+* Web browser::                         Hypertext generator.
 * Other topics::                        Other topics.
 * GNU Free Documentation License::	GNU Free Documentation License.
 * Index::                               Option index.
@@ -125,7 +125,7 @@ GNU GLOBAL has following features:
 @c Global
 @c ***************************************************************************
 @node Global
-@chapter Shell using GLOBAL
+@chapter Command line GLOBAL
 
 You can use tag facilities from shell command line.
 It is a big merit of GLOBAL compared with any other tag system.
@@ -524,7 +524,9 @@ You can use GLOBAL as a tag system of Nvi editor instead of ctags.
 
 @itemize @bullet
 @item
-You can use most of GLOBAL's facilities from nvi editor.
+You can use most of GLOBAL's facilities from the editor.
+@item
+Recognition of the current token and its type.
 @item
 Extended nvi is completely backward-compatible with the original nvi.
 You can use GLOBAL's facilities only in 'gtags mode'.
@@ -715,6 +717,362 @@ using hypertext.
 @end itemize
 
 @c ***************************************************************************
+@c Elvis editor
+@c ***************************************************************************
+@node Elvis editor
+@chapter Elvis using global
+
+Elvis 2.1 has new @code{tagprg} and @code{tagprgonce} variables for
+running an external tag search program. You can use them with GLOBAL.
+
+@menu
+* Features(elvis)::                     Features.
+* Preparation(elvis)::                  Preparation.
+* Basic usage(elvis)::                  Basic usage.
+* Applied usage(elvis)::                Applied usage.
+@end menu
+
+@c ***************************************************************************
+@node   Features(elvis)
+@section Features.
+
+@itemize @bullet
+@item
+You can use most of GLOBAL's facilities from the editor.
+@item
+No source level patch is needed.
+@item
+Mouse events are supported.
+@end itemize
+
+@c ***************************************************************************
+@node   Preparation(elvis)
+@section Preparation.
+
+First, do the preparation of global. (Please see @xref{Preparation}.).
+
+Second, start elvis and execute @code{set tagprg="global -t $1"} like this.
+@opindex -t
+
+@example
+
+    % elvis
+    ~
+    ~
+    ~
+    ~
+    ~
+    ~
+    :set tagprg="global -t $1"
+
+@end example
+
+@c ***************************************************************************
+@node   Basic usage(elvis)
+@section Basic usage.
+
+@itemize @bullet
+@item To go to func1, you can say
+@example
+
+    :tag func1
+
+@end example
+
+It seemes the same as original elvis, but elvis execute @code{global -t func1}
+internally and read it instead of tags file.
+
+@item To go to the referenced point of func1, add @samp{-r} option.
+@opindex -r
+@example
+
+    :tag -r func1
+
+@end example
+
+Elvis executes command like @code{global -t -r func1} internally.
+
+@item To go to any symbols other than function, try this.
+@opindex -s
+@example
+
+    :tag -s lbolt
+
+@end example
+
+@item To go to any strings other than symbols, try this.
+@opindex -g
+@example
+
+    :tag -g Copyright
+
+@end example
+
+@item When using -r, -s or -g, you had better to use browse command.
+@example
+
+    :browse -r fork
+
+@end example
+
+It brings a following selection list. You can select tag and go to
+the point.
+
+@example
+
+    Browse -r fork (2 matches)
+    +----------------+----------------+--------------------
+    | TAG NAME       | SOURCE FILE    | SOURCE LINE                   
+    +----------------+----------------+--------------------
+    |fork            |ux/linux_misc.c | (line 565)                    
+    |fork            |ern/init_main.c | (line 191)                    
+    +----------------+----------------+--------------------
+
+@end example
+
+@item To get list of functions in a file, use -f command.
+@opindex -f
+@example
+
+    :browse -f main.c               <- @r{locate functions in main.c}
+
+@end example
+
+@item Other tag commands are also available:
+
+@table @code
+@item @kbd{CTL-]}
+        go to the definition of current token.
+@item @kbd{CTL-T}
+        return to the most recent tag context.
+@item @kbd{:tag}
+        without argment, go to the next tag.
+@item @kbd{:pop}
+        return to the most recent tag context.
+@item @kbd{:stack}
+        display the tags stack.
+@item @kbd{:stag}
+        creates a new window and moves its cursor to the tag's definition point.
+@item @kbd{:sbrowse}
+        same with 'browse' but show in a new window.
+@end table
+@end itemize
+
+@c ***************************************************************************
+@node   Applied usage(elvis)
+@section Applied usage.
+
+@itemize @bullet
+@item You can use POSIX regular expressions.
+@opindex -g
+@example
+
+    :tag ^put_                  <- @r{locate functions start with 'put_'}
+    
+    :browse -g 'fseek(.*L_SET)' <- @r{locate fseek() using L_SET argment}
+
+@end example
+
+@item You can browse functions list of many files.
+@opindex -f
+@example
+
+    :browse -f *.c              <- @r{locate functions in *.c}
+
+@end example
+
+@item You can browse project files whose path includs specified pattern.
+@opindex -P
+@example
+
+    :browse -P /vm/             <- @r{under vm/ directory}
+    :browse -P \.h$             <- @r{all include files}
+    :browse -P init             <- @r{path including 'init'}
+
+@end example
+
+@item You can use mouse to select tag.
+@example
+
+    +----------------+----------------+--------------------
+    | TAG NAME       | SOURCE FILE    | SOURCE LINE                   
+    +----------------+----------------+--------------------
+    |fork            |ux/linux_misc.c | (line 565)                    
+    |fork            |ern/init_main.c | (line 191)                    
+    +----------------+----------------+--------------------
+
+@end example
+
+Please select tag name with mouse cursor and double click on the left
+button and you go to the tag's point.
+In source screen, also select function name and double click on the
+left button and you can go to the point that the function is defined.
+To come back, double click on the right button.
+@end itemize
+
+@c ***************************************************************************
+@c Vim editor
+@c ***************************************************************************
+@node Vim editor
+@chapter Vim using global
+
+Vim 5.2 or later has @code{grepprg} and @code{grepformat} variables for
+running an external grep like search program. You can use them with GLOBAL.
+
+@menu
+* Features(vim)::                       Features.
+* Preparation(vim)::                    Preparation.
+* Basic usage(vim)::                    Basic usage.
+* Applied usage(vim)::                  Applied usage.
+@end menu
+
+@c ***************************************************************************
+@node   Features(vim)
+@section Features.
+
+@itemize @bullet
+@item
+You can use most of GLOBAL's facilities from the editor.
+@item
+No source level patch is needed.
+@item
+(But tag stack cannot be available.)
+@end itemize
+
+@c ***************************************************************************
+@node   Preparation(vim)
+@section Preparation.
+
+First, do the preparation of global. (Please see @xref{Preparation}.).
+
+Second, write the following set command to the @file{.vimrc} and start vim.
+
+@example
+
+    $HOME/.vimrc
+    +----------------------------
+    |set grepprg=global\ -t
+    |set grepformat=%m\@kbd{TAB}%f\@kbd{TAB}%l
+
+    TAB means @kbd{CTL-I}
+
+@end example
+@opindex -t
+
+@c ***************************************************************************
+@node   Basic usage(vim)
+@section Basic usage.
+
+@itemize @bullet
+@item To go to func1, you can say
+@example
+
+    :grep func1
+
+@end example
+
+Vim execute @code{global -t func1}, parse the output and list located
+objects. You can go to the first entry with @kbd{RET}.
+
+@item To go to the referenced point of func1, add @samp{-r} option.
+@opindex -r
+@example
+
+    :grep -r func1
+
+@end example
+
+vim executes command like @code{global -t -r func1} internally.
+
+@item To go to any symbols other than function, try this.
+@opindex -s
+@example
+
+    :grep -s lbolt
+
+@end example
+
+@item To go to any strings other than symbols, try this.
+@opindex -g
+@example
+
+    :grep -g Copyright
+
+@end example
+
+If many objects are located, vim list all of the them.
+
+@example
+
+main    /usr/src/sys/i386/linux/linux_genassym.c        14
+main    /usr/src/sys/kern/init_main.c   183
+main    /usr/src/sys/pc98/boot/netboot/main.c   37
+main    /usr/src/sys/pc98/boot/netboot/makerom.c        14
+
+Hit ENTER or type command to continue
+
+@end example
+
+You can go to any entry with @kbd{cc}n command.
+
+@item To get list of functions in a file, use -f command.
+@opindex -f
+@example
+
+    :grep -f main.c               <- @r{locate functions in main.c}
+
+@end example
+
+@item Other grep related commands are also available:
+
+@table @code
+@item @kbd{:cn}
+        go to the next entry.
+@item @kbd{:cp}
+        go to the previous entry.
+@item @kbd{:ccN}
+        go to the N'th entry.
+@item @kbd{:cl}
+        list all entries.
+@end table
+@end itemize
+
+@c ***************************************************************************
+@node   Applied usage(vim)
+@section Applied usage.
+
+@itemize @bullet
+@item You can use POSIX regular expressions.
+@opindex -g
+@example
+
+    :grep ^put_                  <- @r{locate functions start with 'put_'}
+    
+    :grep -g 'fseek(.*L_SET)' <- @r{locate fseek() using L_SET argment}
+
+@end example
+
+@item You can browse functions list of many files.
+@opindex -f
+@example
+
+    :grep -f *.c              <- @r{locate functions in *.c}
+
+@end example
+
+@item You can browse project files whose path includs specified pattern.
+@opindex -P
+@example
+
+    :grep -P /vm/             <- @r{under vm/ directory}
+    :grep -P \.h$             <- @r{all include files}
+    :grep -P init             <- @r{path including 'init'}
+
+@end example
+
+@end itemize
+
+@c ***************************************************************************
 @c Emacs editor
 @c ***************************************************************************
 @node Emacs editor
@@ -733,12 +1091,15 @@ You can use GLOBAL as a tag system of Emacs editor instead of etags.
 @node   Features(emacs)
 @section Features.
 
-Addition to the extended vi,
-
 @itemize @bullet
-@item More intelligent recognition of the current token and its type.
-@item Tag completion is available for input tag name.
-@item Mouse events are supported.
+@item
+You can use most of GLOBAL's facilities from the editor.
+@item
+More intelligent recognition of the current token and its type.
+@item
+Tag completion is available for input tag name.
+@item
+Mouse events are supported.
 @end itemize
 
 @c ***************************************************************************
@@ -995,355 +1356,6 @@ You will understand the usage by looking at the examples.
 
 You can move the HTML directory to anywhere. It is independent of the
 source code.
-
-@c ***************************************************************************
-@c Elvis editor
-@c ***************************************************************************
-@node Elvis editor
-@chapter Elvis using global
-
-Elvis 2.1 has new @code{tagprg} and @code{tagprgonce} variables for
-running an external tag search program. You can use them with GLOBAL.
-
-@menu
-* Features(elvis)::                     Features.
-* Preparation(elvis)::                  Preparation.
-* Basic usage(elvis)::                  Basic usage.
-* Applied usage(elvis)::                Applied usage.
-@end menu
-
-@c ***************************************************************************
-@node   Features(elvis)
-@section Features.
-
-Addition to the extended vi,
-
-@itemize @bullet
-@item No source level patch is needed.
-@item Mouse events are supported.
-@end itemize
-
-@c ***************************************************************************
-@node   Preparation(elvis)
-@section Preparation.
-
-First, do the preparation of global. (Please see @xref{Preparation}.).
-
-Second, start elvis and execute @code{set tagprg="global -t $1"} like this.
-@opindex -t
-
-@example
-
-    % elvis
-    ~
-    ~
-    ~
-    ~
-    ~
-    ~
-    :set tagprg="global -t $1"
-
-@end example
-
-@c ***************************************************************************
-@node   Basic usage(elvis)
-@section Basic usage.
-
-@itemize @bullet
-@item To go to func1, you can say
-@example
-
-    :tag func1
-
-@end example
-
-It seemes the same as original elvis, but elvis execute @code{global -t func1}
-internally and read it instead of tags file.
-
-@item To go to the referenced point of func1, add @samp{-r} option.
-@opindex -r
-@example
-
-    :tag -r func1
-
-@end example
-
-Elvis executes command like @code{global -t -r func1} internally.
-
-@item To go to any symbols other than function, try this.
-@opindex -s
-@example
-
-    :tag -s lbolt
-
-@end example
-
-@item To go to any strings other than symbols, try this.
-@opindex -g
-@example
-
-    :tag -g Copyright
-
-@end example
-
-@item When using -r, -s or -g, you had better to use browse command.
-@example
-
-    :browse -r fork
-
-@end example
-
-It brings a following selection list. You can select tag and go to
-the point.
-
-@example
-
-    Browse -r fork (2 matches)
-    +----------------+----------------+--------------------
-    | TAG NAME       | SOURCE FILE    | SOURCE LINE                   
-    +----------------+----------------+--------------------
-    |fork            |ux/linux_misc.c | (line 565)                    
-    |fork            |ern/init_main.c | (line 191)                    
-    +----------------+----------------+--------------------
-
-@end example
-
-@item To get list of functions in a file, use -f command.
-@opindex -f
-@example
-
-    :browse -f main.c               <- @r{locate functions in main.c}
-
-@end example
-
-@item Other tag commands are also available:
-
-@table @code
-@item @kbd{CTL-]}
-        go to the definition of current token.
-@item @kbd{CTL-T}
-        return to the most recent tag context.
-@item @kbd{:tag}
-        without argment, go to the next tag.
-@item @kbd{:pop}
-        return to the most recent tag context.
-@item @kbd{:stack}
-        display the tags stack.
-@item @kbd{:stag}
-        creates a new window and moves its cursor to the tag's definition point.
-@item @kbd{:sbrowse}
-        same with 'browse' but show in a new window.
-@end table
-@end itemize
-
-@c ***************************************************************************
-@node   Applied usage(elvis)
-@section Applied usage.
-
-@itemize @bullet
-@item You can use POSIX regular expressions.
-@opindex -g
-@example
-
-    :tag ^put_                  <- @r{locate functions start with 'put_'}
-    
-    :browse -g 'fseek(.*L_SET)' <- @r{locate fseek() using L_SET argment}
-
-@end example
-
-@item You can browse functions list of many files.
-@opindex -f
-@example
-
-    :browse -f *.c              <- @r{locate functions in *.c}
-
-@end example
-
-@item You can browse project files whose path includs specified pattern.
-@opindex -P
-@example
-
-    :browse -P /vm/             <- @r{under vm/ directory}
-    :browse -P \.h$             <- @r{all include files}
-    :browse -P init             <- @r{path including 'init'}
-
-@end example
-
-@item You can use mouse to select tag.
-@example
-
-    +----------------+----------------+--------------------
-    | TAG NAME       | SOURCE FILE    | SOURCE LINE                   
-    +----------------+----------------+--------------------
-    |fork            |ux/linux_misc.c | (line 565)                    
-    |fork            |ern/init_main.c | (line 191)                    
-    +----------------+----------------+--------------------
-
-@end example
-
-Please select tag name with mouse cursor and double click on the left
-button and you go to the tag's point.
-In source screen, also select function name and double click on the
-left button and you can go to the point that the function is defined.
-To come back, double click on the right button.
-@end itemize
-
-@c ***************************************************************************
-@c Vim editor
-@c ***************************************************************************
-@node Vim editor
-@chapter Vim using global
-
-Vim 5.2 or later has @code{grepprg} and @code{grepformat} variables for
-running an external grep like search program. You can use them with GLOBAL.
-
-@menu
-* Features(vim)::                       Features.
-* Preparation(vim)::                    Preparation.
-* Basic usage(vim)::                    Basic usage.
-* Applied usage(vim)::                  Applied usage.
-@end menu
-
-@c ***************************************************************************
-@node   Features(vim)
-@section Features.
-
-@itemize @bullet
-@item No source level patch is needed.
-@end itemize
-
-@c ***************************************************************************
-@node   Preparation(vim)
-@section Preparation.
-
-First, do the preparation of global. (Please see @xref{Preparation}.).
-
-Second, write the following set command to the @file{.vimrc} and start vim.
-
-@example
-
-    $HOME/.vimrc
-    +----------------------------
-    |set grepprg=global\ -t
-    |set grepformat=%m\@kbd{TAB}%f\@kbd{TAB}%l
-
-    TAB means @kbd{CTL-I}
-
-@end example
-@opindex -t
-
-@c ***************************************************************************
-@node   Basic usage(vim)
-@section Basic usage.
-
-@itemize @bullet
-@item To go to func1, you can say
-@example
-
-    :grep func1
-
-@end example
-
-Vim execute @code{global -t func1}, parse the output and list located
-objects. You can go to the first entry with @kbd{RET}.
-
-@item To go to the referenced point of func1, add @samp{-r} option.
-@opindex -r
-@example
-
-    :grep -r func1
-
-@end example
-
-vim executes command like @code{global -t -r func1} internally.
-
-@item To go to any symbols other than function, try this.
-@opindex -s
-@example
-
-    :grep -s lbolt
-
-@end example
-
-@item To go to any strings other than symbols, try this.
-@opindex -g
-@example
-
-    :grep -g Copyright
-
-@end example
-
-If many objects are located, vim list all of the them.
-
-@example
-
-main    /usr/src/sys/i386/linux/linux_genassym.c        14
-main    /usr/src/sys/kern/init_main.c   183
-main    /usr/src/sys/pc98/boot/netboot/main.c   37
-main    /usr/src/sys/pc98/boot/netboot/makerom.c        14
-
-Hit ENTER or type command to continue
-
-@end example
-
-You can go to any entry with @kbd{cc}n command.
-
-@item To get list of functions in a file, use -f command.
-@opindex -f
-@example
-
-    :grep -f main.c               <- @r{locate functions in main.c}
-
-@end example
-
-@item Other grep related commands are also available:
-
-@table @code
-@item @kbd{:cn}
-        go to the next entry.
-@item @kbd{:cp}
-        go to the previous entry.
-@item @kbd{:ccN}
-        go to the N'th entry.
-@item @kbd{:cl}
-        list all entries.
-@end table
-@end itemize
-
-@c ***************************************************************************
-@node   Applied usage(vim)
-@section Applied usage.
-
-@itemize @bullet
-@item You can use POSIX regular expressions.
-@opindex -g
-@example
-
-    :grep ^put_                  <- @r{locate functions start with 'put_'}
-    
-    :grep -g 'fseek(.*L_SET)' <- @r{locate fseek() using L_SET argment}
-
-@end example
-
-@item You can browse functions list of many files.
-@opindex -f
-@example
-
-    :grep -f *.c              <- @r{locate functions in *.c}
-
-@end example
-
-@item You can browse project files whose path includs specified pattern.
-@opindex -P
-@example
-
-    :grep -P /vm/             <- @r{under vm/ directory}
-    :grep -P \.h$             <- @r{all include files}
-    :grep -P init             <- @r{path including 'init'}
-
-@end example
-
-@end itemize
 
 @c ***************************************************************************
 @c Other topics
