@@ -421,6 +421,8 @@ char	*fid;
 	} else {
 		strbuf_putc(gtop->sb, ',');
 		strbuf_puts(gtop->sb, line);
+		if (strbuf_genlen(gtop) > DBOP_PAGESIZE / 4)
+			gtop->prev_path[0] = '\0';
 	}
 	recover(&ptable);
 }
