@@ -1217,10 +1217,14 @@ sub makedupindex {
 	local($dist) = @_;
 	local($count) = 0;
 	local($srcdir) = "../$'SRCS";
+	local(%kind) = ('GTAGS', 'definitions', 'GRTAGS', 'references');
+	local(%option) = ('GTAGS', '', 'GRTAGS', 'r');
+	local(%type) = ('GTAGS', $'DEFS, 'GRTAGS', $'REFS);
+
 
 	foreach $db ('GRTAGS', 'GTAGS') {
-		local($kind) = $db eq 'GTAGS' ? "definitions" : "references";
-		local($option) = $db eq 'GTAGS' ? '' : 'r';
+		local($kind) = $kind{$db};
+		local($option) = $option{$db};
 		local($prev) = '';
 		local($first_line);
 		local($writing) = 0;
@@ -1252,7 +1256,7 @@ sub makedupindex {
 				# duplicate entry
 				if ($first_line) {
 					&cache'put($db, $tag, " $count");
-					local($type) = ($db eq 'GTAGS') ? $'DEFS : $'REFS;
+					local($type) = $type{$db};
 					if ($'cflag) {
 						open(FILE, "| gzip -c >$dist/$type/$count.$'HTML") || &'error("cannot make file '$dist/$type/$count.$'HTML'.");
 					} else {
@@ -2392,6 +2396,7 @@ package cache;
 #
 sub open {
 	$CACH  = "$'tmp/CACH$$";
+	%map = ('GTAGS', 'D', 'GRTAGS', 'R');
 	dbmopen(%CACH, $CACH, 0600) || &'error("cannot make cache database.");
 }
 #
@@ -2403,7 +2408,7 @@ sub open {
 #
 sub put {
 	local($db, $tag, $line) = @_;
-	local($label) = ($db eq 'GTAGS') ? 'D' : 'R';
+	local($label) = $map{$db};
 
 	$CACH{$label.$tag} = $line;
 }
@@ -2416,7 +2421,7 @@ sub put {
 #
 sub get {
 	local($db, $tag) = @_;
-	local($label) = ($db eq 'GTAGS') ? 'D' : 'R';
+	local($label) = $map{$db};
 
 	defined($CACH{$label.$tag}) ? $CACH{$label.$tag} : undef;
 }
