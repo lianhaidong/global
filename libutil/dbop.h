@@ -60,7 +60,6 @@ typedef	struct {
 #define DBOP_KEY	1		/* read key part		*/
 #define DBOP_PREFIX	2		/* prefixed read		*/
 
-void dbop_setinfo(char *info);
 DBOP *dbop_open(const char *, int, int, int);
 char *dbop_get(DBOP *, const char *);
 void dbop_put(DBOP *, const char *, const char *);
