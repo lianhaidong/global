@@ -10,7 +10,8 @@ GLOBAL NEWS - User visible changes.
 Version 4.*.* - September 30, 2000, by Shigio Yamaguchi
 
 * htags: create bless.sh when the -S option specified.
-* htags: config variables show_position and icase_path added.
+* htags: config variables show_position, position_begin, position_end and
+  icase_path added.
 
 Version 4.0.1 - September 26, 2000, by Shigio Yamaguchi
 

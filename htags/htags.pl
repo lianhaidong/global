@@ -107,6 +107,8 @@ $'brace_begin    = '<FONT COLOR=blue>';		# { ... }
 $'brace_end      = '</FONT>';
 $'reserved_begin = '<B>';			# if, while, for or so on
 $'reserved_end   = '</B>';
+$'position_begin = '<FONT COLOR=gray>';
+$'position_end   = '</FONT>';
 #
 # Reserved words for C and Java are hard coded.
 # (configuration parameter 'reserved_words' was deleted.)
@@ -196,6 +198,10 @@ if (($var1 = &'getconf('brace_begin')) && ($var2 = &'getconf('brace_end'))) {
 if (($var1 = &'getconf('reserved_begin')) && ($var2 = &'getconf('reserved_end'))) {
 	$'reserved_begin  = $var1;
 	$'reserved_end    = $var2;
+}
+if (($var1 = &'getconf('position_begin')) && ($var2 = &'getconf('position_end'))) {
+	$'position_begin  = $var1;
+	$'position_end    = $var2;
 }
 }
 # HTML tag
@@ -1663,7 +1669,11 @@ sub src2html {
 			print ' ' x ($ncol + 1) if ($'nflag);
 			print "$'comment_begin/* ";
 			print &link_format(&anchor'getlinks($define_line));
-			print "[+$define_line $file]" if ($'show_position);
+			if ($'show_position) {
+				print $'position_begin;
+				print "[+$define_line $file]";
+				print $'position_end;
+			}
 			print " */$'comment_end\n";
 		}
 	}
