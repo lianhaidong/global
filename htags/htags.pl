@@ -522,9 +522,6 @@ if (!$dbpath) {
 unless (-r "$dbpath/GTAGS" && -r "$dbpath/GRTAGS") {
 	&'error("GTAGS and/or GRTAGS not found. Htags needs both of them.");
 }
-if ($'fflag && ! -r "$dbpath/GSYMS") {
-	&'error("-f option needs GSYMS. Please make it.");
-}
 $dbpath = &'realpath($dbpath);
 #
 # for global(1)
@@ -611,8 +608,10 @@ if ($'cgi && $'fflag) {
 		chmod(0644, "$dist/bless.sh") || &'error("cannot chmod bless script.");
 	}
 	foreach $f ('GTAGS', 'GRTAGS', 'GSYMS', 'GPATH') {
-		unlink("$dist/cgi-bin/$f");
-		&duplicatefile($f, $dbpath, "$dist/cgi-bin");
+		if (-f "$dbpath/$f") {
+			unlink("$dist/cgi-bin/$f");
+			&duplicatefile($f, $dbpath, "$dist/cgi-bin");
+		}
 	}
 }
 if ($'cgi && $'cflag) {
@@ -1371,8 +1370,10 @@ sub makesearchpart {
 	$index .= "\n<INPUT TYPE=radio NAME=type VALUE=reference>";
 	$index .= ($target) ? "Ref" : "Reference";
 	$index .= "\n<INPUT TYPE=radio NAME=type VALUE=symbol>";
-	$index .= ($target) ? "Sym" : "Other symbol";
-	$index .= "\n<INPUT TYPE=radio NAME=type VALUE=path>";
+	if (-f "$dbpath/GSYMS") {
+		$index .= ($target) ? "Sym" : "Other symbol";
+		$index .= "\n<INPUT TYPE=radio NAME=type VALUE=path>";
+	}
 	$index .= ($target) ? "Path" : "Path name";
 	$index .= "\n</FORM>\n";
 	$index;
