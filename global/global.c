@@ -755,6 +755,7 @@ char	*dbpath;
  * grep: grep pattern
  *
  *	i)	pattern	POSIX regular expression
+ *	i)	dbpath	GTAGS directory
  */
 void
 grep(pattern)

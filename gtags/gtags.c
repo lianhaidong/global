@@ -466,7 +466,7 @@ char	*argv[];
 		}
 		exit(0);
 	} else if (do_write) {
-		FILE *op = NULL;
+		FILE *op;
 		STRBUF *ib = strbuf_open(MAXBUFLEN);
 		int writing = 0;
 		int pipe = 0;

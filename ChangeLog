@@ -18,6 +18,26 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+June 5 2003, Shigio Yamaguchi  <shigio@gnu.org>
+
+	* libutil/env.c: replace putenv() and setenv() with set_env();
+	* libutil/char.c,char.h: New files.
+	* libutil/find.c: Skip symbolic links to eliminate the difference
+	  between find(1) version and dirent(3) version.
+	* htags.in: Remove tag name and line image from cache record.
+	  This made cache file smaller.
+	* htags.in: Stop using anchor db. Up to now, only gtags had called
+	  the parser. But hereafter, the parser will be called by both
+	  gtags and htags.
+	* global.c: About the -g option, implementation using grep + xargs
+	  was removed.
+	* libutil/find.c: The priority of the method of directory traverse
+	  was reversed. If dirent(3) is available, then use it to traverse
+	  directory tree. Otherwise use find(1).
+	* configure.ac: --with-cflags=[=VAL] was removed.
+	  Please use ./configure CFLAGS=VAL instead.
+	* reconf.sh: --configure, --make and --install option added.
+
 March 29 2003, Shigio Yamaguchi  <shigio@gnu.org>
 
 	* C.c,Cpp.c: move some code into condition_macro.

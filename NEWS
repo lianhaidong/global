@@ -19,6 +19,60 @@ ___________________________________
 GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 4.5.3 - June 5 2003, by Shigio Yamaguchi
+
+[INCOMPATIBLE CHANGES]
+
+* htags: Htags does not generate the code of javascript at all.
+  In the former version, we used javascript to display information about
+  links. But a browser these days had come to support the tool tip using
+  'title' attribute. So, we replaced the function using tool tip instead
+  of javascript facility.
+* The --no-javascript option was removed because it was already unnecessary.
+* global: The pattern of the argument came always to be interpreted
+  as a extended regular expression. In the former version, there was both
+  the case for the pattern to be interpreted as a basic regular expression
+  and the interpretation as the extended regular expression. This depended
+  on the environment of the build. (If you have grep(1) and xargs(1),
+  basic regular expression will be used.)
+  In the new version, if you want the pattern to be interpreted as a basic
+  regular expression, please specify the -G option.
+
+[OTHER CHANGES]
+
+New features:
+
+htags:
+* CVS REPOSITORY link (the --cvsweb and --cvsweb-cvsroot option).
+  You can link CVS repository from the hypertext of source code.
+* Tooltip inserted in links.
+* The --no-map-file option added.
+  Htags generate 'MAP' file by default. You can suppress it by this.
+* The --statistics option added.
+  With this option, htags print statistics information to the standard error.
+
+global:
+* The -e(--regexp) option added like grep(1).
+* The -G(--basic-regexp) option added like egrep(1).
+
+Performance tuning:
+
+htags:
+* Remove tag name and line image from cache record. This made cache
+  file smaller.
+* The use of the temporary file was suppressed to the minimum by tring to
+  read the source code.
+
+Other modifications:
+
+* A security hole was shut.
+* conf.h: add '{arch}' and '.notfunction' to default skip list.
+* gctags: support __attribute__((...)).
+
+I wish to express my gratitude continuously since last time for the
+contribution of Hideki Iwamoto san.
+
+
 Version 4.5.2 - March 29 2003, by Shigio Yamaguchi
 
 [INCOMPATIBLE CHANGES]
