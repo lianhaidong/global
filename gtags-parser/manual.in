@@ -28,7 +28,7 @@
 @SYNOPSIS
 	@name{gtags-parser} [-bdenrstvw] @arg{file} ...
 @DESCRIPTION
-	@name{Gctags-parser} print cross reference list for @xref{gtags,1}
+	@name{Gtags-parser} print cross reference list for @xref{gtags,1}
 	from the specified C, C++, yacc, java, PHP and Assembly source
 	to standard output.
 	Each line of output contains the object name,
@@ -95,7 +95,7 @@
 	The @option{-r} and @option{-s} options override each other;
 	the last one specified determines the method used.
 @DIAGNOSTICS
-	@name{Gctags-parser} exits with a non 0 value if an error occurred, 0 otherwise.
+	@name{Gtags-parser} exits with a non 0 value if an error occurred, 0 otherwise.
 	Duplicate objects are not considered errors.
 @SEE ALSO
 	@xref{global,1},
@@ -105,7 +105,7 @@
         GNU GLOBAL source code tag system@br
         (http://www.gnu.org/software/global/).
 @BUG
-	@name{Gctags-parser} relies on the input being well formed,
+	@name{Gtags-parser} relies on the input being well formed,
 	and any syntactical errors will completely confuse it.
 
 	Assembler support is far from complete.
