@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999
  *             Shigio Yamaguchi. All rights reserved.
- * Copyright (c) 1999, 2000
+ * Copyright (c) 1999, 2000, 2001
  *             Tama Communications Corporation. All rights reserved.
  *
  * This file is part of GNU GLOBAL.
@@ -69,6 +69,7 @@ int     show_help;
 int	show_config;
 int	do_find;
 int	do_expand;
+int	gtagsconf;
 int	debug;
 char	*extra_options;
 
@@ -81,6 +82,8 @@ Options:\n\
              make tag files with compact format.\n\
      -i, --incremental\n\
              update tag files incrementally.\n\
+     --gtagsconf file\n\
+             load configuration file.\n\
      -I, --idutils\n\
              make index files for idutils(1).\n\
      -o, --omit-gsyms\n\
@@ -117,6 +120,7 @@ static struct option const long_options[] = {
 	{"debug", no_argument, &debug, 1},
 	{"expand", required_argument, &do_expand, 1},
 	{"find", no_argument, &do_find, 1},
+	{"gtagsconf", required_argument, &gtagsconf, 1},
 	{"idutils", optional_argument, &Iflag, 1},
 	{"version", no_argument, &show_version, 1},
 	{"help", no_argument, &show_help, 1},
@@ -171,6 +175,23 @@ char	*argv[];
 				settabs(atoi(optarg + 1));
 			else if (!strcmp(p, "idutils"))
 				extra_options = optarg;
+			else if (gtagsconf) {
+				if (!optarg)
+					usage();
+				else
+#ifdef HAVE_PUTENV
+				{
+					STRBUF *env = strbuf_open(0);
+
+					strbuf_puts(env, "GTAGSCONF=");
+					strbuf_puts(env, optarg);
+					putenv(strbuf_value(env));
+					strbuf_close(env);
+				}
+#else
+				setenv("GTAGSCONF", optarg, 1);
+#endif /* HAVE_PUTENV */
+			}
 			break;
 		case 'c':
 			cflag++;

@@ -20,7 +20,7 @@
 .\" along with this program; if not, write to the Free Software
 .\" Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .\"
-.Dd Oct 21, 2000
+.Dd Jun 7, 2001
 .Dt GTAGS 1
 .Os FreeBSD
 .Sh NAME
@@ -53,6 +53,9 @@ C, C++, yacc, java and assembler source files are supported.
 .It Fl c
 .It Fl -compact
 Make tag files with compact format.
+.It Fl -gtagsconf Ar file
+Load user's configuration from
+.Ar file .
 .It Fl i
 .It Fl -incremental
 Update tag files incrementally. You had better use
@@ -117,6 +120,13 @@ Tag file for other symbols.
 Tag file for path of source files.
 .It Pa /etc/global.conf .globalrc
 Configuration file.
+.El
+.Sh ENVIRONMENT
+The following environment variables affect the execution of htags.
+.Pp
+.It Ev GTAGSCONF
+If this variable is set, its value is used as the configuration file.
+The default is $HOME/.globalrc.
 .El
 .Sh EXAMPLES
   % ls -F

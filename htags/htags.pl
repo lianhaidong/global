@@ -2,7 +2,7 @@
 #
 # Copyright (c) 1996, 1997, 1998, 1999
 #             Shigio Yamaguchi. All rights reserved.
-# Copyright (c) 1999, 2000
+# Copyright (c) 1999, 2000, 2001
 #             Tama Communications Corporation. All rights reserved.
 #
 # This file is part of GNU GLOBAL.
@@ -49,6 +49,8 @@ Options:
              write cgi script into cgidir to realize a centralised cgi script.
      -t, --title title
              the title of this hypertext.
+     --gtagsconf file
+             load user's configuration from file.
      --version
              print version.
      --help
@@ -136,6 +138,16 @@ $'java_reserved_words =~ s/,/|/g;
 #
 # read values from global.conf
 #
+for ($i = 0; $i < @ARGV; $i++) {
+	if ($ARGV[$i] =~ /^--gtagsconf$/) {
+		if (++$i >= @ARGV) {
+			&'error("--gtagsconf needs file name.");
+		} elsif (! -f $ARGV[$i]) {
+			&'error("config file '$ARGV[$i]' not found.");
+		}
+		$ENV{'GTAGSCONF'} = $ARGV[$i];
+	}
+}
 chop($config = `gtags --config`);
 if ($config) {
 if ($var1 = &'getconf('ncol')) {
@@ -425,6 +437,8 @@ while ($ARGV[0] =~ /^-/) {
 		$'fflag = 'f';
 	} elsif ($opt =~ /^--frame$/) {
 		$'Fflag = 'F';
+	} elsif ($opt =~ /^--gtagsconf$/) {
+		shift;
 	} elsif ($opt =~ /^--each-line-tag$/) {
 		$'lflag = 'l';
 	} elsif ($opt =~ /^--line-number$/) {

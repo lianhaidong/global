@@ -1,7 +1,7 @@
 .\"
 .\" Copyright (c) 1996, 1997, 1998, 1999
 .\"             Shigio Yamaguchi. All rights reserved.
-.\" Copyright (c) 1999, 2000
+.\" Copyright (c) 1999, 2000, 2001
 .\"             Tama Communications Corporation. All rights reserved.
 .\"
 .\" This file is part of GNU GLOBAL.
@@ -20,7 +20,7 @@
 .\" along with this program; if not, write to the Free Software
 .\" Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .\"
-.Dd Oct 21, 2000
+.Dd Jun 7, 2001
 .Dt HTAGS 1
 .Os FreeBSD
 .Sh NAME
@@ -78,6 +78,9 @@ You need to set up an HTTP server for this.
 .It Fl F
 .It Fl -frame
 Use frame for each part of the contents.
+.It Fl -gtagsconf Ar file
+Load user's configuration from
+.Ar file .
 .It Fl l
 .It Fl -each-line-tag
 Make a name tag(<A NAME=line number>) for each line, so that other hypertext
@@ -136,6 +139,9 @@ The following environment variables affect the execution of htags.
 .It Ev TMPDIR
 If this variable is set, its value is used as the directory to make temporary files.
 The default is /tmp.
+.It Ev GTAGSCONF
+If this variable is set, its value is used as the configuration file.
+The default is $HOME/.globalrc.
 .El
 .Sh DIAGNOSTICS
 .Nm Htags
