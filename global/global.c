@@ -386,17 +386,25 @@ char	*argv[];
 	/*
 	 * make sort filter.
 	 */
-	sortfilter = strbuf_open(0);
-	strbuf_puts(sortfilter, sort_command);
-	strbuf_putc(sortfilter, ' ');
-	if (tflag) 			/* ctags format */
-		strbuf_puts(sortfilter, "+0 -1 +1 -2 +2n -3");
-	else if (fflag)
-		strbuf_setlen(sortfilter, 0);
-	else if (xflag)			/* print details */
-		strbuf_puts(sortfilter, "+0 -1 +2 -3 +1n -2");
-	else 				/* print just a file name */
-		strbuf_puts(sortfilter, "-u");
+	{
+		int unique = 0;
+
+		sortfilter = strbuf_open(0);
+		strbuf_puts(sortfilter, sort_command);
+		strbuf_putc(sortfilter, ' ');
+		if (sflag) {
+			strbuf_puts(sortfilter, "-u");
+			unique = 1;
+		}
+		if (tflag) 			/* ctags format */
+			strbuf_puts(sortfilter, " +0 -1 +1 -2 +2n -3");
+		else if (fflag)
+			strbuf_setlen(sortfilter, 0);
+		else if (xflag)			/* print details */
+			strbuf_puts(sortfilter, " +0 -1 +2 -3 +1n -2");
+		else if (!unique)		/* print just a file name */
+			strbuf_puts(sortfilter, " -u");
+	}
 	/*
 	 * make path filter.
 	 */

@@ -697,8 +697,6 @@ int	type;
 		if (vflag)
 			fprintf(stderr, "..");
 		if (type != 2) {
-			if (db == GSYMS)
-				gflags |= GTAGS_UNIQUE;
 			if (extractmethod)
 				gflags |= GTAGS_EXTRACTMETHOD;
 			if (debug)
@@ -795,8 +793,6 @@ int	db;
 		}
 		if (skip)
 			continue;
-		if (db == GSYMS)
-			gflags |= GTAGS_UNIQUE;
 		if (extractmethod)
 			gflags |= GTAGS_EXTRACTMETHOD;
 		if (debug)
