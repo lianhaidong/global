@@ -35,7 +35,7 @@ o If your environment is Windows32(Windows95,98,NT...), you need to
 
   You should install the following tools:
 
-	bash, sed, grep, id-utils
+	gcc, perl, bash, sed, grep, id-utils
 	find, xargs(Find-utils)
 	sort, cat, tr(Text-utils)
 
