@@ -468,6 +468,7 @@ $include_caution = 0;
 $action_value = '';
 $id_value = '';
 $cgidir = '';
+$main_func = 'main';
 while ($ARGV[0] =~ /^-/) {
 	$opt = shift;
 	if ($opt =~ /^--action=(.*)$/) {
@@ -512,6 +513,10 @@ while ($ARGV[0] =~ /^-/) {
 		$opt = shift;
 		last if ($opt eq '');
 		$dbpath = $opt;
+	} elsif ($opt =~ /^--main-func=(.*)$/) {
+		$'main_func = $1;
+	} elsif ($opt =~ /^--main-func$/) {
+		$'main_func = shift;
 	} elsif ($opt =~ /^--secure-cgi=(.*)$/) {
 		$'Sflag = 'S';
 		$'cgidir = $1;
@@ -521,7 +526,7 @@ while ($ARGV[0] =~ /^-/) {
 	} elsif ($opt =~ /^--/) {
 		print STDERR $usage_const, "\n";
 		exit 1;
-	} elsif ($opt =~ /[^-acdfFlnosStvwtd]/) {
+	} elsif ($opt =~ /[^-acdfFlmnosStvwtd]/) {
 				# include 'l' for backward compatibility.
 		print STDERR $usage_const, "\n";
 		exit 1;
@@ -542,6 +547,10 @@ while ($ARGV[0] =~ /^-/) {
 			$opt = shift;
 			last if ($opt eq '');
 			$dbpath = $opt;
+		} elsif ($opt =~ /m/) {
+			$opt = shift;
+			last if ($opt eq '');
+			$'main_func = $opt;
 		} elsif ($opt =~ /S/) {
 			$'Sflag = 'S';
 			$'cgidir = shift;
@@ -1564,7 +1573,7 @@ sub makecommonpart {
 		$index .= "<HR>\n";
 	}
 	$index .= "<H2>MAINS</H2>\n";
-	local($command) = "global -nx main | sort +0 -1 +2 -3 +1n -2";
+	local($command) = "global -nx $'main_func | sort +0 -1 +2 -3 +1n -2";
 	open(PIPE, "$command |") || &'error("cannot fork.");
 	$index .= &'list_begin();
 	while (<PIPE>) {
