@@ -1,6 +1,6 @@
 /*
  * This file is placed into the public domain by the author,
- * Tama Communications Corporation.
+ * Shigio Yamaguchi
  */
 diff -c -r -N ../nvi-1.79.org/common/main.c ./common/main.c
 *** ../nvi-1.79.org/common/main.c	Sat Oct 12 07:28:28 1996
