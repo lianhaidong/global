@@ -1753,6 +1753,7 @@ sub src2html {
 		print "<PRE>\n";
 		while (<SRC>) {
 			s/([&<>])/$ctab{$1}/ge;
+			print "<A NAME=$.>";
 			print;
 		}
 		print "<PRE>\n";
