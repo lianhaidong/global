@@ -1432,7 +1432,8 @@ sub makedupindex {
 				}
 				# single entry
 				if ($first_line) {
-					&cache'put($db, $prev, $first_line);
+					local($nouse, $lno, $filename) = split(/[ \t]+/, $first_line);
+					&cache'put($db, $prev, "$lno $filename");
 				}
 				$first_line = $_;
 				$prev = $tag;
@@ -1585,7 +1586,7 @@ sub makedefineindex {
 				}
 			}
 		} else {
-			local($tag, $lno, $filename) = split(/[ \t]+/, $line);
+			local($lno, $filename) = split(/[ \t]+/, $line);
 			$filename = &'path2url($filename);
 			$url = "$'SRCS/$filename#$lno";
 			if ($'aflag) {
@@ -2290,8 +2291,7 @@ sub src2html {
 						$href .= " onMouseOver=\"show('$TYPE',-1,'')\"" if ($'use_javascript);
 						$href .= ">$TAG</A>";
 					} else {
-						local($nouse, $lno, $filename) = split(/[ \t]+/, $line);
-						$nouse = '';	# to make perl quiet
+						local($lno, $filename) = split(/[ \t]+/, $line);
 						local($url) = &'path2url($filename);
 						$filename =~ s!\./!!; 
 						$href = "<A HREF=../$'SRCS/$url#$lno";
