@@ -951,16 +951,16 @@ if ($?) {&'error("'$command' failed."); }
 #     MAKING TAG CACHE
 #
 print STDERR "[", &'date, "] ", "(3) making duplicate entries ...\n" if ($'vflag);
-$start_time = time();
 sub suddenly { &'clean(); exit 1}
 $SIG{'INT'} = 'suddenly';
 $SIG{'QUIT'} = 'suddenly';
 $SIG{'TERM'} = 'suddenly';
 &cache'open();
+$start_time = time();
 $func_total = &makedupindex($dist);
 $end_time = time();
 print STDERR "Total $func_total functions.\n" if ($'vflag);
-printf STDERR "- Elapsed time of making duplicate entries ............ %10d seconds.\n", $end_time - $start_time if ($'statistics);
+$T_makedupindex = $end_time - $start_time;
 #
 # (4) search index. (search.html)
 #
@@ -973,12 +973,12 @@ if ($'Fflag && $'fflag) {
 #     PRODUCE @defines
 #
 print STDERR "[", &'date, "] ", "(5) making function index ...\n" if ($'vflag);
-$start_time = time();
 sub suddenly { &'clean(); exit 1}
+$start_time = time();
 $func_total = &makedefineindex($dist, "$dist/defines.$'normal_suffix", $func_total);
 $end_time = time();
 print STDERR "Total $func_total functions.\n" if ($'vflag);
-printf STDERR "- Elapsed time of making function index ............... %10d seconds.\n", $end_time - $start_time if ($'statistics);
+$T_makedefineindex = $end_time - $start_time;
 #
 # (6) make file index (files.html and files/*)
 #     PRODUCE @files %includes
@@ -988,7 +988,7 @@ $start_time = time();
 $file_total = &makefileindex($dist, "$dist/files.$'normal_suffix", "$dist/$INCS");
 $end_time = time();
 print STDERR "Total $file_total files.\n" if ($'vflag);
-printf STDERR "- Elapsed time of making file index ................... %10d seconds.\n", $end_time - $start_time if ($'statistics);
+$T_makefileindex = $end_time - $start_time;
 $file_count += $file_total;
 #
 # [#] make a common part for mains.html and index.html
@@ -1014,7 +1014,7 @@ print STDERR "[", &'date, "] ", "(9) making hypertext from source code ...\n" if
 $start_time = time();
 &makehtml($dist, $file_total);
 $end_time = time();
-printf STDERR "- Elapsed time of making hypertext .................... %10d seconds.\n", $end_time - $start_time if ($'statistics);
+$T_makehtml = $end_time - $start_time;
 #
 # (10) rebuild script. (rebuild.sh)
 #
@@ -1026,7 +1026,7 @@ chmod(0640, "$dist/rebuild.sh") || &'error("cannot chmod rebuild script.");
 
 $end_all_time = time();
 print STDERR "[", &'date, "] ", "Done.\n" if ($'vflag);
-printf STDERR "- The entire elapsed time ............................. %10d seconds.\n", $end_all_time - $start_all_time if ($'statistics);
+$T_all = $end_all_time - $start_all_time;
 if ($'vflag && $'cgi && ($'cflag || $'fflag)) {
 	print STDERR "\n";
 	print STDERR "[Information]\n";
@@ -1053,6 +1053,16 @@ if ($'icon_list && -f $'icon_list) {
 }
 # include epilog_script if needed.
 require($'epilog_script) if ($'epilog_script && -f $'epilog_script);
+#
+# Print statistics information.
+#
+if ($'statistics) {
+	printf STDERR "- Elapsed time of making duplicate entries ............ %10d seconds.\n", $T_makedupindex;
+	printf STDERR "- Elapsed time of making function index ............... %10d seconds.\n", $T_makedefineindex;
+	printf STDERR "- Elapsed time of making file index ................... %10d seconds.\n", $T_makefileindex;
+	printf STDERR "- Elapsed time of making hypertext .................... %10d seconds.\n", $T_makehtml;
+	printf STDERR "- The entire elapsed time ............................. %10d seconds.\n", $T_all;
+}
 exit 0;
 #-------------------------------------------------------------------------
 # SUBROUTINES
