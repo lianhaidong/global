@@ -29,7 +29,6 @@
 
 #define MAXFILLEN	1024		/* max length of filter		*/
 #define IDENTLEN	512		/* max length of ident		*/
-#define MAXENVLEN	1024		/* max length of env		*/
 #define MAXBUFLEN	1024		/* max length of buffer		*/
 #define MAXPROPLEN	1024		/* max length of property	*/
 #define MAXARGLEN	512		/* max length of argment	*/

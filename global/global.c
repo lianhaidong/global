@@ -493,12 +493,12 @@ char	*argv[];
 	 * search in library path.
 	 */
 	if (count == 0 && !lflag && !rflag && !sflag && !notnamechar(av) && getenv("GTAGSLIBPATH")) {
-		char	buf[MAXENVLEN+1];
+		STRBUF  *sb = strbuf_open(0);
 		char	libdbpath[MAXPATHLEN+1];
 		char	*p, *lib;
 
-		strcpy(buf, getenv("GTAGSLIBPATH"));
-		p = buf;
+		strbuf_puts(sb, getenv("GTAGSLIBPATH"));
+		p = strbuf_value(sb);
 		while (p) {
 			lib = p;
 			if ((p = locatestring(p, PATHSEP, MATCH_FIRST)) != NULL)
@@ -524,6 +524,7 @@ char	*argv[];
 				break;
 			}
 		}
+		strbuf_close(sb);
 	}
 	if (vflag) {
 		if (count) {
@@ -1074,7 +1075,6 @@ char	*dbpath;
 int	db;
 {
 	char	buf[MAXPATHLEN+1], *path;
-	char	env[MAXPATHLEN+1];
 	char	*p;
 	FILE	*ip, *op;
 	char	*parser, *av;
@@ -1087,12 +1087,14 @@ int	db;
 	 * teach parser where is dbpath.
 	 */
 #ifdef HAVE_PUTENV
-#ifdef HAVE_SNPRINTF
-	snprintf(env, sizeof(env), "GTAGSDBPATH=%s", dbpath);
-#else
-	sprintf(env, "GTAGSDBPATH=%s", dbpath);
-#endif /* HAVE_SNPRINTF */
-	putenv(env);
+	{
+		STRBUF *env = strbuf_open(0);
+
+		strbuf_puts(env, "GTAGSDBPATH=");
+		strbuf_puts(env, dbpath);
+		putenv(strbuf_value(env));
+		strbuf_close(env);
+	}
 #else
 	setenv("GTAGSDBPATH", dbpath, 1);
 #endif /* HAVE_PUTENV */

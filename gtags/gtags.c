@@ -157,7 +157,6 @@ char	*argv[];
 	char    root[MAXPATHLEN+1];
 	char	dbpath[MAXPATHLEN+1];
 	char	cwd[MAXPATHLEN+1];
-	char	env[MAXENVLEN+1];
 	STRBUF	*sb = strbuf_open(0);
 	const char *p;
 	int	db;
@@ -287,26 +286,24 @@ char	*argv[];
 	 * teach gctags(1) where is dbpath by environment variable.
 	 */
 #ifdef HAVE_PUTENV
-#ifdef HAVE_SNPRINTF
-        snprintf(env, sizeof(env), "GTAGSDBPATH=%s", dbpath);
+	{
+		STRBUF *env = strbuf_open(0);
+
+		strbuf_puts(env, "GTAGSDBPATH=");
+		strbuf_puts(env, dbpath);
+		putenv(strbuf_value(env));
+		strbuf_close(env);
+	}
 #else
-        sprintf(env, "GTAGSDBPATH=%s", dbpath);
-#endif /* HAVE_SNPRINTF */
-        putenv(env);
-#else
-        setenv("GTAGSDBPATH", dbpath, 1);
-#endif
+	setenv("GTAGSDBPATH", dbpath, 1);
+#endif /* HAVE_PUTENV */
+
 	if (wflag) {
 #ifdef HAVE_PUTENV
-#ifdef HAVE_SNPRINTF
-		snprintf(env, sizeof(env), "GTAGSWARNING=1");
+		putenv("GTAGSWARNING=1");
 #else
-		sprintf(env, "GTAGSWARNING=1");
-#endif /* HAVE_SNPRINTF */
-		putenv(env);
-#else
-        	setenv("GTAGSWARNING", "1", 1);
-#endif
+		setenv("GTAGSWARNING", "1", 1);
+#endif /* HAVE_PUTENV */
 	}
 	/*
 	 * incremental update.

@@ -39,6 +39,7 @@
 #include "makepath.h"
 #include "path.h"
 #include "test.h"
+#include "strbuf.h"
 #include "usable.h"
 
 #ifdef _WIN32
@@ -56,7 +57,8 @@ char *
 usable(command)
 char	*command;
 {
-	char	buf[MAXENVLEN+1], *p, *dir;
+	STRBUF	*sb;
+	char *p, *dir;
 	static char path[MAXPATHLEN+1];
 #ifdef _WIN32
 	int	i, lim = sizeof(suffix)/sizeof(char *);
@@ -70,23 +72,32 @@ char	*command;
 		}
 		return NULL;
 	}
-	strcpy(buf, getenv("PATH"));
-	p = buf;
+	/*
+	 * Locate the command for each path in GTAGSLIBPATH.
+	 */
+	*path = 0;
+	/* Don't use fixed length buffer for environment variable
+	 * because it brings buffer overflow. */
+	sb = strbuf_open(0);
+	strbuf_puts(sb, getenv("PATH"));
+	p = strbuf_value(sb);
 	while (p) {
 		dir = p;
 		if ((p = locatestring(p, PATHSEP, MATCH_FIRST)) != NULL)
 			*p++ = 0;
 		if (test("fx", makepath(dir, command, NULL))) {
 			strcpy(path, makepath(dir, command, NULL));
-			return path;
+			goto finish;
 		}
 #if defined(_WIN32)
 		for (i = 0; i < lim; i++)
 			if (test("f", makepath(dir, command, suffix[i]))) {
 				strcpy(path, makepath(dir, command, suffix[i]));
-				return path;
+				goto finish;
 			}
 #endif
 	}
-	return NULL;
+finish:
+	strbuf_close(sb);
+	return *path ? path : NULL;
 }
