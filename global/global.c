@@ -523,6 +523,8 @@ char	*argv[];
 				continue;
 			if (!strcmp(dbpath, libdbpath))
 				continue;
+			if (!test("f", makepath(libdbpath, dbname(db), NULL)))
+				continue;
 			if (aflag) {		/* absolute path name */
 				strbuf_reset(pathfilter);
 				strbuf_puts(pathfilter, sed_command);
