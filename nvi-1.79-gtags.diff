@@ -1,10 +1,10 @@
 /*
  * This file is placed into the public domain by the author,
- * Shigio Yamaguchi
+ * Shigio Yamaguchi <shigio@tamacom.com>
  */
 diff -c -r -N ../nvi-1.79.org/common/main.c ./common/main.c
-*** ../nvi-1.79.org/common/main.c	Mon Mar  6 16:24:39 2000
---- ./common/main.c	Sun Jun 18 12:52:08 2000
+*** ../nvi-1.79.org/common/main.c	Sat Oct 12 07:28:28 1996
+--- ./common/main.c	Mon Apr  2 11:01:18 2001
 ***************
 *** 64,69 ****
 --- 64,72 ----
@@ -72,8 +72,8 @@ diff -c -r -N ../nvi-1.79.org/common/main.c ./common/main.c
   		*oargp++ = O_SECURE;
   	*oargp = -1;			/* Options initialization. */
 diff -c -r -N ../nvi-1.79.org/common/options.c ./common/options.c
-*** ../nvi-1.79.org/common/options.c	Mon Mar  6 16:24:39 2000
---- ./common/options.c	Sun Jun 18 12:52:08 2000
+*** ../nvi-1.79.org/common/options.c	Tue Oct 15 03:56:29 1996
+--- ./common/options.c	Mon Apr  2 11:01:18 2001
 ***************
 *** 80,85 ****
 --- 80,89 ----
@@ -100,8 +100,8 @@ diff -c -r -N ../nvi-1.79.org/common/options.c ./common/options.c
   	{"ic",		O_IGNORECASE},		/*     4BSD */
   	{"li",		O_LINES},		/*   4.4BSD */
 diff -c -r -N ../nvi-1.79.org/docs/USD.doc/vi.man/vi.1 ./docs/USD.doc/vi.man/vi.1
-*** ../nvi-1.79.org/docs/USD.doc/vi.man/vi.1	Mon Mar  6 16:24:36 2000
---- ./docs/USD.doc/vi.man/vi.1	Sun Jun 18 12:52:08 2000
+*** ../nvi-1.79.org/docs/USD.doc/vi.man/vi.1	Fri Oct 11 10:34:05 1996
+--- ./docs/USD.doc/vi.man/vi.1	Mon Apr  2 11:01:18 2001
 ***************
 *** 17,23 ****
   .SH SYNOPSIS
@@ -189,8 +189,8 @@ diff -c -r -N ../nvi-1.79.org/docs/USD.doc/vi.man/vi.1 ./docs/USD.doc/vi.man/vi.
   .B "hardtabs, ht [8]"
   Set the spacing between hardware tab settings.
 diff -c -r -N ../nvi-1.79.org/ex/ex.c ./ex/ex.c
-*** ../nvi-1.79.org/ex/ex.c	Mon Mar  6 16:24:40 2000
---- ./ex/ex.c	Sun Jun 18 12:52:08 2000
+*** ../nvi-1.79.org/ex/ex.c	Fri Oct 11 07:49:46 1996
+--- ./ex/ex.c	Mon Apr  2 11:01:18 2001
 ***************
 *** 935,941 ****
   	}
@@ -214,8 +214,8 @@ diff -c -r -N ../nvi-1.79.org/ex/ex.c ./ex/ex.c
   		 * The force flag is sensitive to leading whitespace, i.e.
   		 * "next !" is different from "next!".  Handle it before
 diff -c -r -N ../nvi-1.79.org/ex/ex_argv.c ./ex/ex_argv.c
-*** ../nvi-1.79.org/ex/ex_argv.c	Mon Mar  6 16:24:39 2000
---- ./ex/ex_argv.c	Sun Jun 18 12:52:08 2000
+*** ../nvi-1.79.org/ex/ex_argv.c	Sat Sep 21 09:33:02 1996
+--- ./ex/ex_argv.c	Mon Apr  2 11:01:18 2001
 ***************
 *** 326,331 ****
 --- 326,334 ----
@@ -255,8 +255,8 @@ diff -c -r -N ../nvi-1.79.org/ex/ex_argv.c ./ex/ex_argv.c
   			/*
   			 * QUOTING NOTE:
 diff -c -r -N ../nvi-1.79.org/ex/ex_tag.c ./ex/ex_tag.c
-*** ../nvi-1.79.org/ex/ex_tag.c	Mon Mar  6 16:24:40 2000
---- ./ex/ex_tag.c	Tue Jan 23 02:18:48 2001
+*** ../nvi-1.79.org/ex/ex_tag.c	Mon Sep 16 05:02:43 1996
+--- ./ex/ex_tag.c	Mon Apr  2 11:01:18 2001
 ***************
 *** 18,23 ****
 --- 18,26 ----
@@ -284,7 +284,7 @@ diff -c -r -N ../nvi-1.79.org/ex/ex_tag.c ./ex/ex_tag.c
   static char	*linear_search __P((char *, char *, char *));
 ***************
 *** 110,117 ****
---- 117,222 ----
+--- 117,207 ----
   	size_t cno;
   	long tl;
   	int force, istmp;
@@ -311,30 +311,15 @@ diff -c -r -N ../nvi-1.79.org/ex/ex_tag.c ./ex/ex_tag.c
 + 		for (i = 0; i < cmdp->argc && *cmdp->argv[i]->bp == '-'; i++) {
 + 			char *p = cmdp->argv[i]->bp;
 + 			if (*++p == '-') {	/* long name option */
-+ 				++p;
-+ 				if (	!strcmp(p, "help")
-+ 					|| !strcmp(p, "version")
-+ 					|| !strcmp(p, "completion")
-+ 					|| !strcmp(p, "incremental")
-+ 					|| !strcmp(p, "nofilter")
-+ 					|| !strcmp(p, "print-dbpath")
-+ 					|| !strcmp(p, "verbose")
-+ 				) {
-+ 					msgq(sp, M_ERR, "--%s option not available.", p);
-+ 					return (1);
-+ 				}
-+ 				if (!strcmp(p, "path"))
-+ 					Pflag = 1;
-+ 				if (!strcmp(p, "file"))
-+ 					fflag = 1;
++ 				msgq(sp, M_ERR, "long name option not available.");
++ 				return (1);
 + 			} else {		/* short name option */
 + 				if (	index(p, 'c')
-+ 					|| index(p, 'i')
 + 					|| index(p, 'n')
 + 					|| index(p, 'p')
 + 					|| index(p, 'v')
 + 				) {
-+ 					msgq(sp, M_ERR, "-c, -i, -n, -p and -v option not available.");
++ 					msgq(sp, M_ERR, "-c, -n, -p and -v option not available.");
 + 					return (1);
 + 				}
 + 				if (index(p, 'P'))
@@ -401,7 +386,7 @@ diff -c -r -N ../nvi-1.79.org/ex/ex_tag.c ./ex/ex_tag.c
   
   	/*
   	 * Allocate all necessary memory before swapping screens.  Initialize
---- 243,257 ----
+--- 228,242 ----
   	}
   
   	/* Get the tag information. */
@@ -419,7 +404,7 @@ diff -c -r -N ../nvi-1.79.org/ex/ex_tag.c ./ex/ex_tag.c
   	 * Allocate all necessary memory before swapping screens.  Initialize
 ***************
 *** 969,974 ****
---- 1081,1269 ----
+--- 1066,1254 ----
   	return (0);
   }
   
@@ -610,8 +595,8 @@ diff -c -r -N ../nvi-1.79.org/ex/ex_tag.c ./ex/ex_tag.c
    * ctag_slist --
    *	Search the list of tags files for a tag, and return tag queue.
 diff -c -r -N ../nvi-1.79.org/include/options_def.h ./include/options_def.h
-*** ../nvi-1.79.org/include/options_def.h	Mon Mar  6 16:24:37 2000
---- ./include/options_def.h	Sun Jun 18 12:52:08 2000
+*** ../nvi-1.79.org/include/options_def.h	Wed Oct 23 22:53:10 1996
+--- ./include/options_def.h	Mon Apr  2 11:01:18 2001
 ***************
 *** 16,79 ****
   #define O_EXTENDED 15
@@ -745,8 +730,8 @@ diff -c -r -N ../nvi-1.79.org/include/options_def.h ./include/options_def.h
 ! #define O_WRITEANY 78
 ! #define O_OPTIONCOUNT 79
 diff -c -r -N ../nvi-1.79.org/vi/v_ex.c ./vi/v_ex.c
-*** ../nvi-1.79.org/vi/v_ex.c	Mon Mar  6 16:24:38 2000
---- ./vi/v_ex.c	Sun Jun 18 12:52:08 2000
+*** ../nvi-1.79.org/vi/v_ex.c	Mon Sep 16 05:03:02 1996
+--- ./vi/v_ex.c	Mon Apr  2 11:01:18 2001
 ***************
 *** 223,233 ****
   	SCR *sp;
