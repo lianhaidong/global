@@ -815,7 +815,7 @@ open(FIND, "$'findcom |") || &'error("cannot fork.");
 while (<FIND>) {
 	chop;
 	if ($gtags_ctime < (stat($_))[$ctime_argc]) {
-		&'error("GTAGS is not the latest one. Please remake it.");
+		&'error("GTAGS is not the latest one. Please execute gtags(1) again.");
 	}
 }
 close(FIND);
