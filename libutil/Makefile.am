@@ -24,7 +24,7 @@ makepath.c path.c gpathop.c strbuf.c strmake.c tab.c test.c \
 token.c usable.c version.c is_unixy.c abs2rel.c split.c strlimcpy.c linetable.c \
 env.c char.c vfind.c
 
-AM_CFLAGS = -DBINDIR='"$(bindir)"'
+AM_CFLAGS = -DBINDIR='"$(bindir)"' -DDATADIR='"$(datadir)"'
 
 INCLUDES = @INCLUDES@
 

@@ -415,6 +415,19 @@ getconfs(name, sb)
 		if (!all)
 			break;
 	}
+	/*
+	 * If 'bindir' and 'datadir' are not defined then
+	 * return system configuration value.
+	 */
+	if (!exist) {
+		if (!strcmp(name, "bindir")) {
+			strbuf_puts(sb, BINDIR);
+			exist = 1;
+		} else if (!strcmp(name, "datadir")) {
+			strbuf_puts(sb, DATADIR);
+			exist = 1;
+		}
+	}
 	return exist;
 }
 /*
