@@ -271,9 +271,6 @@ $file_icon = 'c.jpg';
 #-------------------------------------------------------------------------
 $'begin_script="<SCRIPT LANGUAGE=javascript>\n<!--\n";
 $'end_script="<!-- end of script -->\n</SCRIPT>\n";
-# escaped angle
-$'langle  = sprintf("unescape('%s')", &'escape('<'));
-$'rangle  = sprintf("unescape('%s')", &'escape('>'));
 # staus line
 $'status_line  =
 "function show(type, lno, file) {\n" .
@@ -366,10 +363,6 @@ sub error {
 sub clean {
 	&anchor'finish();
 	&cache'close();
-}
-sub escape {
-	local($c) = @_;
-	'%' . sprintf("%x", ord($c));
 }
 #
 # locate executable command and return it's absolute path name.
