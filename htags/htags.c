@@ -46,7 +46,7 @@
 #include "const.h"
 
 void src2html(char *, char *, int);
-int makedupindex(char *);
+int makedupindex(void);
 int makedefineindex(char *, int, STRBUF *);
 int makefileindex(char *, STRBUF *);
 
@@ -1714,7 +1714,7 @@ main(argc, argv)
 	message("[%s] (3) making duplicate entries ...", now());
 	cache_open();
 	start_time = time(NULL);
-	func_total = makedupindex(distpath);
+	func_total = makedupindex();
 	end_time = time(NULL);
 	message("Total %d functions.", func_total);
 	T_makedupindex = end_time - start_time;
