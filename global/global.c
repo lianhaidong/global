@@ -903,6 +903,7 @@ char	*dbpath;
 		if ((xflag || tflag) && !*p)
 			die("illegal grep output format. '%s'", line);
 		*p++ = 0;
+		count++;
 		if (!xflag && !tflag) {
 			fprintf(op, "%s\n", path);
 			continue;
@@ -922,7 +923,6 @@ char	*dbpath;
 		/*
 		 * print out.
 		 */
-		count++;
 		if (tflag)
 			fprintf(op, "%s\t%s\t%d\n",
 				edit, path, linenum);
