@@ -546,6 +546,7 @@ sub list_body {
 		$line =~ s/	/&nbsp;&nbsp;&nbsp;&nbsp;/g;
 		$s = "<TR><TD NOWRAP><A HREF=$srcdir\/$html#$lno>$name</A></TD><TD NOWRAP ALIGN=right>$lno</TD><TD NOWRAP ALIGN=left>$filename</TD><TD NOWRAP>$line</TD></TR>";
 	} else {
+		$name =~ s/([^\w])/\\\1/g;	# Quote name
 		$s =~ s/\.\///;
 		$s =~ s/&/&amp;/g;
 		$s =~ s/</&lt;/g;
