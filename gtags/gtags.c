@@ -74,6 +74,7 @@ int	do_expand;
 int	do_date;
 int	do_pwd;
 int	gtagsconf;
+int	other_files;
 int	info;
 int	debug;
 char	*extra_options;
@@ -114,6 +115,7 @@ static struct option const long_options[] = {
 	{"gtagsconf", required_argument, &gtagsconf, 1},
 	{"idutils", no_argument, NULL, 'I'},
 	{"info", required_argument, &info, 1},
+	{"other", no_argument, &other_files, 1},
 	{"postgres", no_argument, NULL, 'P'},
 	{"pwd", no_argument, &do_pwd, 1},
 	{"version", no_argument, &show_version, 1},
@@ -280,14 +282,19 @@ char	*argv[];
 				exit(1);
 		exit(0);
 	} else if (do_find) {
-		char	*local;
-		char	*p;
+		char	*path;
 
-		local = (argc) ? argv[0] : "./";
-		getdbpath(cwd, root, dbpath, 0);
-		for (gfind_open(dbpath, local); (p = gfind_read()) != NULL; )
-			fprintf(stdout, "%s\n", p);
-		gfind_close();
+		if (other_files) {
+			for (find_open(); (path = find_read()) != NULL; )
+				fprintf(stdout, "%s\n", path);
+			find_close();
+		} else {
+			char *local = (argc) ? argv[0] : "./";
+			getdbpath(cwd, root, dbpath, 0);
+			for (gfind_open(dbpath, local); (path = gfind_read()) != NULL; )
+				fprintf(stdout, "%s\n", path);
+			gfind_close();
+		}
 		exit(0);
 	} else if (Iflag) {
 		if (!usable("mkid"))
@@ -440,7 +447,10 @@ char	*argv[];
 			strbuf_puts(sb, extra_options);
 		}
 		/* append file list */
-		for (find_open(); (path = find_read(NULL)) != NULL; ) {
+		for (find_open(); (path = find_read()) != NULL; ) {
+			/* a blank at the head of path means 'NOT SOURCE'. */
+			if (*path == ' ')
+				continue;
 			strbuf_putc(sb, ' ');
 			strbuf_puts(sb, path);
 		}
@@ -506,7 +516,10 @@ char	*root;
 	/*
 	 * make add list and update list.
 	 */
-	for (find_open(); (path = find_read(NULL)) != NULL; ) {
+	for (find_open(); (path = find_read()) != NULL; ) {
+		/* a blank at the head of path means 'NOT SOURCE'. */
+		if (*path == ' ')
+			continue;
 		if (locatestring(path, " ", MATCH_FIRST)) {
 			if (!qflag)
 				fprintf(stderr, "Warning: '%s' ignored, because it includes blank in the path.\n", path);
@@ -732,10 +745,13 @@ int	db;
 	if (vflag > 1 && getconfs(dbname(db), sb))
 		fprintf(stderr, " using tag command '%s <path>'.\n", strbuf_value(sb));
 	gtop = gtags_open(dbpath, root, db, GTAGS_CREATE, flags);
-	for (find_open(); (path = find_read(NULL)) != NULL; ) {
+	for (find_open(); (path = find_read()) != NULL; ) {
 		int	gflags = 0;
 		int	skip = 0;
 
+		/* a blank at the head of path means 'NOT SOURCE'. */
+		if (*path == ' ')
+			continue;
 		if (exitflag)
 			break;
 		if (locatestring(path, " ", MATCH_FIRST)) {

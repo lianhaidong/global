@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999
  *             Shigio Yamaguchi. All rights reserved.
- * Copyright (c) 1999, 2000, 2001
+ * Copyright (c) 1999, 2000, 2001, 2002
  *             Tama Communications Corporation. All rights reserved.
  *
  * This file is part of GNU GLOBAL.
@@ -72,6 +72,8 @@
  */
 static regex_t	skip_area;
 static regex_t	*skip;			/* regex for skipping units */
+static regex_t	suff_area;
+static regex_t	*suff = &suff_area;	/* regex for suffixes */
 static STRBUF *list;
 static int list_count;
 static char **listarray;		/* list for skipping full path */
@@ -99,22 +101,89 @@ char	*s;
 	*p = 0;
 }
 /*
- * prepare_skip: prepare skipping files.
+ * prepare_source: preparing regular expression.
  *
  *	i)	flags	flags for regcomp.
+ *	go)	suff	regular expression for source files.
+ */
+static void
+prepare_source()
+{
+	STRBUF	*sb = strbuf_open(0);
+	char	*sufflist = NULL;
+	int	flags = REG_EXTENDED;
+
+	/*
+	 * load icase_path option.
+	 */
+	if (getconfb("icase_path"))
+		flags |= REG_ICASE;
+#ifdef _WIN32
+	flags |= REG_ICASE;
+#endif /* _WIN32 */
+	strbuf_reset(sb);
+	if (!getconfs("suffixes", sb))
+		die("cannot get suffixes data.");
+	sufflist = strdup(strbuf_value(sb));
+	if (!sufflist)
+		die("short of memory.");
+	trim(sufflist);
+	{
+		char    *suffp;
+
+		strbuf_reset(sb);
+		strbuf_puts(sb, "\\.(");       /* ) */
+		for (suffp = sufflist; suffp; ) {
+			char    *p;
+
+			for (p = suffp; *p && *p != ','; p++) {
+				strbuf_putc(sb, '\\');
+				strbuf_putc(sb, *p);
+			}
+			if (!*p)
+				break;
+			assert(*p == ',');
+			strbuf_putc(sb, '|');
+			suffp = ++p;
+		}
+		strbuf_puts(sb, ")$");
+		/*
+		 * compile regular expression.
+		 */
+		retval = regcomp(suff, strbuf_value(sb), flags);
+		if (debug)
+			fprintf(stderr, "find regex: %s\n", strbuf_value(sb));
+		if (retval != 0)
+			die("cannot compile regular expression.");
+	}
+	strbuf_close(sb);
+	if (sufflist)
+		free(sufflist);
+}
+/*
+ * prepare_skip: prepare skipping files.
+ *
  *	go)	skip	regular expression for skip files.
  *	go)	listarry[] skip list.
  *	go)	list_count count of skip list.
  */
-void
-prepare_skip(flags)
-int flags;
+static void
+prepare_skip()
 {
 	char *skiplist;
 	STRBUF *reg = strbuf_open(0);
 	int reg_count = 0;
 	char *p, *q;
+	int     flags = REG_EXTENDED|REG_NEWLINE;
 
+	/*
+	 * load icase_path option.
+	 */
+	if (getconfb("icase_path"))
+		flags |= REG_ICASE;
+#ifdef _WIN32
+	flags |= REG_ICASE;
+#endif /* _WIN32 */
 	/*
 	 * initinalize common data.
 	 */
@@ -126,7 +195,6 @@ int flags;
 	if (listarray)
 		(void)free(listarray);
 	listarray = (char **)0;
-	skip = &skip_area;
 	/*
 	 * load skip data.
 	 */
@@ -168,6 +236,7 @@ int flags;
 		/*
 		 * compile regular expression.
 		 */
+		skip = &skip_area;
 		retval = regcomp(skip, strbuf_value(reg), flags);
 		if (debug)
 			fprintf(stderr, "skip regex: %s\n", strbuf_value(reg));
@@ -195,6 +264,7 @@ int flags;
 			fputc('\n', stderr);
 	}
 	strbuf_close(reg);
+	free(skiplist);
 }
 /*
  * skipthisfile: check whether or not we accept this file.
@@ -245,9 +315,6 @@ static  struct {
 	STRBUF  *sb;
 	char    *dirp, *start, *end, *p;
 } stack[STACKSIZE], *topp, *curp;		/* stack */
-
-static regex_t	suff_area;
-static regex_t	*suff = &suff_area;
 
 static int getdirs(char *, STRBUF *);
 
@@ -333,22 +400,9 @@ STRBUF  *sb;
 void
 find_open()
 {
-	STRBUF	*sb = strbuf_open(0);
-	char	*sufflist = NULL;
-	char	*skiplist = NULL;
-	int	flags = REG_EXTENDED;
-
 	assert(opened == 0);
 	opened = 1;
 
-	/*
-	 * load icase_path option.
-	 */
-	if (getconfb("icase_path"))
-		flags |= REG_ICASE;
-#ifdef _WIN32
-	flags |= REG_ICASE;
-#endif /* _WIN32 */
 	/*
 	 * setup stack.
 	 */
@@ -362,64 +416,21 @@ find_open()
 		die("cannot open '.' directory.");
 	curp->start = curp->p = strbuf_value(curp->sb);
 	curp->end   = curp->start + strbuf_getlen(curp->sb);
-
-	/*
-	 * preparing regular expression.
-	 */
-	strbuf_reset(sb);
-	if (!getconfs("suffixes", sb))
-		die("cannot get suffixes data.");
-	sufflist = strdup(strbuf_value(sb));
-	if (!sufflist)
-		die("short of memory.");
-	trim(sufflist);
-	{
-		char    *suffp;
-
-		strbuf_reset(sb);
-		strbuf_puts(sb, "\\.(");       /* ) */
-		for (suffp = sufflist; suffp; ) {
-			char    *p;
-
-			for (p = suffp; *p && *p != ','; p++) {
-				strbuf_putc(sb, '\\');
-				strbuf_putc(sb, *p);
-			}
-			if (!*p)
-				break;
-			assert(*p == ',');
-			strbuf_putc(sb, '|');
-			suffp = ++p;
-		}
-		strbuf_puts(sb, ")$");
-		/*
-		 * compile regular expression.
-		 */
-		retval = regcomp(suff, strbuf_value(sb), flags);
-		if (debug)
-			fprintf(stderr, "find regex: %s\n", strbuf_value(sb));
-		if (retval != 0)
-			die("cannot compile regular expression.");
-	}
 	strbuf_close(sb);
+
 	/*
-	 * prepare for skipping files.
+	 * prepare regular expressions.
 	 */
-	prepare_skip(flags);
-	if (sufflist)
-		free(sufflist);
-	if (skiplist)
-		free(skiplist);
+	prepare_source();
+	prepare_skip();
 }
 /*
  * find_read: read path without GPATH.
  *
- *	i)	length	length of path
  *	r)		path
  */
 char    *
-find_read(length)
-int	*length;
+find_read(void)
 {
 	static	char val[MAXPATHLEN+1];
 
@@ -431,11 +442,16 @@ int	*length;
 			curp->p += strlen(curp->p) + 1;
 			if (type == 'f' || type == 'l') {
 				char	*path = makepath(dir, unit, NULL);
-				if (regexec(suff, path, 0, 0, 0) != 0)
-					continue;
 				if (skipthisfile(path))
 					continue;
-				strcpy(val, path);
+				if (regexec(suff, path, 0, 0, 0) == 0) {
+					/* source file */
+					strcpy(val, $path);
+				} else {
+					/* other file like 'Makefile' */
+					val[0] = ' ';
+					strcpy(&val[1], $path);
+				}
 				if (length)
 					*length = strlen(val);
 				return val;
@@ -502,63 +518,20 @@ static FILE	*ip;
 void
 find_open()
 {
-	char	*findcom, *p, *q;
-	STRBUF	*sb;
-	char	*sufflist = NULL;
-	char	*skiplist = NULL;
-	int	flags = REG_EXTENDED|REG_NEWLINE;
+	char	*findcom = "find . -type f -print";
 
 	assert(opened == 0);
 	opened = 1;
 
-	/*
-	 * load icase_path option.
-	 */
-	if (getconfb("icase_path"))
-		flags |= REG_ICASE;
-#ifdef _WIN32
-	flags |= REG_ICASE;
-#endif /* _WIN32 */
-	sb = strbuf_open(0);
-	if (!getconfs("suffixes", sb))
-		die("cannot get suffixes data.");
-	sufflist = strdup(strbuf_value(sb));
-	if (!sufflist)
-		die("short of memory.");
-	trim(sufflist);
-	strbuf_reset(sb);
-	if (is_unixy())
-		strbuf_puts(sb, "find . -type f \\(");
-	else
-		strbuf_puts(sb, "find . -type f (");
-	for (p = sufflist; p; ) {
-		char	*suff = p;
-		if ((p = locatestring(p, ",", MATCH_FIRST)) != NULL)
-			*p++ = 0;
-		strbuf_puts(sb, " -name '*.");
-		strbuf_puts(sb, suff);
-		strbuf_puts(sb, "'");
-		if (p)
-			strbuf_puts(sb, " -o");
-	}
-	if (is_unixy())
-		strbuf_puts(sb, " \\) -print");
-	else
-		strbuf_puts(sb, " ) -print");
-	findcom = strbuf_value(sb);
 	if (debug)
 		fprintf(stderr, "find com: %s\n", findcom);
 	/*
-	 * prepare for skipping files.
+	 * prepare regular expressions.
 	 */
-	prepare_skip(flags);
+	prepare_source();
+	prepare_skip();
 	if (!(ip = popen(findcom, "r")))
 		die("cannot execute find.");
-	strbuf_close(sb);
-	if (sufflist)
-		free(sufflist);
-	if (skiplist)
-		free(skiplist);
 }
 /*
  * find_read: read path without GPATH.
@@ -567,10 +540,10 @@ find_open()
  *	r)		path
  */
 char	*
-find_read(length)
-int	*length;
+find_read(void)
 {
-	static char	path[MAXPATHLEN+1];
+	static char	val[MAXPATHLEN+2];
+	char	*path = &val[1];
 	char	*p;
 
 	assert(opened == 1);
@@ -582,11 +555,14 @@ int	*length;
 		if (*p != '\n')
 			die("output of find(1) is wrong (findread).");
 		*p = 0;
-		if (!skipthisfile(path)) {
-			if (length)
-				*length = p - path;
-			return path;
+		if (skipthisfile(path))
+			continue;
+		if (regexec(suff, path, 0, 0, 0) != 0) {
+			/* other file like 'Makefile' */
+			val[0] = ' ';
+			path = val;
 		}
+		return path;
 	}
 	return NULL;
 }
@@ -599,5 +575,8 @@ find_close(void)
 	assert(opened == 1);
 	pclose(ip);
 	opened = 0;
+	regfree(suff);
+	if (skip)
+		regfree(skip);
 }
 #endif /* !HAVE_FIND */

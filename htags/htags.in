@@ -78,6 +78,7 @@ $'action = 'cgi-bin/global.cgi';		# default action
 $'id = '';					# id (default non)
 $'cgi = 1;					# 1: make cgi-bin/
 $'definition_header='after';			# {no|after|before}
+$'other_files = 0;				# 1: list other files
 #
 # tag
 #
@@ -163,6 +164,9 @@ if ($var1 = &'getconf('normal_suffix')) {
 }
 if ($var1 = &'getconf('definition_header')) {
 	$'definition_header = $var1;
+}
+if ($var1 = &'getconf('other_files')) {
+	$'other_files = $var1;
 }
 if ($var1 = &'getconf('full_path')) {
 	$'full_path = $var1;
@@ -478,6 +482,8 @@ while ($ARGV[0] =~ /^-/) {
 		$'lflag = 'l';
 	} elsif ($opt =~ /^--line-number$/) {
 		$'nflag = 'n';
+	} elsif ($opt =~ /^--other$/) {
+		$'oflag = 'o';
 	} elsif ($opt =~ /^--verbose$/) {
 		$'vflag = 'v';
 	} elsif ($opt =~ /^--warning$/) {
@@ -498,7 +504,7 @@ while ($ARGV[0] =~ /^-/) {
 	} elsif ($opt =~ /^--/) {
 		print STDERR $usage_const, "\n";
 		exit 1;
-	} elsif ($opt =~ /[^-acdfFlnsStvwtd]/) {
+	} elsif ($opt =~ /[^-acdfFlnosStvwtd]/) {
 		print STDERR $usage_const, "\n";
 		exit 1;
 	} else {
@@ -508,6 +514,7 @@ while ($ARGV[0] =~ /^-/) {
 		if ($opt =~ /F/) { $'Fflag = 'F'; }
 		if ($opt =~ /l/) { $'lflag = 'l'; }
 		if ($opt =~ /n/) { $'nflag = 'n'; }
+		if ($opt =~ /o/) { $'oflag = 'o'; }
 		if ($opt =~ /v/) { $'vflag = 'v'; }
 		if ($opt =~ /w/) { $'wflag = 'w'; }
 		if ($opt =~ /t/) {
@@ -538,6 +545,9 @@ if ($show_help) {
 if ($'cflag && !&'usable('gzip')) {
 	print STDERR "Warning: 'gzip' command not found. -c option ignored.\n";
 	$'cflag = '';
+}
+if ($'oflag) {
+	$'other_files = 1;
 }
 if (!$title) {
 	@cwd = split('/', &'getcwd);
@@ -1272,7 +1282,9 @@ sub makefileindex {
 	local($indexlink) = ($'Fflag) ? "../files.$'normal_suffix" : "../mains.$'normal_suffix";
 	local($target) = ($'Fflag) ? 'mains' : '_top';
 	local(@dirstack, @fdstack);
-	open(FIND, "$'findcom |") || &'error("cannot fork.");
+	local($findcom) = ($'other_files) ? "$'findcom --other" : $'findcom;
+
+	open(FIND, "$findcom |") || &'error("cannot fork.");
 	open(FILES, ">$file") || &'error("cannot make file '$file'.");
 	print FILES $'html_begin, "\n";
 	print FILES &'set_header($'title_file_index);
@@ -1284,6 +1296,12 @@ sub makefileindex {
 	local(@push, @pop, $file);
 
 	while (<FIND>) {
+		local($notsource) = 0;
+		if (/^ /) {
+			next if (!$'other_files);
+			s/^ //;
+			$notsource = 1;
+		}
 		$count++;
 		chop;
 		s!^\./!!;
@@ -1612,16 +1630,23 @@ sub makesearchindex {
 sub makehtml {
 	local($dist, $total) = @_;
 	local($count) = 0;
+	local($findcom) = ($'other_files) ? "$'findcom --other" : $'findcom;
 
-	open(FIND, "$'findcom |") || &'error("cannot fork.");
+	open(FIND, "$findcom |") || &'error("cannot fork.");
 	while (<FIND>) {
+		local($notsource) = 0;
+		if (/^ /) {
+			next if (!$'other_files);
+			s/^ //;
+			$notsource = 1;
+		}
 		chop;
 		$count++;
 		local($path) = $_;
 		$path =~ s/^\.\///;
 		print STDERR " [$count/$total] converting $_\n" if ($'vflag);
 		$path = &'path2url($path);
-		&convert'src2html($_, "$dist/$'SRCS/$path");
+		&convert'src2html($_, "$dist/$'SRCS/$path", $notsource);
 	}
 	close(FIND);
 	if ($?) { &'error("cannot traverse directory."); }
@@ -1635,11 +1660,12 @@ package convert;
 #
 #	i)	$file	source file	- Read from
 #	i)	$hfile	HTML file	- Write to
+#	i)	$notsource 1: isn't source, 0: source.
 #	gi)	%includes
 #			pairs of include file and the path
 #
 sub src2html {
-	local($file, $hfile) = @_;
+	local($file, $hfile, $notsource) = @_;
 	local($ncol) = $'ncol;
 	local($tabs) = $'tabs;
 	local(%ctab) = ('&', '&amp;', '<', '&lt;', '>', '&gt;');
@@ -1662,177 +1688,189 @@ sub src2html {
 	$command = "$'gtags --expand -$tabs ";
 	$command .= ($'w32) ? "\"$file\"" : "'$file'";
 	open(SRC, "$command |") || &'error("cannot fork.");
-	#
-	# print the header
-	#
 	$file =~ s/^\.\///;
 	print $'html_begin, "\n";
 	print &'set_header($file);
 	print $'body_begin, "\n";
-	print "<A NAME=TOP><H2>";
-	print &fill_anchor($file);
-	print "</H2>\n";
-	print "$'comment_begin/* ";
-	print &link_format(&anchor'getlinks(0));
-	print " */$'comment_end";
-	if ($'show_position) {
-		print $'position_begin;
-		print "[+1 $file]";
-		print $'position_end;
-	}
-	print "\n<HR>\n";
-	print "<H2>$'title_define_index</H2>\n";
-	print "This source file includes following functions.\n";
-	print "<OL>\n";
-	local($lno, $tag, $type);
-	for (($lno, $tag, $type) = &anchor'first(); $lno; ($lno, $tag, $type) = &anchor'next()) {
-		print "<LI><A HREF=#$lno onMouseOver=\"show('R',$lno,'')\">$tag</A>\n" if ($type eq 'D');
-	}
-	print "</OL>\n";
-	print "<HR>\n";
-	#
-	# print source code
-	#
-	print "<PRE>\n";
-	$INCOMMENT = 0;			# initial status is out of comment
-	local($LNO, $TAG, $TYPE) = &anchor'first();
-	while (<SRC>) {
-		local($converted);
-		s/\r$//;
-		# make link for include file
-		if (!$INCOMMENT && /^#[ \t]*include/) {
-			local($last, $sep) = m![</"]([^</"]+)([">])!;
-			if (defined $'includes{$last}) {
-				local($link);
-				local($no, @incs) = split(/\n/, $'includes{$last});
-				if (@incs == 1) {
-					$link = &'path2url($incs[0]);
-				} else {
-					$link = "../$'INCS/$no.$'HTML";
-				}
-				# quote path name.
-				$last =~ s/([\[\]\.\*\+])/\\\1/g;
-				if ($sep eq '"') {
-					s!"(.*$last)"!"<A HREF=$link>$1</A>"!;
-				} else {
-					s!<(.*$last)>!&lt;<A HREF=$link>$1</A>&gt;!;
-				}
-				$converted = 1;
-			}
+	if ($notsource) {
+		#
+		# If not source file.
+		#
+		print "<PRE>\n";
+		while (<SRC>) {
+			s/([&<>])/$ctab{$1}/ge;
+			print;
 		}
-		# translate '<', '>' and '&' into entity name
-		if (!$converted) { s/([&<>])/$ctab{$1}/ge; }
-		&protect_line();	# protect quoted char, strings and comments
-		# painting source code
-		s/({|})/$'brace_begin$1$'brace_end/g;
-		local($sharp) = s/^(#[ \t]*($'sharp_macros))// ? $1 : '';
-		if ($sharp !~ '#[ \t]*include') {
-			if ($isjava) {
-				s/\b($'java_reserved_words)\b/$'reserved_begin$1$'reserved_end/go;
-			} elsif ($iscpp) {
-				s/\b($'cpp_reserved_words)\b/$'reserved_begin$1$'reserved_end/go;
-			} else {
-				s/\b($'c_reserved_words)\b/$'reserved_begin$1$'reserved_end/go;
-			}
+		print "<PRE>\n";
+	} else {
+		#
+		# print the header
+		#
+		print "<A NAME=TOP><H2>";
+		print &fill_anchor($file);
+		print "</H2>\n";
+		print "$'comment_begin/* ";
+		print &link_format(&anchor'getlinks(0));
+		print " */$'comment_end";
+		if ($'show_position) {
+			print $'position_begin;
+			print "[+1 $file]";
+			print $'position_end;
 		}
-		s/^/$'sharp_begin$sharp$'sharp_end/ if ($sharp);	# recover macro
-		local($define_line) = 0;
-		local(@links) = ();
-		local($count) = 0;
-		local($lno_printed) = 0;
+		print "\n<HR>\n";
+		print "<H2>$'title_define_index</H2>\n";
+		print "This source file includes following functions.\n";
+		print "<OL>\n";
+		local($lno, $tag, $type);
+		for (($lno, $tag, $type) = &anchor'first(); $lno; ($lno, $tag, $type) = &anchor'next()) {
+			print "<LI><A HREF=#$lno onMouseOver=\"show('R',$lno,'')\">$tag</A>\n" if ($type eq 'D');
+		}
+		print "</OL>\n";
+		print "<HR>\n";
+		#
+		# print source code
+		#
+		print "<PRE>\n";
+		$INCOMMENT = 0;			# initial status is out of comment
+		local($LNO, $TAG, $TYPE) = &anchor'first();
+		while (<SRC>) {
+			local($converted);
+			s/\r$//;
+			# make link for include file
+			if (!$INCOMMENT && /^#[ \t]*include/) {
+				local($last, $sep) = m![</"]([^</"]+)([">])!;
+				if (defined $'includes{$last}) {
+					local($link);
+					local($no, @incs) = split(/\n/, $'includes{$last});
+					if (@incs == 1) {
+						$link = &'path2url($incs[0]);
+					} else {
+						$link = "../$'INCS/$no.$'HTML";
+					}
+					# quote path name.
+					$last =~ s/([\[\]\.\*\+])/\\\1/g;
+					if ($sep eq '"') {
+						s!"(.*$last)"!"<A HREF=$link>$1</A>"!;
+					} else {
+						s!<(.*$last)>!&lt;<A HREF=$link>$1</A>&gt;!;
+					}
+					$converted = 1;
+				}
+			}
+			# translate '<', '>' and '&' into entity name
+			if (!$converted) { s/([&<>])/$ctab{$1}/ge; }
+			&protect_line();	# protect quoted char, strings and comments
+			# painting source code
+			s/({|})/$'brace_begin$1$'brace_end/g;
+			local($sharp) = s/^(#[ \t]*($'sharp_macros))// ? $1 : '';
+			if ($sharp !~ '#[ \t]*include') {
+				if ($isjava) {
+					s/\b($'java_reserved_words)\b/$'reserved_begin$1$'reserved_end/go;
+				} elsif ($iscpp) {
+					s/\b($'cpp_reserved_words)\b/$'reserved_begin$1$'reserved_end/go;
+				} else {
+					s/\b($'c_reserved_words)\b/$'reserved_begin$1$'reserved_end/go;
+				}
+			}
+			s/^/$'sharp_begin$sharp$'sharp_end/ if ($sharp);	# recover macro
+			local($define_line) = 0;
+			local(@links) = ();
+			local($count) = 0;
+			local($lno_printed) = 0;
 
-		if ($'lflag || $. == 1) {
-			print "<A NAME=$.>";
-			$lno_printed = 1;
-		}
-		for (; int($LNO) == $.; ($LNO, $TAG, $TYPE) = &anchor'next()) {
-			if (!$lno_printed) {
+			if ($'lflag || $. == 1) {
 				print "<A NAME=$.>";
 				$lno_printed = 1;
 			}
-			$define_line = $LNO if ($TYPE eq 'D');
-			$db = ($TYPE eq 'R') ? 'GTAGS' : 'GRTAGS';
-			local($line) = &cache'get($db, $TAG);
-			if (defined($line)) {
-				local($href);
-				if ($line =~ /^ (.*)/) {
-					local($type) = ($TYPE eq 'R') ? $'DEFS : $'REFS;
-					local($msg) = 'Multiple ';
-					$msg .= ($TYPE eq 'R') ? 'defined.' : 'refered.';
-					$href = "<A HREF=../$type/$1.$'HTML onMouseOver=\"show('$TYPE',-1,'')\">$TAG</A>";
-				} else {
-					local($nouse, $lno, $filename) = split(/[ \t]+/, $line);
-					$nouse = '';	# to make perl quiet
-					local($url) = &'path2url($filename);
-					$filename =~ s!\./!!; 
-					local($msg) = ($TYPE eq 'R') ? 'Defined at' : 'Refered from';
-					$href = "<A HREF=../$'SRCS/$url#$lno onMouseOver=\"show('$TYPE',$lno,'$filename')\">$TAG</A>";
+			for (; int($LNO) == $.; ($LNO, $TAG, $TYPE) = &anchor'next()) {
+				if (!$lno_printed) {
+					print "<A NAME=$.>";
+					$lno_printed = 1;
 				}
-				# set tag marks and save hyperlink into @links
-				if (ord($TAG) > 127) {	# for multi-byte code
-					if (s/([\x00-\x7f])$TAG([ \t]*\()/$1\005$count\005$2/ || s/([\x00-\x7f])$TAG([\x00-\x7f])/$1\005$count\005$2/) {
-						$count++;
-						push(@links, $href);
+				$define_line = $LNO if ($TYPE eq 'D');
+				$db = ($TYPE eq 'R') ? 'GTAGS' : 'GRTAGS';
+				local($line) = &cache'get($db, $TAG);
+				if (defined($line)) {
+					local($href);
+					if ($line =~ /^ (.*)/) {
+						local($type) = ($TYPE eq 'R') ? $'DEFS : $'REFS;
+						local($msg) = 'Multiple ';
+						$msg .= ($TYPE eq 'R') ? 'defined.' : 'refered.';
+						$href = "<A HREF=../$type/$1.$'HTML onMouseOver=\"show('$TYPE',-1,'')\">$TAG</A>";
 					} else {
-						print STDERR "Error: $file $LNO $TAG($TYPE) tag must exist.\n" if ($'wflag);
+						local($nouse, $lno, $filename) = split(/[ \t]+/, $line);
+						$nouse = '';	# to make perl quiet
+						local($url) = &'path2url($filename);
+						$filename =~ s!\./!!; 
+						local($msg) = ($TYPE eq 'R') ? 'Defined at' : 'Refered from';
+						$href = "<A HREF=../$'SRCS/$url#$lno onMouseOver=\"show('$TYPE',$lno,'$filename')\">$TAG</A>";
+					}
+					# set tag marks and save hyperlink into @links
+					if (ord($TAG) > 127) {	# for multi-byte code
+						if (s/([\x00-\x7f])$TAG([ \t]*\()/$1\005$count\005$2/ || s/([\x00-\x7f])$TAG([\x00-\x7f])/$1\005$count\005$2/) {
+							$count++;
+							push(@links, $href);
+						} else {
+							print STDERR "Error: $file $LNO $TAG($TYPE) tag must exist.\n" if ($'wflag);
+						}
+					} else {
+						if (s/\b$TAG([ \t]*\()/\005$count\005$1/ || s/\b$TAG\b/\005$count\005/ || s/\b_$TAG\b/_\005$count\005/)
+						{
+							$count++;
+							push(@links, $href);
+						} else {
+							print STDERR "Error: $file $LNO $TAG($TYPE) tag must exist.\n" if ($'wflag);
+						}
 					}
 				} else {
-					if (s/\b$TAG([ \t]*\()/\005$count\005$1/ || s/\b$TAG\b/\005$count\005/ || s/\b_$TAG\b/_\005$count\005/)
-					{
-						$count++;
-						push(@links, $href);
-					} else {
-						print STDERR "Error: $file $LNO $TAG($TYPE) tag must exist.\n" if ($'wflag);
-					}
+					print STDERR "Warning: $file $LNO $TAG($TYPE) found but not referred.\n" if ($'wflag);
 				}
-			} else {
-				print STDERR "Warning: $file $LNO $TAG($TYPE) found but not referred.\n" if ($'wflag);
+			}
+			# implant links
+			local($s);
+			for ($count = 0; @links; $count++) {
+				$s = shift @links;
+				unless (s/\005$count\005/$s/) {
+					print STDERR "Error: $file $LNO $TAG($TYPE) tag must exist.\n" if ($'wflag);
+				}
+			}
+			&unprotect_line();
+			# make guide
+			if ($define_line) {
+				$guide = '';
+				$guide .= ' ' x ($ncol + 1) if ($'nflag);
+				$guide .= "$'comment_begin/* ";
+				$guide .= &link_format(&anchor'getlinks($define_line));
+				if ($'show_position) {
+					$guide .= $'position_begin;
+					$guide .= "[+$define_line $file]";
+					$guide .= $'position_end;
+				}
+				$guide .= " */$'comment_end\n";
+			}
+			# print a line
+			if ($define_line && $'definition_header eq 'before') {
+				print $guide;
+			}
+			printf "%${ncol}d ", $. if ($'nflag);
+			print;
+			if ($define_line && $'definition_header eq 'after') {
+				print $guide;
 			}
 		}
-		# implant links
-		local($s);
-		for ($count = 0; @links; $count++) {
-			$s = shift @links;
-			unless (s/\005$count\005/$s/) {
-				print STDERR "Error: $file $LNO $TAG($TYPE) tag must exist.\n" if ($'wflag);
-			}
+		print "</PRE>\n";
+		print "<HR>\n";
+		print "<A NAME=BOTTOM>\n";
+		print "$'comment_begin/* ";
+		print &link_format(&anchor'getlinks(-1));
+		if ($'show_position) {
+			print $'position_begin;
+			print "[+$. $file]";
+			print $'position_end;
 		}
-		&unprotect_line();
-		# make guide
-		if ($define_line) {
-			$guide = '';
-			$guide .= ' ' x ($ncol + 1) if ($'nflag);
-			$guide .= "$'comment_begin/* ";
-			$guide .= &link_format(&anchor'getlinks($define_line));
-			if ($'show_position) {
-				$guide .= $'position_begin;
-				$guide .= "[+$define_line $file]";
-				$guide .= $'position_end;
-			}
-			$guide .= " */$'comment_end\n";
-		}
-		# print a line
-		if ($define_line && $'definition_header eq 'before') {
-			print $guide;
-		}
-		printf "%${ncol}d ", $. if ($'nflag);
-		print;
-		if ($define_line && $'definition_header eq 'after') {
-			print $guide;
-		}
+		print " */$'comment_end";
+		print "\n";
 	}
-	print "</PRE>\n";
-	print "<HR>\n";
-	print "<A NAME=BOTTOM>\n";
-	print "$'comment_begin/* ";
-	print &link_format(&anchor'getlinks(-1));
-	if ($'show_position) {
-		print $'position_begin;
-		print "[+$. $file]";
-		print $'position_end;
-	}
-	print " */$'comment_end";
-	print "\n";
 	print $'body_end, "\n";
 	print $'html_end, "\n";
 	close(SRC);

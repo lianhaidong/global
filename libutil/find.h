@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999
  *             Shigio Yamaguchi. All rights reserved.
- * Copyright (c) 1999, 2000, 2001
+ * Copyright (c) 1999, 2000, 2001, 2002
  *             Tama Communications Corporation. All rights reserved.
  *
  * This file is part of GNU GLOBAL.
@@ -26,7 +26,7 @@
 
 int	issource(char *);
 void	find_open(void);
-char	*find_read(int *);
+char	*find_read(void);
 void	find_close(void);
 
 #endif /* ! _FIND_H_ */
