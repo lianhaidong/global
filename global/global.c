@@ -1089,10 +1089,13 @@ int	db;
 	for (; argc > 0; argv++, argc--) {
 		av = argv[0];
 		if (!test("f", av)) {
-			if (test("d", av))
-				fprintf(stderr, "'%s' is a directory.\n", av);
-			else
-				fprintf(stderr, "'%s' not found.\n", av);
+			if (test("d", av)) {
+				if (!qflag)
+					fprintf(stderr, "'%s' is a directory.\n", av);
+			} else {
+				if (!qflag)
+					fprintf(stderr, "'%s' not found.\n", av);
+			}
 			continue;
 		}
 		/*
@@ -1104,13 +1107,15 @@ int	db;
 		if (!isabspath(path))
 			die("realpath(3) is not compatible with BSD version.");
 		if (strncmp(path, root, strlen(root))) {
-			fprintf(stderr, "'%s' is out of source tree.\n", path);
+			if (!qflag)
+				fprintf(stderr, "'%s' is out of source tree.\n", path);
 			continue;
 		}
 		path += strlen(root) - 1;
 		*path = '.';
 		if (!gpath_path2fid(path)) {
-			fprintf(stderr, "'%s' not found in GPATH.\n", path);
+			if (!qflag)
+				fprintf(stderr, "'%s' not found in GPATH.\n", path);
 			continue;
 		}
 		if (chdir(root) < 0)
