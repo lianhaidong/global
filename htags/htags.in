@@ -1270,7 +1270,7 @@ sub makedupindex {
 		local($writing) = 0;
 
 		$count = 0;
-		local($command) = "global -nx$option \".*\" | sort +0 -1 +2 -3 +1n -2";
+		local($command) = "global -nx$option \".*\" | sort +0 -1 +2 -3 +1n -2 -u";
 		open(LIST, "$command |") || &'error("cannot fork.");
 		while (<LIST>) {
 			chop;
