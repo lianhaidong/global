@@ -781,6 +781,8 @@ char	*dbpath;
 
 	if (!Gflag)
 		flags |= REG_EXTENDED;
+	if (iflag)
+		flags |= REG_ICASE;
 	if (regcomp(&preg, pattern, flags) != 0)
 		die("invalid regular expression.");
 	if (!(op = openfilter()))
