@@ -38,7 +38,7 @@
 #
 # Suggested .nexrc: (If you have gtags.pl in ${HOME}/perl.)
 #
-# perl use lib qw($ENV{HOME}/perl)
+# perl use lib "$ENV{HOME}/perl"
 # perl require 'gtags.pl'
 # map ^P :tagprev^M
 # map ^N :tagnext^M
