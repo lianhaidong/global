@@ -659,7 +659,7 @@ environment variable or temporarily by option.
 @example
 
     [/usr/src/sys] show -e 3
-    (Load emacs and show boot/alpha/boot1/boot1.c at line 227.)
+    (Preloaded emacs show boot/alpha/boot1/boot1.c at line 227.)
     [/usr/src/sys] show -l 3
     (Load less and show boot/alpha/boot1/boot1.c at line 227.)
     [/usr/src/sys] show -g 3
