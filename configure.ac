@@ -62,6 +62,10 @@ AC_HEADER_STAT
 AC_HEADER_TIME
 AG_BYTE_ORDER
 
+if test ${ac_cv_path_FIND} = no && test ${ac_header_dirent} = no; then
+        AC_MSG_ERROR([either find(1) or dirent(3) is required but not found.])
+fi
+
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 AC_TYPE_OFF_T

@@ -28,12 +28,10 @@
 #endif
 #include <assert.h>
 #include <ctype.h>
-#ifndef HAVE_FIND
+#ifdef HAVE_DIRENT_H
 #include <sys/types.h>
 #include <dirent.h>
-#ifndef HAVE_DP_D_TYPE
 #include <sys/stat.h>
-#endif
 #endif
 #include <stdio.h>
 #ifdef STDC_HEADERS
@@ -321,7 +319,7 @@ skipthisfile(path)
 	}
 	return 0;
 }
-#ifndef HAVE_FIND
+#ifdef HAVE_DIRENT_H
 /*----------------------------------------------------------------------*/
 /* dirent version find_xxx()						*/
 /*----------------------------------------------------------------------*/
@@ -352,36 +350,15 @@ getdirs(dir, sb)
 {
 	DIR *dirp;
 	struct dirent *dp;
-#ifndef HAVE_DP_D_TYPE
 	struct stat st;
-#endif
 
 	if ((dirp = opendir(dir)) == NULL)
 		return -1;
 	while ((dp = readdir(dirp)) != NULL) {
-#ifdef HAVE_DP_D_NAMLEN
-		if (dp->d_namlen == 1 && dp->d_name[0] == '.')
-#else
 		if (!strcmp(dp->d_name, "."))
-#endif
 			continue;
-#ifdef HAVE_DP_D_NAMLEN
-		if (dp->d_namlen == 2 && dp->d_name[0] == '.' && dp->d_name[1] == '.')
-#else
 		if (!strcmp(dp->d_name, ".."))
-#endif
 			continue;
-#ifdef HAVE_DP_D_TYPE
-		if (dp->d_type == DT_DIR)
-			strbuf_putc(sb, 'd');
-		else if (dp->d_type == DT_REG)
-			strbuf_putc(sb, 'f');
-		else if (dp->d_type == DT_LNK)
-			continue;	/* strbuf_putc(sb, 'l'); */
-		else
-			strbuf_putc(sb, ' ');
-		strbuf_puts(sb, dp->d_name);
-#else
 #ifdef HAVE_LSTAT
 		if (lstat(makepath(dir, dp->d_name, NULL), &st) < 0) {
 			fprintf(stderr, "cannot lstat '%s'. (Ignored)\n", dp->d_name);
@@ -399,12 +376,11 @@ getdirs(dir, sb)
 			strbuf_putc(sb, 'f');
 #ifdef S_ISLNK
 		else if (S_ISLNK(st.st_mode))
-			continue;	/* strbuf_putc(sb, 'l'); */
+			strbuf_putc(sb, 'l');
 #endif
 		else
 			strbuf_putc(sb, ' ');
 		strbuf_puts(sb, dp->d_name);
-#endif /* HAVE_DP_D_TYPE */
 		strbuf_putc(sb, '\0');
 	}
 	(void)closedir(dirp);
@@ -525,7 +501,7 @@ find_close(void)
 		regfree(skip);
 	opened = 0;
 }
-#else /* !HAVE_FIND */
+#else /* HAVE_DIRENT_H */
 /*----------------------------------------------------------------------*/
 /* find command version							*/
 /*----------------------------------------------------------------------*/
@@ -609,4 +585,4 @@ find_close(void)
 	if (skip)
 		regfree(skip);
 }
-#endif /* !HAVE_FIND */
+#endif /* HAVE_DIRENT_H */
