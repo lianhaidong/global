@@ -1145,8 +1145,8 @@ if ($flag eq 'g' || $flag eq 'I' || $form{'type'} eq 'source') {
 		chdir("../..");
 	}
 }
+local(%ctab) = ('&', '&amp;', '<', '&lt;', '>', '&gt;');
 if ($form{'type'} eq 'source') {
-	local(%ctab) = ('&', '&amp;', '<', '&lt;', '>', '&gt;');
 	open(PIPE, "-|") || exec '@gtagspath@', '--secure', '--expand', '-@tabs@', './'.$pattern;
 	if ($?) {	
 		print "<H1><FONT COLOR=#cc0000>Error</FONT></H1>\n";
@@ -1178,6 +1178,7 @@ if ($?) {
 	print "@html_end@\n";
 	exit 0;
 }
+$pattern =~ s/([&<>])/$ctab{$1}/ge;
 print "<H1><FONT COLOR=#cc0000>" . $pattern . "</FONT></H1>\n";
 print "Following $words are matched to above pattern.<HR>\n";
 $cnt = 0;
@@ -1195,9 +1196,7 @@ $| = 1;	# flush buffer
 while (<PIPE>) {
 	$cnt++;
 	($tag, $lno, $filename) = split;
-	s/&/&amp;/g;
-	s/</&lt;/g;
-	s/>/&gt;/g;
+	s/([&<>])/$ctab{$1}/ge;
 	# " ./$filename " is replaced with file number by gtags --convert.
 	s!(^[^ \t]+)!<A HREF=$htmlbase/S/ ./$filename .@HTML@#$lno>$1<\/A>!;
 	print PIPEOUT;
