@@ -1673,7 +1673,7 @@ sub makefileindex {
 		}
 		# collect include files. format is
 		#	counter + '\n' + path1 + '\n' + path2 ...
-		if (/.*\.[hH]$/) {
+		if (/.*\.(h|hxx|H)$/) {
 			if (! defined $includes{$file}) {
 				$includes{$file} = "$count\n$_";
 			} else {
