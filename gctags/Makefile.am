@@ -24,31 +24,8 @@ gctags_DEPENDENCIES = $(LDADD)
 
 man_MANS = gctags.1
 
-EXTRA_DIST = $(man_MANS) const.h manual.in reserved.pl HACKING \
-		sharp_res.pl \
-		c_res.in c_res.gpf c_res.pl \
-		cpp_res.in cpp_res.gpf cpp_res.pl \
-		java_res.in java_res.gpf java_res.pl \
-		php_res.in php_res.gpf php_res.pl php.l
-
-SUFFIXES = .c .h .l .gpf .in .pl
-
-RESERVED = $(srcdir)/reserved.pl
-
-if ENABLE_GPERF
-.l.c:
-	flex -o$@ $<
-.in.gpf:
-	prefix=`echo $* | sed 's/_res//'` && \
-	perl $(RESERVED) --prefix=$$prefix $< > $@
-.gpf.h:
-	prefix=`echo $* | sed 's/_res//'` && \
-	option=`perl $(RESERVED) --prefix=$$prefix --option` && \
-	gperf $$option < $< > $@
-.in.pl:
-	prefix=`echo $* | sed 's/_res//'` && \
-	perl $(RESERVED) --prefix=$$prefix --perl $< > $@
-perl: sharp_res.pl c_res.pl cpp_res.pl java_res.pl php_res.pl
-sharp_res.pl: c_res.in
-	perl $(RESERVED) --prefix=sharp --perl c_res.in > sharp_res.pl
-endif
+EXTRA_DIST = $(man_MANS) const.h manual.in reserved.pl HACKING htags_res.pl \
+		c_res.in c_res.gpf \
+		cpp_res.in cpp_res.gpf \
+		java_res.in java_res.gpf \
+		php_res.in php_res.gpf php.l

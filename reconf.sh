@@ -63,9 +63,11 @@ done
 # flex and gperf.
 #
 echo "- Preparing parser source ..."
-(cd gctags; set -x; for lang in c cpp java php; do
+(cd gctags; set -x
+perl ./reserved.pl --prefix=sharp --perl c_res.in >htags_res.pl
+for lang in c cpp java php; do
 	name=${lang}_res
-	perl ./reserved.pl --prefix=$lang --perl ${name}.in > ${name}.pl
+	perl ./reserved.pl --prefix=$lang --perl ${name}.in >>htags_res.pl
 	perl ./reserved.pl --prefix=$lang ${lang}_res.in > ${name}.gpf
 	option=`perl ./reserved.pl --prefix=$lang --option`
 	gperf $option < ${name}.gpf > ${name}.h
@@ -73,7 +75,6 @@ echo "- Preparing parser source ..."
 		flex -o$lang.c $lang.l
 	fi
 done
-perl ./reserved.pl --prefix=sharp --perl c_res.in > sharp_res.pl
 )
 
 echo "- Collecting reference manuals ..."

@@ -1,6 +1,6 @@
 ## Process this file with automake to create Makefile.in
 #
-# Copyright (c) 2000, 2001 Tama Communications Corporation
+# Copyright (c) 2000, 2001, 2003 Tama Communications Corporation
 #
 # This file is free software; as a special exception the author gives
 # unlimited permission to copy and/or distribute it, with or without
@@ -18,14 +18,11 @@ endif
 
 PERL = @PERL@
 
-resdir = $(srcdir)/../gctags
+reserved_word = $(srcdir)/../gctags/htags_res.pl
 
-RESFILES = $(resdir)/sharp_res.pl $(resdir)/c_res.pl $(resdir)/cpp_res.pl \
-	$(resdir)/java_res.pl $(resdir)/php_res.pl
-
-htags: $(srcdir)/htags.in $(srcdir)/const.pl $(RESFILES)
+htags: $(srcdir)/htags.in $(srcdir)/const.pl $(reserved_word)
 	echo "#! @PERL@" | \
-	cat - $(srcdir)/const.pl $(RESFILES) $(srcdir)/htags.in | \
+	cat - $(srcdir)/const.pl $(reserved_word) $(srcdir)/htags.in | \
 	sed -e 's,@''PERL''@,$(PERL),g' >htags.tmp && \
 	chmod +x htags.tmp && mv htags.tmp htags
 

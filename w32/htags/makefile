@@ -14,8 +14,8 @@ PROG   = htags
 
 all: $(PROG)
 
-$(PROG): const.pl htags.in
-	copy const.pl+htags.in $(PROG)
+$(PROG): const.pl ..\gctags\htags_res.pl htags.in
+	copy const.pl+..\gctags\htags_res.pl+htags.in $(PROG)
 install:
 	copy $(PROG) $(BINDIR)
 	copy $(PROG).bat $(BINDIR)
