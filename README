@@ -22,9 +22,7 @@ environments. It supports C, C++, Yacc and Java source code.
 
 * Installation
 
-	If your system is a UNIX then please see 'INSTALL',
-	else if your system is a Windows32 (Windows95/98, Windows-NT) then
-	please see 'w32/INSTALL'.
+	Please see 'INSTALL',
 
 * Documentation
 

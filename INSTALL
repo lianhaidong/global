@@ -28,6 +28,17 @@ o PERL version 4 or later is needed for htags.
 	http://www.perl.com/CPAN/
 
 
+o If your environment is Windows32(Windows95,98,NT...), you need to
+  install DJGPP tools to your environment. See following site:
+
+	http://www.delorie.com/djgpp/
+
+  You should install the following tools:
+
+	bash, sed, grep, id-utils
+	find, xargs(Find-utils)
+	sort, cat, tr(Text-utils)
+
 o Groff is needed for formatting online manuals.
 
    Online manuals in GLOBAL are written with 'mandoc' macro which is a part
@@ -53,10 +64,16 @@ o If you want to use the -I option of global(1) then id-utils(1) is needed.
 
    You need GNU make. It may be named 'gmake' on your system.
 
+   UNIX:
+
 	% ./configure
-	% make				<- GNU make
+	% make
 	# make install
 
+   DJGPP:
+	c:\> bash configure
+	c:\> make
+	c:\> make install
 
 3. Using GLOBAL with editors.
 
