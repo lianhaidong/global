@@ -47,15 +47,9 @@ common:\
 # [gtags-parser]
 #
 # This command is distributed as part of GLOBAL.
-#
-# If you want to treat file.x, file.y and file.z as C source files then
-#
-#	:suffixes=x,y,z:				<- pick up x,y,z
-#	:GTAGS=gtags-parser --langmap=c\:.x.y.z -dt %s:	<- treat as C source
-#	:GRTAGS=gtags-parser --langmap=c\:.x.y.z -dt %s:
-#	:GSYMS=gtags-parser --langmap=c\:.x.y.z -dt %s:
-#
 # The %s is replaced with the path of source file.
+# You need not use --langmap=xxx option. Gtags-parser(1) get the value
+# from environment variable.
 #
 gtags:\
 	:tc=common:\
