@@ -464,7 +464,7 @@ if ($'htags_options) {
 $'aflag = $'cflag = $'fflag = $'Fflag = $'nflag = $'Sflag = $'vflag = $'wflag = '';
 $show_version = 0;
 $show_help = 0;
-$include_caution = 0;
+$include_caution = '';
 $action_value = '';
 $id_value = '';
 $cgidir = '';
@@ -504,7 +504,7 @@ while ($ARGV[0] =~ /^-/) {
 	} elsif ($opt =~ /^--warning$/) {
 		$'wflag = 'w';
 	} elsif ($opt =~ /^--caution$/) {
-		$'include_caution = 1;
+		$'include_caution = $'caution_message;
 	} elsif ($opt =~ /^--title$/) {
 		$opt = shift;
 		last if ($opt eq '');
@@ -1565,7 +1565,7 @@ sub makecommonpart {
 	$index .= "</P>\n";
 	$index .= "<HR>\n";
 	if ($'include_caution) {
-		$index .= $'caution_message;
+		$index .= $'include_caution;
 		$index .= "\n<HR>\n";
 	}
 	if ($'fflag) {
