@@ -205,7 +205,7 @@ __gtags_prompt() {
 		local path=`echo $cwd | sed "s!^$root!!"`
 		ps="[$root]$path"
 	elif [ "$root" ]; then
-		ps="$root!$cwd"
+		ps="[$root]!$cwd"
 	else
 		ps=$cwd
 	fi
