@@ -74,6 +74,7 @@ int     show_help;
 int	show_config;
 int	do_find;
 int	do_sort;
+int	do_write;
 int	do_relative;
 int	do_absolute;
 int	do_expand;
@@ -127,6 +128,7 @@ static struct option const long_options[] = {
 	{"pwd", no_argument, &do_pwd, 1},
 	{"relative", no_argument, &do_relative, 1},
 	{"sort", no_argument, &do_sort, 1},
+	{"write", no_argument, &do_write, 1},
 	{"version", no_argument, &show_version, 1},
 	{"help", no_argument, &show_help, 1},
 	{ 0 }
@@ -346,6 +348,50 @@ char	*argv[];
 			}
 			pclose(op);
 		}
+		exit(0);
+	} else if (do_write) {
+		FILE *op;
+		STRBUF *ib = strbuf_open(MAXBUFLEN);
+		int writing = 0;
+		int pipe = 0;
+
+		while (strbuf_fgets(ib, stdin, STRBUF_NOCRLF) != NULL) {
+			char *p = strbuf_value(ib);
+			if (*p == '<') {
+				strbuf_putc(ib, '\n');
+				fputs(p, op);
+			} else {
+				if (writing) {
+					if (pipe)
+						(void)pclose(op);
+					else
+						(void)fclose(op);
+				}
+				pipe = 0;
+				if (*p == 'N') {
+					p++;
+					if ((op = fopen(p, "w")) == NULL)
+						die("cannot create file '%s'.", p);
+				} else if (*p == 'C') {
+					char command[MAXPATHLEN];
+					p++;
+					snprintf(command, sizeof(command), "gzip -c > %s", p);
+					if ((op = popen(command, "w")) == NULL)
+						die("cannot create file '%s'.", p);
+					pipe = 1;
+				} else {
+					die("illegal internal file format (--write).");
+				}
+				writing = 1;
+			}
+		}
+		if (writing) {
+			if (pipe)
+				(void)pclose(op);
+			else
+				(void)fclose(op);
+		}
+		strbuf_close(ib);
 		exit(0);
 	} else if (do_relative || do_absolute) {
 		STRBUF *ib = strbuf_open(MAXBUFLEN);

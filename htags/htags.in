@@ -1262,7 +1262,13 @@ sub makedupindex {
 	local($srcdir) = "../$'SRCS";
 	local(%kind) = ('GTAGS', 'definition', 'GRTAGS', 'reference', 'GSYMS', 'symbol');
 	local(%dir) = &'get_dirhash();
+	local($flag) = ($'cflag) ? 'C' : 'N';
 
+	#
+	# Gtags with --write option create file and put data for each
+	# duplicate entries index.
+	#
+	open(FILE, "| $'gtags --write") || &'error("cannot fork.");
 	foreach $db (&'get_taglist()) {
 		local($kind) = $kind{$db};
 		local($option) = &'get_option($db);
@@ -1283,7 +1289,6 @@ sub makedupindex {
 					print FILE &'list_end;
 					print FILE $'body_end, "\n";
 					print FILE $'html_end, "\n";
-					close(FILE);
 					$'file_count++;
 					$writing = 0;
 				}
@@ -1298,11 +1303,12 @@ sub makedupindex {
 				if ($first_line) {
 					&cache'put($db, $tag, " $count");
 					local($dir) = $dir{$db};
-					if ($'cflag) {
-						open(FILE, "| gzip -c >$dist/$dir/$count.$'HTML") || &'error("cannot make file '$dist/$dir/$count.$'HTML'.");
-					} else {
-						open(FILE, ">$dist/$dir/$count.$'HTML") || &'error("cannot make file '$dist/$dir/$count.$'HTML'.");
-					}
+					#
+					# Protocol:
+					# N<file>	create normal file.
+					# C<file>	create gzipped file.
+					#
+					print FILE "$flag$dist/$dir/$count.$'HTML\n";
 					$writing = 1;
 					print FILE $'html_begin, "\n";
 					print FILE &'set_header($tag);
@@ -1321,13 +1327,13 @@ sub makedupindex {
 			print FILE &'list_end;
 			print FILE $'body_end, "\n";
 			print FILE $'html_end, "\n";
-			close(FILE);
 			$'file_count++;
 		}
 		if ($first_line) {
 			&cache'put($db, $prev, $first_line);
 		}
 	}
+	close(FILE);
 	$count;
 }
 #

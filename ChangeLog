@@ -31,7 +31,7 @@ ChangeLog about GNU GLOBAL
 	* configure.in: macro AG_BYTE_ORDER recovered.
 	* htags: sort command replaced with gtags --sort in makedupindex()
 	  so that sort can treat smaller number of tag lines.
-	* htags: package cache rewritten for performance.
+	* htags: makedupindex() rewritten for performance.
 
 March 30 2002, Shigio Yamaguchi  <shigio@gnu.org>
 
