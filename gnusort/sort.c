@@ -1841,7 +1841,11 @@ sighandler (int sig)
   signal (sig, SIG_DFL);
 #endif				/* SA_INTERRUPT */
   cleanup ();
+#ifdef __MINGW32__
+  raise (sig);
+#else
   kill (getpid (), sig);
+#endif
 }
 
 /* Set the ordering options for KEY specified in S.
@@ -1978,10 +1982,14 @@ main (int argc, char **argv)
 #else				/* !SA_INTERRUPT */
   if (signal (SIGINT, SIG_IGN) != SIG_IGN)
     signal (SIGINT, sighandler);
+#ifdef SIGHUP
   if (signal (SIGHUP, SIG_IGN) != SIG_IGN)
     signal (SIGHUP, sighandler);
+#endif
+#ifdef SIGPIPE
   if (signal (SIGPIPE, SIG_IGN) != SIG_IGN)
     signal (SIGPIPE, sighandler);
+#endif
   if (signal (SIGTERM, SIG_IGN) != SIG_IGN)
     signal (SIGTERM, sighandler);
 #endif				/* !SA_INTERRUPT */
