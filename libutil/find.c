@@ -416,7 +416,6 @@ find_open()
 		die("cannot open '.' directory.");
 	curp->start = curp->p = strbuf_value(curp->sb);
 	curp->end   = curp->start + strbuf_getlen(curp->sb);
-	strbuf_close(sb);
 
 	/*
 	 * prepare regular expressions.
@@ -446,14 +445,12 @@ find_read(void)
 					continue;
 				if (regexec(suff, path, 0, 0, 0) == 0) {
 					/* source file */
-					strcpy(val, $path);
+					strcpy(val, path);
 				} else {
 					/* other file like 'Makefile' */
 					val[0] = ' ';
-					strcpy(&val[1], $path);
+					strcpy(&val[1], path);
 				}
-				if (length)
-					*length = strlen(val);
 				return val;
 			}
 			if (type == 'd') {
@@ -536,7 +533,6 @@ find_open()
 /*
  * find_read: read path without GPATH.
  *
- *	i)	length	length of path
  *	r)		path
  */
 char	*
