@@ -60,6 +60,8 @@
 		You need to set up an HTTP server for this.
 	@item{@option{-F}, @option{--frame}}
 		Use frame for each part of the contents.
+	@item{@option{--gtags}}
+		Execute @xref{gtags,1} before creating hypertext.
 	@item{@option{--gtagsconf} @arg{file}}
 		Load user's configuration from @arg{file}.
 	@item{@option{-m}, @option{--main-func}}

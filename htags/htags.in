@@ -465,6 +465,7 @@ if ($'htags_options) {
 $'aflag = $'cflag = $'fflag = $'Fflag = $'nflag = $'Sflag = $'vflag = $'wflag = '';
 $show_version = 0;
 $show_help = 0;
+$exec_gtags = 0;
 $include_caution = '';
 $action_value = '';
 $id_value = '';
@@ -493,6 +494,8 @@ while ($ARGV[0] =~ /^-/) {
 		$'fflag = 'f';
 	} elsif ($opt =~ /^--frame$/) {
 		$'Fflag = 'F';
+	} elsif ($opt =~ /^--gtags$/) {
+		$'exec_gtags = 1;
 	} elsif ($opt =~ /^--gtagsconf=(.*)$/) {
 		;		# --gtagsconf is estimated only once.
 	} elsif ($opt =~ /^--gtagsconf$/) {
@@ -573,6 +576,13 @@ if ($show_version) {
 if ($show_help) {
 	print STDOUT $help_const;
 	exit 1;
+}
+if ($exec_gtags) {
+	local($command) = $'gtags;
+	$command .= " -v" if ($'vflag);
+	$command .= " $dbpath" if ($dbpath);
+	system($command);
+	if ($?) { &'error("cannot execute gtags(1) command."); }
 }
 if ($'cflag && !&'usable('gzip')) {
 	print STDERR "Warning: 'gzip' command not found. -c option ignored.\n";
