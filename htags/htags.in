@@ -287,13 +287,23 @@ $'end_script="<!-- end of script -->\n</SCRIPT>\n";
 $'status_line  =
 "function show(type, lno, file) {\n" .
 "	if (lno > 0) {\n" .
-"		msg = (type == 'R') ? 'Defined at' : 'Refered from';\n" .
+"		if (type == 'R')\n" .
+"			msg = 'Defined at';\n" .
+"		else if (type == 'D')\n" .
+"			msg = 'Refered from';\n" .
+"		else\n" .
+"			msg = 'Used at';\n" .
 "		msg += ' ' + lno;\n" .
 "		if (file != '')\n" .
 "			msg += ' in ' + file;\n" .
 "	} else {\n" .
 "		msg = 'Multiple ';\n" .
-"		msg += (type == 'R') ? 'defined' : 'refered';\n" .
+"		if (type == 'R')\n" .
+"			msg += 'defined';\n" .
+"		else if (type == 'D')\n" .
+"			msg += 'refered';\n" .
+"		else\n" .
+"			msg += 'used';\n" .
 "	}\n" .
 "	msg += '.';\n" .
 "	self.status = msg;\n" .
@@ -2016,8 +2026,6 @@ sub src2html {
 						} else {	# 'D' or 'M'
 							$dir = $'REFS;
 						}
-						local($msg) = 'Multiple ';
-						$msg .= ($TYPE eq 'R') ? 'defined.' : 'refered.';
 						$href = "<A HREF=../$dir/$1.$'HTML";
 						$href .= " onMouseOver=\"show('$TYPE',-1,'')\"" if ($'use_javascript);
 						$href .= ">$TAG</A>";
@@ -2026,7 +2034,6 @@ sub src2html {
 						$nouse = '';	# to make perl quiet
 						local($url) = &'path2url($filename);
 						$filename =~ s!\./!!; 
-						local($msg) = ($TYPE eq 'R') ? 'Defined at' : 'Refered from';
 						$href = "<A HREF=../$'SRCS/$url#$lno";
 						$href .= " onMouseOver=\"show('$TYPE',$lno,'$filename')\"" if ($'use_javascript);
 						$href .= ">$TAG</A>";
