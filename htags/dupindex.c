@@ -44,6 +44,12 @@ static char *options[] = {NULL, "",           "r",         "s"};
 
 static char command[MAXFILLEN];
 
+/*
+ * Open duplicate object index file.
+ *
+ *	i)	db	tag type(GTAGS, GRTAGS, GSYMS)
+ *	r)	op	file pointer
+ */
 static FILE *
 open_dup_file(db, count)
 	int db;
@@ -65,6 +71,11 @@ open_dup_file(db, count)
 	}
 	return op;
 }
+/*
+ * Close duplicate object index file.
+ *
+ *	i)	op	file pointer
+ */
 static void
 close_dup_file(op)
 	FILE *op;
@@ -76,12 +87,12 @@ close_dup_file(op)
 		fclose(op);
 	}
 }
-/*--------------------------------------------------------------*/
-/* Make duplicate object index					*/
-/*--------------------------------------------------------------*/
 /*
- *	i)	file
- *	i)	incdir	directory which has include files.
+ * Make duplicate object index.
+ *
+ * If referred tag is only one, direct link which points the tag is generated.
+ * Else if two or more tag exists, indirect link which points the tag list
+ * is generated.
  */
 int
 makedupindex()
