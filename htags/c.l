@@ -226,7 +226,7 @@ YACC_IDENTIFIER	({ALPHA}|\.)({ALPHANUM}|\.)*
 }
 
  /* New line */
-\n		C_FAMILY_END_OF_LINE_ACTION
+\n		DEFAULT_END_OF_LINE_ACTION
 .		{ put_char(LEXTEXT[0]); }
 
 %%
@@ -242,6 +242,7 @@ void
 yacc_parser_init(ip)
 	FILE *ip;
 {
+	newline_terminate_string = 1;
 	DEFAULT_BEGIN_OF_FILE_ACTION
 	BEGIN YACC_DECLARATIONS;
 }

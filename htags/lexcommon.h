@@ -24,11 +24,16 @@
 /*
  * The default action for line control.
  * These can be applicable to most languages.
- * You must define C_COMMENT, CPP_COMMENT and SHELL_COMMENT as %start values.
- * It assumed CPP_COMMENT and SHELL_COMMENT is one line comment.
+ * You must define C_COMMENT, CPP_COMMENT SHELL_COMMENT, LITERAL, STRING
+ * and PREPROCESSOR_LINE as %start values, even if they are not used.
+ * It assumed that CPP_COMMENT and SHELL_COMMENT is one line comment.
  */
 static int lineno;
 static int begin_line;
+/*
+ * If you want newline to terminate string, set this variable to 1.
+ */
+static int newline_terminate_string = 0;
 
 #define LINENO	lineno
 
@@ -57,32 +62,15 @@ static int begin_line;
 	switch (YY_START) {						\
 	case CPP_COMMENT:						\
 	case SHELL_COMMENT:						\
-		echos(comment_end);					\
 		yy_pop_state();						\
-		break;							\
-	case C_COMMENT:							\
-		echos(comment_end);					\
-		break;							\
-	}								\
-	put_end_of_line(lineno);					\
-	/* for the next line */						\
-	lineno++;							\
-	begin_line = 1;							\
-}
-
-#define C_FAMILY_END_OF_LINE_ACTION {					\
-	switch (YY_START) {						\
-	case CPP_COMMENT:						\
-	case SHELL_COMMENT:						\
-		echos(comment_end);					\
-		yy_pop_state();						\
-		break;							\
+		/* FALLTHROUGH */					\
 	case C_COMMENT:							\
 		echos(comment_end);					\
 		break;							\
 	case STRING:							\
 	case LITERAL:							\
-		yy_pop_state();						\
+		if (newline_terminate_string)				\
+			yy_pop_state();					\
 		break;							\
 	}								\
 	if (YY_START == PREPROCESSOR_LINE)				\
@@ -94,7 +82,7 @@ static int begin_line;
 }
 
 #define DEFAULT_BACKSLASH_NEWLINE_ACTION {				\
-	put_char(LEXTEXT[0]);						\
+	echoc('\\');							\
 	switch (YY_START) {						\
 	case CPP_COMMENT:						\
 	case C_COMMENT:							\

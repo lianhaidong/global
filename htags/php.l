@@ -65,7 +65,7 @@ ALPHA		[a-zA-Z_\x80-\xff]
 ALPHANUM	[a-zA-Z_\x80-\xff0-9]
 WORD		{ALPHA}{ALPHANUM}*
 
-%start	PHP C_COMMENT CPP_COMMENT SHELL_COMMENT STRING LITERAL
+%start	PHP C_COMMENT CPP_COMMENT SHELL_COMMENT STRING LITERAL PREPROCESSOR_LINE
 %option 8bit noyywrap noyy_top_state stack prefix="php"
 %%
  /* Start PHP */
