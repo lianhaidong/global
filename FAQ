@@ -4,7 +4,7 @@ ___________________________________
 |  |   |  |  |  |  |     |     |  |
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Copyright (c) 2000, 2003 Tama Communications Corporation
+ Copyright (c) 2000, 2003, 2004 Tama Communications Corporation
 
  This file is free software; as a special exception the author gives
  unlimited permission to copy and/or distribute it, with or without
@@ -141,7 +141,8 @@ A8. Some operating system, for example Redhat9, is shipped with
 
 ----------------------------------------------------------------------------
 Q9. I'm running GLOBAL on Cygwin.
-    When I ran htags, it returned the following message: 
+    When I ran htags.pl(perl version of htags(1)), it returned the following
+    message: 
 
         htags: cannot make cache file '/tmp/htagd79287565'.
 
@@ -163,6 +164,20 @@ A9. It seems that some Cygwin perl have a bug and the dbmopen() doesn't work
         |       :format=standard:\
         |       :no_cache_file:                 <== ADD
 
+    But now, you had better use the C version of htags(1) instead.
+
+----------------------------------------------------------------------------
+Q10. Does GLOBAL support multi-bytes code set?
+     Which character code set is supported?
+
+A10. GLOBAL doesn't support multi-byte character code set yet.
+
+----------------------------------------------------------------------------
+Q11. Can GLOBAL running on a UNIX machine treat source files
+     which include DOS/Windows style new-line code? And vice versa? 
+
+A11. GLOBAL support only the native text format.
+     Besides, please go by the own responsibility.
 
 ----------------------------------------------------------------------------
 
