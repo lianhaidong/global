@@ -377,9 +377,9 @@ strbuf_fgets(sb, ip, flags)
  * strbuf_sprintf: do sprintf into string buffer.
  *
  *	i)	sb	STRBUF structure
- *	i)	s	same with sprintf()
- *
- * Node: Generated string is limited to 1024 bytes.
+ *	i)	s	similar to sprintf()
+ *			Currently the following format is supported.
+ *			%s, %d, %<number>d, %<number>s
  */
 void
 #ifdef HAVE_STDARG_H
@@ -391,8 +391,6 @@ strbuf_sprintf(sb, s, va_alist)
 	va_dcl
 #endif
 {
-	static char buf[1024];
-	int i;
 	va_list ap;
 
 #ifdef HAVE_STDARG_H
@@ -400,15 +398,63 @@ strbuf_sprintf(sb, s, va_alist)
 #else
 	va_start(ap);
 #endif
-	/* This should be replaced with vsnprintf() in the future. */
-	(void)vsprintf(buf, s, ap);
-	for (i = 0; i < sizeof(buf); i++)
-		if (buf[i] == '\0')
+	if (sb->alloc_failed)
+		return;
+	for (; *s; s++) {
+		/*
+		 * Put the before part of '%'.
+		 */
+		{
+			const char *p;
+			for (p = s; *p && *p != '%'; p++)
+				;
+			if (p > s) {
+				strbuf_nputs(sb, s, p - s);
+				s = p;
+			}
+		}
+		if (*s == '\0')
 			break;
-	if (i >= sizeof(buf))
-		die("internal buffer for strbuf_sprintf over flow.");
+		if (*s == '%') {
+			int c = *++s;
+			/*
+			 * '%%' means '%'.
+			 */
+			if (c == '%') {
+				strbuf_putc(sb, c);
+			}
+			/*
+			 * If the optional number is specified then
+			 * we forward the job to snprintf(3).
+			 * o %<number>d
+			 * o %<number>s
+			 */
+			else if (isdigit(c)) {
+				char format[32], buf[1024];
+				int i = 0;
+
+				format[i++] = '%';
+				while (isdigit(*s))
+					format[i++] = *s++;
+				format[i++] = c = *s;
+				format[i] = '\0';
+				if (c == 'd' || c == 'x')
+					snprintf(buf, sizeof(buf), format, va_arg(ap, int));
+				else if (c == 's')
+					snprintf(buf, sizeof(buf), format, va_arg(ap, char *));
+				else
+					die("Unsupported control character '%c'.", c);
+				strbuf_puts(sb, buf);
+			} else if (c == 's') {
+				strbuf_puts(sb, va_arg(ap, char *));
+			} else if (c == 'd') {
+				strbuf_putn(sb, va_arg(ap, int));
+			} else {
+				die("Unsupported control character '%c'.", c);
+			}
+		}
+	}
 	va_end(ap);
-	strbuf_puts(sb, buf);
 }
 /*
  * strbuf_close: close string buffer.
