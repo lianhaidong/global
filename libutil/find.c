@@ -430,7 +430,10 @@ find_read(void)
 
 			curp->p += strlen(curp->p) + 1;
 			if (type == 'f' || type == 'l') {
-				char	*path = makepath(dir, unit, NULL);
+				char path[MAXPATHLEN];
+
+				/* makepath() returns unsafe module local area. */
+				strlimcpy(path, makepath(dir, unit, NULL), sizeof(path));
 				if (skipthisfile(path))
 					continue;
 				if (regexec(suff, path, 0, 0, 0) == 0) {

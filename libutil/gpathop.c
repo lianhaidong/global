@@ -62,8 +62,6 @@ gpath_open(dbpath, mode, flags)
 	int mode;
 	int flags;
 {
-	char *p;
-
 	assert(opened == 0);
 	/*
 	 * We create GPATH just first time.
@@ -71,17 +69,15 @@ gpath_open(dbpath, mode, flags)
 	_mode = mode;
 	if (mode == 1 && created)
 		mode = 0;
-	p = strdup(makepath(dbpath, dbname(GPATH), NULL));
-	if (p == NULL)
-		die("short of memory.");
-	dbop = dbop_open(p, mode, 0644, flags);
-	free(p);
+	dbop = dbop_open(makepath(dbpath, dbname(GPATH), NULL), mode, 0644, flags);
 	if (dbop == NULL)
 		return -1;
 	if (mode == 1)
 		_nextkey = 1;
 	else {
-		if (!(p = dbop_get(dbop, NEXTKEY)))
+		char *p = dbop_get(dbop, NEXTKEY);;
+
+		if (p == NULL)
 			die("nextkey not found in GPATH.");
 		_nextkey = atoi(p);
 	}
@@ -230,11 +226,7 @@ gfind_open(dbpath, local)
 
 	assert(gfind_opened == 0);
 	assert(gfind_first == 0);
-	path = strdup(makepath(dbpath, dbname(GPATH), NULL));
-	if (path == NULL)
-		die("short of memory.");
-	gfind_dbop = dbop_open(path, 0, 0, 0);
-	free(path);
+	gfind_dbop = dbop_open(makepath(dbpath, dbname(GPATH), NULL), 0, 0, 0);
 	if (gfind_dbop == NULL)
 		die("GPATH not found.");
 	strlimcpy(gfind_prefix, (local) ? local : "./", sizeof(gfind_prefix));

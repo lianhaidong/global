@@ -46,8 +46,6 @@ int
 defined(name)
 	const char *name;
 {
-	char *path;
-
 	if (dbop == NULL) {
 		const char *dbpath;
 
@@ -56,13 +54,9 @@ defined(name)
 		 */
 		if (!(dbpath = getenv("GTAGSDBPATH")))
 			dbpath = ".";
-		path = strdup(makepath(dbpath, "GTAGS", NULL));
-		if (path == NULL)
-			die("short of memory.");
-		dbop = dbop_open(path, 0, 0, 0);
-		free(path);
+		dbop = dbop_open(makepath(dbpath, "GTAGS", NULL), 0, 0, 0);
 		if (dbop == NULL)
-			die("'%s' not found.", path);
+			die("'GTAGS' not found.");
 	}
 	if (dbop_get(dbop, name))
 		return 1;

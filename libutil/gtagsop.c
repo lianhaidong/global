@@ -251,7 +251,6 @@ gtags_open(dbpath, root, db, mode, flags)
 	int flags;
 {
 	GTOP *gtop;
-	char *path;
 	int dbmode = 0;
 	int dbopflags = 0;
 
@@ -280,11 +279,7 @@ gtags_open(dbpath, root, db, mode, flags)
 	dbopflags = DBOP_DUP;
 	if (flags & GTAGS_POSTGRES)
 		dbopflags |= DBOP_POSTGRES;
-	path = strdup(makepath(dbpath, dbname(db), NULL));
-	if (path == NULL)
-		die("short of memory.");
-	gtop->dbop = dbop_open(path, dbmode, 0644, dbopflags);
-	free(path);
+	gtop->dbop = dbop_open(makepath(dbpath, dbname(db), NULL), dbmode, 0644, dbopflags);
 	if (gtop->dbop == NULL) {
 		if (dbmode == 1)
 			die("cannot make %s.", dbname(db));
