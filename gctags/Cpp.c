@@ -289,11 +289,6 @@ Cpp()
 				if (target == SYM)
 					PUT(token, lineno, sp);
 			break;
-		case CPP_EXTERN:
-			if (level > stack[classlevel].level && target == REF)
-				while ((c = nexttoken(";", reserved)) != EOF && c != ';')
-					;
-			break;
 		case CPP_TEMPLATE:
 			{
 				int level = 0;

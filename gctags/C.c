@@ -282,11 +282,6 @@ C(yacc)
 				if (target == SYM)
 					PUT(token, lineno, sp);
 			break;
-		case C_EXTERN:
-			if (level > 0 && target == REF)
-				while ((c = nexttoken(";", reserved)) != EOF && c != ';')
-					;	
-			break;
 		/* control statement check */
 		case C_BREAK:
 		case C_CASE:
