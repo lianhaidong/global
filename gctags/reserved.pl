@@ -162,6 +162,8 @@ print "#define START_SHARP\t$n_sharp\n";
 print "#define START_YACC\t$n_yacc\n";
 print "#define IS_RESERVED(a)	((a) >= START_WORD)\n";
 print "#define IS_RESERVED_VARIABLE(a)	((a) >= START_VARIABLE && (a) < START_WORD)\n";
+print "#define IS_RESERVED_SHARP(a)	((a) >= START_SHARP && (a) < START_YACC)\n";
+print "#define IS_RESERVED_YACC(a)	((a) >= START_YACC)\n";
 print "\n";
 while(<IP>) {
 	chop;
@@ -247,6 +249,30 @@ if ($n_variable > $START_VARIABLE) {
 	print "\tstruct keyword *keyword = ${pre}_lookup(str, len);\n";
 	print "\tint n = keyword ? keyword->token : 0;\n";
 	print "\treturn IS_RESERVED_VARIABLE(n) ? n : 0;\n";
+	print "}\n";
+}
+if ($n_sharp > $START_SHARP) {
+	print "static int reserved_sharp(const char *, int);\n";
+	print "static int\n";
+	print "reserved_sharp(str, len)\n";
+	print "const char *str;\n";
+	print "int len;\n";
+	print "{\n";
+	print "\tstruct keyword *keyword = ${pre}_lookup(str, len);\n";
+	print "\tint n = keyword ? keyword->token : 0;\n";
+	print "\treturn IS_RESERVED_SHARP(n) ? n : 0;\n";
+	print "}\n";
+}
+if ($n_yacc > $START_YACC) {
+	print "static int reserved_yacc(const char *, int);\n";
+	print "static int\n";
+	print "reserved_yacc(str, len)\n";
+	print "const char *str;\n";
+	print "int len;\n";
+	print "{\n";
+	print "\tstruct keyword *keyword = ${pre}_lookup(str, len);\n";
+	print "\tint n = keyword ? keyword->token : 0;\n";
+	print "\treturn IS_RESERVED_YACC(n) ? n : 0;\n";
 	print "}\n";
 }
 exit 0;
