@@ -706,7 +706,7 @@ char	*dbpath;
 			char	buf[MAXPATHLEN+1];
 
 			snprintf(buf, sizeof(buf), "./%s", path);
-			fprintf(op, "%-16s %3d %-16s %s\n",
+			fprintf(op, "%-16s %4d %-16s %s\n",
 					edit, linenum, buf, p);
 		}
 	}
@@ -810,7 +810,7 @@ char	*dbpath;
 		else if (!xflag)
 			fprintf(op, "%s\n", path);
 		else
-			fprintf(op, "%-16s %3d %-16s %s\n",
+			fprintf(op, "%-16s %4d %-16s %s\n",
 				edit, linenum, path, p);
 	}
 	pclose(ip);
@@ -866,7 +866,7 @@ char	*dbpath;
 					fprintf(op, "%s\n", path);
 					break;
 				} else {
-					fprintf(op, "%-16s %3d %-16s %s\n",
+					fprintf(op, "%-16s %4d %-16s %s\n",
 						edit, linenum, path, buffer);
 				}
 			}

@@ -797,7 +797,7 @@ GTOP	*gtop;
 				gtop->lno++;
 			}
 		}
-		snprintf(output, sizeof(output), "%-16s %3d %-16s %s",
+		snprintf(output, sizeof(output), "%-16s %4d %-16s %s",
 			gtop->tag, tagline, gtop->path, buffer);
 		return output;
 	}

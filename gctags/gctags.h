@@ -50,7 +50,7 @@ struct words {
 #define PUT(tag, lno, line) do {					\
 	DBG_PRINT(level, line);						\
 	if (!nflag)							\
-		printf("%-16s %3d %-16s %s\n",tag, lno, curfile, line);	\
+		printf("%-16s %4d %-16s %s\n",tag, lno, curfile, line);	\
 } while (0)
 
 #define IS_RESERVED(a)  ((a) > 1000)
