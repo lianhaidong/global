@@ -83,21 +83,26 @@ while			word
 ;
 %%			yacc
 %debug			yacc
+%default_prec,%default-prec	yacc
 %define			yacc
 %defines		yacc
 %destructor		yacc
 %dprec			yacc
 %error_verbose,%error-verbose	yacc
 %expect			yacc
+%expect_rr,%expect-rr	yacc
 %file-prefix		yacc
 %glr-parser		yacc
+%initial-action		yacc
 %left			yacc
 %lex-param		yacc
 %locations		yacc
 %merge			yacc
 %name_prefix,%name-prefix	yacc
+%no_default_prec,%no_default-prec,%no-default_prec,%no-default-prec	yacc
 %no_lines,%no-lines	yacc
 %nonassoc,%binary	yacc
+%nondeterministic-parser	yacc
 %nterm			yacc
 %output			yacc
 %parse-param		yacc
