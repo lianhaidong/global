@@ -22,6 +22,7 @@ You need to have the following package installed:
 
 	- flex 2.5.4a
 	- GNU gperf 3.0.1
+	- GNU bison 1.875
 
 (1) Generate gperf(1) source from each reserved word file.
 

@@ -178,9 +178,7 @@ WORD		{ALPHA}{ALPHANUM}*
 
 <ASM,PREPROCESSING_DIRECTIVE>{NUMBER}	ECHO;
 <ASM,PREPROCESSING_DIRECTIVE>{WORD} {
-		if (reserved_word(LEXTEXT, LEXLENG))
-			ECHO;
-		else if (YY_START == PREPROCESSING_DIRECTIVE
+		if (YY_START == PREPROCESSING_DIRECTIVE
 		    && (last_directive == SHARP_IF || last_directive == SHARP_ELIF)
 		    && strcmp(LEXTEXT, "defined") == 0)
 			put_reserved_word(LEXTEXT);

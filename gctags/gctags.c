@@ -237,9 +237,9 @@ main(argc, argv)
 			continue;
 
 		/*
-		 * Initialize token parser. Php() use different parser.
+		 * Initialize token parser. Php() and assembler() use different parser.
 		 */
-		if (strcmp(lang, "php"))
+		if (strcmp(lang, "php") && strcmp(lang, "asm"))
 			if (!opentoken(argv[0]))
 				die("'%s' cannot open.", argv[0]);
 
@@ -256,7 +256,7 @@ main(argc, argv)
 		} else if (!strcmp(lang, "yacc")) {
 			C(YACC);
 		} else if (!strcmp(lang, "asm")) {
-			assembler();
+			assembler(argv[0]);
 		} else if (!strcmp(lang, "java")) {
 			java();
 		} else if (!strcmp(lang, "cpp")) {
@@ -264,7 +264,7 @@ main(argc, argv)
 		} else if (!strcmp(lang, "php")) {
 			php(argv[0]);
 		}
-		if (strcmp(lang, "php"))
+		if (strcmp(lang, "php") && strcmp(lang, "asm"))
 			closetoken();
 	}
 	return 0;

@@ -58,6 +58,6 @@ int cmp(const void *, const void *);
 void C(int);
 void Cpp(void);
 int isCpp(void);
-void assembler(void);
+void assembler(const char *);
 void java(void);
 void php(const char *);

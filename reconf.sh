@@ -26,7 +26,7 @@ case $1 in
 --help)	echo "Usage: sh reconf.sh [--configure|--make|--install]"
 	exit 0;;
 esac
-prog='autoreconf flex gperf perl'	# required programs
+prog='autoreconf flex gperf perl bison'	# required programs
 file='convert.pl configure.ac Makefile.am gctags/reserved.pl'	# required files
 
 echo "- File existent checking..."
@@ -60,7 +60,7 @@ done
 
 #
 # We should do this before packaging so that user can build it without
-# flex and gperf.
+# flex, bison and gperf.
 #
 echo "- Preparing parser source ..."
 (cd gctags; set -x
@@ -73,6 +73,12 @@ for lang in c cpp java php asm; do
 	gperf $option < ${name}.gpf > ${name}.h
 	if [ -f $lang.l ]; then
 		flex -o$lang.c $lang.l
+	fi
+	if [ -f ${lang}_scan.l ]; then
+		flex -o${lang}_scan.c ${lang}_scan.l
+	fi
+	if [ -f ${lang}_parse.y ]; then
+		bison -d -o ${lang}_parse.c ${lang}_parse.y
 	fi
 done
 )

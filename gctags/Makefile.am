@@ -12,9 +12,10 @@
 #
 bin_PROGRAMS= gctags
 
-noinst_HEADERS = gctags.h c_res.h cpp_res.h java_res.h php_res.h asm_res.h
+noinst_HEADERS = gctags.h c_res.h cpp_res.h java_res.h php_res.h asm_res.h \
+		asm_parse.h
 
-gctags_SOURCES = gctags.c C.c Cpp.c assembler.c java.c php.c
+gctags_SOURCES = gctags.c C.c Cpp.c asm_parse.c asm_scan.c java.c php.c
 
 INCLUDES = @INCLUDES@
 
@@ -29,4 +30,4 @@ EXTRA_DIST = $(man_MANS) const.h manual.in reserved.pl HACKING htags_res.pl \
 		cpp_res.in cpp_res.gpf \
 		java_res.in java_res.gpf \
 		php_res.in php_res.gpf php.l \
-		asm_res.in asm_res.gpf
+		asm_res.in asm_res.gpf asm_parse.y asm_scan.l
