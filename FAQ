@@ -19,7 +19,12 @@ ___________________________________
 Frequentry Asked Questions about GLOBAL.
 
 ----------------------------------------------------------------------------
-Q1. Deleted.
+Q1. Does GLOBAL support Windows 32 environment?
+
+A1. No.
+    But we will accept the code for Windows 32 environment as is.
+    It is hoped that someone makes the package for it.
+
 ----------------------------------------------------------------------------
 Q2. GLOBAL skip some functions.
     For example, GLOBAL skip the function 'func' in this example.

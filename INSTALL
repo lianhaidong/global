@@ -16,20 +16,9 @@ ___________________________________
 
 		----------------------------------
 
-Installation of GNU GLOBAL under UNIX, CYGWIN or DJGPP.
+Installation of GNU GLOBAL.
 
 1. Preparation.
-
-o If your environment is Windows32(Windows95,98,NT...), you need to
-  install DJGPP or CYGWIN tools to your environment. See following site:
-
-	CYGWIN: http://cygwin.com/
-	DJGPP:  http://www.delorie.com/djgpp/
-
-  You should install the following GNU tools and set the path so that they
-  are invoked.
-
-	gcc, bash
 
 o If you want to format man files then nroff is needed.
 
@@ -51,16 +40,9 @@ o If you want to use --form(-f) or --dynamic option of htags then
 
 2. How to install.
 
-   UNIX or CYGWIN:
-
 	% ./configure
 	% make
 	# make install
-
-   DJGPP:
-	c:\> bash configure
-	c:\> make
-	c:\> make install
 
 3. Using GLOBAL with editors.
 
