@@ -58,7 +58,7 @@ void	createtags(char *, char *, int);
 char	*now(void);
 int	printconf(char *);
 void	set_base_directory(char *, char *);
-void	put_converting(char *, int);
+void	put_converting(char *, int, int);
 
 int	cflag;					/* compact format */
 int	iflag;					/* incremental update */
@@ -80,6 +80,7 @@ int	do_sort;
 int	do_write;
 int	do_relative;
 int	do_absolute;
+int	cxref;
 int	do_expand;
 int	do_date;
 int	do_pwd;
@@ -113,6 +114,7 @@ help()
 static struct option const long_options[] = {
 	{"absolute", no_argument, &do_absolute, 1},
 	{"compact", no_argument, NULL, 'c'},
+	{"cxref", no_argument, &cxref, 1},
 	{"incremental", no_argument, NULL, 'i'},
 	{"omit-gsyms", no_argument, NULL, 'o'},
 	{"quiet", no_argument, NULL, 'q'},
@@ -533,7 +535,7 @@ char	*argv[];
 			die("do_relative: 2 arguments needed.");
 		set_base_directory(root, cwd);
 		while (strbuf_fgets(ib, stdin, 0) != NULL)
-			put_converting(strbuf_value(ib), do_absolute ? 1 : 0);
+			put_converting(strbuf_value(ib), do_absolute ? 1 : 0, cxref);
 		strbuf_close(ib);
 		exit(0);
 	} else if (Iflag) {
@@ -1117,6 +1119,7 @@ char	*name;
  *
  *	i)	line	raw output from global(1)
  *	i)	absolute 1: absolute, 0: relative
+ *	i)	cxref 1: -x format, 0: file name only
  */
 static STRBUF *abspath;
 static char basedir[MAXPATHLEN+1];
@@ -1137,18 +1140,25 @@ char	*cwd;
 	/* leave abspath unclosed. */
 }
 void
-put_converting(line, absolute)
+put_converting(line, absolute, cxref)
 char	*line;
 int	absolute;
+int	cxref;
 {
 	char buf[MAXPATHLEN+1];
-	char *p;
+	char *p = line;
 
 	/*
 	 * print until path name.
 	 */
-	for (p = line; *p && *p != '.'; p++)
-		(void)putc(*p, stdout);
+	if (cxref) {
+		/* print tag name */
+		for (; *p && !isspace(*p); p++)
+			(void)putc(*p, stdout);
+		/* print blanks and line number */
+		for (; *p && *p != '.'; p++)
+			(void)putc(*p, stdout);
+	}
 	if (*p++ == '\0')
 		return;
 	/*

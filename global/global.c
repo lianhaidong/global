@@ -412,6 +412,8 @@ char	*argv[];
 		strbuf_puts(pathfilter, " --absolute ");
 	else		/* relative path name */
 		strbuf_puts(pathfilter, " --relative ");
+	if (xflag)
+		strbuf_puts(pathfilter, " --cxref ");
 	strbuf_puts(pathfilter, root);
 	strbuf_putc(pathfilter, ' ');
 	strbuf_puts(pathfilter, cwd);
