@@ -299,7 +299,7 @@ char	*argv[];
 		exit(0);
 	} else if (do_convert) {
 		STRBUF *ib = strbuf_open(MAXBUFLEN);
-		char *p, *q;
+		char *p, *q, *fid;
 
 		/*
 		 * [Job]
@@ -310,8 +310,13 @@ char	*argv[];
 		 * <A HREF="http://xxx/global/S/ ./main.c .html#110">main</A>\n
 		 *				|
 		 *				v
-		 * <A HREF="http://xxx/global/S/39..html#110">main</A>\n
+		 * <A HREF="http://xxx/global/S/39.html#110">main</A>\n
 		 *
+		 * If the file name is not found in GPATH, change into the path to CGI script.
+		 * <A HREF="http://xxx/global/S/ ./README .html#9">main</A>\n
+		 *				|
+		 *				v
+		 * <A HREF="http://xxx/global/cgi-bin/global.cgi?pattern=README&type=source#9">main</A>\n
 		 */
 		if (gpath_open(".", 0, 0) < 0)
 			die("GPATH not found.");
@@ -324,10 +329,28 @@ char	*argv[];
 				printf("%s: ERROR(1): %s", progname, strbuf_value(ib));
 				continue;
 			}
+			/*
+			 * <A HREF="http://xxx/global/S/ ./main.c .html#110">main</A>\n
+			 * ^                         ^
+			 * p                         |
+			 *                           q
+			 */
 			for (; p < q; p++)
 				putc(*p, stdout);
+			/*
+			 * <A HREF="http://xxx/global/S/ ./main.c .html#110">main</A>\n
+			 *                           ^
+			 *                           p
+			 *                           q
+			 */
 			for (; *p && *p != ' '; p++)
-				putc(*p, stdout);
+				;
+			/*
+			 * <A HREF="http://xxx/global/S/ ./main.c .html#110">main</A>\n
+			 *                           ^  ^
+			 *                           |  p
+			 *                           q
+			 */
 			for (q = ++p; *q && *q != ' '; q++)
 				;
 			if (*q == '\0') {
@@ -335,7 +358,34 @@ char	*argv[];
 				continue;
 			}
 			*q++ = '\0';
-			fputs(gpath_path2fid(p), stdout);
+			/*
+			 * <A HREF="http://xxx/global/S/ ./main.c\0.html#110">main</A>\n
+			 *                               ^         ^
+			 *                               p         |
+			 *                                         q
+			 */
+			fid = gpath_path2fid(p);
+			if (fid) {
+				fputs("/S/", stdout);
+				fputs(fid, stdout);
+				fputs(q, stdout);
+				continue;
+			}
+			fputs("/cgi-bin/global.cgi?pattern=", stdout);
+			fputs(p + 2, stdout);
+			fputs("&type=source", stdout);
+			for (; *q && *q != '#'; q++)
+				;
+			if (*q == '\0') {
+				printf("%s: ERROR(2): %s", progname, strbuf_value(ib));
+				continue;
+			}
+			/*
+			 * <A HREF="http://xxx/global/S/ ./main.c\0.html#110">main</A>\n
+			 *                               ^              ^
+			 *                               p              |
+			 *                                              q
+			 */
 			fputs(q, stdout);
 		}
 		gpath_close();
