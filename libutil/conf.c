@@ -47,7 +47,7 @@
 
 static FILE	*fp;
 static STRBUF	*ib;
-static char	*line;
+static char	*confline;
 /*
  * 8 level nested tc= or include= is allowed.
  */
@@ -114,33 +114,43 @@ static char	*
 readrecord(label)
 const char *label;
 {
-	char	*line, *p, *q;
+	char	*p;
 	int	flag = STRBUF_NOCRLF;
 	int	count = 0;
 
 	rewind(fp);
-	while ((line = strbuf_fgets(ib, fp, flag)) != NULL) {
+	while ((p = strbuf_fgets(ib, fp, flag)) != NULL) {
 		count++;
+		/*
+		 * ignore \<new line>.
+		 */
 		flag &= ~STRBUF_APPEND;
-		if (*line == '#' || *line == '\0')
+		if (*p == '#' || *p == '\0')
 			continue;
 		if (strbuf_unputc(ib, '\\')) {
 			flag |= STRBUF_APPEND;
 			continue;
 		}
-		trim(line);
-		for (p = line;;) {
-			if ((q = strmake(p, "|:")) == NULL)
+		trim(p);
+		for (;;) {
+			char *candidate;
+			/*
+			 * pick up candidate.
+			 */
+			if ((candidate = strmake(p, "|:")) == NULL)
 				die("invalid config file format (line %d).", count);
-			if (!strcmp(label, q)) {
-				if (!(p = locatestring(line, ":", MATCH_FIRST)))
-					die("invalid config file format (line %d).", line);
-				line = strdup(p);
-				if (!line)
+			if (!strcmp(label, candidate)) {
+				if (!(p = locatestring(p, ":", MATCH_FIRST)))
+					die("invalid config file format (line %d).", strbuf_value(ib));
+				p = strdup(p);
+				if (!p)
 					die("short of memory.");
-				return line;
+				return p;
 			}
-			p += strlen(q);
+			/*
+			 * locate next candidate.
+			 */
+			p += strlen(candidate);
 			if (*p == ':')
 				break;
 			else if (*p == '|')
@@ -149,6 +159,9 @@ const char *label;
 				die("invalid config file format (line %d).", count);
 		}
 	}
+	/*
+	 * config line not found.
+	 */
 	return NULL;
 }
 /*
@@ -233,14 +246,18 @@ openconf()
 	if (!config) {
 		if (vflag)
 			fprintf(stderr, " Using default configuration.\n");
-		line = "";
+		confline = strdup("");
+		if (!confline)
+			die("short of memory.");
 	}
 	/*
 	 * if it doesn't start with '/' then assumed config value itself.
 	 */
 	else if (*config != '/') {
-		line = strdup(config);
-		if (!locatestring(line, ":", MATCH_FIRST))
+		confline = strdup(config);
+		if (!confline)
+			die("short of memory.");
+		if (!locatestring(confline, ":", MATCH_FIRST))
 			die("GTAGSCONF must be absolute path name.");
 	}
 	/*
@@ -265,7 +282,9 @@ openconf()
 		ib = strbuf_open(MAXBUFLEN);
 		sb = strbuf_open(0);
 		includelabel(sb, label, 0);
-		line = strdup(strbuf_value(sb));
+		confline = strdup(strbuf_value(sb));
+		if (!confline)
+			die("short of memory.");
 		strbuf_close(ib);
 		strbuf_close(sb);
 		fclose(fp);
@@ -274,7 +293,7 @@ openconf()
 	 * make up lacked variables.
 	 */
 	sb = strbuf_open(0);
-	strbuf_puts(sb, line);
+	strbuf_puts(sb, confline);
 	strbuf_unputc(sb, ':');
 	if (!getconfs("suffixes", NULL)) {
 		strbuf_puts(sb, ":suffixes=");
@@ -320,11 +339,11 @@ openconf()
 		strbuf_puts(sb, ":sed_command=sed");
 	strbuf_unputc(sb, ':');
 	strbuf_putc(sb, ':');
-	line = strdup(strbuf_value(sb));
-	strbuf_close(sb);
-	if (!line)
+	confline = strdup(strbuf_value(sb));
+	if (!confline)
 		die("short of memory.");
-	trim(line);
+	strbuf_close(sb);
+	trim(confline);
 	return;
 }
 /*
@@ -345,7 +364,7 @@ int	*num;
 	if (!opened)
 		openconf();
 	snprintf(buf, sizeof(buf), ":%s#", name);
-	if ((p = locatestring(line, buf, MATCH_FIRST)) != NULL) {
+	if ((p = locatestring(confline, buf, MATCH_FIRST)) != NULL) {
 		p += strlen(buf);
 		if (num != NULL)
 			*num = atoi(p);
@@ -375,7 +394,7 @@ STRBUF	*sb;
 	if (!strcmp(name, "suffixes") || !strcmp(name, "skip"))
 		all = 1;
 	snprintf(buf, sizeof(buf), ":%s=", name);
-	p = line;
+	p = confline;
 	while ((p = locatestring(p, buf, MATCH_FIRST)) != NULL) {
 		if (exist && sb)
 			strbuf_putc(sb, ',');		
@@ -406,7 +425,7 @@ const char *name;
 	if (!opened)
 		openconf();
 	snprintf(buf, sizeof(buf), ":%s:", name);
-	if (locatestring(line, buf, MATCH_FIRST) != NULL)
+	if (locatestring(confline, buf, MATCH_FIRST) != NULL)
 		return 1;
 	return 0;
 }
@@ -418,14 +437,14 @@ getconfline()
 {
 	if (!opened)
 		openconf();
-	return line;
+	return confline;
 }
 void
 closeconf()
 {
 	if (!opened)
 		return;
-	free(line);
+	free(confline);
 	line = NULL;
 	opened = 0;
 }
