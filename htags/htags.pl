@@ -418,11 +418,17 @@ sub list_end {
 #-------------------------------------------------------------------------
 # include prolog_script if needed.
 require($'prolog_script) if ($'prolog_script && -f $'prolog_script);
+#
 # save config values and option values.
+#
 $save_config = `gtags --config`;
 chop($save_config);
-$save_config =~ s/'/'"'"'/g;
-$save_argv   = "@ARGV";
+$save_config =~ s/'/'"'"'/g;			# keep single quote
+$save_argv   = '';
+foreach (@ARGV) {
+	$save_argv .= ' ' if ($save_argv);
+	$save_argv .= (/[ \t]/) ? "'$_'" : $_;	# quote arg include blank.
+}
 if ($'htags_options) {
 	#
 	# insert $'htags_options at the head of ARGV.
