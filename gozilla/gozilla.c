@@ -59,6 +59,7 @@ int	Cflag;
 int	vflag;
 int	show_version;
 int	linenumber = 0;
+int	debug;
 
 static void
 usage()
