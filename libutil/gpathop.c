@@ -127,8 +127,6 @@ char *
 gpath_path2fid(path)
 const char *path;
 {
-	char	*id;
-
 	assert(opened == 1);
 	return dbop_get(dbop, path);
 }
