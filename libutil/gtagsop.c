@@ -562,10 +562,12 @@ char	*line;
 	/*
 	 * Get path.
 	 */
-	n = split(p, 4, &ptable);
+	n = split(line, 4, &ptable);
 	if (gtop->format == GTAGS_STANDARD || gtop->format == GTAGS_PATHINDEX) {
-		if (n < 4)
-			die("too small number of parts.");
+		if (n < 4) {
+			recover(&ptable);
+			die("too small number of parts.\n'%s'", line);
+		}
 		p = ptable.part[2].start;
 	} else if (gtop->format & GTAGS_COMPACT) {
 		if (n != 3)
