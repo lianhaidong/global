@@ -539,7 +539,7 @@ makesearchpart(action, id, target)
 	STRBUF *sb = strbuf_open(0);
 
 	if (Fflag)
-		strbuf_sprintf(sb, "<a href='search.%s'><h2>SEARCH</h2></a>\n", normal_suffix);
+		strbuf_sprintf(sb, "<h2><a href='search.%s'>SEARCH</a></h2>\n", normal_suffix);
 	else
 		strbuf_puts(sb, "<h2>SEARCH</h2>\n");
 	if (!target)

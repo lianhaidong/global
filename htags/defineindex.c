@@ -74,7 +74,7 @@ makedefineindex(file, total, defines)
 	fprintf(DEFINES, "%s", set_header(title_define_index));
 	fprintf(DEFINES, "%s\n", body_begin);
 	if (Fflag)
-		fprintf(DEFINES, "<a href='defines.%s'><h2>%s</h2></a>\n", normal_suffix, title_define_index);
+		fprintf(DEFINES, "<h2><a href='defines.%s'>%s</a></h2>\n", normal_suffix, title_define_index);
 	else
 		fprintf(DEFINES, "<h2>%s</h2>\n", title_define_index);
 	if (!aflag && !Fflag) {
