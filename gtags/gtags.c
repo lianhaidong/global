@@ -615,7 +615,7 @@ main(argc, argv)
 		STRBUF *ib = strbuf_open(MAXBUFLEN);
 		if (strbuf_fgets(ib, ip, STRBUF_NOCRLF) == NULL || strcmp(strbuf_value(ib), "Part of GLOBAL")) {
 			if (!qflag) {
-				fprintf(stderr, "Warning: gctags in your system is not GLOBAL's one.\n");
+				warning("gctags in your system is not GLOBAL's one.");
 				fprintf(stderr, "Please type 'gctags --version'\n");
 			}
 		}
@@ -648,12 +648,12 @@ main(argc, argv)
 	if (iflag && (!test("f", makepath(dbpath, dbname(GTAGS), NULL)) ||
 		!test("f", makepath(dbpath, dbname(GPATH), NULL)))) {
 		if (wflag)
-			fprintf(stderr, "Warning: GTAGS or GPATH not found. -i option ignored.\n");
+			warning("GTAGS or GPATH not found. -i option ignored.");
 		iflag = 0;
 	}
 	if (Pflag && iflag) {
 		if (wflag)
-			fprintf(stderr, "Warning: existing tag files are used. -P option ignored.\n");
+			warning("existing tag files are used. -P option ignored.");
 		Pflag = 0;
 	}
 	if (!test("d", dbpath))
@@ -816,7 +816,7 @@ incremental(dbpath, root)
 			continue;
 		if (locatestring(path, " ", MATCH_FIRST)) {
 			if (!qflag)
-				fprintf(stderr, "Warning: '%s' ignored, because it includes blank in the path.\n", path);
+				warning("'%s' ignored, because it includes blank in the path.", path);
 			continue;
 		}
 		if (stat(path, &statp) < 0)
@@ -1057,7 +1057,7 @@ createtags(dbpath, root, db)
 			break;
 		if (locatestring(path, " ", MATCH_FIRST)) {
 			if (!qflag)
-				fprintf(stderr, "Warning: '%s' ignored, because it includes blank in the path.\n", path + 2);
+				warning("'%s' ignored, because it includes blank in the path.", path + 2);
 			continue;
 		}
 		count++;

@@ -118,7 +118,7 @@ java()
 		case '}':
 			if (--level < 0) {
 				if (wflag)
-					fprintf(stderr, "Warning: missing left '{' (at %d).\n", lineno); /* } */
+					warning("missing left '{' (at %d).", lineno); /* } */
 				level = 0;
 			}
 			if (level < stack[classlevel].level)

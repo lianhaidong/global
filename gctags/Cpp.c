@@ -160,7 +160,7 @@ Cpp()
 					if (target == REF)
 						PUT(token, lineno, sp);
 				} else {
-					fprintf(stderr, "Warning: missing namespace name. [+%d %s].\n", lineno, curfile);
+					warning("missing namespace name. [+%d %s].", lineno, curfile);
 					pushbacktoken();
 				}
 			} else
@@ -179,7 +179,7 @@ Cpp()
 			if (c == '{') /* } */ {
 				namespacelevel++;
 			} else {
-				fprintf(stderr, "Warning: missing namespace block. [+%d %s](0x%x).\n", lineno, curfile, c);
+				warning("missing namespace block. [+%d %s](0x%x).", lineno, curfile, c);
 			}
 			break;
 		case CPP_CLASS:
@@ -197,7 +197,7 @@ Cpp()
 			++level;
 			if (bflag && atfirst) {
 				if (wflag && level != 1)
-					fprintf(stderr, "Warning: forced level 1 block start by '{' at column 0 [+%d %s].\n", lineno, curfile); /* } */
+					warning("forced level 1 block start by '{' at column 0 [+%d %s].", lineno, curfile); /* } */
 				level = 1;
 			}
 			if (startclass) {
@@ -223,13 +223,13 @@ Cpp()
 				if (namespacelevel > 0)
 					namespacelevel--;
 				else if (wflag)
-					fprintf(stderr, "Warning: missing left '{' [+%d %s].\n", lineno, curfile); /* } */
+					warning("missing left '{' [+%d %s].", lineno, curfile); /* } */
 				level = 0;
 			}
 			if (eflag && atfirst) {
 				if (wflag && level != 0)
 					/* { */
-					fprintf(stderr, "Warning: forced level 0 block end by '}' at column 0 [+%d %s].\n", lineno, curfile);
+					warning("forced level 0 block end by '}' at column 0 [+%d %s].", lineno, curfile);
 				level = 0;
 			}
 			if (level < stack[classlevel].level)
@@ -246,7 +246,7 @@ Cpp()
 		case '\n':
 			if (startmacro && level != savelevel) {
 				if (wflag)
-					fprintf(stderr, "Warning: different level before and after #define macro. reseted. [+%d %s].\n", lineno, curfile);
+					warning("different level before and after #define macro. reseted. [+%d %s].", lineno, curfile);
 				level = savelevel;
 			}
 			startmacro = startsharp = 0;
@@ -331,7 +331,7 @@ Cpp()
 					}
 				}
 				if (c == EOF && wflag)
-					fprintf(stderr, "Warning: templete <...> isn't closed. [+%d %s].\n", lineno, curfile);
+					warning("templete <...> isn't closed. [+%d %s].", lineno, curfile);
 			}
 			break;
 		case CPP_OPERATOR:
@@ -347,7 +347,7 @@ Cpp()
 				}
 			}
 			if (c == EOF && wflag)
-				fprintf(stderr, "Warning: '{' doesn't exist after 'operator'. [+%d %s].\n", lineno, curfile); /* } */
+				warning("'{' doesn't exist after 'operator'. [+%d %s].", lineno, curfile); /* } */
 			break;
 		/* control statement check */
 		case CPP_THROW:
@@ -368,7 +368,7 @@ Cpp()
 		case CPP_TRY:
 		case CPP_WHILE:
 			if (wflag && !startmacro && level == 0)
-				fprintf(stderr, "Warning: Out of function. %8s [+%d %s]\n", token, lineno, curfile);
+				warning("Out of function. %8s [+%d %s]", token, lineno, curfile);
 			break;
 		case CPP_TYPEDEF:
 			if (tflag) {
@@ -384,7 +384,7 @@ Cpp()
 				} while (IS_CV_QUALIFIER(c) || c == '\n');
 
 				if (wflag && c == EOF) {
-					fprintf(stderr, "Warning: unexpected eof. [+%d %s]\n", lineno, curfile);
+					warning("unexpected eof. [+%d %s]", lineno, curfile);
 					break;
 				} else if (c == CPP_ENUM || c == CPP_STRUCT || c == CPP_UNION) {
 					char *interest_enum = "{},;";
@@ -443,7 +443,7 @@ Cpp()
 					if (c == ';')
 						break;
 					if (wflag && c == EOF) {
-						fprintf(stderr, "Warning: unexpected eof. [+%d %s]\n", lineno, curfile);
+						warning("unexpected eof. [+%d %s]", lineno, curfile);
 						break;
 					}
 				} else if (c == SYMBOL) {
@@ -496,9 +496,9 @@ Cpp()
 				}
 				if (wflag) {
 					if (c == EOF)
-						fprintf(stderr, "Warning: unexpected eof. [+%d %s]\n", lineno, curfile);
+						warning("unexpected eof. [+%d %s]", lineno, curfile);
 					else if (level != typedef_savelevel)
-						fprintf(stderr, "Warning: () block unmatched. (last at level %d.)[+%d %s]\n", level, lineno, curfile);
+						warning("() block unmatched. (last at level %d.)[+%d %s]", level, lineno, curfile);
 				}
 			}
 			break;
@@ -512,9 +512,9 @@ Cpp()
 	strbuf_close(sb);
 	if (wflag) {
 		if (level != 0)
-			fprintf(stderr, "Warning: {} block unmatched. (last at level %d.)[+%d %s]\n", level, lineno, curfile);
+			warning("{} block unmatched. (last at level %d.)[+%d %s]", level, lineno, curfile);
 		if (piflevel != 0)
-			fprintf(stderr, "Warning: #if block unmatched. (last at level %d.)[+%d %s]\n", piflevel, lineno, curfile);
+			warning("#if block unmatched. (last at level %d.)[+%d %s]", piflevel, lineno, curfile);
 	}
 }
 /*
@@ -677,7 +677,7 @@ condition_macro(cc, target)
 		if (cur->end == -1)
 			cur->end = level;
 		else if (cur->end != level && wflag)
-			fprintf(stderr, "Warning: uneven level. [+%d %s]\n", lineno, curfile);
+			warning("uneven level. [+%d %s]", lineno, curfile);
 		level = cur->start;
 		cur->if0only = 0;
 	} else if (cc == SHARP_ENDIF) {
@@ -690,13 +690,13 @@ condition_macro(cc, target)
 		}
 		DBG_PRINT(piflevel, "#endif");
 		if (minus) {
-			fprintf(stderr, "Warning: #if block unmatched. reseted. [+%d %s]\n", lineno, curfile);
+			warning("#if block unmatched. reseted. [+%d %s]", lineno, curfile);
 		} else {
 			if (cur->if0only)
 				level = cur->start;
 			else if (cur->end != -1) {
 				if (cur->end != level && wflag)
-					fprintf(stderr, "Warning: uneven level. [+%d %s]\n", lineno, curfile);
+					warning("uneven level. [+%d %s]", lineno, curfile);
 				level = cur->end;
 			}
 		}

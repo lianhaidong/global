@@ -677,7 +677,7 @@ makehtml(total)
 			_++;
 			if (is_binary(_)) {
 				if (wflag)
-					fprintf(stderr, "Warning: '%s' is binary file. (skipped)\n", _);
+					warning("'%s' is binary file. (skipped)", _);
 				continue;
 			}
 			notsource = 1;
@@ -934,13 +934,13 @@ configuration(argc, argv)
 	 */
 	if (getconfn("ncol", &n)) {
 		if (n < 1 || n > 10)
-			fprintf(stderr, "Warning: parameter 'ncol' ignored becase the value (=%d) is too large or too small.\n", n);
+			warning("parameter 'ncol' ignored becase the value (=%d) is too large or too small.", n);
 		else
 			ncol = n;
 	}
 	if (getconfn("tabs", &n)) {
 		if (n < 1 || n > 32)
-			fprintf(stderr, "Warning: parameter 'tabs' ignored becase the value (=%d) is too large or too small.\n", n);
+			warning("parameter 'tabs' ignored becase the value (=%d) is too large or too small.", n);
 		else
 			tabs = n;
 	}
@@ -1475,7 +1475,7 @@ main(argc, argv)
 		strlimcpy(dbpath, arg_dbpath, sizeof(dbpath));
 
 	if (cflag && !usable("gzip")) {
-		warning("Warning: 'gzip' command not found. -c option ignored.");
+		warning("'gzip' command not found. -c option ignored.");
 		cflag = 0;
 	}
 	if (!title) {

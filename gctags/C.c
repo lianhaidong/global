@@ -173,7 +173,7 @@ C(yacc)
 			++level;
 			if (bflag && atfirst) {
 				if (wflag && level != 1)
-					fprintf(stderr, "Warning: forced level 1 block start by '{' at column 0 [+%d %s].\n", lineno, curfile); /* } */
+					warning("forced level 1 block start by '{' at column 0 [+%d %s].", lineno, curfile); /* } */
 				level = 1;
 			}
 			break;
@@ -181,12 +181,12 @@ C(yacc)
 		case '}':
 			if (--level < 0) {
 				if (wflag)
-					fprintf(stderr, "Warning: missing left '{' [+%d %s].\n", lineno, curfile); /* } */
+					warning("missing left '{' [+%d %s].", lineno, curfile); /* } */
 				level = 0;
 			}
 			if (eflag && atfirst) {
 				if (wflag && level != 0) /* { */
-					fprintf(stderr, "Warning: forced level 0 block end by '}' at column 0 [+%d %s].\n", lineno, curfile);
+					warning("forced level 0 block end by '}' at column 0 [+%d %s].", lineno, curfile);
 				level = 0;
 			}
 			if (yaccstatus == RULES && level == 0)
@@ -197,7 +197,7 @@ C(yacc)
 		case '\n':
 			if (startmacro && level != savelevel) {
 				if (wflag)
-					fprintf(stderr, "Warning: different level before and after #define macro. reseted. [+%d %s].\n", lineno, curfile);
+					warning("different level before and after #define macro. reseted. [+%d %s].", lineno, curfile);
 				level = savelevel;
 			}
 			startmacro = startsharp = 0;
@@ -205,7 +205,7 @@ C(yacc)
 		case YACC_SEP:		/* %% */
 			if (level != 0) {
 				if (wflag)
-					fprintf(stderr, "Warning: forced level 0 block end by '%%' [+%d %s].\n", lineno, curfile);
+					warning("forced level 0 block end by '%%' [+%d %s].", lineno, curfile);
 				level = 0;
 			}
 			if (yaccstatus == DECLARATIONS) {
@@ -219,21 +219,21 @@ C(yacc)
 		case YACC_BEGIN:	/* %{ */
 			if (level != 0) {
 				if (wflag)
-					fprintf(stderr, "Warning: forced level 0 block end by '%%{' [+%d %s].\n", lineno, curfile);
+					warning("forced level 0 block end by '%%{' [+%d %s].", lineno, curfile);
 				level = 0;
 			}
 			if (inC == 1 && wflag)
-				fprintf(stderr, "Warning: '%%{' appeared in C mode. [+%d %s].\n", lineno, curfile);
+				warning("'%%{' appeared in C mode. [+%d %s].", lineno, curfile);
 			inC = 1;
 			break;
 		case YACC_END:		/* %} */
 			if (level != 0) {
 				if (wflag)
-					fprintf(stderr, "Warning: forced level 0 block end by '%%}' [+%d %s].\n", lineno, curfile);
+					warning("forced level 0 block end by '%%}' [+%d %s].", lineno, curfile);
 				level = 0;
 			}
 			if (inC == 0 && wflag)
-				fprintf(stderr, "Warning: '%%}' appeared in Yacc mode. [+%d %s].\n", lineno, curfile);
+				warning("'%%}' appeared in Yacc mode. [+%d %s].", lineno, curfile);
 			inC = 0;
 			break;
 		/*
@@ -309,7 +309,7 @@ C(yacc)
 		case C_SWITCH:
 		case C_WHILE:
 			if (wflag && !startmacro && level == 0)
-				fprintf(stderr, "Warning: Out of function. %8s [+%d %s]\n", token, lineno, curfile);
+				warning("Out of function. %8s [+%d %s]", token, lineno, curfile);
 			break;
 		case C_TYPEDEF:
 			if (tflag) {
@@ -325,7 +325,7 @@ C(yacc)
 				} while (IS_TYPE_QUALIFIER(c) || c == '\n');
 
 				if (wflag && c == EOF) {
-					fprintf(stderr, "Warning: unexpected eof. [+%d %s]\n", lineno, curfile);
+					warning("unexpected eof. [+%d %s]", lineno, curfile);
 					break;
 				} else if (c == C_ENUM || c == C_STRUCT || c == C_UNION) {
 					char *interest_enum = "{},;";
@@ -384,7 +384,7 @@ C(yacc)
 					if (c == ';')
 						break;
 					if (wflag && c == EOF) {
-						fprintf(stderr, "Warning: unexpected eof. [+%d %s]\n", lineno, curfile);
+						warning("unexpected eof. [+%d %s]", lineno, curfile);
 						break;
 					}
 				} else if (c == SYMBOL) {
@@ -437,9 +437,9 @@ C(yacc)
 				}
 				if (wflag) {
 					if (c == EOF)
-						fprintf(stderr, "Warning: unexpected eof. [+%d %s]\n", lineno, curfile);
+						warning("unexpected eof. [+%d %s]", lineno, curfile);
 					else if (level != typedef_savelevel)
-						fprintf(stderr, "Warning: () block unmatched. (last at level %d.)[+%d %s]\n", level, lineno, curfile);
+						warning("() block unmatched. (last at level %d.)[+%d %s]", level, lineno, curfile);
 				}
 			}
 			break;
@@ -453,9 +453,9 @@ C(yacc)
 	strbuf_close(sb);
 	if (wflag) {
 		if (level != 0)
-			fprintf(stderr, "Warning: {} block unmatched. (last at level %d.)[+%d %s]\n", level, lineno, curfile);
+			warning("{} block unmatched. (last at level %d.)[+%d %s]", level, lineno, curfile);
 		if (piflevel != 0)
-			fprintf(stderr, "Warning: #if block unmatched. (last at level %d.)[+%d %s]\n", piflevel, lineno, curfile);
+			warning("#if block unmatched. (last at level %d.)[+%d %s]", piflevel, lineno, curfile);
 	}
 }
 /*
@@ -623,7 +623,7 @@ condition_macro(cc, target)
 		if (cur->end == -1)
 			cur->end = level;
 		else if (cur->end != level && wflag)
-			fprintf(stderr, "Warning: uneven level. [+%d %s]\n", lineno, curfile);
+			warning("uneven level. [+%d %s]", lineno, curfile);
 		level = cur->start;
 		cur->if0only = 0;
 	} else if (cc == SHARP_ENDIF) {
@@ -636,13 +636,13 @@ condition_macro(cc, target)
 		}
 		DBG_PRINT(piflevel, "#endif");
 		if (minus) {
-			fprintf(stderr, "Warning: #if block unmatched. reseted. [+%d %s]\n", lineno, curfile);
+			warning("#if block unmatched. reseted. [+%d %s]", lineno, curfile);
 		} else {
 			if (cur->if0only)
 				level = cur->start;
 			else if (cur->end != -1) {
 				if (cur->end != level && wflag)
-					fprintf(stderr, "Warning: uneven level. [+%d %s]\n", lineno, curfile);
+					warning("uneven level. [+%d %s]", lineno, curfile);
 				level = cur->end;
 			}
 		}

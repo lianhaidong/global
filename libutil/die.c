@@ -147,6 +147,7 @@ warning(s, va_alist)
 	va_list ap;
 
 	if (!quiet) {
+		fputs("Warning: ", stderr);
 #ifdef HAVE_STDARG_H
 		va_start(ap, s);
 #else
