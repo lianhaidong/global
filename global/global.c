@@ -415,8 +415,6 @@ char	*argv[];
 	 * exec gid(idutils).
 	 */
 	if (Iflag) {
-		if (!usable("gid"))
-			die("gid(idutils) not found.");
 		chdir(root);
 		idutils(av, dbpath);
 		exit(0);
@@ -636,7 +634,11 @@ char	*dbpath;
 	char	edit[IDENTLEN+1];
 	char    *line, *p, *path, *lno;
 	int     linenum, count, editlen;
+	char	*gid;
 
+	gid = usable("gid");
+	if (!gid)
+		die("gid(idutils) not found.");
 	/*
 	 * convert spaces into %FF format.
 	 */
@@ -645,7 +647,8 @@ char	*dbpath;
 	/*
 	 * make gid command line.
 	 */
-	strbuf_puts(ib, "gid ");
+	strbuf_puts(ib, gid);
+	strbuf_putc(ib, ' ');
 	strbuf_puts(ib, "--separator=newline ");
 	if (!tflag && !xflag)
 		strbuf_puts(ib, "--result=filenames --key=none ");
