@@ -995,7 +995,6 @@ char	*dbpath;
 			fprintf(stderr, "%d objects located", count);
 		fprintf(stderr, " (no index used).\n");
 	}
-	fprintf(stderr, "NO xargs version\n");
 }
 #endif /* HAVE_XARGS && HAVE_GREP */
 /*
