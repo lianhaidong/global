@@ -83,6 +83,9 @@ if (defined($ENV{'TMPDIR'}) && -d $ENV{'TMPDIR'}) {
 if (! -d $tmp || ! -w $tmp) {
 	&'error("temporary directory '$tmp' not exist or not writable.");
 }
+if (defined($ENV{'GTAGSCONF'}) && ! -f $ENV{'GTAGSCONF'}) {
+	&'error("config file '$ENV{'GTAGSCONF'}' not found.");
+}
 $'ncol = 4;					# columns of line number
 $'tabs = 8;					# tab skip
 $'full_path = 0;				# file index format
@@ -914,12 +917,16 @@ sub makebless {
 #	% cd /var/obj/HTML
 #	% sh bless.sh		<- OK. It will work well!
 #
-pattern='INPUT TYPE=hidden NAME=id VALUE='
-[ $1 ] && verbose=1
+pattern1='INPUT TYPE=hidden NAME=id VALUE='
+pattern2='FORM METHOD=GET ACTION='
+action=`gtags --config script_alias | sed 's!/$!!'`/global.cgi
+case $1 in
+-v)	verbose=1;;
+esac
 id=`pwd`
 for f in mains.html index.html search.html; do
 	if [ -f $f ]; then
-		sed "s!<$pattern.*>!<$pattern$id>!" $f > $f.new;
+		sed -e "s!<$pattern1.*>!<$pattern1$id>!" -e "s!<$pattern2.*>!<$pattern2$action>!" $f > $f.new;
 		if ! cmp $f $f.new >@null_device@; then
 			mv $f.new $f
 			[ $verbose ] && echo "$f was blessed."
