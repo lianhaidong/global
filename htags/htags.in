@@ -1297,13 +1297,14 @@ sub makefileindex {
 
 	while (<FIND>) {
 		local($notsource) = 0;
+		chop;
 		if (/^ /) {
 			next if (!$'other_files);
 			s/^ //;
+			next if (-B $_);
 			$notsource = 1;
 		}
 		$count++;
-		chop;
 		s!^\./!!;
 		print STDERR " [$count] adding $_\n" if ($'vflag);
 		@push = split('/');
@@ -1635,12 +1636,13 @@ sub makehtml {
 	open(FIND, "$findcom |") || &'error("cannot fork.");
 	while (<FIND>) {
 		local($notsource) = 0;
+		chop;
 		if (/^ /) {
 			next if (!$'other_files);
 			s/^ //;
+			next if (-B $_);
 			$notsource = 1;
 		}
-		chop;
 		$count++;
 		local($path) = $_;
 		$path =~ s/^\.\///;
