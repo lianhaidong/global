@@ -107,11 +107,6 @@ AC_SUBST(INCLUDES)
 LDADD='../libutil/libgloutil.a ../libdb/libglodb.a ../libglibc/libgloglibc.a'
 AC_SUBST(LDADD)
 
-AC_ARG_ENABLE(statistics,dnl
-[  --enable-statistics     enable statistics option],
-	CFLAGS="$CFLAGS -DSTATISTICS"
-)dnl
-
 AC_OUTPUT([Makefile
 	libutil/Makefile
 	gtags/Makefile

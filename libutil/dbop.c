@@ -363,17 +363,3 @@ DBOP	*dbop;
 		die("cannot change file mode.");
 	(void)free(dbop);
 }
-#ifdef STATISTICS
-void
-dbop_dump(dbop)
-DBOP	*dbop;
-{
-	__bt_dump(dbop->db);
-}
-void
-dbop_stat(dbop)
-DBOP	*dbop;
-{
-	__bt_stat(dbop->db);
-}
-#endif

@@ -60,8 +60,4 @@ char	*dbop_first(DBOP *, const char *, regex_t *, int);
 char	*dbop_next(DBOP *);
 char	*dbop_lastdat(DBOP *);
 void	dbop_close(DBOP *);
-#ifdef STATISTICS
-void	dbop_dump(DBOP *);
-void	dbop_stat(DBOP *);
-#endif
 #endif /* _DBOP_H_ */
