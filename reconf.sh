@@ -71,7 +71,7 @@ echo "- Clean up config.cache..."
 rm -f config.cache
 
 echo "- Generating configure items..."
-(set -x; aclocal && autoheader && automake --add-missing && automake && autoconf) &&
+(set -x; aclocal && autoheader && automake --add-missing && autoconf) &&
 if [ "$1" = "-c" ]; then
 	./configure
 else
