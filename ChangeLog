@@ -26,7 +26,7 @@ November 11 2004, Shigio Yamaguchi  <shigio@gnu.org>
 
         Decrease in dependancy to external commands:
         * The sed(1), sort(1) and find(1) are not necessary any longer.
-        * The support of Find(1) as a method of directory traversing
+        * The support of find(1) as a method of directory traversing
           was ended. As a result, dirent(3) became indispensable.
           The configuration phase was changed like follows:
 
@@ -42,7 +42,7 @@ November 11 2004, Shigio Yamaguchi  <shigio@gnu.org>
                         use dirent(3)
                 else
                         ERROR
-        * Htags.pl was removed completely. Therefore, The --date, --pwd,
+        * Htags.pl was removed completely. Therefore, the --date, --pwd,
           --write and --scandb option of gtags(1) which was used internally
           by htags.pl, were removed.
         * Includes GNU sort as part of GLOBAL package.
