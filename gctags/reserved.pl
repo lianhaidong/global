@@ -171,6 +171,7 @@ while(<IP>) {
 	$upper = $id[0];
 	$upper =~ tr/a-z/A-Z/;
 	if ($type eq 'word') {
+		$upper =~ s/::/WCOLON/;
 		print "#define ${PRE}_${upper}\t${n_word}\n";
 		$n_word++;
 	} elsif ($type eq 'variable') {
@@ -209,6 +210,7 @@ while(<IP>) {
 	for ($i = 0; $i < @id; $i++) {
 		$name = $id[$i];
 		if ($type eq 'word') {
+			$upper =~ s/::/WCOLON/;
 			print "$name, ${PRE}_${upper}\n";
 		} elsif ($type eq 'variable') {
 			print "\"${name}\", ${PRE}_${upper}\n";

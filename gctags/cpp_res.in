@@ -13,7 +13,7 @@
 ;
 ; C++ reserved word list.
 ;
-;::				word
+::				word
 __P				word
 __attribute__,__attribute	word
 __extension__			word
