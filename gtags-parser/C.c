@@ -44,6 +44,7 @@
 #include "token.h"
 #include "c_res.h"
 
+static void C_family(const char *, int);
 static void process_attribute(int);
 static int function_definition(int, char *);
 static void condition_macro(int, int);
@@ -55,6 +56,9 @@ static int seems_datatype(const char *);
 #define RULES           1
 #define PROGRAMS        2
 
+#define TYPE_C		0
+#define TYPE_LEX	1
+#define TYPE_YACC	2
 /*
  * #ifdef stack.
  */
@@ -67,7 +71,6 @@ static struct {
 } stack[MAXPIFSTACK], *cur;
 static int piflevel;		/* condition macro level */
 static int level;		/* brace level */
-static int yaccflag;		/* 1: yacc, 0: c */
 
 /*
  * yacc: read yacc file and pickup tag entries.
@@ -76,8 +79,7 @@ void
 yacc(file)
 	const char *file;
 {
-	yaccflag = 1;
-	C(file);
+	C_family(file, TYPE_YACC);
 }
 /*
  * C: read C file and pickup tag entries.
@@ -85,6 +87,17 @@ yacc(file)
 void
 C(file)
 	const char *file;
+{
+	C_family(file, TYPE_C);
+}
+/*
+ *	i)	file	source file
+ *	i)	type	TYPE_C, TYPE_YACC, TYPE_LEX
+ */
+static void
+C_family(file, type)
+	const char *file;
+	int type;
 {
 	int c, cc;
 	int savelevel;
@@ -102,8 +115,8 @@ C(file)
 	 * programs
 	 *
 	 */
-	int yaccstatus = (yaccflag) ? DECLARATIONS : PROGRAMS;
-	int inC = (yaccflag) ? 0 : 1;		/* 1 while C source */
+	int yaccstatus = (type == TYPE_YACC) ? DECLARATIONS : PROGRAMS;
+	int inC = (type == TYPE_YACC) ? 0 : 1;	/* 1 while C source */
 
 	level = piflevel = 0;
 	savelevel = -1;
@@ -114,7 +127,7 @@ C(file)
 		die("'%s' cannot open.", file);
 	cmode = 1;			/* allow token like '#xxx' */
 	crflag = 1;			/* require '\n' as a token */
-	if (yaccflag)
+	if (type == TYPE_YACC)
 		ymode = 1;		/* allow token like '%xxx' */
 
 	while ((cc = nexttoken(interested, reserved_word)) != EOF) {
