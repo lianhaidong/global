@@ -415,10 +415,6 @@ Cpp()
 						fprintf(stderr, "Warning: unexpected eof. [+%d %s]\n", lineno, curfile);
 						break;
 					}
-					if ((wflag && level != typedef_savelevel) || c != '}') {
-						fprintf(stderr, "Warning: uneven {}. [+%d %s]\n", lineno, curfile);
-						break;
-					}
 				} else if (c == SYMBOL) {
 					if (target == REF && defined(token))
 						PUT(token, lineno, sp);
@@ -444,7 +440,7 @@ Cpp()
 					else if (c == ')')
 						level--;
 					else if (c == SYMBOL) {
-						if (level > 0) {
+						if (level > typedef_savelevel) {
 							if (target == SYM)
 								PUT(token, lineno, sp);
 						} else {
@@ -464,13 +460,13 @@ Cpp()
 							savetok[0] = 0;
 						}
 					}
-					if (level == 0 && c == ';')
+					if (level == typedef_savelevel && c == ';')
 						break;
 				}
 				if (wflag) {
 					if (c == EOF)
 						fprintf(stderr, "Warning: unexpected eof. [+%d %s]\n", lineno, curfile);
-					else if (level > 0)
+					else if (level != typedef_savelevel)
 						fprintf(stderr, "Warning: () block unmatched. (last at level %d.)[+%d %s]\n", level, lineno, curfile);
 				}
 			}
