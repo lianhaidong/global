@@ -46,6 +46,7 @@ static int      reserved(char *);
 #define A_NENTRY	1006
 #define A_SYMBOL_NAME	1007
 #define A_C_LABEL	1008
+#define A_GLOBAL_ENTRY	1009
 
 void
 assembler()
@@ -86,6 +87,7 @@ assembler()
 		case A_ENTRY:
 		case A_ALTENTRY:
 		case A_NENTRY:
+		case A_GLOBAL_ENTRY:
 			if (!startline || target != DEF)
 				break;
 			if ((c = nexttoken(interested, reserved)) == '('/* ) */)
@@ -133,6 +135,10 @@ reserved(word)
 			return A_ENTRY;
 		else if (!strcmp(word, "EXT"))
 			return A_EXT;
+		break;
+	case 'G':
+		if (!strcmp(word, "GLOBAL_ENTRY"))
+			return A_GLOBAL_ENTRY;
 		break;
 	case 'N':
 		if (!strcmp(word, "NENTRY"))
