@@ -21,5 +21,3 @@ EXTRA_DIST = FAQ LICENSE \
 	w32/libglibc/makefile w32/libutil/makefile \
 	w32/libdb/objs w32/libglibc/objs w32/libutil/objs \
 	w32/htags/htags.bat w32/machine/config.h w32/machine/unistd.h
-
-CLEANFILES = GTAGS GRTAGS GSYMS GPATH
