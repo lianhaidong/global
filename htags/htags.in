@@ -22,11 +22,12 @@
 #
 $'w32 = ($^O =~ /^(ms)?(dos|win(32|nt))/i) ? 1 : 0;
 $www = "http://www.gnu.org/software/global/";
-$caution_message = <<END_OF_CAUTION;
+$file_count = 0;
+$caution_message = <<'END_OF_CAUTION';
 <CENTER>
 <BLOCKQUOTE>
 <FONT SIEZE=+3 COLOR=red>CAUTION</FONT><BR>
-This hypertext is HUGE.
+This hypertext consist of @FILE_COUNT@ files.
 Please don't download whole hypertext using hypertext copy tools.
 Our network cannot afford such traffic.
 Instead, you can generate same thing in your computer using
@@ -750,12 +751,12 @@ if ($'cgi && ($'fflag || $'cflag)) {
 if ($'cgi && $'fflag) {
 	if ($'cgidir) {
 		print STDERR "[", &'date, "] ", "(1) making CGI program ...\n" if ($'vflag);
-		&makeprogram("$cgidir/global.cgi") || &'error("cannot make CGI program.");
+		&makeprogram("$cgidir/global.cgi");
 		chmod(0755, "$cgidir/global.cgi") || &'error("cannot chmod CGI program.");
 	}
 	# Always make bless.sh.
 	# Don't grant execute permission to bless script.
-	&makebless("$dist/bless.sh") || &'error("cannot make bless script.");
+	&makebless("$dist/bless.sh");
 	chmod(0640, "$dist/bless.sh") || &'error("cannot chmod bless script.");
 
 	foreach $f ('GTAGS', 'GRTAGS', 'GSYMS', 'GPATH') {
@@ -766,7 +767,7 @@ if ($'cgi && $'fflag) {
 	}
 }
 if ($'cgi && $'cflag) {
-	&makehtaccess("$dist/.htaccess") || &'error("cannot make .htaccess skelton.");
+	&makehtaccess("$dist/.htaccess");
 	chmod(0644, "$dist/.htaccess") || &'error("cannot chmod .htaccess skelton.");
 	if ($'cgidir) {
 		&makeghtml("$cgidir/ghtml.cgi") || &'error("cannot make unzip script.");
@@ -827,6 +828,7 @@ print STDERR "Total $func_total functions.\n" if ($'vflag);
 print STDERR "[", &'date, "] ", "(6) making file index ...\n" if ($'vflag);
 $file_total = &makefileindex($dist, "$dist/files.$'normal_suffix", "$dist/$INCS");
 print STDERR "Total $file_total files.\n" if ($'vflag);
+$file_count += $file_total;
 #
 # [#] make a common part for mains.html and index.html
 #     USING @defines @files
@@ -1039,7 +1041,8 @@ END_OF_SCRIPT
 	$script =~ s/\@globalpath\@/$globalpath/g;
 	$script =~ s/\@btreeoppath\@/$btreeoppath/g;
 	print PROGRAM $script;
-	close(PROGRAM);
+	close(PROGRAM) || &'error("cannot make CGI program.");
+	$'file_count++;
 }
 #
 # makebless: make bless script
@@ -1083,7 +1086,7 @@ END_OF_SCRIPT
 	$script =~ s/\@null_device\@/$'null_device/g;
 	$script =~ s/\@action\@/$action/g;
 	print SCRIPT $script;
-	close(SCRIPT);
+	close(SCRIPT) || &'error("cannot make bless script.");
 }
 #
 # makeghtml: make unzip script
@@ -1123,7 +1126,7 @@ AddHandler htags-gzipped-html $'gzipped_suffix
 Action htags-gzipped-html /cgi-bin/ghtml.cgi
 END_OF_SCRIPT
 	print SKELTON $skelton;
-	close(SKELTON);
+	close(SKELTON) || &'error("cannot make .htaccess skelton.");
 }
 #
 # makerebuild: make rebuild script
@@ -1190,6 +1193,7 @@ sub makehelp {
 	print HELP $'body_end, "\n";
 	print HELP $'html_end, "\n";
 	close(HELP);
+	$'file_count++;
 }
 #
 # makedupindex: make duplicate entries index ($DEFS/* and $REFS/*)
@@ -1223,6 +1227,7 @@ sub makedupindex {
 					print FILE $'body_end, "\n";
 					print FILE $'html_end, "\n";
 					close(FILE);
+					$'file_count++;
 					$writing = 0;
 				}
 				# single entry
@@ -1253,12 +1258,14 @@ sub makedupindex {
 			}
 		}
 		close(LIST);
+		$'file_count++;
 		if ($?) { &'error("'$command' failed."); }
 		if ($writing) {
 			print FILE &'list_end;
 			print FILE $'body_end, "\n";
 			print FILE $'html_end, "\n";
 			close(FILE);
+			$'file_count++;
 		}
 		if ($first_line) {
 			&cache'put($db, $prev, $first_line);
@@ -1317,6 +1324,7 @@ sub makedefineindex {
 				print ALPHA $'body_end, "\n";
 				print ALPHA $'html_end, "\n";
 				close(ALPHA);
+				$'file_count++;
 			}
 			# for multi-byte code
 			local($c0, $c1);
@@ -1377,6 +1385,7 @@ sub makedefineindex {
 		print ALPHA $'body_end, "\n";
 		print ALPHA $'html_end, "\n";
 		close(ALPHA);
+		$'file_count++;
 
 		print DEFINES @defines;
 	}
@@ -1387,6 +1396,7 @@ sub makedefineindex {
 	print DEFINES $'body_end, "\n";
 	print DEFINES $'html_end, "\n";
 	close(DEFINES);
+	$'file_count++;
 	if ($'map_file) {
 		close(MAP);
 	}
@@ -1451,6 +1461,7 @@ sub makefileindex {
 				print $'html_end, "\n";
 				$path = pop(@fdstack);
 				close($path);
+				$'file_count++;
 				select($fdstack[$#fdstack]) if (@fdstack);
 				pop(@pop);
 			}
@@ -1537,6 +1548,7 @@ sub makefileindex {
 		print $'html_end, "\n";
 		$path = pop(@fdstack);
 		close($path);
+		$'file_count++;
 		select($fdstack[$#fdstack]) if (@fdstack);
 	}
 	print FILES @files;
@@ -1544,6 +1556,7 @@ sub makefileindex {
 	print FILES $'body_end, "\n";
 	print FILES $'html_end, "\n";
         close(FILES);
+	$'file_count++;
 
 	select($org);
 	foreach $last (keys %includes) {
@@ -1567,6 +1580,7 @@ sub makefileindex {
 			print INCLUDE $'body_end, "\n";
 			print INCLUDE $'html_end, "\n";
 			close(INCLUDE);
+			$'file_count++;
 			# '' means that information already written to file.
 			$includes{$last} = $no;
 		}
@@ -1642,6 +1656,7 @@ sub makecommonpart {
 	$index .= "</P>\n";
 	$index .= "<HR>\n";
 	if ($'include_caution) {
+		$'include_caution =~ s/\@FILE_COUNT\@/$'file_count/;
 		$index .= $'include_caution;
 		$index .= "\n<HR>\n";
 	}
@@ -1718,6 +1733,7 @@ sub makeindex {
 		print FRAME "</FRAMESET>\n";
 		print FRAME $'html_end, "\n";
 		close(FRAME);
+		$'file_count++;
 	} else {
 		open(FILE, ">$file") || &'error("cannot open file '$file'.");
 		print FILE $'html_begin, "\n";
@@ -1727,6 +1743,7 @@ sub makeindex {
 		print FILE $'body_end, "\n";
 		print FILE $'html_end, "\n";
 		close(FILE);
+		$'file_count++;
 	}
 }
 #
@@ -1746,6 +1763,7 @@ sub makemainindex {
 	print INDEX $'body_end, "\n";
 	print INDEX $'html_end, "\n";
 	close(INDEX);
+	$'file_count++;
 }
 #
 # makesearchindex: make search html
@@ -1763,6 +1781,7 @@ sub makesearchindex {
 	print SEARCH $'body_end, "\n";
 	print SEARCH $'html_end, "\n";
 	close(SEARCH);
+	$'file_count++;
 }
 #
 # makehtml: make html files
