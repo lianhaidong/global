@@ -1250,6 +1250,8 @@ int	db;
 		count++;
 	}
 	closefilter(op);
+	if (sb)
+		strbuf_close(sb);
 	gtags_close(gtop);
 	return count;
 }
