@@ -22,6 +22,7 @@ Thanks to:		for his(her):
 ---------------------------------------------------------------------------
 A.E. Brouwer		advice about writing code for generic UNIX.
 Andrew Gallatin		bug report about generating wrong path.
+Andrs Azar		Cygwin trouble report.
 Andy Newman		bug report about treating tab character.
 Andy Zhou		bug report about gctags overlook 'extern' prefixed function.
 Bakken, Luke		bug fix method about stat() in htags(1).

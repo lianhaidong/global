@@ -139,5 +139,30 @@ A8. Some operating system, for example Redhat9, is shipped with
       2. Replace sort command with one which is not internationalized.
 
 ----------------------------------------------------------------------------
+Q9. I'm running GLOBAL on Cygwin.
+    When I ran htags, it returned the following message: 
+
+        htags: cannot make cache file '/tmp/htagd79287565'.
+
+    Any workaround?
+
+A9. It seems that some Cygwin perl have a bug and the dbmopen() doesn't work
+    on FAT file system. You can take the following workaround until Cygwin perl
+    is fixed.
+   
+    With 'no_cache_file' variable set, htags doesn't use dbmopen() any longer.
+    Instead, more memory might be requred for execution of htags.
+
+        gtags.conf:
+        +-----------------------------------------------------
+        |
+        |...
+        |common:\
+        |       :skip=GPATH,GTAGS,GRTAGS,GSYMS,HTML/,tags,...
+        |       :format=standard:\
+        |       :no_cache_file:                 <== ADD
+
+
+----------------------------------------------------------------------------
 
 Shigio Yamaguchi
