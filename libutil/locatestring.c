@@ -66,6 +66,7 @@ size_t len;
  *			MATCH_AT_FIRST: match only at first column
  *			MATCH_LAST:	match last
  *			MATCH_AT_LAST:	match only at last column
+ *			MATCH_COMPLETE	match completely
  *			IGNORE_CASE:	Ignore case
  *	r)		pointer or NULL
  *
@@ -88,6 +89,12 @@ int	flag;
 	cmpfunc = (flag & IGNORE_CASE) ? strincmp : strncmp;
 	flag &= ~IGNORE_CASE;
 
+	if (flag == MATCH_COMPLETE) {
+		if (strlen(string) == slen && !(*cmpfunc)(string, pattern, plen))
+			return string;
+		else
+			return NULL;
+	}
 	if (flag == MATCH_AT_LAST && (slen = strlen(string)) > plen)
 		string += (slen - plen);
 	for (; *string; string++) {

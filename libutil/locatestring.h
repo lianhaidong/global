@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999
  *             Shigio Yamaguchi. All rights reserved.
- * Copyright (c) 1999, 2000
+ * Copyright (c) 1999, 2000, 2002
  *             Tama Communications Corporation. All rights reserved.
  *
  * This file is part of GNU GLOBAL.
@@ -28,6 +28,7 @@
 #define MATCH_AT_FIRST	1
 #define MATCH_LAST	2
 #define MATCH_AT_LAST	3
+#define MATCH_COMPLETE	4
 #define IGNORE_CASE	8
 
 char	*locatestring(const char *, const char *, int);
