@@ -73,6 +73,7 @@ echo "- Preparing parser source ..."
 		flex -o$lang.c $lang.l
 	fi
 done
+perl ./reserved.pl --prefix=sharp --perl c_res.in > sharp_res.pl
 )
 
 echo "- Collecting reference manuals ..."

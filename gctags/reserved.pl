@@ -99,22 +99,40 @@ if (!$keyword_file) {
 # [2] Generate regular expression which means reserved words for htags(1).
 #
 if ($perl) {
+	local(@array);
 	open(IP, $keyword_file) || die("$com: cannot open file '$keyword_file'.\n");
-	print "# This part is generated automatically by $com from '$keyword_file'.\n";
-	print "\$'${prefix}_reserved_words = \"(";
-	$sep = '';
 	while(<IP>) {
 		chop;
 		next if (/^$/ || /^;/);
 		($id, $type) = split;
-		@id = split(/,/, $id);
-		if ($type eq 'word') {
-			for ($i = 0; $i < @id; $i++) {
-				print $sep, $id[$i];
-				$sep = '|';
+		if ($prefix eq 'sharp') {
+			if ($type eq 'sharp' && $id ne '##') {
+				$id =~ s/#//g;
+				push(@array, $id);
+			}
+		} else {
+			if ($type eq 'word') {
+				@id = split(/,/, $id);
+				for ($i = 0; $i < @id; $i++) {
+					push(@array, $id[$i]);
+				}
 			}
 		}
 	}
+	close(IP);
+	#
+	# Sort by the length to match pattern to a longer name.
+	#
+	sub compare { length($b) <=> length($a); }
+	@array = sort compare @array;
+
+	print "# This part is generated automatically by $com from '$keyword_file'.\n";
+	if ($prefix eq 'sharp') {
+		print "\$'sharp_macros = \"(";
+	} else {
+		print "\$'${prefix}_reserved_words = \"(";
+	}
+	print join('|', @array);
 	print ")\";\n";
 	print "# end of generated part.\n";
 	close(IP);

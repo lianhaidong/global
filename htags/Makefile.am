@@ -20,8 +20,8 @@ PERL = @PERL@
 
 resdir = $(srcdir)/../gctags
 
-RESFILES = $(resdir)/c_res.pl $(resdir)/cpp_res.pl $(resdir)/java_res.pl \
-	$(resdir)/php_res.pl
+RESFILES = $(resdir)/sharp_res.pl $(resdir)/c_res.pl $(resdir)/cpp_res.pl \
+	$(resdir)/java_res.pl $(resdir)/php_res.pl
 
 htags: $(srcdir)/htags.in $(srcdir)/const.pl $(RESFILES)
 	echo "#! @PERL@" | \

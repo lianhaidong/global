@@ -104,13 +104,6 @@ $'position_end   = '</FONT>';
 $'warned_line_begin = '<SPAN STYLE="background-color:yellow">';
 $'warned_line_end   = '</SPAN>';
 $'hr		 = '<HR>';
-#
-# Reserved words for C and Java are hard coded.
-# (configuration parameter 'reserved_words' was deleted.)
-#
-$'sharp_macros = "assert,define,elif,else,endif,error,ident,ifdef,ifndef,if," .
-		"include,line,pragma,undef,warning";
-$'sharp_macros        =~ s/,/|/g;
 {
 	#
 	# Setup the GTAGSCONF environment variable according to
