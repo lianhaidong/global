@@ -25,10 +25,6 @@ environments. It supports C, C++, Yacc and Java source code.
 	If you want to use Borland C++ compiler on Windows32 environment
 	then please see 'w32/INSTALL'.
 
-	Note: I strongly recommend you to use UNIX(GNU/Linux,*BSD) environment.
-	I cannot say GLOBAL works well in Windows32 environment because
-	I don't use it and in fact I don't have it.
-
 * Documentation
 
 	Please see 'doc/global.texi'(texinfo format) to know how to use GLOBAL.
