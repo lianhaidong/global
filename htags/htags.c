@@ -1465,6 +1465,7 @@ main(argc, argv)
 		}
 		if (system(strbuf_value(sb)))
 			die("cannot execute gtags(1) command.");
+		strbuf_close(sb);
 	}
 	/*
 	 * get root, cwd and dbpath.
