@@ -78,33 +78,20 @@ A3. Emacs's ctags cannot locate function referencies. So, gtags cannot make
     global's -r option.
 
 ----------------------------------------------------------------------------
-Q4. The man program on my machine does not understand the manual files
-    in GLOBAL
-
-A4. Online manuals in GLOBAL are written with 'mandoc' macro which is a part
-    of GNU groff package. You can format these manuals by following command
-    line manually.
-
-        % groff -Wall -Tascii -mandoc global.1
-
-    If you replace your system's nroff(1) with GNU's one(nroff.sh) then
-    you can use man(1) to see GLOBAL's online manuals.
-
-----------------------------------------------------------------------------
-Q5. I have built GLOBAL in Windows 32 environment. But gtags(1) failed by sort
+Q4. I have built GLOBAL in Windows 32 environment. But gtags(1) failed by sort
     command error.
 
-A5. It seems that MS sort is executed. Please set your path so that unix
+A4. It seems that MS sort is executed. Please set your path so that unix
     sort will be executed.
 
 ----------------------------------------------------------------------------
-Q6. I invoked gtags but it failed with a message like this:
+Q5. I invoked gtags but it failed with a message like this:
 
 	gctags: no input files specified
 
     What should I do?
 
-A6. Please check what is the gctags? You can check it with this command like.
+A5. Please check what is the gctags? You can check it with this command like.
 
 	% which gctags
 	% gctags --version
@@ -113,17 +100,17 @@ A6. Please check what is the gctags? You can check it with this command like.
     so that GLOBAL's gctags will be invoked.
 
 ----------------------------------------------------------------------------
-Q7. It seems that gtags cannot treat files which include blanks in the path.
+Q6. It seems that gtags cannot treat files which include blanks in the path.
     Why?
 
-A7. Because it is hard for GLOBAL to treat them correctly with keeping
+A6. Because it is hard for GLOBAL to treat them correctly with keeping
     upper compatibility. If you can do it, please send the patch to me.
 
 ----------------------------------------------------------------------------
-Q8. Gtags(1) and htags(1) works only on one directory. So, we cannot refer
+Q7. Gtags(1) and htags(1) works only on one directory. So, we cannot refer
     library functions like strlen from my project. Any solutions?
 
-A8. In global(1), you can use GTAGSLIBPATH environment variable.
+A7. In global(1), you can use GTAGSLIBPATH environment variable.
 
 	[library]	/usr/src/lib
 	[your project]	/usr/home/project
