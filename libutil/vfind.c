@@ -25,6 +25,7 @@
 
 #include "gparam.h"
 #include "find.h"
+#include "getdbpath.h"
 #include "gpathop.h"
 #include "vfind.h"
 

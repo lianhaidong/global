@@ -43,8 +43,6 @@
 
 #include "global.h"
 #include "regex.h"
-#include "strlimcpy.h"
-#include "usable.h"
 #include "const.h"
 
 static void	usage(void);
