@@ -259,8 +259,7 @@ char	*argv[];
 		if (!info_string && argc)
 			info_string = argv[0];
 		if (info_string) {
-			if (!printconf(info_string))
-				exit(1);
+			printconf(info_string);
 		} else {
 			fprintf(stdout, "%s\n", getconfline());
 		}
