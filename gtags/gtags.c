@@ -99,7 +99,7 @@ Options:\n\
              suppress making GSYMS file.\n\
      -P, --postgres\n\
              use postgres database.\n\
-             you can pass info string to PQconnectdb(3) using --info option.
+             you can pass info string to PQconnectdb(3) using --info option.\n\
      -v, --verbose\n\
              verbose mode.\n\
      -w, --warning\n\
