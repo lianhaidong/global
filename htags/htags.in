@@ -2553,8 +2553,18 @@ sub protect_line {
 			push(@quoted_strings, $1);
 		}
 	}
-	while (/(\/\/|\/\*|'|")/) {
-		if ($1 eq '//') {
+	#
+	# PHP accept both C style comment and shell style comment.
+	#
+	# In PHP, string may include variables but it is too hard
+	# to extract them using perl. We should rewrite htags itself
+	# using other language like lex or yacc in the near future.
+	#
+	while ($isphp ? /(#|\/\/|\/\*|'|")/ : /(\/\/|\/\*|'|")/) {
+		if ($isphp && $1 eq '#') {
+			s/(#.*$)/\004/;
+			push(@comments, $1);
+		} elsif ($1 eq '//') {
 			s/(\/\/.*$)/\004/;
 			push(@comments, $1);
 		} elsif ($1 eq '/*') {
