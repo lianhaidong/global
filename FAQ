@@ -111,6 +111,13 @@ A6. Please check what is the gctags? You can check it with this command like.
 
     If the gctags is not the GLOBAL's one then you should set your PATH
     so that GLOBAL's gctags will be invoked.
+
+----------------------------------------------------------------------------
+Q7. It seems that gtags cannot treat files which include blanks in the path.
+    Why?
+
+A7. Because it is hard for GLOBAL to treat them correctly with keeping
+    upper compatibility. If you can do it, please send a patch for it.
 ----------------------------------------------------------------------------
 
 Shigio Yamaguchi

@@ -535,7 +535,7 @@ char	*root;
 	 */
 	for (find_open(); (path = find_read(NULL)) != NULL; ) {
 		if (locatestring(path, " ", MATCH_FIRST)) {
-			if (wflag)
+			if (!qflag)
 				fprintf(stderr, "Warning: '%s' ignored, because it includes blank in the path.\n", path);
 			continue;
 		}
@@ -766,7 +766,7 @@ int	db;
 		if (exitflag)
 			break;
 		if (locatestring(path, " ", MATCH_FIRST)) {
-			if (wflag)
+			if (!qflag)
 				fprintf(stderr, "Warning: '%s' ignored, because it includes blank in the path.\n", path);
 			continue;
 		}
