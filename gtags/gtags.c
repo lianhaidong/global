@@ -436,8 +436,11 @@ char	*root;
 	 * make add list and update list.
 	 */
 	for (ffindopen(); (path = ffindread(NULL)) != NULL; ) {
-		if (locatestring(path, " ", MATCH_FIRST))
-			die("cannot treat blanks in a path '%s'.", path);
+		if (locatestring(path, " ", MATCH_FIRST)) {
+			if (wflag)
+				fprintf(stderr, "Warning: '%s' ignored, because it includes blank in the path.\n", path);
+			continue;
+		}
 		if (stat(path, &statp) < 0)
 			die("stat failed '%s'.", path);
 		if (!pathget(path))
@@ -656,6 +659,11 @@ int	db;
 
 		if (exitflag)
 			break;
+		if (locatestring(path, " ", MATCH_FIRST)) {
+			if (wflag)
+				fprintf(stderr, "Warning: '%s' ignored, because it includes blank in the path.\n", path);
+			continue;
+		}
 		count++;
 		/*
 		 * GSYMS doesn't treat asembler.
@@ -677,8 +685,6 @@ int	db;
 		}
 		if (skip)
 			continue;
-		if (locatestring(path, " ", MATCH_FIRST))
-			die("cannot treat blanks in a path '%s'.", path);
 		if (db == GSYMS)
 			gflags |= GTAGS_UNIQUE;
 		if (extractmethod)
