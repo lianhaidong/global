@@ -33,6 +33,7 @@
 
 #include "die.h"
 #include "linetable.h"
+#include "varray.h"
 #include "strbuf.h"
 
 /* File buffer */
@@ -45,10 +46,8 @@ static int filesize;
 static char *curp;
 static char *endp;
 
-/* Index for line */
-static int *linetable;
-static int total_lines;
-static int active_lines;
+/* Offset table */
+VARRAY *vb;
 
 static void linetable_put(int, int);
 /*
@@ -69,6 +68,7 @@ linetable_open(path)
 	if (stat(path, &sb) < 0)
 		return -1;
 	ib = strbuf_open(sb.st_size);
+	vb = varray_open(sizeof(int), EXPAND);
 	if ((ip = fopen(path, "r")) == NULL)
 		return -1;
 	lineno = 1;
@@ -117,32 +117,17 @@ linetable_read(buf, size)
  *	i)	offset	offset of the line
  *	i)	lineno	line number of the line (>= 1)
  */
-static void
+void
 linetable_put(offset, lineno)
 	int offset;
 	int lineno;
 {
-	if (lineno-- <= 0)
-		die("line number must >= 1");
-	/*
-	 * Old implementations of realloc() may crash when a null pointer is passed.
-	 * Therefore, we cannot use realloc(NULL, total_lines * sizeof(int)).
-	 */
-	if (!total_lines) {
-		total_lines = EXPAND;
-		linetable = (int *)malloc(total_lines * sizeof(int));
-		if (linetable == NULL)
-			die("short of memory");
-	}
-	if (total_lines <= lineno) {
-		total_lines += (lineno > EXPAND) ? lineno : EXPAND;
-		linetable = (int *)realloc(linetable, total_lines * sizeof(int));
-		if (linetable == NULL)
-			die("short of memory");
-	}
-	if (lineno > active_lines)
-		active_lines = lineno;
-	linetable[lineno] = offset;
+	int *entry;
+
+	if (lineno <= 0)
+		die("linetable_put: line number must >= 1 (lineno = %d)", lineno);
+	entry = varray_assign(vb, lineno - 1, 1);
+	*entry = offset;
 }
 /*
  * linetable_get: get a line from table.
@@ -159,11 +144,9 @@ linetable_get(lineno, offset)
 {
 	int addr;
 
-	if (lineno-- <= 0)
-		return NULL;
-	if (lineno > active_lines)
-		return NULL;
-	addr = linetable[lineno];
+	if (lineno <= 0)
+		die("linetable_get: line number must >= 1 (lineno = %d)", lineno);
+	addr = *((int *)varray_assign(vb, lineno - 1, 0));
 	if (offset)
 		*offset = addr;
 	return filebuf + addr;
@@ -174,10 +157,7 @@ linetable_get(lineno, offset)
 void
 linetable_close()
 {
-	if (linetable)
-		(void)free(linetable);
-	linetable = NULL;
-	total_lines = active_lines = 0;
+	varray_close(vb);
 	strbuf_close(ib);
 }
 /*
@@ -191,7 +171,11 @@ linetable_print(op, lineno)
 	FILE *op;
 	int lineno;
 {
-	char *s = linetable_get(lineno, NULL);
+	char *s;
+
+	if (lineno <= 0)
+		die("linetable_print: line number must >= 1 (lineno = %d)", lineno);
+	s = linetable_get(lineno, NULL);
 	if (s == NULL)
 		return;
 	while (*s != '\n')

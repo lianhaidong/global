@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999 Shigio Yamaguchi
- * Copyright (c) 1999, 2000, 2001, 2002, 2003 Tama Communications Corporation
+ * Copyright (c) 1999, 2000, 2001, 2002, 2003, 2004
+ *			 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -34,9 +35,8 @@
 #include "anchor.h"
 #include "htags.h"
 
-static int alloced;
-static int used;
 static struct anchor *table;
+static VARRAY *vb;
 
 static struct anchor *start;
 static struct anchor *curp;
@@ -75,7 +75,11 @@ anchor_load(file)
 	FIRST = LAST = 0;
 	end = CURRENT = NULL;
 
-	used = 0;
+	if (vb == NULL)
+		vb = varray_open(sizeof(struct anchor), 1000);
+	else
+		varray_reset(vb);
+
 	for (db = GTAGS; db < GTAGLIM; db++) {
 		char *_;
 
@@ -128,24 +132,8 @@ anchor_load(file)
 				type = 'R';
 			else
 				type = 'Y';
-			/*
-			 * Allocate table if needed.
-			 *
-			 * Old implementations of realloc() may crash when a null pointer is passed.
-			 * Therefore, we cannot use realloc(NULL, sizeof(struct anchor) * alloced).
-			 */
-			if (alloced == 0) {
-				alloced = 1000;
-				table = (struct anchor *)malloc(sizeof(struct anchor) * alloced);
-				used = 0;
-			} else if (used >= alloced) {
-				alloced += 1000;
-				table = (struct anchor *)realloc(table, sizeof(struct anchor) * alloced);
-			}
-			if (table == NULL)
-				die("Short of memory.");
 			/* allocate an entry */
-			a = &table[used++];
+			a = varray_append(vb);
 			a->lineno = atoi(lineno);
 			a->type = type;
 			a->done = 0;
@@ -156,30 +144,35 @@ anchor_load(file)
 			die("command '%s' failed.", command);
 	}
 	strbuf_close(sb);
-	/*
-	 * Sort by lineno.
-	 */
-	qsort(table, used, sizeof(struct anchor), cmp); 
-	/*
-	 * Setup some lineno.
-	 */
-	for (i = 0; i < used; i++)
-		if (table[i].type == 'D')
-			break;
-	if (i < used)
-		FIRST = table[i].lineno;
-	for (i = used - 1; i >= 0; i--)
-		if (table[i].type == 'D')
-			break;
-	if (i >= 0)
-		LAST = table[i].lineno;
-
+	if (vb->length == 0) {
+		table = NULL;
+	} else {
+		int used = vb->length;
+		/*
+		 * Sort by lineno.
+		 */
+		table = varray_assign(vb, 0, 0);
+		qsort(table, used, sizeof(struct anchor), cmp); 
+		/*
+		 * Setup some lineno.
+		 */
+		for (i = 0; i < used; i++)
+			if (table[i].type == 'D')
+				break;
+		if (i < used)
+			FIRST = table[i].lineno;
+		for (i = used - 1; i >= 0; i--)
+			if (table[i].type == 'D')
+				break;
+		if (i >= 0)
+			LAST = table[i].lineno;
+	}
 	/*
 	 * Setup loop range.
 	 */
 	start = table;
 	curp = NULL;
-	end = &table[used];
+	end = &table[vb->length];
 	/* anchor_dump(stderr, 0);*/
 }
 /*
@@ -190,15 +183,16 @@ anchor_unload()
 {
 	struct anchor *a;
 
-	for (a = start; a < end; a++) {
+	for (a = start; a && a < end; a++) {
 		if (a->reserve) {
 			free(a->reserve);
 			a->reserve = NULL;
 		}
 	}
+	/* We don't free varray */
+	/* varray_close(vb); */
 	FIRST = LAST = 0;
 	start = curp = end = NULL;
-	used = 0;
 }
 /*
  * anchor_first: return the first anchor

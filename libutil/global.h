@@ -50,6 +50,7 @@
 #include "token.h"
 #include "usable.h"
 #include "version.h"
+#include "varray.h"
 #include "vfind.h"
 
 #endif /* ! _GLOBAL_H_ */
