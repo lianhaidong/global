@@ -466,6 +466,7 @@ $'aflag = $'cflag = $'fflag = $'Fflag = $'nflag = $'Sflag = $'vflag = $'wflag = 
 $show_version = 0;
 $show_help = 0;
 $exec_gtags = 0;
+$map_file = 0;
 $include_caution = '';
 $action_value = '';
 $id_value = '';
@@ -500,8 +501,8 @@ while ($ARGV[0] =~ /^-/) {
 		;		# --gtagsconf is estimated only once.
 	} elsif ($opt =~ /^--gtagsconf$/) {
 		shift;		# --gtagsconf is estimated only once.
-	} elsif ($opt =~ /^--index$/) {
-		$'iflag = 'i';
+	} elsif ($opt =~ /^--map-file$/) {
+		$map_file = 1;
 	} elsif ($opt =~ /^--line-number$/) {
 		$'nflag = 'n';
 	} elsif ($opt =~ /^--other$/) {
@@ -537,7 +538,7 @@ while ($ARGV[0] =~ /^-/) {
 	} elsif ($opt =~ /^--/) {
 		print STDERR $usage_const, "\n";
 		exit 1;
-	} elsif ($opt =~ /[^-acdfFilmnosStvwtd]/) {
+	} elsif ($opt =~ /[^-acdfFlmnosStvwtd]/) {
 				# include 'l' for backward compatibility.
 		print STDERR $usage_const, "\n";
 		exit 1;
@@ -546,7 +547,6 @@ while ($ARGV[0] =~ /^-/) {
 		if ($opt =~ /c/) { $'cflag = 'c'; }
 		if ($opt =~ /f/) { $'fflag = 'f'; }
 		if ($opt =~ /F/) { $'Fflag = 'F'; }
-		if ($opt =~ /i/) { $'iflag = 'i'; }
 		if ($opt =~ /n/) { $'nflag = 'n'; }
 		if ($opt =~ /o/) { $'oflag = 'o'; }
 		if ($opt =~ /v/) { $'vflag = 'v'; }
@@ -1255,8 +1255,8 @@ sub makedefineindex {
 	local($indexlink) = ($'Fflag) ? "../defines.$'normal_suffix" : "../mains.$'normal_suffix";
 	local($target) = ($'Fflag) ? 'mains' : '_top';
 
-	if ($'iflag) {
-		open(INDEX, "|btreeop -C $'dist/INDEX") || &'error("cannot fork.");
+	if ($'map_file) {
+		open(MAP, ">$'dist/MAP") || &'error("cannot open.");
 	}
 	open(DEFINES, ">$file") || &'error("cannot make function index '$file'.");
 	print DEFINES $'html_begin, "\n";
@@ -1336,8 +1336,8 @@ sub makedefineindex {
 			$url = "$'SRCS/$filename#$lno";
 		}
 		print "<LI><A HREF=", ($'aflag) ? "../" : "", $url, " TARGET=$target>$tag</A>\n";
-		if ($'iflag) {
-			print INDEX "$tag $url\n";
+		if ($'map_file) {
+			print MAP "$tag\t$url\n";
 		}
 	}
 	close(TAGS);
@@ -1361,8 +1361,8 @@ sub makedefineindex {
 	print DEFINES $'body_end, "\n";
 	print DEFINES $'html_end, "\n";
 	close(DEFINES);
-	if ($'iflag) {
-		close(INDEX);
+	if ($'map_file) {
+		close(MAP);
 	}
 	$count;
 }

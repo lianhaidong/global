@@ -25,7 +25,7 @@ Current version - **** ** ****, by Shigio Yamaguchi
 * htags: -m(--main-func) option added.
 * htags: --style-sheet=<style file> option added.
 * htags: --gtags option added.
-* htags: --index option added.
+* htags: --map-file option added.
 * gctags: --langmap option added.
 
 Version 4.4 - March 30 2002, by Shigio Yamaguchi
