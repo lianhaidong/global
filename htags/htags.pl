@@ -762,6 +762,9 @@ if ($form{'type'} eq 'reference') {
 } elsif ($form{'type'} eq 'symbol') {
 	$flag = 's';
 	$words = 'symbols';
+} elsif ($form{'type'} eq 'path') {
+	$flag = 'P';
+	$words = 'paths';
 }
 if ($form{'id'}) {
 	chdir("$form{'id'}/cgi-bin");
@@ -1346,6 +1349,8 @@ sub makesearchpart {
 	$index .= ($target) ? "Ref" : "Reference";
 	$index .= "\n<INPUT TYPE=radio NAME=type VALUE=symbol>";
 	$index .= ($target) ? "Sym" : "Other symbol";
+	$index .= "\n<INPUT TYPE=radio NAME=type VALUE=path>";
+	$index .= ($target) ? "Path" : "Path name";
 	$index .= "\n</FORM>\n";
 	$index;
 }

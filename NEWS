@@ -12,6 +12,7 @@ Version 4.1.0a
 * htags: create bless.sh when the -S option specified.
 * htags: config variables show_position, position_begin, position_end and
   icase_path added.
+* htags: path name search facility added.
 * gtags: the -i option also locate tag files among cadedite directories.
 
 Version 4.0.1 - September 26, 2000, by Shigio Yamaguchi
