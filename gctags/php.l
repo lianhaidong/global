@@ -301,7 +301,7 @@ const char *file;
 		case PHP_POINTER:
 			if (phplex() != PHP_TOKEN)
 				break;
-			/* FALL THROUTH */
+			/* FALLTHROUGH */
 		case PHP_TOKEN:
 			if (target == REF) {
 				if (defined(phptext))
