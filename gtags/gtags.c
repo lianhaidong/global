@@ -758,7 +758,7 @@ now(void)
 
 	if (time(&tval) == -1)
 		die("cannot get current time.");
-	(void)strftime(buf, sizeof(buf), "%a %b %e %H:%M:%S %Z %Y", localtime(&tval));
+	(void)strftime(buf, sizeof(buf), "%a %b %d %H:%M:%S %Z %Y", localtime(&tval));
 #else
 	FILE	*ip;
 
