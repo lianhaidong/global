@@ -35,5 +35,6 @@
 #ifndef MAXPATHLEN
 #define MAXPATHLEN	1024		/* max length of path		*/
 #endif
+#define MAXURLLEN	1024		/* max length of URL		*/
 
 #endif /* ! _GPARAM_H_ */
