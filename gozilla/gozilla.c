@@ -291,6 +291,7 @@ STRBUF *URL;
 	char	dbpath[MAXPATHLEN+1];
 	char	htmldir[MAXPATHLEN+1];
 	char	*path, *p;
+	STRBUF	*sb = NULL;
 	DBOP	*dbop = NULL;
 	SPLIT	ptable;
 	int	status = -1;
@@ -323,7 +324,7 @@ STRBUF *URL;
 		}
 		dbop_close(dbop);
 	} else {
-		STRBUF *sb = strbuf_open(0);
+		sb = strbuf_open(0);
 		FILE *fp;
 
 		fp = fopen(path, "r");
@@ -338,7 +339,6 @@ STRBUF *URL;
 			}
 			fclose(fp);
 		}
-		strbuf_close(sb);
 	}
 	if (status == -1)
 		die("definition %s not found.", arg);
@@ -354,6 +354,8 @@ STRBUF *URL;
 #endif
 	strbuf_sprintf(URL, "file://%s/%s", htmldir, ptable.part[1].start);
 	recover(&ptable);
+	if (sb != NULL)
+		strbuf_close(sb);
 }
 /*
  * getURL: get specified URL.
@@ -411,6 +413,7 @@ STRBUF *URL;
 		strbuf_sprintf(URL, "file://%s", p);
 		if (linenumber)
 			strbuf_sprintf(URL, "#%d", linenumber);
+		strbuf_close(sb);
 	} else {
 		/*
 		 * Make URL.
