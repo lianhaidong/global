@@ -337,7 +337,7 @@ char	*argv[];
 				putc(*p, stdout);
 			for (q = ++p; *q && *q != ' '; q++)
 				;
-			if (*q == NULL) {
+			if (*q == '\0') {
 				printf("%s: ERROR(2): %s", progname, strbuf_value(ib));
 				continue;
 			}
