@@ -260,6 +260,10 @@
 		Language mapping. Each comma-separated map consists of
 		the language name, a colon, and a list of file extensions.
 		Default mapping is 'c:.c.h,yacc:.y,asm:.s.S,java:.java,cpp:.c++.cc.cpp.cxx.hxx.hpp.C.H,php:.php.php3.phtml'.
+	@item{@code{copy_files}(boolean)}
+		Copy files instead of linking.
+		When the @option{-f} option is used, @name{htags} make links
+		of tag files in @file{cgi-bin} directory by default.
 	@end_itemize
 @DIAGNOSTICS
 	@name{Htags} exits with a non 0 value if an error occurred, 0 otherwise.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004
+ * Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -102,6 +102,7 @@ int dynamic;				/* --dynamic(-D) option		*/
 int symbol;				/* --symbol(-s) option		*/
 int statistics;				/* --statistics option		*/
 
+int copy_files;				/* 1: copy tag files		*/
 int no_map_file;			/* 1: doesn't make map file	*/
 int no_order_list;			/* 1: doesn't use order list	*/
 int other_files;			/* 1: list other files		*/
@@ -790,7 +791,8 @@ copyfile(from, to)
 	close(ip);
 }
 /*
- * duplicate file. if possible, link it without making a copy.
+ * duplicate file.
+ * By default, htags uses link system call without making a copy.
  */
 static void
 duplicatefile(file, from, to)
@@ -803,7 +805,7 @@ duplicatefile(file, from, to)
 
 	snprintf(from_path, sizeof(from_path), "%s/%s", from, file);
 	snprintf(to_path, sizeof(to_path), "%s/%s", to, file);
-        if (w32) {
+        if (copy_files) {
                 copyfile(from_path, to_path);
 	} else {
                 if (link(from_path, to_path) < 0)
@@ -1048,6 +1050,8 @@ configuration(argc, argv)
 		table_list = 1;
 	if (getconfb("no_order_list"))
 		no_order_list = 1;
+	if (getconfb("copy_files"))
+		copy_files = 1;
 	if (getconfb("no_map_file"))
 		no_map_file = 1;
 	strbuf_reset(sb);
@@ -1437,7 +1441,7 @@ main(argc, argv)
 	if (htags_options)
 		argv = append_options(&argc, argv);
 
-	while ((optchar = getopt_long(argc, argv, "acDd:fFgm:noqsS:t:vw", long_options, &option_index)) != EOF) {
+	while ((optchar = getopt_long(argc, argv, "acd:DfFgm:noqsS:t:vw", long_options, &option_index)) != EOF) {
 		switch (optchar) {
                 case 0:
                 case 1:
@@ -1526,6 +1530,13 @@ main(argc, argv)
                 setquiet();
 		vflag = 0;
 	}
+	/*
+	 * If copy_files is true then htags copy tag files instead of linking.
+	 * Since Windows 32 environment doesn't have link system call
+	 * we set copy_files true.
+	 */
+	if (w32)
+		copy_files = 1;
         if (show_version)
                 version(av, vflag);
         if (show_help)
