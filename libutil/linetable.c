@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002 Tama Communications Corporation
+ * Copyright (c) 2002, 2004 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -145,17 +145,25 @@ linetable_put(offset, lineno)
  * linetable_get: get a line from table.
  *
  *	i)	lineno	line number of the line
+ *	o)	offset	offset of the line
+ *			if offset == NULL, nothing returned.
  *	r)		line pointer
  */
 char *
-linetable_get(lineno)
+linetable_get(lineno, offset)
 	int lineno;
+	int *offset;
 {
+	int addr;
+
 	if (lineno-- <= 0)
 		return NULL;
 	if (lineno > active_lines)
 		return NULL;
-	return filebuf + linetable[lineno];
+	addr = linetable[lineno];
+	if (offset)
+		*offset = addr;
+	return filebuf + addr;
 }
 /*
  * linetable_close: close line table.
@@ -180,7 +188,7 @@ linetable_print(op, lineno)
 	FILE *op;
 	int lineno;
 {
-	char *s = linetable_get(lineno);
+	char *s = linetable_get(lineno, NULL);
 	if (s == NULL)
 		return;
 	while (*s != '\n')
