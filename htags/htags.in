@@ -1558,6 +1558,10 @@ sub makecommonpart {
 	local($title) = @_;
 	local($index) = '';
 
+	if ($'include_header) {
+		$index .= $'include_header;
+		$index .= "\n<HR>\n";
+	}
 	$index .= "<H1>$'title_begin$'title$'title_end</H1>\n";
 	$index .= "<P ALIGN=right>\n";
 	$index .= "Last updated " . &'date . "<BR>\n";
