@@ -109,13 +109,14 @@ C(file)
 	savelevel = -1;
 	target = (sflag) ? SYM : (rflag) ? REF : DEF;
 	startmacro = startsharp = 0;
+
+	if (!opentoken(file))
+		die("'%s' cannot open.", file);
 	cmode = 1;			/* allow token like '#xxx' */
 	crflag = 1;			/* require '\n' as a token */
 	if (yaccflag)
 		ymode = 1;		/* allow token like '%xxx' */
 
-	if (!opentoken(file))
-		die("'%s' cannot open.", file);
 	while ((cc = nexttoken(interested, reserved_word)) != EOF) {
 		switch (cc) {
 		case SYMBOL:		/* symbol	*/
