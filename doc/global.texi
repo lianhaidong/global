@@ -1685,7 +1685,7 @@ needs source files.
 
 With the @samp{-c} option, htags makes gzipped hypertext.
 You need to set up an HTTP server so that gzipped files can be read
-(see @file{HTML/.htaccess.skel}).
+(see @file{HTML/.htaccess}).
 
 @example
 
