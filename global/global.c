@@ -156,7 +156,8 @@ Options:\n\
 static void
 usage()
 {
-	fputs(usage_const, stderr);
+	if (!qflag)
+		fputs(usage_const, stderr);
 	exit(2);
 }
 static void
