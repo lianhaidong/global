@@ -511,10 +511,12 @@ int	target;
 		/* pick up symbol */
 		if (c == SYMBOL) {
 			if (target == REF) {
-				if (seems_datatype(token))
+				if (seems_datatype(token) && defined(token))
 					PUT(token, lineno, sp);
-			} else if (target == SYM)
-				PUT(token, lineno, sp);
+			} else if (target == SYM) {
+				if (!seems_datatype(token) || !defined(token))
+					PUT(token, lineno, sp);
+			}
 		}
 	}
 	return 0;
