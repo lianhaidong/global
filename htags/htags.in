@@ -320,10 +320,10 @@ sub set_header {
 # get current working directory.
 #
 sub getcwd {
-        local($dir) = `$'gtags --pwd`;
+	local($dir) = `$'gtags --pwd`;
 	if ($'w32) { $dir =~ s!\\!/!g; }
-        chop($dir);
-        $dir;
+	chop($dir);
+	$dir;
 }
 #
 # get real absolute path name.
@@ -418,7 +418,9 @@ sub getconf {
 	local($name) = @_;
 	local($val);
 	chop($val = `$'gtags --config $name`);
-	if ($? != 0) { $val = ''; }
+	if ($? != 0) {
+		&'error("cannot get config value.");
+	}
 	$val;
 }
 #
