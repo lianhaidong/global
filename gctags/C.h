@@ -27,6 +27,7 @@ enum {
 	CTOKEN_BASE = 1000,
 	C___P,
 	C___ATTRIBUTE__,
+	C___EXTENSION__,
 	C__BOOL,
 	C__COMPLEX,
 	C__IMAGINARY,
