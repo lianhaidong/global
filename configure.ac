@@ -113,7 +113,7 @@ AC_ARG_WITH(postgres,
 [  --with-postgres[=DIR]   include postgres support ],
 [
         if test "$withval" = 'no'; then
-                AC_MSG_RESULT(yes)
+                AC_MSG_RESULT(no)
         else
                 case $withval in
                 ''|yes) POSTGRES=/usr/local/pgsql;;
