@@ -67,10 +67,8 @@ char dbpath[MAXPATHLEN];
 char distpath[MAXPATHLEN];
 char gtagsconf[MAXPATHLEN];
 
-char *needed[] = {"sed", "sort", "find", "gtags", "global"};
 char sed_path[MAXFILLEN];
 char sort_path[MAXFILLEN];
-char find_path[MAXFILLEN];
 char gtags_path[MAXFILLEN];
 char global_path[MAXFILLEN];
 char findcom[MAXFILLEN];
@@ -852,9 +850,6 @@ basic_check()
 	if (!(p = usable("sort")))
 		die("sort command required but not found.");
 	strlimcpy(sort_path, p, sizeof(sort_path));
-	if (!(p = usable("find")))
-		die("find command required but not found.");
-	strlimcpy(find_path, p, sizeof(find_path));
 	if (!(p = usable("gtags")))
 		die("gtags command required but not found.");
 	strlimcpy(gtags_path, p, sizeof(gtags_path));
