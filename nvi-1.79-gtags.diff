@@ -256,7 +256,7 @@ diff -c -r -N ../nvi-1.79.org/ex/ex_argv.c ./ex/ex_argv.c
   			 * QUOTING NOTE:
 diff -c -r -N ../nvi-1.79.org/ex/ex_tag.c ./ex/ex_tag.c
 *** ../nvi-1.79.org/ex/ex_tag.c	Mon Mar  6 16:24:40 2000
---- ./ex/ex_tag.c	Sun Jan 14 20:58:49 2001
+--- ./ex/ex_tag.c	Tue Jan 23 02:18:48 2001
 ***************
 *** 18,23 ****
 --- 18,26 ----
@@ -419,7 +419,7 @@ diff -c -r -N ../nvi-1.79.org/ex/ex_tag.c ./ex/ex_tag.c
   	 * Allocate all necessary memory before swapping screens.  Initialize
 ***************
 *** 969,974 ****
---- 1081,1291 ----
+--- 1081,1269 ----
   	return (0);
   }
   
@@ -448,9 +448,6 @@ diff -c -r -N ../nvi-1.79.org/ex/ex_tag.c ./ex/ex_tag.c
 +  *	o Exuberant Ctags with -x option
 +  *		See <http://ctags.sourceforge.net>
 +  *
-+  * The tag name and file name can include blanks using quote('"') like:
-+  * "main and func"	30	"main file.c"	...
-+  *
 +  * Returns 0 on success, -1 on error.
 +  * The tag, file, and line will each be NUL-terminated pointers
 +  * into buf.
@@ -464,18 +461,8 @@ diff -c -r -N ../nvi-1.79.org/ex/ex_tag.c ./ex/ex_tag.c
 + {
 + 	char *p = buf;
 + 
-+ 	/*
-+ 	 * tag name format is:
-+ 	 * "<tag name include blank>"
-+ 	 * <tag name><blank>
-+ 	 */
-+ 	if (*p == '"') {
-+ 		for (*tag = p + 1; *p && *p != '"'; p++)
-+ 			;
-+ 	} else {
-+ 		for (*tag = p; *p && !isspace(*p); p++)	/* tag name */
-+ 			;
-+ 	}
++ 	for (*tag = p; *p && !isspace(*p); p++)		/* tag name */
++ 		;
 + 	if (*p == 0)
 + 		goto err;
 + 	*p++ = 0;
@@ -505,18 +492,9 @@ diff -c -r -N ../nvi-1.79.org/ex/ex_tag.c ./ex/ex_tag.c
 + 		;
 + 	if (*p == 0)
 + 		goto err;
-+ 	/*
-+ 	 * file name format is:
-+ 	 * "<file name include blank>"
-+ 	 * <file name><blank>
-+ 	 */
-+ 	if (*p == '"') {
-+ 		for (*file = p + 1; *p && *p != '"'; p++)
-+ 			;
-+ 	} else {
-+ 		for (*file = p; *p && !isspace(*p); p++)
-+ 			;
-+ 	}
++ 	*file = p;					/* file name */
++ 	for (*file = p; *p && !isspace(*p); p++)
++ 		;
 + 	if (*p == 0)
 + 		goto err;
 + 	*p = 0;
