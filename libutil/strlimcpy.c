@@ -26,29 +26,26 @@
 #include "strlimcpy.h"
 
 /*
- * strlimcpy: copy string by size.
+ * strlimcpy: copy string with limit.
  *
  *	o)	dist	distination string
  *	i)	source	source string
- *	i)	size	size of dist
- *	r)		effectively copied size.
+ *	i)	limit	size of dist
  *
  * NOTE: This function is similar to strlcpy() in OpenBSD
  * but was made to avoid compatibility problems.
  */
 void
-strlimcpy(dist, source, size)
+strlimcpy(dist, source, limit)
 char *dist;
 const char *source;
-const int size;
+const int limit;
 {
-	int n = (int)size - 1;
+	int n = (int)limit;
 	char *d = dist;
 
 	while (n--)
 		if (!(*d++ = *source++))
 			return;
-	if (*source)
-		die("buffer overflow (strlimcpy).");
-	*d = '\0';
+	die("buffer overflow (strlimcpy).");
 }

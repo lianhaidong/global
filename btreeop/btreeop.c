@@ -254,7 +254,8 @@ DBOP	*dbop;
 			die("data part not found.");
 		if (c - p > MAXKEYLEN)
 			die("primary key too long.");
-		strlimcpy(keybuf, p, c - p);		/* make key string */
+		strncpy(keybuf, p, c - p);		/* make key string */
+		keybuf[c - p] = '\0';
 		for (; *c && isspace(*c); c++)		/* skip blanks */
 			;
 		if (*c == 0)
