@@ -143,7 +143,7 @@ C(yacc)
 					 */
 					if (function_definition(target, arg1)) {
 						if (!strcmp(savetok, "SCM_DEFINE") && *arg1)
-							strcpy(savetok, arg1);
+							strlimcpy(savetok, arg1, sizeof(savetok));
 						if (target == DEF)
 							PUT(savetok, savelineno, saveline);
 					} else {
