@@ -27,6 +27,7 @@ ChangeLog about GNU GLOBAL
 	  Above changes are for Windows 32 environment.
 	* rename file: pathop.[ch] -> gpathop.[ch].
 	* rename functions: pathxxx -> gpath_xxx, gtagsxxx -> gtags_xxx.
+	* rename functions: ffindxxx -> find_xxx, gfindxxx -> gfind_xxx.
 	* libglibc/snprintf.c added.
 
 July 31 2001, Shigio Yamaguchi  <shigio@tamacom.com>

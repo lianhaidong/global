@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999
  *             Shigio Yamaguchi. All rights reserved.
- * Copyright (c) 1999, 2000
+ * Copyright (c) 1999, 2000, 2001
  *             Tama Communications Corporation. All rights reserved.
  *
  * This file is part of GNU GLOBAL.
@@ -25,11 +25,11 @@
 #define _FIND_H_
 
 int	issource(char *);
-void	ffindopen(void);
-char	*ffindread(int *);
-void	ffindclose(void);
-void	gfindopen(char *, char *);
-char	*gfindread(void);
-void	gfindclose(void);
+void	find_open(void);
+char	*find_read(int *);
+void	find_close(void);
+void	gfind_open(char *, char *);
+char	*gfind_read(void);
+void	gfind_close(void);
 
 #endif /* ! _FIND_H_ */

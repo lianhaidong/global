@@ -968,7 +968,7 @@ char	*dbpath;
 	if (!(op = openfilter()))
 		die("cannot open output filter.");
 	count = 0;
-	for (gfindopen(dbpath, localprefix); (path = gfindread()) != NULL; ) {
+	for (gfind_open(dbpath, localprefix); (path = gfind_read()) != NULL; ) {
 		if (!(fp = fopen(path, "r")))
 			die("cannot open file '%s'.", path);
 		linenum = 0;
@@ -990,7 +990,7 @@ char	*dbpath;
 		}
 		fclose(fp);
 	}
-	gfindclose();
+	gfind_close();
 	closefilter(op);
 	strbuf_close(ib);
 	regfree(&preg);
@@ -1036,7 +1036,7 @@ char	*av;
 	if (!(op = openfilter()))
 		die("cannot open output filter.");
 	count = 0;
-	for (gfindopen(dbpath, localprefix); (path = gfindread()) != NULL; ) {
+	for (gfind_open(dbpath, localprefix); (path = gfind_read()) != NULL; ) {
 		/*
 		 * skip localprefix because end-user doesn't see it.
 		 */
@@ -1051,7 +1051,7 @@ char	*av;
 			fprintf(op, "%s\n", path);
 		count++;
 	}
-	gfindclose();
+	gfind_close();
 	closefilter(op);
 	if (av)
 		regfree(&preg);

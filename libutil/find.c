@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999
  *             Shigio Yamaguchi. All rights reserved.
- * Copyright (c) 1999, 2000
+ * Copyright (c) 1999, 2000, 2001
  *             Tama Communications Corporation. All rights reserved.
  *
  * This file is part of GNU GLOBAL.
@@ -187,10 +187,10 @@ STRBUF  *sb;
 	return 0;
 }
 /*
- * ffindopen: start iterator without GPATH.
+ * find_open: start iterator without GPATH.
  */
 void
-ffindopen()
+find_open()
 {
 	STRBUF	*sb = strbuf_open(0);
 	char	*sufflist = NULL;
@@ -308,13 +308,13 @@ ffindopen()
 		free(skiplist);
 }
 /*
- * ffindread: read path without GPATH.
+ * find_read: read path without GPATH.
  *
  *	i)	length	length of path
  *	r)		path
  */
 char    *
-ffindread(length)
+find_read(length)
 int	*length;
 {
 	static	char val[MAXPATHLEN+1];
@@ -372,10 +372,10 @@ int	*length;
 	return NULL;
 }
 /*
- * ffindclose: close iterator.
+ * find_close: close iterator.
  */
 void
-ffindclose(void)
+find_close(void)
 {
 	assert(opened == 1);
 	for (curp = &stack[0]; curp < topp; curp++)
@@ -393,10 +393,10 @@ ffindclose(void)
 static FILE	*ip;
 
 /*
- * ffindopen: start iterator without GPATH.
+ * find_open: start iterator without GPATH.
  */
 void
-ffindopen()
+find_open()
 {
 	char	*findcom, *p, *q;
 	STRBUF	*sb;
@@ -492,13 +492,13 @@ ffindopen()
 		free(skiplist);
 }
 /*
- * ffindread: read path without GPATH.
+ * find_read: read path without GPATH.
  *
  *	i)	length	length of path
  *	r)		path
  */
 char	*
-ffindread(length)
+find_read(length)
 int	*length;
 {
 	static char	path[MAXPATHLEN+1];
@@ -522,10 +522,10 @@ int	*length;
 	return NULL;
 }
 /*
- * ffindclose: close iterator.
+ * find_close: close iterator.
  */
 void
-ffindclose(void)
+find_close(void)
 {
 	assert(opened == 1);
 	pclose(ip);
@@ -534,10 +534,10 @@ ffindclose(void)
 #endif /* !HAVE_FIND */
 
 /*
- * Fast findXXX() using GPATH.
+ * Fast gfind_XXX() using GPATH.
  *
- * gfindxxx() does almost same with findxxx() but much faster,
- * because gfindxxx() use GPATH (file index).
+ * gfind_xxx() does almost same with find_xxx() but much faster,
+ * because gfind_xxx() use GPATH (file index).
  * If GPATH exist then you should use this.
  */
 #include "dbop.h"
@@ -549,10 +549,10 @@ static int      first;
 static char	prefix[MAXPATHLEN+1];
 
 /*
- * gfindopen: start iterator using GPATH.
+ * gfind_open: start iterator using GPATH.
  */
 void
-gfindopen(dbpath, local)
+gfind_open(dbpath, local)
 char	*dbpath;
 char	*local;
 {
@@ -572,12 +572,12 @@ char	*local;
 	first = 1;
 }
 /*
- * gfindread: read path without GPATH.
+ * gfind_read: read path without GPATH.
  *
  *	r)		path
  */
 char	*
-gfindread()
+gfind_read()
 {
 	assert(opened == 1);
 	if (first) {
@@ -587,10 +587,10 @@ gfindread()
 	return dbop_next(dbop);
 }
 /*
- * gfindclose: close iterator.
+ * gfind_close: close iterator.
  */
 void
-gfindclose(void)
+gfind_close(void)
 {
 	dbop_close(dbop);
 	opened = first = 0;

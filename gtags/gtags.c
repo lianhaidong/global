@@ -300,9 +300,9 @@ char	*argv[];
 
 		local = (argc) ? argv[0] : "./";
 		getdbpath(cwd, root, dbpath, 0);
-		for (gfindopen(dbpath, local); (p = gfindread()) != NULL; )
+		for (gfind_open(dbpath, local); (p = gfind_read()) != NULL; )
 			fprintf(stdout, "%s\n", p);
-		gfindclose();
+		gfind_close();
 		exit(0);
 	} else if (Iflag) {
 		if (!usable("mkid"))
@@ -513,7 +513,7 @@ char	*root;
 	/*
 	 * make add list and update list.
 	 */
-	for (ffindopen(); (path = ffindread(NULL)) != NULL; ) {
+	for (find_open(); (path = find_read(NULL)) != NULL; ) {
 		if (locatestring(path, " ", MATCH_FIRST)) {
 			if (wflag)
 				fprintf(stderr, "Warning: '%s' ignored, because it includes blank in the path.\n", path);
@@ -526,7 +526,7 @@ char	*root;
 		else if (gtags_mtime < statp.st_mtime)
 			strbuf_puts0(updatelist, path);
 	}
-	ffindclose();
+	find_close();
 	/*
 	 * make delete list.
 	 */
@@ -739,7 +739,7 @@ int	db;
 	if (vflag > 1 && getconfs(dbname(db), sb))
 		fprintf(stderr, " using tag command '%s <path>'.\n", strbuf_value(sb));
 	gtop = gtags_open(dbpath, root, db, GTAGS_CREATE, flags);
-	for (ffindopen(); (path = ffindread(NULL)) != NULL; ) {
+	for (find_open(); (path = find_read(NULL)) != NULL; ) {
 		int	gflags = 0;
 		int	skip = 0;
 
@@ -782,7 +782,7 @@ int	db;
 		gtags_add(gtop, comline, path, gflags);
 	}
 	total = count;				/* save total count */
-	ffindclose();
+	find_close();
 	gtags_close(gtop);
 	free(comline);
 	strbuf_close(sb);
