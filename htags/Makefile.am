@@ -18,11 +18,10 @@ endif
 
 PERL = @PERL@
 
-reserved_word = $(srcdir)/../gctags/htags_res.pl
+body = $(srcdir)/const.pl $(srcdir)/../gctags/htags_res.pl $(srcdir)/htags.in
 
-htags: $(srcdir)/htags.in $(srcdir)/const.pl $(reserved_word)
-	echo "#! @PERL@" | \
-	cat - $(srcdir)/const.pl $(reserved_word) $(srcdir)/htags.in | \
+htags: $(body)
+	echo "#! @PERL@" | cat - $(body) | \
 	sed -e 's,@''PERL''@,$(PERL),g' >htags.tmp && \
 	chmod +x htags.tmp && mv htags.tmp htags
 
