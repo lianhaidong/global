@@ -19,6 +19,12 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+**** ** 2001, Shigio Yamaguchi  <shigio@tamacom.com>
+
+	* gtags: format char for strftime() changed (%e -> %d).
+	* htags: use gtags --date and gtags --pwd instead of date and pwd.
+	  Above changes are for Windows 32 environment.
+
 July 31 2001, Shigio Yamaguchi  <shigio@tamacom.com>
 
 	* VERSION: removed.
