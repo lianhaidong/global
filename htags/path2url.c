@@ -46,38 +46,25 @@ void
 load_gpath(dbpath)
 	char *dbpath;
 {
-	char command[MAXFILLEN];
-	STRBUF *sb = strbuf_open(0);
-	FILE *gpath;
-	char *_;
+	DBOP *dbop;
+	char *path;
+	int n;
 
 	assoc = assoc_open('a');
-
 	nextkey = 0;
-	snprintf(command, sizeof(command), "gtags --scandb=%s/%s ./", dbpath, dbname(GPATH));
-	if (!(gpath = popen(command, "r")))
-		die("cannot execute '%s'.", command);
-	while ((_ = strbuf_fgets(sb, gpath, STRBUF_NOCRLF)) != NULL) {
-		SPLIT ptable;
-		char *path, *no;
-		int n;
+	dbop = dbop_open(makepath(dbpath, dbname(GPATH), NULL), 0, 0, 0);
+	if (dbop == NULL)
+		die("cannot open '%s'.", makepath(dbpath, dbname(GPATH), NULL));
+	for (path = dbop_first(dbop, "./", NULL, DBOP_PREFIX | DBOP_KEY); path; path = dbop_next(dbop)) {
+		char *no = dbop_lastdat(dbop);
 
-		if (split(_, 2, &ptable) < 2) {
-			recover(&ptable);
-			die("too small number of parts in load_gpath().\n'%s'", _);
-		}
-		path = ptable.part[0].start;
-		no   = ptable.part[1].start;
 		path += 2;			/* remove './' */
 		assoc_put(assoc, path, no);
 		n = atoi(no);
 		if (n > nextkey)
 			nextkey = n;
-		recover(&ptable);
 	}
-	if (pclose(gpath) < 0)
-		die("command '%s' failed.", command);
-	strbuf_close(sb);
+	dbop_close(dbop);
 }
 /*
  * unload_gpath: load gpath tag file.

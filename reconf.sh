@@ -64,10 +64,8 @@ done
 #
 echo "- Preparing parser source ..."
 (cd gctags; set -x
-perl ./reserved.pl --prefix=sharp --perl c_res.in >htags_res.pl
 for lang in c cpp java php asm; do
 	name=${lang}_res
-	perl ./reserved.pl --prefix=$lang --perl ${name}.in >>htags_res.pl
 	perl ./reserved.pl --prefix=$lang ${lang}_res.in > ${name}.gpf
 	option=`perl ./reserved.pl --prefix=$lang --option`
 	gperf $option < ${name}.gpf > ${name}.h
@@ -96,10 +94,6 @@ for d in `echo $commands`; do
 	echo "+ doc/$d.ref"
 	perl ./convert.pl --man  $d/manual.in > $d/$d.1
 	echo "+ $d/$d.1"
-	if [ $d = 'htags' ]; then
-		perl ./convert.pl --perl $d/manual.in > $d/const.pl
-		echo "+ $d/const.pl"
-	fi
 	perl ./convert.pl --c $d/manual.in > $d/const.h
 	echo "+ $d/const.h"
 done

@@ -81,16 +81,12 @@ int show_version;
 int show_help;
 int show_config;
 int do_convert;
-int do_scandb;
 int do_find;
 int do_sort;
-int do_write;
 int do_relative;
 int do_absolute;
 int cxref;
 int do_expand;
-int do_date;
-int do_pwd;
 int gtagsconf;
 int gtagslabel;
 int other_files;
@@ -99,7 +95,6 @@ int debug;
 int secure_mode;
 char *extra_options;
 char *info_string;
-char *btree_dbname;
 
 int extractmethod;
 int total;
@@ -132,7 +127,6 @@ static struct option const long_options[] = {
 	/* long name only */
 	{"config", optional_argument, &show_config, 1},
 	{"convert", no_argument, &do_convert, 1},
-	{"date", no_argument, &do_date, 1},
 	{"debug", no_argument, &debug, 1},
 	{"expand", required_argument, &do_expand, 1},
 	{"find", no_argument, &do_find, 1},
@@ -142,12 +136,9 @@ static struct option const long_options[] = {
 	{"info", required_argument, &info, 1},
 	{"other", no_argument, &other_files, 1},
 	{"postgres", optional_argument, NULL, 'P'},
-	{"pwd", no_argument, &do_pwd, 1},
 	{"relative", no_argument, &do_relative, 1},
-	{"scandb", required_argument, &do_scandb, 1},
 	{"secure", no_argument, &secure_mode, 1},
 	{"sort", no_argument, &do_sort, 1},
-	{"write", no_argument, &do_write, 1},
 	{"version", no_argument, &show_version, 1},
 	{"help", no_argument, &show_help, 1},
 	{ 0 }
@@ -219,9 +210,6 @@ main(argc, argv)
 			} else if (!strcmp(p, "config")) {
 				if (optarg)
 					info_string = optarg;
-			} else if (!strcmp(p, "scandb")) {
-				if (optarg)
-					btree_dbname = optarg;
 			} else if (gtagsconf || gtagslabel) {
 				char value[MAXPATHLEN+1];
 				char *name = (gtagsconf) ? "GTAGSCONF" : "GTAGSLABEL";
@@ -380,24 +368,6 @@ main(argc, argv)
 		gpath_close();
 		strbuf_close(ib);
 		exit(0);
-	} else if (do_scandb) {
-		DBOP *dbop;
-		char *p;
-
-		/*
-		 * [Job]
-		 *
-		 * Load GPATH record.
-		 */
-		if (argc == 0)
-			die("usage: %s --scandb=dbname prefix", progname);
-		dbop = dbop_open(btree_dbname, 0, 0, 0);
-		if (dbop == NULL)
-			die("cannot open '%s'.", btree_dbname);
-		for (p = dbop_first(dbop, "./", NULL, DBOP_PREFIX | DBOP_KEY); p; p = dbop_next(dbop))
-			fprintf(stdout, "%s %s\n", p, dbop_lastdat(dbop));
-		dbop_close(dbop);
-		exit(0);
 	} else if (do_expand) {
 		/*
 		 * The 'gtags --expand' is nearly equivalent with 'expand'.
@@ -428,15 +398,6 @@ main(argc, argv)
 		while (strbuf_fgets(ib, ip, STRBUF_NOCRLF) != NULL)
 			detab(stdout, strbuf_value(ib));
 		strbuf_close(ib);
-		exit(0);
-	} else if (do_date) {
-		fprintf(stdout, "%s\n", now());
-		exit(0);
-	} else if (do_pwd) {
-		if (!getcwd(cwd, MAXPATHLEN))
-			die("cannot get current directory.");
-		canonpath(cwd);
-		fprintf(stdout, "%s\n", cwd);
 		exit(0);
 	} else if (do_find) {
 		/*
@@ -500,75 +461,6 @@ main(argc, argv)
 			}
 			pclose(op);
 		}
-		exit(0);
-	} else if (do_write) {
-		/*
-		 * This code and the makedupindex() in htags(1) compose
-		 * a pipeline 'print <Protocol lines> | gtags --write'.
-		 * This code improve performance a little (about 5%) and
-		 * conceal the details of file IO from htags but it is a
-		 * unsightly hack and we should not adopt it in the future.
-		 *
-		 * The protocol is like follows:
-		 *
-		 * N<file name>\n
-		 * <HTML>\n
-		 * <BODY>
-		 * <PRE>
-		 * <A HREF=../S/77.html#97>DB_SHMEM</A>    97 libdb/db.h     #define
-		 * ...
-		 * C<file name>\n
-		 * <HTML>\n
-		 * ...
-		 *
-		 * The 'N<file name>\n' means making a new file with a name
-		 * <file name> and writing the following HTML to it. The HTML
-		 * lines should start with '<' or '\t'.
-		 * Similarly, the 'C<file name>\n' means making a new file
-		 * but as a compressed file.
-		 */
-		FILE *op = NULL;
-		STRBUF *ib = strbuf_open(MAXBUFLEN);
-		int writing = 0;
-		int pipe = 0;
-
-		while (strbuf_fgets(ib, stdin, STRBUF_NOCRLF) != NULL) {
-			char *p = strbuf_value(ib);
-			if (*p == '<' || *p == '\t') {
-				strbuf_putc(ib, '\n');
-				fputs(p, op);
-			} else {
-				if (writing) {
-					if (pipe)
-						(void)pclose(op);
-					else
-						(void)fclose(op);
-				}
-				pipe = 0;
-				if (*p == 'N') {
-					p++;
-					if ((op = fopen(p, "w")) == NULL)
-						die("cannot create file '%s'.", p);
-				} else if (*p == 'C') {
-					char command[MAXPATHLEN];
-					p++;
-					snprintf(command, sizeof(command), "gzip -c > %s", p);
-					if ((op = popen(command, "w")) == NULL)
-						die("cannot create file '%s'.", p);
-					pipe = 1;
-				} else {
-					die("illegal internal file format (--write).");
-				}
-				writing = 1;
-			}
-		}
-		if (writing) {
-			if (pipe)
-				(void)pclose(op);
-			else
-				(void)fclose(op);
-		}
-		strbuf_close(ib);
 		exit(0);
 	} else if (do_relative || do_absolute) {
 		/*

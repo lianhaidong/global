@@ -12,12 +12,6 @@
 #
 bin_PROGRAMS= htags
 
-if DJGPP
-bin_SCRIPTS = htags.pl htags.bat
-else
-bin_SCRIPTS = htags.pl
-endif
-
 htags_SOURCES = htags.c defineindex.c dupindex.c fileindex.c src2html.c \
 		anchor.c cache.c common.c incop.c assoc.c path2url.c \
 		c.c cpp.c java.c php.c asm.c
@@ -31,18 +25,9 @@ LDADD = @LDADD@
 
 htags_DEPENDENCIES = $(LDADD)
 
-PERL = @PERL@
-
-body = $(srcdir)/const.pl $(top_srcdir)/gctags/htags_res.pl $(srcdir)/htags.in
-
-htags.pl: $(body)
-	echo "#! @PERL@" | cat - $(body) | \
-	sed -e 's,@''PERL''@,$(PERL),g' -e 's,@''BINDIR''@,$(bindir),g' >htags.tmp && \
-	chmod +x htags.tmp && mv htags.tmp htags.pl
-
 man_MANS = htags.1
 
-EXTRA_DIST = $(man_MANS) htags.in manual.in const.pl htags.bat \
+EXTRA_DIST = $(man_MANS) manual.in \
 		const.h global.cgi.tmpl.in bless.sh.tmpl \
 		c.l cpp.l java.l php.l asm.l
 const.h: manual.in
