@@ -26,9 +26,9 @@ Current version - **** ** ****, by Shigio Yamaguchi
 * htags: --style-sheet=<style file> option added.
 * htags: --no-javascript option and no_javascript config variable added.
 * htags: -g(--gtags) option added.
-* htags: -s(--symbols) option added.
+* htags: -s(--symbols) option and symbols config variable added.
 * gctags: --langmap option added.
-* gctags: -t option added.
+* gctags: -t and -d option added.
 * gtags: pick up macros with noargument, typedef name and enum member.
 * gozilla: -d option added.
 * gctags: assumes __attribute__, const, volatile, wchar_t as a reserved word
