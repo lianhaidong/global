@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 1999 Shigio Yamaguchi
- * Copyright (c) 1999, 2000 Tama Communications Corporation
+ * Copyright (c) 1999, 2000, 2004 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -22,6 +22,23 @@
 #ifndef _STRMAKE_H_
 #define _STRMAKE_H_
 
+#include <ctype.h>
+
+#define	TRIM_HEAD	1
+#define TRIM_TAIL	2
+#define TRIM_BOTH	3
+#define TRIM_ALL	4
+
+#ifndef isblank
+#define isblank(c)	((c) == ' ' || (c) == '\t')
+#endif
+
+#define SKIP_BLANKS(p)	do {						\
+	while (*p && isblank((unsigned char)*p))			\
+		p++;							\
+} while (0)
+
 char *strmake(const char *, const char *);
+char *strtrim(const char *, int, int *);
 
 #endif /* ! _STRMAKE_H_ */
