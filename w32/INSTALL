@@ -4,7 +4,7 @@ ___________________________________
 |  |   |  |  |  |  |     |     |  |
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Copyright (c) 2000
+ Copyright (c) 2000, 2001
         Tama Communications Corporation. All rights reserved.
 
  This file is free software; as a special exception the author gives
@@ -27,7 +27,7 @@ o Borland C++ compiler 5.0 or later.
 	It may be downloaded at:
 	http://community.borland.com/
 
-o GNU sed and sort for Windows 32.
+o GNU sed ,sort, pwd and date for Windows 32.
 	It may be downloaded at:
 	http://www.edv.agrar.tu-muenchen.de/~syring/win32/UnxUtils.html
 
@@ -55,7 +55,8 @@ C:\global>make clean
 
 3. Some notes about GLOBAL for Windows 32.
 
-Global requires the GNU programs sed.exe, sort.exe be the path.
+Global requires the GNU programs sed.exe, sort.exe, date.exe, pwd.exe
+be the path.
 Note that the sort that comes with Windows does not support multikey sorting
 which is required by global. To avoid using that version of sort, the directory
 containing the GNU version must be first in your PATH.
