@@ -1700,7 +1700,9 @@ sub src2html {
 	print $'html_begin, "\n";
 	print &'set_header($file);
 	print $'body_begin, "\n";
-	print "<A NAME=TOP><H2>$file</H2>\n";
+	print "<A NAME=TOP><H2>";
+	print &fill_anchor($file);
+	print "</H2>\n";
 	print "$'comment_begin/* ";
 	print &link_format(&anchor'getlinks(0));
 	print " */$'comment_end";
@@ -1862,6 +1864,31 @@ sub src2html {
 	close(HTML);
 	select($old);
 
+}
+#
+# fill_anchor: fill anchor into file name
+#
+#	i)	$file	file name
+#	r)		hypertext file name string
+#
+sub fill_anchor {
+	local(@file) = split(/\//, $_[0]);
+	local(@path, $url);
+
+	while (@file) {
+		local($unit) = shift(@file);
+		if (@file == 0) {
+			$url .= $unit;
+			last;
+		}
+		push(@path, $unit);
+		$url .= "<A HREF=../files/";
+		$url .= &'path2url(join('/', @path));
+		$url .= ">";
+		$url .= $unit;
+		$url .= "</A>/";
+	}
+	$url;
 }
 #
 # protect_line: protect quoted strings
