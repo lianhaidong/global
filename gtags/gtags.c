@@ -696,10 +696,15 @@ char	*argv[];
 		if (vflag)
 			fprintf(stderr, "[%s] Creating indexes for id-utils.\n", now());
 		strbuf_reset(sb);
-		strbuf_puts(sb, "mkid --file=");
-		strbuf_puts(sb, makepath(dbpath, "ID", NULL));
+		strbuf_puts(sb, "mkid");
 		if (vflag)
 			strbuf_puts(sb, " -v");
+#if 0
+		/*
+		 * Removed becase --file=... option brings argument overflow.
+		 */
+		strbuf_puts(sb, " --file=");
+		strbuf_puts(sb, makepath(dbpath, "ID", NULL));
 		if (extra_options) {
 			strbuf_putc(sb, ' ');
 			strbuf_puts(sb, extra_options);
@@ -712,6 +717,7 @@ char	*argv[];
 			strbuf_putc(sb, ' ');
 			strbuf_puts(sb, path);
 		}
+#endif
 		if (vflag) {
 #ifdef __DJGPP__
 			if (is_unixy())	/* test for 4DOS as well? */
