@@ -48,6 +48,7 @@
 static	int	function_definition(int);
 static  int     seems_datatype(const char *);
 static	void	condition_macro(int);
+static	void	inittable();
 static	int	reserved(char *);
 
 /*
@@ -95,6 +96,11 @@ Cpp()
 	cmode = 1;			/* allow token like '#xxx' */
 	crflag = 1;			/* require '\n' as a token */
 	cppmode = 1;			/* treat '::' as a token */
+
+	/*
+	 * set up reserved word table.
+	 */
+	inittable();
 
 	while ((cc = nexttoken(interested, reserved)) != EOF) {
 		if (cc == '~' && level == stack[classlevel].level)
@@ -728,6 +734,12 @@ static struct words words[] = {
 	{"while",	CPP_WHILE},
 };
 
+static void
+inittable()
+{
+	int i;
+	qsort(words, sizeof(words)/sizeof(struct words), sizeof(struct words), cmp);
+}
 static int
 reserved(word)
         char *word;

@@ -40,6 +40,7 @@
 #include "strlimcpy.h"
 #include "token.h"
 
+static  void    inittable();
 static int	reserved(char *);
 
 /*
@@ -67,6 +68,11 @@ java()
 	level = classlevel = 0;
 	target = (sflag) ? SYM : ((rflag) ? REF : DEF);
 	startclass = startthrows = startequal = 0;
+
+	/*
+	 * set up reserved word table.
+	 */
+	inittable();
 
 	while ((c = nexttoken(interested, reserved)) != EOF) {
 		switch (c) {
@@ -226,6 +232,12 @@ static struct words words[] = {
 	{"widefp",	J_WIDEFP},
 };
 
+static void
+inittable()
+{
+	int i;
+	qsort(words, sizeof(words)/sizeof(struct words), sizeof(struct words), cmp);
+}
 static int
 reserved(word)
         char *word;

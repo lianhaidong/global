@@ -47,6 +47,7 @@
 static	int	function_definition(int);
 static	void	condition_macro(int);
 static	int	seems_datatype(const char *);
+static	void	inittable();
 static	int	reserved(char *);
 
 /*
@@ -96,6 +97,10 @@ C(yacc)
 	crflag = 1;			/* require '\n' as a token */
 	if (yacc)
 		ymode = 1;		/* allow token like '%xxx' */
+	/*
+	 * set up reserved word table.
+	 */
+	inittable();
 
 	while ((cc = nexttoken(interested, reserved)) != EOF) {
 		switch (cc) {
@@ -670,6 +675,11 @@ static struct words words[] = {
 	{"while",	C_WHILE},
 };
 
+static void
+inittable()
+{
+	qsort(words, sizeof(words)/sizeof(struct words), sizeof(struct words), cmp);
+}
 static int
 reserved(word)
         char *word;
