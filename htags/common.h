@@ -87,6 +87,7 @@ extern char *noframes_end;
 #define CURRENT	0
 #define PARENT 1
 
+int fputs_nl(const char *, FILE *);
 void setup_html();
 void setup_xhtml();
 void setup_tex();

@@ -140,9 +140,9 @@ makedupindex()
 					fprintf(stderr, " [%d] adding %s %s\n", count, kind, tag);
 				if (writing) {
 					if (!dynamic) {
-						fprintf(op, "%s\n", gen_list_end());
-						fprintf(op, "%s\n", body_end);
-						fprintf(op, "%s\n", gen_page_end());
+						fputs_nl(gen_list_end(), op);
+						fputs_nl(body_end, op);
+						fputs_nl(gen_page_end(), op);
 						close_dup_file(op);
 						file_count++;
 					}
@@ -176,17 +176,17 @@ makedupindex()
 				if (first_line[0]) {
 					if (!dynamic) {
 						op = open_dup_file(db, count);
-						fprintf(op, "%s\n", gen_page_begin(tag, 1));
-						fprintf(op, "%s\n", body_begin);
-						fprintf(op, "%s\n", gen_list_begin());
-						fprintf(op, "%s\n", gen_list_body(srcdir, first_line));
+						fputs_nl(gen_page_begin(tag, 1), op);
+						fputs_nl(body_begin, op);
+						fputs_nl(gen_list_begin(), op);
+						fputs_nl(gen_list_body(srcdir, first_line), op);
 					}
 					writing = 1;
 					entry_count++;
 					first_line[0] = 0;
 				}
 				if (!dynamic) {
-					fprintf(op, "%s\n", gen_list_body(srcdir, _));
+					fputs_nl(gen_list_body(srcdir, _), op);
 				}
 				entry_count++;
 			}
@@ -197,9 +197,9 @@ makedupindex()
 			die("'%s' failed.", command);
 		if (writing) {
 			if (!dynamic) {
-				fprintf(op, "%s\n", gen_list_end());
-				fprintf(op, "%s\n", body_end);
-				fprintf(op, "%s\n", gen_page_end());
+				fputs_nl(gen_list_end(), op);
+				fputs_nl(body_end, op);
+				fputs_nl(gen_page_end(), op);
 				close_dup_file(op);
 				file_count++;
 			}

@@ -623,8 +623,7 @@ put_begin_of_line(lineno)
                         guide = NULL;
         }
         if (guide && definition_header == BEFORE_HEADER) {
-                fputs(guide, out);
-                fputc('\n', out);
+                fputs_nl(guide, out);
                 guide = NULL;
         }
 }
@@ -660,8 +659,7 @@ put_end_of_line(lineno)
 			fputs(guide, out);
 		fputc('\n', out);
 		if (definition_header == AFTER_HEADER) {
-			fputs(guide, out);
-			fputc('\n', out);
+			fputs_nl(guide, out);
 		}
 		guide = NULL;
 	}
@@ -704,8 +702,8 @@ src2html(src, html, notsource)
 	if (!notsource) {
 		anchor_load(src);
 	}
-	fprintf(out, "%s\n", gen_page_begin(src, 1));
-	fprintf(out, "%s\n", body_begin);
+	fputs_nl(gen_page_begin(src, 1), out);
+	fputs_nl(body_begin, out);
 	/*
          * print the header
          */
@@ -728,19 +726,24 @@ src2html(src, html, notsource)
 		}
 		if (cvsweb_cvsroot)
 			strbuf_sprintf(sb, "?cvsroot=%s", cvsweb_cvsroot);
-		fprintf(out, "%s%s", quote_space, gen_href_begin_simple(strbuf_value(sb)));
-		fprintf(out, "%s[CVS]%s", cvslink_begin, cvslink_end);
-		fprintf(out, "%s\n", gen_href_end());
+		fputs(quote_space, out);
+		fputs(gen_href_begin_simple(strbuf_value(sb)), out);
+		fputs(cvslink_begin, out);
+		fputs("[CVS]", out);
+		fputs(cvslink_end, out);
+		fputs_nl(gen_href_end(), out);
 		/* doesn't close string buffer */
 	}
-	fprintf(out, "%s\n", header_end);
-        fprintf(out, "%s/* ", comment_begin);
+	fputs_nl(header_end, out);
+	fputs(comment_begin, out);
+	fputs("/* ", out);
 
 	fputs(link_format(anchor_getlinks(0)), out);
 	if (show_position)
 		fprintf(out, "%s[+1 %s]%s", position_begin, src, position_end);
-	fprintf(out, " */%s", comment_end);
-	fprintf(out, "\n%s\n", hr);
+	fputs(" */", out);
+	fputs_nl(comment_end, out);
+	fputs_nl(hr, out);
         /*
          * It is not source file.
          */
@@ -748,7 +751,7 @@ src2html(src, html, notsource)
 		STRBUF *sb = strbuf_open(0);
 		char *_;
 
-		fprintf(out, "%s\n", verbatim_begin);
+		fputs_nl(verbatim_begin, out);
 		last_lineno = 0;
 		while ((_ = strbuf_fgets(sb, in, STRBUF_NOCRLF)) != NULL) {
 			fputs(gen_name_number(++last_lineno), out);
@@ -766,7 +769,7 @@ src2html(src, html, notsource)
 			}
 			fputc('\n', out);
 		}
-		fprintf(out, "%s\n", verbatim_end);
+		fputs_nl(verbatim_end, out);
 		strbuf_close(sb);
         }
 	/*
@@ -822,8 +825,8 @@ src2html(src, html, notsource)
 			fputs(gen_href_begin_with_title(dir, file, suffix, key, title), out);
 			fputs(title_included_from, out);
 			fputs(gen_href_end(), out);
-			fprintf(out, "%s\n", header_end);
-			fprintf(out, "%s\n", hr);
+			fputs_nl(header_end, out);
+			fputs_nl(hr, out);
 		}
 		/*
 		 * DEFINITIONS index.
@@ -844,12 +847,12 @@ src2html(src, html, notsource)
 		if (strbuf_getlen(define_index) > 0) {
 			fputs(header_begin, out);
 			fputs(title_define_index, out);
-			fprintf(out, "%s\n", header_end);
-			fputs("This source file includes following definitions.\n", out);
-			fprintf(out, "%s\n", list_begin);
+			fputs_nl(header_end, out);
+			fputs_nl("This source file includes following definitions.", out);
+			fputs_nl(list_begin, out);
 			fputs(strbuf_value(define_index), out);
-			fprintf(out, "%s\n", list_end);
-			fprintf(out, "%s\n", hr);
+			fputs_nl(list_end, out);
+			fputs_nl(hr, out);
 		}
 		/*
 		 * print source code
@@ -881,17 +884,19 @@ src2html(src, html, notsource)
 			while (ent->exec_proc())
 				;
 		}
-        	fprintf(out, "%s\n", verbatim_end);
+		fputs_nl(verbatim_end, out);
 	}
-	fprintf(out, "%s\n", hr);
-	fprintf(out, "%s\n", gen_name_string("BOTTOM"));
-        fprintf(out, "%s/* ", comment_begin);
+	fputs_nl(hr, out);
+	fputs_nl(gen_name_string("BOTTOM"), out);
+	fputs(comment_begin, out);
+	fputs("/* ", out);
 	fputs(link_format(anchor_getlinks(-1)), out);
 	if (show_position)
 		fprintf(out, "%s[+%d %s]%s", position_begin, last_lineno, src, position_end);
-        fprintf(out, " */%s\n", comment_end);
-	fprintf(out, "%s\n", body_end);
-	fprintf(out, "%s\n", gen_page_end());
+	fputs(" */", out);
+	fputs_nl(comment_end, out);
+	fputs_nl(body_end, out);
+	fputs_nl(gen_page_end(), out);
 	if (!notsource)
 		anchor_unload();
 	close_output_file(out);

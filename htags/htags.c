@@ -453,9 +453,9 @@ makeghtml(cgidir, file)
 	op = fopen(makepath(cgidir, file, NULL), "w");
 	if (!op)
 		die("cannot make unzip script.");
-	fprintf(op, "#!/bin/sh\n");
-	fprintf(op, "echo \"content-type: text/html\"\n");
-	fprintf(op, "echo\n");
+	fputs_nl("#!/bin/sh", op);
+	fputs_nl("echo \"content-type: text/html\"", op);
+	fputs_nl("echo", op);
 	fprintf(op, "gzip -S %s -d -c \"$PATH_TRANSLATED\"\n", HTML);
         fclose(op);
 }
@@ -471,13 +471,13 @@ makerebuild(file)
 	op = fopen(makepath(distpath, file, NULL), "w");
 	if (!op)
 		die("cannot make rebuild script.");
-	fprintf(op, "#!/bin/sh\n");
-	fprintf(op, "#\n");
-	fprintf(op, "# rebuild.sh: rebuild hypertext with the previous context.\n");
-	fprintf(op, "#\n");
-	fprintf(op, "# Usage:\n");
-	fprintf(op, "#\t%% sh rebuild.sh\n");
-	fprintf(op, "#\n");
+	fputs_nl("#!/bin/sh", op);
+	fputs_nl("#", op);
+	fputs_nl("# rebuild.sh: rebuild hypertext with the previous context.", op);
+	fputs_nl("#", op);
+	fputs_nl("# Usage:", op);
+	fputs_nl("#\t% sh rebuild.sh", op);
+	fputs_nl("#", op);
 	fprintf(op, "cd %s && GTAGSCONF='%s' htags%s\n", cwdpath, save_config, save_argv);
         fclose(op);
 }
@@ -497,11 +497,11 @@ makehelp(file)
 	op = fopen(makepath(distpath, file, NULL), "w");
 	if (!op)
 		die("cannot make help file.");
-	fprintf(op, "%s\n", gen_page_begin("HELP", 0));
-	fprintf(op, "%s\n", body_begin);
+	fputs_nl(gen_page_begin("HELP", 0), op);
+	fputs_nl(body_begin, op);
 	fputs(header_begin, op);
 	fputs("Usage of Links", op);
-	fprintf(op, "%s\n", header_end);
+	fputs_nl(header_end, op);
 	fputs(verbatim_begin, op);
 	fputs("/* ", op);
 	for (n = 0; n <= last; n++) {
@@ -516,8 +516,8 @@ makehelp(file)
 	if (show_position)
 		fprintf(op, "[+line file]");
 	fputs(" */", op);
-	fprintf(op, "%s\n", verbatim_end);
-	fprintf(op, "%s\n", define_list_begin);
+	fputs_nl(verbatim_end, op);
+	fputs_nl(define_list_begin, op);
 	for (n = 0; n <= last; n++) {
 		fputs(define_term_begin, op);
 		if (icon_list) {
@@ -528,7 +528,7 @@ makehelp(file)
 		fputs(define_term_end, op);
 		fputs(define_desc_begin, op);
 		fputs(msg[n], op);
-		fprintf(op, "%s\n", define_desc_end);
+		fputs_nl(define_desc_end, op);
 	}
 	if (show_position) {
 		fputs(define_term_begin, op);
@@ -536,11 +536,11 @@ makehelp(file)
 		fputs(define_term_end, op);
 		fputs(define_desc_begin, op);
 		fputs("Current position (line number and file name).", op);
-		fprintf(op, "%s\n", define_desc_end);
+		fputs_nl(define_desc_end, op);
 	}
-	fprintf(op, "%s\n", define_list_end);
-	fprintf(op, "%s\n", body_end);
-	fprintf(op, "%s\n", gen_page_end());
+	fputs_nl(define_list_end, op);
+	fputs_nl(body_end, op);
+	fputs_nl(gen_page_end(), op);
 	fclose(op);
 	file_count++;
 }
@@ -613,35 +613,35 @@ makeindex(file, title, index)
 	op = fopen(makepath(distpath, file, NULL), "w");
 	if (!op)
 		die("cannot make file '%s'.", file);
-	fprintf(op, "%s\n", gen_page_begin(title, 0));
+	fputs_nl(gen_page_begin(title, 0), op);
 	if (Fflag) {
-		fprintf(op, "%s\n", gen_frameset_begin("cols='200,*'"));
+		fputs_nl(gen_frameset_begin("cols='200,*'"), op);
 		if (fflag) {
-			fprintf(op, "%s\n", gen_frameset_begin("rows='33%,33%,*'"));
-			fprintf(op, "%s\n", gen_frame("search", makepath(NULL, "search", normal_suffix)));
+			fputs_nl(gen_frameset_begin("rows='33%,33%,*'"), op);
+			fputs_nl(gen_frame("search", makepath(NULL, "search", normal_suffix)), op);
 		} else {
-			fprintf(op, "%s\n", gen_frameset_begin("rows='50%,*'"));
+			fputs_nl(gen_frameset_begin("rows='50%,*'"), op);
 		}
 		/*
 		 * id='xxx' for XHTML
 		 * name='xxx' for HTML
 		 */
-		fprintf(op, "%s\n", gen_frame("defines", makepath(NULL, "defines", normal_suffix)));
-		fprintf(op, "%s\n", gen_frame("files", makepath(NULL, "files", normal_suffix)));
-		fprintf(op, "%s\n", gen_frameset_end());
-		fprintf(op, "%s\n", gen_frame("mains", makepath(NULL, "mains", normal_suffix)));
-		fprintf(op, "%s\n", noframes_begin);
-		fprintf(op, "%s\n", body_begin);
+		fputs_nl(gen_frame("defines", makepath(NULL, "defines", normal_suffix)), op);
+		fputs_nl(gen_frame("files", makepath(NULL, "files", normal_suffix)), op);
+		fputs_nl(gen_frameset_end(), op);
+		fputs_nl(gen_frame("mains", makepath(NULL, "mains", normal_suffix)), op);
+		fputs_nl(noframes_begin, op);
+		fputs_nl(body_begin, op);
 		fputs(index, op);
-		fprintf(op, "%s\n", body_end);
-		fprintf(op, "%s\n", noframes_end);
-		fprintf(op, "%s\n", gen_frameset_end());
+		fputs_nl(body_end, op);
+		fputs_nl(noframes_end, op);
+		fputs_nl(gen_frameset_end(), op);
 	} else {
-		fprintf(op, "%s\n", body_begin);
+		fputs_nl(body_begin, op);
 		fputs(index, op);
-		fprintf(op, "%s\n", body_end);
+		fputs_nl(body_end, op);
 	}
-	fprintf(op, "%s\n", gen_page_end());
+	fputs_nl(gen_page_end(), op);
 	fclose(op);
 	file_count++;
 }
@@ -661,11 +661,11 @@ makemainindex(file, index)
 	op = fopen(makepath(distpath, file, NULL), "w");
 	if (!op)
 		die("cannot make file '%s'.", file);
-	fprintf(op, "%s\n", gen_page_begin(title, 0));
-	fprintf(op, "%s\n", body_begin);
+	fputs_nl(gen_page_begin(title, 0), op);
+	fputs_nl(body_begin, op);
 	fputs(index, op);
-	fprintf(op, "%s\n", body_end);
-	fprintf(op, "%s\n", gen_page_end());
+	fputs_nl(body_end, op);
+	fputs_nl(gen_page_end(), op);
 	fclose(op);
 	file_count++;
 }
@@ -683,11 +683,11 @@ makesearchindex(file)
 	op = fopen(makepath(distpath, file, NULL), "w");
 	if (!op)
 		die("cannot create file '%s'.", file);
-	fprintf(op, "%s\n", gen_page_begin("SEARCH", 0));
-	fprintf(op, "%s\n", body_begin);
+	fputs_nl(gen_page_begin("SEARCH", 0), op);
+	fputs_nl(body_begin, op);
 	fputs(makesearchpart(action, id, "mains"), op);
-	fprintf(op, "%s\n", body_end);
-	fprintf(op, "%s\n", gen_page_end());
+	fputs_nl(body_end, op);
+	fputs_nl(gen_page_end(), op);
 	fclose(op);
 	file_count++;
 }
@@ -703,19 +703,19 @@ makehtaccess(file)
 	op = fopen(makepath(distpath, file, NULL), "w");
 	if (!op)
 		die("cannot make .htaccess skeleton file.");
-	fprintf(op, "#\n");
-	fprintf(op, "# Skeleton file for .htaccess -- This file was generated by htags(1).\n");
-	fprintf(op, "#\n");
-	fprintf(op, "# Htags have made gzipped hypertext because you specified -c option.\n");
-	fprintf(op, "# If your browser doesn't decompress gzipped hypertext, you will need to\n");
-	fprintf(op, "# setup your http server to treat this hypertext as gzipped files first.\n");
-	fprintf(op, "# There are many way to do it, but one of the method is to put .htaccess\n");
-	fprintf(op, "# file in 'HTML' directory.\n");
-	fprintf(op, "#\n");
-	fprintf(op, "# Please rewrite '/cgi-bin/ghtml.cgi' to the true value in your web site.\n");
-	fprintf(op, "#\n");
+	fputs_nl("#", op);
+	fputs_nl("# Skeleton file for .htaccess -- This file was generated by htags(1).", op);
+	fputs_nl("#", op);
+	fputs_nl("# Htags have made gzipped hypertext because you specified -c option.", op);
+	fputs_nl("# If your browser doesn't decompress gzipped hypertext, you will need to", op);
+	fputs_nl("# setup your http server to treat this hypertext as gzipped files first.", op);
+	fputs_nl("# There are many way to do it, but one of the method is to put .htaccess", op);
+	fputs_nl("# file in 'HTML' directory.", op);
+	fputs_nl("#", op);
+	fputs_nl("# Please rewrite '/cgi-bin/ghtml.cgi' to the true value in your web site.", op);
+	fputs_nl("#", op);
 	fprintf(op, "AddHandler htags-gzipped-html %s\n", gzipped_suffix);
-	fprintf(op, "Action htags-gzipped-html /cgi-bin/ghtml.cgi\n");
+	fputs_nl("Action htags-gzipped-html /cgi-bin/ghtml.cgi", op);
 	fclose(op);
 }
 /*

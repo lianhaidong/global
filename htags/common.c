@@ -109,6 +109,20 @@ char *noframes_begin	= "<noframes>";
 char *noframes_end	= "</noframes>";
 
 /*
+ * print string and new line.
+ *
+ * This function is a replacement of fprintf(op, "%s\n", s) in htags.
+ */
+int
+fputs_nl(s, op)
+	const char *s;
+	FILE *op;
+{
+	fputs(s, op);
+	putc('\n', op);
+	return 0;
+}
+/*
  * XHTML support.
  *
  * If the --xhtml option is specified then we take 'XHTML 1.1'.

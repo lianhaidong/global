@@ -226,12 +226,12 @@ static dump_stack(sp, label)
 	fprintf(stderr, "%s(%s): ", label, sp->name);
 	for (p = sp->buf; p < last; p++) {
 		if (p == start)
-			fprintf(stderr, "[");
+			fputs("[", stderr);
 		fputc((*p == 0) ? ' ' : *p, stderr);
 	}
 	if (start == sp->last)
-		fprintf(stderr, "[");
-	fprintf(stderr, "]\n");
+		fputs("[", stderr);
+	fputs_nl("]", stderr);
 }
 /*
  * make_stack: make new stack.
@@ -654,15 +654,15 @@ makefileindex(file, files)
 	if ((FILES = fopen(makepath(distpath, file, NULL), "w")) == NULL)
 		die("cannot open file '%s'.", file);
 
-	fprintf(FILES, "%s\n", gen_page_begin(title_file_index, 0));
-	fprintf(FILES, "%s\n", body_begin);
+	fputs_nl(gen_page_begin(title_file_index, 0), FILES);
+	fputs_nl(body_begin, FILES);
 	fputs(header_begin, FILES);
 	fputs(gen_href_begin(NULL, "files", normal_suffix, NULL), FILES);
 	fputs(title_file_index, FILES);
 	fputs(gen_href_end(), FILES);
-	fprintf(FILES, "%s\n", header_end);
+	fputs_nl(header_end, FILES);
 	if (!no_order_list)
-		fprintf(FILES, "%s\n", list_begin);
+		fputs_nl(list_begin, FILES);
 	STDOUT = FILES;
 
 	FILEMAP = NULL;
@@ -706,17 +706,17 @@ makefileindex(file, files)
 					suffix = normal_suffix;
 				}
 				if (no_order_list)
-					fprintf(STDOUT, "%s\n", br);
+					fputs_nl(br, STDOUT);
 				else
-					fprintf(STDOUT, "%s\n", list_end);
+					fputs_nl(list_end, STDOUT);
 				fputs(gen_href_begin_with_title(NULL, parent, suffix, NULL, "Parent Directory"), STDOUT);
 				if (icon_list)
 					fputs(gen_image(PARENT, back_icon, ".."), STDOUT);
 				else
 					fputs("[..]", STDOUT);
-				fprintf(STDOUT, "%s\n", gen_href_end());
-				fprintf(STDOUT, "%s\n", body_end);
-				fprintf(STDOUT, "%s\n", gen_page_end());
+				fputs_nl(gen_href_end(), STDOUT);
+				fputs_nl(body_end, STDOUT);
+				fputs_nl(gen_page_end(), STDOUT);
 				path = pop_stack(fdstack);	
 				close_file_queue(path);
 				file_count++;
@@ -757,15 +757,15 @@ makefileindex(file, files)
 				if (count_stack(dirstack) == 1)
 					strbuf_puts(files, strbuf_value(sb));
 				else
-					fprintf(STDOUT, "%s", strbuf_value(sb));
+					fputs(strbuf_value(sb), STDOUT);
 				op = open_file_queue(cur);
 				STDOUT = op;
 				push_stack(fdstack, cur);
 				strbuf_reset(sb);
 				strbuf_puts(sb, path);
 				strbuf_putc(sb, '/');
-				fprintf(STDOUT, "%s\n", gen_page_begin(strbuf_value(sb), 1));
-				fprintf(STDOUT, "%s\n", body_begin);
+				fputs_nl(gen_page_begin(strbuf_value(sb), 1), STDOUT);
+				fputs_nl(body_begin, STDOUT);
 				fprintf(STDOUT, "%s%sroot%s/", header_begin, gen_href_begin(NULL, indexlink, normal_suffix, NULL), gen_href_end());
 				{
 					struct dirstack *p = make_stack("tmp");
@@ -777,22 +777,22 @@ makefileindex(file, files)
 						anchor = count_stack(p) < count_stack(dirstack) ? 1 : 0;
 						if (anchor)
 							fputs(gen_href_begin(NULL, path2fid(join_stack(p)), HTML, NULL), STDOUT);
-						fprintf(STDOUT, s);
+						fputs(s, STDOUT);
 						if (anchor)
 							fputs(gen_href_end(), STDOUT);
 						fputc('/', STDOUT);
 					}
 					delete_stack(p);
 				}
-				fprintf(STDOUT, "%s\n", header_end);
+				fputs_nl(header_end, STDOUT);
 				fputs(gen_href_begin_with_title(NULL, parent, suffix, NULL, "Parent Directory"), STDOUT);
 				if (icon_list)
 					fputs(gen_image(PARENT, back_icon, ".."), STDOUT);
 				else
 					fputs("[..]", STDOUT);
-				fprintf(STDOUT, "%s\n", gen_href_end());
+				fputs_nl(gen_href_end(), STDOUT);
 				if (!no_order_list)
-					fprintf(STDOUT, "%s\n", list_begin);
+					fputs_nl(list_begin, STDOUT);
 				else
 					fprintf(STDOUT, "%s%s\n", br, br);
 			}
@@ -861,7 +861,7 @@ makefileindex(file, files)
 		if (count_stack(dirstack) == 0)
 			strbuf_puts(files, strbuf_value(sb));
 		else
-			fprintf(STDOUT, "%s", strbuf_value(sb));
+			fputs(strbuf_value(sb), STDOUT);
 	}
 	if (map_file)
 		fclose(FILEMAP);
@@ -879,17 +879,17 @@ makefileindex(file, files)
 			suffix = normal_suffix;
 		}
 		if (no_order_list)
-			fprintf(STDOUT, "%s\n", br);
+			fputs_nl(br, STDOUT);
 		else
-			fprintf(STDOUT, "%s\n", list_end);
+			fputs_nl(list_end, STDOUT);
 		fputs(gen_href_begin_with_title(NULL, parent, suffix, NULL, "Parent Directory"), STDOUT);
 		if (icon_list)
 			fputs(gen_image(PARENT, back_icon, ".."), STDOUT);
 		else
 			fputs("[..]", STDOUT);
-		fprintf(STDOUT, "%s\n", gen_href_end());
-		fprintf(STDOUT, "%s\n", body_end);
-		fprintf(STDOUT, "%s\n", gen_page_end());
+		fputs_nl(gen_href_end(), STDOUT);
+		fputs_nl(body_end, STDOUT);
+		fputs_nl(gen_page_end(), STDOUT);
 		close_file_queue(pop_stack(fdstack));
 		file_count++;
 		if (count_stack(fdstack) > 0)
@@ -897,11 +897,11 @@ makefileindex(file, files)
 	}
 	fputs(strbuf_value(files), FILES);
 	if (no_order_list)
-		fprintf(FILES, "%s\n", br);
+		fputs_nl(br, FILES);
 	else
-		fprintf(FILES, "%s\n", list_end);
-	fprintf(FILES, "%s\n", body_end);
-	fprintf(FILES, "%s\n", gen_page_end());
+		fputs_nl(list_end, FILES);
+	fputs_nl(body_end, FILES);
+	fputs_nl(gen_page_end(), FILES);
 	fclose(FILES);
 	file_count++;
 
@@ -982,9 +982,9 @@ makeincludeindex()
 
 			snprintf(path, sizeof(path), "%s/%s/%d.%s", distpath, INCS, no, HTML);
 			INCLUDE = open_file_queue(path);
-			fprintf(INCLUDE, "%s\n", gen_page_begin(last, 1));
-			fprintf(INCLUDE, "%s\n", body_begin);
-			fprintf(INCLUDE, "%s\n", verbatim_begin);
+			fputs_nl(gen_page_begin(last, 1), INCLUDE);
+			fputs_nl(body_begin, INCLUDE);
+			fputs_nl(verbatim_begin, INCLUDE);
 			{
 				char *filename = strbuf_value(inc->contents);
 				int count = inc->count;
@@ -992,12 +992,12 @@ makeincludeindex()
 				for (; count; filename += strlen(filename) + 1, count--) {
 					fputs(gen_href_begin_with_title_target(upperdir(SRCS), path2fid(filename), HTML, NULL, NULL, target), INCLUDE);
 					fputs(filename, INCLUDE);
-					fprintf(INCLUDE, "%s\n", gen_href_end());
+					fputs_nl(gen_href_end(), INCLUDE);
 				}
 			}
-			fprintf(INCLUDE, "%s\n", verbatim_end);
-			fprintf(INCLUDE, "%s\n", body_end);
-			fprintf(INCLUDE, "%s\n", gen_page_end());
+			fputs_nl(verbatim_end, INCLUDE);
+			fputs_nl(body_end, INCLUDE);
+			fputs_nl(gen_page_end(), INCLUDE);
 			close_file_queue(path);
 			file_count++;
 			/*
@@ -1026,19 +1026,19 @@ makeincludeindex()
 
 			snprintf(path, sizeof(path), "%s/%s/%d.%s", distpath, INCREFS, no, HTML);
 			INCLUDE = open_file_queue(path);
-			fprintf(INCLUDE, "%s\n", gen_page_begin(last, 1));
-			fprintf(INCLUDE, "%s\n", body_begin);
-			fprintf(INCLUDE, "%s\n", gen_list_begin());
+			fputs_nl(gen_page_begin(last, 1), INCLUDE);
+			fputs_nl(body_begin, INCLUDE);
+			fputs_nl(gen_list_begin(), INCLUDE);
 			{
 				char *line = strbuf_value(data->contents);
 				int count = data->count;
 
 				for (; count; line += strlen(line) + 1, count--)
-					fprintf(INCLUDE, "%s\n", gen_list_body(upperdir(SRCS), line));
+					fputs_nl(gen_list_body(upperdir(SRCS), line), INCLUDE);
 			}
-			fprintf(INCLUDE, "%s\n", gen_list_end());
-			fprintf(INCLUDE, "%s\n", body_end);
-			fprintf(INCLUDE, "%s\n", gen_page_end());
+			fputs_nl(gen_list_end(), INCLUDE);
+			fputs_nl(body_end, INCLUDE);
+			fputs_nl(gen_page_end(), INCLUDE);
 			close_file_queue(path);
 			file_count++;
 			/*

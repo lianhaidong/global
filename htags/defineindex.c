@@ -75,26 +75,26 @@ makedefineindex(file, total, defines)
 	}
 	if (!(DEFINES = fopen(makepath(distpath, file, NULL), "w")))
 		die("cannot make function index '%s'.", file);
-	fprintf(DEFINES, "%s\n", gen_page_begin(title_define_index, 0));
-	fprintf(DEFINES, "%s\n", body_begin);
+	fputs_nl(gen_page_begin(title_define_index, 0), DEFINES);
+	fputs_nl(body_begin, DEFINES);
 	fputs(header_begin, DEFINES);
 	if (Fflag)
 		fputs(gen_href_begin(NULL, "defines", normal_suffix, NULL), DEFINES);
 	fputs(title_define_index, DEFINES);
 	if (Fflag)
 		fputs(gen_href_end(), DEFINES);
-	fprintf(DEFINES, "%s\n", header_end);
+	fputs_nl(header_end, DEFINES);
 	if (!aflag && !Fflag) {
 		fputs(gen_href_begin_with_title(NULL, indexlink, normal_suffix, NULL, index_string), DEFINES);
 		if (icon_list)
 			fputs(gen_image(CURRENT, back_icon, ".."), DEFINES);
 		else
 			fputs("[..]", DEFINES);
-		fprintf(DEFINES, "%s\n", gen_href_end());
+		fputs_nl(gen_href_end(), DEFINES);
 	}
 	if (!aflag) {
 		if (!no_order_list)
-			fprintf(DEFINES, "%s\n", list_begin);
+			fputs_nl(list_begin, DEFINES);
 	}
 	/*
 	 * map DEFINES to STDOUT.
@@ -124,17 +124,17 @@ makedefineindex(file, total, defines)
 				strbuf_sprintf(defines, "%s\n", gen_href_end());
 				alpha_count = 0;
 				if (!no_order_list)
-					fprintf(ALPHA, "%s\n", list_end);
+					fputs_nl(list_end, ALPHA);
 				else
-					fprintf(ALPHA, "%s\n", br);
+					fputs_nl(br, ALPHA);
 				fputs(gen_href_begin_with_title(NULL, indexlink, normal_suffix, NULL, index_string), ALPHA);
 				if (icon_list)
 					fputs(gen_image(PARENT, back_icon, ".."), ALPHA);
 				else
 					fputs("[..]", ALPHA);
-				fprintf(ALPHA, "%s\n", gen_href_end());
-				fprintf(ALPHA, "%s\n", body_end);
-				fprintf(ALPHA, "%s\n", gen_page_end());
+				fputs_nl(gen_href_end(), ALPHA);
+				fputs_nl(body_end, ALPHA);
+				fputs_nl(gen_page_end(), ALPHA);
 				if (cflag) {
 					if (pclose(ALPHA) != 0)
 						die("terminated abnormally.");
@@ -186,17 +186,17 @@ makedefineindex(file, total, defines)
 			if (!ALPHA)
 				die("cannot make alphabetical function index.");
 			snprintf(buf, sizeof(buf), "[%s]", alpha);
-			fprintf(ALPHA, "%s\n", gen_page_begin(buf, 1));
-			fprintf(ALPHA, "%s\n", body_begin);
+			fputs_nl(gen_page_begin(buf, 1), ALPHA);
+			fputs_nl(body_begin, ALPHA);
 			fprintf(ALPHA, "%s[%s]%s\n", header_begin, alpha, header_end);
 			fputs(gen_href_begin_with_title(NULL, indexlink, normal_suffix, NULL, index_string), ALPHA);
 			if (icon_list)
 				fputs(gen_image(PARENT, back_icon, ".."), ALPHA);
 			else
 				fputs("[..]", ALPHA);
-			fprintf(ALPHA, "%s\n", gen_href_end());
+			fputs_nl(gen_href_end(), ALPHA);
 			if (!no_order_list)
-				fprintf(ALPHA, "%s\n", list_begin);
+				fputs_nl(list_begin, ALPHA);
 			else
 				fprintf(ALPHA, "%s%s\n", br, br);
 			STDOUT = ALPHA;
@@ -283,34 +283,34 @@ makedefineindex(file, total, defines)
 		strbuf_sprintf(defines, "[%s]", alpha);
 		strbuf_sprintf(defines, "%s\n", gen_href_end());
 		if (!no_order_list)
-			fprintf(ALPHA, "%s\n", list_end);
+			fputs_nl(list_end, ALPHA);
 		else
-			fprintf(ALPHA, "%s\n", br);
+			fputs_nl(br, ALPHA);
 		fputs(gen_href_begin_with_title(NULL, indexlink, normal_suffix, NULL, index_string), ALPHA);
 		if (icon_list)
 			fputs(gen_image(PARENT, back_icon, ".."), ALPHA);
 		else
 			fputs("[..]", ALPHA);
-		fprintf(ALPHA, "%s\n", gen_href_end());
-		fprintf(ALPHA, "%s\n", body_end);
-		fprintf(ALPHA, "%s\n", gen_page_end());
+		fputs_nl(gen_href_end(), ALPHA);
+		fputs_nl(body_end, ALPHA);
+		fputs_nl(gen_page_end(), ALPHA);
 		fclose(ALPHA);
 		file_count++;
 
-		fprintf(DEFINES, strbuf_value(defines));
+		fputs(strbuf_value(defines), DEFINES);
 	}
 	if (!no_order_list && !aflag)
-		fprintf(DEFINES, "%s\n", list_end);
+		fputs_nl(list_end, DEFINES);
 	if (!aflag && !Fflag) {
 		fputs(gen_href_begin_with_title(NULL, "mains", normal_suffix, NULL, index_string), DEFINES);
 		if (icon_list)
 			fputs(gen_image(CURRENT, back_icon, ".."), DEFINES);
 		else
 			fputs("[..]", DEFINES);
-		fprintf(DEFINES, "%s\n", gen_href_end());
+		fputs_nl(gen_href_end(), DEFINES);
 	}
-	fprintf(DEFINES, "%s\n", body_end);
-	fprintf(DEFINES, "%s\n", gen_page_end());
+	fputs_nl(body_end, DEFINES);
+	fputs_nl(gen_page_end(), DEFINES);
 	fclose(DEFINES);
 	file_count++;
 	if (map_file)
