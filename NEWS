@@ -7,7 +7,7 @@ ___________________________________
 
 GLOBAL NEWS - User visible changes.
 
-Version 4.*.* - September 30, 2000, by Shigio Yamaguchi
+Version 4.1.0a
 
 * htags: create bless.sh when the -S option specified.
 * htags: config variables show_position, position_begin, position_end and
