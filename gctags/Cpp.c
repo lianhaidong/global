@@ -144,9 +144,10 @@ Cpp()
 			DBG_PRINT(level, "class");
 			if ((c = nexttoken(interested, reserved)) == SYMBOL) {
 				strcpy(classname, token);
-				startclass = 1;
 				if (target == DEF)
 					PUT(token, lineno, sp);
+				if (peekc(0) != ';')
+					startclass = 1;
 			}
 			break;
 		case '{':  /* } */
