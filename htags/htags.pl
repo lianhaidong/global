@@ -73,6 +73,8 @@ foreach $c ('sort', 'gtags', 'global', 'btreeop') {
 #-------------------------------------------------------------------------
 # CONFIGURATION
 #-------------------------------------------------------------------------
+# null device
+$'null_device = $'w32 ? 'NUL' : '/dev/null';
 # temporary directory
 $'tmp = '/tmp';
 if (defined($ENV{'TMPDIR'}) && -d $ENV{'TMPDIR'}) {
@@ -547,7 +549,7 @@ if ($id_value) {
 # If $dbpath is not specified then listen to global(1).
 if (!$dbpath) {
 	local($cwd) = &'getcwd();
-	local($root) = `global -pr 2>/dev/null`;
+	local($root) = `global -pr 2>$'null_device`;
 	chop($root);
 	if ($cwd eq $root) {
 		$dbpath = `global -p`;
@@ -918,7 +920,7 @@ id=`pwd`
 for f in mains.html index.html search.html; do
 	if [ -f $f ]; then
 		sed "s!<$pattern.*>!<$pattern$id>!" $f > $f.new;
-		if ! cmp $f $f.new >/dev/null; then
+		if ! cmp $f $f.new >@null_device@; then
 			mv $f.new $f
 			[ $verbose ] && echo "$f was blessed."
 		else
@@ -927,6 +929,7 @@ for f in mains.html index.html search.html; do
 	fi
 done
 END_OF_SCRIPT
+	$script =~ s/\@null_device\@/$'null_device/g;
 	print SCRIPT $script;
 	close(SCRIPT);
 }
