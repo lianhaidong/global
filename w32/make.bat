@@ -20,3 +20,6 @@ cd ..
 cd htags
 make %1
 cd ..
+cd gozilla
+make %1
+cd ..
