@@ -20,9 +20,9 @@ endif
 PERL = @PERL@
 
 htags: $(srcdir)/htags.in $(srcdir)/const.pl
-	echo "#! $(PERL)" | cat - $(srcdir)/const.pl $(srcdir)/htags.in > htags.tmp && \
+	echo "#! @PERL@" | cat - $(srcdir)/const.pl $(srcdir)/htags.in | \
+	sed -e 's,@''PERL''@,$(PERL),g' >htags.tmp && \
 	chmod +x htags.tmp && mv htags.tmp htags
-	rm -f htags.tmp
 
 man_MANS = htags.1
 
