@@ -19,7 +19,7 @@
  * the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef _TAB
+#ifndef _TAB_H_
 #define _TAB_H_
 
 void	settabs(int);
