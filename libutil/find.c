@@ -70,7 +70,10 @@
  *
  */
 static regex_t	skip_area;
-static regex_t	*skip = &skip_area;
+static regex_t	*skip;			/* regex for skipping units */
+static STRBUF *list;
+static int list_count;
+static char **listarray;		/* list for skipping full path */
 static int	opened;
 static int	retval;
 
@@ -93,6 +96,133 @@ char	*s;
 		*p++ = *s;
 	}
 	*p = 0;
+}
+/*
+ * prepare_skip: prepare skipping files.
+ *
+ *	i)	flags	flags for regcomp.
+ *	go)	skip	regular expression for skip files.
+ *	go)	listarry[] skip list.
+ *	go)	list_count count of skip list.
+ */
+void
+prepare_skip(flags)
+int flags;
+{
+	char *skiplist;
+	STRBUF *reg = strbuf_open(0);
+	int reg_count = 0;
+	char *p, *q;
+
+	/*
+	 * initinalize common data.
+	 */
+	if (!list)
+		list = strbuf_open(0);
+	else
+		strbuf_reset(list);
+	list_count = 0;
+	if (listarray)
+		(void)free(listarray);
+	listarray = (char **)0;
+	skip = &skip_area;
+	/*
+	 * load skip data.
+	 */
+	if (!getconfs("skip", reg))
+		return;
+	skiplist = strdup(strbuf_value(reg));
+	if (!skiplist)
+		die("short of memory.");
+	trim(skiplist);
+	strbuf_reset(reg);
+	/*
+	 * construct regular expression.
+	 */
+	strbuf_putc(reg, '(');	/* ) */
+	for (p = skiplist; p; ) {
+		char    *skipf = p;
+		if ((p = locatestring(p, ",", MATCH_FIRST)) != NULL)
+			*p++ = 0;
+		if (*skipf == '/') {
+			list_count++;
+			strbuf_puts0(list, skipf);
+		} else {
+			reg_count++;
+			strbuf_putc(reg, '/');
+			for (q = skipf; *q; q++) {
+				if (*q == '.')
+					strbuf_putc(reg, '\\');
+				strbuf_putc(reg, *q);
+			}
+			if (*(q - 1) != '/')
+				strbuf_putc(reg, '$');
+			if (p)
+				strbuf_putc(reg, '|');
+		}
+	}
+	strbuf_putc(reg, ')');
+	if (reg_count > 0) {
+		/*
+		 * compile regular expression.
+		 */
+		retval = regcomp(skip, strbuf_value(reg), flags);
+		if (debug)
+			fprintf(stderr, "skip regex: %s\n", strbuf_value(reg));
+		if (retval != 0)
+			die("cannot compile regular expression.");
+	} else {
+		skip = (regex_t *)0;
+	}
+	if (list_count > 0) {
+		int i;
+		listarray = (char **)malloc(sizeof(char *) * list_count);
+		p = strbuf_value(list);
+		for (i = 0; i < list_count; i++) {
+			listarray[i] = p;
+			p += strlen(p) + 1;
+		}
+	}
+	strbuf_close(reg);
+}
+/*
+ * skipthisfile: check weather or not we accept this file.
+ *
+ *	i)	path	path name (must start with ./)
+ *	r)		1: skip, 0: dont skip
+ */
+int
+skipthisfile(path)
+char *path;
+{
+	char *first, *last;
+	int i;
+
+	/*
+	 * unit check.
+	 */
+	if (skip && regexec(skip, path, 0, 0, 0) == 0)
+		return 1;
+	/*
+	 * list check.
+	 */
+	if (list_count == 0)
+		return 0;
+	for (i = 0; i < list_count; i++) {
+		first = listarray[i];
+		last = first + strlen(first);
+		/*
+		 * the path must start with "./".
+		 */
+		if (*(last - 1) == '/') {	/* it's a directory */
+			if (!strncmp(path + 1, first, last - first))
+				return 1;
+		} else {
+			if (!strcmp(path + 1, first))
+				return 1;
+		}
+	}
+	return 0;
 }
 #ifndef HAVE_FIND
 /*----------------------------------------------------------------------*/
@@ -232,13 +362,6 @@ find_open()
 	if (!sufflist)
 		die("short of memory.");
 	trim(sufflist);
-	strbuf_reset(sb);
-	if (getconfs("skip", sb)) {
-		skiplist = strdup(strbuf_value(sb));
-		if (!skiplist)
-			die("short of memory.");
-		trim(skiplist);
-	}
 	{
 		char    *suffp;
 
@@ -267,41 +390,11 @@ find_open()
 		if (retval != 0)
 			die("cannot compile regular expression.");
 	}
-	if (skiplist) {
-		char    *p, *q;
-		/*
-		 * construct regular expression.
-		 */
-		strbuf_reset(sb);
-		strbuf_putc(sb, '(');	/* ) */
-		for (p = skiplist; p; ) {
-			char    *skipf = p;
-			if ((p = locatestring(p, ",", MATCH_FIRST)) != NULL)
-				*p++ = 0;
-			strbuf_putc(sb, '/');
-			for (q = skipf; *q; q++) {
-				if (*q == '.')
-					strbuf_putc(sb, '\\');
-				strbuf_putc(sb, *q);
-			}
-			if (*(q - 1) != '/')
-				strbuf_putc(sb, '$');
-			if (p)
-				strbuf_putc(sb, '|');
-		}
-		strbuf_putc(sb, ')');
-		/*
-		 * compile regular expression.
-		 */
-		retval = regcomp(skip, strbuf_value(sb), flags);
-		if (debug)
-			fprintf(stderr, "skip regex: %s\n", strbuf_value(sb));
-		if (retval != 0)
-			die("cannot compile regular expression.");
-	} else {
-		skip = (regex_t *)0;
-	}
 	strbuf_close(sb);
+	/*
+	 * prepare for skipping files.
+	 */
+	prepare_skip(flags);
 	if (sufflist)
 		free(sufflist);
 	if (skiplist)
@@ -329,7 +422,7 @@ int	*length;
 				char	*path = makepath(dir, unit, NULL);
 				if (regexec(suff, path, 0, 0, 0) != 0)
 					continue;
-				if (skip && regexec(skip, path, 0, 0, 0) == 0)
+				if (skipthisfile(path))
 					continue;
 				strcpy(val, path);
 				if (length)
@@ -423,14 +516,6 @@ find_open()
 		die("short of memory.");
 	trim(sufflist);
 	strbuf_reset(sb);
-	if (getconfs("skip", sb)) {
-		skiplist = strdup(strbuf_value(sb));
-		if (!skiplist)
-			die("short of memory.");
-		trim(skiplist);
-	}
-
-	strbuf_reset(sb);
 	strbuf_puts(sb, "find . \\( -type f -o -type l \\) \\(");
 	for (p = sufflist; p; ) {
 		char	*suff = p;
@@ -446,43 +531,10 @@ find_open()
 	findcom = strbuf_value(sb);
 	if (debug)
 		fprintf(stderr, "find com: %s\n", findcom);
-
-	if (skiplist) {
-		char	*reg;
-		STRBUF	*sbb = strbuf_open(0);
-		/*
-		 * construct regular expression.
-		 */
-		strbuf_putc(sbb, '(');	/* ) */
-		for (p = skiplist; p; ) {
-			char    *skipf = p;
-			if ((p = locatestring(p, ",", MATCH_FIRST)) != NULL)
-				*p++ = 0;
-			strbuf_putc(sbb, '/');
-			for (q = skipf; *q; q++) {
-				if (*q == '.')
-					strbuf_putc(sbb, '\\');
-				strbuf_putc(sbb, *q);
-			}
-			if (*(q - 1) != '/')
-				strbuf_putc(sbb, '$');
-			if (p)
-				strbuf_putc(sbb, '|');
-		}
-		strbuf_putc(sbb, ')');
-		reg = strbuf_value(sbb);
-		/*
-		 * compile regular expression.
-		 */
-		retval = regcomp(skip, reg, flags);
-		if (debug)
-			fprintf(stderr, "skip regex: %s\n", reg);
-		if (retval != 0)
-			die("cannot compile regular expression.");
-		strbuf_close(sbb);
-	} else {
-		skip = (regex_t *)0;
-	}
+	/*
+	 * prepare for skipping files.
+	 */
+	prepare_skip(flags);
 	if (!(ip = popen(findcom, "r")))
 		die("cannot execute find.");
 	strbuf_close(sb);
@@ -506,14 +558,14 @@ int	*length;
 
 	assert(opened == 1);
 	while (fgets(path, MAXPATHLEN, ip)) {
-		if (!skip || regexec(skip, path, 0, 0, 0) != 0) {
-			/*
-			 * chop(path)
-			 */
-			p = path + strlen(path) - 1;
-			if (*p != '\n')
-				die("output of find(1) is wrong (findread).");
-			*p = 0;
+		/*
+		 * chop(path)
+		 */
+		p = path + strlen(path) - 1;
+		if (*p != '\n')
+			die("output of find(1) is wrong (findread).");
+		*p = 0;
+		if (!skipthisfile(path)) {
 			if (length)
 				*length = p - path;
 			return path;

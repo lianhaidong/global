@@ -24,6 +24,7 @@ Version 4.* - *** **, 2001, by Shigio Yamaguchi
 
 * postgres support added.
 * gtags: when no parser specified in config file, overloaded by default values.
+* gtags: skip variable accept full path name.
 * htags: changed to refer to macros which is defined in other C source.
 * global.texi: reference manual added.
 
