@@ -59,7 +59,24 @@ static int	belongto(GTOP *, char *, char *);
 static regex_t reg;
 
 /*
- * format version:
+ * The concept of format version.
+ *
+ * Since GLOBAL's tag files are machine independent, they can be distributed
+ * apart from GLOBAL itself. For example, if some network file system available,
+ * client may execute global using server's tag files. In this case, both
+ * GLOBAL are not necessarily the same version. So, we should assume that
+ * older version of GLOBAL might access the tag files which generated
+ * by new GLOBAL. To deal in such case, we decided to buried a version number
+ * to both global(1) and tag files. The conclete procedure is like follows:
+ *
+ * 1. Gtags(1) bury the version number in tag files.
+ * 2. Global(1) pick up the version number from a tag file. If the number
+ *    is larger than its acceptable version number then global give up work
+ *    any more and display error message.
+ * 3. If version number is not found then it assumes version 1.
+ *
+ * [History fo format version]
+ *
  * GLOBAL-1.0 - 1.8	no idea about format version.
  * GLOBAL-1.9 - 2.24 	understand format version.
  *			support format version 1 (default).
@@ -68,12 +85,19 @@ static regex_t reg;
  *			if (format version > 2) then print error message.
  * GLOBAL-4.5.1 -	support format version 1, 2 and 3.
  *			if (format version > 3) then print error message.
- * format version 1:
+ * format version 1 (default):
  *	original format.
- * format version 2:
+ * format version 2 (gtags -c):
  *	compact format + pathindex format
- * format version 3:
- *	only pathindex format
+ * format version 3 (gtags -cc):
+ *	only pathindex format (undocumented)
+ *
+ * About GTAGS and GRTAGS, the default format is still version 1.
+ * Since if version number is not found then it assumes version 1, we
+ * don't bury format version in tag files currently.
+ *
+ * We know the format version 3 is better than 1 in all aspect,
+ * the default format version will be change into 3 in the future.
  */
 static int	support_version = 3;	/* acceptable format version   */
 static const char *tagslist[] = {"GPATH", "GTAGS", "GRTAGS", "GSYMS"};
