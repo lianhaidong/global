@@ -853,7 +853,7 @@ pathlist(dbpath, av)
 			die("invalid regular expression.");
 	}
 	if (!localprefix)
-		localprefix = "./";
+		localprefix = ".";
 	if (!(op = openfilter()))
 		die("cannot open output filter.");
 	count = 0;
