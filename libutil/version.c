@@ -39,6 +39,14 @@ For more information about these matters,\n\
 see the files named COPYING.\n\
 ";
 /*
+ * get_version: get version string.
+ */
+char *
+get_version()
+{
+	return VERSION;
+}
+/*
  * version: print version information.
  */
 void
