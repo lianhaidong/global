@@ -167,15 +167,19 @@ linetable_close()
 }
 /*
  * linetable_print: print a line.
+ *
+ *	i)	op	output file pointer
+ *	i)	lineno	line number
  */
 void
-linetable_print(lineno)
+linetable_print(op, lineno)
+FILE *op;
 int lineno;
 {
 	char *s = linetable_get(lineno);
 	if (s == NULL)
 		return;
 	while (*s != '\n')
-		fputc(*s++, stdout);
-	fputc('\n', stdout);
+		fputc(*s++, op);
+	fputc('\n', op);
 }
