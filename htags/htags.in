@@ -808,13 +808,13 @@ print STDERR "[", &'date, "] ", "Htags started\n" if ($'vflag);
 #
 # (#) check if GTAGS, GRTAGS is the latest.
 #
-$ctime_argc = ($'w32) ? 9 : 10;
+$mtime_argc = 9;
 print STDERR "[", &'date, "] ", "(#) checking tag files ...\n" if ($'vflag);
-$gtags_ctime = (stat("$dbpath/GTAGS"))[$ctime_argc];
+$gtags_mtime = (stat("$dbpath/GTAGS"))[$mtime_argc];
 open(FIND, "$'findcom |") || &'error("cannot fork.");
 while (<FIND>) {
 	chop;
-	if ($gtags_ctime < (stat($_))[$ctime_argc]) {
+	if ($gtags_mtime < (stat($_))[$mtime_argc]) {
 		&'error("GTAGS is not the latest one. Please execute gtags(1) again.");
 	}
 }

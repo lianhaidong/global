@@ -317,6 +317,7 @@ strbuf_sprintf(sb, s, va_alist)
 #endif
 {
 	static char buf[1024];
+	int i;
 	va_list ap;
 
 #ifdef HAVE_STDARG_H
@@ -324,7 +325,13 @@ strbuf_sprintf(sb, s, va_alist)
 #else
 	va_start(ap);
 #endif
-	(void)vsnprintf(buf, sizeof(buf), s, ap);
+	/* This should be replaced with vsnprintf() in the future. */
+	(void)vsprintf(buf, s, ap);
+	for (i = 0; i < sizeof(buf); i++)
+		if (buf[i] == '\0')
+			break;
+	if (i >= sizeof(buf))
+		die("internal buffer for strbuf_sprintf over flow.");
 	va_end(ap);
 	strbuf_puts(sb, buf);
 }
