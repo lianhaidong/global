@@ -39,19 +39,10 @@ o If your environment is Windows32(Windows95,98,NT...), you need to
 	find, xargs(Find-utils)
 	sort, cat, tr(Text-utils)
 
-o Groff is needed for formatting online manuals.
+o nroff is needed for formatting online manuals.
 
-   Online manuals in GLOBAL are written with 'mandoc' macro which is a part
-   of GNU groff package. See following site:
-
-	ftp://ftp.gnu.org/pub/gnu/groff/
-
-   You can format these manuals by following command line manually.
-
-	% groff -Wall -Tascii -mandoc global.1
-
-   If you replace your system's nroff(1) with GNU's one(nroff.sh) then
-   you can use man(1) to see GLOBAL's online manuals.
+   If you setup man(1) on your system then you can use man command
+   to read GLOBAL's online manuals.
 
 o If you want to use the -I option of global(1) then id-utils(1) is needed.
 
