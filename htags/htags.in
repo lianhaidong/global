@@ -18,6 +18,11 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #
+#-------------------------------------------------------------------------
+# COMMENT FOR HACKERS:
+#
+# Htags is written so that it run even with perl4.
+#-------------------------------------------------------------------------
 $'w32 = ($^O =~ /^(ms)?(dos|win(32|nt))/i) ? 1 : 0;
 $www = "http://www.gnu.org/software/global/";
 $file_count = 0;
