@@ -11,7 +11,7 @@
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
 LIB    = libgloglibc.lib
-OBJS   = regex.obj getopt.obj getopt1.obj
+OBJS   = regex.obj getopt.obj getopt1.obj snprintf.obj
 !include ..\makefile.inc
 
 all: $(LIB)
