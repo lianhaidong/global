@@ -27,6 +27,7 @@ ChangeLog about GNU GLOBAL
 	* strbuf.c: strbuf_putn() added.
 	* conf.c find.c: shut buffer overflow.
 	* gtags, htags: './' removed from path name in verbose message.
+	* *.c, *.h: copyright year fixed.
 
 March 30 2002, Shigio Yamaguchi  <shigio@gnu.org>
 
