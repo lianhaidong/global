@@ -1,6 +1,6 @@
 #
 # Copyright (c) 1996, 1997, 1998, 1999 Shigio Yamaguchi
-# Copyright (c) 1999, 2000, 2001, 2002 Tama Communications Corporation
+# Copyright (c) 1999, 2000, 2001, 2002, 2003 Tama Communications Corporation
 #
 # This file is part of GNU GLOBAL.
 #
@@ -23,7 +23,7 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	GLOBAL,1,Jul 2002,GNU Project
+@HEADER	GLOBAL,1,June 2003,GNU Project
 @NAME	global - print the locations of specified object.
 @SYNOPSIS
 	@name{global} [-aGilnqrstTvx][-e] @arg{pattern}
@@ -36,7 +36,7 @@
 	@name{global} -u[qv]
 @DESCRIPTION
 	@name{Global} find the locations of specified object
-	in C, C++, Yacc, Java and assembler source files.
+	in C, C++, Yacc, Java, PHP and assembler source files.
 	@name{Global} can treat a source tree, that is, a directory that
 	has subdirectories and source files.
 	You can get the relative path of objects from anywhere within the tree.

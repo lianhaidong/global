@@ -4,7 +4,7 @@ ___________________________________
 |  |   |  |  |  |  |     |     |  |
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Copyright (c) 2000, 2001, 2002 Tama Communications Corporation
+ Copyright (c) 2000, 2001, 2002, 2003 Tama Communications Corporation
 
  This file is free software; as a special exception the author gives
  unlimited permission to copy and/or distribute it, with or without
@@ -17,7 +17,7 @@ ___________________________________
 		----------------------------------
 
 GNU GLOBAL is a source code tag system that works the same way across diverse
-environments. It supports C, C++, Yacc and Java source code.
+environments. It supports C, C++, Yacc, Java, PHP and assembler source code.
 
 * Installation
 
