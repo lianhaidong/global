@@ -397,7 +397,7 @@ char	*argv[];
 				if (!isabspath(path))
 					die("realpath(3) is not compatible with BSD version.");
 				if (strncmp(path, root, strlen(root)))
-					die("'%s' is out of source tree.\n", path);
+					die("'%s' is out of source tree.", path);
 			}
 			ip = fopen(argv[0], "r");
 			if (ip == NULL)
