@@ -82,6 +82,8 @@ $'ncol = 4;					# columns of line number
 $'tabs = 8;					# tab skip
 $'full_path = 0;				# file index format
 $'icon_list = '';				# use icon for file index
+$'prolog_script = '';				# include script at first
+$'epilog_script = '';				# include script at last
 $'show_position = 0;				# show current position
 $'table_list = 0;				# tag list using table tag
 $'script_alias = '/cgi-bin';			# script alias of WWW server
@@ -164,6 +166,12 @@ if ($var1 = &'getconf('table_list')) {
 }
 if ($var1 = &'getconf('icon_list')) {
 	$'icon_list = $var1;
+}
+if ($var1 = &'getconf('prolog_script')) {
+	$'prolog_script = $var1;
+}
+if ($var1 = &'getconf('epilog_script')) {
+	$'epilog_script = $var1;
 }
 if ($var1 = &'getconf('show_position')) {
 	$'show_position = $var1;
@@ -386,6 +394,8 @@ sub list_end {
 #-------------------------------------------------------------------------
 # PROCESS START
 #-------------------------------------------------------------------------
+# include prolog_script if needed.
+require($'prolog_script) if ($'prolog_script && -f $'prolog_script);
 #
 # options check.
 #
@@ -729,6 +739,8 @@ if ($'vflag && $'cgi && ($'cflag || $'fflag)) {
 if ($'icon_list && -f $'icon_list) {
 	system("tar xzf $'icon_list -C $dist");
 }
+# include epilog_script if needed.
+require($'epilog_script) if ($'epilog_script && -f $'epilog_script);
 exit 0;
 #-------------------------------------------------------------------------
 # SUBROUTINES

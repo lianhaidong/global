@@ -30,8 +30,8 @@ incompatible changes
 other changes
 
 * htags: create bless.sh when the -S option specified.
-* htags: config variables show_position, position_begin, position_end and
-  icase_path added.
+* htags: config variables prolog_script, epilog_script, show_position,
+  position_begin, position_end and icase_path added.
 * htags: path name search facility added.
 * htags: locate dbpath like global(1) does.
 * htags: show addtional information on status bar.
