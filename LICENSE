@@ -29,7 +29,7 @@ GNU GLOBAL source code tag system is covered by the followings:
 nvi-1.79-gtags.diff
 
      This file is placed into the public domain by the author,
-     Shigio Yamaguchi <shigio@tamacom.com>
+     Shigio Yamaguchi
 
 Getopt for GNU (getopt.c getopt.h getopt1.c):
 

@@ -24,7 +24,7 @@
 ;;
 
 ;; GLOBAL home page is at: http://www.tamacom.com/global/
-;; Author: Shigio Yamaguchi <shigio@tamacom.com>
+;; Author: Shigio Yamaguchi
 ;; Version: 2.0
 ;; Keywords: tools
 

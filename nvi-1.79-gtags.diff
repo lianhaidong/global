@@ -1,6 +1,6 @@
 /*
  * This file is placed into the public domain by the author,
- * Shigio Yamaguchi <shigio@tamacom.com>
+ * Shigio Yamaguchi
  */
 diff -c -r -N ../nvi-1.79.org/common/main.c ./common/main.c
 *** ../nvi-1.79.org/common/main.c	Mon Mar  6 16:24:39 2000
