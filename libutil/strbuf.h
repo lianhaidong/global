@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2002
+ * Copyright (c) 1997, 1998, 1999, 2000, 2002, 2005
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -85,21 +85,15 @@ typedef struct _strbuf {
 		*sb->curp++ = c;\
 	}\
 } while (0)
-#define strbuf_nputs(sb, s, len) do {\
-	unsigned int _length = len;\
-	if (!sb->alloc_failed) {\
-		if (sb->curp + _length > sb->endp)\
-			__strbuf_expandbuf(sb, _length);\
-		strncpy(sb->curp, s, _length);\
-		sb->curp += _length;\
-	}\
-} while (0)
-#define strbuf_puts(sb, s) strbuf_nputs(sb, s, strlen(s))
-#define strbuf_puts0(sb, s) strbuf_nputs(sb, s, strlen(s) + 1)
 
 #define strbuf_reset(sb) do {\
 	sb->curp = sb->sbuf;\
 	sb->alloc_failed = 0;\
+} while (0)
+
+#define strbuf_puts0(sb, s) do {\
+	strbuf_puts(sb, s);\
+	strbuf_putc(sb, '\0');\
 } while (0)
 
 #define strbuf_getlen(sb) (sb->curp - sb->sbuf)
@@ -120,6 +114,8 @@ void strbuf_dump(char *);
 void __strbuf_expandbuf(STRBUF *, int);
 STRBUF *strbuf_open(int);
 void strbuf_init(STRBUF *);
+void strbuf_nputs(STRBUF *, const char *, int);
+void strbuf_puts(STRBUF *, const char *);
 void strbuf_putn(STRBUF *, int);
 int strbuf_unputc(STRBUF *, int);
 char *strbuf_value(STRBUF *);

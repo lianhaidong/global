@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2002
+ * Copyright (c) 1997, 1998, 1999, 2000, 2002, 2005
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -207,6 +207,48 @@ strbuf_init(sb)
 		sb->endp = sb->sbuf + sb->sbufsize;
 	} else {
 		strbuf_reset(sb);
+	}
+}
+/*
+ * strbuf_nputs: Put string with length
+ *
+ *	i)	sb	statically defined string buffer
+ *	i)	s	string
+ *	i)	len	length of string
+ */
+void
+strbuf_nputs(sb, s, len)
+	STRBUF *sb;
+	const char *s;
+	int len;
+{
+	if (!sb->alloc_failed) {
+		if (sb->curp + len > sb->endp)
+			__strbuf_expandbuf(sb, len);
+		while (*s) {
+			if (len-- <= 0)
+				break;
+			*sb->curp++ = *s++;
+		}
+	}
+}
+/*
+ * strbuf_puts: Put string
+ *
+ *	i)	sb	statically defined string buffer
+ *	i)	s	string
+ */
+void
+strbuf_puts(sb, s)
+	STRBUF *sb;
+	const char *s;
+{
+	if (!sb->alloc_failed) {
+		while (*s) {
+			if (sb->curp >= sb->endp)
+				__strbuf_expandbuf(sb, 0);
+			*sb->curp++ = *s++;
+		}
 	}
 }
 /*
