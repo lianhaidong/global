@@ -21,6 +21,17 @@
 #ifndef _SPLIT_H_
 #define _SPLIT_H_
 
-int	split(char *, int, int, char **);
+#define NPART 10
+
+typedef struct {
+        int npart;
+	struct part {
+		char *start;
+		char *end;
+		int savec;
+	} part[NPART];
+} SPLIT;
+
+int	split(char *, int, SPLIT *);
 
 #endif /* ! _SPLIT_H_ */

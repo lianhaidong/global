@@ -88,7 +88,7 @@ typedef struct {
 
 const char *dbname(int);
 void	makecommand(char *, char *, STRBUF *);
-int	formatcheck(char *, int);
+void	formatcheck(char *, int);
 int	notnamechar(char *);
 int	isregex(char *);
 void	gtags_setinfo(char *);

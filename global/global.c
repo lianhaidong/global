@@ -592,46 +592,38 @@ char	*prefix;
  * printtag: print a tag's line
  *
  *	i)	op	output stream
- *	i)	bp	tag's line
+ *	i)	line	tag's line
  */
 void
-printtag(op, bp)
+printtag(op, line)
 FILE	*op;
-char	*bp;
+char	*line;
 {
 	if (tflag) {
-		char	buf[MAXBUFLEN+1];
-		char	lno[20], *l = lno;
-		char	*p = bp;
-		char	*q = buf;
+		SPLIT ptable;
+		int n;
 
-		while (*p && !isspace(*p))
-			*q++ = *p++;
-		*q++ = '\t';
-		for (; *p && isspace(*p); p++)
-			;
-		while (*p && isdigit(*p))
-			*l++ = *p++;
-		*l = 0;
-		for (; *p && isspace(*p); p++)
-			;
-		while (*p && !isspace(*p))
-			*q++ = *p++;
-		*q++ = '\t';
-		l = lno;
-		while (*l)
-			*q++ = *l++;
-		*q = 0;
-		fprintf(op, "%s\n", buf); 
+		/*
+		 * Split tag line.
+		 */
+		n = split(line, 4, &ptable);
+
+		fputs(ptable.part[0].start, op);	/* tag */
+		(void)putc('\t', op);
+		fputs(ptable.part[2].start, op);	/* path */
+		(void)putc('\t', op);
+		fputs(ptable.part[1].start, op);	/* line number */
+		(void)putc('\n', op);
+		recover(&ptable);
 	} else if (!xflag) {
-		char	*p = locatestring(bp, "./", MATCH_FIRST);
+		char	*p = locatestring(line, "./", MATCH_FIRST);
 
 		if (p == NULL)
 			die("invalid tag format (path not found).");
 		fputs(strmake(p, " \t"), op);
 		(void)putc('\n', op);
 	} else
-		fprintf(op, "%s\n", bp); 
+		fprintf(op, "%s\n", line); 
 }
 /*
  * idutils:  lid(idutils) pattern

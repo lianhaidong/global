@@ -46,6 +46,7 @@
 #include "makepath.h"
 #include "path.h"
 #include "gpathop.h"
+#include "split.h"
 #include "strbuf.h"
 #include "strlimcpy.h"
 #include "strmake.h"
@@ -139,63 +140,72 @@ char	*s;
  * formatcheck: check format of tag command's output
  *
  *	i)	line	input
- *	i)	flags	flag
+ *	i)	format	format
  *	r)	0:	normal
  *		-1:	tag name
  *		-2:	line number
  *		-3:	path
  *
- * [example of right format]
- *
- * $1                $2 $3             $4
+ * [STANDARD FORMAT]
+ * 0                 1  2              3
  * ----------------------------------------------------
- * main              83 ./ctags.c        main(argc, argv)
+ * func              83 ./func.c       func()
+ *
+ * [PATHINDEX FORMAT]
+ * 0                 1  2              3
+ * ----------------------------------------------------
+ * func              83 38             func()
+ *
+ * [COMPACT FORMAT]
+ * 0    1  2
+ * ----------------------------------------------------
+ * func 38 83,95,103,205
  */
-int
-formatcheck(line, flags)
+void
+formatcheck(line, format)
 char	*line;
-int	flags;
+int	format;
 {
-	char	*p, *q;
+	int n;
+	char *p;
+	SPLIT ptable;
+
 	/*
-	 * $1 = tagname: allowed any char except sepalator.
+	 * Extract parts.
 	 */
-	p = q = line;
-	while (*p && !isspace(*p))
-		p++;
-	while (*p && isspace(*p))
-		p++;
-	if (p == q)
-		return -1;
+	n = split(line, 4, &ptable);
+
 	/*
-	 * $2 = line number: must be digit.
+	 * line number
 	 */
-	q = p;
-	while (*p && !isspace(*p))
-		if (!isdigit(*p))
-			return -2;
-		else
-			p++;
-	if (p == q)
-		return -2;
-	while (*p && isspace(*p))
-		p++;
-	/*
-	 * $3 = path:
-	 *	standard format: must start with './'.
-	 *	compact format: must be digit.
-	 */
-	if (flags & GTAGS_PATHINDEX) {
-		while (*p && !isspace(*p))
-			if (!isdigit(*p))
-				return -3;
-			else
-				p++;
-	} else {
-		if (!(*p == '.' && *(p + 1) == '/' && *(p + 2)))
-			return -3;
+	if (n < 4) {
+		recover(&ptable);
+		die("too small number of parts.\n'%s'", line);
 	}
-	return 0;
+	for (p = ptable.part[1].start; *p; p++) {
+		if (!isdigit(*p)) {
+			recover(&ptable);
+			die("line number includes other than digit.\n'%s'", line);
+		}
+	}
+	/*
+	 * path name
+	 */
+	if (format == GTAGS_STANDARD) {
+		p = ptable.part[2].start;
+		if (!(*p == '.' && *(p + 1) == '/' && *(p + 2))) {
+			recover(&ptable);
+			die("path name must start with './'.\n'%s'", line);
+		}
+	}
+	if (format & GTAGS_PATHINDEX) {
+		for (p = ptable.part[2].start; *p; p++)
+			if (!isdigit(*p)) {
+				recover(&ptable);
+				die("file number includes other than digit.\n'%s'", line);
+			}
+	}
+	recover(&ptable);
 }
 /*
  * gtags_setinfo: set info string.
@@ -374,9 +384,8 @@ char	*tag;
 char	*record;
 char	*fid;
 {
-#define PARTS 4
 	char *line, *path;
-	char *parts[PARTS];
+	SPLIT ptable;
 
 	if (gtop->format == GTAGS_STANDARD || gtop->format == GTAGS_PATHINDEX) {
 		/* entab(record); */
@@ -386,10 +395,10 @@ char	*fid;
 	/*
 	 * gtop->format & GTAGS_COMPACT
 	 */
-	if (split(record, '\t', PARTS, parts) != PARTS)
+	if (split(record, 4, &ptable) != 4)
 		die("illegal format.");
-	line = parts[1];
-	path = parts[2];
+	line = ptable.part[1].start;
+	path = ptable.part[2].start;
 	/*
 	 * First time, it occurs, because 'prev_tag' and 'prev_path' are NULL.
 	 */
@@ -413,6 +422,7 @@ char	*fid;
 		strbuf_putc(gtop->sb, ',');
 		strbuf_puts(gtop->sb, line);
 	}
+	recover(&ptable);
 }
 /*
  * gtags_add: add tags belonging to the path into tag file.
@@ -497,8 +507,7 @@ int	flags;
 		char	*tag, *p;
 
 		strbuf_trim(ib);
-		if (formatcheck(ctags_x, gtop->format) < 0)
-			die("invalid parser output.\n'%s'", ctags_x);
+		formatcheck(ctags_x, gtop->format);
 		tag = strmake(ctags_x, " \t");		 /* tag = $1 */
 		/*
 		 * extract method when class method definition.
@@ -528,35 +537,36 @@ int	flags;
  *	i)	gtop	GTOP structure
  *	i)	path	path name (in standard format)
  *			path number (in compact format)
- *	i)	p	record
+ *	i)	line	record
  *	r)		1: belong, 0: not belong
+ *
  */
 static int
-belongto(gtop, path, p)
+belongto(gtop, path, line)
 GTOP	*gtop;
 char	*path;
-char	*p;
+char	*line;
 {
-	char	*q;
-	int	length = strlen(path);
+	char *p;
+	int status, n;
+	SPLIT ptable;
 
 	/*
-	 * seek to path part.
+	 * Get path.
 	 */
-	if (gtop->format & GTAGS_PATHINDEX) {
-		for (q = p; *q && !isspace(*q); q++)
-			;
-		if (*q == 0)
-			die("invalid tag format. '%s'", p);
-		for (; *q && isspace(*q); q++)
-			;
-	} else
-		q = locatestring(p, "./", MATCH_FIRST);
-	if (*q == 0)
-		die("invalid tag format. '%s'", p);
-	if (!strncmp(q, path, length) && isspace(*(q + length)))
-		return 1;
-	return 0;
+	n = split(p, 4, &ptable);
+	if (gtop->format == GTAGS_STANDARD || gtop->format == GTAGS_PATHINDEX) {
+		if (n < 4)
+			die("too small number of parts.");
+		p = ptable.part[2].start;
+	} else if (gtop->format & GTAGS_COMPACT) {
+		if (n != 3)
+			die("illegal compact format.\n");
+		p = ptable.part[1].start;
+	}
+	status = !strcmp(p, path) ? 1 : 0;
+	recover(&ptable);
+	return status;
 }
 /*
  * gtags_delete: delete records belong to path.
@@ -737,97 +747,78 @@ static char *
 unpack_pathindex(line)
 char *line;
 {
-	char *p, *q, *path;
+	SPLIT ptable;
+	int n, i;
+	char *path, *fid;
 
+	n = split(line, 4, &ptable);
+	if (n < 4) {
+		recover(&ptable);
+		die("illegal tag format.'%s'\n", line);
+	}
+	/*
+	 * extract path and convert into file number.
+	 */
+	path = gpath_fid2path(ptable.part[2].start);
+	if (path == NULL)
+		die("GPATH is corrupted.(fid '%s' not found)", fid);
+	recover(&ptable);
+	/*
+	 * copy line with converting.
+	 */
 	if (output == NULL)
 		output = strbuf_open(MAXBUFLEN);
 	else
 		strbuf_reset(output);
-	p = line;
-	while (*p && !isspace(*p))	/* tag name */
-		strbuf_putc(output, *p++);
-	if (*p == 0)
-		die("invalid tag format. '%s'", line);
-	while (*p && isspace(*p))
-		strbuf_putc(output, *p++);
-	if (*p == 0)
-		die("invalid tag format. '%s'", line);
-	while (*p && isdigit(*p))	/* line number */
-		strbuf_putc(output, *p++);
-	if (*p == 0)
-		die("invalid tag format. '%s'", line);
-	while (*p && isspace(*p))
-		strbuf_putc(output, *p++);
-	if (*p == 0)
-		die("invalid tag format. '%s'", line);
-	/*
-	 * read path and convert.
-	 */
-	path = p;
-	while (*p && !isspace(*p))
-		p++;
-	if (*p == 0)
-		die("invalid tag format. '%s'", line);
-	{
-		int savechar = *p;
-		char *result;
+	strbuf_nputs(output, line, ptable.part[2].start - line);
+	strbuf_puts(output, path);
+	strbuf_puts(output, ptable.part[2].end);
 
-		/*
-		 * Convert fid into path.
-		 */
-		*p = '\0';
-		result = gpath_fid2path(path);
-		if (result == NULL)
-			die("GPATH is corrupted.('%s' not found)", path);
-		while (*result)
-			strbuf_putc(output, *result++);
-		*p = savechar;
-	}
-	while (*p)		/* copy until end of line */
-		strbuf_putc(output, *p++);;
 	return strbuf_value(output);
 }
 static char *
 genrecord(gtop)
 GTOP	*gtop;
 {
+	SPLIT ptable;
 	static char	output[MAXBUFLEN+1];
-	char	path[MAXPATHLEN+1];
+	char    path[MAXPATHLEN+1];
 	static char	buf[1];
 	char	*buffer = buf;
 	char	*lnop;
 	int	tagline;
 
 	if (!gtop->opened) {
-		char	*p, *q;
+		int n;
+		char *p;
 
 		gtop->opened = 1;
-		p = gtop->line;
-		q = gtop->tag;				/* gtop->tag = $1 */
-		while (!isspace(*p))
-			*q++ = *p++;
-		*q = 0;
-		for (; isspace(*p) ; p++)
-			;
-		if (gtop->format & GTAGS_PATHINDEX) {	/* gtop->path = $2 */
-			char	*name;
-
-			q = path;
-			while (!isspace(*p))
-				*q++ = *p++;
-			*q = 0;
-			if ((name = gpath_fid2path(path)) == NULL)
-				die("GPATH is corrupted.('%s' not found)", path);
-			strlimcpy(gtop->path, name, sizeof(gtop->path));
-		} else {
-			q = gtop->path;
-			while (!isspace(*p))
-				*q++ = *p++;
-			*q = 0;
+		n = split(gtop->line, 3, &ptable);
+		if (n != 3) {
+			recover(&ptable);
+			die("illegal compact format. '%s'\n", gtop->line);
 		}
-		for (; isspace(*p) ; p++)
-			;
-		gtop->lnop = p;			/* gtop->lnop = $3 */
+		/*
+		 * gtop->tag = part[0]
+		 */
+		strlimcpy(gtop->tag, ptable.part[0].start, sizeof(gtop->tag));
+
+		/*
+		 * gtop->path = part[1]
+		 */
+		p = ptable.part[1].start;
+		if (gtop->format & GTAGS_PATHINDEX) {
+			char *q;
+			if ((q = gpath_fid2path(p)) == NULL)
+				die("GPATH is corrupted.('%s' not found)", p);
+			p = q;
+		}
+		strlimcpy(gtop->path, p, sizeof(gtop->path));
+
+		/*
+		 * gtop->lnop = part[2]
+		 */
+		gtop->lnop = ptable.part[2].start;
 
 		if (gtop->root)
 			snprintf(path, sizeof(path),
@@ -838,6 +829,7 @@ GTOP	*gtop;
 			if ((gtop->fp = fopen(path, "r")) != NULL)
 				gtop->lno = 0;
 		}
+		recover(&ptable);
 	}
 
 	lnop = gtop->lnop;
@@ -853,7 +845,7 @@ GTOP	*gtop;
 				return output;
 			while (gtop->lno < tagline) {
 				if (!(buffer = strbuf_fgets(gtop->ib, gtop->fp, STRBUF_NOCRLF)))
-					die("unexpected end of file. '%s'", path);
+					die("unexpected end of file. '%s'", gtop->path);
 				strbuf_trim(gtop->ib);
 				gtop->lno++;
 			}

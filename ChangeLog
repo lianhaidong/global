@@ -22,6 +22,7 @@ ChangeLog about GNU GLOBAL
 
 	* gtags.c: --convert/--createdb/--readdb/--scandb option added.
 	* btreeop: replaced with gtags and removed.
+	* split.c: use SPLIT structure which manage substring.
 
 July 4 2002, Shigio Yamaguchi  <shigio@gnu.org>
 

@@ -22,47 +22,103 @@
 #include <config.h>
 #endif
 
+#include "split.h"
+/*
+ * Substring manager like perl's split.
+ *
+ * Initial status.
+ *              +------------------------------------------------------
+ *         line |main         100    ./main.c        main(argc, argv)\n
+ *
+ * The result of split().
+ *
+ *              +------------------------------------------------------
+ * list    line |main\0       100\0  ./main.c\0      main(argc, argv)\n
+ * +---------+   ^   ^        ^  ^   ^       ^       ^
+ * |npart=4  |   |   |        |  |   |       |       |
+ * +---------+   |   |        |  |   |       |       |
+ * | start  *----+   |        |  |   |       |       |
+ * | end    *--------+        |  |   |       |       |
+ * | save ' '|                |  |   |       |       |
+ * +---------+                |  |   |       |       |
+ * | start  *-----------------+  |   |       |       |
+ * | end    *--------------------+   |       |       |
+ * | save ' '|                       |       |       |
+ * +---------+                       |       |       |
+ * | start  *------------------------+       |       |
+ * | end    *--------------------------------+       |
+ * | save ' '|                                       |
+ * +---------+                                       |
+ * | start  *----------------------------------------+
+ * | end    *--+
+ * | save    | |
+ * +---------+ =
+ *
+ * The result of recover().
+ *              +------------------------------------------------------
+ *         line |main         100    ./main.c        main(argc, argv)\n
+ *
+ * Recover() recover initial status of line with saved char in savec.
+ */
+
 /*
  * split: split a string into pieces
  *
- *	i)	s	string
- *	i)	sep	separator
- *	i)	max	max parts
- *	o)	parts	parts pointer table
- *	r)		number of parts
+ *	i)	line	string
+ *	i)	npart	parts number
+ *	io)	list	split table
+ *	r)		part count
  */
 int
-split(s, sep, max, parts)
-char *s;
-int sep;
-int max;
-char *parts[];
+split(line, npart, list)
+char *line;
+int npart;
+SPLIT *list;
 {
-	char *p;
-	int count = 0;
+	char *s = line;
+	struct part *part;
+	int count;
 
-	if (sep == ' ' || sep == '\t') {
-		while (1) {
-			while (*s && isspace(*s))
-				s++;
-			if (*s == '\0')
-				break;
-			parts[count++] = s;
-			while (*s && !isspace(*s))
-				s++;
-			if (*s == '\0' || count >= max)
-				break;
-			*s++ = '\0';
-		}
-	} else {
-		while (1) {
-			parts[count++] = s;
-			while (*s && *s != sep)
-				s++;
-			if (*s == '\0' || count >= max)
-				break;
-			*s++ = '\0';
-		}
+	if (npart > NPART)
+		npart = NPART;
+	npart--;
+	for (count = 0; count < npart; count++) {
+		while (*s && isspace(*s))
+			s++;
+		if (*s == '\0')
+			break;
+		part = &list->part[count];
+		part->start = s;
+		while (*s && !isspace(*s))
+			s++;
+		part->end = s;
+		part->savec = *s;
+		if (*s == '\0')
+			break;
+		*s++ = '\0';
 	}
-	return count;
+	if (*s) {
+		while (*s && isspace(*s))
+			s++;
+		part = &list->part[count];
+		part->start = s;
+		part->end = (char *)0;
+		part->savec = 0;
+	}
+	return list->npart = count + 1;
+}
+/*
+ * recover: recover initial status of line.
+ *
+ *	io)	list	split table
+ */
+void
+recover(list)
+SPLIT *list;
+{
+	int i, c;
+	for (i = 0; i < list->npart; i++) {
+		if (c = list->part[i].savec)
+			*(list->part[i].end) = c;
+	}
 }

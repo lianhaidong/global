@@ -267,7 +267,7 @@ STRBUF *URL;
 	char	htmldir[MAXPATHLEN+1];
 	char	*path, *p;
 	DBOP	*dbop = NULL;
-	char	*args[2];
+	SPLIT	ptable;
 	int	status = -1;
 
 	/*
@@ -292,7 +292,7 @@ STRBUF *URL;
 	}
 	if (dbop) {
 		if ((p = dbop_get(dbop, arg)) != NULL) {
-			if (split(p, '\t', 2, args) != 2)
+			if (split(p, 2, &ptable) != 2)
 				die("illegal format.");
 			status = 0;
 		}
@@ -304,9 +304,9 @@ STRBUF *URL;
 		fp = fopen(path, "r");
 		if (fp) {
 			while ((p = strbuf_fgets(sb, fp, STRBUF_NOCRLF)) != NULL) {
-				if (split(p, '\t', 2, args) != 2)
+				if (split(p, 2, &ptable) != 2)
 					die("illegal format.");
-				if (!strcmp(arg, args[0])) {
+				if (!strcmp(arg, ptable.part[0].start)) {
 					status = 0;
 					break;
 				}
@@ -321,7 +321,8 @@ STRBUF *URL;
 	strbuf_puts(URL, "file:");
 	strbuf_puts(URL, htmldir);
 	strbuf_putc(URL, '/');
-	strbuf_puts(URL, args[1]);
+	strbuf_puts(URL, ptable.part[1].start);
+	recover(&ptable);
 }
 /*
  * getURL: get specified URL.
