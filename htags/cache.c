@@ -30,6 +30,7 @@
 #include "global.h"
 #include "assoc.h"
 #include "htags.h"
+#include "cache.h"
 
 static ASSOC *assoc[GTAGLIM];
 
