@@ -4,7 +4,7 @@
  */
 diff -c -r -N ../nvi-1.79.org/common/main.c ./common/main.c
 *** ../nvi-1.79.org/common/main.c	Sat Oct 12 07:28:28 1996
---- ./common/main.c	Mon Apr  2 11:01:18 2001
+--- ./common/main.c	Fri Jul 13 13:38:45 2001
 ***************
 *** 64,69 ****
 --- 64,72 ----
@@ -73,7 +73,7 @@ diff -c -r -N ../nvi-1.79.org/common/main.c ./common/main.c
   	*oargp = -1;			/* Options initialization. */
 diff -c -r -N ../nvi-1.79.org/common/options.c ./common/options.c
 *** ../nvi-1.79.org/common/options.c	Tue Oct 15 03:56:29 1996
---- ./common/options.c	Mon Apr  2 11:01:18 2001
+--- ./common/options.c	Fri Jul 13 13:38:45 2001
 ***************
 *** 80,85 ****
 --- 80,89 ----
@@ -101,7 +101,7 @@ diff -c -r -N ../nvi-1.79.org/common/options.c ./common/options.c
   	{"li",		O_LINES},		/*   4.4BSD */
 diff -c -r -N ../nvi-1.79.org/docs/USD.doc/vi.man/vi.1 ./docs/USD.doc/vi.man/vi.1
 *** ../nvi-1.79.org/docs/USD.doc/vi.man/vi.1	Fri Oct 11 10:34:05 1996
---- ./docs/USD.doc/vi.man/vi.1	Mon Apr  2 11:01:18 2001
+--- ./docs/USD.doc/vi.man/vi.1	Fri Jul 13 13:38:45 2001
 ***************
 *** 17,23 ****
   .SH SYNOPSIS
@@ -190,7 +190,7 @@ diff -c -r -N ../nvi-1.79.org/docs/USD.doc/vi.man/vi.1 ./docs/USD.doc/vi.man/vi.
   Set the spacing between hardware tab settings.
 diff -c -r -N ../nvi-1.79.org/ex/ex.c ./ex/ex.c
 *** ../nvi-1.79.org/ex/ex.c	Fri Oct 11 07:49:46 1996
---- ./ex/ex.c	Mon Apr  2 11:01:18 2001
+--- ./ex/ex.c	Fri Jul 13 13:38:45 2001
 ***************
 *** 935,941 ****
   	}
@@ -215,7 +215,7 @@ diff -c -r -N ../nvi-1.79.org/ex/ex.c ./ex/ex.c
   		 * "next !" is different from "next!".  Handle it before
 diff -c -r -N ../nvi-1.79.org/ex/ex_argv.c ./ex/ex_argv.c
 *** ../nvi-1.79.org/ex/ex_argv.c	Sat Sep 21 09:33:02 1996
---- ./ex/ex_argv.c	Mon Apr  2 11:01:18 2001
+--- ./ex/ex_argv.c	Fri Jul 13 13:38:45 2001
 ***************
 *** 326,331 ****
 --- 326,334 ----
@@ -256,7 +256,7 @@ diff -c -r -N ../nvi-1.79.org/ex/ex_argv.c ./ex/ex_argv.c
   			 * QUOTING NOTE:
 diff -c -r -N ../nvi-1.79.org/ex/ex_tag.c ./ex/ex_tag.c
 *** ../nvi-1.79.org/ex/ex_tag.c	Mon Sep 16 05:02:43 1996
---- ./ex/ex_tag.c	Mon Apr  2 11:01:18 2001
+--- ./ex/ex_tag.c	Fri Jul 13 13:39:47 2001
 ***************
 *** 18,23 ****
 --- 18,26 ----
@@ -284,7 +284,7 @@ diff -c -r -N ../nvi-1.79.org/ex/ex_tag.c ./ex/ex_tag.c
   static char	*linear_search __P((char *, char *, char *));
 ***************
 *** 110,117 ****
---- 117,207 ----
+--- 117,208 ----
   	size_t cno;
   	long tl;
   	int force, istmp;
@@ -317,9 +317,10 @@ diff -c -r -N ../nvi-1.79.org/ex/ex_tag.c ./ex/ex_tag.c
 + 				if (	index(p, 'c')
 + 					|| index(p, 'n')
 + 					|| index(p, 'p')
++ 					|| index(p, 'u')
 + 					|| index(p, 'v')
 + 				) {
-+ 					msgq(sp, M_ERR, "-c, -n, -p and -v option not available.");
++ 					msgq(sp, M_ERR, "-c, -n, -p, -u and -v option not available.");
 + 					return (1);
 + 				}
 + 				if (index(p, 'P'))
@@ -386,7 +387,7 @@ diff -c -r -N ../nvi-1.79.org/ex/ex_tag.c ./ex/ex_tag.c
   
   	/*
   	 * Allocate all necessary memory before swapping screens.  Initialize
---- 228,242 ----
+--- 229,243 ----
   	}
   
   	/* Get the tag information. */
@@ -404,7 +405,7 @@ diff -c -r -N ../nvi-1.79.org/ex/ex_tag.c ./ex/ex_tag.c
   	 * Allocate all necessary memory before swapping screens.  Initialize
 ***************
 *** 969,974 ****
---- 1066,1254 ----
+--- 1067,1255 ----
   	return (0);
   }
   
@@ -596,7 +597,7 @@ diff -c -r -N ../nvi-1.79.org/ex/ex_tag.c ./ex/ex_tag.c
    *	Search the list of tags files for a tag, and return tag queue.
 diff -c -r -N ../nvi-1.79.org/include/options_def.h ./include/options_def.h
 *** ../nvi-1.79.org/include/options_def.h	Wed Oct 23 22:53:10 1996
---- ./include/options_def.h	Mon Apr  2 11:01:18 2001
+--- ./include/options_def.h	Fri Jul 13 13:38:45 2001
 ***************
 *** 16,79 ****
   #define O_EXTENDED 15
@@ -731,7 +732,7 @@ diff -c -r -N ../nvi-1.79.org/include/options_def.h ./include/options_def.h
 ! #define O_OPTIONCOUNT 79
 diff -c -r -N ../nvi-1.79.org/vi/v_ex.c ./vi/v_ex.c
 *** ../nvi-1.79.org/vi/v_ex.c	Mon Sep 16 05:03:02 1996
---- ./vi/v_ex.c	Mon Apr  2 11:01:18 2001
+--- ./vi/v_ex.c	Fri Jul 13 13:38:45 2001
 ***************
 *** 223,233 ****
   	SCR *sp;
