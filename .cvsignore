@@ -10,3 +10,4 @@ configure
 gtags.conf
 stamp-h1
 global-*.tar.gz
+elc-stamp
