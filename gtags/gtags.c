@@ -769,7 +769,7 @@ int	db;
 			break;
 		if (locatestring(path, " ", MATCH_FIRST)) {
 			if (!qflag)
-				fprintf(stderr, "Warning: '%s' ignored, because it includes blank in the path.\n", path);
+				fprintf(stderr, "Warning: '%s' ignored, because it includes blank in the path.\n", path + 2);
 			continue;
 		}
 		count++;
@@ -786,7 +786,7 @@ int	db;
 				fprintf(stderr, " [%d/%d]", count, total);
 			else
 				fprintf(stderr, " [%d]", count);
-			fprintf(stderr, " extracting tags of %s", path);
+			fprintf(stderr, " extracting tags of %s", path + 2);
 			if (skip)
 				fprintf(stderr, " (skipped)");
 			fputc('\n', stderr);

@@ -1864,7 +1864,7 @@ sub makehtml {
 		$count++;
 		local($path) = $_;
 		$path =~ s/^\.\///;
-		print STDERR " [$count/$total] converting $_\n" if ($'vflag);
+		print STDERR " [$count/$total] converting $path\n" if ($'vflag);
 		$path = &'path2url($path);
 		&convert'src2html($_, "$dist/$'SRCS/$path", $notsource);
 	}

@@ -26,6 +26,7 @@ ChangeLog about GNU GLOBAL
 	* strlimcpy.c: replaced strcpy() and strncpy() with strlimcpy().
 	* strbuf.c: strbuf_putn() added.
 	* conf.c find.c: shut buffer overflow.
+	* gtags, htags: './' removed from path name in verbose message.
 
 March 30 2002, Shigio Yamaguchi  <shigio@gnu.org>
 
