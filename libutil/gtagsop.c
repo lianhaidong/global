@@ -574,6 +574,7 @@ char	*path;
  *			GTOP_KEY	read key only
  *			GTOP_NOSOURCE	don't read source file(compact format)
  *			GTOP_NOREGEX	don't use regular expression.
+ *			GTOP_IGNORECASE	ignore case distinction.
  *	r)		record
  */
 char *
@@ -587,12 +588,15 @@ int	flags;
 	char    buf[IDENTLEN+1], *p;
 	regex_t *preg = &reg;
 	char	*key;
+	int	regflags = REG_EXTENDED;
 
 	gtop->flags = flags;
 	if (flags & GTOP_PREFIX && pattern != NULL)
 		dbflags |= DBOP_PREFIX;
 	if (flags & GTOP_KEY)
 		dbflags |= DBOP_KEY;
+	if (flags & GTOP_IGNORECASE)
+		regflags |= REG_ICASE;
 
 	if (flags & GTOP_NOREGEX) {
 		key = pattern;
@@ -600,8 +604,8 @@ int	flags;
 	} else if (pattern == NULL || !strcmp(pattern, ".*")) {
 		key = NULL;
 		preg = NULL;
-	} else if (isregex(pattern) && regcomp(preg, pattern, REG_EXTENDED) == 0) {
-		if (*pattern == '^' && *(p = pattern + 1) && !isregexchar(*p)) {
+	} else if (isregex(pattern) && regcomp(preg, pattern, regflags) == 0) {
+		if (!(flags & GTOP_IGNORECASE) && *pattern == '^' && *(p = pattern + 1) && !isregexchar(*p)) {
 			char    *prefix = buf;
 
 			*prefix++ = *p++;

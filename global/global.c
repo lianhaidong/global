@@ -71,6 +71,7 @@ STRBUF	*pathfilter;			/* path convert filter	*/
 char	*localprefix;			/* local prefix		*/
 int	aflag;				/* [option]		*/
 int	cflag;				/* command		*/
+int	Cflag;				/* [option]		*/
 int	fflag;				/* command		*/
 int	gflag;				/* command		*/
 int	iflag;				/* command		*/
@@ -92,14 +93,14 @@ int	use_tagfiles;
 int	debug;
 char	*extra_options;
 const char *usage_const = "\
-Usage: global [-alnrstTvx] pattern\n\
+Usage: global [-aClnrstTvx] pattern\n\
        global -c[sv] [prefix]\n\
        global -f[anrstvx] files\n\
-       global -g[alntvx] pattern\n\
+       global -g[aClntvx] pattern\n\
        global -i[v]\n\
-       global -I[alntvx] pattern\n\
+       global -I[aClntvx] pattern\n\
        global -p[rv]\n\
-       global -P[alntvx] [pattern]\n";
+       global -P[aClntvx] [pattern]\n";
 const char *help_const = "\
 Pattern accept POSIX 1003.2 regular expression.\n\
 Commands:\n\
@@ -127,6 +128,8 @@ Commands:\n\
 Options:\n\
      -a, --absolute\n\
              print absolute path name.\n\
+     -C, --ignore-case\n\
+             ignore case distinctions in pattern.\n\
      -l, --local\n\
              print just objects which exist under the current directory.\n\
      -n, --nofilter\n\
@@ -160,6 +163,7 @@ help()
 
 static struct option const long_options[] = {
 	{"absolute", no_argument, NULL, 'a'},
+	{"ignore-case", no_argument, NULL, 'C'},
 	{"completion", no_argument, NULL, 'c'},
 	{"file", no_argument, NULL, 'f'},
 	{"local", no_argument, NULL, 'l'},
@@ -209,7 +213,7 @@ char	*argv[];
 	char	root[MAXPATHLEN+1];		/* root of source tree	*/
 	char	dbpath[MAXPATHLEN+1];		/* dbpath directory	*/
 
-	while ((optchar = getopt_long(argc, argv, "acfgGiIlnpPrstTvx", long_options, &option_index)) != EOF) {
+	while ((optchar = getopt_long(argc, argv, "acCfgGiIlnpPrstTvx", long_options, &option_index)) != EOF) {
 		switch (optchar) {
 		case 0:
 			if (!strcmp("idutils", long_options[option_index].name))
@@ -221,6 +225,9 @@ char	*argv[];
 		case 'c':
 			cflag++;
 			setcom(optchar);
+			break;
+		case 'C':
+			Cflag++;
 			break;
 		case 'f':
 			fflag++;
@@ -763,6 +770,8 @@ char	*dbpath;
 		strbuf_puts(ib, "--result=filenames --key=none ");
 	else
 		strbuf_puts(ib, "--result=grep ");
+	if (Cflag)
+		strbuf_puts(ib, "--ignore-case ");
 	if (extra_options) {
 		strbuf_puts(ib, extra_options);
 		strbuf_putc(ib, ' ');
@@ -872,6 +881,8 @@ char	*dbpath;
 		strbuf_puts(ib, "-l ");
 	else
 		strbuf_puts(ib, "-n ");
+	if (Cflag)
+		strbuf_puts(ib, "-i ");
 	strbuf_putc(ib, '\'');
 	strbuf_puts(ib, pattern);
 	strbuf_putc(ib, '\'');
@@ -1014,7 +1025,7 @@ char	*av;
 	if (av) {
 		int	flags = REG_EXTENDED;
 
-		if (getconfb("icase_path"))
+		if (Cflag || getconfb("icase_path"))
 			flags |= REG_ICASE;
 #ifdef _WIN32
 		flags |= REG_ICASE;
@@ -1193,6 +1204,7 @@ int	db;
 	FILE	*op;
 	GTOP	*gtop;
 	int	flags = 0;
+	STRBUF	*sb = NULL;
 
 	/*
 	 * open tag file.
@@ -1205,6 +1217,14 @@ int	db;
 	 */
 	if (nflag > 1)
 		flags |= GTOP_NOSOURCE;
+	if (Cflag) {
+		sb = strbuf_open(0);
+		strbuf_putc(sb, '^');
+		strbuf_puts(sb, pattern);
+		strbuf_putc(sb, '$');
+		pattern = strbuf_value(sb);
+		flags |= GTOP_IGNORECASE;
+	}
 	for (p = gtagsfirst(gtop, pattern, flags); p; p = gtagsnext(gtop)) {
 		if (lflag) {
 			char	*q;

@@ -30,6 +30,8 @@ Version 4.1.0a
 * gtags: the -i option also locate tag files among cadedite directories.
 * global, gtags: make icase_path allways enable in Windows32 environment.
 * global: the -T(--through) option added.
+* global: the -C(--ignore-case) option added. '-i' would be better but the
+  option is already used for other purpose.
 
 Version 4.0.1 - September 26, 2000, by Shigio Yamaguchi
 
