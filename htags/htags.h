@@ -22,7 +22,6 @@
 #define _HTAGS_H_
 
 #include "gparam.h"
-#include "strbuf.h"
 
 #if defined(_WIN32) || defined(__DJGPP__)
 #define W32	1
@@ -71,9 +70,6 @@ extern char global_path[MAXFILLEN];
 extern char findcom[MAXFILLEN];
 extern char *null_device;
 extern char *tmpdir;
-
-extern STRBUF *defines;
-extern STRBUF *files;
 
 extern int aflag;
 extern int cflag;
