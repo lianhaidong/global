@@ -304,6 +304,7 @@ sub set_header {
 	$head .= "self.defaultStatus = '$title'\n";
 	$head .= $'status_line;
 	$head .= $'end_script;	
+	$head .= $'style_sheet if ($'style_sheet);
 	$head .= "</HEAD>\n";
 	$head;
 }
@@ -469,6 +470,7 @@ $action_value = '';
 $id_value = '';
 $cgidir = '';
 $main_func = 'main';
+$style_sheet = '';
 while ($ARGV[0] =~ /^-/) {
 	$opt = shift;
 	if ($opt =~ /^--action=(.*)$/) {
@@ -499,6 +501,10 @@ while ($ARGV[0] =~ /^-/) {
 		$'nflag = 'n';
 	} elsif ($opt =~ /^--other$/) {
 		$'oflag = 'o';
+	} elsif ($opt =~ /^--style-sheet=(.*)$/) {
+		$'style_sheet = $1;
+	} elsif ($opt =~ /^--style-sheet$/) {
+		$'style_sheet = shift;
 	} elsif ($opt =~ /^--verbose$/) {
 		$'vflag = 'v';
 	} elsif ($opt =~ /^--warning$/) {
@@ -578,6 +584,19 @@ if ($'oflag) {
 if (!$title) {
 	@cwd = split('/', &'getcwd);
 	$title = $cwd[$#cwd];
+}
+#
+# load style sheet.
+#
+if ($style_sheet) {
+	my $style_path = $style_sheet;
+	$style_sheet = '';
+	if (open(SHEET, $style_path)) {
+		while (<SHEET>) {
+			$style_sheet .= $_;
+		}
+		close(SHEET);
+	}
 }
 #
 # decide directory in which we make hypertext.
@@ -1622,7 +1641,10 @@ sub makeindex {
 	if ($'Fflag) {
 		open(FRAME, ">$file") || &'error("cannot open file '$file'.");
 		print FRAME $'html_begin, "\n";
-		print FRAME "<HEAD>\n<TITLE>$title</TITLE>\n$'meta_robots\n$'meta_generator\n</HEAD>\n";
+		print FRAME "<HEAD>\n<TITLE>$title</TITLE>\n";
+		print FRAME "$'meta_robots\n$'meta_generator\n";
+		print FRAME $'style_sheet if ($'style_sheet);
+		print FRAME "</HEAD>\n";
 		print FRAME "<FRAMESET COLS='200,*'>\n";
 		if ($'fflag) {
 			print FRAME "<FRAMESET ROWS='33%,33%,*'>\n";
