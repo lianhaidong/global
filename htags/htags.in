@@ -1455,11 +1455,13 @@ sub makedupindex {
 			if ($prev ne $tag) {
 				$count++;
 				print STDERR " [$count] adding $kind $tag\n" if ($'vflag);
-				if ($writing && !$'dynamic) {
-					print FILE &'list_end;
-					print FILE $'body_end, "\n";
-					print FILE $'html_end, "\n";
-					$'file_count++;
+				if ($writing) {
+					if (!$'dynamic) {
+						print FILE &'list_end;
+						print FILE $'body_end, "\n";
+						print FILE $'html_end, "\n";
+						$'file_count++;
+					}
 					$writing = 0;
 					#
 					# cache record: " <file id> <entry number>"
@@ -1478,21 +1480,21 @@ sub makedupindex {
 			} else {
 				# duplicate entry
 				if ($first_line) {
-					local($dir) = $dir{$db};
 					#
 					# Protocol:
 					# N<file>	create normal file.
 					# C<file>	create gzipped file.
 					#
 					if (!$'dynamic) {
+						local($dir) = $dir{$db};
 						print FILE "$flag$dist/$dir/$count.$'HTML\n";
-						$writing = 1;
 						print FILE $'html_begin, "\n";
 						print FILE &'set_header($tag);
 						print FILE $'body_begin, "\n";
 						print FILE &'list_begin;
 						print FILE &'list_body($srcdir, $first_line);
 					}
+					$writing = 1;
 					$entry_count++;
 					$first_line = '';
 				}
@@ -1504,13 +1506,14 @@ sub makedupindex {
 		}
 		$definition_count = $count if ($db eq 'GTAGS');
 		close(LIST);
-		$'file_count++;
 		if ($?) { &'error("'$command' failed."); }
-		if (!$'dynamic && $writing) {
-			print FILE &'list_end;
-			print FILE $'body_end, "\n";
-			print FILE $'html_end, "\n";
-			$'file_count++;
+		if ($writing) {
+			if (!$'dynamic) {
+				print FILE &'list_end;
+				print FILE $'body_end, "\n";
+				print FILE $'html_end, "\n";
+				$'file_count++;
+			}
 			#
 			# cache record: " <file id> <entry number>"
 			#
