@@ -4,7 +4,7 @@ ___________________________________
 |  |   |  |  |  |  |     |     |  |
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Copyright (c) 2000, 2001, 2002, 2003 Tama Communications Corporation
+ Copyright (c) 2000, 2001, 2002, 2003, 2004 Tama Communications Corporation
 
  This file is free software; as a special exception the author gives
  unlimited permission to copy and/or distribute it, with or without
@@ -17,6 +17,14 @@ ___________________________________
 		----------------------------------
 
 ChangeLog about GNU GLOBAL
+
+Feb 1 2004, Shigio Yamaguchi  <shigio@gnu.org>
+
+	* Rewrite strbuf_putn() without snprintf().
+	* Created datadir, the default is '/usr/local/share/gtags'.
+	  The following files are installed into the directory:
+	  AUTHORS COPYING ChangeLog FAQ INSTALL LICENSE NEWS README THANKS
+	  globash.rc gtags.conf gtags.el gtags.pl gtags.vim nvi-1.79-gtags.diff
 
 Oct 3 2003, Shigio Yamaguchi  <shigio@gnu.org>
 
