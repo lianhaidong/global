@@ -1155,7 +1155,7 @@ if ($flag eq 'g' || $flag eq 'I') {
 	}
 } else {
 	if (-f "../../GTAGS" &&
-	(($flag eq 'r' && -f "../../GRTAGS") || $flag eq 's' && -f "../../GSYMS")) {
+	(($flag eq '') || ($flag eq 'r' && -f "../../GRTAGS") || $flag eq 's' && -f "../../GSYMS")) {
 		chdir("../..");
 	}
 }
