@@ -324,9 +324,9 @@ STRBUF *URL;
 		}
 		dbop_close(dbop);
 	} else {
-		sb = strbuf_open(0);
 		FILE *fp;
 
+		sb = strbuf_open(0);
 		fp = fopen(path, "r");
 		if (fp) {
 			while ((p = strbuf_fgets(sb, fp, STRBUF_NOCRLF)) != NULL) {
