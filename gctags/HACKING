@@ -4,7 +4,7 @@ ___________________________________
 |  |   |  |  |  |  |     |     |  |
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Copyright (c) 2003 Tama Communications Corporation
+ Copyright (c) 2003, 2004 Tama Communications Corporation
 
  This file is free software; as a special exception the author gives
  unlimited permission to copy and/or distribute it, with or without
@@ -16,13 +16,19 @@ ___________________________________
 
                 ----------------------------------
 
-1. Outline of generating parsers.
+1. Required programs.
 
-You need to have the following package installed:
+To build the parser, you need to have the following package installed:
 
-	- flex 2.5.4a
-	- GNU gperf 3.0.1
-	- GNU bison 1.875
+	- GNU gperf 3.0.1	to lookup reserved words.
+	- flex 2.5.4a		to generate php and assembly parser.
+	- GNU bison 1.875	to generate assembly parser.
+
+2. Reserved word processing using GNU gperf.
+
+This mechanism is independent of lex and bison.
+
+2.1 Outline
 
 (1) Generate gperf(1) source from each reserved word file.
 
@@ -56,7 +62,7 @@ You need to have the following package installed:
 	+-------------------------------------
 
 
-2. The format of reserved word file.
+2.2 Reserved word file format.
 
 	o One word and 'word' which means 'reserved word' a line.
 	o Null line and the line start with ';' is skipped.
