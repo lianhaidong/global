@@ -197,6 +197,7 @@ if ($var1 = &'getconf('show_position')) {
 }
 if ($var1 = &'getconf('script_alias')) {
 	$'script_alias = $var1;
+	$'script_alias =~ s!/$!!;
 }
 if (($var1 = &'getconf('body_begin')) && ($var2 = &'getconf('body_end'))) {
 	$'body_begin  = $var1;
@@ -556,8 +557,7 @@ if ($ARGV[0]) {
 	chdir($cwd) || &'error("cannot return to original directory.");
 }
 if ($'Sflag) {
-	$script_alias =~ s!/$!!;
-	$'action = "$script_alias/global.cgi";
+	$'action = "$'script_alias/global.cgi";
 	$'id = $dist;
 }
 # --action, --id overwrite Sflag's value.
@@ -930,6 +930,7 @@ END_OF_SCRIPT
 #
 sub makebless {
 	local($file) = @_;
+	local($action) = "$'script_alias/global.cgi";
 
 	open(SCRIPT, ">$file") || &'error("cannot make bless script.");
 	$script = <<'END_OF_SCRIPT';
@@ -943,26 +944,27 @@ sub makebless {
 #	% cd /var/obj/HTML
 #	% sh bless.sh		<- OK. It will work well!
 #
-pattern1='INPUT TYPE=hidden NAME=id VALUE='
-pattern2='FORM METHOD=GET ACTION='
-action=`gtags --config script_alias | sed 's!/$!!'`/global.cgi
+pattern1='INPUT TYPE=hidden NAME=id VALUE'
+pattern2='FORM METHOD=GET ACTION'
+action=@action@
 case $1 in
 -v)	verbose=1;;
 esac
 id=`pwd`
 for f in mains.html index.html search.html; do
 	if [ -f $f ]; then
-		sed -e "s!<$pattern1.*>!<$pattern1$id>!" -e "s!<$pattern2.*>!<$pattern2$action>!" $f > $f.new;
-		if ! cmp $f $f.new >@null_device@; then
+		sed -e "s!<$pattern1=.*>!<$pattern1=$id>!" -e "s!<$pattern2=[^ >]*!<$pattern2=$action!" $f > $f.new;
+		if cmp $f $f.new >@null_device@; then
+			rm -f $f.new
+		else
 			mv $f.new $f
 			[ $verbose ] && echo "$f was blessed."
-		else
-			rm -f $f.new
 		fi
 	fi
 done
 END_OF_SCRIPT
 	$script =~ s/\@null_device\@/$'null_device/g;
+	$script =~ s/\@action\@/$action/g;
 	print SCRIPT $script;
 	close(SCRIPT);
 }
