@@ -120,6 +120,7 @@ static struct option const long_options[] = {
 	{"grep", no_argument, NULL, 'g'},
 	{"basic-regexp", no_argument, NULL, 'G'},
 	{"ignore-case", no_argument, NULL, 'i'},
+	{"idutils", optional_argument, NULL, 'I'},
 	{"other", no_argument, NULL, 'o'},
 	{"print-dbpath", no_argument, NULL, 'p'},
 	{"path", no_argument, NULL, 'P'},
@@ -135,7 +136,6 @@ static struct option const long_options[] = {
 
 	/* long name only */
 	{"debug", no_argument, &debug, 1},
-	{"idutils", optional_argument, &Iflag, 1},
 	{"version", no_argument, &show_version, 1},
 	{"help", no_argument, &show_help, 1},
 	{"filter", no_argument, &show_filter, 1},
