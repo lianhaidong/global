@@ -171,15 +171,15 @@ int	level;
 	if (!(savep = p = readrecord(label)))
 		die("label '%s' not found.", label);
 	while ((q = locatestring(p, ":include=", MATCH_FIRST)) || (q = locatestring(p, ":tc=", MATCH_FIRST))) {
-		char	inclabel[MAXPROPLEN+1], *c = inclabel;
+		STRBUF *inc = strbuf_open(0);
 
 		strbuf_nputs(sb, p, q - p);
 		q = locatestring(q, "=", MATCH_FIRST) + 1;
-		while (*q && *q != ':')
-			*c++ = *q++;
-		*c = 0;
-		includelabel(sb, inclabel, level);
+		for (; *q && *q != ':'; q++)
+			strbuf_putc(inc, *q);
+		includelabel(sb, strbuf_value(inc), level);
 		p = q;
+		strbuf_close(inc);
 	}
 	strbuf_puts(sb, p);
 	free(savep);

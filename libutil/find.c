@@ -445,12 +445,13 @@ find_read(void)
 					continue;
 				if (regexec(suff, path, 0, 0, 0) == 0) {
 					/* source file */
-					strcpy(val, path);
+					strncpy(val, path, sizeof(val));
 				} else {
 					/* other file like 'Makefile' */
 					val[0] = ' ';
-					strcpy(&val[1], path);
+					strncpy(&val[1], path, sizeof(val) - 1);
 				}
+				val[sizeof(val) - 1] = '\0';
 				return val;
 			}
 			if (type == 'd') {

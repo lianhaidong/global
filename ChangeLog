@@ -24,6 +24,7 @@ ChangeLog about GNU GLOBAL
 	* gctags.c: allows second argument in *ENTRY for 4.3BSD.
 	* split.c: splitting function added.
 	* strbuf.c: strbuf_putn() added.
+	* conf.c find.c: shut buffer overflow.
 
 March 30 2002, Shigio Yamaguchi  <shigio@gnu.org>
 
