@@ -201,7 +201,7 @@ main(argc, argv)
 	 * This is a hack for FreeBSD.
 	 * In the near future, it will be removed.
 	 */
-#ifdef __DGJPP__
+#ifdef __DJGPP__
 	if (test("r", NOTFUNCTION) || test("r", DOS_NOTFUNCTION))
 #else
 	if (test("r", NOTFUNCTION))
