@@ -76,9 +76,15 @@ if (! -d $tmp || ! -w $tmp) {
 }
 $'ncol = 4;					# columns of line number
 $'tabs = 8;					# tab skip
+#
+# File index
+#
 $'full_path = 0;				# file index format
 $'icon_list = '';				# use icon for file index
-$'icon_spec = 'BORDER=0 ALIGN=middle';		# parameter in IMG tag
+$'no_order_list = 0;				# doesn't use order list
+$'icon_suffix = '';				# icon suffix (jpg, png etc)
+$'icon_spec = 'BORDER=0 ALIGN=top';		# parameter in IMG tag
+
 $'prolog_script = '';				# include script at first
 $'epilog_script = '';				# include script at last
 $'show_position = 0;				# show current position
@@ -199,6 +205,12 @@ if ($var1 = &'getconf('icon_list')) {
 if ($var1 = &'getconf('icon_spec')) {
 	$'icon_spec = $var1;
 }
+if ($var1 = &'getconf('icon_suffix')) {
+	$'icon_suffix = $var1;
+}
+if ($var1 = &'getconf('no_order_list')) {
+	$'no_order_list = $var1;
+}
 if ($var1 = &'getconf('prolog_script')) {
 	$'prolog_script = $var1;
 }
@@ -288,11 +300,15 @@ $'title_included_from = 'INCLUDED FROM';
 
 # Anchor image
 @anchor_label = ('&lt;', '&gt;', '^', 'v', 'top', 'bottom', 'index', 'help');
-@anchor_icons = ('left.jpg', 'right.jpg', 'first.jpg', 'last.jpg', 'top.jpg', 'bottom.jpg', 'index.jpg', 'help.jpg');
+@anchor_icons = ('left', 'right', 'first', 'last', 'top', 'bottom', 'index', 'help');
 @anchor_comment = ('previous', 'next', 'first', 'last', 'top', 'bottom', 'index', 'help');
-$back_icon = 'back.jpg';
-$dir_icon  = 'dir.jpg';
-$file_icon = 'c.jpg';
+foreach $a (@anchor_icons) {
+	$a .= '.' . $'icon_suffix;
+}
+$back_icon = 'back' . '.' . $'icon_suffix;
+$dir_icon  = 'dir' . '.' . $'icon_suffix;
+$c_icon = 'c' . '.' . $'icon_suffix;
+$file_icon = 'text' . '.' . $'icon_suffix;
 @anchor_msg   = ('Previous definition.',
 		'Next definition.',
 		'First definition in this file.',
@@ -1548,9 +1564,13 @@ sub makedefineindex {
 	}
 	if (!$'aflag && !$'Fflag) {
 		$indexlink = "mains.$'normal_suffix";
-		print DEFINES "<A HREF=$indexlink TITLE='$index_string'>[..]</A>\n";
+		print DEFINES "<A HREF=$indexlink TITLE='$index_string'>" .
+			($'icon_list ? "<IMG SRC=icons/$'back_icon ALT='[..]' $'icon_spec>" : "[..]") .
+			"</A>\n";
 	}
-	print DEFINES "<OL>\n" if (!$'aflag);
+	if (!$'no_order_list) {
+		print DEFINES "<OL>\n" if (!$'aflag);
+	}
 	local($old) = select(DEFINES);
 	local($command) = "global -c";
 	open(TAGS, "$command |") || &'error("cannot fork.");
@@ -1566,7 +1586,11 @@ sub makedefineindex {
 				local($msg) = $alpha_count == 1 ? 'definition is containded.' : 'definitions are containded.';
 				push(@defines, "<A HREF=defines/$alpha_f.$'HTML TITLE='$alpha_count $msg'>[$alpha]</A>\n");
 				$alpha_count = 0;
-				print ALPHA "</OL>\n";
+				if (!$'no_order_list) {
+					print ALPHA "</OL>\n";
+				} else {
+					print ALPHA "<BR>\n";
+				}
 				print ALPHA "<A HREF=$indexlink TITLE='$index_string'>";
 				print ALPHA $'icon_list ? "<IMG SRC=../icons/$'back_icon ALT='[..]' $'icon_spec>" : "[..]";
 				print ALPHA "</A>\n";
@@ -1602,7 +1626,11 @@ sub makedefineindex {
 			print ALPHA "<A HREF=$indexlink TITLE='$index_string'>";
 			print ALPHA $'icon_list ? "<IMG SRC=../icons/$'back_icon ALT='[..]' $'icon_spec>" : "[..]";
 			print ALPHA "</A>\n";
-			print ALPHA "<OL>\n";
+			if (!$'no_order_list) {
+				print ALPHA "<OL>\n";
+			} else {
+				print ALPHA "<BR><BR>\n";
+			}
 			select(ALPHA);
 		}
 		$alpha_count++;
@@ -1637,9 +1665,15 @@ sub makedefineindex {
 			}
 			$guide = "Defined at $lno in $path.";
 		}
-		print "<LI><A HREF=$url TARGET=$target";
+		if (!$'no_order_list) {
+			print "<LI>";
+		}
+		print "<A HREF=$url TARGET=$target";
 		print " TITLE='$guide'" if ($guide);
 		print ">$tag</A>\n";
+		if ($'no_order_list) {
+			print "<BR>";
+		}
 		if ($'map_file) {
 			print MAP "$tag\t$url\n";
 		}
@@ -1649,7 +1683,11 @@ sub makedefineindex {
 	select($old);
 	if ($'aflag) {
 		push(@defines, "<A HREF=defines/$alpha_f.$'HTML TITLE='$alpha_count definitions are containded.'>[$alpha]</A>\n");
-		print ALPHA "</OL>\n";
+		if (!$'no_order_list) {
+			print ALPHA "</OL>\n";
+		} else {
+			print ALPHA "<BR>\n";
+		}
 		print ALPHA "<A HREF=$indexlink TITLE='$index_string'>";
 		print ALPHA $'icon_list ? "<IMG SRC=../icons/$'back_icon ALT='[..]' $'icon_spec>" : "[..]";
 		print ALPHA "</A>\n";
@@ -1660,9 +1698,13 @@ sub makedefineindex {
 
 		print DEFINES @defines;
 	}
-	print DEFINES "</OL>\n" if (!$'aflag);
+	if (!$'no_order_list) {
+		print DEFINES "</OL>\n" if (!$'aflag);
+	}
 	if (!$'aflag && !$'Fflag) {
-		print DEFINES "<A HREF=$indexlink TITLE='$index_string'>[..]</A>\n";
+		print DEFINES "<A HREF=$indexlink TITLE='$index_string'>" .
+			($'icon_list ? "<IMG SRC=icons/$'back_icon ALT='[..]' $'icon_spec>" : "[..]") .
+			"</A>\n";
 	}
 	print DEFINES $'body_end, "\n";
 	print DEFINES $'html_end, "\n";
@@ -1697,8 +1739,9 @@ sub makefileindex {
 	print FILES &'set_header($'title_file_index);
 	print FILES $'body_begin, "\n";
 	print FILES "<A HREF=files.$'normal_suffix><H2>$'title_file_index</H2></A>\n";
-	print FILES "<OL>\n";
-
+	if (!$'no_order_list) {
+		print FILES "<OL>\n";
+	}
 	local($org) = select(FILES);
 	local(@push, @pop, $file);
 
@@ -1725,7 +1768,7 @@ sub makefileindex {
 			while (@pop) {
 				pop(@dirstack);
 				local($parent) = (@dirstack) ? &'path2url(join('/', @dirstack)) : $indexlink;
-				print "</OL>\n";
+				print $'no_order_list ? "<BR>\n" : "</OL>\n";
 				print "<A HREF=$parent TITLE='$parent_string'>" .
 					($'icon_list ? "<IMG SRC=../icons/$'back_icon ALT='[..]' $'icon_spec>" : "[..]") .
 					"</A>\n";
@@ -1746,10 +1789,16 @@ sub makefileindex {
 				if (!$'full_path) {
 					$last =~ s!.*/!!;
 				}
-				local($li) = "<LI>" .
-					"<A HREF=" . (@dirstack == 1 ? 'files/' : '') . &path2url($path) . " TITLE='$path/'>" .
+				local($li) = '';
+				if (!$'no_order_list) {
+					$li .="<LI>";
+				}
+				$li .= "<A HREF=" . (@dirstack == 1 ? 'files/' : '') . &path2url($path) . " TITLE='$path/'>" .
 					($'icon_list ? "<IMG SRC=" . (@dirstack == 1 ? '' : '../') . "icons/$'dir_icon ALT=[$path/] HSPACE=3 $'icon_spec>" : '') .
 					"$last/</A>\n";
+				if ($'no_order_list) {
+					$li .="<BR>";
+				}
 				if (@dirstack == 1) {
 					push(@files, $li);
 				} else {
@@ -1780,7 +1829,11 @@ sub makefileindex {
 				print "<A HREF=$parent TITLE='$parent_string'>" .
 					($'icon_list ? "<IMG SRC=../icons/$'back_icon ALT='[..]' $'icon_spec>" : "[..]") .
 					"</A>\n";
-				print "<OL>\n";
+				if (!$'no_order_list) {
+					print "<OL>\n";
+				} else {
+					print "<BR><BR>\n";
+				}
 			}
 		}
 		#
@@ -1813,10 +1866,17 @@ sub makefileindex {
 		if (!$'full_path) {
 			$last =~ s!.*/!!;
 		}
-		local($li) = "<LI>" .
-			"<A HREF=$url TARGET=$target TITLE='$_'>" .
-			($'icon_list ? "<IMG SRC=" . (@dirstack == 0 ? '' : '../') . "icons/$'file_icon ALT=[$_] HSPACE=3 $'icon_spec>" : '') .
+		local($icon) = ($last =~ /\.[chy]$/) ? $'c_icon : $'file_icon;
+		local($li) = '';
+		if (!$'no_order_list) {
+			$li .= "<LI>\n";
+		}
+		$li .= "<A HREF=$url TARGET=$target TITLE='$_'>" .
+			($'icon_list ? "<IMG SRC=" . (@dirstack == 0 ? '' : '../') . "icons/$icon ALT=[$_] HSPACE=3 $'icon_spec>" : '') .
 			"$last</A>\n";
+		if ($'no_order_list) {
+			$li .= "<BR>\n";
+		}
 		if (@dirstack == 0) {
 			push(@files, $li);
 		} else {
@@ -1828,7 +1888,7 @@ sub makefileindex {
 	while (@dirstack) {
 		pop(@dirstack);
 		local($parent) = (@dirstack) ? &'path2url(join('/', @dirstack)) : $indexlink;
-		print "</OL>\n";
+		print $'no_order_list ? "<BR>\n": "</OL>\n";
 		print "<A HREF=$parent TITLE='$parent_string'>" .
 			($'icon_list ? "<IMG SRC=../icons/$'back_icon ALT='[..]' $'icon_spec>" : "[..]") .
 			"</A>\n";
@@ -1840,7 +1900,7 @@ sub makefileindex {
 		select($fdstack[$#fdstack]) if (@fdstack);
 	}
 	print FILES @files;
-	print FILES "</OL>\n";
+	print FILES $'no_order_list ? "<BR>\n" : "</OL>\n";
 	print FILES $'body_end, "\n";
 	print FILES $'html_end, "\n";
         close(FILES);
@@ -2042,11 +2102,18 @@ sub makecommonpart {
 		$index .= "<H2><A HREF=files.$'normal_suffix>$'title_file_index</A></H2>\n";
 	} else {
 		$index .= "<H2>$'title_file_index</H2>\n";
-		$index .= "<OL>\n";
+		if (!$'no_order_list) {
+			$index .= "<OL>\n";
+		}
 		foreach $f (@files) {
 			$index .= $f;
 		}
-		$index .= "</OL>\n$'hr\n";
+		if (!$'no_order_list) {
+			$index .= "</OL>\n";
+		} else {
+			$index .= "<BR>\n";
+		}
+		$index .= "$'hr\n";
 	}
 	$index;
 }
@@ -2650,9 +2717,6 @@ sub link_format {
 			$line .=  "\[$label[$n]\]";
 		}
 		$line .=  "</A>" if ($n > 5 || $tag[$n]);
-		if ($'icon_list && $n < $#label) {
-			$line .= ' ';
-		}
 	}
 	$line;
 }
