@@ -756,110 +756,6 @@ char	*dbpath;
  *	i)	pattern	POSIX regular expression
  *	i)	dbpath	GTAGS directory
  */
-#if defined(HAVE_XARGS) && defined(HAVE_GREP)
-void
-grep(pattern, dbpath)
-char	*pattern;
-char	*dbpath;
-{
-	FILE	*ip, *op;
-	STRBUF	*ib = strbuf_open(0);
-	char	edit[IDENTLEN+1];
-	char    *line, *p, *path, *lno;
-	int     linenum, count, editlen;
-	char	*gtags;
-
-	/*
-	 * convert spaces into %FF format.
-	 */
-	ffformat(edit, sizeof(edit), pattern);
-	editlen = strlen(edit);
-	/*
-	 * make grep command line.
-	 * (/dev/null needed when single argument specified.)
-	 */
-	gtags = usable("gtags");
-	if (!gtags)
-		die("gtags command not found.");
-	strbuf_puts(ib, gtags);
-	strbuf_puts(ib, " --find ");
-	if (oflag)
-		strbuf_puts(ib, "--other ");
-	if (lflag)
-		strbuf_puts(ib, localprefix);
-	strbuf_puts(ib, "| xargs grep ");
-	if (!tflag && !xflag)
-		strbuf_puts(ib, "-l ");
-	else
-		strbuf_puts(ib, "-n ");
-	if (iflag)
-		strbuf_puts(ib, "-i ");
-	strbuf_puts(ib, "-e ");
-	strbuf_putc(ib, '\'');
-	strbuf_puts(ib, pattern);
-	strbuf_putc(ib, '\'');
-	strbuf_puts(ib, " /dev/null");
-	if (debug)
-		fprintf(stderr, "grep: %s\n", strbuf_value(ib));
-	if (!(ip = popen(strbuf_value(ib), "r")))
-		die("cannot execute '%s'.", strbuf_value(ib));
-	if (!(op = openfilter()))
-		die("cannot open output filter.");
-	count = 0;
-	while ((line = strbuf_fgets(ib, ip, STRBUF_NOCRLF)) != NULL) {
-		p = line;
-		/* extract filename */
-		path = p;
-		while (*p && *p != ':')
-			p++;
-		if ((xflag || tflag) && !*p)
-			die("invalid grep output format. '%s'", line);
-		*p++ = 0;
-		count++;
-		if (!xflag && !tflag) {
-			fputs(path, op);
-			fputc('\n', op);
-			continue;
-		}
-		/* extract line number */
-		while (*p && isspace(*p))
-			p++;
-		lno = p;
-		while (*p && isdigit(*p))
-			p++;
-		if (*p != ':')
-			die("invalid grep output format. '%s'", line);
-		*p++ = 0;
-		linenum = atoi(lno);
-		if (linenum <= 0)
-			die("invalid grep output format. '%s'", line);
-		/*
-		 * print out.
-		 */
-		if (tflag)
-			fprintf(op, "%s\t%s\t%d\n",
-				edit, path, linenum);
-		else if (!xflag) {
-			fputs(path, op);
-			fputc('\n', op);
-		} else
-			fprintf(op, "%-16s %4d %-16s %s\n",
-				edit, linenum, path, p);
-	}
-	pclose(ip);
-	closefilter(op);
-	strbuf_close(ib);
-	if (vflag) {
-		if (count == 0)
-			fprintf(stderr, "object not found");
-		if (count == 1)
-			fprintf(stderr, "%d object located", count);
-		if (count > 1)
-			fprintf(stderr, "%d objects located", count);
-		fprintf(stderr, " (no index used).\n");
-	}
-}
-#else /* HAVE_XARGS && HAVE_GREP */
 void
 grep(pattern, dbpath)
 char	*pattern;
@@ -921,7 +817,6 @@ char	*dbpath;
 		fprintf(stderr, " (no index used).\n");
 	}
 }
-#endif /* HAVE_XARGS && HAVE_GREP */
 /*
  * pathlist: print candidate path list.
  *

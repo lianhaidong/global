@@ -62,7 +62,6 @@
 		This option implies -x option.
 	@item{@option{-g}, @option{--grep} @arg{pattern}}
 		Print all lines which match to the @arg{pattern}.
-		This function use @xref{grep,1} as a search engine.
 	@item{@option{-I}, @option{--idutils} @arg{pattern}}
 		Print all lines which match to the @arg{pattern}.
 		This function use @xref{id-utils,1} as a search engine.
