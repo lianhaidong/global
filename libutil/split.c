@@ -134,7 +134,7 @@ void
 split_dump(list)
 SPLIT *list;
 {
-	int i, c;
+	int i;
 	struct part *part;
 
 	fprintf(stderr, "npart: %d\n", list->npart);
