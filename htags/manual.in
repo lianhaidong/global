@@ -122,6 +122,9 @@
 	@xref{gctags,1},
 	@xref{global,1},
 	@xref{gtags,1}.
+
+        GNU GLOBAL source code tag system@br
+        (http://www.gnu.org/software/global/).
 @BUG
 	Generated hypertext is VERY LARGE.
 	In advance, check the space of your disk.

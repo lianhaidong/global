@@ -118,6 +118,9 @@
 	@xref{gctags,1},
 	@xref{global,1},
 	@xref{htags,1}.
+
+        GNU GLOBAL source code tag system@br
+        (http://www.gnu.org/software/global/).
 @BUG
 	@file{GTAGS}, @file{GRTAGS} and @file{GSYMS} are very large.
 	In advance of using this command, check the space of your disk.

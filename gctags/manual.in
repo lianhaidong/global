@@ -90,6 +90,9 @@
 	@xref{global,1},
 	@xref{gtags,1},
 	@xref{htags,1}.
+
+        GNU GLOBAL source code tag system@br
+        (http://www.gnu.org/software/global/).
 @BUG
 	@name{Gctags} relies on the input being well formed,
 	and any syntactical errors will completely confuse it.

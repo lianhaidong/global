@@ -221,6 +221,7 @@ sub convert {
 	while (s/\@xref\{($arg),($arg)\}/\\fB$1\\fP($2)/) {
 		;
 	}
+	s/\@br$/\n.br/;
 }
 sub gen {
 	local($arg) = '[^,]+';
@@ -299,6 +300,7 @@ sub convert {
 	while (s/\@(arg|name)\{($arg)\}/$2/) {
 		;
 	}
+	s/\@br$/\@\*/;
 }
 sub gen {
 	print "\@c This file is generated automatically by $'com from $'infile.\n";
@@ -330,9 +332,6 @@ sub gen {
 		} elsif (/^\@(.*)$/) {
 			$type = $1;
 			local($varbatim) = ($type =~ /^(EXAMPLES|FORMAT)$/) ? 1 : 0;
-			if ($type =~ /\s+/) {
-				$type = "\"$type\"";
-			}
 			print "\@unnumberedsubsec $type\n";
 			print "\@example\n" if ($varbatim);
 			local($itemize) = 0;

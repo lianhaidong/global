@@ -144,6 +144,9 @@ Delete record.
 	@name{Btreeop} exits with a non 0 value if an error occurred, 0 otherwise.
 @SEE ALSO
 	@xref{btree,3}.
+
+	GNU GLOBAL source code tag system@br
+	(http://www.gnu.org/software/global/).
 @AUTHORS
 	Shigio Yamaguchi
 @HISTORY
