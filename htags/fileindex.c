@@ -528,6 +528,11 @@ extract_lastname(image, is_php)
 		p += 5;
 	while (*p && isspace((unsigned char)*p))		/* skip space */
 		p++;
+	if (is_php && *p == '(') {
+		p++;
+		while (*p && isspace((unsigned char)*p))	/* skip space */
+			p++;
+	}
 	sep = *p;
 	if (is_php) {
 		if (sep != '\'' && sep != '"')
@@ -882,6 +887,7 @@ makeincludeindex()
                 char *nouse, *lno, *filename, *image;
 		char *last, buf[MAXBUFLEN];
 		int is_php = 0;
+		const char *lang, *suffix;
 
 		if (split(_, 4, &ptable) < 4) {
 			recover(&ptable);
@@ -891,8 +897,10 @@ makeincludeindex()
 		lno = ptable.part[1].start;
 		filename = ptable.part[2].start;
 		image = ptable.part[3].start;
-	
-		if (locatestring(image, ".php", MATCH_AT_LAST))
+
+		if ((suffix = locatestring(filename, ".", MATCH_LAST)) != NULL
+		    && (lang = decide_lang(suffix)) != NULL
+		    && strcmp(lang, "php") == 0)
 			is_php = 1;
 		last = extract_lastname(image, is_php);
 		if (last == NULL || get_inc(last) == NULL)

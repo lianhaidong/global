@@ -99,7 +99,7 @@ WORD		{ALPHA}{ALPHANUM}*
 <LITERAL>\'	{ ECHO; yy_pop_state(); }
 <LITERAL>\\.	{ put_char(LEXTEXT[0]); put_char(LEXTEXT[1]); }
 
-<PHP>^[ \t]*include[ \t]\( {
+<PHP>^[ \t]*include[ \t]*\( {
 		int c;
 
 		ECHO;
