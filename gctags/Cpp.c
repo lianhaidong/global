@@ -284,6 +284,7 @@ Cpp()
 			}
 			break;
 		case SHARP_INCLUDE:
+		case SHARP_INCLUDE_NEXT:
 		case SHARP_ERROR:
 		case SHARP_LINE:
 		case SHARP_PRAGMA:
