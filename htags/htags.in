@@ -29,7 +29,7 @@ This hypertext consist of @FILE_COUNT@ files.
 Please don't download whole hypertext using hypertext copy tools.
 Our network cannot afford such traffic.
 Instead, you can generate same thing in your computer using
-<A HREF=$www TARGET=_top>GLOBAL source code tag system</A>.
+<A HREF=@WWW@ TARGET=_top>GLOBAL source code tag system</A>.
 Thank you. 
 </BLOCKQUOTE>
 </CENTER>
@@ -1721,6 +1721,7 @@ sub makecommonpart {
 	$index .= "<HR>\n";
 	if ($'include_caution) {
 		$'include_caution =~ s/\@FILE_COUNT\@/$'file_count/;
+		$'include_caution =~ s/\@WWW\@/$'www/;
 		$index .= $'include_caution;
 		$index .= "\n<HR>\n";
 	}
