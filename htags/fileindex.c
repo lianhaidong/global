@@ -147,6 +147,7 @@ close_file_queue(path)
 	} else
 		fclose(file->op);
 	SLIST_REMOVE(&file_q, file, file, ptr);
+	free(file);
 }
 /*----------------------------------------------------------------------*/
 /* Directory stack							*/
