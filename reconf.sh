@@ -55,4 +55,8 @@ rm -f config.cache
 # do the job
 echo "- Generating configure items..."
 (set -x; aclocal && autoheader && automake --add-missing && autoconf) &&
-echo "You are ready to execute ./configure."
+if [ "$1" = "-c" ]; then
+	./configure
+else
+	echo "You are ready to execute ./configure."
+fi
