@@ -2398,7 +2398,7 @@ sub create {
 				$PATHLIST{$filename} = $fnumber = $fcount++;
 			}
 			if ($db eq 'GTAGS') {
-				$type = ($image =~ /^#[ \t]*define/) ? 'M' : 'D';
+				$type = ($image =~ /^#[ \t]*(define|undef)/) ? 'M' : 'D';
 			} elsif ($db eq 'GRTAGS') {
 				$type = 'R';
 			} else {

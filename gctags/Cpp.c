@@ -219,6 +219,7 @@ Cpp()
 		 * #xxx
 		 */
 		case CP_DEFINE:
+		case CP_UNDEF:
 			startmacro = 1;
 			savelevel = level;
 			if ((c = nexttoken(interested, reserved)) != SYMBOL) {
@@ -258,7 +259,6 @@ Cpp()
 		case CP_ELIF:
 		case CP_ELSE:
 		case CP_ENDIF:
-		case CP_UNDEF:
 			condition_macro(cc);
 			while ((c = nexttoken(interested, reserved)) != EOF && c != '\n') {
 				if (!strcmp(token, "defined"))
@@ -375,7 +375,6 @@ Cpp()
 						case CP_ELIF:
 						case CP_ELSE:
 						case CP_ENDIF:
-						case CP_UNDEF:
 							condition_macro(c);
 							continue;
 						default:
@@ -436,7 +435,6 @@ Cpp()
 					case CP_ELIF:
 					case CP_ELSE:
 					case CP_ENDIF:
-					case CP_UNDEF:
 						condition_macro(c);
 						continue;
 					default:
@@ -511,7 +509,6 @@ int	target;
 		case CP_ELIF:
 		case CP_ELSE:
 		case CP_ENDIF:
-		case CP_UNDEF:
 			condition_macro(c);
 			continue;
 		default:
@@ -547,7 +544,6 @@ int	target;
 		case CP_ELIF:
 		case CP_ELSE:
 		case CP_ENDIF:
-		case CP_UNDEF:
 			condition_macro(c);
 			continue;
 		default:
