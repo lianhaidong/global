@@ -115,8 +115,13 @@ Cpp()
 					if (target == REF && defined(token))
 						PUT(token, lineno, sp);
 				} else if (level > stack[classlevel].level || startequal || startmacro) {
-					if (target == REF && defined(token))
-						PUT(token, lineno, sp);
+					if (target == REF) {
+						if (defined(token))
+							PUT(token, lineno, sp);
+					} else if (target == SYM) {
+						if (!defined(token))
+							PUT(token, lineno, sp);
+					}
 				} else if (level == stack[classlevel].level && !startmacro && !startsharp && !startequal) {
 					char savetok[MAXTOKEN], *saveline;
 					int savelineno = lineno;

@@ -111,8 +111,13 @@ C(yacc)
 					if (target == REF && defined(token))
 						PUT(token, lineno, sp);
 				} else if (level > 0 || startmacro) {
-					if (target == REF && defined(token))
-						PUT(token, lineno, sp);
+					if (target == REF) {
+						if (defined(token))
+							PUT(token, lineno, sp);
+					} else if (target == SYM) {
+						if (!defined(token))
+							PUT(token, lineno, sp);
+					}
 				} else if (level == 0 && !startmacro && !startsharp) {
 					char arg1[MAXTOKEN], savetok[MAXTOKEN], *saveline;
 					int savelineno = lineno;
