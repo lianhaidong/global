@@ -76,7 +76,6 @@ typedef struct {
 	char prev_tag[IDENTLEN+1];	/* previous tag */
 	char path[MAXPATHLEN+1];	/* current path */
 	char prev_path[MAXPATHLEN+1];	/* previous path */
-/*	char prev_fid[32];		/* previous fid (postgres) */
 	STRBUF *sb;			/* string buffer */
 	STRBUF *ib;			/* input buffer */
 	FILE *fp;			/* descriptor of 'path' */
