@@ -180,10 +180,19 @@ int flags;
 		int i;
 		listarray = (char **)malloc(sizeof(char *) * list_count);
 		p = strbuf_value(list);
+		if (debug)
+			fprintf(stderr, "skip list: ");
 		for (i = 0; i < list_count; i++) {
+			if (debug) {
+				fprintf(stderr, "%s", p);
+				if (i + 1 < list_count)
+					fputc(',', stderr);
+			}
 			listarray[i] = p;
 			p += strlen(p) + 1;
 		}
+		if (debug)
+			fputc('\n', stderr);
 	}
 	strbuf_close(reg);
 }
