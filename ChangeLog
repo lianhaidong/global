@@ -19,7 +19,7 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
-**** ** 2001, Shigio Yamaguchi  <shigio@tamacom.com>
+Nov 23 2001, Shigio Yamaguchi  <shigio@tamacom.com>
 
 	* gtags: format char for strftime() changed (%e -> %d).
 	* gtags: the path of gctags changed from 'gctags' to '$bindir/gctags'.

@@ -20,11 +20,12 @@ ___________________________________
 GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
-Version 4.* - *** **, 2001, by Shigio Yamaguchi
+Version 4.2 - Nov 24 2001, by Shigio Yamaguchi
 
 * postgres support added.
+  You need to configure GLOBAL with --with-postgres option.
 * gtags: when no parser specified in config file, overloaded by default values.
-* gtags: skip variable accept full path name.
+* gtags: variable 'skip' accept full path name.
 * htags: changed to refer to macros which is defined in other C source.
 * htags: --caution option added.
 * global.texi: reference manual added.
