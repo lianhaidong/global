@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999
  *             Shigio Yamaguchi. All rights reserved.
- * Copyright (c) 1999, 2000, 2001
+ * Copyright (c) 1999, 2000, 2001, 2002
  *             Tama Communications Corporation. All rights reserved.
  *
  * This file is part of GNU GLOBAL.
@@ -26,37 +26,41 @@
 #define PROGRAMS	2
 
 #define C___P		1001
-#define C_ASM		1002
-#define C_AUTO		1003
-#define C_BREAK		1004
-#define C_CASE		1005
-#define C_CHAR		1006
-#define C_CONTINUE	1007
-#define C_DEFAULT	1008
-#define C_DO		1009
-#define C_DOUBLE	1010
-#define C_ELSE		1011
-#define C_ENUM		1012
-#define C_EXTERN	1013
-#define C_FLOAT		1014
-#define C_FOR		1015
-#define C_GOTO		1016
-#define C_IF		1017
-#define C_INT		1018
-#define C_LONG		1019
-#define C_REGISTER	1020
-#define C_RETURN	1021
-#define C_SHORT		1022
-#define C_SIGNED	1023
-#define C_SIZEOF	1024
-#define C_STATIC	1025
-#define C_STRUCT	1026
-#define C_SWITCH	1027
-#define C_TYPEDEF	1028
-#define C_UNION		1029
-#define C_UNSIGNED	1030
-#define C_VOID		1031
-#define C_WHILE		1032
+#define C___ATTRIBUTE__	1002
+#define C_ASM		1003
+#define C_AUTO		1004
+#define C_BREAK		1005
+#define C_CASE		1006
+#define C_CHAR		1007
+#define C_CONST		1008
+#define C_CONTINUE	1009
+#define C_DEFAULT	1010
+#define C_DO		1011
+#define C_DOUBLE	1012
+#define C_ELSE		1013
+#define C_ENUM		1014
+#define C_EXTERN	1015
+#define C_FLOAT		1016
+#define C_FOR		1017
+#define C_GOTO		1018
+#define C_IF		1019
+#define C_INT		1020
+#define C_LONG		1021
+#define C_REGISTER	1022
+#define C_RETURN	1023
+#define C_SHORT		1024
+#define C_SIGNED	1025
+#define C_SIZEOF	1026
+#define C_STATIC	1027
+#define C_STRUCT	1028
+#define C_SWITCH	1029
+#define C_TYPEDEF	1030
+#define C_UNION		1031
+#define C_UNSIGNED	1032
+#define C_VOID		1033
+#define C_VOLATILE	1034
+#define C_WCHAR_T	1035
+#define C_WHILE		1036
 #define CP_ELIF		2001
 #define CP_ELSE		2002
 #define CP_DEFINE	2003

@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999
  *             Shigio Yamaguchi. All rights reserved.
- * Copyright (c) 1999, 2000
+ * Copyright (c) 1999, 2000, 2002
  *             Tama Communications Corporation. All rights reserved.
  *
  * This file is part of GNU GLOBAL.
@@ -22,55 +22,62 @@
  */
 
 #define CPP___P		1001
-#define CPP_ASM		1002
-#define CPP_AUTO	1003
-#define CPP_BREAK	1004
-#define CPP_CASE	1005
-#define CPP_CATCH	1006
-#define CPP_CHAR	1007
-#define CPP_CLASS	1008
-#define CPP_CONST	1009
-#define CPP_CONTINUE	1010
-#define CPP_DEFAULT	1011
-#define CPP_DELETE	1012
-#define CPP_DO		1013
-#define CPP_DOUBLE	1014
-#define CPP_ELSE	1015
-#define CPP_ENUM	1016
-#define CPP_EXTERN	1017
-#define CPP_FLOAT	1018
-#define CPP_FOR		1019
-#define CPP_FRIEND	1020
-#define CPP_GOTO	1021
-#define CPP_IF		1022
-#define CPP_INLINE	1023
-#define CPP_INT		1024
-#define CPP_LONG	1025
-#define CPP_NEW		1026
-#define CPP_OPERATOR	1027
-#define CPP_PRIVATE	1028
-#define CPP_PROTECTED	1029
-#define CPP_PUBLIC	1030
-#define CPP_REGISTER	1031
-#define CPP_RETURN	1032
-#define CPP_SHORT	1033
-#define CPP_SIGNED	1034
-#define CPP_SIZEOF	1035
-#define CPP_STATIC	1036
-#define CPP_STRUCT	1037
-#define CPP_SWITCH	1038
-#define CPP_TEMPLATE	1039
-#define CPP_THIS	1040
-#define CPP_THROW	1041
-#define CPP_TRY		1042
-#define CPP_TYPEDEF	1043
-#define CPP_UNION	1044
-#define CPP_UNSIGNED	1045
-#define CPP_VIRTUAL	1046
-#define CPP_VOID	1047
-#define CPP_VOLATILE	1048
-#define CPP_WHILE	1049
-#define CPP_SEP		1050
+#define CPP___ATTRIBUTE__	1002
+#define CPP_ASM		1003
+#define CPP_AUTO	1004
+#define CPP_BREAK	1005
+#define CPP_CASE	1006
+#define CPP_CATCH	1007
+#define CPP_CHAR	1008
+#define CPP_CLASS	1009
+#define CPP_CONST	1010
+#define CPP_CONTINUE	1011
+#define CPP_DEFAULT	1012
+#define CPP_DELETE	1013
+#define CPP_DO		1014
+#define CPP_DOUBLE	1015
+#define CPP_ELSE	1016
+#define CPP_ENUM	1017
+#define CPP_EXPLICIT	1018
+#define CPP_EXTERN	1019
+#define CPP_FLOAT	1020
+#define CPP_FOR		1021
+#define CPP_FRIEND	1022
+#define CPP_GOTO	1023
+#define CPP_IF		1024
+#define CPP_INLINE	1025
+#define CPP_INT		1026
+#define CPP_LONG	1027
+#define CPP_MUTABLE	1028
+#define CPP_NAMESPACE	1029
+#define CPP_NEW		1030
+#define CPP_OPERATOR	1031
+#define CPP_OVERLOAD	1032
+#define CPP_PRIVATE	1033
+#define CPP_PROTECTED	1034
+#define CPP_PUBLIC	1035
+#define CPP_REGISTER	1036
+#define CPP_RETURN	1037
+#define CPP_SHORT	1038
+#define CPP_SIGNED	1039
+#define CPP_SIZEOF	1040
+#define CPP_STATIC	1041
+#define CPP_STRUCT	1042
+#define CPP_SWITCH	1043
+#define CPP_TEMPLATE	1044
+#define CPP_THIS	1045
+#define CPP_THROW	1046
+#define CPP_TRY		1047
+#define CPP_TYPEDEF	1048
+#define CPP_TYPENAME	1049
+#define CPP_UNION	1050
+#define CPP_UNSIGNED	1051
+#define CPP_USING	1052
+#define CPP_VIRTUAL	1053
+#define CPP_VOID	1054
+#define CPP_VOLATILE	1055
+#define CPP_WHILE	1056
+#define CPP_SEP		1057
 
 #define CP_ELIF		2001
 #define CP_ELSE		2002

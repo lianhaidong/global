@@ -525,11 +525,13 @@ static struct words words[] = {
 	{"%{",		YACC_BEGIN},
 	{"%}",		YACC_END},
 	{"__P",		C___P},
+	{"__attribute__",C___ATTRIBUTE__},
 	{"asm",		C_ASM},
 	{"auto",	C_AUTO},
 	{"break",	C_BREAK},
 	{"case",	C_CASE},
 	{"char",	C_CHAR},
+	{"const",	C_CONST},
 	{"continue",	C_CONTINUE},
 	{"default",	C_DEFAULT},
 	{"do",		C_DO},
@@ -555,6 +557,8 @@ static struct words words[] = {
 	{"union",	C_UNION},
 	{"unsigned",	C_UNSIGNED},
 	{"void",	C_VOID},
+	{"volatile",	C_VOLATILE},
+	{"wchar_t",	C_WCHAR_T},
 	{"while",	C_WHILE},
 };
 
