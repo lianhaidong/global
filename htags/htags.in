@@ -2191,9 +2191,11 @@ sub src2html {
 			local($s);
 			for ($count = 0; @links; $count++) {
 				$s = shift @links;
-				unless (s/\005$count\005/$s/ && $'wflag) {
-					print STDERR "Warning: $file $LNO $TAG($TYPE) tag must exist.\n";
-					$warned = 1;
+				unless (s/\005$count\005/$s/) {
+					if ($'wflag) {
+						print STDERR "Warning: $file $LNO $TAG($TYPE) tag must exist.\n";
+						$warned = 1;
+					}
 				}
 			}
 			s/\016/$'brace_begin/g;
