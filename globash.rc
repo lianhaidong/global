@@ -779,8 +779,13 @@ ghelp() {
 # Run private command script.
 #
 gtags_aliases=1
-if [ -f $HOME/.globashrc ]; then
-	source $HOME/.globashrc
+if [ -n "$HOME_ETC" ]; then
+	home=$HOME_ETC
+else
+	home=$HOME
+fi
+if [ -f $home/.globashrc ]; then
+	source $home/.globashrc
 fi
 #
 # Aliases
