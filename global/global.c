@@ -627,10 +627,10 @@ char	*prefix;
 	if (prefix)
 		flags |= GTOP_PREFIX;
 	db = (sflag) ? GSYMS : GTAGS;
-	gtop = gtagsopen(dbpath, root, db, GTAGS_READ, 0);
-	for (p = gtagsfirst(gtop, prefix, flags); p; p = gtagsnext(gtop))
+	gtop = gtags_open(dbpath, root, db, GTAGS_READ, 0);
+	for (p = gtags_first(gtop, prefix, flags); p; p = gtags_next(gtop))
 		(void)fprintf(stdout, "%s\n", p);
-	gtagsclose(gtop);
+	gtags_close(gtop);
 }
 /*
  * relative_filter: make relative path filter
@@ -1213,7 +1213,7 @@ int	db;
 	/*
 	 * open tag file.
 	 */
-	gtop = gtagsopen(dbpath, root, db, GTAGS_READ, 0);
+	gtop = gtags_open(dbpath, root, db, GTAGS_READ, 0);
 	if (!(op = openfilter()))
 		die("cannot open output filter.");
 	/*
@@ -1229,7 +1229,7 @@ int	db;
 		pattern = strbuf_value(sb);
 		flags |= GTOP_IGNORECASE;
 	}
-	for (p = gtagsfirst(gtop, pattern, flags); p; p = gtagsnext(gtop)) {
+	for (p = gtags_first(gtop, pattern, flags); p; p = gtags_next(gtop)) {
 		if (lflag) {
 			char	*q;
 			/* locate start point of a path */
@@ -1241,7 +1241,7 @@ int	db;
 		count++;
 	}
 	closefilter(op);
-	gtagsclose(gtop);
+	gtags_close(gtop);
 	return count;
 }
 /*

@@ -197,7 +197,7 @@ int	flags;
 	return 0;
 }
 /*
- * gtagsopen: open global tag.
+ * gtags_open: open global tag.
  *
  *	i)	dbpath	dbpath directory
  *	i)	root	root directory (needed when compact format)
@@ -213,7 +213,7 @@ int	flags;
  * GTAGS_PATHINDEX needs GTAGS_COMPACT.
  */
 GTOP	*
-gtagsopen(dbpath, root, db, mode, flags)
+gtags_open(dbpath, root, db, mode, flags)
 char	*dbpath;
 char	*root;
 int	db;
@@ -331,14 +331,14 @@ int	flags;
 	return gtop;
 }
 /*
- * gtagsput: put tag record with packing.
+ * gtags_put: put tag record with packing.
  *
  *	i)	gtop	descripter of GTOP
  *	i)	tag	tag name
  *	i)	record	ctags -x image
  */
 void
-gtagsput(gtop, tag, record)
+gtags_put(gtop, tag, record)
 GTOP	*gtop;
 char	*tag;
 char	*record;
@@ -393,7 +393,7 @@ char	*record;
 	}
 }
 /*
- * gtagsadd: add tags belonging to the path into tag file.
+ * gtags_add: add tags belonging to the path into tag file.
  *
  *	i)	gtop	descripter of GTOP
  *	i)	comline	tag command line
@@ -401,7 +401,7 @@ char	*record;
  *	i)	flags	GTAGS_UNIQUE, GTAGS_EXTRACTMETHOD, GTAGS_DEBUG
  */
 void
-gtagsadd(gtop, comline, path, flags)
+gtags_add(gtop, comline, path, flags)
 GTOP	*gtop;
 char	*comline;
 char	*path;
@@ -467,7 +467,7 @@ int	flags;
 	if (flags & GTAGS_UNIQUE)
 		strbuf_puts(sb, " -u");
 	if (flags & GTAGS_DEBUG)
-		fprintf(stderr, "gtagsadd() executing '%s'\n", strbuf_value(sb));
+		fprintf(stderr, "gtags_add() executing '%s'\n", strbuf_value(sb));
 	if (!(ip = popen(strbuf_value(sb), "r")))
 		die("cannot execute '%s'.", strbuf_value(sb));
 	while ((tagline = strbuf_fgets(ib, ip, STRBUF_NOCRLF)) != NULL) {
@@ -491,7 +491,7 @@ int	flags;
 			else if ((p = locatestring(tag, "::", MATCH_LAST)) != NULL)
 				tag = p + 2;
 		}
-		gtagsput(gtop, tag, tagline);
+		gtags_put(gtop, tag, tagline);
 	}
 	pclose(ip);
 	strbuf_close(sb);
@@ -534,13 +534,13 @@ char	*p;
 	return 0;
 }
 /*
- * gtagsdelete: delete records belong to path.
+ * gtags_delete: delete records belong to path.
  *
  *	i)	gtop	GTOP structure
  *	i)	path	path name
  */
 void
-gtagsdelete(gtop, path)
+gtags_delete(gtop, path)
 GTOP	*gtop;
 char	*path;
 {
@@ -564,7 +564,7 @@ char	*path;
 	 */
 }
 /*
- * gtagsfirst: return first record
+ * gtags_first: return first record
  *
  *	i)	gtop	GTOP structure
  *	i)	pattern	tag name
@@ -578,7 +578,7 @@ char	*path;
  *	r)		record
  */
 char *
-gtagsfirst(gtop, pattern, flags)
+gtags_first(gtop, pattern, flags)
 GTOP	*gtop;
 char	*pattern;
 int	flags;
@@ -633,14 +633,14 @@ int	flags;
 	return genrecord(gtop);
 }
 /*
- * gtagsnext: return followed record
+ * gtags_next: return followed record
  *
  *	i)	gtop	GTOP structure
  *	r)		record
  *			NULL end of tag
  */
 char *
-gtagsnext(gtop)
+gtags_next(gtop)
 GTOP	*gtop;
 {
 	char	*line;
@@ -666,12 +666,12 @@ GTOP	*gtop;
 	return genrecord(gtop);
 }
 /*
- * gtagsclose: close tag file
+ * gtags_close: close tag file
  *
  *	i)	gtop	GTOP structure
  */
 void
-gtagsclose(gtop)
+gtags_close(gtop)
 GTOP	*gtop;
 {
 	if (gtop->format & GTAGS_PATHINDEX || gtop->mode != GTAGS_READ)

@@ -352,8 +352,8 @@ char	*argv[];
 		 * Version check. If existing tag files are old enough
 		 * gtagsopen() abort with error message.
 		 */
-		GTOP *gtop = gtagsopen(dbpath, cwd, GTAGS, GTAGS_MODIFY, 0);
-		gtagsclose(gtop);
+		GTOP *gtop = gtags_open(dbpath, cwd, GTAGS, GTAGS_MODIFY, 0);
+		gtags_close(gtop);
 		/*
 		 * GPATH is needed for incremental updating.
 		 * Gtags check whether or not GPATH exist, since it may be
@@ -629,9 +629,9 @@ int	type;
 		strbuf_reset(sb);
 		if (!getconfs(dbname(db), sb))
 			die("cannot get tag command. (%s)", dbname(db));
-		gtop = gtagsopen(dbpath, root, db, GTAGS_MODIFY, 0);
+		gtop = gtags_open(dbpath, root, db, GTAGS_MODIFY, 0);
 		if (type != 1)
-			gtagsdelete(gtop, path);
+			gtags_delete(gtop, path);
 		if (vflag)
 			fprintf(stderr, "..");
 		if (type != 2) {
@@ -641,9 +641,9 @@ int	type;
 				gflags |= GTAGS_EXTRACTMETHOD;
 			if (debug)
 				gflags |= GTAGS_DEBUG;
-			gtagsadd(gtop, strbuf_value(sb), path, gflags);
+			gtags_add(gtop, strbuf_value(sb), path, gflags);
 		}
-		gtagsclose(gtop);
+		gtags_close(gtop);
 	}
 	strbuf_close(sb);
 	if (exitflag)
@@ -692,7 +692,7 @@ int	db;
 	strbuf_reset(sb);
 	if (vflag > 1 && getconfs(dbname(db), sb))
 		fprintf(stderr, " using tag command '%s <path>'.\n", strbuf_value(sb));
-	gtop = gtagsopen(dbpath, root, db, GTAGS_CREATE, flags);
+	gtop = gtags_open(dbpath, root, db, GTAGS_CREATE, flags);
 	for (ffindopen(); (path = ffindread(NULL)) != NULL; ) {
 		int	gflags = 0;
 		int	skip = 0;
@@ -731,11 +731,11 @@ int	db;
 			gflags |= GTAGS_EXTRACTMETHOD;
 		if (debug)
 			gflags |= GTAGS_DEBUG;
-		gtagsadd(gtop, comline, path, gflags);
+		gtags_add(gtop, comline, path, gflags);
 	}
 	total = count;				/* save total count */
 	ffindclose();
-	gtagsclose(gtop);
+	gtags_close(gtop);
 	free(comline);
 	strbuf_close(sb);
 }

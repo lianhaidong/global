@@ -48,11 +48,11 @@
 #define GTAGS_STANDARD		0	/* standard format */
 #define GTAGS_COMPACT		1	/* compact format */
 #define GTAGS_PATHINDEX		2	/* use path index */
-/* gtagsadd() */
+/* gtags_add() */
 #define GTAGS_UNIQUE		1	/* compress duplicate lines */
 #define GTAGS_EXTRACTMETHOD	2	/* extract method from class definition */
 #define GTAGS_DEBUG		4	/* print information for debug */
-/* gtagsfirst() */
+/* gtags_first() */
 #define GTOP_KEY		1	/* read key part */
 #define GTOP_PREFIX		2	/* prefixed read */
 #define GTOP_NOSOURCE		4	/* don't read source file */
@@ -90,13 +90,13 @@ void	makecommand(char *, char *, STRBUF *);
 int	formatcheck(char *, int);
 int	notnamechar(char *);
 int	isregex(char *);
-GTOP	*gtagsopen(char *, char *, int, int, int);
-void	gtagsput(GTOP *, char *, char *);
-char	*gtagsget(GTOP *, char *);
-void    gtagsadd(GTOP *, char *, char *, int);
-void	gtagsdelete(GTOP *, char *);
-char	*gtagsfirst(GTOP *, char *, int);
-char	*gtagsnext(GTOP *);
-void	gtagsclose(GTOP *);
+GTOP	*gtags_open(char *, char *, int, int, int);
+void	gtags_put(GTOP *, char *, char *);
+char	*gtags_get(GTOP *, char *);
+void    gtags_add(GTOP *, char *, char *, int);
+void	gtags_delete(GTOP *, char *);
+char	*gtags_first(GTOP *, char *, int);
+char	*gtags_next(GTOP *);
+void	gtags_close(GTOP *);
 
 #endif /* ! _GTOP_H_ */
