@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1997, 1998, 1999 Shigio Yamaguchi
- * Copyright (c) 1999, 2000, 2001, 2002 Tama Communications Corporation
+ * Copyright (c) 1999, 2000, 2001, 2002, 2003 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -35,6 +35,7 @@
 extern	const char *progname;
 
 void setquiet();
+void setverbose();
 #ifdef HAVE_STDARG_H
 void die(const char *s, ...);
 #else
@@ -46,9 +47,14 @@ void die_with_code(int n, const char *s, ...);
 void die_with_code();
 #endif
 #ifdef HAVE_STDARG_H
-void verbose(const char *s, ...);
+void message(const char *s, ...);
 #else
-void verbose();
+void message();
+#endif
+#ifdef HAVE_STDARG_H
+void warning(const char *s, ...);
+#else
+void warning();
 #endif
 
 #endif /* ! _DIE_H_ */

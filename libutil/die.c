@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1997, 1998, 1999 Shigio Yamaguchi
- * Copyright (c) 1999, 2000, 2001, 2002 Tama Communications Corporation
+ * Copyright (c) 1999, 2000, 2001, 2002, 2003 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -30,11 +30,17 @@
 #include "die.h"
 
 static int quiet;
+static int verbose;
 
 void
 setquiet()
 {
 	quiet = 1;
+}
+void
+setverbose()
+{
+	verbose = 1;
 }
 
 void
@@ -89,9 +95,31 @@ die_with_code(int n, s, va_alist)
 }
 void
 #ifdef HAVE_STDARG_H
-verbose(const char *s, ...)
+message(const char *s, ...)
 #else
-verbose(s, va_alist)
+message(s, va_alist)
+	char *s;
+	va_dcl;
+#endif
+{
+	va_list ap;
+
+	if (!quiet && verbose) {
+#ifdef HAVE_STDARG_H
+		va_start(ap, s);
+#else
+		va_start(ap);
+#endif
+		(void)vfprintf(stderr, s, ap);
+		va_end(ap);
+		fputs("\n", stderr);
+	}
+}
+void
+#ifdef HAVE_STDARG_H
+warning(const char *s, ...)
+#else
+warning(s, va_alist)
 	char *s;
 	va_dcl;
 #endif
