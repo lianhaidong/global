@@ -32,7 +32,7 @@ New features:
 * htags: Warn about unknown preprocessing directive. As the exception,
   when unknown preprocessing directive appeared in assembly source,
   it will be recognized as the start of a shell comment.  
-* htags: Add all yacc directives understood by bison-1.87.
+* htags: Add all yacc directives understood by bison-1.875.
 
 Version 4.8 - August 26 2004, by Shigio Yamaguchi
 
