@@ -106,7 +106,7 @@ anchor_load(file)
 			if (db == GTAGS) {
 				char *p;
 
-				for (p = image; *p && isspace(*p); p++)
+				for (p = image; *p && isspace((unsigned char)*p); p++)
 					;
 				if (!*p) {
 					recover(&ptable);
@@ -114,7 +114,7 @@ anchor_load(file)
 				}
 				type = 'D';
 				if (*p == '#') {
-					for (p++; *p && isspace(*p); p++)
+					for (p++; *p && isspace((unsigned char)*p); p++)
 						;
 					if (*p) {
 						if (!strncmp(p, "define", sizeof("define") - 1))
