@@ -96,7 +96,7 @@ anchor_load(file)
 
 			if (split(_, 4, &ptable) < 4) {
 				recover(&ptable);
-				die("too small number of parts in anchor_create().\n'%s'", _);
+				die("too small number of parts in anchor_load().\n'%s'", _);
 			}
 			tag = ptable.part[0].start;
 			lineno = ptable.part[1].start;
@@ -180,10 +180,10 @@ anchor_load(file)
 	/* anchor_dump(stderr, 0);*/
 }
 /*
- * anchor_close: close anchor table
+ * anchor_unload: unload anchor table
  */
 void
-anchor_close()
+anchor_unload()
 {
 	struct anchor *a;
 

@@ -57,10 +57,7 @@ struct anchor {
 #define A_HELP		7
 #define A_LIMIT		8
 
-void anchor_create();
-void anchor_close();
 void anchor_load(char *);
-void anchor_unload();
 struct anchor *anchor_first();
 struct anchor *anchor_next();
 struct anchor *anchor_get(char *, int, int, int);

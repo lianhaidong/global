@@ -727,7 +727,7 @@ src2html(src, html, notsource)
         fprintf(out, "%s\n", html_end);
 
 	if (!notsource)
-		anchor_close();
+		anchor_unload();
 	close_output_file();
 	close_input_file();
 }
