@@ -52,12 +52,14 @@ extern int debug;
 
 #define DBG_PRINT(level, a) dbg_print(level, a)
 
+/* parser procedures */
+void C(const char *);
+void yacc(const char *);
+void Cpp(const char *);
+void java(const char *);
+void php(const char *);
+void assembler(const char *);
+
 void dbg_print(int, const char *);
 int isnotfunction(char *);
 int cmp(const void *, const void *);
-void C(int);
-void Cpp(void);
-int isCpp(void);
-void assembler(const char *);
-void java(void);
-void php(const char *);

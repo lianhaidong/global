@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 1999, 2000, 2001, 2002, 2003, 2004
+ * Copyright (c) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -67,13 +67,24 @@ static struct {
 } stack[MAXPIFSTACK], *cur;
 static int piflevel;		/* condition macro level */
 static int level;		/* brace level */
+static int yaccflag;		/* 1: yacc, 0: c */
 
 /*
- * C: read C (includes .h, .y) file and pickup tag entries.
+ * yacc: read yacc file and pickup tag entries.
  */
 void
-C(yacc)
-	int yacc;
+yacc(file)
+	const char *file;
+{
+	yaccflag = 1;
+	C(file);
+}
+/*
+ * C: read C file and pickup tag entries.
+ */
+void
+C(file)
+	const char *file;
 {
 	int c, cc;
 	int savelevel;
@@ -91,8 +102,8 @@ C(yacc)
 	 * programs
 	 *
 	 */
-	int yaccstatus = (yacc) ? DECLARATIONS : PROGRAMS;
-	int inC = (yacc) ? 0 : 1;		/* 1 while C source */
+	int yaccstatus = (yaccflag) ? DECLARATIONS : PROGRAMS;
+	int inC = (yaccflag) ? 0 : 1;		/* 1 while C source */
 
 	level = piflevel = 0;
 	savelevel = -1;
@@ -100,9 +111,11 @@ C(yacc)
 	startmacro = startsharp = 0;
 	cmode = 1;			/* allow token like '#xxx' */
 	crflag = 1;			/* require '\n' as a token */
-	if (yacc)
+	if (yaccflag)
 		ymode = 1;		/* allow token like '%xxx' */
 
+	if (!opentoken(file))
+		die("'%s' cannot open.", file);
 	while ((cc = nexttoken(interested, reserved_word)) != EOF) {
 		switch (cc) {
 		case SYMBOL:		/* symbol	*/
@@ -464,6 +477,7 @@ C(yacc)
 		if (piflevel != 0)
 			warning("#if block unmatched. (last at level %d.)[+%d %s]", piflevel, lineno, curfile);
 	}
+	closetoken();
 }
 /*
  * process_attribute: skip attributes in __attribute__((...)).

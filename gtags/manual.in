@@ -1,5 +1,5 @@
 #
-# Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003
+# Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005
 #	Tama Communications Corporation
 #
 # This file is part of GNU GLOBAL.
@@ -23,7 +23,7 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	GTAGS,1,Nov 2004,GNU Project
+@HEADER	GTAGS,1,Feb 2005,GNU Project
 @NAME	gtags - create tag files for global.
 @SYNOPSIS
 	@name{gtags} [-c][-i][-I][-o][-P][-q][-v][-w][@arg{dbpath}]
@@ -134,12 +134,18 @@
 	@item{@code{suffixes}(comma separated list)}
 		Suffixes of target source file.
 		As a special exception, @name{gtags} collect values from multiple @code{suffixes} variables.
+		This variable is obsoleted. If the langmap variable is defined
+		@name{gtags} no longer refers this.
 	@item{@code{format}(standard|compact)}
 		Format of tag files. The default is @code{standard}.
 		Compact format is same to @option{-c}(@option{--compact}).
 	@item{@code{icase_path}(boolean)}
 		Ignore case distinctions in the path.
 		Suffixes check are affected by this capability.
+	@item{@code{langmap}(comma separated list)}
+		Language mapping. Each comma-separated map consists of
+		the language name, a colon, and a list of file extensions.
+		Default mapping is 'c:.c.h,yacc:.y,asm:.s.S,java:.java,cpp:.c++.cc.cpp.cxx.hxx.hpp.C.H,php:.php.php3.phtml'.
 	@end_itemize
 @DIAGNOSTICS
 	@name{Gtags} exits with a non 0 value if an error occurred, 0 otherwise.

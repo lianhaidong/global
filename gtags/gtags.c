@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2003
+ * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -147,6 +147,8 @@ static struct option const long_options[] = {
  * Gtags catch signal even if the parent ignore it.
  */
 int exitflag = 0;
+
+static char *langmap = DEFAULTLANGMAP;
 
 void
 onintr(signo)
@@ -548,8 +550,20 @@ main(argc, argv)
 	if (cflag == 0 && getconfs("format", sb) && !strcmp(strbuf_value(sb), "compact"))
 		cflag++;
 	/*
-	 * teach gtags-parser(1) where is dbpath by environment variable.
+	 * Pass the following information to gtags-parser(1)
+	 * using environment variable.
+	 *
+	 * o langmap
+	 * o DBPATH
 	 */
+	strbuf_reset(sb);
+	if (getconfs("langmap", sb)) {
+		char *p = strdup(strbuf_value(sb));
+		if (p == NULL)
+			die("short of memory.");
+		langmap = p;
+	}
+	set_env("GTAGSLANGMAP", langmap);
 	set_env("GTAGSDBPATH", dbpath);
 
 	if (wflag)

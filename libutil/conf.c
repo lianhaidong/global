@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 1999, 2000, 2001, 2002
+ * Copyright (c) 1998, 1999, 2000, 2001, 2002, 2005
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -37,6 +37,7 @@
 #include "conf.h"
 #include "die.h"
 #include "env.h"
+#include "langmap.h"
 #include "locatestring.h"
 #include "makepath.h"
 #include "path.h"
@@ -302,9 +303,22 @@ openconf()
 	sb = strbuf_open(0);
 	strbuf_puts(sb, confline);
 	strbuf_unputc(sb, ':');
+
 	if (!getconfs("suffixes", NULL)) {
+		STRBUF *tmp = strbuf_open(0);
+		char *langmap = NULL;
+
+		/*
+		 * Variable 'suffixes' is obsoleted. But it is generated
+		 * internally from the value of variable 'langmap'.
+		 */
+		if (getconfs("langmap", tmp))
+			langmap = strbuf_value(tmp);
+		else
+			langmap = DEFAULTLANGMAP;
 		strbuf_puts(sb, ":suffixes=");
-		strbuf_puts(sb, DEFAULTSUFFIXES);
+		make_suffixes(langmap, sb);
+		strbuf_close(tmp);
 	}
 	if (!getconfs("skip", NULL)) {
 		strbuf_puts(sb, ":skip=");

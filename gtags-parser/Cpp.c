@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 1999, 2000, 2001, 2002, 2003, 2004
+ * Copyright (c) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -72,7 +72,8 @@ static int namespacelevel;	/* namespace block level */
  * Cpp: read C++ file and pickup tag entries.
  */
 void
-Cpp()
+Cpp(file)
+	const char *file;
 {
 	int c, cc;
 	int savelevel;
@@ -101,6 +102,8 @@ Cpp()
 	crflag = 1;			/* require '\n' as a token */
 	cppmode = 1;			/* treat '::' as a token */
 
+	if (!opentoken(file))
+		die("'%s' cannot open.", file);
 	while ((cc = nexttoken(interested, reserved_word)) != EOF) {
 		if (cc == '~' && level == stack[classlevel].level)
 			continue;
@@ -521,6 +524,7 @@ Cpp()
 		if (piflevel != 0)
 			warning("#if block unmatched. (last at level %d.)[+%d %s]", piflevel, lineno, curfile);
 	}
+	closetoken();
 }
 /*
  * process_attribute: skip attributes in __attribute__((...)).
@@ -735,25 +739,4 @@ seems_datatype(token)
 		if (islower(*p))
 			return 0;
 	return 1;
-}
-/*
- * whether or not C++.
- */
-int
-isCpp()
-{
-	int cc;
-	int Cpp = 0;
-	cmode = 1;			/* allow token like '#xxx' */
-	cppmode = 1;			/* treat '::' as a token */
-
-	while ((cc = nexttoken(NULL, reserved_word)) != EOF) {
-		if (cc == CPP_CLASS || cc == CPP_TEMPLATE ||
-			cc == CPP_OPERATOR || cc == CPP_VIRTUAL) {
-			Cpp = 1;
-			break;
-		}
-	}
-	rewindtoken();
-	return Cpp;
 }

@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2002, 2004 Tama Communications Corporation
+ * Copyright (c) 2002, 2004, 2005
+ *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -38,32 +39,42 @@ static STRBUF *active_map;
 
 /*
  * construct language map.
+ *
+ * copy string langmap and convert it to language map like this:
+ *
+ * langmap (string)	"c:.c.h,java:.java,cpp:.C.H"
+ *	|
+ *	v
+ * language map		c\0.c.h\0java\0.java\0cpp\0.C.H\0
  */
 void
 setup_langmap(map)
 	const char *map;
 {
 	char *p;
-	int flag;
+	int onsuffix = 0;		/* not on suffix string */
 
 	active_map = strbuf_open(0);
 	strbuf_puts(active_map, map);
-	flag = 0;
 	for (p = strbuf_value(active_map); *p; p++) {
 		/*
 		 * "c:.c.h,java:.java,cpp:.C.H"
 		 */
-		if ((flag == 0 && *p == ',') || (flag == 1 && *p == ':'))
+		if ((onsuffix == 0 && *p == ',') || (onsuffix == 1 && *p == ':'))
 			die_with_code(2, "syntax error in langmap '%s'.", map);
 		if (*p == ':' || *p == ',') {
-			flag ^= 1;
+			onsuffix ^= 1;
 			*p = '\0';
 		}
 	}
-	if (flag == 0)
+	if (onsuffix == 0)
 		die_with_code(2, "syntax error in langmap '%s'.", map);
+	/* strbuf_close(active_map); */
 }
 
+/*
+ * decide the language of the suffix.
+ */
 const char *
 decide_lang(suffix)
 	const char *suffix;
@@ -100,4 +111,40 @@ match_suffix_list(suffix, list)
 			;
 	}
 	return 0;
+}
+
+/*
+ * make the suffixes value from langmap value.
+ */
+void
+make_suffixes(langmap, sb)
+	char *langmap;
+	STRBUF *sb;
+{
+	char *p;
+	int onsuffix = 0;		/* not on suffix string */
+	int first_dot = 1;
+
+	for (p = langmap; *p; p++) {
+		/*
+		 * "c:.c.h,java:.java,cpp:.C.H"
+		 */
+		if ((onsuffix == 0 && *p == ',') || (onsuffix == 1 && *p == ':'))
+			die_with_code(2, "syntax error in langmap '%s'.", langmap);
+		if (*p == ':')
+			onsuffix = 1;
+		else if (*p == ',')
+			onsuffix = 0;
+		else if (onsuffix) {
+			if (*p == '.') {
+				if (first_dot)
+					first_dot = 0;
+				else
+					strbuf_putc(sb, ',');
+			} else 
+				strbuf_putc(sb, *p);
+		}
+	}
+	if (onsuffix == 0)
+		die_with_code(2, "syntax error in langmap '%s'.", langmap);
 }

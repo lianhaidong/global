@@ -29,6 +29,10 @@
 # 'default' is default target.
 # You can specify target with GTAGSLABEL environment variable.
 #
+# Variable 'suffixes' is obsoleted but is acceptable because it is needed
+# for plugged-in parser. If you use gtags-parser(1) then you should use
+# variable 'langmap' instead.
+#
 default:\
 	:tc=gtags:tc=htags:
 #---------------------------------------------------------------------
@@ -37,6 +41,7 @@ default:\
 #---------------------------------------------------------------------
 common:\
 	:skip=@DEFAULTSKIP@:\
+	:langmap=@DEFAULTLANGMAP_QUOTED@:\
 	:format=standard:
 #
 # [gtags-parser]
@@ -50,9 +55,10 @@ common:\
 #	:GRTAGS=gtags-parser --langmap=c\:.x.y.z -dt %s:
 #	:GSYMS=gtags-parser --langmap=c\:.x.y.z -dt %s:
 #
+# The %s is replaced with the path of source file.
+#
 gtags:\
 	:tc=common:\
-	:suffixes=@DEFAULTSUFFIXES@:\
 	:GTAGS=gtags-parser -dt %s:\
 	:GRTAGS=gtags-parser -dtr %s:\
 	:GSYMS=gtags-parser -dts %s:

@@ -138,14 +138,20 @@ AC_SUBST(LDFLAGS)
 dnl
 dnl The definition of config variable skip and suffixes.
 dnl
-DEFAULTSUFFIXES='c,h,y,c++,cc,cpp,cxx,hxx,hpp,C,H,s,S,java,php,php3,phtml'
 DEFAULTSKIP='GPATH,GTAGS,GRTAGS,GSYMS,HTML/,tags,TAGS,ID,y.tab.c,y.tab.h,.notfunction,cscope.out,.gdbinit,SCCS/,RCS/,CVS/,CVSROOT/,{arch}/,.svn/,.cvsrc,.cvsignore,.cvspass,.cvswrappers,.deps/,autom4te.cache/,.snprj/'
-AC_SUBST(DEFAULTSUFFIXES)
+DEFAULTLANGMAP='c:.c.h,yacc:.y,asm:.s.S,java:.java,cpp:.c++.cc.cpp.cxx.hxx.hpp.C.H,php:.php.php3.phtml'
 AC_SUBST(DEFAULTSKIP)
+AC_SUBST(DEFAULTLANGMAP)
+
+dnl
+dnl Quoted langmap. It is only for gtags.conf.
+dnl
+DEFAULTLANGMAP_QUOTED=`echo $DEFAULTLANGMAP | sed 's/:/\\\\:/g'`
+AC_SUBST(DEFAULTLANGMAP_QUOTED)
 
 AC_OUTPUT([Makefile
 	gtags.conf
-	libutil/conf.h
+	libutil/langmap.h
 	htags/global.cgi.tmpl
 	libutil/Makefile
 	gtags/Makefile

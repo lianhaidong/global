@@ -1,5 +1,5 @@
 #
-# Copyright (c} 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003
+# Copyright (c} 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005
 #	Tama Communications Corporation
 #
 # This file is part of GNU GLOBAL.
@@ -23,7 +23,7 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	HTAGS,1,May 2004,GNU Project
+@HEADER	HTAGS,1,Feb 2005,GNU Project
 @NAME	htags - generate hypertext from source code.
 @SYNOPSIS
 	@name{htags} [-a][-c][-D][-f][-F][-g][-n][-o][-s][-v][-w][-d @arg{dbpath}][-m @arg{name}][-S @arg{cgidir}][-t @arg{title}][@arg{htmldir}]
@@ -256,15 +256,10 @@
 		When this function is enabled, you cannot move hypertext from source directory.
 	@item{@code{include_file_suffixes}(comma separated list)}
 		Suffixes of include file. The default is 'h,hxx,hpp,H,inc.php'.
-#
-#	2004/10/2
-#	We keep the langmap variable undocumented until being supported
-#	by gtags(1) not to cause a useless mess to the user,
-#
-#	@item{@code{langmap}(comma separated list)}
-#		Language mapping. Each comma-separated map consists of
-#		the language name, a colon, and a list of file extensions.
-#		Default mapping is 'c:.c,yacc:.y,asm:.s.S,java:.java,cpp:.c++.cc.cpp.cxx.h.hxx.hpp.C.H,php:.php.php3.phtml'.
+	@item{@code{langmap}(comma separated list)}
+		Language mapping. Each comma-separated map consists of
+		the language name, a colon, and a list of file extensions.
+		Default mapping is 'c:.c.h,yacc:.y,asm:.s.S,java:.java,cpp:.c++.cc.cpp.cxx.hxx.hpp.C.H,php:.php.php3.phtml'.
 	@end_itemize
 @DIAGNOSTICS
 	@name{Htags} exits with a non 0 value if an error occurred, 0 otherwise.

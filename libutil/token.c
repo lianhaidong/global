@@ -60,7 +60,7 @@ static void pushbackchar(void);
  */
 int
 opentoken(file)
-	char *file;
+	const char *file;
 {
 	/*
 	 * b flag is needed for WIN32 environment. Almost unix ignore it.

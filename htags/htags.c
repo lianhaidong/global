@@ -199,7 +199,7 @@ int cgi = 1;				/* 1: make cgi-bin/		*/
 int definition_header=NO_HEADER;	/* (NO|BEFORE|RIGHT|AFTER)_HEADER */
 char *htags_options = NULL;
 char *include_file_suffixes = "h,hxx,hpp,H,inc.php";
-static char *langmap = "c:.c,yacc:.y,asm:.s.S,java:.java,cpp:.c++.cc.cpp.cxx.h.hxx.hpp.C.H,php:.php.php3.phtml";
+static char *langmap = DEFAULTLANGMAP;
 
 static struct option const long_options[] = {
         {"alphabet", no_argument, NULL, 'a'},

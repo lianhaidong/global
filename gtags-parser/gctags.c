@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 1999, 2000, 2001, 2002, 2003
+ * Copyright (c) 1998, 1999, 2000, 2001, 2002, 2003, 2005
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -54,12 +54,6 @@ struct words {
 struct words *words;
 static int tablesize;
 
-/*
- * language map.
- *
- * By default, default_map is used.
- */
-static const char *default_map = "c:.c.h,yacc:.y,asm:.s.S,java:.java,cpp:.c++.cc.cpp.cxx.hxx.hpp.C.H,php:.php.php3.phtml";
 static char *langmap;
 
 int bflag;			/* -b: force level 1 block start */
@@ -75,6 +69,58 @@ int do_check;
 int show_version;
 int show_help;
 int debug;
+
+/*----------------------------------------------------------------------*/
+/* Parser switch                                                        */
+/*----------------------------------------------------------------------*/
+/*
+ * This is the linkage section of each parsers.
+ * If you want to support new language, you must define parser procedure
+ * which requires file name as an argument.
+ */
+struct lang_entry {
+	const char *lang_name;
+	void (*parser)(const char *);		/* parser procedure */
+};
+
+/*
+ * The first entry is default language.
+ */
+static struct lang_entry lang_switch[] = {
+	/* lang_name    parser_proc	*/
+	{"c",		C},			/* DEFAULT */
+	{"yacc",	yacc},
+	{"cpp",		Cpp},
+	{"java",	java},
+	{"php",		php},
+	{"asm",		assembler}
+};
+#define DEFAULT_ENTRY &lang_switch[0]
+/*
+ * get language entry.
+ *
+ *      i)      lang    language name (NULL means 'not specified'.)
+ *      r)              language entry
+ */
+static struct lang_entry *
+get_lang_entry(lang)
+        const char *lang;
+{
+        int i, size = sizeof(lang_switch) / sizeof(struct lang_entry);
+
+        /*
+         * if language not specified, it assumes default language.
+         */
+        if (lang == NULL)
+                return DEFAULT_ENTRY;
+        for (i = 0; i < size; i++)
+                if (!strcmp(lang, lang_switch[i].lang_name))
+                        return &lang_switch[i];
+        /*
+         * if specified language not found, it assumes default language.
+         */
+        return DEFAULT_ENTRY;
+}
 
 static void
 usage()
@@ -167,7 +213,16 @@ main(argc, argv)
 		fprintf(stdout, "Part of GLOBAL\n");
 		exit(0);
 	}
-	setup_langmap(langmap ? langmap : default_map);
+	/*
+	 * If langmap is not passed as argument, environment variable
+	 * GTAGSLANGMAP should be checked. Gtags(1) call gtags-parser
+	 * in this method.
+	 */
+	if (langmap == NULL)
+		langmap = getenv("GTAGSLANGMAP");
+	if (langmap == NULL)
+		langmap = DEFAULTLANGMAP;
+	setup_langmap(langmap);
 
         argc -= optind;
         argv += optind;
@@ -223,6 +278,7 @@ main(argc, argv)
 	 */
 	for (; argc > 0; argv++, argc--) {
 		const char *lang, *suffix;
+		struct lang_entry *ent;
 
 #if defined(_WIN32) || defined(__DJGPP__)
 		/* Lower case the file name since names are case insensitive */
@@ -235,37 +291,17 @@ main(argc, argv)
 		lang = decide_lang(suffix);
 		if (lang == NULL)
 			continue;
-
-		/*
-		 * Initialize token parser. Php() and assembler() use different parser.
-		 */
-		if (strcmp(lang, "php") && strcmp(lang, "asm"))
-			if (!opentoken(argv[0]))
-				die("'%s' cannot open.", argv[0]);
-
-		if (!strcmp(suffix, ".h") && isCpp())
-			lang = "cpp";
 		if (vflag)
 			fprintf(stderr, "suffix '%s' assumed language '%s'.\n", suffix, lang);
-
+		/*
+		 * Select parser.
+		 * If lang == NULL then default parser is selected.
+		 */
+		ent = get_lang_entry(lang);
 		/*
 		 * call language specific parser.
 		 */
-		if (!strcmp(lang, "c")) {
-			C(0);
-		} else if (!strcmp(lang, "yacc")) {
-			C(YACC);
-		} else if (!strcmp(lang, "asm")) {
-			assembler(argv[0]);
-		} else if (!strcmp(lang, "java")) {
-			java();
-		} else if (!strcmp(lang, "cpp")) {
-			Cpp();
-		} else if (!strcmp(lang, "php")) {
-			php(argv[0]);
-		}
-		if (strcmp(lang, "php") && strcmp(lang, "asm"))
-			closetoken();
+		ent->parser(argv[0]);
 	}
 	return 0;
 }

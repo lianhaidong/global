@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 1999, 2000, 2002, 2003
+ * Copyright (c) 1998, 1999, 2000, 2002, 2003, 2005
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -47,7 +47,8 @@
  * java: read java file and pickup tag entries.
  */
 void
-java()
+java(file)
+	const char *file;
 {
 	int c;
 	int level;					/* brace level */
@@ -71,6 +72,8 @@ java()
 	target = (sflag) ? SYM : ((rflag) ? REF : DEF);
 	startclass = startthrows = startequal = 0;
 
+	if (!opentoken(file))
+		die("'%s' cannot open.", file);
 	while ((c = nexttoken(interested, reserved_word)) != EOF) {
 		switch (c) {
 		case SYMBOL:					/* symbol */
@@ -171,4 +174,5 @@ java()
 			break;
 		}
 	}
+	closetoken();
 }
