@@ -639,10 +639,8 @@ int	type;
 				gflags |= GTAGS_UNIQUE;
 			if (extractmethod)
 				gflags |= GTAGS_EXTRACTMETHOD;
-#ifdef DEBUG
 			if (debug)
 				gflags |= GTAGS_DEBUG;
-#endif
 			gtagsadd(gtop, strbuf_value(sb), path, gflags);
 		}
 		gtagsclose(gtop);
@@ -731,10 +729,8 @@ int	db;
 			gflags |= GTAGS_UNIQUE;
 		if (extractmethod)
 			gflags |= GTAGS_EXTRACTMETHOD;
-#ifdef DEBUG
 		if (debug)
 			gflags |= GTAGS_DEBUG;
-#endif
 		gtagsadd(gtop, comline, path, gflags);
 	}
 	total = count;				/* save total count */

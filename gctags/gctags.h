@@ -38,6 +38,7 @@ extern int	eflag;
 extern int	nflag;
 extern int	rflag;
 extern int	sflag;
+extern int	tflag;
 extern int	wflag;
 extern int      yaccfile;
 

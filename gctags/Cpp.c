@@ -129,8 +129,15 @@ Cpp()
 					}
 				}
 			} else {
-				if (target == SYM)
-					PUT(token, lineno, sp);
+				if (dflag) {
+					if (target == REF && defined(token))
+						PUT(token, lineno, sp);
+					else if (target == SYM && !defined(token))
+						PUT(token, lineno, sp);
+				} else {
+					if (target == SYM)
+						PUT(token, lineno, sp);
+				}
 			}
 			break;
 		case CPP_CLASS:
@@ -217,8 +224,13 @@ Cpp()
 				if (c == '\n')
 					pushbacktoken();
 			}  else {
-				if (target == SYM)
-					PUT(token, lineno, sp);
+				if (dflag) {
+					if (target == DEF)
+						PUT(token, lineno, sp);
+				} else {
+					if (target == SYM)
+						PUT(token, lineno, sp);
+				}
 			}
 			break;
 		case CP_INCLUDE:
@@ -322,6 +334,65 @@ Cpp()
 		case CPP_WHILE:
 			if (wflag && !startmacro && level == 0)
 				fprintf(stderr, "Warning: Out of function. %8s [+%d %s]\n", token, lineno, curfile);
+			break;
+		case CPP_TYPEDEF:
+			if (tflag) {
+				char	savetok[MAXTOKEN];
+				int	savelineno;
+				char	savefunc[MAXTOKEN];
+				int	savefunclineno;
+				int	typelevel = 0;
+				int	funclevel = 0;
+
+				savetok[0] = savefunc[0] = 0;
+				while ((c = nexttoken("{}();", reserved)) != EOF) {
+					if (c == ';' && typelevel == 0)
+						break;
+					if (c == '(' || c == ')') {
+						if (c == '(') {
+							if (funclevel++ == 0) {
+								strcpy(savefunc, savetok);
+								savefunclineno = savelineno;
+								savetok[0] = 0;
+							}
+						}
+						if (c == ')') {
+							if (--funclevel == 0) {
+								strcpy(savetok, savefunc);
+								savelineno = savefunclineno;
+								savefunc[0] = 0;
+							}
+						}
+						continue;
+					} else if (c == '{' || c == '}') {
+						if (c == '{')
+							typelevel++;
+						if (c == '}')
+							typelevel--;
+						continue;
+					}
+					if (savetok[0]) {
+						if (target == SYM)
+							PUT(savetok, lineno, sp);
+						if (target == REF && defined(savetok))
+							PUT(savetok, lineno, sp);
+						savetok[0] = 0;
+					}
+					if (c == SYMBOL) {
+						/* save lastest token */
+						strcpy(savetok, token);
+						savelineno = lineno;
+					}
+				}
+				if (wflag && c == EOF) {
+					if (typelevel > 0)
+						fprintf(stderr, "Warning: typedef block unmatched. (last at level %d.)[+%d %s]\n", typelevel, lineno, curfile);
+					if (funclevel > 0)
+						fprintf(stderr, "Warning: () block unmatched. (last at level %d.)[+%d %s]\n", funclevel, lineno, curfile);
+				}
+				if (target == DEF && savetok[0])
+					PUT(savetok, lineno, sp);
+			}
 			break;
 		default:
 			break;
