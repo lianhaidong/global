@@ -42,17 +42,17 @@ static ASSOC *assoc[GTAGLIM];
  * It can be distinguished the first character of the cache record.
  * If it is a blank then it is the former else the latter.
  *
- * (1) The frequency and the name of duplicate object entry file.
- *	+--------------------------+
- *	|' '<file id>' '<frequency>|
- *	+--------------------------+
- *    The duplicate object entry file can be referred to as 'D/<file id>.html'.
+ * (1) The frequency and the id of duplicate object entry file (=fid).
+ *	+----------------------+
+ *	|' '<fid>' '<frequency>|
+ *	+----------------------+
+ *    The duplicate object entry file can be referred to as 'D/<fid>.html'.
  *	
  * (2) The tag definition.
  *	+---------------------------+
  *	|<line number>' '<file name>|
  *	+---------------------------+
- *    The tag entry is referred to as '<fid>.html#<line number>'.
+ *    The tag entry is referred to as 'S/<fid>.html#<line number>'.
  *    The <fid> can be calculated by path2fid(<file name>).
  */
 
