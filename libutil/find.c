@@ -181,10 +181,16 @@ ffindopen()
 	STRBUF	*sb = strbuf_open(0);
 	char	*sufflist = NULL;
 	char	*skiplist = NULL;
+	int	flags = REG_EXTENDED;
 
 	assert(opened == 0);
 	opened = 1;
 
+	/*
+	 * load ignore_case option.
+	 */
+	if (getconfb("ignore_case"))
+		flags |= REG_ICASE;
 	/*
 	 * setup stack.
 	 */
@@ -238,7 +244,7 @@ ffindopen()
 		/*
 		 * compile regular expression.
 		 */
-		retval = regcomp(suff, strbuf_value(sb), REG_EXTENDED);
+		retval = regcomp(suff, strbuf_value(sb), flags);
 		if (retval != 0)
 			die("cannot compile regular expression.");
 	}
@@ -268,7 +274,7 @@ ffindopen()
 		/*
 		 * compile regular expression.
 		 */
-		retval = regcomp(skip, strbuf_value(sb), REG_EXTENDED);
+		retval = regcomp(skip, strbuf_value(sb), flags);
 		if (retval != 0)
 			die("cannot compile regular expression.");
 	} else {
@@ -363,10 +369,16 @@ ffindopen()
 	STRBUF	*sb;
 	char	*sufflist = NULL;
 	char	*skiplist = NULL;
+	int	flags = REG_EXTENDED|REG_NEWLINE;
 
 	assert(opened == 0);
 	opened = 1;
 
+	/*
+	 * load ignore_case option.
+	 */
+	if (getconfb("ignore_case"))
+		flags |= REG_ICASE;
 	sb = strbuf_open(0);
 	if (!getconfs("suffixes", sb))
 		die("cannot get suffixes data.");
@@ -424,7 +436,7 @@ ffindopen()
 		/*
 		 * compile regular expression.
 		 */
-		retval = regcomp(skip, reg, REG_EXTENDED|REG_NEWLINE);
+		retval = regcomp(skip, reg, flags);
 		if (retval != 0)
 			die("cannot compile regular expression.");
 		strbuf_close(sbb);

@@ -1013,7 +1013,11 @@ char	*av;
 	int	count;
 
 	if (av) {
-		if (regcomp(&preg, av, REG_EXTENDED) != 0)
+		int	flags = REG_EXTENDED;
+
+		if (getconfb("ignore_case"))
+			flags |= REG_ICASE;
+		if (regcomp(&preg, av, flags) != 0)
 			die("illegal regular expression.");
 	}
 	if (!localprefix)
