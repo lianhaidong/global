@@ -35,6 +35,18 @@ Thank you.
 </CENTER>
 END_OF_CAUTION
 #-------------------------------------------------------------------------
+# SELF CHECK
+#-------------------------------------------------------------------------
+if (!defined($program) || !defined($usage_const) || !defined($help_const) ||
+	!defined($'c_reserved_words) ||
+	!defined($'cpp_reserved_words) ||
+	!defined($'java_reserved_words)||
+	!defined($'php_reserved_words) ||
+	!defined($'sharp_macros))
+{
+	die("htags: Required variables not found. It seems that htags wasn't built correctly.\n");
+}
+#-------------------------------------------------------------------------
 # COMMAND EXISTENCE CHECK
 #-------------------------------------------------------------------------
 foreach $c ('sort', 'gtags', 'global') {
