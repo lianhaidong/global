@@ -1011,6 +1011,7 @@ END_OF_SCRIPT
 #
 sub makerebuild {
 	local($file) = @_;
+	local($cwd) = getcwd;
 	open(FILE, ">$file") || &'error("cannot make rebuild script.");
 	print FILE "#!/bin/sh\n";
 	print FILE "#\n";
@@ -1020,7 +1021,7 @@ sub makerebuild {
 	print FILE "#\t(at the root of source directory)\n";
 	print FILE "#\t% sh HTML/rebuild.sh\n";
 	print FILE "#\n";
-	print FILE "GTAGSCONF='$save_config' htags $save_argv\n";
+	print FILE "cd $cwd && GTAGSCONF='$save_config' htags $save_argv\n";
 	close(FILE);
 }
 #
