@@ -271,7 +271,7 @@ char	*argv[];
 	 * Decide directory (dbpath) in which gtags make tag files.
 	 *
 	 * Gtags create tag files at current directory by default.
-	 * If dbpath is specified as an argment then use it.
+	 * If dbpath is specified as an argument then use it.
 	 * If the -i option specified and both GTAGS and GRTAGS exists
 	 * at one of the candedite directories then gtags use existing
 	 * tag files.

@@ -72,7 +72,7 @@ int	flags;
 	BTREEINFO info;
 
 	/*
-	 * setup argments.
+	 * setup arguments.
 	 */
 	switch (mode) {
 	case 0:

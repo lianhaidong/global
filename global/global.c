@@ -300,7 +300,7 @@ char	*argv[];
 	if (sflag && rflag)
 		die("both of -s and -r are not allowed.");
 	/*
-	 * only -c, -i, -P and -p allows no argment.
+	 * only -c, -i, -P and -p allows no argument.
 	 */
 	if (!av && !show_filter) {
 		switch (command) {
@@ -873,7 +873,7 @@ char	*dbpath;
 	editlen = strlen(edit);
 	/*
 	 * make grep command line.
-	 * (/dev/null needed when single argment specified.)
+	 * (/dev/null needed when single argument specified.)
 	 */
 	strbuf_puts(ib, "gtags --find ");
 	if (lflag)

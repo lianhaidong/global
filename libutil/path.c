@@ -33,7 +33,7 @@
 #include "path.h"
 
 /*
- * isabspath: wether absolute path or not
+ * isabspath: whether absolute path or not
  *
  *	i)	path	path
  *	r)		1: absolute, 0: not absolute

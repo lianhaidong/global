@@ -31,7 +31,7 @@
 #define IDENTLEN	512		/* max length of ident		*/
 #define MAXBUFLEN	1024		/* max length of buffer		*/
 #define MAXPROPLEN	1024		/* max length of property	*/
-#define MAXARGLEN	512		/* max length of argment	*/
+#define MAXARGLEN	512		/* max length of argument	*/
 #define MAXKEYLEN	300		/* max length of record key	*/
 #define MAXTOKEN	512		/* max length of token		*/
 #ifndef MAXPATHLEN

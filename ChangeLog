@@ -59,7 +59,7 @@ September 3 2000, Shigio Yamaguchi  <shigio@tamacom.com>
 	* htags.pl: most code which depend on javascript are removed
 	  because most of browsers don't support the language.
 	* mgets.c: now belongs strbuf.c as strbuf_fgets().
-	* strbuf.c: new argment 'initial buffer size' of strbuf_open().
+	* strbuf.c: new argument 'initial buffer size' of strbuf_open().
 	* global.conf: one line script for ctags-exuberant fixed.
 	* Cpp.h, java.h: MAXCLASSSTACK changed from 10 to 100.
 	* use snprintf(3) instead of sprintf(3). 

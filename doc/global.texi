@@ -1047,7 +1047,7 @@ the point.
 @item @kbd{CTL-T}
         return to the most recent tag context.
 @item @kbd{:tag}
-        without argment, go to the next tag.
+        without argument, go to the next tag.
 @item @kbd{:pop}
         return to the most recent tag context.
 @item @kbd{:stack}
@@ -1070,7 +1070,7 @@ the point.
 
     :tag ^put_                  <- @r{locate functions start with 'put_'}
     
-    :browse -g 'fseek(.*L_SET)' <- @r{locate fseek() using L_SET argment}
+    :browse -g 'fseek(.*L_SET)' <- @r{locate fseek() using L_SET argument}
 
 @end example
 
@@ -1249,7 +1249,7 @@ You can go to any entry with @kbd{cc}n command.
 
     :grep ^put_                  <- @r{locate functions start with 'put_'}
     
-    :grep -g 'fseek(.*L_SET)' <- @r{locate fseek() using L_SET argment}
+    :grep -g 'fseek(.*L_SET)' <- @r{locate fseek() using L_SET argument}
 
 @end example
 
@@ -1623,12 +1623,12 @@ in the same style as @code{ctags -x}, ie.:
     
     [1] tag name
     [2] line number the tag appeared
-    [3] path name. It must be equal to argment path name.
+    [3] path name. It must be equal to argument path name.
     [4] line image
 
 @end example
 
-Otherwise, you can make a suitable wrapper for the pug-in parser.
+Otherwise, you can make a suitable wrapper for the plug-in parser.
 
 @page
 @c ***************************************************************************

@@ -72,7 +72,7 @@ typedef struct {
 	/*
 	 * Stuff for compact format
 	 */
-	int	opened;			/* wether or not file opened */
+	int	opened;			/* whether or not file opened */
 	char	*line;			/* current record */
 	char	tag[IDENTLEN+1];	/* current tag */
 	char	prev_tag[IDENTLEN+1];	/* previous tag */

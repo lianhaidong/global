@@ -335,7 +335,7 @@ diff -c -r -N ../nvi-1.79.org/ex/ex_tag.c ./ex/ex_tag.c
 + 		}
 + 		if (i < cmdp->argc) {		/* tag name exist */
 + 			/*
-+ 			 * In gtagsmode, only one argment can be accepted.
++ 			 * In gtagsmode, only one argument can be accepted.
 + 			 */
 + 			last = cmdp->argv[cmdp->argc - 1]->bp;
 + 			/*
