@@ -1705,7 +1705,7 @@ sub makedefineindex {
 	close(TAGS);
 	if ($?) { &'error("'$command' failed."); }
 	select($old);
-	if ($'aflag) {
+	if ($'aflag && $alpha) {
 		push(@defines, "<A HREF=defines/$alpha_f.$'HTML TITLE='$alpha_count definitions are containded.'>[$alpha]</A>\n");
 		if (!$'no_order_list) {
 			print ALPHA "</OL>\n";

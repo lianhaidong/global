@@ -260,7 +260,7 @@ makedefineindex(file, total, defines)
 	if (pclose(TAGS) < 0)
 		die("'%s' failed.", command);
 	STDOUT = old;
-	if (aflag) {
+	if (aflag && alpha[0]) {
 		char *msg = (alpha_count == 1) ? "definition is containded." : "definitions are containded.";
 
 		strbuf_sprintf(defines, "<A HREF=defines/%s.%s TITLE='%d %s'>[%s]</A>\n", alpha_f, HTML, alpha_count, msg, alpha);
