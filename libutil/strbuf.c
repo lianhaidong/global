@@ -349,7 +349,7 @@ strbuf_sprintf(STRBUF *sb, const char *s, ...)
 strbuf_sprintf(sb, s, va_alist)
 	STRBUF *sb;
 	char *s;
-	va_dcl;
+	va_dcl
 #endif
 {
 	static char buf[1024];

@@ -61,7 +61,7 @@ die(const char *s, ...)
 #else
 die(s, va_alist)
 	char *s;
-	va_dcl;
+	va_dcl
 #endif
 {
 	va_list ap;
@@ -91,7 +91,7 @@ die_with_code(int n, const char *s, ...)
 die_with_code(n, s, va_alist)
 	int n;
 	char *s;
-	va_dcl;
+	va_dcl
 #endif
 {
 	va_list ap;
@@ -119,7 +119,7 @@ message(const char *s, ...)
 #else
 message(s, va_alist)
 	char *s;
-	va_dcl;
+	va_dcl
 #endif
 {
 	va_list ap;
@@ -141,7 +141,7 @@ warning(const char *s, ...)
 #else
 warning(s, va_alist)
 	char *s;
-	va_dcl;
+	va_dcl
 #endif
 {
 	va_list ap;

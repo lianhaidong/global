@@ -78,7 +78,7 @@ debug_print(const char *s, ...)
 #else
 debug_print(s, va_alist)
 const char *s;
-va_dcl;
+va_dcl
 #endif
 {
 	va_list ap;
