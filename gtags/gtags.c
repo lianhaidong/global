@@ -468,7 +468,7 @@ char	*argv[];
 		 * we splited the output into relatively small unit and
 		 * execute sort for each unit.
 		 *
-		 * It is not certain whether a present unit value is the best.
+		 * It is not certain whether the present unit value is the best.
 		 */
 		int unit = 1500;
 		STRBUF *ib = strbuf_open(MAXBUFLEN);
