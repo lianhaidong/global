@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999
  *             Shigio Yamaguchi. All rights reserved.
- * Copyright (c) 1999, 2000
+ * Copyright (c) 1999, 2000, 2002
  *             Tama Communications Corporation. All rights reserved.
  *
  * This file is part of GNU GLOBAL.
@@ -60,6 +60,7 @@ char	*command;
 	STRBUF	*sb;
 	char *p, *dir;
 	static char path[MAXPATHLEN+1];
+
 #if defined(_WIN32) || defined(__DJGPP__)
 	int	i, lim = sizeof(suffix)/sizeof(char *);
 #endif
@@ -71,6 +72,14 @@ char	*command;
 			return path;
 		}
 		return NULL;
+	}
+	/*
+	 * If found in BINDIR then use it.
+	 */
+	if (test("fx", makepath(BINDIR, command, NULL))) {
+		strncpy(path, makepath(BINDIR, command, NULL), sizeof(path));
+		path[sizeof(path) - 1] = '\0';
+		return path;
 	}
 	/*
 	 * Locate the command for each path in PATH.
@@ -101,11 +110,5 @@ char	*command;
 	}
 finish:
 	strbuf_close(sb);
-	if (*path == NULL) {
-		if (test("fx", makepath(BINDIR, command, NULL))) {
-			strncpy(path, makepath(BINDIR, command, NULL), sizeof(path));
-			path[sizeof(path) - 1] = '\0';
-		}
-	}
 	return *path ? path : NULL;
 }
