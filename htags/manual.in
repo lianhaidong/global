@@ -128,7 +128,7 @@
 	% lynx HTML/D/348.html
 
 	% cd global
-	% htags -gv --cvsweb=http://savannah.gnu.org/cgi-bin/cvsweb/global/
+	% htags -gv --cvsweb=http://savannah.gnu.org/cgi-bin/viewcvs/global/global/
 
 @FILES
 	@begin_itemize
