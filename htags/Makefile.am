@@ -1,6 +1,6 @@
 ## Process this file with automake to create Makefile.in
 #
-# Copyright (c) 2000
+# Copyright (c) 2000, 2001
 #        Tama Communications Corporation. All rights reserved.
 #
 # This file is free software; as a special exception the author gives
@@ -14,7 +14,6 @@
 bin_SCRIPTS = htags
 
 PERL = @PERL@
-VERSION = @VERSION@
 
 SUFFIXES = .pl
 
