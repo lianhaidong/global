@@ -1932,7 +1932,7 @@ If @file{$HOME/.globalrc} exists then GLOBAL use it. Else if @file{/etc/gtags.co
 exists then GLOBAL use it. Otherwise default value will be used.
 The format of @file{gtags.conf} is resemble to termcap(5). By default, 'default'
 target is used.
-About the capabilities, please see each command manual. (@xref{gtags}, @xref{htags} and @xref{global}).
+About the capabilities, please see each command manual. (See @xref{Reference}.)
 
 @c ***************************************************************************
 @node   Plugin
