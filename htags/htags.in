@@ -655,10 +655,10 @@ while ($ARGV[0] =~ /^-/) {
 		$'wflag = 'w';
 	} elsif ($opt =~ /^--caution$/) {
 		$'include_caution = $'caution_message;
+	} elsif ($opt =~ /^--title=(.*)$/) {
+		$'title = $1;
 	} elsif ($opt =~ /^--title$/) {
-		$opt = shift;
-		last if ($opt eq '');
-		$title = $opt;
+		$'title = shift;
 	} elsif ($opt =~ /^--dbpath$/) {
 		$opt = shift;
 		last if ($opt eq '');
