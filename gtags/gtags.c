@@ -51,6 +51,7 @@
 static void	usage(void);
 void	signal_setup(void);
 void	onintr(int);
+int	match(char *, char *);
 int	main(int, char **);
 int	incremental(char *, char *);
 void	updatetags(char *, char *, char *, int);
@@ -72,6 +73,7 @@ int     show_version;
 int     show_help;
 int	show_config;
 int	do_find;
+int	do_sort;
 int	do_relative;
 int	do_absolute;
 int	do_expand;
@@ -124,6 +126,7 @@ static struct option const long_options[] = {
 	{"postgres", optional_argument, NULL, 'P'},
 	{"pwd", no_argument, &do_pwd, 1},
 	{"relative", no_argument, &do_relative, 1},
+	{"sort", no_argument, &do_sort, 1},
 	{"version", no_argument, &show_version, 1},
 	{"help", no_argument, &show_help, 1},
 	{ 0 }
@@ -153,6 +156,21 @@ signal_setup()
 #ifdef SIGQUIT
 	signal(SIGQUIT, onintr);
 #endif
+}
+
+int
+match(curtag, line)
+char *curtag;
+char *line;
+{
+	char *p, *q = line;
+
+	for (p = curtag; *p; p++)
+		if (*p != *q++)
+			return 0;
+	if (!isspace(*q))
+		return 0;
+	return 1;
 }
 
 int
@@ -297,6 +315,36 @@ char	*argv[];
 			for (gfind_open(dbpath, local); (path = gfind_read()) != NULL; )
 				fprintf(stdout, "%s\n", path);
 			gfind_close();
+		}
+		exit(0);
+	} else if (do_sort) {
+		/*
+		 * This is GLOBAL version of sort.
+		 * We replace sort with this procedure for performance.
+		 */
+		int unit = 1500;
+		STRBUF *ib = strbuf_open(MAXBUFLEN);
+		char *line = strbuf_fgets(ib, stdin, 0);
+
+		while (line != NULL) {
+			int count = 0;
+			FILE *op = popen("sort +0 -1 +2 -3 +1n -2 -u", "w");
+			do {
+				fputs(line, op);
+			} while ((line = strbuf_fgets(ib, stdin, 0)) != NULL && ++count < unit);
+			if (line) {
+				/* curtag = current tag name */
+				STRBUF *curtag = strbuf_open(0);
+				char *p = line;
+				while (!isspace(*p))
+					strbuf_putc(curtag, *p++);
+				/* read until next tag name */
+				do {
+					fputs(line, op);
+				} while ((line = strbuf_fgets(ib, stdin, 0)) != NULL
+					&& match(strbuf_value(curtag), line));
+			}
+			pclose(op);
 		}
 		exit(0);
 	} else if (do_relative || do_absolute) {
