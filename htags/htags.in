@@ -1219,7 +1219,7 @@ sub makedupindex {
 	local($srcdir) = "../$'SRCS";
 	local(%kind) = ('GTAGS', 'definitions', 'GRTAGS', 'references');
 	local(%option) = ('GTAGS', '', 'GRTAGS', 'r');
-	local(%type) = ('GTAGS', $'DEFS, 'GRTAGS', $'REFS);
+	local(%dir) = ('GTAGS', $'DEFS, 'GRTAGS', $'REFS);
 
 
 	foreach $db ('GRTAGS', 'GTAGS') {
@@ -1256,11 +1256,11 @@ sub makedupindex {
 				# duplicate entry
 				if ($first_line) {
 					&cache'put($db, $tag, " $count");
-					local($type) = $type{$db};
+					local($dir) = $dir{$db};
 					if ($'cflag) {
-						open(FILE, "| gzip -c >$dist/$type/$count.$'HTML") || &'error("cannot make file '$dist/$type/$count.$'HTML'.");
+						open(FILE, "| gzip -c >$dist/$dir/$count.$'HTML") || &'error("cannot make file '$dist/$dir/$count.$'HTML'.");
 					} else {
-						open(FILE, ">$dist/$type/$count.$'HTML") || &'error("cannot make file '$dist/$type/$count.$'HTML'.");
+						open(FILE, ">$dist/$dir/$count.$'HTML") || &'error("cannot make file '$dist/$dir/$count.$'HTML'.");
 					}
 					$writing = 1;
 					print FILE $'html_begin, "\n";
