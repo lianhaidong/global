@@ -1,7 +1,5 @@
 /*
- * Copyright (c) 1996, 1997, 1998, 1999
- *             Shigio Yamaguchi. All rights reserved.
- * Copyright (c) 1999, 2000, 2001, 2002
+ * Copyright (c) 2002
  *             Tama Communications Corporation. All rights reserved.
  *
  * This file is part of GNU GLOBAL.
@@ -21,30 +19,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef _GLOBAL_H_
-#define _GLOBAL_H_
+#ifndef _SPLIT_H_
+#define _SPLIT_H_
 
-#include "gparam.h"
-#include "abs2rel.h"
-#include "conf.h"
-#include "dbop.h"
-#include "defined.h"
-#include "die.h"
-#include "find.h"
-#include "getdbpath.h"
-#include "gtagsop.h"
-#include "is_unixy.h"
-#include "locatestring.h"
-#include "makepath.h"
-#include "path.h"
-#include "gpathop.h"
-#include "split.h"
-#include "strbuf.h"
-#include "strmake.h"
-#include "tab.h"
-#include "test.h"
-#include "token.h"
-#include "usable.h"
-#include "version.h"
+int	split(char *, int, int, char **);
 
-#endif /* ! _GLOBAL_H_ */
+#endif /* ! _SPLIT_H_ */
