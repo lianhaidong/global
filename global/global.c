@@ -56,7 +56,7 @@ FILE	*openfilter(void);
 void	closefilter(FILE *);
 void	completion(char *, char *, char *);
 void	idutils(char *, char *);
-void	grep(char *, char *);
+void	grep(char *);
 void	pathlist(char *, char *);
 void	parsefile(int, char **, char *, char *, char *, int);
 void	printtag(FILE *, char *);
@@ -455,7 +455,7 @@ char	*argv[];
 	 */
 	if (gflag) {
 		chdir(root);
-		grep(av, dbpath);
+		grep(av);
 		exit(0);
 	}
 	/*
@@ -760,13 +760,12 @@ char	*dbpath;
  *	i)	dbpath	GTAGS directory
  */
 void
-grep(pattern, dbpath)
+grep(pattern)
 char	*pattern;
-char	*dbpath;
 {
 	FILE	*op, *fp;
 	STRBUF	*ib = strbuf_open(MAXBUFLEN);
-	char	*path;
+	char	*path, *p;
 	char	edit[IDENTLEN+1];
 	char	*buffer;
 	int	linenum, count, editlen;
@@ -788,7 +787,8 @@ char	*dbpath;
 	if (!(op = openfilter()))
 		die("cannot open output filter.");
 	count = 0;
-	for (gfind_open(dbpath, localprefix); (path = gfind_read()) != NULL; ) {
+	for (vfind_open(localprefix, oflag); (p = vfind_read()) != NULL; ) {
+		path = (*p == ' ') ? ++p : p;
 		if (!(fp = fopen(path, "r")))
 			die("cannot open file '%s'.", path);
 		linenum = 0;
@@ -811,7 +811,7 @@ char	*dbpath;
 		}
 		fclose(fp);
 	}
-	gfind_close();
+	vfind_close();
 	closefilter(op);
 	strbuf_close(ib);
 	regfree(&preg);

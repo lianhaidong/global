@@ -64,7 +64,7 @@
 /*
  * usage of find_xxx()
  *
- *	find_open();
+ *	find_open(NULL);
  *	while (path = find_read()) {
  *		...
  *	}
@@ -412,20 +412,25 @@ STRBUF  *sb;
 }
 /*
  * find_open: start iterator without GPATH.
+ *
+ *	i)	start	start directory
+ *			If NULL, assumed '.' directory.
  */
 void
-find_open()
+find_open(start)
+char *start;
 {
 	assert(opened == 0);
 	opened = 1;
 
+	if (!start)
+		start = ".";
 	/*
 	 * setup stack.
 	 */
 	curp = &stack[0];
 	topp = curp + STACKSIZE; 
-	strlimcpy(dir, ".", sizeof(dir));
-
+	strlimcpy(dir, start, sizeof(dir));
 	curp->dirp = dir + strlen(dir);
 	curp->sb = strbuf_open(0);
 	if (getdirs(dir, curp->sb) < 0)
@@ -528,14 +533,21 @@ static FILE	*ip;
 
 /*
  * find_open: start iterator without GPATH.
+ *
+ *	i)	start	start directory
+ *			If NULL, assumed '.' directory.
  */
 void
-find_open()
+find_open(start)
+char *start;
 {
-	char	*findcom = "find . -type f -print";
-
+	char findcom[MAXFILLEN+1];
 	assert(opened == 0);
 	opened = 1;
+
+	if (!start)
+		start = ".";
+	 snprintf(findcom, sizeof(findcom), "find %s -type f -print", start);
 
 #ifdef DEBUG
 	if (debug)

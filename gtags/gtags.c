@@ -428,22 +428,13 @@ char	*argv[];
 		exit(0);
 	} else if (do_find) {
 		char	*path;
+		char *local = (argc) ? argv[0] : NULL;
 
-		if (other_files) {
-			for (find_open(); (path = find_read()) != NULL; ) {
-				fputs(path, stdout);
-				fputc('\n', stdout);
-			}
-			find_close();
-		} else {
-			char *local = (argc) ? argv[0] : "./";
-			getdbpath(cwd, root, dbpath, 0);
-			for (gfind_open(dbpath, local); (path = gfind_read()) != NULL; ) {
-				fputs(path, stdout);
-				fputc('\n', stdout);
-			}
-			gfind_close();
+		for (vfind_open(local, other_files); (path = vfind_read()) != NULL; ) {
+			fputs(path, stdout);
+			fputc('\n', stdout);
 		}
+		vfind_close();
 		exit(0);
 	} else if (do_sort) {
 		/*
@@ -672,35 +663,12 @@ char	*argv[];
 	 * create id-utils index.
 	 */
 	if (Iflag) {
-#if 0
-		char *path;
-#endif
-
 		if (vflag)
 			fprintf(stderr, "[%s] Creating indexes for id-utils.\n", now());
 		strbuf_reset(sb);
 		strbuf_puts(sb, "mkid");
 		if (vflag)
 			strbuf_puts(sb, " -v");
-#if 0
-		/*
-		 * Removed becase --file=... option brings argument overflow.
-		 */
-		strbuf_puts(sb, " --file=");
-		strbuf_puts(sb, makepath(dbpath, "ID", NULL));
-		if (extra_options) {
-			strbuf_putc(sb, ' ');
-			strbuf_puts(sb, extra_options);
-		}
-		/* append file list */
-		for (find_open(); (path = find_read()) != NULL; ) {
-			/* a blank at the head of path means 'NOT SOURCE'. */
-			if (*path == ' ')
-				continue;
-			strbuf_putc(sb, ' ');
-			strbuf_puts(sb, path);
-		}
-#endif
 		if (vflag) {
 #ifdef __DJGPP__
 			if (is_unixy())	/* test for 4DOS as well? */
@@ -763,7 +731,7 @@ char	*root;
 	/*
 	 * make add list and update list.
 	 */
-	for (find_open(); (path = find_read()) != NULL; ) {
+	for (find_open(NULL); (path = find_read()) != NULL; ) {
 		/* a blank at the head of path means 'NOT SOURCE'. */
 		if (*path == ' ')
 			continue;
@@ -999,7 +967,7 @@ int	db;
 	if (vflag > 1 && getconfs(dbname(db), sb))
 		fprintf(stderr, " using tag command '%s <path>'.\n", strbuf_value(sb));
 	gtop = gtags_open(dbpath, root, db, GTAGS_CREATE, flags);
-	for (find_open(); (path = find_read()) != NULL; ) {
+	for (find_open(NULL); (path = find_read()) != NULL; ) {
 		int	gflags = 0;
 		int	skip = 0;
 
