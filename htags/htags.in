@@ -321,8 +321,13 @@ $file_icon = 'c.jpg';
 #
 # This is alternative for title string.
 #
+#	i)	type	D, R, Y
+#	i)	lno	>0: line number, -1: multi line
+#	i)	opt	lno > 0: file name
+#			lno == -1: entry count
+#
 sub show {
-	local($type, $lno, $file) = @_;
+	local($type, $lno, $opt) = @_;
 	local($msg) = '';
 
 	if ($lno > 0) {
@@ -334,18 +339,19 @@ sub show {
 			$msg .= 'Refered from';
 		}
 		$msg .= ' ' . $lno;
-		if ($file ne '') {
-			$msg .= ' in ' . $file;
+		if ($opt ne '') {
+			$msg .= ' in ' . $opt;
 		}
 	} else {
 		$msg .= 'Multiple ';
 		if ($type eq 'R') {
-			$msg .= 'defined';
+			$msg .= 'defined at';
 		} elsif ($type eq 'Y') {
-			$msg .= 'used';
+			$msg .= 'used at';
 		} else {
-			$msg .= 'refered';
+			$msg .= 'refered from';
 		}
+		$msg .= ' ' . $opt . ' places';
 	}
 	$msg .= '.';
 	$msg;
@@ -1428,6 +1434,7 @@ sub makedupindex {
 		local($first_line);
 		local($writing) = 0;
 		local($count) = 0;
+		local($entry_count) = 0;
 		local($command);
 
 		#
@@ -1451,6 +1458,10 @@ sub makedupindex {
 					print FILE $'html_end, "\n";
 					$'file_count++;
 					$writing = 0;
+					#
+					# cache record: " <file id> <entry number>"
+					#
+					&cache'put($db, $prev, &cache'get($db, $prev) . " $entry_count");
 				}
 				# single entry
 				if ($first_line) {
@@ -1459,6 +1470,7 @@ sub makedupindex {
 				}
 				$first_line = $_;
 				$prev = $tag;
+				$entry_count = 0;
 			} else {
 				# duplicate entry
 				if ($first_line) {
@@ -1478,11 +1490,13 @@ sub makedupindex {
 						print FILE &'list_begin;
 						print FILE &'list_body($srcdir, $first_line);
 					}
+					$entry_count++;
 					$first_line = '';
 				}
 				if (!$'dynamic) {
 					print FILE &'list_body($srcdir, $_);
 				}
+				$entry_count++;
 			}
 		}
 		$definition_count = $count if ($db eq 'GTAGS');
@@ -1494,6 +1508,10 @@ sub makedupindex {
 			print FILE $'body_end, "\n";
 			print FILE $'html_end, "\n";
 			$'file_count++;
+			#
+			# cache record: " <file id> <entry number>"
+			#
+			&cache'put($db, $prev, &cache'get($db, $prev) . " $entry_count");
 		}
 		if ($first_line) {
 			local($nouse, $lno, $filename) = split(/[ \t]+/, $first_line);
@@ -1600,7 +1618,7 @@ sub makedefineindex {
 		local($line) = &cache'get('GTAGS', $tag);
 		local($url);
 		local($guide);
-		if ($line =~ /^ (.*)/) {
+		if ($line =~ /^ (\d+) (\d+)/) {
 			$url = "$'DEFS/$1.$'HTML";
 			if ($'dynamic) {
 				local($cgi) = $'action;
@@ -1613,8 +1631,8 @@ sub makedefineindex {
 				if ($'aflag) {
 					$url = "../" . $url;
 				}
-				$guide = 'Multiple defined.';
 			}
+			$guide = "Multiple defined at $2 places.";
 		} else {
 			local($lno, $path) = split(/[ \t]+/, $line);
 			local($filename) = &'path2url($path);
@@ -2315,7 +2333,7 @@ sub src2html {
 				local($line) = &cache'get($db, $TAG);
 				if (defined($line)) {
 					local($href);
-					if ($line =~ /^ (.*)/) {
+					if ($line =~ /^ (\d+) (\d+)/) {
 						local($url);
 						if ($'dynamic) {
 							local($cgi) = ($'action =~ /^\//) ? $'action : "../$'action";
@@ -2340,7 +2358,7 @@ sub src2html {
 							$url = "../$dir/$1.$'HTML";
 						}
 						$href = "<A HREF=$url";
-						$href .= " TITLE=\"" . &'show($TYPE,-1,'') . "\"";
+						$href .= " TITLE=\"" . &'show($TYPE,-1,$2) . "\"";
 						$href .= ">$TAG</A>";
 					} else {
 						local($lno, $filename) = split(/[ \t]+/, $line);
