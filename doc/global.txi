@@ -1482,8 +1482,11 @@ Second, write the following set command to the @file{.vimrc} and start vim.
     +----------------------------
     |set grepprg=global\ -t
     |set grepformat=%m%\\t%f%\\t%l
-
-    TAB means @kbd{CTL-I}
+or
+    $HOME/.vimrc
+    +----------------------------
+    |set grepprg=global\ -x
+    |set grepformat=%m%\\s%\\+%l%\\s%f%.%#
 
 @end example
 @opindex -t
