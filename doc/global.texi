@@ -1,7 +1,7 @@
 \input texinfo   @c -*-texinfo-*-
 @c %**start of header
 @setfilename global.info
-@settitle GLOBAL source code tag system
+@settitle GNU GLOBAL source code tag system
 @comment %**end of header
 
 @include version.texi
@@ -13,12 +13,12 @@
 @ifinfo
 @dircategory Miscellaneous
 @direntry
-* GLOBAL: (global).             The GNU GLOBAL source code tag system.
+* GLOBAL: (global).             GNU GLOBAL source code tag system.
 @end direntry
 @end ifinfo
 
 @ifinfo
-This file documents the @file{GLOBAL} source code tag system.
+This file documents the GNU GLOBAL source code tag system.
 
 Copyright (c) 2000, 2001 Tama Communications Corporation. All rights reserved.
 
@@ -32,8 +32,8 @@ Free Documentation License".
 @end ifinfo
 
 @titlepage
-@title GLOBAL source code tag system
-@subtitle Edition @value{EDITION}, for GLOBAL version @value{VERSION}
+@title GNU GLOBAL source code tag system
+@subtitle Edition @value{EDITION}, for GNU GLOBAL version @value{VERSION}
 @subtitle @value{UPDATED}
 @author by Shigio Yamaguchi
 @c copyright page
@@ -59,9 +59,9 @@ Free Documentation License".
 
 @ifinfo
 @node Top
-@top GLOBAL source code tag system
+@top GNU GLOBAL source code tag system
 
-This manual documents version @value{VERSION} of the GLOBAL source code tag system.
+This manual documents version @value{VERSION} of the GNU GLOBAL source code tag system.
 
 @menu
 * Introduction::                        Overview of the tools.
