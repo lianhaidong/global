@@ -1,6 +1,6 @@
 Makefile
 Makefile.in
-gctags.ref
+gtags-parser.ref
 global.info
 global.ref
 gozilla.ref

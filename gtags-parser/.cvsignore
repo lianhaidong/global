@@ -11,8 +11,8 @@ c_res.h
 const.h
 cpp_res.gpf
 cpp_res.h
-gctags
-gctags.1
+gtags-parser
+gtags-parser.1
 htags_res.pl
 java_res.gpf
 java_res.h
