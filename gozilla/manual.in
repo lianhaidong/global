@@ -23,7 +23,7 @@
 #       o man format reference manual.
 #       o texinfo format reference manual.
 #
-@HEADER GOZILLA,1,May 2002,GNU Project
+@HEADER GOZILLA,1,May 2004,GNU Project
 @NAME   gozilla - force mozilla to display specified source file.
 @SYNOPSIS
 	@name{gozilla} [-b browser][-p][+no] file
@@ -115,7 +115,7 @@
 	I don't know whether or not @name{gozilla} works well in Windows32
 	environment.
 @AUTHORS
-	Shigio Yamaguchi, Tama Communications Corporation.
+	Tama Communications Corporation.
 @HISTORY
 	The @name{gozilla} command appeared in FreeBSD 2.2.2 but did not
 	installed by default.

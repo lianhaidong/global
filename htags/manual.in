@@ -23,7 +23,7 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	HTAGS,1,June 2003,GNU Project
+@HEADER	HTAGS,1,May 2004,GNU Project
 @NAME	htags - generate hypertext from source code.
 @SYNOPSIS
 	@name{htags} [-a][-c][-D][-f][-F][-g][-n][-o][-s][-v][-w][-d @arg{dbpath}][-m @arg{name}][-S @arg{cgidir}][-t @arg{title}][@arg{htmldir}]
@@ -265,6 +265,6 @@
 
 	PHP supprt is far from complete.
 @AUTHOR
-	Shigio Yamaguchi, Tama Communications Corporation.
+	Tama Communications Corporation.
 @HISTORY
 	The @name{htags} command appeared in FreeBSD 2.2.2.

@@ -23,7 +23,7 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	GCTAGS,1,June 2003,GNU Project
+@HEADER	GCTAGS,1,May 2004,GNU Project
 @NAME	gctags - print cross reference list for gtags.
 @SYNOPSIS
 	@name{gctags} [-bdenrstvw] @arg{file} ...
@@ -112,6 +112,6 @@
 	and ALTENTRY() from source file.
 	Probably valid only for FreeBSD and Linux kernel source.
 @AUTHOR
-	Shigio Yamaguchi, Tama Communications Corporation.
+	Tama Communications Corporation.
 @HISTORY
 	The @name{gctags} command appeared in FreeBSD 2.2.2.

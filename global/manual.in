@@ -23,7 +23,7 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	GLOBAL,1,Dec 2003,GNU Project
+@HEADER	GLOBAL,1,May 2004,GNU Project
 @NAME	global - print the locations of specified object.
 @SYNOPSIS
 	@name{global} [-aGilnqrstTvx][-e] @arg{pattern}
@@ -208,6 +208,6 @@
         GNU GLOBAL source code tag system@br
         (http://www.gnu.org/software/global/).
 @AUTHOR
-	Shigio Yamaguchi, Tama Communications Corporation.
+	Tama Communications Corporation.
 @HISTORY
 	The @name{global} command appeared in FreeBSD 2.2.2.

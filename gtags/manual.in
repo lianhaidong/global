@@ -23,7 +23,7 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	GTAGS,1,Oct 2003,GNU Project
+@HEADER	GTAGS,1,May 2004,GNU Project
 @NAME	gtags - create tag files for global.
 @SYNOPSIS
 	@name{gtags} [-c][-i][-I][-o][-P][-q][-v][-w][@arg{dbpath}]
@@ -178,6 +178,6 @@
 	Info string is passed to external system as is.
 	If you mistake the value then program may abort with core dump.
 @AUTHOR
-	Shigio Yamaguchi, Tama Communications Corporation.
+	Tama Communications Corporation.
 @HISTORY
 	The @name{gtags} command appeared in FreeBSD 2.2.2.
