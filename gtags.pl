@@ -1,8 +1,7 @@
 #
 # Gtags.pl --- Global facility for Nvi-1.81
 #
-# Copyright (c) 2001, 2002
-#             Tama Communications Corporation. All rights reserved.
+# Copyright (c) 2001, 2002 Tama Communications Corporation
 #
 # This file is part of GNU GLOBAL.
 #

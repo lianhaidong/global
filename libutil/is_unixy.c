@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2001
- *             Tama Communications Corporation. All rights reserved.
+ * Copyright (c) 2001 Tama Communications Corporation
  *
  * Contributed by Jason Hood <jadoxa@yahoo.com.au>, 2001.
  *

@@ -1,8 +1,7 @@
 #
 # GloBash --- Global facility for Bash
 #
-# Copyright (c) 2001, 2002
-#             Tama Communications Corporation. All rights reserved.
+# Copyright (c) 2001, 2002 Tama Communications Corporation
 #
 # This file is part of GNU GLOBAL.
 #
@@ -680,8 +679,7 @@ ghelp() {
 	echo
 	echo "GloBash --- Global facility for Bash"
 	echo
-	echo "Copyright (c) 2001, 2002"
-	echo "Tama Communications Corporation. All rights reserved."
+	echo "Copyright (c) 2001, 2002 Tama Communications Corporation"
 	echo "GLOBAL WWW: http://www.gnu.org/software/global/"
 	echo
 	echo "Prompt:"

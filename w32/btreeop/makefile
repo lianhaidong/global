@@ -1,6 +1,5 @@
 #
-# Copyright (c) 2000
-#        Tama Communications Corporation. All rights reserved.
+# Copyright (c) 2000 Tama Communications Corporation
 #
 # This file is free software; as a special exception the author gives
 # unlimited permission to copy and/or distribute it, with or without

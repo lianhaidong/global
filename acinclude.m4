@@ -1,7 +1,6 @@
 # Local additions to Autoconf macros.
 #
-# Copyright (c) 2000, 2001
-#        Tama Communications Corporation. All rights reserved.
+# Copyright (c) 2000, 2001 Tama Communications Corporation
 #
 # This file is part of GNU GLOBAL.
 #

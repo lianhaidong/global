@@ -2,8 +2,7 @@ dnl
 dnl Configuration script for GLOBAL.
 dnl Process this file with autoconf to produce a configure script.
 dnl
-dnl Copyright (c) 2000, 2001, 2002
-dnl             Tama Communications Corporation. All rights reserved.
+dnl Copyright (c) 2000, 2001, 2002 Tama Communications Corporation
 dnl
 dnl This file is part of GNU GLOBAL.
 dnl
