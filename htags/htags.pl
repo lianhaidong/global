@@ -1013,6 +1013,13 @@ sub makerebuild {
 	local($file) = @_;
 	open(FILE, ">$file") || &'error("cannot make rebuild script.");
 	print FILE "#!/bin/sh\n";
+	print FILE "#\n";
+	print FILE "# rebuild.sh: rebuild hypertext with the previous context.\n";
+	print FILE "#\n";
+	print FILE "# Usage:\n";
+	print FILE "#\t(at the root of source directory)\n";
+	print FILE "#\t% sh HTML/rebuild.sh\n";
+	print FILE "#\n";
 	print FILE "GTAGSCONF='$save_config' htags $save_argv\n";
 	close(FILE);
 }
