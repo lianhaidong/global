@@ -29,11 +29,11 @@ o If your environment is Windows32(Windows95,98,NT...), you need to
   You should install the following GNU tools and set the path so that they
   are invoked.
 
-	gcc, bash, sed, find(Find-utils), sort(Text-utils)
+	gcc, bash, sed, sort(Text-utils)
 
-  CAUTION: Windows32 environment also has two commands named 'find' and 'sort'
-           but they are different from GNU's one. Please set the path
-           so that GNU find and GNU sort are invoked.
+  CAUTION: Windows32 environment also has a command named 'sort'
+           but it is different from GNU's one. Please set the path
+           so that GNU sort is invoked.
 
 o If you want to format man files then nroff is needed.
 

@@ -319,10 +319,7 @@ skipthisfile(path)
 	}
 	return 0;
 }
-#ifdef HAVE_DIRENT_H
-/*----------------------------------------------------------------------*/
-/* dirent version find_xxx()						*/
-/*----------------------------------------------------------------------*/
+
 #define STACKSIZE 50
 static  char dir[MAXPATHLEN+1];			/* directory path */
 static  struct {
@@ -501,105 +498,3 @@ find_close(void)
 		regfree(skip);
 	opened = 0;
 }
-#else /* HAVE_DIRENT_H */
-/*----------------------------------------------------------------------*/
-/* find command version							*/
-/*----------------------------------------------------------------------*/
-static FILE *ip;
-
-/*
- * find_open: start iterator without GPATH.
- *
- *	i)	start	start directory
- *			If NULL, assumed '.' directory.
- */
-void
-find_open(start)
-	char *start;
-{
-	char findcom[MAXFILLEN+1];
-	assert(opened == 0);
-	opened = 1;
-
-	if (!start)
-		start = ".";
-	if (is_unixy())
-		snprintf(findcom, sizeof(findcom), "find %s \\( -type f -o -type l \\) -print", start);
-	else
-		snprintf(findcom, sizeof(findcom), "find %s -type f -print", start);
-
-#ifdef DEBUG
-	if (debug)
-		fprintf(stderr, "find com: %s\n", findcom);
-#endif
-	/*
-	 * prepare regular expressions.
-	 */
-	prepare_source();
-	prepare_skip();
-	if (!(ip = popen(findcom, "r")))
-		die("cannot execute find.");
-}
-/*
- * find_read: read path without GPATH.
- *
- *	r)		path
- */
-char	*
-find_read(void)
-{
-#if defined(_WIN32) && !defined(__CYGWIN__)
-	static int back = 1;
-#endif
-	static char val[MAXPATHLEN+2];
-	char *path = &val[1];
-	char *p;
-
-	assert(opened == 1);
-	while (fgets(path, MAXPATHLEN, ip)) {
-		/*
-		 * chop(path)
-		 */
-		p = path + strlen(path) - 1;
-		if (*p != '\n')
-			die("output of find(1) is wrong (find_read).");
-		*p = 0;
-#if defined(_WIN32) && !defined(__CYGWIN__)
-		/*
-		 * depending on the port of find used, backslashes may
-		 * be used - translate to slashes.
-		 */
-		if (back)
-		{
-			for (p = path; *p; ++p)
-				if (*p == '\\')
-					*p = '/', back = 2;
-			if (back == 1)
-				back = 0;
-		}
-#endif
-		if (skipthisfile(path))
-			continue;
-		if (regexec(suff, path, 0, 0, 0) != 0) {
-			/* other file like 'Makefile' */
-			val[0] = ' ';
-			path = val;
-		}
-		return path;
-	}
-	return NULL;
-}
-/*
- * find_close: close iterator.
- */
-void
-find_close(void)
-{
-	assert(opened == 1);
-	pclose(ip);
-	opened = 0;
-	regfree(suff);
-	if (skip)
-		regfree(skip);
-}
-#endif /* HAVE_DIRENT_H */

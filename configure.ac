@@ -33,7 +33,6 @@ AC_PROG_RANLIB
 dnl
 dnl GLOBAL needs following tools for execution.
 dnl	perl, sed, sort
-dnl (Find is no longer needed.)
 dnl
 AC_PATH_PROG(PERL, perl, no)
 if test ${ac_cv_path_PERL} = no; then
@@ -47,24 +46,19 @@ AC_PATH_PROG(SED, sed, no)
 if test ${ac_cv_path_SED} = no; then
 	AC_MSG_ERROR([SED is required but not found.])
 fi
-AC_PATH_PROG(FIND, find, no)
-if test ${ac_cv_path_FIND} != no; then
-	AC_DEFINE(HAVE_FIND,1,[Define if your system have find(1).])
-fi
 
 dnl Checks for libraries.
 
 dnl Checks for header files.
 AC_CHECK_HEADERS(limits.h string.h unistd.h stdarg.h sys/time.h)
 AC_HEADER_DIRENT
+if test ${ac_header_dirent} = no; then
+        AC_MSG_ERROR([dirent(3) is required but not found.])
+fi
 AC_HEADER_STDC
 AC_HEADER_STAT
 AC_HEADER_TIME
 AG_BYTE_ORDER
-
-if test ${ac_cv_path_FIND} = no && test ${ac_header_dirent} = no; then
-        AC_MSG_ERROR([either find(1) or dirent(3) is required but not found.])
-fi
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
