@@ -53,6 +53,8 @@
 	@item{@arg{pattern}}
 		Print object which match to the @arg{pattern}.
 		It can include POSIX 1003.2 regular expression.
+		Extended regular expressions which are the same as those
+		accepted by @xref{egrep,1} are available.
 	@item{@option{-c}, @option{--completion} [@arg{prefix}]}
 		Print candidate function names which start with specified
 		@arg{prefix}. @arg{Prefix} is not specified,
@@ -60,9 +62,9 @@
 	@item{@option{-f}, @option{--file} @arg{files}}
 		Print all function definitions in the @arg{files}.
 		This option implies -x option.
-	@item{@option{-g}, @option{--grep} @arg{pattern}}
+	@item{@option{-g}, @option{--grep}}
 		Print all lines which match to the @arg{pattern}.
-	@item{@option{-I}, @option{--idutils} @arg{pattern}}
+	@item{@option{-I}, @option{--idutils}}
 		Print all lines which match to the @arg{pattern}.
 		This function use @xref{id-utils,1} as a search engine.
 		To use this command, you need to install @xref{id-utils,1}
@@ -97,7 +99,7 @@
 	@item{@option{-o}, @option{--other}}
 		Search pattern in not only source files but also other files
 		like @file{README}.
-		This options is valid only with @option{-g} option.
+		This option is valid only with @option{-g} command.
 	@item{@option{-q}, @option{--quiet}}
 		Quiet mode.
 	@item{@option{-r}, @option{--reference}, @option{--rootdir}}
