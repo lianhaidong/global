@@ -187,7 +187,7 @@ int	verbose;
 				die("GTAGSDBPATH must be an absolute path.");
 			if (stat(p, &sb) || !S_ISDIR(sb.st_mode))
 				die("directory '%s' not found.", p);
-			strlimcpy(dbpath, getenv("GTAGSDBPATH"), sizeof(dbpath));
+			strlimcpy(dbpath, getenv("GTAGSDBPATH"), MAXPATHLEN);
 		} else {
 			if (!gtagsexist(root, dbpath, MAXPATHLEN, verbose))
 				die_with_code(3, "GTAGS not found.");
@@ -198,7 +198,7 @@ int	verbose;
 		/*
 		 * start from current directory to '/' directory.
 		 */
-		strlimcpy(root, cwd, sizeof(root));
+		strlimcpy(root, cwd, MAXPATHLEN);
 		p = root + strlen(root);
 		while (!gtagsexist(root, dbpath, MAXPATHLEN, verbose)) {
 			while (*--p != '/' && p > root)
@@ -240,7 +240,7 @@ int	verbose;
 					char buf[MAXPATHLEN+1];
 					s = realpath(makepath(root, s, NULL), buf);
 				}
-				strlimcpy(root, s, sizeof(root));
+				strlimcpy(root, s, MAXPATHLEN);
 			}
 			fclose(fp);
 			strbuf_close(sb);
