@@ -1,4 +1,4 @@
 .deps
 Makefile
 Makefile.in
-conf.h
+langmap.h
