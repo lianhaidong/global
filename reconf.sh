@@ -18,6 +18,14 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #
+# Usage:
+#
+#	% sh reconf.sh [--configure|--make|--install]
+#
+case $1 in
+--help)	echo "Usage: sh reconf.sh [--configure|--make|--install]"
+	exit 0;;
+esac
 prog='autoconf automake aclocal autoheader'	# required programs
 file='convert.pl configure.ac Makefile.am'	# required files
 
@@ -72,8 +80,16 @@ rm -f config.cache
 
 echo "- Generating configure items..."
 (set -x; aclocal && autoheader && automake --add-missing && autoconf) &&
-if [ "$1" = "-c" ]; then
+case $1 in
+'')	echo "You are ready to execute ./configure."
+	;;
+-c|--configure|--make|--install)
 	./configure
-else
-	echo "You are ready to execute ./configure."
-fi
+	;;
+esac && case $1 in
+--make)	make
+	;;
+--install)
+	make install
+	;;
+esac
