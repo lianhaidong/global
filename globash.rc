@@ -659,7 +659,7 @@ show()	{
 		-e|-emacs)	local EDITOR=emacsclient; shift;;
 		-g|-gozilla)	local EDITOR=gozilla; shift;;
 		-n|-noedit)	local EDITOR=noedit; shift;;
-		*)		echo "illegal option $1."
+		*)		echo "invalid option $1."
 				return 1;;
 		esac
 		;;

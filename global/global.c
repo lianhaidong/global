@@ -735,7 +735,7 @@ char	*bp;
 		char	*p = locatestring(bp, "./", MATCH_FIRST);
 
 		if (p == NULL)
-			die("illegal tag format (path not found).");
+			die("invalid tag format (path not found).");
 		fputs(strmake(p, " \t"), op);
 		(void)putc('\n', op);
 	} else
@@ -795,7 +795,7 @@ char	*dbpath;
 		while (*p && *p != ':')
 			p++;
 		if ((xflag || tflag) && !*p)
-			die("illegal gid(idutils) output format. '%s'", line);
+			die("invalid gid(idutils) output format. '%s'", line);
 		*p++ = 0;
 		if (lflag) {
 			if (!locatestring(path, localprefix + 2, MATCH_AT_FIRST))
@@ -813,11 +813,11 @@ char	*dbpath;
 		while (*p && isdigit(*p))
 			p++;
 		if (*p != ':')
-			die("illegal grep output format. '%s'", line);
+			die("invalid grep output format. '%s'", line);
 		*p++ = 0;
 		linenum = atoi(lno);
 		if (linenum <= 0)
-			die("illegal grep output format. '%s'", line);
+			die("invalid grep output format. '%s'", line);
 		/*
 		 * print out.
 		 */
@@ -903,7 +903,7 @@ char	*dbpath;
 		while (*p && *p != ':')
 			p++;
 		if ((xflag || tflag) && !*p)
-			die("illegal grep output format. '%s'", line);
+			die("invalid grep output format. '%s'", line);
 		*p++ = 0;
 		count++;
 		if (!xflag && !tflag) {
@@ -917,11 +917,11 @@ char	*dbpath;
 		while (*p && isdigit(*p))
 			p++;
 		if (*p != ':')
-			die("illegal grep output format. '%s'", line);
+			die("invalid grep output format. '%s'", line);
 		*p++ = 0;
 		linenum = atoi(lno);
 		if (linenum <= 0)
-			die("illegal grep output format. '%s'", line);
+			die("invalid grep output format. '%s'", line);
 		/*
 		 * print out.
 		 */
@@ -968,7 +968,7 @@ char	*dbpath;
 	editlen = strlen(edit);
 
 	if (regcomp(&preg, pattern, REG_EXTENDED) != 0)
-		die("illegal regular expression.");
+		die("invalid regular expression.");
 	if (!(op = openfilter()))
 		die("cannot open output filter.");
 	count = 0;
@@ -1033,7 +1033,7 @@ char	*av;
 		flags |= REG_ICASE;
 #endif /* _WIN32 */
 		if (regcomp(&preg, av, flags) != 0)
-			die("illegal regular expression.");
+			die("invalid regular expression.");
 	}
 	if (!localprefix)
 		localprefix = "./";
@@ -1259,7 +1259,7 @@ char	*path;
 	int	length;
 
 	if (!(p = locatestring(line, "./", MATCH_FIRST)))
-		die("illegal tag format (path not found).");
+		die("invalid tag format (path not found).");
 	length = strlen(path);
 	if (strncmp(p, path, length))
 		return 0;

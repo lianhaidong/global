@@ -475,7 +475,7 @@ int	flags;
 
 		strbuf_trim(ib);
 		if (formatcheck(tagline, gtop->format) < 0)
-			die("illegal parser output.\n'%s'", tagline);
+			die("invalid parser output.\n'%s'", tagline);
 		tag = strmake(tagline, " \t");		 /* tag = $1 */
 		/*
 		 * extract method when class method definition.
@@ -522,13 +522,13 @@ char	*p;
 		for (q = p; *q && !isspace(*q); q++)
 			;
 		if (*q == 0)
-			die("illegal tag format. '%s'", p);
+			die("invalid tag format. '%s'", p);
 		for (; *q && isspace(*q); q++)
 			;
 	} else
 		q = locatestring(p, "./", MATCH_FIRST);
 	if (*q == 0)
-		die("illegal tag format. '%s'", p);
+		die("invalid tag format. '%s'", p);
 	if (!strncmp(q, path, length) && isspace(*(q + length)))
 		return 1;
 	return 0;

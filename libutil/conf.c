@@ -95,10 +95,10 @@ const char *label;
 		trim(p);
 		for (;;) {
 			if ((q = strmake(p, "|:")) == NULL)
-				die("illegal config file format (line %d).", line);
+				die("invalid config file format (line %d).", line);
 			if (!strcmp(label, q)) {
 				if (!(p = locatestring(p, ":", MATCH_FIRST)))
-					die("illegal config file format (line %d).", line);
+					die("invalid config file format (line %d).", line);
 				p = strdup(p);
 				if (!p)
 					die("short of memory.");
@@ -110,7 +110,7 @@ const char *label;
 			else if (*p == '|')
 				p++;
 			else
-				die("illegal config file format (line %d).", line);
+				die("invalid config file format (line %d).", line);
 		}
 	}
 	return NULL;

@@ -555,7 +555,7 @@ diff -c -r -N ../nvi-1.79.org/ex/ex_tag.c ./ex/ex_tag.c
 + 		status = pclose(fp);
 + 		if (status) {
 + 			if (WEXITSTATUS(status) == 2)
-+ 				msgq(sp, M_ERR, "illegal option of global(1).");
++ 				msgq(sp, M_ERR, "invalid option of global(1).");
 + 			else {
 + 				char msg[128];
 + 				FILE *ip = fopen(tmpname, "r");
