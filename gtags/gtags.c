@@ -73,8 +73,6 @@ int     show_version;
 int     show_help;
 int	show_config;
 int	do_convert;
-int	do_createdb;
-int	do_readdb;
 int	do_scandb;
 int	do_find;
 int	do_sort;
@@ -126,7 +124,6 @@ static struct option const long_options[] = {
 	/* long name only */
 	{"config", optional_argument, &show_config, 1},
 	{"convert", no_argument, &do_convert, 1},
-	{"createdb", required_argument, &do_createdb, 1},
 	{"date", no_argument, &do_date, 1},
 	{"debug", no_argument, &debug, 1},
 	{"expand", required_argument, &do_expand, 1},
@@ -138,7 +135,6 @@ static struct option const long_options[] = {
 	{"other", no_argument, &other_files, 1},
 	{"postgres", optional_argument, NULL, 'P'},
 	{"pwd", no_argument, &do_pwd, 1},
-	{"readdb", required_argument, &do_readdb, 1},
 	{"relative", no_argument, &do_relative, 1},
 	{"scandb", required_argument, &do_scandb, 1},
 	{"secure", no_argument, &secure_mode, 1},
@@ -215,7 +211,7 @@ char	*argv[];
 			} else if (!strcmp(p, "config")) {
 				if (optarg)
 					info_string = optarg;
-			} else if (!strcmp(p, "createdb") || !strcmp(p, "readdb") || !strcmp(p, "scandb")) {
+			} else if (!strcmp(p, "scandb")) {
 				if (optarg)
 					btree_dbname = optarg;
 			} else if (gtagsconf || gtagslabel) {
@@ -368,56 +364,6 @@ char	*argv[];
 		}
 		gpath_close();
 		strbuf_close(ib);
-		exit(0);
-	} else if (do_createdb) {
-		DBOP *dbop;
-		STRBUF *ib = strbuf_open(MAXBUFLEN);
-		char *p, *q;
-
-		/*
-		 * [Job]
-		 *
-		 * Read line from stdin and write to btree database.
-		 * Format: [0-9]+ [0-9]+[MDRY][a-zA-Z_0-9]+
-		 */
-		dbop = dbop_open(btree_dbname, 1, 0644, DBOP_DUP);
-		if (dbop == NULL)
-			die("cannot create '%s'.", btree_dbname);
-		while (strbuf_fgets(ib, stdin, STRBUF_NOCRLF) != NULL) {
-			if (exitflag)
-				break;
-			p = q = strbuf_value(ib);
-			for (; *q && isdigit(*q); q++)	/* key part */
-				;
-			if (*q == 0)
-				die("data part not found.");
-			*q++ = '\0';
-			if (*q == 0)
-				die("data part is null.");
-			dbop_put(dbop, p, q, 0);
-		}
-		dbop_close(dbop);
-		strbuf_close(ib);
-		exit(0);
-	} else if (do_readdb) {
-		DBOP *dbop;
-		char *p;
-
-		/*
-		 * [Job]
-		 *
-		 * Read specified key records from btree database and write to stdout.
-		 */
-		if (argc == 0)
-			die("usage: %s --readdb=dbname key", progname);
-		dbop = dbop_open(btree_dbname, 0, 0, 0);
-		if (dbop == NULL)
-			die("cannot open '%s'.", btree_dbname);
-		for (p = dbop_first(dbop, argv[0], NULL, 0); p; p = dbop_next(dbop)) {
-			fputs(p, stdout);
-			fputc('\n', stdout);
-		}
-		dbop_close(dbop);
 		exit(0);
 	} else if (do_scandb) {
 		DBOP *dbop;
