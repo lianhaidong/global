@@ -2008,7 +2008,7 @@ sub src2html {
 				$define_line = $LNO if ($TYPE eq 'D');
 				if ($TYPE eq 'R') {
 					$db = 'GTAGS';
-				} elsif ($TYPE eq 'S') {
+				} elsif ($TYPE eq 'Y') {
 					$db = 'GSYMS';
 				} else {	# 'D' or 'M'
 					$db = 'GRTAGS';
@@ -2020,7 +2020,7 @@ sub src2html {
 						local($dir);
 						if ($TYPE eq 'R') {
 							$dir = $'DEFS;
-						} elsif ($TYPE eq 'S') {
+						} elsif ($TYPE eq 'Y') {
 							$dir = $'SYMS;
 						} else {	# 'D' or 'M'
 							$dir = $'REFS;
@@ -2288,7 +2288,7 @@ sub create {
 			} elsif ($db eq 'GRTAGS') {
 				$type = 'R';
 			} else {
-				$type = 'S';
+				$type = 'Y';
 			}
 			print ANCH "$fnumber $lno $tag $type\n";
 		}
