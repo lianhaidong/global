@@ -941,7 +941,7 @@ $SIG{'TERM'} = 'suddenly';
 $func_total = &makedupindex($dist);
 $end_time = time();
 print STDERR "Total $func_total functions.\n" if ($'vflag);
-printf STDERR "Elapsed time of making duplicate entries ............ %10d seconds.\n", $end_time - $start_time if ($'statistics);
+printf STDERR "- Elapsed time of making duplicate entries ............ %10d seconds.\n", $end_time - $start_time if ($'statistics);
 #
 # (4) search index. (search.html)
 #
@@ -959,7 +959,7 @@ sub suddenly { &'clean(); exit 1}
 $func_total = &makedefineindex($dist, "$dist/defines.$'normal_suffix", $func_total);
 $end_time = time();
 print STDERR "Total $func_total functions.\n" if ($'vflag);
-printf STDERR "Elapsed time of making function index ............... %10d seconds.\n", $end_time - $start_time if ($'statistics);
+printf STDERR "- Elapsed time of making function index ............... %10d seconds.\n", $end_time - $start_time if ($'statistics);
 #
 # (6) make file index (files.html and files/*)
 #     PRODUCE @files %includes
@@ -969,7 +969,7 @@ $start_time = time();
 $file_total = &makefileindex($dist, "$dist/files.$'normal_suffix", "$dist/$INCS");
 $end_time = time();
 print STDERR "Total $file_total files.\n" if ($'vflag);
-printf STDERR "Elapsed time of making file index ................... %10d seconds.\n", $end_time - $start_time if ($'statistics);
+printf STDERR "- Elapsed time of making file index ................... %10d seconds.\n", $end_time - $start_time if ($'statistics);
 $file_count += $file_total;
 #
 # [#] make a common part for mains.html and index.html
@@ -995,7 +995,7 @@ print STDERR "[", &'date, "] ", "(9) making hypertext from source code ...\n" if
 $start_time = time();
 &makehtml($dist, $file_total);
 $end_time = time();
-printf STDERR "Elapsed time of making hypertext .................... %10d seconds.\n", $end_time - $start_time if ($'statistics);
+printf STDERR "- Elapsed time of making hypertext .................... %10d seconds.\n", $end_time - $start_time if ($'statistics);
 #
 # (10) rebuild script. (rebuild.sh)
 #
@@ -1007,7 +1007,7 @@ chmod(0640, "$dist/rebuild.sh") || &'error("cannot chmod rebuild script.");
 
 $end_all_time = time();
 print STDERR "[", &'date, "] ", "Done.\n" if ($'vflag);
-printf STDERR "Elapsed time of making everything ................... %10d seconds.\n", $end_all_time - $start_all_time if ($'statistics);
+printf STDERR "- The entire elapsed time ............................. %10d seconds.\n", $end_all_time - $start_all_time if ($'statistics);
 if ($'vflag && $'cgi && ($'cflag || $'fflag)) {
 	print STDERR "\n";
 	print STDERR "[Information]\n";
