@@ -71,7 +71,8 @@ linetable_open(path)
 	ib = strbuf_open(sb.st_size);
 	if ((ip = fopen(path, "r")) == NULL)
 		return -1;
-	lineno = offset = 0;
+	lineno = 1;
+	offset = 0;
 	for (offset = 0;
 		(strbuf_fgets(ib, ip, STRBUF_APPEND), offset != strbuf_getlen(ib));
 		offset = strbuf_getlen(ib))
@@ -114,13 +115,15 @@ linetable_read(buf, size)
  * linetable_put: put a line into table.
  *
  *	i)	offset	offset of the line
- *	i)	lineno	line number of the line
+ *	i)	lineno	line number of the line (>= 1)
  */
 static void
 linetable_put(offset, lineno)
 	int offset;
 	int lineno;
 {
+	if (lineno-- <= 0)
+		die("line number must >= 1");
 	/*
 	 * Old implementations of realloc() may crash when a null pointer is passed.
 	 * Therefore, we cannot use realloc(NULL, total_lines * sizeof(int)).
@@ -144,7 +147,7 @@ linetable_put(offset, lineno)
 /*
  * linetable_get: get a line from table.
  *
- *	i)	lineno	line number of the line
+ *	i)	lineno	line number of the line (>= 1)
  *	o)	offset	offset of the line
  *			if offset == NULL, nothing returned.
  *	r)		line pointer
@@ -181,7 +184,7 @@ linetable_close()
  * linetable_print: print a line.
  *
  *	i)	op	output file pointer
- *	i)	lineno	line number
+ *	i)	lineno	line number (>= 1)
  */
 void
 linetable_print(op, lineno)
