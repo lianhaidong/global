@@ -65,7 +65,7 @@ static regex_t reg;
  *			if (format version > 1) then print error message.
  * GLOBAL-3.0 - 4.5	support format version 1 and 2.
  *			if (format version > 2) then print error message.
- * GLOBAL-4.6 -		support format version 1, 2 and 3.
+ * GLOBAL-4.5.1 -	support format version 1, 2 and 3.
  *			if (format version > 3) then print error message.
  * format version 1:
  *	original format.
