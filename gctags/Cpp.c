@@ -45,6 +45,7 @@
 #include "strlimcpy.h"
 #include "token.h"
 
+static  void    process_attribute(int);
 static	int	function_definition(int);
 static  int     seems_datatype(const char *);
 static	void	condition_macro(int, int);
@@ -466,6 +467,9 @@ Cpp()
 				}
 			}
 			break;
+		case CPP___ATTRIBUTE__:
+			process_attribute(target);
+			break;
 		default:
 			break;
 		}
@@ -476,6 +480,39 @@ Cpp()
 			fprintf(stderr, "Warning: {} block unmatched. (last at level %d.)[+%d %s]\n", level, lineno, curfile);
 		if (piflevel != 0)
 			fprintf(stderr, "Warning: #if block unmatched. (last at level %d.)[+%d %s]\n", piflevel, lineno, curfile);
+	}
+}
+/*
+ * process_attribute: skip attributes in __attribute__((...)).
+ *
+ *	r)	target type
+ */
+static void
+process_attribute(target)
+int target;
+{
+	int brace = 0;
+	int c;
+	/*
+	 * Skip '...' in __attribute__((...))
+	 * but pick up symbols in it.
+	 */
+	while ((c = nexttoken("()", reserved)) != EOF) {
+		if (c == '(')
+			brace++;
+		else if (c == ')')
+			brace--;
+		else if (c == SYMBOL) {
+			if (target == REF) {
+				if (defined(token))
+					PUT(token, lineno, sp);
+			} else if (target == SYM) {
+				if (!defined(token))
+					PUT(token, lineno, sp);
+			}
+		}
+		if (brace == 0)
+			break;
 	}
 }
 /*
@@ -537,6 +574,9 @@ int	target;
 		case CP_ELSE:
 		case CP_ENDIF:
 			condition_macro(c, target);
+			continue;
+		case CPP___ATTRIBUTE__:
+			process_attribute(target);
 			continue;
 		default:
 			break;
