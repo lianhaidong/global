@@ -1799,9 +1799,18 @@ sub makefileindex {
 				print "<OL>\n";
 			}
 		}
+		#
+		# We assume the file which has one of the following suffixes
+		# as a candidate of include file.
+		#
+		# C: .h
+		# C++: .hxx, .H
+		# PHP: .inc.php
+		#
 		# collect include files. format is
 		#	counter + '\n' + path1 + '\n' + path2 ...
-		if (/.*\.(h|hxx|H)$/) {
+		#
+		if (/.*\.(h|hxx|H|inc\.php)$/) {
 			if (!defined $includes{$file}) {
 				$includes{$file} = "$count\n$_";
 			} else {
@@ -1853,12 +1862,23 @@ sub makefileindex {
         close(FILES);
 	$'file_count++;
 
-	local($command) = "global -gnx \"^[ \t]*#[ \t]*include\"";
+	#
+	# Pick up include pattern.
+	#
+	# C: #include "xxx.h"
+	# PHP: include("xxx.inc.php");
+	#
+	local($command) = "global -gnx \"^[ \\t]*(#[ \\t]*include|include[ \\t]*\\()\"";
 	open(PIPE, "$command |") || &'error("cannot fork.");
 	while (<PIPE>) {
 		chop;
 		local($nouse, $lno, $filename, $image) = split(/\s+/, $_, 4);
-		local($last, $sep) = ($image =~ m![</"]([^</"]+)([">])!);
+		local($last, $sep);
+		if ($filename =~ /\.php$/) {
+			($last, $sep) = ($image =~ m![/"']([^/"']+)(["'])\)!);
+		} else {
+			($last, $sep) = ($image =~ m![</"]([^</"]+)([">])!);
+		}
 		if (!defined $includes{$last}) {
 			next;
 		}
@@ -2296,8 +2316,13 @@ sub src2html {
 			local($converted);
 			s/\r$//;
 			# make link for include file
-			if (!$INCOMMENT && !$quote && /^[ \t]*#[ \t]*include/) {
-				local($last, $sep) = m![</"]([^</"]+)([">])!;
+			if (!$INCOMMENT && !$quote && /^[ \t]*(#[ \t]*include|include[ \t]*\()/) {
+				local($last, $sep);
+				if ($isphp) {
+					($last, $sep) = ($_ =~ m![/"']([^/"']+)(["'])[ \t]*\)!);
+				} else {
+					($last, $sep) = ($_ =~ m![</"]([^</"]+)([">])!);
+				}
 				if (defined $'includes{$last}) {
 					local($link);
 					local($no, @incs) = split(/\n/, $'includes{$last});
@@ -2310,6 +2335,8 @@ sub src2html {
 					$last =~ s/([\[\]\.\*\+])/\\\1/g;
 					if ($sep eq '"') {
 						s!"(.*$last)"!"<A HREF=$link>$1</A>"!;
+					} elsif ($sep eq '\'') {
+						s!'(.*$last)'!"<A HREF=$link>$1</A>"!;
 					} else {
 						s!<(.*$last)>!&lt;<A HREF=$link>$1</A>&gt;!;
 					}
