@@ -48,6 +48,7 @@
 
 #define YY_USER_ACTION DEFAULT_YY_USER_ACTION
 
+static int last_directive;
 %}
  /* Definitions */
 H		0[Xx][0-9A-Fa-f]+
@@ -154,7 +155,7 @@ WORD		{ALPHA}{ALPHANUM}*
 			buf[i] = '\0';
 			p = buf;
 		}
-		if (i > 0 && reserved_sharp(p, i))
+		if (i > 0 && (last_directive = reserved_sharp(p, i)))
 			put_macro(LEXTEXT);
 		else {
 			ECHO;
@@ -169,6 +170,10 @@ WORD		{ALPHA}{ALPHANUM}*
 <C,PREPROCESSING_DIRECTIVE>{NUMBER}	ECHO;
 <C,PREPROCESSING_DIRECTIVE>{WORD} {
 		if (reserved_word(LEXTEXT, LEXLENG))
+			put_reserved_word(LEXTEXT);
+		else if (YY_START == PREPROCESSING_DIRECTIVE
+		    && (last_directive == SHARP_IF || last_directive == SHARP_ELIF)
+		    && strcmp(LEXTEXT, "defined") == 0)
 			put_reserved_word(LEXTEXT);
 		else {
 			struct anchor *a = anchor_get(LEXTEXT, LEXLENG, 0, LINENO);
