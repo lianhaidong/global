@@ -663,11 +663,11 @@ if ($'cgi && $'fflag) {
 		&makeprogram("$cgidir/global.cgi") || &'error("cannot make CGI program.");
 		chmod(0755, "$cgidir/global.cgi") || &'error("cannot chmod CGI program.");
 	}
-	if ($'Sflag) {
-		# Don't grant execute permission to bless script.
-		&makebless("$dist/bless.sh") || &'error("cannot make bless script.");
-		chmod(0644, "$dist/bless.sh") || &'error("cannot chmod bless script.");
-	}
+	# Always make bless.sh.
+	# Don't grant execute permission to bless script.
+	&makebless("$dist/bless.sh") || &'error("cannot make bless script.");
+	chmod(0644, "$dist/bless.sh") || &'error("cannot chmod bless script.");
+
 	foreach $f ('GTAGS', 'GRTAGS', 'GSYMS', 'GPATH') {
 		if (-f "$dbpath/$f") {
 			unlink("$dist/cgi-bin/$f");
@@ -767,7 +767,10 @@ if ($'Fflag && $'fflag) {
 #
 # (10) rebuild script. (rebuild.sh)
 #
+# Don't grant execute permission to rebuild script.
 &makerebuild("$dist/rebuild.sh");
+chmod(0644, "$dist/rebuild.sh") || &'error("cannot chmod rebuild script.");
+
 &'clean();
 print STDERR "[", &'date, "] ", "Done.\n" if ($'vflag);
 if ($'vflag && $'cgi && ($'cflag || $'fflag)) {
