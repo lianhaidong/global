@@ -63,31 +63,31 @@ WORD		{ALPHA}{ALPHANUM}*
 YACC_DIRECTIVE	%{ALPHA}({ALPHANUM}|-)*
 
 %start	C C_COMMENT CPP_COMMENT SHELL_COMMENT STRING LITERAL PREPROCESSING_DIRECTIVE
-%start	YACC_DECLARATIONS YACC_RULES
+%start	YACC_DECLARATIONS YACC_RULES YACC_PROLOGUE
 %option 8bit noyywrap noyy_top_state stack prefix="c"
 %%
  /* Backslash-newline */
 \\\n		DEFAULT_BACKSLASH_NEWLINE_ACTION
 
  /* Comment */
-<C,PREPROCESSING_DIRECTIVE,YACC_DECLARATIONS,YACC_RULES>{
+<C,PREPROCESSING_DIRECTIVE,YACC_DECLARATIONS,YACC_RULES,YACC_PROLOGUE>{
 	"/*"	{ echos(comment_begin); ECHO; yy_push_state(C_COMMENT); }
 }
 <C_COMMENT>"*/"	{ ECHO; echos(comment_end); yy_pop_state(); }
 <C_COMMENT>.	{ put_char(LEXTEXT[0]); }
-<C,PREPROCESSING_DIRECTIVE,YACC_DECLARATIONS,YACC_RULES>{
+<C,PREPROCESSING_DIRECTIVE,YACC_DECLARATIONS,YACC_RULES,YACC_PROLOGUE>{
 	"//"	{ echos(comment_begin); ECHO; yy_push_state(CPP_COMMENT); }
 }
 
  /* String */
-<C,PREPROCESSING_DIRECTIVE,YACC_DECLARATIONS,YACC_RULES>{
+<C,PREPROCESSING_DIRECTIVE,YACC_DECLARATIONS,YACC_RULES,YACC_PROLOGUE>{
 	\"	{ ECHO; yy_push_state(STRING); }
 }
 <STRING>\"	{ ECHO; yy_pop_state(); }
 <STRING>\\.	{ put_char(LEXTEXT[0]); put_char(LEXTEXT[1]); }
 
  /* Literal */
-<C,PREPROCESSING_DIRECTIVE,YACC_DECLARATIONS,YACC_RULES>{
+<C,PREPROCESSING_DIRECTIVE,YACC_DECLARATIONS,YACC_RULES,YACC_PROLOGUE>{
 	\'	{ ECHO; yy_push_state(LITERAL); }
 }
 <LITERAL>\'	{ ECHO; yy_pop_state(); }
@@ -100,7 +100,7 @@ YACC_DIRECTIVE	%{ALPHA}({ALPHANUM}|-)*
 	}
 
  /* Preprocessing directive */
-<C,YACC_DECLARATIONS,YACC_RULES>{
+<C,YACC_DECLARATIONS,YACC_RULES,YACC_PROLOGUE>{
 	^[ \t]*\#[ \t]*(include|include_next) {
 		int c;
 
@@ -186,8 +186,7 @@ YACC_DIRECTIVE	%{ALPHA}({ALPHANUM}|-)*
 }
 
  /* Yacc directive */
-<YACC_DECLARATIONS,YACC_RULES>{
-	{YACC_DIRECTIVE} {
+<YACC_DECLARATIONS,YACC_RULES>{YACC_DIRECTIVE} {
 		if (reserved_yacc(LEXTEXT, LEXLENG))
 			put_reserved_word(LEXTEXT);
 		else {
@@ -196,18 +195,17 @@ YACC_DIRECTIVE	%{ALPHA}({ALPHANUM}|-)*
 				unknown_yacc_directive(LEXTEXT, LINENO);
 		}
 	}
-	"%{"	|
-	"%}"	{ put_reserved_word(LEXTEXT); }
-}
+<YACC_DECLARATIONS>"%{"	{ put_reserved_word(LEXTEXT); yy_push_state(YACC_PROLOGUE); }
+<YACC_PROLOGUE>"%}"	{ put_reserved_word(LEXTEXT); yy_pop_state(); }
 <YACC_DECLARATIONS>"%%"	{ put_reserved_word(LEXTEXT); BEGIN YACC_RULES; }
 <YACC_RULES>"%%"	{ put_reserved_word(LEXTEXT); BEGIN C; }
-<YACC_DECLARATIONS><<EOF>> {
+<YACC_DECLARATIONS,YACC_PROLOGUE><<EOF>> {
 		if (wflag)
 			unexpected_eof(LINENO);
 		yyterminate();
 	}
 
-<C,PREPROCESSING_DIRECTIVE,YACC_DECLARATIONS,YACC_RULES>{
+<C,PREPROCESSING_DIRECTIVE,YACC_DECLARATIONS,YACC_RULES,YACC_PROLOGUE>{
 	{NUMBER}	ECHO;
 	{WORD} {
 		if (reserved_word(LEXTEXT, LEXLENG))
