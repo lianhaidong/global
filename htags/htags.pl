@@ -82,6 +82,7 @@ $'ncol = 4;					# columns of line number
 $'tabs = 8;					# tab skip
 $'full_path = 0;				# file index format
 $'icon_list = '';				# use icon for file index
+$'show_position = 0;				# show current position
 $'table_list = 0;				# tag list using table tag
 $'script_alias = '/cgi-bin';			# script alias of WWW server
 $'gzipped_suffix = 'ghtml';			# suffix of gzipped html file
@@ -161,6 +162,9 @@ if ($var1 = &'getconf('table_list')) {
 }
 if ($var1 = &'getconf('icon_list')) {
 	$'icon_list = $var1;
+}
+if ($var1 = &'getconf('show_position')) {
+	$'show_position = $var1;
 }
 if ($var1 = &'getconf('script_alias')) {
 	$'script_alias = $var1;
@@ -917,6 +921,9 @@ sub makehelp {
 			print HELP "\[$label[$n]\]";
 		}
 	}
+	if ($'show_position) {
+		print HELP "[+line file]";
+	}
 	print HELP " */</PRE>\n";
 	print HELP "<DL>\n";
 	foreach $n (0 .. $#label) {
@@ -927,6 +934,10 @@ sub makehelp {
 			print HELP "[$label[$n]]";
 		}
 		print HELP "<DD>$msg[$n]\n";
+	}
+	if ($'show_position) {
+		print HELP "<DT>[+line file]";
+		print HELP "<DD>Current position (line number and file name).\n";
 	}
 	print HELP "</DL>\n";
 	print HELP $'body_end, "\n";
@@ -1529,7 +1540,7 @@ sub src2html {
 	print &'set_header($file);
 	print $'body_begin, "\n";
 	print "<A NAME=TOP><H2>$file</H2>\n";
-	print &link_format(&anchor'getlinks(0));
+	printf "$'comment_begin/* %s */$'comment_end", &link_format(&anchor'getlinks(0));
 	print "\n<HR>\n";
 	print "<H2>$'title_define_index</H2>\n";
 	print "This source file includes following functions.\n";
@@ -1647,17 +1658,19 @@ sub src2html {
 		# print a line
 		printf "%${ncol}d ", $. if ($'nflag);
 		print;
-		# print hyperlinks
+		# print guide
 		if ($define_line) {
 			print ' ' x ($ncol + 1) if ($'nflag);
+			print "$'comment_begin/* ";
 			print &link_format(&anchor'getlinks($define_line));
-			print "\n";
+			print "[+$define_line $file]" if ($'show_position);
+			print " */$'comment_end\n";
 		}
 	}
 	print "</PRE>\n";
 	print "<HR>\n";
 	print "<A NAME=BOTTOM>\n";
-	print &link_format(&anchor'getlinks(-1));
+	printf "$'comment_begin/* %s */$'comment_end", &link_format(&anchor'getlinks(-1));
 	print "\n";
 	print $'body_end, "\n";
 	print $'html_end, "\n";
@@ -1760,8 +1773,8 @@ sub link_format {
 	local(@tag) = @_;
 	local(@label) = ($'icon_list) ? @'anchor_comment : @'anchor_label;
 	local(@icons) = @'anchor_icons;
+	local($line);
 
-	local($line) = "$'comment_begin/* ";
 	for $n (0 .. $#label) {
 		if ($n == 6) {
 			$line .=  "<A HREF=../mains.$'normal_suffix>";
@@ -1781,8 +1794,6 @@ sub link_format {
 			$line .= ' ';
 		}
 	}
-	$line .=  " */$'comment_end";
-
 	$line;
 }
 
