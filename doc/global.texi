@@ -73,6 +73,7 @@ This manual documents version @value{VERSION} of the GLOBAL source code tag syst
 * Emacs editor::                        Extended emacs using GLOBAL.
 * Web browser::                         Hypertext generator.
 * Other topics::                        Other topics.
+* Reference::				Reference manual.
 * GNU Free Documentation License::	GNU Free Documentation License.
 * Index::                               Option index.
 @end menu
@@ -143,7 +144,7 @@ It is a big merit of GLOBAL compared with any other tag system.
 @node   Preparation
 @section Preparation.
 
-First of all, you must execute gtags(1) at the root of source tree.
+First of all, you must execute gtags(1)(See @xref{gtags}.) at the root of source tree.
 For example, if you want to browse vi's source code:
 
 @example
@@ -581,7 +582,7 @@ If you need help then please type 'ghelp'.
 @section Basic usage.
 
 @itemize @bullet
-@item Almost global(1)'s command character is available as a command.
+@item Almost global(1)(See @xref{global}.)'s command character is available as a command.
 @example
 
     [/usr/src/sys] x fork               <- @r{(global -x fork)}
@@ -1718,6 +1719,372 @@ Instead, you can use incremental updating facility (@samp{-u} option).
     [Sun Dec  6 16:28:52 JST 1998] Done.
 
 @end example
+
+@c ***************************************************************************
+@c Reference manual.
+@c ***************************************************************************
+@node Reference
+@chapter Reference manual
+
+@menu
+* gtags::              gtags - create tag files for global.
+* htags::              htags - generate hypertext from source code.
+* global::             global - print the locations of specified object.
+@end menu
+
+@c ***************************************************************************
+@node   gtags
+@section gtags - create tag files for global.
+
+@subsection NAME
+gtags - create tag files for global.
+@subsection SYNOPSIS
+gtags [-c] [-i] [-I] [-o] [-w] [-v] [dbpath]
+@subsection DESCRIPTION
+Gtags makes @file{GTAGS}, @file{GRTAGS}, @file{GSYMS} and @file{GPATH}
+ file for global(1)(See @xref{global}.).
+Gtags trace subdirectories, read source files, locate symbols
+and save the information into tag files in current directory.
+You should execute this command at the root of the source tree.
+If your source directory is on a read only device like CDROM,
+specify dbpath of the directory on which make tag files.
+
+C, C++, yacc, java and assembler source files are supported.
+
+@table @asis
+@item @option{-c}, @option{--compact}
+Make tag files with compact format.
+@item @option{--config} [name]
+Show the value of config variable name.
+If name is not specified then show whole of config entry.
+@item @option{--gtagsconf} file
+Load user's configuration from file.
+@item @option{-i}, @option{--incremental}
+Update tag files incrementally. You had better use global(1)(See @xref{global}.)
+with the -u option.
+@item @option{-I}, @option{--idutils}
+Make index files for id-utils(1).
+@item @option{-o}, @option{--omit-gsyms}
+Suppress making GSYMS file.  Use this option if you don't use -s option of
+global(1)(See @xref{global}.).
+@item @option{-v}, @option{--verbose}
+Verbose mode.
+@item @option{-w}, @option{--warning}
+Print warning messages.
+@end table
+
+Files whose names end in .c or .h are assumed to be C source files and
+are searched for C style routine and macro definitions.  Files whose
+names end in .c++ .cc .cpp .cxx .hxx .C .H are assumed to be C++ source
+files.  Files whose names end in .y are assumed to be YACC source files.
+Files whose names end in .java are assumed to be Java source files.
+Files whose names end in .s or .S are assumed to be Assembler source
+files.  Other files are searched for C style definitions.
+
+@subsection FILES
+
+@table @asis
+@item @file{GTAGS}
+Tag file for function definitions.
+@item @file{GRTAGS}
+Tag file for function references.
+@item @file{GSYMS}
+Tag file for other symbols.
+@item @file{GPATH}
+Tag file for path of source files.
+@item @file{/etc/gtags.conf}, @file{$HOME/.globalrc}
+Configuration file.
+@end table
+
+@subsection ENVIRONMENT
+The following environment variables affect the execution of gtags.
+
+@table @asis
+@item @var{GTAGSCONF}
+If this variable is set, its value is used as the configuration file.
+The default is @file{$HOME/.globalrc}.
+@item @var{GTAGSLABEL}
+If this variable is set, its value is used as the label of configuration file.
+The default is @kbd{default}.
+@end table
+
+@subsection EXAMPLES
+
+@example
+% ls -F
+Makefile      src/    lib/
+% gtags -v
+% global -x main
+main              10 src/main.c  main (argc, argv) @{
+@end example
+
+@subsection DIAGNOSTICS
+Gtags exits with a non 0 value if an error occurred, 0 otherwise.
+
+@c ***************************************************************************
+@node   htags
+@section htags - generate hypertext from source code.
+
+@subsection NAME
+htags - generate hypertext from C, C++, Yacc, Java and assembler
+@subsection SYNOPSIS
+htags [-a] [-c] [-f] [-F] [-l] [-n] [-v] [-s] [-w] [-d tagdir] [-S cgidir] [-t title] [dir]
+@subsection DESCRIPTION
+Htags makes hypertext from C, C++, Yacc and Java source code.
+
+In advance of using this command, you must execute gtags(1)(See @xref{gtags}.)
+from the root directory of the source tree.
+Then you can execute htags from the same place.
+Htags makes an HTML directory and generates hypertext in it.
+
+You can start browsing from @file{HTML/index.html}.  Once the hypertext is
+generated, you can move it anywhere and browse it with any browser.
+
+@table @asis
+@item @option{-a}, @option{--alphabet}
+Make an alphabetical function index, suitable for a large project.
+@item @option{-c}, @option{--compact}
+Compress html files  by gzip(1).
+You need to set up an HTTP server so that gzip(1) is invoked for
+each compressed file.
+See @file{HTML/.htaccess} that is generated by htags.
+@item @option{-f}, @option{--form}
+Support search form using CGI program.
+You need to set up an HTTP server for this.
+@item @option{-F}, @option{--frame}
+Use frame for each part of the contents.
+@item @option{--gtagsconf} file
+Load user's configuration from file.
+@item @option{-l}, @option{--each-line-tag}
+Make a name tag(<A NAME=line number>) for each line,
+so that other hypertext can link to any line of this hypertext.
+By default, htags makes it only for lines that are referred to.
+@item @option{-n}, @option{--line-number}
+Print the line numbers. By default, doesn't print it.
+@item @option{-v}, @option{--verbose}
+Verbose mode.
+@item @option{-w}, @option{--warning}
+Print warning messages.
+@item @option{-d}, @option{--dbpath} tagdir
+Specifies the directory in which @file{GTAGS} and @file{GRTAGS} exist.
+The default is the current directory.
+@item @option{-S}, @option{--secure-cgi} cgidir
+write cgi script into cgidir to realize a centralised cgi script.
+Script alias is @file{/cgi-bin} by default. You can overwrite this
+value with config variable @var{script_alias} in @file{gtags.conf}.
+@item @option{-t}, @option{--title} title
+The title of this hypertext.
+The default is the last component of the current directory.
+@item @kbd{dir}
+The directory in which hypertext is generated.
+The default is the current directory.
+@end table
+
+@subsection EXAMPLES
+@example
+% cd /usr/src/sys
+# gtags -v
+# htags -fFnvat 'Welcom to FreeBSD kernel source tour!'
+% lynx HTML/index.html
+@end example
+
+@subsection FILES
+@table @asis
+@item @file{HTML/index.html}
+Index file of hypertext.
+@item @file{GTAGS}
+Tag file for function definitions.
+@item @file{GRTAGS}
+Tag file for function references.
+@item @file{GSYMS}
+Tag file for other symbols.
+@item @file{GPATH}
+Tag file for path of source files.
+@item @file{/etc/gtags.conf}, @file{$HOME/.globalrc}
+Configuration file.
+@end table
+
+@subsection ENVIRONMENT
+The following environment variables affect the execution of gtags.
+
+@table @asis
+@item @var{TMPDIR}
+If this variable is set, its value is used as the directory to
+make temporary files.  The default is @file{/tmp}.
+@item @var{GTAGSCONF}
+If this variable is set, its value is used as the configuration file.
+The default is @file{$HOME/.globalrc}.
+@item @var{GTAGSLABEL}
+If this variable is set, its value is used as the label of configuration file.
+The default is @kbd{default}.
+@end table
+
+@subsection DIAGNOSTICS
+Htags exits with a non 0 value if an error occurred, 0 otherwise.
+
+@subsection BUG
+Generated hypertext is VERY LARGE. In advance, check the space of your disk.
+
+@c ***************************************************************************
+@node   global
+@section global - print the locations of specified object.
+
+@subsection NAME
+global - print the locations of specified object.
+@subsection SYNOPSIS
+@noindent
+@quotation
+global [-ailnrstTvx] pattern@*
+global -c[sv] [prefix]@*
+global -f[anrstvx] files@*
+global -g[ailntvx] pattern@*
+global -I[ailntvx] pattern@*
+global -p[rv]@*
+global -P[ailntvx] [pattern]@*
+global -u[v]
+@end quotation
+
+@subsection DESCRIPTION
+Global find the locations of specified object in C, C++, Yacc, Java and
+assembler source files.  Global can treat a source tree, that is,
+a directory that has subdirectories and source files.
+You can get the relative path of objects from anywhere within the tree.
+Global can locate not only function definitions but also function
+references and other symbols.  Duplicate entries are allowed.
+
+In advance of using this command, you must execute gtags(1)(See @xref{global}.)
+at the root directory of the source tree to make tag files.
+Then you can execute global at anywhere in the source tree.
+
+@subsection COMMANDS
+The following commands are available:
+
+@table @asis
+@item pattern
+Print object which match to the pattern.
+It can include POSIX 1003.2 regular expression.
+@item @option{-c}, @option{--completion} [prefix]
+Print candidate function names which start with specified prefix.
+If prefix is not specified, print all function names.
+@item @option{-f}, @option{--file} files
+Print all function definitions in the files.  This option implies
+-x option.
+@item @option{-g}, @option{--grep} pattern
+Print all lines which match to the pattern.  This function use
+grep(1) as a search engine.
+@item @option{-I}, @option{--idutils} pattern
+Print all lines which match to the pattern.  This function use
+id-utils(1) as a search engine.  To use this command, you need to
+install id-utils(1) in your system and you must execute
+gtags(1)(See @xref{global}.) with -I option.
+@item @option{-p}, @option{--print-dbpath}
+Print the location of @file{GTAGS}.
+@item @option{-P}, @option{--path} [pattern]
+Print the path which match to the pattern.
+If no pattern specified, print all.
+@item @option{-u}, @option{--update}
+Locate tag files and update them incrementally.
+@item @option{--version}
+Show version number.
+@item @option{--help}
+Show help.
+@end table
+
+@subsection OPTIONS
+The following options are available:
+
+@table @asis
+@item @option{-a}, @option{--absolute}
+Print absolute path name. By default, print relative path name.
+@item @option{-i}, @option{--ignore-case}
+ignore case distinctions in pattern.
+@item @option{-l}, @option{--local}
+Print just objects which exist under the current directory.
+@item @option{-n}, @option{--nofilter}
+Suppress sort filter and path conversion filter.
+@item @option{-r}, @option{--reference}, @option{--rootdir}
+Print the locations of object references. By default, print object definitions.
+With the -p option, print the root directory of source tree.
+@item @option{-s}, @option{--symbol} pattern
+Print the locations of specified symbol other than function names.
+You need @file{GSYMS} tags file. (See @xref{gtags}.)
+@item @option{-t}, @option{--tags}
+Print with standard ctags format.
+@item @option{-T}, @option{--through}
+Go through all the tag files listed in @var{GTAGSLIBPATH}.
+By default, stop searching when tag is found.  This option is ignored when
+either -s, -r or -l option is specified.
+@item @option{-v}, @option{--verbose}
+Verbose mode.
+@item @option{-x}, @option{--cxref}
+In addition to the default output, produce the line number and the line contents.
+@end table
+
+@subsection FILES
+
+@table @asis
+@item @file{GTAGS}
+Tag file for function definitions.
+@item @file{GRTAGS}
+Tag file for function references.
+@item @file{GSYMS}
+Tag file for other symbols.
+@item @file{GPATH}
+Tag file for path of source files.
+@item @file{/etc/gtags.conf}, @file{$HOME/.globalrc}
+Configuration file.
+@end table
+
+@subsection ENVIRONMENT
+The following environment variables affect the execution of gtags.
+
+@table @asis
+@item @var{GTAGSROOT}
+The directory which is the root of source tree.
+@item @var{GTAGSDBPATH}
+The directory on which gtags database exist.
+This value is ignored when @var{GTAGSROOT} is not defined.
+@item @var{GTAGSLIBPATH}
+If this variable is set, it is used as the path to search for library functions.
+If the specified function is not found in a source tree, global also search
+in these paths.
+@end table
+
+@subsection EXAMPLES
+
+@example
+% ls -F
+Makefile      src/    lib/
+% gtags
+% global main
+src/main.c
+% global -x main
+main              10 src/main.c  main (argc, argv) @{
+% global -x '^[sg]et'
+set_num           20 lib/util.c  set_num(values)
+get_num           30 lib/util.c  get_num() @{
+% global -rx '^[sg]et'
+set_num          113 src/op.c            set_num(32);
+set_num          225 src/opop.c               if (set_num(0) > 0) @{
+get_num           90 src/op.c            while (get_num() > 0) @{
+% cd lib
+% global -rx '^[sg]et'
+set_num          113 ../src/op.c            set_num(32);
+set_num          225 ../src/opop.c               if (set_num(0) > 0) @{
+get_num           90 ../src/op.c            while (get_num() > 0) @{
+% global strlen
+% (cd /usr/src/sys; gtags)
+% setenv GTAGSLIBPATH /usr/src/sys
+% global strlen
+../../../usr/src/sys/libkern/strlen.c
+% (cd /usr/src/lib; gtags)
+% setenv GTAGSLIBPATH /usr/src/lib:/usr/src/sys
+% global strlen
+../../../usr/src/lib/libc/string/strlen.c
+@end example
+
+@subsection DIAGNOSTICS
+Global exits with a non 0 value if an error occurred, 0 otherwise.
 
 @c ***************************************************************************
 @c GNU Free Documentation License
