@@ -32,8 +32,8 @@
  *	i)	source	source string
  *	i)	limit	size of dist
  *
- * NOTE: This function is similar to strlcpy() in OpenBSD
- * but was made to avoid compatibility problems.
+ * NOTE: This function is similar to strlcpy of OpenBSD but is different
+ * because strlimcpy abort when it beyond the limit.
  */
 void
 strlimcpy(dist, source, limit)
