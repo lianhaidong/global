@@ -689,7 +689,7 @@ if ($'cgi && $'fflag) {
 	# Always make bless.sh.
 	# Don't grant execute permission to bless script.
 	&makebless("$dist/bless.sh") || &'error("cannot make bless script.");
-	chmod(0644, "$dist/bless.sh") || &'error("cannot chmod bless script.");
+	chmod(0640, "$dist/bless.sh") || &'error("cannot chmod bless script.");
 
 	foreach $f ('GTAGS', 'GRTAGS', 'GSYMS', 'GPATH') {
 		if (-f "$dbpath/$f") {
@@ -792,7 +792,7 @@ print STDERR "[", &'date, "] ", "(9) making hypertext from source code ...\n" if
 #
 # Don't grant execute permission to rebuild script.
 &makerebuild("$dist/rebuild.sh");
-chmod(0644, "$dist/rebuild.sh") || &'error("cannot chmod rebuild script.");
+chmod(0640, "$dist/rebuild.sh") || &'error("cannot chmod rebuild script.");
 
 &'clean();
 print STDERR "[", &'date, "] ", "Done.\n" if ($'vflag);
