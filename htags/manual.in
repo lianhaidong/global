@@ -26,7 +26,7 @@
 @HEADER	HTAGS,1,Jul 2002,GNU Project
 @NAME	htags - generate hypertext from source code.
 @SYNOPSIS
-	@name{htags} [-a][-c][-D][-f][-F][-g][-m][-n][-o][-s][-v][-w][-d @arg{dir}][-S @arg{dir}][-t @arg{title}][@arg{dir}]
+	@name{htags} [-a][-c][-D][-f][-F][-g][-m][-n][-o][-s][-v][-w][-d @arg{dbpath}][-S @arg{cgidir}][-t @arg{title}][@arg{htmldir}]
 @DESCRIPTION
 	@name{Htags} makes hypertext from C, C++, Yacc and Java source code.
 
@@ -53,7 +53,7 @@
 	@item{@option{-D}, @option{--dynamic}}
 		Generate object list dynamically using CGI program.
 		By default, object list is generated statically.
-	@item{@option{-d}, @option{--dbpath} @arg{dir}}
+	@item{@option{-d}, @option{--dbpath} @arg{dbpath}}
 		Specifies the directory in which @file{GTAGS} and @file{GRTAGS}
 		exist. The default is the current directory.
 	@item{@option{-f}, @option{--form}}
@@ -63,6 +63,7 @@
 		Use frame for each part of the contents.
 	@item{@option{-g}, @option{--gtags}}
 		Execute @xref{gtags,1} before creating hypertext.
+		The @option{-v}, @option{-w} and @arg{dbpath} are passwd to @name{gtags}.
 	@item{@option{--gtagsconf} @arg{file}}
 		Load user's configuration from @arg{file}.
 	@item{@option{--gtagslabel} @arg{label}}
@@ -73,8 +74,8 @@
 	@item{@option{-n}, @option{--line-number}}
 		Print the line numbers. By default, doesn't print it.
 	@item{@option{--no-javascript}}
-		Doesn't put javascript code.
-		By default, @name{htags} put javascript code.
+		Doesn't generate javascript code.
+		By default, @name{htags} generates javascript code.
 	@item{@option{-o}, @option{--other}}
 		Pick up not only source files but also other files except for
 		binary files.
@@ -83,8 +84,8 @@
 	@item{@option{-s}, @option{--symbol}}
 		Make anchors not only for functions but also other symbols.
 		@file{GSYMS} tag file needed.
-	@item{@option{-S}, @option{--secure-cgi} @arg{dir}}
-		write cgi script into @arg{dir} to realize a centralised
+	@item{@option{-S}, @option{--secure-cgi} @arg{cgidir}}
+		write cgi script into @arg{cgidir} to realize a centralised
 		cgi script. Script alias is @file{/cgi-bin} by default.
 		You can overwrite this value with config variable
 		@code{script_alias} in @file{gtags.conf}.
@@ -95,7 +96,7 @@
 		Verbose mode.
 	@item{@option{-w}, @option{--warning}}
 		Print warning messages.
-	@item{@arg{dir}}
+	@item{@arg{htmldir}}
 		The directory in which hypertext is generated.
 		The default is the current directory.
 	@end_itemize
@@ -199,8 +200,8 @@
 		List tags using table tag. The default is false.
 	@item{@code{normal_suffix}(string)}
 		Suffix for normal html file. The default is 'html'.
-	@item{@code{no_javascript}}
-		Doesn't put javascript code. By default, @name{htags} put javascript code.
+	@item{@code{no_javascript}(boolean)}
+		Doesn't generate javascript code. By default, @name{htags} generates javascript code.
 	@item{@code{gzipped_suffix}(string)}
 		Suffix for compressed html file. The default is 'ghtml'.
 	@item{@code{script_alias}(string)}
