@@ -508,7 +508,7 @@ char	*argv[];
 	/*
 	 * search in library path.
 	 */
-	if (getenv("GTAGSLIBPATH") && (count == 0 || Tflag) && !lflag && !rflag && !sflag) {
+	if (getenv("GTAGSLIBPATH") && (count == 0 || Tflag) && !lflag && !rflag) {
 		STRBUF  *sb = strbuf_open(0);
 		char	libdbpath[MAXPATHLEN+1];
 		char	*p, *lib;
