@@ -1885,7 +1885,7 @@ sub makefileindex {
 		if (!$'full_path) {
 			$last =~ s!.*/!!;
 		}
-		local($icon) = ($last =~ /\.[chy]$/) ? $'c_icon : $'file_icon;
+		local($icon) = ($last =~ /\.(h|c|y|c\+\+|cc|cpp|cxx|hxx|hpp|C|H)$/) ? $'c_icon : $'file_icon;
 		local($li) = '';
 		if (!$'no_order_list) {
 			$li .= "<LI>\n";
