@@ -208,6 +208,6 @@
         GNU GLOBAL source code tag system@br
         (http://www.gnu.org/software/global/).
 @AUTHOR
-	Shigio Yamaguchi
+	Shigio Yamaguchi, Tama Communications Corporation.
 @HISTORY
 	The @name{global} command appeared in FreeBSD 2.2.2.

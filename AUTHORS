@@ -16,7 +16,7 @@ ___________________________________
 
 		----------------------------------
 
-The GLOBAL was written by Shigio Yamaguchi.
+The GLOBAL was written by Shigio Yamaguchi and Tama Communications Corporation.
 
 Port to Windows 32 (for Borland C++ Compiler) by Dan Fandrich.
 (w32/INSTALL, w32/machine/unistd.h and most of #ifdef _WIN32.)

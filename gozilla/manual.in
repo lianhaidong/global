@@ -115,7 +115,7 @@
 	I don't know whether or not @name{gozilla} works well in Windows32
 	environment.
 @AUTHORS
-	Shigio Yamaguchi
+	Shigio Yamaguchi, Tama Communications Corporation.
 @HISTORY
 	The @name{gozilla} command appeared in FreeBSD 2.2.2 but did not
 	installed by default.

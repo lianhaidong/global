@@ -112,6 +112,6 @@
 	and ALTENTRY() from source file.
 	Probably valid only for FreeBSD and Linux kernel source.
 @AUTHOR
-	Shigio Yamaguchi
+	Shigio Yamaguchi, Tama Communications Corporation.
 @HISTORY
 	The @name{gctags} command appeared in FreeBSD 2.2.2.
