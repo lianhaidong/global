@@ -16,12 +16,13 @@ noinst_HEADERS = \
 conf.h dbop.h defined.h die.h find.h getdbpath.h global.h gparam.h \
 gtagsop.h locatestring.h makepath.h path.h gpathop.h strbuf.h \
 strmake.h tab.h test.h token.h usable.h version.h is_unixy.h abs2rel.h \
-split.h strlimcpy.h linetable.h
+split.h strlimcpy.h linetable.h env.h
 
 libgloutil_a_SOURCES = \
 conf.c dbop.c defined.c die.c find.c getdbpath.c gtagsop.c locatestring.c \
 makepath.c path.c gpathop.c strbuf.c strmake.c tab.c test.c \
-token.c usable.c version.c is_unixy.c abs2rel.c split.c strlimcpy.c linetable.c
+token.c usable.c version.c is_unixy.c abs2rel.c split.c strlimcpy.c linetable.c \
+env.c
 
 AM_CFLAGS = -DBINDIR='"$(bindir)"'
 

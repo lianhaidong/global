@@ -226,19 +226,7 @@ char	*argv[];
 				} else {
 					strlimcpy(value, optarg, sizeof(value));
 				}
-#ifdef HAVE_PUTENV
-				/* '=' and '\0' require +2 bytes. */
-				env = (char *)malloc(strlen(name)+strlen(value)+2);
-				if (!env)	
-					die("short of memory.");
-				strcpy(env, name);
-				strcat(env, "=");
-				strcat(env, value);
-				putenv(env);
-				/* Don't free memory. putenv(3) require it. */
-#else
-				setenv(name, value, 1);
-#endif /* HAVE_PUTENV */
+				set_env(name, value);
 				gtagsconf = gtagslabel = 0;
 			}
 			break;
@@ -609,19 +597,7 @@ char	*argv[];
 	/*
 	 * teach gctags(1) where is dbpath by environment variable.
 	 */
-#ifdef HAVE_PUTENV
-	{
-		char *env = (char *)malloc(strlen("GTAGSDBPATH=")+strlen(dbpath)+1);
-
-		if (!env)	
-			die("short of memory.");
-		strcpy(env, "GTAGSDBPATH=");
-		strcat(env, dbpath);
-		putenv(env);
-	}
-#else
-	setenv("GTAGSDBPATH", dbpath, 1);
-#endif /* HAVE_PUTENV */
+	set_env("GTAGSDBPATH", dbpath);
 
 	if (wflag) {
 #ifdef HAVE_PUTENV

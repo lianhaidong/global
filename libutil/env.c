@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 1997, 1998, 1999 Shigio Yamaguchi
- * Copyright (c) 1999, 2000, 2001, 2002 Tama Communications Corporation
+ * Copyright (c) 2003 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -19,33 +18,43 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef _GLOBAL_H_
-#define _GLOBAL_H_
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+#ifdef STDC_HEADERS
+#include <stdlib.h>
+#endif
 
-#include "gparam.h"
-#include "abs2rel.h"
-#include "conf.h"
-#include "dbop.h"
-#include "defined.h"
-#include "die.h"
 #include "env.h"
-#include "find.h"
-#include "getdbpath.h"
-#include "gtagsop.h"
-#include "is_unixy.h"
-#include "linetable.h"
-#include "locatestring.h"
-#include "makepath.h"
-#include "path.h"
-#include "gpathop.h"
-#include "split.h"
-#include "strbuf.h"
-#include "strlimcpy.h"
-#include "strmake.h"
-#include "tab.h"
-#include "test.h"
-#include "token.h"
-#include "usable.h"
-#include "version.h"
 
-#endif /* ! _GLOBAL_H_ */
+/*
+ * set_env: put environment variable.
+ *
+ *	i)	var	environment variable
+ *	i)	val	value
+ */
+void
+set_env(var, val)
+const char *var;
+const char *val;
+{
+#ifdef HAVE_PUTENV
+	char *env;
+	/*
+	 * extra 2 bytes needed for '=' and '\0'.
+	 *
+	 * putenv("TMPDIR=/tmp");
+	 * TMPDIR=/tmp\0
+	 */
+	env = (char *)malloc(strlen(var)+strlen(val)+2);
+	if (!env)
+		die("short of memory.");
+	strcpy(env, var);
+	strcat(env, "=");
+	strcat(env, val);
+	putenv(env);
+	/* Don't free memory. putenv(3) require it. */
+#else
+	setenv(var, val, 1);
+#endif
+}

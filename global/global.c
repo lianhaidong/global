@@ -1006,19 +1006,7 @@ int	db;
 	/*
 	 * teach parser where is dbpath.
 	 */
-#ifdef HAVE_PUTENV
-	{
-		char *env = (char *)malloc(strlen("GTAGSDBPATH=")+strlen(dbpath)+1);
-
-		if (!env)	
-			die("short of memory.");
-		strcpy(env, "GTAGSDBPATH=");
-		strcat(env, dbpath);
-		putenv(env);
-	}
-#else
-	setenv("GTAGSDBPATH", dbpath, 1);
-#endif /* HAVE_PUTENV */
+	set_env("GTAGSDBPATH", dbpath);
 
 	/*
 	 * get parser.
