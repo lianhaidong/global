@@ -19,6 +19,35 @@ ___________________________________
 GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 4.8.2 - November 11 2004, by Shigio Yamaguchi
+
+[INCOMPATIBLE CHANGES]
+* Postgres support ended.
+* Htags.pl (perl version of htags) was removed completely.
+* Config variable sed_command and sort_command were removed.
+  The sed(1) and sort(1) are not necessary any longer.
+
+[OTHER CHANGES]
+Fixed bugs:
+* Wrong output of 'global -Po' was fixed.
+
+New features:
+* gctags(assembly language):
+  - In addition to `call', `jsr' is recognized as call instruction.
+    Although various call instructions exist like `bl' or `calls',
+    only `call' and `jsr' are used widely.
+  - Macros like ENTRY or EXT are taken up as reference,
+    when definitions exist in somewhere else.
+  - Warning is displayed when a comment is not closed.
+  - C_SYMBOL_NAME and C_ENTRY are recognized as a macro
+    which shows the start of a function.
+  - The string which is not closed finishes at the end of line.
+    This behavior is the same as GNU C preprocessor.
+  - The check of correspondence of "#if" and "#endif" was deleted.
+    This did not exist in version 4.8.
+* New directory '.snprj/' was added to the DEFAULTSKIP list.
+  This is the tag directory of Source-Navigator.
+
 Version 4.8.1 - October 6 2004, by Shigio Yamaguchi
 
 Fixed bugs:

@@ -18,6 +18,42 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+November 11 2004, Shigio Yamaguchi  <shigio@gnu.org>
+
+        * Assembly language parser rewritten using Yacc.
+        * libutil/strmake.c: strtrim() added.
+        * libutil/varray.c added.
+
+        Decrease in dependancy to external commands:
+        * The sed(1), sort(1) and find(1) are not necessary any longer.
+        * The support of Find(1) as a method of directory traversing
+          was ended. As a result, dirent(3) became indispensable.
+          The configuration phase was changed like follows:
+
+                if dirent(3) exist then
+                        use dirent(3)
+                else if find(1) exist then
+                        use find(1)
+                else
+                        ERROR
+                        |
+                        v
+                if dirent(3) exist then
+                        use dirent(3)
+                else
+                        ERROR
+        * Htags.pl was removed completely. Therefore, The --date, --pwd,
+          --write and --scandb option of gtags(1) which was used internally
+          by htags.pl, were removed.
+        * Includes GNU sort as part of GLOBAL package.
+          This solves following troubles:
+          - A certain operating system has another 'sort' command
+            that specification is different from GNU sort. Unluckily,
+            the command is often invoked for GLOBAL.
+          - Multi-language version of sort is often very slow. Since GLOBAL
+            doesn't support multi-language, the slowness is quite meaningless.
+          - In the past, the specification of sort command was changed.
+
 October 6 2004, Shigio Yamaguchi  <shigio@gnu.org>
 
 	* libutil/langmap.c, langmap.h added.
