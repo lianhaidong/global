@@ -45,15 +45,25 @@
 #include "path2url.h"
 #include "htags.h"
 
+/*
+ * XHTML support.
+ *
+ * If the --xhtml option is specified then we take 'XHTML 1.1'.
+ * If both of the --xhtml and the --frame option are specified
+ * then we take 'XHTML 1.0 Frameset'.
+ * We define each style for the tags in 'style.css' in this directory.
+ */
 /*----------------------------------------------------------------------*/
 /* Tag definitions							*/
 /*----------------------------------------------------------------------*/
 char *html_begin;
 char *html_end;
+char *html_head_begin;
+char *html_head_end;
+char *html_title_begin;
+char *html_title_end;
 char *body_begin;
 char *body_end;
-char *head_begin;
-char *head_end;
 char *title_begin;
 char *title_end;
 char *header_begin;
@@ -63,9 +73,15 @@ char *cvslink_end;
 char *caution_begin;
 char *caution_end;
 char *list_begin;
+char *list_end;
 char *item_begin;
 char *item_end;
-char *list_end;
+char *define_list_begin;
+char *define_list_end;
+char *define_term_begin;
+char *define_term_end;
+char *define_desc_begin;
+char *define_desc_end;
 char *table_begin;
 char *table_end;
 char *comment_begin;
@@ -94,6 +110,7 @@ char *quote_amp;
 char *quote_space;
 char *hr;
 char *br;
+char *empty_element;
 /*
  * Set up HTML tags.
  */
@@ -102,10 +119,12 @@ setup_html()
 {
 	html_begin	= "<html>";
 	html_end	= "</html>";
+	html_head_begin	= "<head>";
+	html_head_end	= "</head>";
+	html_title_begin= "<title>";
+	html_title_end	= "</title>";
 	body_begin	= "<body>";
 	body_end	= "</body>";
-	head_begin	= "<head>";
-	head_end	= "</head>";
 	title_begin	= "<h1><font color='#cc0000'>";
 	title_end	= "</font></h1>";
 	header_begin	= "<h2>";
@@ -115,9 +134,15 @@ setup_html()
 	caution_begin	= "<center>\n<blockquote>";
 	caution_end	= "</blockquote>\n</center>";
 	list_begin	= "<ol>";
+	list_end	= "</ol>";
 	item_begin	= "<li>";
 	item_end	= "";
-	list_end	= "</ol>";
+	define_list_begin = "<dl>";
+	define_list_end   = "</dl>";
+	define_term_begin = "<dt>";
+	define_term_end   = "";
+	define_desc_begin  = "<dd>";
+	define_desc_end    = "";
 	table_begin	= "<table>";
 	table_end	= "</table>";
 	comment_begin	= "<i><font color='green'>";
@@ -146,37 +171,69 @@ setup_html()
 	quote_space	= "&nbsp;";
 	hr              = "<hr>";
 	br              = "<br>";
+	empty_element	= "";
 }
 /*
  * Set up XHTML tags.
- * (under construction)
  */
 void
 setup_xhtml()
 {
-	setup_html();
-}
-/*
- * Set up TEX tags.
- * (under construction)
- */
-void
-setup_tex()
-{
-	setup_html();
-}
-/*
- * Generate meta record.
- */
-char *
-meta_record()
-{
-	static char buf[512];
-	char *s1 = "meta name='robots' content='noindex,nofollow'";
-	char *s2 = "meta name='generator'";
-
-	snprintf(buf, sizeof(buf), "<%s>\n<%s content='GLOBAL-%s'>\n", s1, s2, get_version());
-	return buf;
+	html_begin	= "<html xmlns='http://www.w3.org/1999/xhtml'>";
+	html_end	= "</html>";
+	html_head_begin	= "<head>";
+	html_head_end	= "</head>";
+	html_title_begin= "<title>";
+	html_title_end	= "</title>";
+	body_begin	= "<body>";
+	body_end	= "</body>";
+	title_begin	= "<h1 class='title'>";
+	title_end	= "</h1>";
+	header_begin	= "<h2 class='header'>";
+	header_end	= "</h2>";
+	cvslink_begin	= "<span class='cvs'>";
+	cvslink_end	= "</span>";
+	caution_begin	= "<div class='caution'>";
+	caution_end	= "</div>";
+	list_begin	= "<ol>";
+	list_end	= "</ol>";
+	item_begin	= "<li>";
+	item_end	= "</li>";
+	define_list_begin = "<dl>";
+	define_list_end   = "</dl>";
+	define_term_begin = "<dt>";
+	define_term_end   = "</dt>";
+	define_desc_begin  = "<dd>";
+	define_desc_end    = "</dd>";
+	table_begin	= "<table>";
+	table_end	= "</table>";
+	comment_begin	= "<em class='comment'>";
+	comment_end	= "</em>";
+	sharp_begin	= "<em class='sharp'>";
+	sharp_end	= "</em>";
+	brace_begin	= "<em class='brace'>";
+	brace_end	= "</em>";
+	verbatim_begin	= "<pre>";
+	verbatim_end	= "</pre>";
+	reserved_begin	= "<strong class='reserved'>";
+	reserved_end	= "</strong>";
+	position_begin	= "<em class='position'>";
+	position_end	= "</em>";
+	warned_line_begin = "<em class='warned'>";
+	warned_line_end   = "</em>";
+	error_begin     = "<h2 class='error'>";
+	error_end       = "</h2>";
+	message_begin   = "<h3 class='message'>";
+	message_end     = "</h3>";
+	string_begin	= "<em class='string'>";
+	string_end	= "</em>";
+	quote_great	= "&gt;";
+	quote_little	= "&lt;";
+	quote_amp	= "&amp;";
+	quote_space	= "&nbsp;";
+	hr              = "<hr />";
+	br              = "<br />";
+	empty_element	= " /";
 }
 /*
  * Generate upper directory.
@@ -190,26 +247,54 @@ upperdir(dir)
 	return path;
 }
 /*
- * Generate header tag.
+ * Generate beginning of page
+ *
+ *	i)	title	title of this page
+ *	i)	subdir	1: this page is in subdirectory
  */
 char *
-set_header(title)
+gen_page_begin(title, subdir)
 	char *title;
+	int subdir;
 {
 	static STRBUF *sb = NULL;
+	char *dir = subdir ? "../" : "";
 
 	if (sb == NULL)
 		sb = strbuf_open(0);
 	else
 		strbuf_reset(sb);
-	strbuf_sprintf(sb, "%s\n", head_begin);
-	strbuf_sprintf(sb, "<title>%s</title>\n", title);
-	strbuf_puts(sb, meta_record());
+	if (enable_xhtml) {
+		strbuf_puts(sb, "<?xml version='1.0' encoding='ISO-8859-1'?>\n");
+		strbuf_sprintf(sb, "<?xml-stylesheet type='text/css' href='%sstyle.css'?>\n", dir);
+		if (Fflag)
+			strbuf_puts(sb, "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Frameset//EN' 'http:://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd'>\n");
+		else
+			strbuf_puts(sb, "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.1//EN' 'http:://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd'>\n");
+	}
+	strbuf_sprintf(sb, "%s\n", html_begin);
+	strbuf_sprintf(sb, "%s\n", html_head_begin);
+	strbuf_puts(sb, html_title_begin);
+	strbuf_puts(sb, title);
+	strbuf_sprintf(sb, "%s\n", html_title_end);
+	strbuf_sprintf(sb, "<meta name='robots' content='noindex,nofollow'%s>\n", empty_element);
+	strbuf_sprintf(sb, "<meta name='generator' content='GLOBAL-%s'%s>\n", get_version(), empty_element);
+	if (enable_xhtml) {
+		strbuf_sprintf(sb, "<meta http-equiv='Content-Style-Type' content='text/css'%s>\n", empty_element);
+		strbuf_sprintf(sb, "<link rel='stylesheet' type='text/css' href='%sstyle.css'%s>\n", dir, empty_element);
+	}
 	if (style_sheet)
 		strbuf_puts(sb, style_sheet);
-	strbuf_sprintf(sb, "%s\n", head_end);
-
+	strbuf_puts(sb, html_head_end);
 	return strbuf_value(sb);
+}
+/*
+ * Generate end of page
+ */
+char *
+gen_page_end()
+{
+	return html_end;
 }
 
 /*
@@ -230,8 +315,12 @@ gen_image(where, file, alt)
 	static char buf[1024];
 	char *dir = (where == PARENT) ? "../icons" : "icons";
 		
-	snprintf(buf, sizeof(buf), "<img src='%s/%s.%s' alt='[%s]' %s>",
-		dir, file, icon_suffix, alt, icon_spec);
+	if (enable_xhtml)
+		snprintf(buf, sizeof(buf), "<img src='%s/%s.%s' alt='[%s]' %s%s>",
+			dir, file, icon_suffix, alt, icon_spec, empty_element);
+	else
+		snprintf(buf, sizeof(buf), "<img class='icon' src='%s/%s.%s' alt='[%s]'%s>",
+			dir, file, icon_suffix, alt, empty_element);
 	return buf;
 }
 /*
@@ -242,7 +331,8 @@ gen_name_number(number)
 	int number;
 {
 	static char buf[128];
-	snprintf(buf, sizeof(buf), "<a name='%d'>", number);
+	char *id = enable_xhtml ? "id" : "name";
+	snprintf(buf, sizeof(buf), "<a %s='%d'%s>", id, number, empty_element);
 	return buf;
 }
 /*
@@ -253,7 +343,8 @@ gen_name_string(name)
 	const char *name;
 {
 	static char buf[128];
-	snprintf(buf, sizeof(buf), "<a name='%s'>", name);
+	char *id = enable_xhtml ? "id" : "name";
+	snprintf(buf, sizeof(buf), "<a %s='%s'%s>", id, name, empty_element);
 	return buf;
 }
 /*
@@ -362,12 +453,21 @@ gen_list_begin()
 	static char buf[1024];
 
 	if (table_list) {
-		snprintf(buf, sizeof(buf), "%s\n%s%s%s%s",
-			table_begin, 
-			"<tr><th nowrap align='left'>tag</th>",
-			"<th nowrap align='right'>line</th>",
-			"<th nowrap align='center'>file</th>",
-			"<th nowrap align='left'>source code</th></tr>");
+		if (enable_xhtml) {
+			snprintf(buf, sizeof(buf), "%s\n%s%s%s%s",
+				table_begin, 
+				"<tr><th class='tag'>tag</th>",
+				"<th class='line'>line</th>",
+				"<th class='file'>file</th>",
+				"<th class='code'>source code</th></tr>");
+		} else {
+			snprintf(buf, sizeof(buf), "%s\n%s%s%s%s",
+				table_begin, 
+				"<tr><th nowrap align='left'>tag</th>",
+				"<th nowrap align='right'>line</th>",
+				"<th nowrap align='center'>file</th>",
+				"<th nowrap align='left'>source code</th></tr>");
+		}
 	} else {
 		strlimcpy(buf, verbatim_begin, sizeof(buf));
 	}
@@ -404,12 +504,21 @@ gen_list_body(srcdir, string)
 	fid = path2fid(filename);
 
 	if (table_list) {
-		strbuf_puts(sb, "<tr><td nowrap>");
-		strbuf_puts(sb, gen_href_begin(srcdir, fid, HTML, lno));
-		strbuf_puts(sb, name);
-		strbuf_puts(sb, gen_href_end());
-		strbuf_sprintf(sb, "</td><td nowrap align='right'>%s</td><td nowrap align='left'>%s</td><td nowrap>",
-			lno, filename);
+		if (enable_xhtml) {
+			strbuf_puts(sb, "<tr><td class='tag'>");
+			strbuf_puts(sb, gen_href_begin(srcdir, fid, HTML, lno));
+			strbuf_puts(sb, name);
+			strbuf_puts(sb, gen_href_end());
+			strbuf_sprintf(sb, "</td><td class='line'>%s</td><td class='file'>%s</td><td class='code'>",
+				lno, filename);
+		} else {
+			strbuf_puts(sb, "<tr><td nowrap>");
+			strbuf_puts(sb, gen_href_begin(srcdir, fid, HTML, lno));
+			strbuf_puts(sb, name);
+			strbuf_puts(sb, gen_href_end());
+			strbuf_sprintf(sb, "</td><td nowrap align='right'>%s</td><td nowrap align='left'>%s</td><td nowrap>",
+				lno, filename);
+		}
 
 		for (p = line; *p; p++) {
 			unsigned char c = *p;
@@ -466,6 +575,28 @@ char *
 gen_list_end()
 {
 	return table_list ? table_end : verbatim_end;
+}
+/*
+ * Generate div begin tag.
+ */
+char *
+gen_div_begin(align)
+	const char *align;
+{
+	if (align) {
+		static char buf[32];
+		snprintf(buf, sizeof(buf), "<div class='%s'>", align);
+		return buf;
+	}
+	return "<div>";
+}
+/*
+ * Generate div end tag.
+ */
+char *
+gen_div_end()
+{
+	return "</div>";
 }
 
 /*

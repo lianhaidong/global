@@ -25,10 +25,12 @@
  */
 extern char *html_begin;
 extern char *html_end;
+extern char *html_head_begin;
+extern char *html_head_end;
+extern char *html_title_begin;
+extern char *html_title_end;
 extern char *body_begin;
 extern char *body_end;
-extern char *head_begin;
-extern char *head_end;
 extern char *title_begin;
 extern char *title_end;
 extern char *header_begin;
@@ -41,6 +43,12 @@ extern char *list_begin;
 extern char *item_begin;
 extern char *item_end;
 extern char *list_end;
+extern char *define_list_begin;
+extern char *define_list_end;
+extern char *define_term_begin;
+extern char *define_term_end;
+extern char *define_desc_begin;
+extern char *define_desc_end;
 extern char *table_begin;
 extern char *table_end;
 extern char *verbatim_begin;
@@ -69,6 +77,7 @@ extern char *quote_amp;
 extern char *quote_space;
 extern char *hr;
 extern char *br;
+extern char *empty_element;
 
 /*
  * Parameter for gen_image();
@@ -81,7 +90,8 @@ void setup_xhtml();
 void setup_tex();
 char *meta_record();
 char *upperdir(const char *);
-char *set_header(char *);
+char *gen_page_begin(char *, int);
+char *gen_page_end();
 char *gen_image(int, const char *, const char *);
 char *gen_name_number(int);
 char *gen_name_string(const char *);
@@ -93,6 +103,8 @@ char *gen_href_end();
 char *gen_list_begin();
 char *gen_list_body(char *, char *);
 char *gen_list_end();
+char *gen_div_begin(const char *);
+char *gen_div_end();
 int is_binary(char *);
 char *encode(char *);
 

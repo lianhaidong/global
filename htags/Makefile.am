@@ -28,5 +28,5 @@ htags_DEPENDENCIES = $(LDADD)
 man_MANS = htags.1
 
 EXTRA_DIST = $(man_MANS) manual.in \
-		const.h global.cgi.tmpl.in bless.sh.tmpl \
+		const.h global.cgi.tmpl.in bless.sh.tmpl style.css \
 		c.l cpp.l java.l php.l asm.l

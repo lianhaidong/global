@@ -76,6 +76,7 @@ char cwdpath[MAXPATHLEN];
 char dbpath[MAXPATHLEN];
 char distpath[MAXPATHLEN];
 char gtagsconf[MAXPATHLEN];
+char datadir[MAXPATHLEN];
 
 char sort_path[MAXFILLEN];
 char gtags_path[MAXFILLEN];
@@ -112,6 +113,7 @@ int no_order_list;			/* 1: doesn't use order list	*/
 int other_files;			/* 1: list other files		*/
 int enable_grep;			/* 1: enable grep		*/
 int enable_idutils;			/* 1: enable idutils		*/
+int enable_xhtml;			/* 1: enable XHTML		*/
 
 char *action_value;
 char *id_value;
@@ -236,6 +238,7 @@ static struct option const long_options[] = {
         {"no-map-file", no_argument, &no_map_file, 1},
         {"statistics", no_argument, &statistics, 1},
         {"style-sheet", required_argument, NULL, 1},
+        {"xhtml", no_argument, &enable_xhtml, 1},
         {"version", no_argument, &show_version, 1},
         {"help", no_argument, &show_help, 1},
         { 0 }
@@ -316,10 +319,12 @@ generate_file(dist, file)
                 char *name;
                 char *value;
         } tab[] = {
-                {"@html_begin@", html_begin},
-                {"@html_end@", html_end},
+                {"@page_begin@", NULL},
+                {"@page_end@", NULL},
                 {"@body_begin@", body_begin},
                 {"@body_end@", body_end},
+                {"@title_begin@", title_begin},
+                {"@title_end@", title_end},
                 {"@error_begin@", error_begin},
                 {"@error_end@", error_end},
                 {"@message_begin@", message_begin},
@@ -340,6 +345,8 @@ generate_file(dist, file)
         };
 	int tabsize = sizeof(tab) / sizeof(struct map);
 
+	tab[0].value = gen_page_begin("Result", 1);
+	tab[1].value = gen_page_end();
 	/*
 	 * construct regular expression.
 	 */
@@ -356,9 +363,7 @@ generate_file(dist, file)
 	 * construct skelton file name in the system datadir directory.
 	 */
 	strbuf_reset(sb);
-	if (!getconfs("datadir", sb))
-		die("cannot get datadir directory name.");
-	strbuf_sprintf(sb, "/gtags/%s.tmpl", file);
+	strbuf_sprintf(sb, "%s/gtags/%s.tmpl", datadir, file);
 	ip = fopen(strbuf_value(sb), "r");
 	if (!ip)
 		die("skelton file '%s' not found.", strbuf_value(sb));
@@ -393,6 +398,8 @@ generate_file(dist, file)
 				 */
 				for (q = tab[i].value; *q; q++) {
 					if (*q == '"')
+						fputc('\\', op);
+					else if (*q == '\n')
 						fputc('\\', op);
 					fputc(*q, op);
 				}
@@ -490,11 +497,13 @@ makehelp(file)
 	op = fopen(makepath(distpath, file, NULL), "w");
 	if (!op)
 		die("cannot make help file.");
-	fprintf(op, "%s\n", html_begin);
-	fprintf(op, "%s", set_header("HELP"));
+	fprintf(op, "%s\n", gen_page_begin("HELP", 0));
 	fprintf(op, "%s\n", body_begin);
-	fprintf(op, "%sUsage of Links%s\n", header_begin, header_end);
-	fprintf(op, "%s/* ", verbatim_begin);
+	fputs(header_begin, op);
+	fputs("Usage of Links", op);
+	fprintf(op, "%s\n", header_end);
+	fputs(verbatim_begin, op);
+	fputs("/* ", op);
 	for (n = 0; n <= last; n++) {
 		if (icon_list) {
 			fputs(gen_image(CURRENT, icons[n], label[n]), op);
@@ -506,24 +515,32 @@ makehelp(file)
 	}
 	if (show_position)
 		fprintf(op, "[+line file]");
-	fprintf(op, " */%s\n", verbatim_end);
-	fprintf(op, "<dl>\n");
+	fputs(" */", op);
+	fprintf(op, "%s\n", verbatim_end);
+	fprintf(op, "%s\n", define_list_begin);
 	for (n = 0; n <= last; n++) {
-		fprintf(op, "<dt>");
+		fputs(define_term_begin, op);
 		if (icon_list) {
 			fputs(gen_image(CURRENT, icons[n], label[n]), op);
 		} else {
 			fprintf(op, "[%s]", label[n]);
 		}
-		fprintf(op, "<dd>%s\n", msg[n]);
+		fputs(define_term_end, op);
+		fputs(define_desc_begin, op);
+		fputs(msg[n], op);
+		fprintf(op, "%s\n", define_desc_end);
 	}
 	if (show_position) {
-		fprintf(op, "<dt>[+line file]");
-		fprintf(op, "<dd>Current position (line number and file name).\n");
+		fputs(define_term_begin, op);
+		fputs("[+line file]", op);
+		fputs(define_term_end, op);
+		fputs(define_desc_begin, op);
+		fputs("Current position (line number and file name).", op);
+		fprintf(op, "%s\n", define_desc_end);
 	}
-	fprintf(op, "</dl>\n");
+	fprintf(op, "%s\n", define_list_end);
 	fprintf(op, "%s\n", body_end);
-	fprintf(op, "%s\n", html_end);
+	fprintf(op, "%s\n", gen_page_end());
 	fclose(op);
 	file_count++;
 }
@@ -549,43 +566,44 @@ makesearchpart(action, id, target)
 	strbuf_puts(sb, "SEARCH");
 	if (Fflag)
 		strbuf_puts(sb, gen_href_end());
-	strbuf_puts(sb, header_end);
-	strbuf_putc(sb, '\n');
-	if (!target)
-		strbuf_puts(sb, "Please input object name and select [Search]. POSIX's regular expression is allowed.<p>\n"); 
+	strbuf_sprintf(sb, "%s\n", header_end);
+	if (!target) {
+		strbuf_puts(sb, "Please input object name and select [Search]. POSIX's regular expression is allowed.");
+		strbuf_puts(sb, br);
+		strbuf_putc(sb, '\n');
+	}
 	strbuf_sprintf(sb, "<form method='get' action='%s'", action);
 	if (target)
 		strbuf_sprintf(sb, " target='%s'", target);
-	strbuf_puts(sb, ">\n");
-	strbuf_puts(sb, "<input name='pattern'>\n");
-	strbuf_puts(sb, "<input type='hidden' name='id' value='");
-	if (id)
-		strbuf_puts(sb, id);
-	strbuf_puts(sb, "'>\n");
-	strbuf_puts(sb, "<input type='submit' value='Search'>\n");
-	strbuf_sprintf(sb, "<input type='reset' value='Reset'>%s\n", br);
-	strbuf_puts(sb, "<input type='radio' name='type' value='definition' checked title='Retrieve the definition place of the specified symbol.'>");
+	strbuf_sprintf(sb, "%s>\n", empty_element);
+	strbuf_sprintf(sb, "<input name='pattern'%s>\n", empty_element);
+	if (id == NULL)
+		id = "";
+	strbuf_sprintf(sb, "<input type='hidden' name='id' value='%s'%s>\n", id, empty_element);
+	strbuf_sprintf(sb, "<input type='submit' value='Search'%s>\n", empty_element);
+	strbuf_sprintf(sb, "<input type='reset' value='Reset'%s>%s\n", empty_element, br);
+	strbuf_sprintf(sb, "<input type='radio' name='type' value='definition' checked title='Retrieve the definition place of the specified symbol.'%s>", empty_element);
 	strbuf_puts(sb, target ? "Def" : "Definition");
-	strbuf_puts(sb, "\n<input type='radio' name='type' value='reference' title='Retrieve the reference place of the specified symbol.'>");
+	strbuf_sprintf(sb, "\n<input type='radio' name='type' value='reference' title='Retrieve the reference place of the specified symbol.'%s>", empty_element);
 	strbuf_puts(sb, target ? "Ref" : "Reference");
 	if (test("f", makepath(dbpath, dbname(GSYMS), NULL))) {
-		strbuf_puts(sb, "\n<input type='radio' name='type' value='symbol' title='Retrieve the place of the specified symbol is used.'>");
+		strbuf_sprintf(sb, "\n<input type='radio' name='type' value='symbol' title='Retrieve the place of the specified symbol is used.'%s>", empty_element);
 		strbuf_puts(sb, target ? "Sym" : "Other symbol");
 	}
-	strbuf_puts(sb, "\n<input type='radio' name='type' value='path' title='Look for path name which matches to the specified pattern.'>");
+	strbuf_sprintf(sb, "\n<input type='radio' name='type' value='path' title='Look for path name which matches to the specified pattern.'%s>", empty_element);
 	strbuf_puts(sb, target ? "Path" : "Path name");
 	if (enable_grep) {
-		strbuf_puts(sb, "\n<input type='radio' name='type' value='grep' title='Retrieve lines which matches to the specified pattern.'>");
+		strbuf_sprintf(sb, "\n<input type='radio' name='type' value='grep' title='Retrieve lines which matches to the specified pattern.'%s>", empty_element);
 		strbuf_puts(sb, target ? "Grep" : "Grep pattern");
 	}
 	if (enable_idutils && test("f", makepath(dbpath, "ID", NULL))) {
-		strbuf_puts(sb, "\n<input type='radio' name='type' value='idutils' title='Retrieve lines which matches to the specified pattern using idutils(1).'>");
+		strbuf_sprintf(sb, "\n<input type='radio' name='type' value='idutils' title='Retrieve lines which matches to the specified pattern using idutils(1).'%s>", empty_element);
 		strbuf_puts(sb, target ? "Id" : "Id pattern");
 	}
-	strbuf_sprintf(sb, "%s\n<input type='checkbox' name='icase' value='1' title='Ignore case distinctions in the pattern.'>", br);
+	strbuf_sprintf(sb, "%s\n<input type='checkbox' name='icase' value='1' title='Ignore case distinctions in the pattern.'%s>", br, empty_element);
 	strbuf_puts(sb, target ? "Icase" : "Ignore case");
 	if (other_files) {
-		strbuf_puts(sb, "\n<input type='checkbox' name='other' value='1' title='Files other than the source code are also retrieved.'>");
+		strbuf_sprintf(sb, "\n<input type='checkbox' name='other' value='1' title='Files other than the source code are also retrieved.'%s>", empty_element);
 		strbuf_puts(sb, target ? "Other" : "Other files");
 	}
 	strbuf_puts(sb, "\n</form>\n");
@@ -607,44 +625,40 @@ makeindex(file, title, index)
 	char *index;
 {
 	FILE *op;
+	char *name = enable_xhtml ? "id" : "name";
 
 	op = fopen(makepath(distpath, file, NULL), "w");
 	if (!op)
 		die("cannot make file '%s'.", file);
+	fprintf(op, "%s\n", gen_page_begin(title, 0));
 	if (Fflag) {
-		fprintf(op, "%s\n", html_begin);
-		fprintf(op, "%s\n", head_begin);
-		fprintf(op, "<title>%s</title>\n", title);
-		fprintf(op, "%s", meta_record());
-		if (style_sheet)
-			fprintf(op, "%s", style_sheet);
-		fprintf(op, "%s\n", head_end);
 		fprintf(op, "<frameset cols='200,*'>\n");
 		if (fflag) {
 			fprintf(op, "<frameset rows='33%%,33%%,*'>\n");
-			fprintf(op, "<frame name='search' src='search.%s'>\n", normal_suffix);
+			fprintf(op, "<frame %s='search' src='search.%s'%s>\n", name, normal_suffix, empty_element);
 		} else {
 			fprintf(op, "<frameset rows='50%%,*'>\n");
 		}
-		fprintf(op, "<frame name='defines' src='defines.%s'>\n", normal_suffix);
-		fprintf(op, "<frame name='files' src='files.%s'>\n", normal_suffix);
+		/*
+		 * id='xxx' for XHTML
+		 * name='xxx' for HTML
+		 */
+		fprintf(op, "<frame name='defines' id='defines' src='defines.%s'%s>\n", normal_suffix, empty_element);
+		fprintf(op, "<frame name='files' id='files' src='files.%s'%s>\n", normal_suffix, empty_element);
 		fprintf(op, "</frameset>\n");
-		fprintf(op, "<frame name='mains' src='mains.%s'>\n", normal_suffix);
+		fprintf(op, "<frame name='mains' id='mains' src='mains.%s'%s>\n", normal_suffix, empty_element);
 		fprintf(op, "<noframes>\n");
 		fprintf(op, "%s\n", body_begin);
 		fputs(index, op);
 		fprintf(op, "%s\n", body_end);
 		fprintf(op, "</noframes>\n");
 		fprintf(op, "</frameset>\n");
-		fprintf(op, "%s\n", html_end);
 	} else {
-		fprintf(op, "%s\n", html_begin);
-		fprintf(op, "%s", set_header(title));
 		fprintf(op, "%s\n", body_begin);
 		fputs(index, op);
 		fprintf(op, "%s\n", body_end);
-		fprintf(op, "%s\n", html_end);
 	}
+	fprintf(op, "%s\n", gen_page_end());
 	fclose(op);
 	file_count++;
 }
@@ -664,12 +678,11 @@ makemainindex(file, index)
 	op = fopen(makepath(distpath, file, NULL), "w");
 	if (!op)
 		die("cannot make file '%s'.", file);
-	fprintf(op, "%s\n", html_begin);
-	fprintf(op, "%s", set_header(title));
+	fprintf(op, "%s\n", gen_page_begin(title, 0));
 	fprintf(op, "%s\n", body_begin);
 	fputs(index, op);
 	fprintf(op, "%s\n", body_end);
-	fprintf(op, "%s\n", html_end);
+	fprintf(op, "%s\n", gen_page_end());
 	fclose(op);
 	file_count++;
 }
@@ -687,12 +700,11 @@ makesearchindex(file)
 	op = fopen(makepath(distpath, file, NULL), "w");
 	if (!op)
 		die("cannot create file '%s'.", file);
-	fprintf(op, "%s\n", html_begin);
-	fprintf(op, "%s", set_header("SEARCH"));
+	fprintf(op, "%s\n", gen_page_begin("SEARCH", 0));
 	fprintf(op, "%s\n", body_begin);
 	fputs(makesearchpart(action, id, "mains"), op);
 	fprintf(op, "%s\n", body_end);
-	fprintf(op, "%s\n", html_end);
+	fprintf(op, "%s\n", gen_page_end());
 	fclose(op);
 	file_count++;
 }
@@ -848,14 +860,15 @@ makecommonpart(title, defines, files)
 	strbuf_puts(sb, title);
 	strbuf_puts(sb, title_end);
 	strbuf_putc(sb, '\n');
-	strbuf_puts(sb, "<div align='right'>\n");
+	strbuf_puts(sb, gen_div_begin("right"));
+	strbuf_putc(sb, '\n');
 	strbuf_sprintf(sb, "Last updated %s%s\n", now(), br);
 	strbuf_sprintf(sb, "This hypertext was generated by %sGLOBAL-%s%s.%s\n",
 		gen_href_begin_with_title_target(NULL, www, NULL, NULL, "Go to the GLOBAL project page.", "_top"),
 		get_version(),
 		gen_href_end(),
 		br);
-	strbuf_puts(sb, "</div>\n");
+	strbuf_sprintf(sb, "%s\n", gen_div_end());
 	strbuf_sprintf(sb, "%s\n", hr);
 	if (caution) {
 		strbuf_sprintf(sb, "%s\n", caution_begin);
@@ -1006,6 +1019,8 @@ configuration(argc, argv)
 					if (*p++ == '=' && *p)
 						label = p;
 				}
+			} else if (!strcmp(argv[i], "--xhtml")) {
+				enable_xhtml = 1;
 			}
 		}
 		if (confpath) {
@@ -1021,8 +1036,19 @@ configuration(argc, argv)
 			set_env("GTAGSLABEL", label);
 	}
 	/*
+	 * Setup parts.
+	 */
+	if (enable_xhtml)
+		setup_xhtml();
+	else
+		setup_html();
+	/*
 	 * Config variables.
 	 */
+	strbuf_reset(sb);
+	if (!getconfs("datadir", sb))
+		die("cannot get datadir directory name.");
+	strlimcpy(datadir, strbuf_value(sb), sizeof(datadir));
 	if (getconfn("ncol", &n)) {
 		if (n < 1 || n > 10)
 			warning("parameter 'ncol' ignored becase the value (=%d) is too large or too small.", n);
@@ -1454,7 +1480,6 @@ main(argc, argv)
 
 	arg_dbpath[0] = 0;
 	basic_check();
-	setup_html();
 	configuration(argc, argv);
 	setup_langmap(langmap);
 	save_environment(argc, argv);
@@ -1485,6 +1510,8 @@ main(argc, argv)
 				;	/* --gtagslabel is estimated only once. */
 			else if (!strcmp("style-sheet", long_options[option_index].name))
                                 style_sheet = optarg;
+			else if (!strcmp("xhtml", long_options[option_index].name))
+				;	/* --xhtml is estimated only once. */
                         break;
                 case 'a':
                         aflag++;
@@ -1709,6 +1736,7 @@ main(argc, argv)
 	 *       HTML/S/                 ... source files (9)
 	 *       HTML/I/                 ... include file index (9)
 	 *       HTML/rebuild.sh         ... rebuild script (10)
+	 *       HTML/style.css          ... style sheet (11)
 	 *------------------------------------------------------------------
 	 */
 	/* for clean up */
@@ -1908,7 +1936,15 @@ main(argc, argv)
 	makerebuild("rebuild.sh");
 	if (chmod(makepath(distpath, "rebuild.sh", NULL), 0640) < 0)
 		die("cannot chmod rebuild script.");
-
+	/*
+	 * (11) style sheet file (style.css)
+	 */
+	if (enable_xhtml) {
+		char src[MAXPATHLEN], dst[MAXPATHLEN];;
+		snprintf(src, sizeof(src), "%s/gtags/style.css", datadir);
+		snprintf(dst, sizeof(dst), "%s/style.css", distpath);
+		copyfile(src, dst);
+	}
 	end_all_time = time(NULL);
 	message("[%s] Done.", now());
 	T_all = end_all_time - start_all_time;

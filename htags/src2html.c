@@ -719,9 +719,8 @@ src2html(src, html, notsource)
 	if (!notsource) {
 		anchor_load(src);
 	}
-        fprintf(out, "%s\n", html_begin);
-        fputs(set_header(src), out);
-        fprintf(out, "%s\n", body_begin);
+	fprintf(out, "%s\n", gen_page_begin(src, 1));
+	fprintf(out, "%s\n", body_begin);
 	/*
          * print the header
          */
@@ -912,9 +911,8 @@ src2html(src, html, notsource)
 	if (show_position)
 		fprintf(out, "%s[+%d %s]%s", position_begin, last_lineno, src, position_end);
         fprintf(out, " */%s\n", comment_end);
-        fprintf(out, "%s\n", body_end);
-        fprintf(out, "%s\n", html_end);
-
+	fprintf(out, "%s\n", body_end);
+	fprintf(out, "%s\n", gen_page_end());
 	if (!notsource)
 		anchor_unload();
 	close_output_file(out);

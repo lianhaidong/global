@@ -628,8 +628,7 @@ makefileindex(file, files)
 	if ((FILES = fopen(makepath(distpath, file, NULL), "w")) == NULL)
 		die("cannot open file '%s'.", file);
 
-	fprintf(FILES, "%s\n", html_begin);
-	fprintf(FILES, set_header(title_file_index));
+	fprintf(FILES, "%s\n", gen_page_begin(title_file_index, 0));
 	fprintf(FILES, "%s\n", body_begin);
 	fputs(header_begin, FILES);
 	fputs(gen_href_begin(NULL, "files", normal_suffix, NULL), FILES);
@@ -691,7 +690,7 @@ makefileindex(file, files)
 					fputs("[..]", STDOUT);
 				fprintf(STDOUT, "%s\n", gen_href_end());
 				fprintf(STDOUT, "%s\n", body_end);
-				fprintf(STDOUT, "%s\n", html_end);
+				fprintf(STDOUT, "%s\n", gen_page_end());
 				path = pop_stack(fdstack);	
 				close_file_queue(path);
 				file_count++;
@@ -736,11 +735,10 @@ makefileindex(file, files)
 				op = open_file_queue(cur);
 				STDOUT = op;
 				push_stack(fdstack, cur);
-				fprintf(STDOUT, "%s\n", html_begin);
 				strbuf_reset(sb);
 				strbuf_puts(sb, path);
 				strbuf_putc(sb, '/');
-				fprintf(STDOUT, set_header(strbuf_value(sb)));
+				fprintf(STDOUT, "%s\n", gen_page_begin(strbuf_value(sb), 1));
 				fprintf(STDOUT, "%s\n", body_begin);
 				fprintf(STDOUT, "%s%sroot%s/", header_begin, gen_href_begin(NULL, indexlink, normal_suffix, NULL), gen_href_end());
 				{
@@ -865,7 +863,7 @@ makefileindex(file, files)
 			fputs("[..]", STDOUT);
 		fprintf(STDOUT, "%s\n", gen_href_end());
 		fprintf(STDOUT, "%s\n", body_end);
-		fprintf(STDOUT, "%s\n", html_end);
+		fprintf(STDOUT, "%s\n", gen_page_end());
 		close_file_queue(pop_stack(fdstack));
 		file_count++;
 		if (count_stack(fdstack) > 0)
@@ -877,7 +875,7 @@ makefileindex(file, files)
 	else
 		fprintf(FILES, "%s\n", list_end);
 	fprintf(FILES, "%s\n", body_end);
-	fprintf(FILES, "%s\n", html_end);
+	fprintf(FILES, "%s\n", gen_page_end());
 	fclose(FILES);
 	file_count++;
 
@@ -964,8 +962,7 @@ makeincludeindex()
 
 			snprintf(path, sizeof(path), "%s/%s/%d.%s", distpath, INCS, no, HTML);
 			INCLUDE = open_file_queue(path);
-			fprintf(INCLUDE, "%s\n", html_begin);
-			fprintf(INCLUDE, set_header(last));
+			fprintf(INCLUDE, "%s\n", gen_page_begin(last, 1));
 			fprintf(INCLUDE, "%s\n", body_begin);
 			fprintf(INCLUDE, "%s\n", verbatim_begin);
 			{
@@ -980,7 +977,7 @@ makeincludeindex()
 			}
 			fprintf(INCLUDE, "%s\n", verbatim_end);
 			fprintf(INCLUDE, "%s\n", body_end);
-			fprintf(INCLUDE, "%s\n", html_end);
+			fprintf(INCLUDE, "%s\n", gen_page_end());
 			close_file_queue(path);
 			file_count++;
 			/*
@@ -1013,8 +1010,7 @@ makeincludeindex()
 
 			snprintf(path, sizeof(path), "%s/%s/%d.%s", distpath, INCREFS, no, HTML);
 			INCLUDE = open_file_queue(path);
-			fprintf(INCLUDE, "%s\n", html_begin);
-			fprintf(INCLUDE, set_header(last));
+			fprintf(INCLUDE, "%s\n", gen_page_begin(last, 1));
 			fprintf(INCLUDE, "%s\n", body_begin);
 			fprintf(INCLUDE, "%s\n", gen_list_begin());
 			{
@@ -1026,7 +1022,7 @@ makeincludeindex()
 			}
 			fprintf(INCLUDE, "%s\n", gen_list_end());
 			fprintf(INCLUDE, "%s\n", body_end);
-			fprintf(INCLUDE, "%s\n", html_end);
+			fprintf(INCLUDE, "%s\n", gen_page_end());
 			close_file_queue(path);
 			file_count++;
 			/*

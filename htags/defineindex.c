@@ -75,8 +75,7 @@ makedefineindex(file, total, defines)
 	}
 	if (!(DEFINES = fopen(makepath(distpath, file, NULL), "w")))
 		die("cannot make function index '%s'.", file);
-	fprintf(DEFINES, "%s\n", html_begin);
-	fprintf(DEFINES, "%s", set_header(title_define_index));
+	fprintf(DEFINES, "%s\n", gen_page_begin(title_define_index, 0));
 	fprintf(DEFINES, "%s\n", body_begin);
 	fputs(header_begin, DEFINES);
 	if (Fflag)
@@ -135,7 +134,7 @@ makedefineindex(file, total, defines)
 					fputs("[..]", ALPHA);
 				fprintf(ALPHA, "%s\n", gen_href_end());
 				fprintf(ALPHA, "%s\n", body_end);
-				fprintf(ALPHA, "%s\n", html_end);
+				fprintf(ALPHA, "%s\n", gen_page_end());
 				if (cflag) {
 					if (pclose(ALPHA) != 0)
 						die("terminated abnormally.");
@@ -186,9 +185,8 @@ makedefineindex(file, total, defines)
 			}
 			if (!ALPHA)
 				die("cannot make alphabetical function index.");
-			fprintf(ALPHA, "%s\n", html_begin);
 			snprintf(buf, sizeof(buf), "[%s]", alpha);
-			fprintf(ALPHA, "%s", set_header(buf));
+			fprintf(ALPHA, "%s\n", gen_page_begin(buf, 1));
 			fprintf(ALPHA, "%s\n", body_begin);
 			fprintf(ALPHA, "%s[%s]%s\n", header_begin, alpha, header_end);
 			fputs(gen_href_begin_with_title(NULL, indexlink, normal_suffix, NULL, index_string), ALPHA);
@@ -295,7 +293,7 @@ makedefineindex(file, total, defines)
 			fputs("[..]", ALPHA);
 		fprintf(ALPHA, "%s\n", gen_href_end());
 		fprintf(ALPHA, "%s\n", body_end);
-		fprintf(ALPHA, "%s\n", html_end);
+		fprintf(ALPHA, "%s\n", gen_page_end());
 		fclose(ALPHA);
 		file_count++;
 
@@ -312,7 +310,7 @@ makedefineindex(file, total, defines)
 		fprintf(DEFINES, "%s\n", gen_href_end());
 	}
 	fprintf(DEFINES, "%s\n", body_end);
-	fprintf(DEFINES, "%s\n", html_end);
+	fprintf(DEFINES, "%s\n", gen_page_end());
 	fclose(DEFINES);
 	file_count++;
 	if (map_file)

@@ -23,7 +23,7 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	HTAGS,1,Feb 2005,GNU Project
+@HEADER	HTAGS,1,March 2005,GNU Project
 @NAME	htags - generate hypertext from source code.
 @SYNOPSIS
 	@name{htags} [-a][-c][-D][-f][-F][-g][-n][-o][-s][-v][-w][-d @arg{dbpath}][-m @arg{name}][-S @arg{cgidir}][-t @arg{title}][@arg{htmldir}]
@@ -97,7 +97,7 @@
 	@item{@option{--statistics}}
 		Print statistics information.
 	@item{@option{--style-sheet} @arg{file}}
-		Load style sheet file and insert it into <HEAD> tag.
+		Load style sheet file and insert it into <head> tag.
 	@item{@option{-s}, @option{--symbol}}
 		Make anchors not only for functions but also other symbols.
 		@file{GSYMS} tag file needed.
@@ -113,6 +113,10 @@
 		Verbose mode.
 	@item{@option{-w}, @option{--warning}}
 		Print warning messages.
+	@item{@option{--xhtml}}
+		Generate XHTML-1.1 hypertext instead of HTML.
+		If the @option{--frame} option is specified then
+		generate XHTML-1.0 Frameset.
 	@item{@arg{htmldir}}
 		The directory in which hypertext is generated.
 		The default is the current directory.
@@ -151,6 +155,9 @@
 	@item{@file{HTML/FILEMAP}}
 		Mapping file for converting file name into path of hypertext.
 		External system utilize this file.
+	@item{@file{HTML/style.css}}
+		Style sheet file. This file is generated when the @option{--xhtml}
+		option is specified.
 	@end_itemize
 @ENVIRONMENT
 	The following environment variables affect the execution of @name{htags}:
@@ -180,48 +187,48 @@
 		Default options for @name{htags}. This value is inserted into
 		the head of arguments.
 	@item{@code{body_begin}(string)}
-		Begin tag for body. The default is '<BODY>'.
+		Begin tag for body. The default is '<body>'.
 	@item{@code{body_end}(string)}
-		End tag for body. The default is '</BODY>'.
+		End tag for body. The default is '</body>'.
 	@item{@code{table_begin}(string)}
-		Begin tag for table. The default is '<TABLE>'.
+		Begin tag for table. The default is '<table>'.
 	@item{@code{table_end}(string)}
-		End tag for table. The default is '</TABLE>'.
+		End tag for table. The default is '</table>'.
 	@item{@code{title_begin}(string)}
-		Begin tag for Title. The default is '<H1><FONT COLOR=#cc0000>'.
+		Begin tag for Title. The default is '<h1><font color=#cc0000>'.
 	@item{@code{title_end}(string)}
-		End tag for Title. The default is '</FONT></H1>'.
+		End tag for Title. The default is '</font></h1>'.
 	@item{@code{comment_begin}(string)}
-		Begin tag for comments. The default is '<I><FONT COLOR=green>'.
+		Begin tag for comments. The default is '<i><font color=green>'.
 	@item{@code{comment_end}(string)}
-		End tag for comments. The default is '</FONT></I>'.
+		End tag for comments. The default is '</font></i>'.
 	@item{@code{dynamic}(bool)}
 		Generate object list dynamically.
 	@item{@code{sharp_begin}(string)}
-		Begin tag for 'define'. The default is '<FONT COLOR=darkred>'.
+		Begin tag for 'define'. The default is '<font color=darkred>'.
 	@item{@code{sharp_end}(string)}
-		End tag for 'define'. The default is '</FONT>'.
+		End tag for 'define'. The default is '</font>'.
 	@item{@code{brace_begin}(string)}
-		Begin tag for brace. The default is '<FONT COLOR=blue>'.
+		Begin tag for brace. The default is '<font color=blue>'.
 	@item{@code{brace_end}(string)}
-		End tag for brace. The default is '</FONT>'.
+		End tag for brace. The default is '</font>'.
 	@item{@code{reserved_begin}(string)}
-		Begin tag for reserved word. The default is '<B>'.
+		Begin tag for reserved word. The default is '<b>'.
 	@item{@code{reserved_end}(string)}
-		End tag for reserved word. The default is '</B>'.
+		End tag for reserved word. The default is '</b>'.
 	@item{@code{position_begin}(string)}
-		Begin tag for posiotion mark. The default is '<FONT COLOR=gray>'.
+		Begin tag for posiotion mark. The default is '<font color=gray>'.
 	@item{@code{position_end}(string)}
-		End tag for posiotion mark. The default is '</FONT>'.
+		End tag for posiotion mark. The default is '</font>'.
 	@item{@code{colorize_warned_line}(boolean)}
 		Colorize warned line using @code{warned_line_begin} and @code{warned_line_end}.
 		The default is false.
 	@item{@code{warned_line_begin}(string)}
-		Begin tag for line which htags warned. The default is '<SPAN STYLE="background-color:yellow">'.
+		Begin tag for line which htags warned. The default is '<span style="background-color:yellow">'.
 	@item{@code{warned_line_end}(string)}
-		End tag for line which htags warned. The default is '</SPAN>'.
+		End tag for line which htags warned. The default is '</span>'.
 	@item{@code{hr}(string)}
-		Horizontal rules. The default is '<HR>'.
+		Horizontal rules. The default is '<hR>'.
 	@item{@code{ncol}(number)}
 		Columns of line number. The default is 4.
 	@item{@code{tabs}(number)}

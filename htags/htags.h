@@ -94,6 +94,7 @@ extern int no_order_list;
 extern int other_files;
 extern int enable_grep;
 extern int enable_idutils;
+extern int enable_xhtml;
 
 extern char *action_value;
 extern char *id_value;

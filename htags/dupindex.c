@@ -142,7 +142,7 @@ makedupindex()
 					if (!dynamic) {
 						fprintf(op, "%s\n", gen_list_end());
 						fprintf(op, "%s\n", body_end);
-						fprintf(op, "%s\n", html_end);
+						fprintf(op, "%s\n", gen_page_end());
 						close_dup_file(op);
 						file_count++;
 					}
@@ -180,8 +180,7 @@ makedupindex()
 				if (first_line[0]) {
 					if (!dynamic) {
 						op = open_dup_file(db, count);
-						fprintf(op, "%s\n", html_begin);
-						fprintf(op, "%s", set_header(tag));
+						fprintf(op, "%s\n", gen_page_begin(tag, 1));
 						fprintf(op, "%s\n", body_begin);
 						fprintf(op, "%s\n", gen_list_begin());
 						fprintf(op, "%s\n", gen_list_body(srcdir, first_line));
@@ -204,7 +203,7 @@ makedupindex()
 			if (!dynamic) {
 				fprintf(op, "%s\n", gen_list_end());
 				fprintf(op, "%s\n", body_end);
-				fprintf(op, "%s\n", html_end);
+				fprintf(op, "%s\n", gen_page_end());
 				close_dup_file(op);
 				file_count++;
 			}

@@ -17,14 +17,14 @@
 # SO THAT THIS SCRIPT CAN BE EXECUTED AS A CGI COMMAND. THANK YOU.
 #------------------------------------------------------------------
 print "Content-type: text/html\n\n";
-print "@html_begin@\n";
+print "@page_begin@\n";
 print "@body_begin@\n";
 $htmlbase = $ENV{'HTTP_REFERER'};
 if (!$htmlbase) {
 	print "@error_begin@Error@error_end@\n";
 	print "@message_begin@Your browser doesn't send HTTP_REFERER.@message_end@\n";
 	print "@body_end@\n";
-	print "@html_end@\n";
+	print "@page_end@\n";
 	exit 0;
 }
 $htmlbase =~ s!/[^\/]+$!!;		# remove file name.
@@ -35,7 +35,7 @@ if (! -x '@globalpath@' || ! -x '@gtagspath@') {
 	print "@error_begin@Error@error_end@\n";
 	print "@message_begin@Server side command not found. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a>@message_end@\n";
 	print "@body_end@\n";
-	print "@html_end@\n";
+	print "@page_end@\n";
 	exit 0;
 }
 @pairs = split (/&/, $ENV{'QUERY_STRING'});
@@ -49,7 +49,7 @@ if ($form{'pattern'} eq '') {
 	print "@error_begin@Error@error_end@\n";
 	print "@message_begin@Pattern not specified. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a>@message_end@\n";
 	print "@body_end@\n";
-	print "@html_end@\n";
+	print "@page_end@\n";
 	exit 0;
 }
 $pattern = $form{'pattern'};
@@ -86,7 +86,7 @@ if ($form{'id'}) {
 		print "@error_begin@Error@error_end@\n";
 		print "@message_begin@Couldn't find tag directory in secure mode. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a>@message_end@\n";
 		print "@body_end@\n";
-		print "@html_end@\n";
+		print "@page_end@\n";
 		exit 0;
 	}
 }
@@ -98,7 +98,7 @@ if ($flag eq 'g' || $flag eq 'I' || $form{'type'} eq 'source' || ($flag eq 'P' &
 		print "@error_begin@Error@error_end@\n";
 		print "@message_begin@Couldn't execute command. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a>@message_end@\n";
 		print "@body_end@\n";
-		print "@html_end@\n";
+		print "@page_end@\n";
 		exit 0;
 	}
 	chdir("../..");
@@ -106,7 +106,7 @@ if ($flag eq 'g' || $flag eq 'I' || $form{'type'} eq 'source' || ($flag eq 'P' &
 		print "@error_begin@Error@error_end@\n";
 		print "@message_begin@Couldn't change directory for $form{'type'} search. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a>@message_end@\n";
 		print "@body_end@\n";
-		print "@html_end@\n";
+		print "@page_end@\n";
 		exit 0;
 	}
 } else {
@@ -122,7 +122,7 @@ if ($form{'type'} eq 'source') {
 		print "@error_begin@Error@error_end@\n";
 		print "@message_begin@Cannot execute gtags. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a>@message_end@\n";
 		print "@body_end@\n";
-		print "@html_end@\n";
+		print "@page_end@\n";
 		exit 0;
 	}
 	print "@verbatim_begin@\n";
@@ -134,7 +134,7 @@ if ($form{'type'} eq 'source') {
 	close(PIPE);
 	print "@verbatim_end@\n";
 	print "@body_end@\n";
-	print "@html_end@\n";
+	print "@page_end@\n";
 	exit 0;
 }
 #
@@ -145,11 +145,11 @@ if ($?) {
 	print "@error_begin@Error@error_end@\n";
 	print "@message_begin@Cannot execute global. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a>@message_end@\n";
 	print "@body_end@\n";
-	print "@html_end@\n";
+	print "@page_end@\n";
 	exit 0;
 }
 $pattern =~ s/([&<>])/$ctab{$1}/ge;
-print "@error_begin@" . $pattern . "@error_end@\n";
+print "@title_begin@" . $pattern . "@title_end@\n";
 print "Following $words are matched to above pattern.@hr@\n";
 $cnt = 0;
 local($tag, $lno, $filename, $fileno);
@@ -159,7 +159,7 @@ if ($?) {
 	print "@error_begin@Error@error_end@\n";
 	print "@message_begin@Cannot execute gtags --convert. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a>@message_end@\n";
 	print "@body_end@\n";
-	print "@html_end@\n";
+	print "@page_end@\n";
 	exit 0;
 }
 $| = 1;	# flush buffer
@@ -179,7 +179,7 @@ if ($cnt == 0) {
 	print "@message_begin@Pattern not found. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a>@message_end@\n";
 }
 print "@body_end@\n";
-print "@html_end@\n";
+print "@page_end@\n";
 exit 0;
 #------------------------------------------------------------------
 # SORRY TO HAVE SURPRISED YOU!
