@@ -288,7 +288,8 @@ char	*argv[];
 	}
 	if (iflag && (!test("f", makepath(dbpath, dbname(GTAGS), NULL)) ||
 		!test("f", makepath(dbpath, dbname(GPATH), NULL)))) {
-		fprintf(stderr, " GTAGS or GPATH not found. -i option ignored.\n");
+		if (wflag)
+			fprintf(stderr, "Warning: GTAGS or GPATH not found. -i option ignored.\n");
 		iflag = 0;
 	}
 	if (!test("d", dbpath))
