@@ -422,6 +422,7 @@ char    *
 find_read(void)
 {
 	static char val[MAXPATHLEN+1];
+	extern int qflag;
 
 	for (;;) {
 		while (curp->p < curp->end) {
@@ -436,6 +437,19 @@ find_read(void)
 				strlimcpy(path, makepath(dir, unit, NULL), sizeof(path));
 				if (skipthisfile(path))
 					continue;
+				/*
+				 * GLOBAL cannot treat path which includes blanks.
+				 * It will be improved in the future.
+				 */
+				if (locatestring(path, " ", MATCH_FIRST)) {
+					if (!qflag)
+						warning("'%s' ignored, because it includes blank in the path.", path);
+					continue;
+				}
+				/*
+				 * A blank at the head of path means
+				 * other than source file.
+				 */
 				if (regexec(suff, path, 0, 0, 0) == 0) {
 					/* source file */
 					strlimcpy(val, path, sizeof(val));

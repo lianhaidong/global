@@ -701,11 +701,6 @@ incremental(dbpath, root)
 		/* a blank at the head of path means 'NOT SOURCE'. */
 		if (*path == ' ')
 			continue;
-		if (locatestring(path, " ", MATCH_FIRST)) {
-			if (!qflag)
-				warning("'%s' ignored, because it includes blank in the path.", path);
-			continue;
-		}
 		if (stat(path, &statp) < 0)
 			die("stat failed '%s'.", path);
 		if (!gpath_path2fid(path))
@@ -937,11 +932,6 @@ createtags(dbpath, root, db)
 			continue;
 		if (exitflag)
 			break;
-		if (locatestring(path, " ", MATCH_FIRST)) {
-			if (!qflag)
-				warning("'%s' ignored, because it includes blank in the path.", path + 2);
-			continue;
-		}
 		count++;
 		/*
 		 * GSYMS doesn't treat asembler.
