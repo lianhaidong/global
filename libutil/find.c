@@ -20,7 +20,7 @@
  */
 
 /*
- * If find(1) is available the use it to traverse directory tree.
+ * If find(1) is available, then use it to traverse directory tree.
  * Otherwise use dirent(3).
  */
 #ifdef HAVE_CONFIG_H
@@ -62,13 +62,13 @@
 #include "strlimcpy.h"
 
 /*
- * usage of ?findxxx()
+ * usage of find_xxx()
  *
- *	?findopen();
- *	while (path = ?findread()) {
+ *	find_open();
+ *	while (path = find_read()) {
  *		...
  *	}
- *	?findclose();
+ *	find_close();
  *
  */
 static regex_t	skip_area;
@@ -323,7 +323,7 @@ char *path;
 }
 #ifndef HAVE_FIND
 /*----------------------------------------------------------------------*/
-/* dirent version findxxx()						*/
+/* dirent version find_xxx()						*/
 /*----------------------------------------------------------------------*/
 #define STACKSIZE 50
 static  char    dir[MAXPATHLEN+1];		/* directory path */
@@ -568,7 +568,7 @@ find_read(void)
 		 */
 		p = path + strlen(path) - 1;
 		if (*p != '\n')
-			die("output of find(1) is wrong (findread).");
+			die("output of find(1) is wrong (find_read).");
 		*p = 0;
 		if (skipthisfile(path))
 			continue;

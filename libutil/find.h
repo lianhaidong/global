@@ -22,7 +22,6 @@
 #ifndef _FIND_H_
 #define _FIND_H_
 
-int	issource(char *);
 void	find_open(void);
 char	*find_read(void);
 void	find_close(void);
