@@ -460,12 +460,12 @@ sub path2url {
 # return header.
 #
 sub set_header {
-	local($title) = @_;
+	local($title, $javascript) = @_;
 	local($head) = '';
 	$head .= "<HEAD>\n";
 	$head .= "<TITLE>$title</TITLE>\n";
 	$head .= "$'meta_robots\n$'meta_generator\n";
-	if ($'use_javascript) {
+	if ($javascript && $'use_javascript) {
 		$head .= $'begin_script;
 		$head .= "self.defaultStatus = '$title'\n";
 		$head .= $'status_line;
@@ -1911,7 +1911,7 @@ sub src2html {
 	$file =~ s/^\.\///;
 
 	print $'html_begin, "\n";
-	print &'set_header($file);
+	print &'set_header($file, 1);		# 1: use javascript
 	print $'body_begin, "\n";
 	if ($notsource) {
 		#
