@@ -1,8 +1,7 @@
 ;;; gtags.el --- gtags facility for Emacs
 
 ;;
-;; Copyright (c) 1997, 1998, 1999 Shigio Yamaguchi
-;; Copyright (c) 1999, 2000 Tama Communications Corporation
+;; Copyright (c) 1997, 1998, 1999, 2000 Tama Communications Corporation
 ;;
 ;; This file is part of GNU GLOBAL.
 ;;
@@ -22,7 +21,7 @@
 ;;
 
 ;; GLOBAL home page is at: http://www.gnu.org/software/global/
-;; Author: Shigio Yamaguchi
+;; Author: Tama Communications Corporation
 ;; Version: 2.0
 ;; Keywords: tools
 

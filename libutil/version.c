@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1999, 2000, 2001 Tama Communications Corporation
+ * Copyright (c) 1999, 2000, 2001
+ *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -29,13 +30,11 @@
 #include "version.h"
 
 const char *copy = "\
-Copyright (c) 1996, 1997, 1998, 1999 Shigio Yamaguchi\n\
-Copyright (c) 1999, 2000, 2001, 2002, 2003, 2004 Tama Communications Corporation\n\
-GNU GLOBAL comes with NO WARRANTY,\n\
-to the extent permitted by law.\n\
-You may redistribute copies of GNU GLOBAL\n\
-under the terms of the GNU General Public License.\n\
-For more information about these matters,\n\
+Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004\n\
+	Tama Communications Corporation\n\
+GNU GLOBAL comes with NO WARRANTY, to the extent permitted by law.\n\
+You may redistribute copies of GNU GLOBAL under the terms of the\n\
+GNU General Public License. For more information about these matters,\n\
 see the files named COPYING.\n\
 ";
 /*

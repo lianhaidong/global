@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1997, 1998, 1999 Shigio Yamaguchi
- * Copyright (c) 1999, 2000, 2002, 2003, 2004 Tama Communications Corporation
+ * Copyright (c) 1997, 1998, 1999, 2000, 2002, 2003, 2004
+ *	Tama Communications Corporation
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

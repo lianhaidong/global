@@ -20,7 +20,7 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #
 # GLOBAL home page is at: http://www.gnu.org/software/global/
-# Author: Shigio Yamaguchi
+# Author: Tama Communications Corporation
   version=0.1
 # Usage:
 # $ bash --rcfile <this file>

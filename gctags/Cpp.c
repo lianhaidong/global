@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 1998, 1999 Shigio Yamaguchi
- * Copyright (c) 1999, 2000, 2001, 2002, 2003, 2004
+ * Copyright (c) 1998, 1999, 2000, 2001, 2002, 2003, 2004
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.

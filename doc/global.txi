@@ -35,7 +35,7 @@ Free Documentation License".
 @title GNU GLOBAL Source Code Tag System
 @subtitle Edition @value{EDITION}, for GNU GLOBAL version @value{VERSION}
 @subtitle @value{UPDATED}
-@author by Shigio Yamaguchi
+@author by Tama Communications Corporation
 @c copyright page
 @page
 @vskip 0pt plus 1filll
