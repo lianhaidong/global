@@ -111,7 +111,7 @@ dnl for Postgres support
 dnl
 AC_MSG_CHECKING(for postgres support)
 AC_ARG_WITH(postgres,
-[  --with-postgres[=DIR]     include postgres support ],
+[  --with-postgres[=DIR]   include postgres support ],
 [
         if test "$withval" = 'no'; then
                 AC_MSG_RESULT(yes)
@@ -127,6 +127,23 @@ AC_ARG_WITH(postgres,
                 CFLAGS="$CFLAGS -DUSE_POSTGRES"
                 LDADD="$LDADD $POSTGRES/lib/libpq.a -lcrypt"
                 AC_MSG_RESULT([yes, using $POSTGRES])
+        fi
+],[
+        AC_MSG_RESULT(no)
+])
+dnl
+dnl for CFLAGS
+dnl
+AC_MSG_CHECKING(for optional CFLAGS)
+AC_ARG_WITH(cflags,
+[  --with-cflags[=VAL]     additional CFLAGS value ],
+[
+        if test "$withval" = 'no'; then
+        	AC_MSG_RESULT(no)
+        else
+		VAL=$withval
+                CFLAGS="$CFLAGS $VAL"
+                AC_MSG_RESULT([yes, using $VAL])
         fi
 ],[
         AC_MSG_RESULT(no)
