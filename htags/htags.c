@@ -765,7 +765,7 @@ makehtml(total)
 			if (!other_files)
 				continue;
 			_++;
-			if (is_binary(_)) {
+			if (test("b", _)) {
 				if (wflag)
 					warning("'%s' is binary file. (skipped)", _);
 				continue;

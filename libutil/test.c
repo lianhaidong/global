@@ -37,6 +37,36 @@
 #include "test.h"
 
 /*
+ * Decide whether or not the path is binary file.
+ *
+ *	i)	path
+ *	r)	0: is not binary, 1: is binary
+ */
+static int
+is_binary(path)
+	char *path;
+{
+	int ip;
+	char buf[32];
+	int i, c, size;
+
+	ip = open(path, 0);
+	if (ip < 0)
+		die("cannot open file '%s' in read mode.", path);
+	size = read(ip, buf, sizeof(buf));
+	close(ip);
+	if (size < 0)
+		return 1;
+	if (!strncmp(buf, "!<arch>", 7))
+		return 1;
+	for (i = 0; i < size; i++) {
+		c = (unsigned char)buf[i];
+		if (c == 0 || c > 127)
+			return 1;
+	}
+	return 0;
+}
+/*
  * test: 
  *
  *	i)	flags	file flags
@@ -47,12 +77,13 @@
  *			"s"	[ -s path ]
  *			"w"	[ -w path ]
  *			"x"	[ -x path ]
+ *			"b"	[ -b path ]
  *
  *	i)	path	path
  *			if NULL then previous path.
  *	r)		0: no, 1: ok
  *
- * You can specify more than one character. It assumed 'and' test.
+ * You can specify more than one character. It assumed 'AND' test.
  */
 int
 test(flags, path)
@@ -67,6 +98,10 @@ test(flags, path)
 			return 0;
 	while ((c = *flags++) != 0) {
 		switch (c) {
+		case 'b':
+	 		if (!is_binary(path))
+				return 0;
+			break;
 		case 'f':
 	 		if (!S_ISREG(sb.st_mode))
 				return 0;

@@ -105,6 +105,5 @@ char *gen_list_body(char *, char *);
 char *gen_list_end();
 char *gen_div_begin(const char *);
 char *gen_div_end();
-int is_binary(char *);
 
 #endif /* ! _COMMON_H_ */

@@ -38,6 +38,7 @@
 #include "path2url.h"
 #include "htags.h"
 #include "common.h"
+#include "test.h"
 
 /*----------------------------------------------------------------------*/
 /* File queue								*/
@@ -678,7 +679,7 @@ makefileindex(file, files)
 			if (!other_files)
 				continue;
 			_++;
-			if (is_binary(_))
+			if (test("b", _))
 				continue;
 			notsource = 1;
 		}
