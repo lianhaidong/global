@@ -342,7 +342,7 @@ is_binary(path)
 	if (!strncmp(buf, "!<arch>", 7))
 		return 1;
 	for (i = 0; i < size; i++) {
-		c = buf[i];
+		c = (unsigned char)buf[i];
 		if (c == 0 || c > 127)
 			return 1;
 	}
@@ -360,7 +360,7 @@ encode(url)
 	else
 		sb = strbuf_open(0);
         for (p = url; *p; p++) {
-		int c = *p;
+		int c = (unsigned char)*p;
 
                 if (isalnum(c))
 			strbuf_putc(sb, c);

@@ -570,7 +570,7 @@ src2html(src, html, notsource)
 		else
 			sb = strbuf_open(0);
 		for (p = src; *p; p++) {
-			int c = *p;
+			int c = (unsigned char)*p;
 
 			if (c == '/' || isalnum(c))
 				strbuf_putc(sb, c);
