@@ -1641,7 +1641,7 @@ sub makehtml {
 			next if (!$'other_files);
 			s/^ //;
 			if (-B $_) {
-				print STDERR "Warning: '$_' is binary file. (skipped)\n";
+				print STDERR "Warning: '$_' is binary file. (skipped)\n" if ($'wflag);
 				next;
 			}
 			$notsource = 1;
