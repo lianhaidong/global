@@ -81,6 +81,7 @@ $'id = '';					# id (default non)
 $'cgi = 1;					# 1: make cgi-bin/
 $'definition_header='after';			# {no|after|before}
 $'other_files = 0;				# 1: list other files
+$'map_file = 1;
 #
 # tag
 #
@@ -220,6 +221,9 @@ if ($var1 = &'getconf('epilog_script')) {
 }
 if (&'getconf('no_javascript')) {
 	$'use_javascript = 0;
+}
+if (&'getconf('no_map_file')) {
+	$'map_file = 0;
 }
 if ($var1 = &'getconf('show_position')) {
 	$'show_position = $var1;
@@ -609,7 +613,6 @@ if ($'htags_options) {
 $'aflag = $'cflag = $'Dflag = $'fflag = $'Fflag = $'gflag = $'nflag = $'sflag = $'Sflag = $'vflag = $'wflag = '';
 $show_version = 0;
 $show_help = 0;
-$map_file = 1;
 $include_caution = '';
 $action_value = '';
 $id_value = '';
@@ -652,6 +655,8 @@ while ($ARGV[0] =~ /^-/) {
 		;		# --gtagslabel is estimated only once.
 	} elsif ($opt =~ /^--gtagslabel$/) {
 		shift;		# --gtagslabel is estimated only once.
+	} elsif ($opt =~ /^--no-map-file$/) {
+		$'map_file = 0;
 	} elsif ($opt =~ /^--line-number$/) {
 		$'nflag = 'n';
 	} elsif ($opt =~ /^--other$/) {
