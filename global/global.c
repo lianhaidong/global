@@ -325,7 +325,7 @@ char	*argv[];
 	if (!Iflag && !gflag && av)
 		for (; *av == ' ' || *av == '\t'; av++)
 			;
-	if (cflag && av && notnamechar(av))
+	if (cflag && av && isregex(av))
 		die("only name char is allowed with -c option.");
 	/*
 	 * get path of following directories.

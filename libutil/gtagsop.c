@@ -72,6 +72,8 @@ static regex_t reg;
  */
 static int	support_version = 2;	/* acceptable format version   */
 static const char *tagslist[] = {"GPATH", "GTAGS", "GRTAGS", "GSYMS"};
+static int init;
+static char regexchar[256];
 /*
  * dbname: return db name
  *
@@ -116,19 +118,19 @@ STRBUF	*sb;
 	}
 }
 /*
- * notnamechar: test whether or not no name char included.
+ * isregex: test whether or not regular expression
  *
  *	i)	s	string
- *	r)		0: not included, 1: included
+ *	r)		1: is regex, 0: not regex
  */
 int
-notnamechar(s)
+isregex(s)
 char	*s;
 {
 	int	c;
 
 	while ((c = *s++) != '\0')
-		if (!isnamechar(c))
+		if (isregexchar(c))
 			return 1;
 	return 0;
 }
@@ -221,6 +223,13 @@ int	flags;
 	GTOP	*gtop;
 	int	dbmode = 0;
 
+	/* initialize for isregex() */
+	if (!init) {
+		regexchar['^'] = regexchar['$'] = regexchar['{'] =
+		regexchar['}'] = regexchar['('] = regexchar[')'] =
+		regexchar['.'] = regexchar['*'] = regexchar['+'] =
+		regexchar['?'] = regexchar['\\'] = init = 1;
+	}
 	if ((gtop = (GTOP *)calloc(sizeof(GTOP), 1)) == NULL)
 		die("short of memory.");
 	gtop->db = db;
@@ -591,12 +600,12 @@ int	flags;
 	} else if (pattern == NULL || !strcmp(pattern, ".*")) {
 		key = NULL;
 		preg = NULL;
-	} else if (notnamechar(pattern) && regcomp(preg, pattern, REG_EXTENDED) == 0) {
-		if (*pattern == '^' && *(p = pattern + 1) && (isalpha(*p) || *p == '_')) {
+	} else if (isregex(pattern) && regcomp(preg, pattern, REG_EXTENDED) == 0) {
+		if (*pattern == '^' && *(p = pattern + 1) && !isregexchar(*p)) {
 			char    *prefix = buf;
 
 			*prefix++ = *p++;
-			while (*p && isnamechar(*p))
+			while (*p && !isregexchar(*p))
 				*prefix++ = *p++;
 			*prefix = 0;
 			key = buf;

@@ -58,7 +58,7 @@
 #define GTOP_NOSOURCE		4	/* don't read source file */
 #define GTOP_NOREGEX		8	/* don't use regular expression */
 
-#define isnamechar(c)	(isalpha(c) || isdigit(c) || c == '_' || c == '-')
+#define isregexchar(c)	(regexchar[c])
 
 typedef struct {
 	DBOP	*dbop;			/* descripter of DBOP */
@@ -88,6 +88,7 @@ const char *dbname(int);
 void	makecommand(char *, char *, STRBUF *);
 int	formatcheck(char *, int);
 int	notnamechar(char *);
+int	isregex(char *);
 GTOP	*gtagsopen(char *, char *, int, int, int);
 void	gtagsput(GTOP *, char *, char *);
 char	*gtagsget(GTOP *, char *);

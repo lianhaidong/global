@@ -14,6 +14,7 @@ ChangeLog about GNU GLOBAL
 	* htags.pl: the value of id changed from src directory
 	  to HTML directory.
 	* libutil/conf.c: error check added.
+	* libutil/gtagsop.c: replace notnamechar() with isregex().
 
 September 26 2000, Shigio Yamaguchi  <shigio@tamacom.com>
 
