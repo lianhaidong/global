@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 1998, 1999 Shigio Yamaguchi
- * Copyright (c) 1999, 2000, 2001, 2002, 2003 Tama Communications Corporation
+ * Copyright (c) 1999, 2000, 2001, 2002, 2003, 2004
+ *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -66,6 +67,7 @@ static struct {
 } pifstack[MAXPIFSTACK], *cur;
 static int piflevel;		/* condition macro level */
 static int level;		/* brace level */
+static int namespacelevel;	/* namespace block level */
 
 /*
  * Cpp: read C++ file and pickup tag entries.
@@ -92,7 +94,7 @@ Cpp()
 	stack[0].classname = completename;
 	stack[0].terminate = completename;
 	stack[0].level = 0;
-	level = classlevel = piflevel = 0;
+	level = classlevel = piflevel = namespacelevel = 0;
 	savelevel = -1;
 	target = (sflag) ? SYM : (rflag) ? REF : DEF;
 	startclass = startthrow = startmacro = startsharp = startequal = 0;
@@ -147,6 +149,34 @@ Cpp()
 				}
 			}
 			break;
+		case CPP_USING:
+			if ((c = nexttoken(interested, reserved_word)) == CPP_NAMESPACE) {
+				if ((c = nexttoken(interested, reserved_word)) == SYMBOL) {
+					if (target == REF)
+						PUT(token, lineno, sp);
+				} else {
+					fprintf(stderr, "Warning: missing namespace name. [+%d %s].\n", lineno, curfile);
+					pushbacktoken();
+				}
+			} else
+				pushbacktoken();
+		case CPP_NAMESPACE:
+			if (peekc(0) != '{') /* } */ {
+				if ((c = nexttoken(interested, reserved_word)) == SYMBOL)
+					if (target == DEF)
+						PUT(token, lineno, sp);
+			}
+			while ((c = nexttoken(interested, reserved_word)) == '\n')
+				;
+			/*
+			 * Namespace block doesn't have any influence on level.
+			 */
+			if (c == '{') /* } */ {
+				namespacelevel++;
+			} else {
+				fprintf(stderr, "Warning: missing namespace block. [+%d %s](0x%x).\n", lineno, curfile, c);
+			}
+			break;
 		case CPP_CLASS:
 			DBG_PRINT(level, "class");
 			if ((c = nexttoken(interested, reserved_word)) == SYMBOL) {
@@ -185,12 +215,15 @@ Cpp()
 			/* { */
 		case '}':
 			if (--level < 0) {
-				if (wflag)
+				if (namespacelevel > 0)
+					namespacelevel--;
+				else if (wflag)
 					fprintf(stderr, "Warning: missing left '{' [+%d %s].\n", lineno, curfile); /* } */
 				level = 0;
 			}
 			if (eflag && atfirst) {
-				if (wflag && level != 0) /* { */
+				if (wflag && level != 0)
+					/* { */
 					fprintf(stderr, "Warning: forced level 0 block end by '}' at column 0 [+%d %s].\n", lineno, curfile);
 				level = 0;
 			}
