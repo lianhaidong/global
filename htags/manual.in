@@ -157,9 +157,9 @@
 	@item{@code{table_end}(string)}
 		End tag for table. The default is '</TABLE>'.
 	@item{@code{title_begin}(string)}
-		Begin tag for Title. The default is '<FONT COLOR=#cc0000>'.
+		Begin tag for Title. The default is '<H1><FONT COLOR=#cc0000>'.
 	@item{@code{title_end}(string)}
-		End tag for Title. The default is '</FONT>'.
+		End tag for Title. The default is '</FONT></H1>'.
 	@item{@code{comment_begin}(string)}
 		Begin tag for comments. The default is '<I><FONT COLOR=green>'.
 	@item{@code{comment_end}(string)}
