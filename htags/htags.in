@@ -680,10 +680,12 @@ while ($ARGV[0] =~ /^-/) {
 	} elsif ($opt =~ /^--cvsweb-cvsroot$/) {
 		$'cvsweb_cvsroot = shift;
 	} elsif ($opt =~ /^--/) {
+		print STDERR "$program: unrecognized option `$opt'\n";
 		print STDERR $usage_const, "\n";
 		exit 1;
 	} elsif ($opt =~ /[^-acdDfFglmnosStvwtd]/) {
 				# include 'l' for backward compatibility.
+		print STDERR "$program: unrecognized option `$opt'\n";
 		print STDERR $usage_const, "\n";
 		exit 1;
 	} else {
