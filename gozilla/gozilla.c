@@ -94,7 +94,6 @@ static char *
 alias(alias_name)
 char	*alias_name;
 {
-	char rc[MAXPATHLEN+1];
 	FILE *ip;
 	STRBUF *sb = strbuf_open(0);
 	char *p, *alias = NULL;
@@ -102,10 +101,9 @@ char	*alias_name;
 
 	if (!(p = getenv("HOME")))
 		goto end;
-	strcpy(rc, makepath(p, gozillarc, NULL));
-	if (!test("r", rc))
+	if (!test("r", makepath(p, gozillarc, NULL)))
 		goto end;
-	if (!(ip = fopen(rc, "r")))
+	if (!(ip = fopen(makepath(p, gozillarc, NULL), "r")))
 		goto end;
 	while (p = strbuf_fgets(sb, ip, flag)) {
 		char *name, *value;
@@ -154,7 +152,7 @@ char	*argv[];
 	char	*browser = NULL;
 	char	*command = NULL;
 	char	*function = NULL;
-	char	arg[MAXPATHLEN+1];
+	STRBUF	*arg = strbuf_open(0);
 	STRBUF	*URL = strbuf_open(0);
 	int	status;
 
@@ -211,22 +209,24 @@ char	*argv[];
 	if (function == NULL) {
 		if (argc == 0)
 			usage();
-		strcpy(arg, argv[0]);
+		strbuf_puts(arg, argv[0]);
 		/*
 		 * Replace with alias value.
 		 */
-		if (p = alias(arg))
-			strcpy(arg, p);
+		if (p = alias(strbuf_value(arg))) {
+			strbuf_reset(arg);
+			strbuf_puts(arg, p);
+		}
 	}
 	/*
 	 * Get URL.
 	 */
 	if (function)
 		getfunctionURL(function, URL);
-	else if (isprotocol(arg))
-		strbuf_puts(URL, arg);
+	else if (isprotocol(strbuf_value(arg)))
+		strbuf_puts(URL, strbuf_value(arg));
 	else
-		getURL(arg, URL);
+		getURL(strbuf_value(arg), URL);
 	if (pflag) {
 		fprintf(stdout, "%s\n", strbuf_value(URL));
 		if (vflag)
