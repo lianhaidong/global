@@ -50,6 +50,10 @@ static	void usage(void);
 static	void help(void);
 static	int match_suffix_list(const char *, const char *);
 
+struct words {
+        const char *name;
+        int val;
+};
 struct words *words;
 static int tablesize;
 

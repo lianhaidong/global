@@ -63,13 +63,15 @@ done
 # flex and gperf.
 #
 echo "- Preparing parser source ..."
-(cd gctags; set -x; for lang in php; do
+(cd gctags; set -x; for lang in c cpp java php; do
 	name=${lang}_res
 	perl ./reserved.pl --prefix=$lang --perl ${name}.in > ${name}.pl
 	perl ./reserved.pl --prefix=$lang ${lang}_res.in > ${name}.gpf
 	option=`perl ./reserved.pl --prefix=$lang --option`
 	gperf $option < ${name}.gpf > ${name}.h
-	flex -o$lang.c $lang.l
+	if [ -f $lang.l ]; then
+		flex -o$lang.c $lang.l
+	fi
 done
 )
 

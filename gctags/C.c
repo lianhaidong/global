@@ -36,20 +36,24 @@
 #include <strings.h>
 #endif
 
-#include "C.h"
 #include "gctags.h"
 #include "defined.h"
 #include "die.h"
 #include "strbuf.h"
 #include "strlimcpy.h"
 #include "token.h"
+#include "c_res.h"
 
 static	void	process_attribute(int);
 static	int	function_definition(int, char *);
 static	void	condition_macro(int, int);
 static	int	seems_datatype(const char *);
-static	void	inittable();
-static	int	reserved(char *);
+
+#define IS_TYPE_QUALIFIER(c)	((c) == C_CONST || (c) == C_RESTRICT || (c) == C_VOLATILE)
+
+#define DECLARATIONS    0
+#define RULES           1
+#define PROGRAMS        2
 
 /*
  * #ifdef stack.
@@ -98,12 +102,8 @@ C(yacc)
 	crflag = 1;			/* require '\n' as a token */
 	if (yacc)
 		ymode = 1;		/* allow token like '%xxx' */
-	/*
-	 * set up reserved word table.
-	 */
-	inittable();
 
-	while ((cc = nexttoken(interested, reserved)) != EOF) {
+	while ((cc = nexttoken(interested, reserved_word)) != EOF) {
 		switch (cc) {
 		case SYMBOL:		/* symbol	*/
 			if (inC && peekc(0) == '('/* ) */) {
@@ -234,18 +234,18 @@ C(yacc)
 		/*
 		 * #xxx
 		 */
-		case CP_DEFINE:
-		case CP_UNDEF:
+		case SHARP_DEFINE:
+		case SHARP_UNDEF:
 			startmacro = 1;
 			savelevel = level;
-			if ((c = nexttoken(interested, reserved)) != SYMBOL) {
+			if ((c = nexttoken(interested, reserved_word)) != SYMBOL) {
 				pushbacktoken();
 				break;
 			}
 			if (peekc(1) == '('/* ) */) {
 				if (target == DEF)
 					PUT(token, lineno, sp);
-				while ((c = nexttoken("()", reserved)) != EOF && c != '\n' && c != /* ( */ ')')
+				while ((c = nexttoken("()", reserved_word)) != EOF && c != '\n' && c != /* ( */ ')')
 					if (c == SYMBOL && target == SYM)
 						PUT(token, lineno, sp);
 				if (c == '\n')
@@ -260,28 +260,28 @@ C(yacc)
 				}
 			}
 			break;
-		case CP_INCLUDE:
-		case CP_ERROR:
-		case CP_LINE:
-		case CP_PRAGMA:
-		case CP_WARNING:
-		case CP_IDENT:
-			while ((c = nexttoken(interested, reserved)) != EOF && c != '\n')
+		case SHARP_INCLUDE:
+		case SHARP_ERROR:
+		case SHARP_LINE:
+		case SHARP_PRAGMA:
+		case SHARP_WARNING:
+		case SHARP_IDENT:
+			while ((c = nexttoken(interested, reserved_word)) != EOF && c != '\n')
 				;
 			break;
-		case CP_IFDEF:
-		case CP_IFNDEF:
-		case CP_IF:
-		case CP_ELIF:
-		case CP_ELSE:
-		case CP_ENDIF:
+		case SHARP_IFDEF:
+		case SHARP_IFNDEF:
+		case SHARP_IF:
+		case SHARP_ELIF:
+		case SHARP_ELSE:
+		case SHARP_ENDIF:
 			condition_macro(cc, target);
 			break;
-		case CP_SHARP:		/* ## */
-			(void)nexttoken(interested, reserved);
+		case SHARP_SHARP:		/* ## */
+			(void)nexttoken(interested, reserved_word);
 			break;
 		case C_STRUCT:
-			c = nexttoken(interested, reserved);
+			c = nexttoken(interested, reserved_word);
 			if (c == '{' /* } */) {
 				pushbacktoken();
 				break;
@@ -316,7 +316,7 @@ C(yacc)
 
 				/* skip type qualifiers */
 				do {
-					c = nexttoken("{}(),;", reserved);
+					c = nexttoken("{}(),;", reserved_word);
 				} while (IS_TYPE_QUALIFIER(c) || c == '\n');
 
 				if (wflag && c == EOF) {
@@ -326,21 +326,21 @@ C(yacc)
 					char *interest_enum = "{},;";
 					int c_ = c;
 
-					c = nexttoken(interest_enum, reserved);
+					c = nexttoken(interest_enum, reserved_word);
 					/* read enum name if exist */
 					if (c == SYMBOL) {
 						if (target == SYM)
 							PUT(token, lineno, sp);
-						c = nexttoken(interest_enum, reserved);
+						c = nexttoken(interest_enum, reserved_word);
 					}
-					for (; c != EOF; c = nexttoken(interest_enum, reserved)) {
+					for (; c != EOF; c = nexttoken(interest_enum, reserved_word)) {
 						switch (c) {
-						case CP_IFDEF:
-						case CP_IFNDEF:
-						case CP_IF:
-						case CP_ELIF:
-						case CP_ELSE:
-						case CP_ENDIF:
+						case SHARP_IFDEF:
+						case SHARP_IFNDEF:
+						case SHARP_IF:
+						case SHARP_ELIF:
+						case SHARP_ELSE:
+						case SHARP_ENDIF:
 							condition_macro(c, target);
 							continue;
 						default:
@@ -389,14 +389,14 @@ C(yacc)
 						PUT(token, lineno, sp);
 				}
 				savetok[0] = 0;
-				while ((c = nexttoken("(),;", reserved)) != EOF) {
+				while ((c = nexttoken("(),;", reserved_word)) != EOF) {
 					switch (c) {
-					case CP_IFDEF:
-					case CP_IFNDEF:
-					case CP_IF:
-					case CP_ELIF:
-					case CP_ELSE:
-					case CP_ENDIF:
+					case SHARP_IFDEF:
+					case SHARP_IFNDEF:
+					case SHARP_IF:
+					case SHARP_ELIF:
+					case SHARP_ELSE:
+					case SHARP_ENDIF:
 						condition_macro(c, target);
 						continue;
 					default:
@@ -468,7 +468,7 @@ int target;
 	 * Skip '...' in __attribute__((...))
 	 * but pick up symbols in it.
 	 */
-	while ((c = nexttoken("()", reserved)) != EOF) {
+	while ((c = nexttoken("()", reserved_word)) != EOF) {
 		if (c == '(')
 			brace++;
 		else if (c == ')')
@@ -503,14 +503,14 @@ char	arg1[MAXTOKEN];
 	int	accept_arg1 = 0;
 
 	brace_level = isdefine = 0;
-	while ((c = nexttoken("()", reserved)) != EOF) {
+	while ((c = nexttoken("()", reserved_word)) != EOF) {
 		switch (c) {
-		case CP_IFDEF:
-		case CP_IFNDEF:
-		case CP_IF:
-		case CP_ELIF:
-		case CP_ELSE:
-		case CP_ENDIF:
+		case SHARP_IFDEF:
+		case SHARP_IFNDEF:
+		case SHARP_IF:
+		case SHARP_ELIF:
+		case SHARP_ELSE:
+		case SHARP_ENDIF:
 			condition_macro(c, target);
 			continue;
 		default:
@@ -540,14 +540,14 @@ char	arg1[MAXTOKEN];
 	if (c == EOF)
 		return 0;
 	brace_level = 0;
-	while ((c = nexttoken(",;[](){}=", reserved)) != EOF) {
+	while ((c = nexttoken(",;[](){}=", reserved_word)) != EOF) {
 		switch (c) {
-		case CP_IFDEF:
-		case CP_IFNDEF:
-		case CP_IF:
-		case CP_ELIF:
-		case CP_ELSE:
-		case CP_ENDIF:
+		case SHARP_IFDEF:
+		case SHARP_IFNDEF:
+		case SHARP_IF:
+		case SHARP_ELIF:
+		case SHARP_ELSE:
+		case SHARP_ENDIF:
 			condition_macro(c, target);
 			continue;
 		case C___ATTRIBUTE__:
@@ -599,7 +599,7 @@ condition_macro(cc, target)
 	int	target;
 {
 	cur = &stack[piflevel];
-	if (cc == CP_IFDEF || cc == CP_IFNDEF || cc == CP_IF) {
+	if (cc == SHARP_IFDEF || cc == SHARP_IFNDEF || cc == SHARP_IF) {
 		DBG_PRINT(piflevel, "#if");
 		if (++piflevel >= MAXPIFSTACK)
 			die("#if stack over flow. [%s]", curfile);
@@ -609,11 +609,11 @@ condition_macro(cc, target)
 		cur->if0only = 0;
 		if (peekc(0) == '0')
 			cur->if0only = 1;
-		else if ((cc = nexttoken(NULL, reserved)) == SYMBOL && !strcmp(token, "notdef"))
+		else if ((cc = nexttoken(NULL, reserved_word)) == SYMBOL && !strcmp(token, "notdef"))
 			cur->if0only = 1;
 		else
 			pushbacktoken();
-	} else if (cc == CP_ELIF || cc == CP_ELSE) {
+	} else if (cc == SHARP_ELIF || cc == SHARP_ELSE) {
 		DBG_PRINT(piflevel - 1, "#else");
 		if (cur->end == -1)
 			cur->end = level;
@@ -621,7 +621,7 @@ condition_macro(cc, target)
 			fprintf(stderr, "Warning: uneven level. [+%d %s]\n", lineno, curfile);
 		level = cur->start;
 		cur->if0only = 0;
-	} else if (cc == CP_ENDIF) {
+	} else if (cc == SHARP_ENDIF) {
 		int	minus = 0;
 
 		--piflevel;
@@ -642,7 +642,7 @@ condition_macro(cc, target)
 			}
 		}
 	}
-	while ((cc = nexttoken(NULL, reserved)) != EOF && cc != '\n') {
+	while ((cc = nexttoken(NULL, reserved_word)) != EOF && cc != '\n') {
                 if (cc == SYMBOL && strcmp(token, "defined") != 0) {
 			if (target == REF) {
 				if (dflag && defined(token))
@@ -673,105 +673,4 @@ const char *token;
 		if (islower(*p))
 			return 0;
 	return 1;
-}
-		/* sorted by alphabet */
-static struct words words[] = {
-	{"##",		CP_SHARP},
-	{"#assert",     CP_ASSERT},
-	{"#define",	CP_DEFINE},
-	{"#elif",	CP_ELIF},
-	{"#else",	CP_ELSE},
-	{"#endif",	CP_ENDIF},
-	{"#error",	CP_ERROR},
-	{"#ident",	CP_IDENT},
-	{"#if",		CP_IF},
-	{"#ifdef",	CP_IFDEF},
-	{"#ifndef",	CP_IFNDEF},
-	{"#include",	CP_INCLUDE},
-	{"#line",	CP_LINE},
-	{"#pragma",	CP_PRAGMA},
-	{"#undef",	CP_UNDEF},
-	{"#warning",	CP_WARNING},
-	{"%%",		YACC_SEP},
-	{"%left",	YACC_LEFT},
-	{"%nonassoc",	YACC_NONASSOC},
-	{"%right",	YACC_RIGHT},
-	{"%start",	YACC_START},
-	{"%term",	YACC_TERM},
-	{"%token",	YACC_TOKEN},
-	{"%type",	YACC_TYPE},
-	{"%union",	YACC_UNION},
-	{"%{",		YACC_BEGIN},
-	{"%}",		YACC_END},
-	{"__P",		C___P},
-	{"__attribute",	C___ATTRIBUTE__},
-	{"__attribute__",C___ATTRIBUTE__},
-	{"__extension__",C___EXTENSION__},
-	{"_Bool",	C__BOOL},
-	{"_Complex",	C__COMPLEX},
-	{"_Imaginary",	C__IMAGINARY},
-	{"__asm",	C_ASM},
-	{"__asm__",	C_ASM},
-	{"asm",		C_ASM},
-	{"auto",	C_AUTO},
-	{"break",	C_BREAK},
-	{"case",	C_CASE},
-	{"char",	C_CHAR},
-	{"__const",	C_CONST},
-	{"__const__",	C_CONST},
-	{"const",	C_CONST},
-	{"continue",	C_CONTINUE},
-	{"default",	C_DEFAULT},
-	{"do",		C_DO},
-	{"double",	C_DOUBLE},
-	{"else",	C_ELSE},
-	{"enum",	C_ENUM},
-	{"extern",	C_EXTERN},
-	{"float",	C_FLOAT},
-	{"for",		C_FOR},
-	{"goto",	C_GOTO},
-	{"if",		C_IF},
-	{"__inline",	C_INLINE},
-	{"__inline__",	C_INLINE},
-	{"inline",	C_INLINE},
-	{"int",		C_INT},
-	{"long",	C_LONG},
-	{"register",	C_REGISTER},
-	{"__restrict",	C_RESTRICT},
-	{"__restrict__",C_RESTRICT},
-	{"restrict",	C_RESTRICT},
-	{"return",	C_RETURN},
-	{"short",	C_SHORT},
-	{"__signed",	C_SIGNED},
-	{"__signed__",	C_SIGNED},
-	{"signed",	C_SIGNED},
-	{"sizeof",	C_SIZEOF},
-	{"static",	C_STATIC},
-	{"struct",	C_STRUCT},
-	{"switch",	C_SWITCH},
-	{"typedef",	C_TYPEDEF},
-	{"union",	C_UNION},
-	{"unsigned",	C_UNSIGNED},
-	{"void",	C_VOID},
-	{"__volatile",	C_VOLATILE},
-	{"__volatile__",C_VOLATILE},
-	{"volatile",	C_VOLATILE},
-	{"while",	C_WHILE},
-};
-
-static void
-inittable()
-{
-	qsort(words, sizeof(words)/sizeof(struct words), sizeof(struct words), cmp);
-}
-static int
-reserved(word)
-        char *word;
-{
-	struct words tmp;
-	struct words *result;
-
-	tmp.name = word;
-	result = (struct words *)bsearch(&tmp, words, sizeof(words)/sizeof(struct words), sizeof(struct words), cmp);
-	return (result != NULL) ? result->val : SYMBOL;
 }

@@ -12,9 +12,9 @@
 #
 bin_PROGRAMS= gctags
 
-noinst_HEADERS = C.h Cpp.h gctags.h java.h php_res.h
+noinst_HEADERS = gctags.h c_res.h cpp_res.h java_res.h php_res.h
 
-gctags_SOURCES = C.c Cpp.c assembler.c gctags.c java.c php.c
+gctags_SOURCES = gctags.c C.c Cpp.c assembler.c java.c php.c
 
 INCLUDES = @INCLUDES@
 
@@ -24,8 +24,11 @@ gctags_DEPENDENCIES = $(LDADD)
 
 man_MANS = gctags.1
 
-EXTRA_DIST = $(man_MANS) const.h manual.in HACKING \
-		php.l reserved.pl php_res.in php_res.gpf php_res.pl
+EXTRA_DIST = $(man_MANS) const.h manual.in reserved.pl HACKING
+		c_res.in c_res.gpf c_res.pl \
+		cpp_res.in cpp_res.gpf cpp_res.pl \
+		java_res.in java_res.gpf java_res.pl \
+		php_res.in php_res.gpf php_res.pl php.l
 
 SUFFIXES = .c .h .l .gpf .in .pl
 

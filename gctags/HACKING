@@ -16,8 +16,6 @@ ___________________________________
 
                 ----------------------------------
 
-*** At present, this description is applied only to the PHP parser.
-
 1. Outline of generating parsers.
 
 You need to have the following package installed:
@@ -60,12 +58,12 @@ You need to have the following package installed:
 2. The format of resreved word file.
 
 	o One word and 'word' which means 'reserved word' a line.
-	o Null line and the line start with '#' is skipped.
+	o Null line and the line start with ';' is skipped.
 	o You need not sort words by alphabetical order.
 
 	[Example]
 	+---------------------
-	|# This is comment.
+	|; This is comment.
 	|
 	|int		word
 	|auto		word

@@ -1,0 +1,89 @@
+;; Process this file with reserved.pl to create gperf source.
+;
+; Copyright (c) 2003 Tama Communications Corporation
+;
+; This file is free software; as a special exception the author gives
+; unlimited permission to copy and/or distribute it, with or without
+; modifications, as long as this notice is preserved.
+;
+; This program is distributed in the hope that it will be useful, but
+; WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
+; implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+;
+; C reserved word list.
+;
+__P			word
+__attribute__,__attribute		word
+__extension__				word
+asm,__asm,__asm__			word
+const,__const,__const__			word
+inline,__inline,__inline__		word
+restrict,__restrict,__restrict__	word
+signed,__signed,__signed__		word
+volatile,__volatile,__volatile__	word
+_Bool			word
+_Complex		word
+_Imaginary		word
+auto			word
+break			word
+case			word
+char			word
+continue		word
+default			word
+do			word
+double			word
+else			word
+enum			word
+extern			word
+float			word
+for			word
+goto			word
+if			word
+int			word
+long			word
+register		word
+return			word
+short			word
+sizeof			word
+static			word
+struct			word
+switch			word
+typedef			word
+union			word
+unsigned		word
+void			word
+while			word
+;
+; Pre-processer macro.
+;
+##			sharp
+#assert			sharp
+#define			sharp
+#elif			sharp
+#else			sharp
+#endif			sharp
+#error			sharp
+#ident			sharp
+#if			sharp
+#ifdef			sharp
+#ifndef			sharp
+#include		sharp
+#line			sharp
+#pragma			sharp
+#undef			sharp
+#warning		sharp
+;
+; Yacc reserved word.
+;
+%%			yacc
+%left			yacc
+%nonassoc		yacc
+%right			yacc
+%start			yacc
+%term			yacc
+%token			yacc
+%type			yacc
+%union			yacc
+%{			yacc
+%}			yacc

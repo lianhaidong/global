@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 1999 Shigio Yamaguchi
- * Copyright (c) 1999, 2000, 2002 Tama Communications Corporation
+ * Copyright (c) 1999, 2000, 2002, 2003 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -51,6 +51,7 @@ static	int lasttok;
 static	FILE *ip;
 static	STRBUF *ib;
 
+#define tlen	(p - &token[0])
 static	void pushbackchar(void);
 
 /*
@@ -112,10 +113,10 @@ closetoken()
 int
 nexttoken(interested, reserved)
 	const char *interested;
-	int (*reserved)(char *);
+	int (*reserved)(const char *, int);
 {
 	int	c;
-	char	*p;
+	unsigned char *p;
 	int	sharp = 0;
 	int	percent = 0;
 
@@ -178,7 +179,7 @@ nexttoken(interested, reserved)
 				*p++ = c;
 				*p++ = nextchar();
 				*p   = 0;
-				if (reserved && (c = (*reserved)(token)) == 0)
+				if (reserved && (c = (*reserved)(token, tlen)) == 0)
 					break;
 			} else if (atfirst_exceptspace()) {
 				sharp = 1;
@@ -190,7 +191,7 @@ nexttoken(interested, reserved)
 				*p++ = c;
 				*p++ = nextchar();
 				*p   = 0;
-				if (reserved && (c = (*reserved)(token)) == 0)
+				if (reserved && (c = (*reserved)(token, tlen)) == 0)
 					break;
 			}
 		} else if (c == '%' && ymode) {
@@ -201,7 +202,7 @@ nexttoken(interested, reserved)
 				if ((c = peekc(1)) == '%' || c == '{' || c == '}') {
 					*p++ = nextchar();
 					*p   = 0;
-					if (reserved && (c = (*reserved)(token)) != 0)
+					if (reserved && (c = (*reserved)(token, tlen)) != 0)
 						break;
 				} else if (!isspace(c)) {
 					percent = 1;
@@ -230,7 +231,7 @@ nexttoken(interested, reserved)
 			/* convert token string into token number */
 			c = SYMBOL;
 			if (reserved)
-				c = (*reserved)(token);
+				c = (*reserved)(token, tlen);
 			break;
 		} else {				/* special char */
 			if (interested == NULL || strchr(interested, c))

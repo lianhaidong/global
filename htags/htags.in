@@ -108,29 +108,8 @@ $'hr		 = '<HR>';
 # Reserved words for C and Java are hard coded.
 # (configuration parameter 'reserved_words' was deleted.)
 #
-$'c89_reserved_words =	"auto,break,case,char,const,continue,default,do,double," .
-		"else,enum,extern,float,for,goto,if,int,long,register,return," .
-		"short,signed,sizeof,static,struct,switch,typedef,union," .
-		"unsigned,void,volatile,while";
-$'c_reserved_words = 	"_Bool,_Complex,_Imaginary,inline,restrict," .
-		$'c89_reserved_words;
-$'cpp_reserved_words =	"asm,bool,catch,const_cast,class,delete,dynamic_cast," .
-		"explicit,export,false,friend,inline,mutable,namespace,new," .
-		"operator,private,protected,public,reinterpret_cast,static_cast," .
-		"template,this,throw,true,try,typeid,typename,using,virtual,wchar_t," .
-		$'c89_reserved_words;
-$'java_reserved_words  = "abstract,boolean,break,byte,case,catch,char,class," .
-		"const,continue,default,do,double,else,extends,false," .
-		"final,finally,float,for,goto,if,implements,import," .
-		"instanceof,int,interface,long,native,new,null," .
-		"package,private,protected,public,return,short," .
-		"static,super,switch,synchronized,this,throw,throws," .
-		"union,transient,true,try,void,volatile,while";
 $'sharp_macros = "assert,define,elif,else,endif,error,ident,ifdef,ifndef,if," .
 		"include,line,pragma,undef,warning";
-$'c_reserved_words    =~ s/,/|/g;
-$'cpp_reserved_words  =~ s/,/|/g;
-$'java_reserved_words =~ s/,/|/g;
 $'sharp_macros        =~ s/,/|/g;
 {
 	#

@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 1999 Shigio Yamaguchi
- * Copyright (c) 1999, 2000, 2002 Tama Communications Corporation
+ * Copyright (c) 1999, 2000, 2002, 2003 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -34,7 +34,7 @@
 #include "defined.h"
 #include "token.h"
 
-static int      reserved(char *);
+static int      reserved_word(const char *, int);
 
 #define A_CALL		1001
 #define A_DEFINE	1002
@@ -65,7 +65,7 @@ assembler()
 	cmode = 1;
 	crflag = 1;
 
-	while ((c = nexttoken(interested, reserved)) != EOF) {
+	while ((c = nexttoken(interested, reserved_word)) != EOF) {
 		switch (c) {
 		case '\n':
 			startline = 1;
@@ -73,9 +73,9 @@ assembler()
 		case A_CALL:
 			if (!startline || target != REF)
 				break;
-			if ((c = nexttoken(interested, reserved)) == A_EXT || c == A_SYMBOL_NAME || c == A_C_LABEL) {
-				if ((c = nexttoken(interested, reserved)) == '('/* ) */)
-					if ((c = nexttoken(interested, reserved)) == SYMBOL)
+			if ((c = nexttoken(interested, reserved_word)) == A_EXT || c == A_SYMBOL_NAME || c == A_C_LABEL) {
+				if ((c = nexttoken(interested, reserved_word)) == '('/* ) */)
+					if ((c = nexttoken(interested, reserved_word)) == SYMBOL)
 						if (defined(token))
 							PUT(token, lineno, sp);
 			} else if (c == SYMBOL && *token == '_') {
@@ -90,22 +90,22 @@ assembler()
 		case A_JSBENTRY:
 			if (!startline || target != DEF)
 				break;
-			if ((c = nexttoken(interested, reserved)) == '('/* ) */) {
-				if ((c = nexttoken(interested, reserved)) == SYMBOL)
+			if ((c = nexttoken(interested, reserved_word)) == '('/* ) */) {
+				if ((c = nexttoken(interested, reserved_word)) == SYMBOL)
 					PUT(token, lineno, sp);
-				while ((c = nexttoken(interested, reserved)) != EOF && c != '\n' && c != /* ( */ ')')
+				while ((c = nexttoken(interested, reserved_word)) != EOF && c != '\n' && c != /* ( */ ')')
 					;
 			}
 			break;
 		case A_DEFINE:
 			if (!startline || target != DEF)
 				break;
-			if ((c = nexttoken(interested, reserved)) == SYMBOL) {
+			if ((c = nexttoken(interested, reserved_word)) == SYMBOL) {
 				if (peekc(1) == '('/* ) */) {
 					PUT(token, lineno, sp);
-					while ((c = nexttoken(interested, reserved)) != EOF && c != '\n' && c != /* ( */ ')')
+					while ((c = nexttoken(interested, reserved_word)) != EOF && c != '\n' && c != /* ( */ ')')
 						;
-					while ((c = nexttoken(interested, reserved)) != EOF && c != '\n')
+					while ((c = nexttoken(interested, reserved_word)) != EOF && c != '\n')
 						;
 				}
 			}
@@ -116,8 +116,9 @@ assembler()
 	}
 }
 static int
-reserved(word)
-        char *word;
+reserved_word(word, length)
+        const char *word;
+	int length;
 {
 	switch (*word) {
 	case '#':

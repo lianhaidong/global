@@ -36,12 +36,12 @@
 #include "gctags.h"
 #include "defined.h"
 #include "die.h"
-#include "java.h"
 #include "strlimcpy.h"
 #include "token.h"
+#include "java_res.h"
 
-static  void    inittable();
-static int	reserved(char *);
+#define MAXCOMPLETENAME 1024            /* max size of complete name of class */
+#define MAXCLASSSTACK   100             /* max size of class stack */
 
 /*
  * java: read java file and pickup tag entries.
@@ -69,15 +69,10 @@ java()
 	target = (sflag) ? SYM : ((rflag) ? REF : DEF);
 	startclass = startthrows = startequal = 0;
 
-	/*
-	 * set up reserved word table.
-	 */
-	inittable();
-
-	while ((c = nexttoken(interested, reserved)) != EOF) {
+	while ((c = nexttoken(interested, reserved_word)) != EOF) {
 		switch (c) {
 		case SYMBOL:					/* symbol */
-			for (; c == SYMBOL && peekc(1) == '.'; c = nexttoken(interested, reserved)) {
+			for (; c == SYMBOL && peekc(1) == '.'; c = nexttoken(interested, reserved_word)) {
 				if (target == SYM)
 					PUT(token, lineno, sp);
 			}
@@ -137,114 +132,41 @@ java()
 		case ';':
 			startclass = startthrows = startequal = 0;
 			break;
-		case J_CLASS:
-		case J_INTERFACE:
-			if ((c = nexttoken(interested, reserved)) == SYMBOL) {
+		case JAVA_CLASS:
+		case JAVA_INTERFACE:
+			if ((c = nexttoken(interested, reserved_word)) == SYMBOL) {
 				strlimcpy(classname, token, sizeof(classname));
 				startclass = 1;
 				if (target == DEF)
 					PUT(token, lineno, sp);
 			}
 			break;
-		case J_NEW:
-		case J_INSTANCEOF:
-			while ((c = nexttoken(interested, reserved)) == SYMBOL && peekc(1) == '.')
+		case JAVA_NEW:
+		case JAVA_INSTANCEOF:
+			while ((c = nexttoken(interested, reserved_word)) == SYMBOL && peekc(1) == '.')
 				if (target == SYM)
 					PUT(token, lineno, sp);
 			if (c == SYMBOL)
 				if (target == REF && defined(token))
 					PUT(token, lineno, sp);
 			break;
-		case J_THROWS:
+		case JAVA_THROWS:
 			startthrows = 1;
 			break;
-		case J_BOOLEAN:
-		case J_BYTE:
-		case J_CHAR:
-		case J_DOUBLE:
-		case J_FLOAT:
-		case J_INT:
-		case J_LONG:
-		case J_SHORT:
-		case J_VOID:
-			if (peekc(1) == '.' && (c = nexttoken(interested, reserved)) != J_CLASS)
+		case JAVA_BOOLEAN:
+		case JAVA_BYTE:
+		case JAVA_CHAR:
+		case JAVA_DOUBLE:
+		case JAVA_FLOAT:
+		case JAVA_INT:
+		case JAVA_LONG:
+		case JAVA_SHORT:
+		case JAVA_VOID:
+			if (peekc(1) == '.' && (c = nexttoken(interested, reserved_word)) != JAVA_CLASS)
 				pushbacktoken();
 			break;
 		default:
 			break;
 		}
 	}
-}
-		/* sorted by alphabet */
-static struct words words[] = {
-	{"abstract",	J_ABSTRACT},
-	{"boolean",	J_BOOLEAN},
-	{"break",	J_BREAK},
-	{"byte",	J_BYTE},
-	{"case",	J_CASE},
-	{"catch",	J_CATCH},
-	{"char",	J_CHAR},
-	{"class",	J_CLASS},
-	{"const",	J_CONST},
-	{"continue",	J_CONTINUE},
-	{"default",	J_DEFAULT},
-	{"do",		J_DO},
-	{"double",	J_DOUBLE},
-	{"else",	J_ELSE},
-	{"extends",	J_EXTENDS},
-	{"false",	J_FALSE},
-	{"final",	J_FINAL},
-	{"finally",	J_FINALLY},
-	{"float",	J_FLOAT},
-	{"for",		J_FOR},
-	{"goto",	J_GOTO},
-	{"if",		J_IF},
-	{"implements",	J_IMPLEMENTS},
-	{"import",	J_IMPORT},
-	{"instanceof",	J_INSTANCEOF},
-	{"int",		J_INT},
-	{"interface",	J_INTERFACE},
-	{"long",	J_LONG},
-	{"native",	J_NATIVE},
-	{"new",		J_NEW},
-	{"null",	J_NULL},
-	{"package",	J_PACKAGE},
-	{"private",	J_PRIVATE},
-	{"protected",	J_PROTECTED},
-	{"public",	J_PUBLIC},
-	{"return",	J_RETURN},
-	{"short",	J_SHORT},
-	{"static",	J_STATIC},
-	{"strictfp",	J_STRICTFP},
-	{"super",	J_SUPER},
-	{"switch",	J_SWITCH},
-	{"synchronized",J_SYNCHRONIZED},
-	{"this",	J_THIS},
-	{"throw",	J_THROW},
-	{"throws",	J_THROWS},
-	{"union",	J_UNION},
-	{"transient",	J_TRANSIENT},
-	{"true",	J_TRUE},
-	{"try",		J_TRY},
-	{"void",	J_VOID},
-	{"volatile",	J_VOLATILE},
-	{"while",	J_WHILE},
-	{"widefp",	J_WIDEFP},
-};
-
-static void
-inittable()
-{
-	qsort(words, sizeof(words)/sizeof(struct words), sizeof(struct words), cmp);
-}
-static int
-reserved(word)
-        char *word;
-{
-	struct words tmp;
-	struct words *result;
-
-	tmp.name = word;
-	result = (struct words *)bsearch(&tmp, words, sizeof(words)/sizeof(struct words), sizeof(struct words), cmp);
-	return (result != NULL) ? result->val : SYMBOL;
 }

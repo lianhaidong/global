@@ -43,18 +43,11 @@ extern int	tflag;
 extern int	wflag;
 extern int      yaccfile;
 
-struct words {
-        const char *name;
-        int val;
-};
-
 #define PUT(tag, lno, line) do {					\
 	DBG_PRINT(level, line);						\
 	if (!nflag)							\
 		printf("%-16s %4d %-16s %s\n",tag, lno, curfile, line);	\
 } while (0)
-
-#define IS_RESERVED(a)  ((a) > 1000)
 
 #define DBG_PRINT(level, a) dbg_print(level, a)
 
