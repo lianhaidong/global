@@ -52,10 +52,11 @@ fi
 dnl Checks for libraries.
 
 dnl Checks for header files.
-AC_CHECK_HEADERS(limits.h string.h unistd.h stdarg.h)
+AC_CHECK_HEADERS(limits.h string.h unistd.h stdarg.h sys/time.h)
 AC_HEADER_DIRENT
 AC_HEADER_STDC
 AC_HEADER_STAT
+AC_HEADER_TIME
 AG_BYTE_ORDER
 
 dnl Checks for typedefs, structures, and compiler characteristics.
