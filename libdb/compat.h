@@ -83,18 +83,50 @@ static int __sigtemp;		/* For the use of sigprocmask */
 #endif
 #endif
 
-#if defined(SYSV) || defined(SYSTEM5)
+/*
+ * Old definitions were rewritten using 'HAVE_XXX' macros.
+ *
+ * #if defined(SYSV) || defined(SYSTEM5)
+ * #define	index(a, b)		strchr(a, b)
+ * #define	rindex(a, b)		strrchr(a, b)
+ * #define	bzero(a, b)		memset(a, 0, b)
+ * #define	bcmp(a, b, n)		memcmp(a, b, n)
+ * #define	bcopy(a, b, n)		memmove(b, a, n)
+ * #endif
+ * 
+ * #if defined(BSD) || defined(BSD4_3)
+ * #define	strchr(a, b)		index(a, b)
+ * #define	strrchr(a, b)		rindex(a, b)
+ * #define	memcmp(a, b, n)		bcmp(a, b, n)
+ * #define	memmove(a, b, n)	bcopy(b, a, n)
+ * #endif
+*/
+#if !defined (HAVE_INDEX) && defined (HAVE_STRCHR)
 #define	index(a, b)		strchr(a, b)
+#endif
+#if !defined (HAVE_RINDEX) && defined (HAVE_STRRCHR)
 #define	rindex(a, b)		strrchr(a, b)
+#endif
+#if !defined (HAVE_BZERO) && defined (HAVE_MEMSET)
 #define	bzero(a, b)		memset(a, 0, b)
+#endif
+#if !defined (HAVE_BCMP) && defined (HAVE_MEMCMP)
 #define	bcmp(a, b, n)		memcmp(a, b, n)
+#endif
+#if !defined (HAVE_BCOPY) && defined (HAVE_MEMMOVE)
 #define	bcopy(a, b, n)		memmove(b, a, n)
 #endif
 
-#if defined(BSD) || defined(BSD4_3)
+#if !defined (HAVE_STRCHR) && defined (HAVE_INDEX)
 #define	strchr(a, b)		index(a, b)
+#endif
+#if !defined (HAVE_STRRCHR) && defined (HAVE_RINDEX)
 #define	strrchr(a, b)		rindex(a, b)
+#endif
+#if !defined (HAVE_MEMCMP) && defined (HAVE_BCMP)
 #define	memcmp(a, b, n)		bcmp(a, b, n)
+#endif
+#if !defined (HAVE_MEMMOVE) && defined (HAVE_BCOPY)
 #define	memmove(a, b, n)	bcopy(b, a, n)
 #endif
 
