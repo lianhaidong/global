@@ -336,6 +336,39 @@ $'status_line  =
 "	msg += '.';\n" .
 "	self.status = msg;\n" .
 "}\n";
+
+#
+# This is alternative for title string.
+#
+sub show {
+	local($type, $lno, $file) = @_;
+	local($msg) = '';
+
+	if ($lno > 0) {
+		if ($type eq 'R') {
+			$msg .= 'Defined at';
+		} elsif ($type eq 'Y') {
+			$msg .= 'Used at';
+		} else {
+			$msg .= 'Refered from';
+		}
+		$msg .= ' ' . $lno;
+		if ($file ne '') {
+			$msg .= ' in ' . $file;
+		}
+	} else {
+		$msg .= 'Multiple ';
+		if ($type eq 'R') {
+			$msg .= 'defined';
+		} elsif ($type eq 'Y') {
+			$msg .= 'used';
+		} else {
+			$msg .= 'refered';
+		}
+	}
+	$msg .= '.';
+	$msg;
+}
 #-------------------------------------------------------------------------
 # DIRECTORIES
 #-------------------------------------------------------------------------
@@ -2108,6 +2141,7 @@ sub src2html {
 		for (($lno, $tag, $type) = &anchor'first(); $lno; ($lno, $tag, $type) = &anchor'next()) {
 			if ($type eq 'D') {
 				print "<LI><A HREF=#$lno";
+				print " title=\"" . &'show('R',$lno,'') . "\"";
 				print " onMouseOver=\"show('R',$lno,'')\"" if ($'use_javascript);
 				print ">$tag</A>\n";
 			}
@@ -2211,6 +2245,7 @@ sub src2html {
 							$url = "../$dir/$1.$'HTML";
 						}
 						$href = "<A HREF=$url";
+						$href .= " title=\"" . &'show($TYPE,-1,'') . "\"";
 						$href .= " onMouseOver=\"show('$TYPE',-1,'')\"" if ($'use_javascript);
 						$href .= ">$TAG</A>";
 					} else {
@@ -2219,6 +2254,7 @@ sub src2html {
 						local($url) = &'path2url($filename);
 						$filename =~ s!\./!!; 
 						$href = "<A HREF=../$'SRCS/$url#$lno";
+						$href .= " title=\"" . &'show($TYPE,$lno,$filename) . "\"";
 						$href .= " onMouseOver=\"show('$TYPE',$lno,'$filename')\"" if ($'use_javascript);
 						$href .= ">$TAG</A>";
 					}
