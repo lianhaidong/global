@@ -25,7 +25,7 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	GLOBAL,25,March 2002,GNU Project
+@HEADER	GLOBAL,29,March 2002,GNU Project
 @NAME	global - print the locations of specified object.
 @SYNOPSIS
 	@name{global} [-ailnqrstTvx] @arg{pattern}
@@ -178,6 +178,9 @@
 		If this variable is set, it is used as the path to search
 		for library functions. If the specified function is not
 		found in a source tree, @name{global} also search in these paths.
+	@item{@var{GTAGSLABEL}}
+		If this variable is set, its value is used as the label
+		of configuration file. The default is @code{default}.
 	@end_itemize
 @CONFIGURATION
 	The following configuration variables affect the execution of @name{global}:

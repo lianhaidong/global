@@ -25,7 +25,7 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	GTAGS,25,March 2002,GNU Project
+@HEADER	GTAGS,29,March 2002,GNU Project
 @NAME	gtags - create tag files for global.
 @SYNOPSIS
 	@name{gtags} [-c][-i][-I][-o][-P][-q][-v][-w][@arg{dbpath}]
@@ -109,7 +109,7 @@
 		configuration file. The default is @file{$HOME/.globalrc}.
 	@item{@var{GTAGSLABEL}}
 		If this variable is set, its value is used as the label
-		of configuration file. The default is 'default'.
+		of configuration file. The default is @code{default}.
 	@end_itemize
 @CONFIGURATION
 	The following configuration variables affect the execution of @name{gtags}:
