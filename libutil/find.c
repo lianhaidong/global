@@ -547,7 +547,10 @@ find_open(start)
 
 	if (!start)
 		start = ".";
-	 snprintf(findcom, sizeof(findcom), "find %s -type f -print", start);
+	if (is_unixy())
+		snprintf(findcom, sizeof(findcom), "find %s \\( -type f -o -type l \\) -print", start);
+	else
+		snprintf(findcom, sizeof(findcom), "find %s -type f -print", start);
 
 #ifdef DEBUG
 	if (debug)
