@@ -18,6 +18,16 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+July 2 2003, Shigio Yamaguchi  <shigio@gnu.org>
+
+	* gctags: If you want to build this parser from original source in
+	  CVS repository then it is necessary to install flex(1) and gperf(1)
+	  in your environment. (Since both of them are GNU software,
+	  you can get them from GNU ftp site.)
+	* reserved.pl: Generate C and Perl code for locating reserved words.
+	* gtags.c: The --createdb and the --readdb option which used for anchor
+	  database were removed, becase there is no necessity any longer.
+
 June 5 2003, Shigio Yamaguchi  <shigio@gnu.org>
 
 	* libutil/env.c: replace putenv() and setenv() with set_env();

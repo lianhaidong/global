@@ -19,6 +19,31 @@ ___________________________________
 GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 4.6 - July 2 2003, by Shigio Yamaguchi
+
+[INCOMPATIBLE CHANGES]
+* The default value of the config variable 'definition_header' was changed
+  to 'no', because the definition header is unsightly according to the place,
+  especially in class definition.
+
+[OTHER CHANGES]
+* Added support for PHP language.
+  (Known problems in htags)
+  - The variable in string cannot be recognized.(global can recognize that.)
+  - In HTML, the character string of the same spelling as the reserved
+    word of PHP is recognized as a reserved word of PHP.
+  I will rewrite htags in C language in the future to solve above problems.
+* Added support for SCM_DEFINE macro which is part of guile-snarf.
+* Added 'right' as a value of config variable 'definition_header'.
+* Added some tool tips.
+  - Alphabet in alphabetical index shows the count of definitions.
+  - File name in file index show the full path name.
+  - Anchor to duplicate index show the number of duplicated objects.
+* Added .cvsrc,.cvsignore,.cvspass,.cvswrappers,autom4te.cache/
+  to the default skip list.
+
+Always thanks to Hideki Iwamoto san for his contribution.
+
 Version 4.5.3 - June 5 2003, by Shigio Yamaguchi
 
 [INCOMPATIBLE CHANGES]
@@ -71,7 +96,6 @@ Other modifications:
 
 I wish to express my gratitude continuously since last time for the
 contribution of Hideki Iwamoto san.
-
 
 Version 4.5.2 - March 29 2003, by Shigio Yamaguchi
 

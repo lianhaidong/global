@@ -2,7 +2,7 @@ dnl
 dnl Configuration script for GLOBAL.
 dnl Process this file with autoconf to produce a configure script.
 dnl
-dnl Copyright (c) 2000, 2001, 2002 Tama Communications Corporation
+dnl Copyright (c) 2000, 2001, 2002, 2003 Tama Communications Corporation
 dnl
 dnl This file is part of GNU GLOBAL.
 dnl
@@ -22,7 +22,7 @@ dnl Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 dnl
 AC_INIT(global/global.c)
 AM_CONFIG_HEADER(config.h:config-h.in)
-AM_INIT_AUTOMAKE(global, 4.5.3)
+AM_INIT_AUTOMAKE(global, 4.6)
 AC_PREREQ(2.53)
 
 dnl Checks for programs.
