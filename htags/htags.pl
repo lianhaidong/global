@@ -698,7 +698,7 @@ sub makeprogram {
 
 	open(PROGRAM, ">$file") || &'error("cannot make CGI program.");
 	$program = <<'END_OF_SCRIPT';
-#! /usr/bin/perl
+#! @PERL@
 #------------------------------------------------------------------
 # SORRY TO HAVE SURPRISED YOU!
 # IF YOU SEE THIS UNREASONABLE FILE WHILE BROUSING, FORGET PLEASE.
