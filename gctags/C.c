@@ -671,7 +671,6 @@ static struct words words[] = {
 	{"unsigned",	C_UNSIGNED},
 	{"void",	C_VOID},
 	{"volatile",	C_VOLATILE},
-	{"wchar_t",	C_WCHAR_T},
 	{"while",	C_WHILE},
 };
 

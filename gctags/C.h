@@ -57,8 +57,7 @@
 #define C_UNSIGNED	1032
 #define C_VOID		1033
 #define C_VOLATILE	1034
-#define C_WCHAR_T	1035
-#define C_WHILE		1036
+#define C_WHILE		1035
 #define CP_ELIF		2001
 #define CP_ELSE		2002
 #define CP_DEFINE	2003
