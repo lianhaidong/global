@@ -29,7 +29,7 @@ Contributers of GNU GLOBAL
 The undermentioned people wrote the code, and the right was abandoned
 or transferred to Tama Communications Corporation with legal paper.
 
-The original author is Shigio Yamaguchi.
+The original author is Shigio YAMAGUCHI.
 
 Port to Windows 32 (for Borland C++ Compiler) by Dan Fandrich.
 (most of #ifdef _WIN32.)

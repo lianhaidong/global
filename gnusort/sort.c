@@ -40,7 +40,7 @@
 #define AUTHORS "Mike Haertel"
 
 /*
- * The following two definition was added by Shigio Yamaguchi
+ * The following two definition was added by Shigio YAMAGUCHI
  * to include this command into GNU GLOBAL package.
  */
 #undef GNU_PACKAGE
