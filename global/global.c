@@ -460,6 +460,7 @@ main(argc, argv)
 	 * locate the path including the pattern in a source tree.
 	 */
 	if (Pflag) {
+		chdir(root);
 		pathlist(dbpath, av);
 		exit(0);
 	}
@@ -855,7 +856,8 @@ pathlist(dbpath, av)
 	if (!(op = openfilter()))
 		die("cannot open output filter.");
 	count = 0;
-	for (gfind_open(dbpath, localprefix); (path = gfind_read()) != NULL; ) {
+	for (vfind_open(localprefix, oflag); (p = vfind_read()) != NULL; ) {
+		path = (*p == ' ') ? ++p : p;
 		/*
 		 * skip localprefix because end-user doesn't see it.
 		 */
@@ -872,7 +874,7 @@ pathlist(dbpath, av)
 		}
 		count++;
 	}
-	gfind_close();
+	vfind_close();
 	closefilter(op);
 	if (av)
 		regfree(&preg);
