@@ -113,3 +113,5 @@ enum {
 
 #define MAXCOMPLETENAME 1024            /* max size of complete name of class */
 #define MAXCLASSSTACK   100             /* max size of class stack */
+
+#define IS_CV_QUALIFIER(c)	((c) == CPP_CONST || (c) == CPP_VOLATILE)

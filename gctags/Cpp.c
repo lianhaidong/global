@@ -341,7 +341,12 @@ Cpp()
 				int	typedef_savelevel = level;
 
 				savetok[0] = 0;
-				c = nexttoken("{}(),;", reserved);
+
+				/* skip CV qualifiers */
+				do {
+					c = nexttoken("{}(),;", reserved);
+				} while (IS_CV_QUALIFIER(c) || c == '\n');
+
 				if (wflag && c == EOF) {
 					fprintf(stderr, "Warning: unexpected eof. [+%d %s]\n", lineno, curfile);
 					break;

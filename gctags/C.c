@@ -299,7 +299,7 @@ C(yacc)
 				/* skip type qualifiers */
 				do {
 					c = nexttoken("{}(),;", reserved);
-				} while (IS_TYPE_QUALIFIER(c));
+				} while (IS_TYPE_QUALIFIER(c) || c == '\n');
 
 				if (wflag && c == EOF) {
 					fprintf(stderr, "Warning: unexpected eof. [+%d %s]\n", lineno, curfile);
