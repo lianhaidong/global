@@ -1489,7 +1489,7 @@ main(argc, argv)
 	if (arg_dbpath[0])
 		strlimcpy(dbpath, arg_dbpath, sizeof(dbpath));
 	else
-		strlimcpy(dbpath, cwdpath, sizeof(cwdpath));
+		strlimcpy(dbpath, cwdpath, sizeof(dbpath));
 
 	if (cflag && !usable("gzip")) {
 		warning("'gzip' command not found. -c option ignored.");
