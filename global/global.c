@@ -719,11 +719,11 @@ char	*dbpath;
 		while (*p && isdigit(*p))
 			p++;
 		if (*p != ':')
-			die("invalid grep output format. '%s'", line);
+			die("invalid lid(id-utils) output format. '%s'", line);
 		*p++ = 0;
 		linenum = atoi(lno);
 		if (linenum <= 0)
-			die("invalid grep output format. '%s'", line);
+			die("invalid lid(id-utils) output format. '%s'", line);
 		/*
 		 * print out.
 		 */
