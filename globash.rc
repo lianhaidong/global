@@ -688,7 +688,7 @@ ghelp() {
 	echo "means \"/usr/src/sys/kern\" is current directory and"
 	echo "\"/usr/src/sys\" is GTAGSROOT."
 	echo
-	echo "/usr/src/sys!/tmp _"
+	echo "[/usr/src/sys]!/tmp _"
 	echo "means environment variable GTAGSROOT is set to \"/usr/src/sys\""
 	echo "and \"/tmp\" is current directory."
 	echo

@@ -27,7 +27,7 @@ Version 4.1.1 - *******, 2001, by Shigio Yamaguchi
 * configure: bug fixed. now you can build project at any directory
   other than source directory.
 * htags: generates rebuild.sh to redo the job with the previous context.
-* globash.rc: when GTAGSROOT specified, prompt is changed to "$root!$cwd"
+* globash.rc: when GTAGSROOT specified, prompt is changed to "[$root]!$cwd"
   instead of "[$root]/...".
 * globash.rc: bug fixed. number was ignored in 'next <no>' and 'prev <no>'.
 * globash.rc: The -e option of show use emacsclient instead of emacs.
