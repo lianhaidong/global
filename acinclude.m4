@@ -18,7 +18,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #
-AC_DEFUN(AG_STRUCT_DP_D_NAMLEN,
+AC_DEFUN([AG_STRUCT_DP_D_NAMLEN],
 [AC_CACHE_CHECK([for dp_d_namlen in struct dirent], ac_cv_struct_dp_d_namlen,
 [AC_TRY_COMPILE([#include <sys/types.h>
 #include <dirent.h>], [struct dirent s; s.d_namlen;],
@@ -28,7 +28,7 @@ if test $ac_cv_struct_dp_d_namlen = yes; then
 fi
 ])
 
-AC_DEFUN(AG_STRUCT_DP_D_TYPE,
+AC_DEFUN([AG_STRUCT_DP_D_TYPE],
 [AC_CACHE_CHECK([for dp_d_type in struct dirent], ac_cv_struct_dp_d_type,
 [AC_TRY_COMPILE([#include <sys/types.h>
 #include <dirent.h>], [struct dirent s; s.d_type;],
@@ -39,7 +39,7 @@ fi
 ])
 
 dnl derived from acspecific.m4 and fix warning.
-AC_DEFUN(AG_BYTE_ORDER,
+AC_DEFUN([AG_BYTE_ORDER],
 [AC_CACHE_CHECK(whether byte ordering is bigendian, ac_cv_c_bigendian,
 [ac_cv_c_bigendian=unknown
 # See if sys/param.h defines the BYTE_ORDER macro.
@@ -70,7 +70,7 @@ if test $ac_cv_c_bigendian = yes; then
 fi
 ])
 
-AC_DEFUN(AG_DJGPP,
+AC_DEFUN([AG_DJGPP],
 [AC_CACHE_CHECK([whether we are using the GNU DJGPP compiler], ac_cv_djgpp,
 [AC_TRY_COMPILE([], [#ifdef __DJGPP__
 int a;
