@@ -77,7 +77,6 @@ open_output_file(file)
 {
 	char command[MAXFILLEN];
 	FILE *op;
-	extern int cflag;
 
 	if (cflag) {
 		snprintf(command, sizeof(command), "gzip -c >%s", file);
@@ -98,8 +97,6 @@ open_output_file(file)
 static void
 close_output_file()
 {
-	extern int cflag;
-
 	if (cflag) {
 		if (pclose(out) < 0)
 			die("command 'gzip -c' failed.");
@@ -457,7 +454,6 @@ put_brace(text)
 	strbuf_puts(outbuf, brace_end);
 }
 
-static char lineno_format[32];
 /*
  * common procedure for line control.
  */
