@@ -136,7 +136,8 @@ prepare_source()
 			char    *p;
 
 			for (p = suffp; *p && *p != ','; p++) {
-				strbuf_putc(sb, '\\');
+				if (!isalnum(*p))
+					strbuf_putc(sb, '\\');
 				strbuf_putc(sb, *p);
 			}
 			if (!*p)
