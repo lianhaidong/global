@@ -46,7 +46,7 @@
 #undef GNU_PACKAGE
 #define GNU_PACKAGE "GNU Textutil"
 #undef VERSION
-#define VERSION "2.1"
+#define VERSION "2.0"
 
 #if defined ENABLE_NLS && HAVE_LANGINFO_H
 # include <langinfo.h>
