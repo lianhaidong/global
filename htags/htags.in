@@ -148,6 +148,9 @@ $'sharp_macros        =~ s/,/|/g;
 	}
 	@ARGV = @a;
 }
+#
+# load configuration variables.
+#
 if ($var1 = &'getconf('ncol')) {
 	if ($var1 < 1 || $var1 > 10) {
 		print STDERR "Warning: parameter 'ncol' ignored becase the value is too large or too small.\n";
@@ -290,10 +293,10 @@ $'status_line  =
 # DEFINITION
 #-------------------------------------------------------------------------
 # unit for a path
-$'SRCS   = 'S';
-$'DEFS   = 'D';
-$'REFS   = 'R';
-$'INCS   = 'I';
+$'SRCS   = 'S';				# source file directory.
+$'DEFS   = 'D';				# object definition directory.
+$'REFS   = 'R';				# object reference directory.
+$'INCS   = 'I';				# include file directory.
 sub set_header {
 	local($title) = @_;
 	local($head) = '';
@@ -311,12 +314,18 @@ sub set_header {
 #-------------------------------------------------------------------------
 # UTILITIES
 #-------------------------------------------------------------------------
+#
+# get current working directory.
+#
 sub getcwd {
         local($dir) = `$'gtags --pwd`;
 	if ($'w32) { $dir =~ s!\\!/!g; }
         chop($dir);
         $dir;
 }
+#
+# get real absolute path name.
+#
 sub realpath {
         local($path) = @_;
         local($cwd) = &getcwd;		# for recovery
@@ -335,16 +344,25 @@ sub realpath {
         chdir($cwd) || &'error("cannot recover current directory '$cwd'.");
         $path;
 }
+#
+# get date string.
+#
 sub date {
 	local($date) = `$'gtags --date`;
 	chop($date);
 	$date;
 }
+#
+# print message and exit with error status.
+#
 sub error {
 	&clean();
 	printf STDERR "$program: $_[0]\n";
 	exit 1;
 }
+#
+# set things right before exiting.
+#
 sub clean {
 	&anchor'finish();
 	&cache'close();
@@ -353,6 +371,9 @@ sub escape {
 	local($c) = @_;
 	'%' . sprintf("%x", ord($c));
 }
+#
+# locate executable command and return it's absolute path name.
+#
 sub usable {
 	local($command) = @_;
 	local($pathsep) = ($'w32) ? ';' : ':';
@@ -366,6 +387,9 @@ sub usable {
 	}
 	return '';
 }
+#
+# duplicate file. if possible, link it without making a copy.
+#
 sub duplicatefile {
 	local($file, $from, $to) = @_;
 	if ($'w32) {
@@ -377,6 +401,9 @@ sub duplicatefile {
 			|| &'error("cannot copy $file.");
 	}
 }
+#
+# copy file.
+#
 sub copy {
 	local($from, $to) = @_;
 	open(FROM, $from) || return 0;
@@ -386,6 +413,9 @@ sub copy {
 	close(FROM);
 	return 1;
 }
+#
+# get value of configuration variable.
+#
 sub getconf {
 	local($name) = @_;
 	local($val);
@@ -393,6 +423,9 @@ sub getconf {
 	if ($? != 0) { $val = ''; }
 	$val;
 }
+#
+# convert source file path name into url.
+#
 sub path2url {
 	local($path) = @_;
 	$path = './' . $path if ($path !~ /^\./);
