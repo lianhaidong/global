@@ -118,6 +118,7 @@ STRBUF *strbuf_open(int);
 void strbuf_clear(STRBUF *);
 void strbuf_nputs(STRBUF *, const char *, int);
 void strbuf_puts(STRBUF *, const char *);
+void strbuf_puts_nl(STRBUF *, const char *);
 void strbuf_putn(STRBUF *, int);
 int strbuf_unputc(STRBUF *, int);
 char *strbuf_value(STRBUF *);

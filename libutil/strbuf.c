@@ -108,7 +108,7 @@ strbuf_dump(msg)
 		if (strbuf_getlen(sb) <= strlen(p))
 			fprintf(stderr, ", value=|%s|\n", p);
 		else {
-			fprintf(stderr, "\n");
+			fputc('\n', stderr);
 			for (; p < end; p += strlen(p) + 1)
 				fprintf(stderr, "\t|%s|", p);
 		}
@@ -246,6 +246,28 @@ strbuf_puts(sb, s)
 				__strbuf_expandbuf(sb, 0);
 			*sb->curp++ = *s++;
 		}
+	}
+}
+/*
+ * strbuf_puts_nl: Put string with a new line
+ *
+ *	i)	sb	statically defined string buffer
+ *	i)	s	string
+ */
+void
+strbuf_puts_nl(sb, s)
+	STRBUF *sb;
+	const char *s;
+{
+	if (!sb->alloc_failed) {
+		while (*s) {
+			if (sb->curp >= sb->endp)
+				__strbuf_expandbuf(sb, 0);
+			*sb->curp++ = *s++;
+		}
+		if (sb->curp >= sb->endp)
+			__strbuf_expandbuf(sb, 0);
+		*sb->curp++ = '\n';
 	}
 }
 /*

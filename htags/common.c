@@ -220,18 +220,18 @@ gen_page_begin(title, subdir)
 
 	strbuf_clear(sb);
 	if (enable_xhtml) {
-		strbuf_puts(sb, "<?xml version='1.0' encoding='ISO-8859-1'?>\n");
+		strbuf_puts_nl(sb, "<?xml version='1.0' encoding='ISO-8859-1'?>");
 		strbuf_sprintf(sb, "<?xml-stylesheet type='text/css' href='%sstyle.css'?>\n", dir);
 		if (Fflag)
-			strbuf_puts(sb, "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Frameset//EN' 'http:://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd'>\n");
+			strbuf_puts_nl(sb, "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Frameset//EN' 'http:://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd'>");
 		else
-			strbuf_puts(sb, "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.1//EN' 'http:://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd'>\n");
+			strbuf_puts_nl(sb, "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.1//EN' 'http:://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd'>");
 	}
-	strbuf_sprintf(sb, "%s\n", html_begin);
-	strbuf_sprintf(sb, "%s\n", html_head_begin);
+	strbuf_puts_nl(sb, html_begin);
+	strbuf_puts_nl(sb, html_head_begin);
 	strbuf_puts(sb, html_title_begin);
 	strbuf_puts(sb, title);
-	strbuf_sprintf(sb, "%s\n", html_title_end);
+	strbuf_puts_nl(sb, html_title_end);
 	strbuf_sprintf(sb, "<meta name='robots' content='noindex,nofollow'%s>\n", empty_element);
 	strbuf_sprintf(sb, "<meta name='generator' content='GLOBAL-%s'%s>\n", get_version(), empty_element);
 	if (enable_xhtml) {

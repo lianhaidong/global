@@ -840,8 +840,7 @@ src2html(src, html, notsource)
 				strbuf_puts(define_index, gen_href_begin_with_title(NULL, NULL, NULL, tmp, tooltip('R', ancref->lineno, NULL)));
 				strbuf_puts(define_index, gettag(ancref));
 				strbuf_puts(define_index, gen_href_end());
-				strbuf_puts(define_index, item_end);
-				strbuf_putc(define_index, '\n');
+				strbuf_puts_nl(define_index, item_end);
 			}
 		}
 		if (strbuf_getlen(define_index) > 0) {
@@ -857,7 +856,7 @@ src2html(src, html, notsource)
 		/*
 		 * print source code
 		 */
-		fprintf(out, "%s\n", verbatim_begin);
+		fputs_nl(verbatim_begin, out);
 		{
 			const char *suffix = locatestring(src, ".", MATCH_LAST);
 			const char *lang = NULL;
