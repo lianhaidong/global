@@ -2768,14 +2768,14 @@ sub get {
 sub close {
 	if ($GTAGS) {
 		dbmclose(%GTAGS);
-		unlink("$GTAGS.db", "$GTAGS.pag", "$GTAGS.dir");
+		unlink("$GTAGS", "$GTAGS.db", "$GTAGS.pag", "$GTAGS.dir");
 	}
 	if ($GRTAGS) {
 		dbmclose(%GRTAGS);
-		unlink("$GRTAGS.db", "$GRTAGS.pag", "$GRTAGS.dir");
+		unlink("$GRTAGS", "$GRTAGS.db", "$GRTAGS.pag", "$GRTAGS.dir");
 	}
 	if ($GSYMS) {
 		dbmclose(%GSYMS);
-		unlink("$GSYMS.db", "$GSYMS.pag", "$GSYMS.dir");
+		unlink("$GSYMS", "$GSYMS.db", "$GSYMS.pag", "$GSYMS.dir");
 	}
 }
