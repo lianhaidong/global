@@ -2449,9 +2449,14 @@ package cache;
 #			other: sized cache
 #
 sub open {
-	$CACH  = "$'tmp/CACH$$";
-	%map = &'get_dirhash();
-	dbmopen(%CACH, $CACH, 0600) || &'error("cannot make cache database.");
+	$GTAGS  = "$'tmp/CACD$$";
+	dbmopen(%GTAGS, $GTAGS, 0600) || &'error("cannot make cache file '$GTAGS'.");
+	$GRTAGS = "$'tmp/CACR$$";
+	dbmopen(%GRTAGS, $GRTAGS, 0600) || &'error("cannot make cache file '$GRTAGS'.");
+	if ($'symbols) {
+		$GSYMS  = "$'tmp/CACY$$";
+		dbmopen(%GSYMS, $GSYMS, 0600) || &'error("cannot make cache file '$GSYMS'.");
+	}
 }
 #
 # put: put tag into cache
@@ -2462,9 +2467,13 @@ sub open {
 #
 sub put {
 	local($db, $tag, $line) = @_;
-	local($label) = $map{$db};
-
-	$CACH{$label.$tag} = $line;
+	if ($db eq 'GTAGS') {
+		$GTAGS{$tag} = $line;
+	} elsif ($db eq 'GRTAGS') {
+		$GRTAGS{$tag} = $line;
+	} else {
+		$GSYMS{$tag} = $line;
+	}
 }
 #
 # get: get tag from cache
@@ -2475,16 +2484,28 @@ sub put {
 #
 sub get {
 	local($db, $tag) = @_;
-	local($label) = $map{$db};
-
-	defined($CACH{$label.$tag}) ? $CACH{$label.$tag} : undef;
+	if ($db eq 'GTAGS') {
+		return $GTAGS{$tag};
+	} elsif ($db eq 'GRTAGS') {
+		return $GRTAGS{$tag};
+	} else {
+		return $GSYMS{$tag};
+	}
 }
 #
 # close: close cache
 #
 sub close {
-	if ($CACH) {
-		dbmclose(%CACH);
-		unlink("$CACH.db", "$CACH.pag", "$CACH.dir");
+	if ($GTAGS) {
+		dbmclose(%GTAGS);
+		unlink("$GTAGS.db", "$GTAGS.pag", "$GTAGS.dir");
+	}
+	if ($GRTAGS) {
+		dbmclose(%GRTAGS);
+		unlink("$GRTAGS.db", "$GRTAGS.pag", "$GRTAGS.dir");
+	}
+	if ($GSYMS) {
+		dbmclose(%GSYMS);
+		unlink("$GSYMS.db", "$GSYMS.pag", "$GSYMS.dir");
 	}
 }
