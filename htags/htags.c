@@ -1721,14 +1721,15 @@ main(argc, argv)
 		 * replace G*** tag files.
 		 */
 		for (i = GPATH; i < GTAGLIM; i++) {
-			char path[MAXPATHLEN];
 			const char *name = dbname(i);
 
 			if (test("f", makepath(dbpath, name, NULL))) {
+				char path[MAXPATHLEN];
+
 				snprintf(path, sizeof(path), "%s/cgi-bin/%s", distpath, name);
 				unlink(path);
 				snprintf(path, sizeof(path), "%s/cgi-bin", distpath);
-				duplicatefile(name, dbpath, makepath(distpath, "cgi-bin", NULL));
+				duplicatefile(name, dbpath, path);
 			}
 		}
 	} else {
