@@ -488,10 +488,9 @@ if ($'htags_options) {
 #
 # options check.
 #
-$'aflag = $'cflag = $'fflag = $'Fflag = $'nflag = $'Sflag = $'vflag = $'wflag = '';
+$'aflag = $'cflag = $'fflag = $'Fflag = $'gflag = $'nflag = $'Sflag = $'vflag = $'wflag = '';
 $show_version = 0;
 $show_help = 0;
-$exec_gtags = 0;
 $map_file = 0;
 $include_caution = '';
 $action_value = '';
@@ -522,7 +521,7 @@ while ($ARGV[0] =~ /^-/) {
 	} elsif ($opt =~ /^--frame$/) {
 		$'Fflag = 'F';
 	} elsif ($opt =~ /^--gtags$/) {
-		$'exec_gtags = 1;
+		$'gflag = 'g';
 	} elsif ($opt =~ /^--gtagsconf=(.*)$/) {
 		;		# --gtagsconf is estimated only once.
 	} elsif ($opt =~ /^--gtagsconf$/) {
@@ -564,7 +563,7 @@ while ($ARGV[0] =~ /^-/) {
 	} elsif ($opt =~ /^--/) {
 		print STDERR $usage_const, "\n";
 		exit 1;
-	} elsif ($opt =~ /[^-acdfFlmnosStvwtd]/) {
+	} elsif ($opt =~ /[^-acdfFglmnosStvwtd]/) {
 				# include 'l' for backward compatibility.
 		print STDERR $usage_const, "\n";
 		exit 1;
@@ -573,6 +572,7 @@ while ($ARGV[0] =~ /^-/) {
 		if ($opt =~ /c/) { $'cflag = 'c'; }
 		if ($opt =~ /f/) { $'fflag = 'f'; }
 		if ($opt =~ /F/) { $'Fflag = 'F'; }
+		if ($opt =~ /g/) { $'gflag = 'g'; }
 		if ($opt =~ /n/) { $'nflag = 'n'; }
 		if ($opt =~ /o/) { $'oflag = 'o'; }
 		if ($opt =~ /v/) { $'vflag = 'v'; }
@@ -606,7 +606,7 @@ if ($show_help) {
 	print STDOUT $help_const;
 	exit 1;
 }
-if ($exec_gtags) {
+if ($'gflag) {
 	local($command) = $'gtags;
 	$command .= " -v" if ($'vflag);
 	$command .= " $dbpath" if ($dbpath);
