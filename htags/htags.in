@@ -25,7 +25,7 @@ $'w32 = ($^O =~ /^(ms)?(dos|win(32|nt))/i) ? 1 : 0;
 $com = $0;
 $com =~ s/.*\///;
 $usage = "Usage: $com [-a][-c][-f][-F][-l][-n][-v][-w][-d tagdir][-S cgidir][-t title][dir]";
-$www = "http://www.gnu.org/software/global/global.html";
+$www = "http://www.gnu.org/software/global/";
 $help = <<END_OF_HELP;
 $usage
 Options:
