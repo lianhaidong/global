@@ -70,6 +70,7 @@ Patrick Strasser	bug report about the --caution and --style-sheet option of htag
 Paul Lew		advice about compat.h for Solaris.
 Philippe Defert		building on many plathomes and the problem report.
 Richard Stallman	advice about gtags.el and GNU style packaging.
+Rob Fitzgerald		bug fix patch for global(1).
 Ron Lee			Debian package, htmake(1) and many bug reports.
 Sadaichi Hayashida	idea about generating relative path.
 Sergio Talens-Oliag	writing online manual for systags(1).
