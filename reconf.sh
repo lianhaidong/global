@@ -29,6 +29,7 @@ for f in `echo $file`; do
 		echo "You must execute this command at the root of GLOBAL source directory."
 		exit 1
 	fi
+	echo "+ $f"
 done
 
 echo "- Program existent checking..."
@@ -39,6 +40,7 @@ for p in `echo $prog`; do
 		if [ -x $d/$p ]; then
 			#echo "Found at $d/$p."
 			found=1
+			echo "+ $d/$p"
 			break
 		fi
 	done
@@ -54,11 +56,15 @@ commands="global gtags htags gctags gozilla btreeop";
 perl ./convert.pl --menu $commands > doc/reference.texi
 for d in `echo $commands`; do
 	perl ./convert.pl --info $d/manual.in > doc/$d.ref
+	echo "+ doc/$d.ref"
 	perl ./convert.pl --man  $d/manual.in > $d/$d.1
+	echo "+ $d/$d.1"
 	if [ $d = 'htags' ]; then
 		perl ./convert.pl --perl $d/manual.in > $d/const.pl
+		echo "+ $d/const.pl"
 	else
 		perl ./convert.pl --c $d/manual.in > $d/const.h
+		echo "+ $d/const.h"
 	fi
 done
 
