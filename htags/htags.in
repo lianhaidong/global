@@ -345,9 +345,9 @@ sub show {
 	} else {
 		$msg .= 'Multiple ';
 		if ($type eq 'R') {
-			$msg .= 'defined at';
+			$msg .= 'defined in';
 		} elsif ($type eq 'Y') {
-			$msg .= 'used at';
+			$msg .= 'used in';
 		} else {
 			$msg .= 'refered from';
 		}
