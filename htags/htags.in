@@ -1277,7 +1277,7 @@ sub makedupindex {
 			local($tag) = split;
 			if ($prev ne $tag) {
 				$count++;
-				print STDERR " [$count] adding $tag as $kind\n" if ($'vflag);
+				print STDERR " [$count] adding $kind $tag\n" if ($'vflag);
 				if ($writing) {
 					print FILE &'list_end;
 					print FILE $'body_end, "\n";
