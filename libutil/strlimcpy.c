@@ -47,5 +47,5 @@ const int limit;
 	while (n--)
 		if (!(*d++ = *source++))
 			return;
-	die("buffer overflow (strlimcpy).");
+	die("buffer overflow. strlimcpy(dist, '%s', %d).", source, limit);
 }
