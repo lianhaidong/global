@@ -26,6 +26,7 @@ Current, Shigio Yamaguchi  <shigio@gnu.org>
 	  remove length argument from find_read().
 	* global.texi: reconstuct documentation.
 	* globash.rc: --no-wait option added to emacsclient.
+	* gozilla: gozilla directory added.
 
 Jan 22 2002, Shigio Yamaguchi  <shigio@gnu.org>
 

@@ -22,6 +22,7 @@ At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
 Current version by Shigio Yamaguchi
 
+* gozilla: gozilla return to GLOBAL.
 * htags: -o(--other) option added. This option list not only source files
   but also other files like 'README'.
 * htags: configuration variable other_files added.

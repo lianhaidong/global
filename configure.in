@@ -106,6 +106,9 @@ AG_DJGPP
 INCLUDES='-I$(top_srcdir)/libutil -I$(top_srcdir)/libdb -I$(top_srcdir)/libglibc'
 LDADD='../libutil/libgloutil.a ../libdb/libglodb.a ../libglibc/libgloglibc.a'
 
+dnl
+dnl for Postgres support
+dnl
 AC_MSG_CHECKING(for postgres support)
 AC_ARG_WITH(postgres,
 [  --with-postgres[=DIR]     include postgres support ],
@@ -140,6 +143,7 @@ AC_OUTPUT([Makefile
 	libdb/Makefile
 	btreeop/Makefile
 	global/Makefile
+	gozilla/Makefile
 	libglibc/Makefile
 	doc/Makefile
 ])

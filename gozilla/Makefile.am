@@ -1,6 +1,6 @@
 ## Process this file with automake to create Makefile.in
 #
-# Copyright (c) 2000, 2001
+# Copyright (c) 2002
 #        Tama Communications Corporation. All rights reserved.
 #
 # This file is free software; as a special exception the author gives
@@ -11,9 +11,14 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
-info_TEXINFOS = global.texi
+bin_PROGRAMS= gozilla
 
-global_TEXINFOS = fdl.texi reference.texi \
-	global.ref gtags.ref htags.ref gctags.ref gozilla.ref btreeop.ref
+INCLUDES = @INCLUDES@
 
-EXTRA_DIST = texinfo.tex
+LDADD = @LDADD@
+
+gozilla_DEPENDENCIES = $(LDADD)
+
+man_MANS = gozilla.1
+
+EXTRA_DIST = $(man_MANS) const.h manual.in

@@ -1,6 +1,5 @@
-## Process this file with automake to create Makefile.in
 #
-# Copyright (c) 2000, 2001
+# Copyright (c) 2002
 #        Tama Communications Corporation. All rights reserved.
 #
 # This file is free software; as a special exception the author gives
@@ -11,9 +10,18 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
-info_TEXINFOS = global.texi
+PROG   = gozilla
+EXE    = $(PROG).exe
+OBJS   = gozilla.obj
+!include ..\makefile.inc
 
-global_TEXINFOS = fdl.texi reference.texi \
-	global.ref gtags.ref htags.ref gctags.ref gozilla.ref btreeop.ref
+all: $(EXE)
 
-EXTRA_DIST = texinfo.tex
+$(EXE): $(OBJS) $(LIBS)
+	$(CC) -e$(EXE) $(OBJS) $(WILDOBJ) @..\libs
+install:
+	copy $(EXE) $(BINDIR)
+	copy $(PROG).1 $(MANDIR)
+clean:
+	del $(EXE)
+	del $(OBJS)
