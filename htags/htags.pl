@@ -137,7 +137,7 @@ $'c_reserved_words    =~ s/,/|/g;
 $'cpp_reserved_words  =~ s/,/|/g;
 $'java_reserved_words =~ s/,/|/g;
 #
-# read values from global.conf
+# read values from gtags.conf
 #
 for ($i = 0; $i < @ARGV; $i++) {
 	if ($ARGV[$i] =~ /^--gtagsconf$/) {

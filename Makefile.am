@@ -1,6 +1,6 @@
 ## Process this file with automake to create Makefile.in
 #
-# Copyright (c) 2000
+# Copyright (c) 2000, 2001
 #        Tama Communications Corporation. All rights reserved.
 #
 # This file is free software; as a special exception the author gives
@@ -13,6 +13,6 @@
 #
 SUBDIRS= libdb libglibc libutil btreeop gctags global gtags htags machine doc
 
-EXTRA_DIST = VERSION FAQ LICENSE global.conf gtags.el nvi-1.79-gtags.diff w32 reconf.sh
+EXTRA_DIST = VERSION FAQ LICENSE gtags.conf gtags.el nvi-1.79-gtags.diff w32 reconf.sh
 
 CLEANFILES = GTAGS GRTAGS GSYMS GPATH

@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999
  *             Shigio Yamaguchi. All rights reserved.
- * Copyright (c) 1999, 2000
+ * Copyright (c) 1999, 2000, 2001
  *             Tama Communications Corporation. All rights reserved.
  *
  * This file is part of GNU GLOBAL.
@@ -26,11 +26,13 @@
 
 #include "strbuf.h"
 /*
- * Access library for global.conf (.globalrc).
+ * Access library for gtags.conf (.globalrc).
  * File format is a subset of XXXcap (termcap, printcap) file.
  */
-#define GTAGSCONF       "/etc/global.conf"
-#define DEBIANCONF      "/etc/gtags/global.conf"
+#define GTAGSCONF       "/etc/gtags.conf"
+#define OLD_GTAGSCONF   "/etc/global.conf"	/* for compatibility */
+#define DEBIANCONF      "/etc/gtags/gtags.conf"
+#define OLD_DEBIANCONF  "/etc/gtags/global.conf"/* for compatibility */
 #define GTAGSRC         ".globalrc"
 #define DEFAULTLABEL    "default"
 #define DEFAULTSUFFIXES "c,h,y,c++,cc,cpp,cxx,hxx,C,H,s,S,java"

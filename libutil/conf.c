@@ -161,8 +161,12 @@ configpath() {
 		strcpy(config, makepath(p, GTAGSRC, NULL));
 	else if (test("r", GTAGSCONF))
 		strcpy(config, GTAGSCONF);
+	else if (test("r", OLD_GTAGSCONF))
+		strcpy(config, OLD_GTAGSCONF);
 	else if (test("r", DEBIANCONF))
 		strcpy(config, DEBIANCONF);
+	else if (test("r", OLD_DEBIANCONF))
+		strcpy(config, OLD_DEBIANCONF);
 	else
 		config[0] = 0;
 	return config;

@@ -117,7 +117,7 @@ GNU GLOBAL has following features:
 @item plugged-in parser is available to treat new language.
 @item compact format is available to save disk space.
 @item support incremental updating of tag files.
-@item support customizing with global.conf.
+@item support customizing with gtags.conf.
 @item generate completion list for completing input method.
 @end itemize
 
@@ -1363,7 +1363,7 @@ You can go to any entry with @kbd{cc}n command.
 
 You can write new parser and use as a plugged-in parser.
 
-Copy @file{global.conf} to @file{/etc/global.conf} or @file{$HOME/.globalrc}.
+Copy @file{gtags.conf} to @file{/etc/gtags.conf} or @file{$HOME/.globalrc}.
 
 For example, if you would like to use ctags based on etags (included
 by Emacs),
@@ -1373,7 +1373,7 @@ by Emacs),
     % cd /@var{emacs source directory}/lib-src
     % make ctags
     # cp ctags /usr/local/bin/ctags-emacs
-    % setenv GTAGSLABEL ctags-emacs         # @r{see global.conf}
+    % setenv GTAGSLABEL ctags-emacs         # @r{see gtags.conf}
     % gtags
     % ls G*
     GPATH   GTAGS
@@ -1388,7 +1388,7 @@ Or if you would like to use exuberant ctags (included by Vim editor),
     % cp Makefile.unix Makefile
     % make
     # cp ctags /usr/local/bin/ctags-exuberant
-    % setenv GTAGSLABEL ctags-exuberant     # @r{see global.conf}
+    % setenv GTAGSLABEL ctags-exuberant     # @r{see gtags.conf}
     % gtags
     % ls G*
     GPATH   GTAGS

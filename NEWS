@@ -26,6 +26,8 @@ incompatible changes
 * global: rename the -i(incremental) option to -u(update) and the new
   -i(--ignore-case) option added. Sorry for my incompatible change from
   the older version. But I believe it should be so.
+* gtags.conf: rename global.conf into gtags.conf because the name was
+  too generic. (Old name is acceptable for compatibility.)
 
 other changes
 
