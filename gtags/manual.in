@@ -150,6 +150,10 @@
 	@end_itemize
 @DIAGNOSTICS
 	@name{Gtags} exits with a non 0 value if an error occurred, 0 otherwise.
+@MESSAGE FORMAT
+	Verbose message has important level. The most important level is 0,
+	the second it 1 and so on. All the message has level numbers leading
+	blanks.
 @SEE ALSO
 	@xref{gctags,1},
 	@xref{global,1},
