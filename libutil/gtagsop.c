@@ -426,32 +426,29 @@ char	*comline;
 char	*path;
 int	flags;
 {
-	char	*tagline;
+	char	*ctags_x;
 	FILE	*ip;
 	STRBUF	*sb = strbuf_open(0);
 	STRBUF	*ib = strbuf_open(MAXBUFLEN);
-	char	sort_command[MAXFILLEN+1];
-	char	sed_command[MAXFILLEN+1];
+	STRBUF	*sort_command = strbuf_open(0);
+	STRBUF	*sed_command = strbuf_open(0);
 	char	*fid;
 
 	/*
 	 * get command name of sort and sed.
 	 */
-	if (!getconfs("sort_command", sb))
+	if (!getconfs("sort_command", sort_command))
 		die("cannot get sort command name.");
 #if defined(_WIN32) || defined(__DJGPP__)
-	if (!locatestring(strbuf_value(sb), ".exe", MATCH_LAST))
-		strbuf_puts(sb, ".exe");
+	if (!locatestring(strbuf_value(sort_command), ".exe", MATCH_LAST))
+		strbuf_puts(sort_command, ".exe");
 #endif
-	strcpy(sort_command, strbuf_value(sb));
-	strbuf_reset(sb);
-	if (!getconfs("sed_command", sb))
+	if (!getconfs("sed_command", sed_command))
 		die("cannot get sed command name.");
 #if defined(_WIN32) || defined(__DJGPP__)
-	if (!locatestring(strbuf_value(sb), ".exe", MATCH_LAST))
-		strbuf_puts(sb, ".exe");
+	if (!locatestring(strbuf_value(sed_command), ".exe", MATCH_LAST))
+		strbuf_puts(sed_command, ".exe");
 #endif
-	strcpy(sed_command, strbuf_value(sb));
 	/*
 	 * add path index if not yet.
 	 */
@@ -459,7 +456,6 @@ int	flags;
 	/*
 	 * make command line.
 	 */
-	strbuf_reset(sb);
 	makecommand(comline, path, sb);
 	/*
 	 * get file id.
@@ -474,7 +470,7 @@ int	flags;
 	 */
 	if (gtop->format & GTAGS_PATHINDEX) {
 		strbuf_puts(sb, "| ");
-		strbuf_puts(sb, sed_command);
+		strbuf_puts(sb, strbuf_value(sed_command));
 		strbuf_putc(sb, ' ');
 		strbuf_puts(sb, "\"s@");
 		strbuf_puts(sb, path);
@@ -484,7 +480,7 @@ int	flags;
 	}
 	if (gtop->format & GTAGS_COMPACT) {
 		strbuf_puts(sb, "| ");
-		strbuf_puts(sb, sort_command);
+		strbuf_puts(sb, strbuf_value(sort_command));
 		strbuf_putc(sb, ' ');
 		strbuf_puts(sb, "+0 -1 +1n -2");
 	}
@@ -494,13 +490,13 @@ int	flags;
 		fprintf(stderr, "gtags_add() executing '%s'\n", strbuf_value(sb));
 	if (!(ip = popen(strbuf_value(sb), "r")))
 		die("cannot execute '%s'.", strbuf_value(sb));
-	while ((tagline = strbuf_fgets(ib, ip, STRBUF_NOCRLF)) != NULL) {
+	while ((ctags_x = strbuf_fgets(ib, ip, STRBUF_NOCRLF)) != NULL) {
 		char	*tag, *p;
 
 		strbuf_trim(ib);
-		if (formatcheck(tagline, gtop->format) < 0)
-			die("invalid parser output.\n'%s'", tagline);
-		tag = strmake(tagline, " \t");		 /* tag = $1 */
+		if (formatcheck(ctags_x, gtop->format) < 0)
+			die("invalid parser output.\n'%s'", ctags_x);
+		tag = strmake(ctags_x, " \t");		 /* tag = $1 */
 		/*
 		 * extract method when class method definition.
 		 *
@@ -515,9 +511,11 @@ int	flags;
 			else if ((p = locatestring(tag, "::", MATCH_LAST)) != NULL)
 				tag = p + 2;
 		}
-		gtags_put(gtop, tag, tagline, fid);
+		gtags_put(gtop, tag, ctags_x, fid);
 	}
 	pclose(ip);
+	strbuf_close(sort_command);
+	strbuf_close(sed_command);
 	strbuf_close(sb);
 	strbuf_close(ib);
 }
@@ -617,7 +615,7 @@ int	flags;
 {
 	int	dbflags = 0;
 	char	*line;
-	char    buf[IDENTLEN+1], *p;
+	char    prefix[IDENTLEN+1], *p;
 	regex_t *preg = &reg;
 	char	*key;
 	int	regflags = REG_EXTENDED;
@@ -638,13 +636,12 @@ int	flags;
 		preg = NULL;
 	} else if (isregex(pattern) && regcomp(preg, pattern, regflags) == 0) {
 		if (!(flags & GTOP_IGNORECASE) && *pattern == '^' && *(p = pattern + 1) && !isregexchar(*p)) {
-			char    *prefix = buf;
+			int i = 0;
 
-			*prefix++ = *p++;
-			while (*p && !isregexchar(*p))
-				*prefix++ = *p++;
-			*prefix = 0;
-			key = buf;
+			while (*p && !isregexchar(*p) && i < IDENTLEN)
+				prefix[i++] = *p++;
+			prefix[i] = '\0';
+			key = prefix;
 			dbflags |= DBOP_PREFIX;
 		} else {
 			key = NULL;
