@@ -2082,8 +2082,8 @@ sub src2html {
 			&protect_line();	# protect quoted char, strings and comments
 			# painting source code
 			s/({|})/\016$1\017/g;
-			local($sharp) = s/^([ \t]*#[ \t]*($'sharp_macros))// ? $1 : '';
-			if ($sharp !~ '#[ \t]*include') {
+			local($sharp) = s/^([ \t\004]*#[ \t\004]*($'sharp_macros))// ? $1 : '';
+			if ($sharp !~ '#[ \t\004]*include') {
 				if ($isjava) {
 					s/\b($'java_reserved_words)\b/\022$1\023/go;
 				} elsif ($iscpp) {
@@ -2148,14 +2148,14 @@ sub src2html {
 					}
 					# set tag marks and save hyperlink into @links
 					if (ord($TAG) > 127) {	# for multi-byte code
-						if (s/([\x00-\x7f])$TAG([ \t]*\()/$1\005$count\005$2/ || s/([\x00-\x7f])$TAG([\x00-\x7f])/$1\005$count\005$2/) {
+						if (s/([\x00-\x7f])$TAG([ \t\004]*\()/$1\005$count\005$2/ || s/([\x00-\x7f])$TAG([\x00-\x7f])/$1\005$count\005$2/) {
 							$count++;
 							push(@links, $href);
 						} else {
 							print STDERR "Error: $file $LNO $TAG($TYPE) tag must exist.\n" if ($'wflag);
 						}
 					} else {
-						if (s/\b$TAG([ \t]*\()/\005$count\005$1/ || s/\b$TAG\b/\005$count\005/ || s/\b_$TAG\b/_\005$count\005/)
+						if (s/\b$TAG([ \t\004]*\()/\005$count\005$1/ || s/\b$TAG\b/\005$count\005/ || s/\b_$TAG\b/_\005$count\005/)
 						{
 							$count++;
 							push(@links, $href);
