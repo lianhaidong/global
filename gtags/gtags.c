@@ -253,21 +253,21 @@ char	*argv[];
 	 * at one of the candedite directories then gtags use existing
 	 * tag files.
 	 */
-	if (argc > 0)
-		realpath(*argv, dbpath);
-	else if (iflag) {
-		if (gtagsexist(cwd, dbpath, MAXPATHLEN, vflag)
-			&& test("f", makepath(dbpath, dbname(GTAGS), NULL))
-			&& test("f", makepath(dbpath, dbname(GRTAGS), NULL))) {
-			;
-		} else {
-			if (vflag)
-				fprintf(stderr, " GTAGS or GRTAGS not found. -i option ignored.\n");
-			iflag = 0;
+	if (iflag) {
+		if (argc > 0)
+			realpath(*argv, dbpath);
+		else if (!gtagsexist(cwd, dbpath, MAXPATHLEN, vflag))
 			strcpy(dbpath, cwd);
-		}
 	} else {
-		strcpy(dbpath, cwd);
+		if (argc > 0)
+			realpath(*argv, dbpath);
+		else
+			strcpy(dbpath, cwd);
+	}
+	if (iflag && (!test("f", makepath(dbpath, dbname(GTAGS), NULL)) ||
+		!test("f", makepath(dbpath, dbname(GPATH), NULL)))) {
+		fprintf(stderr, " GTAGS or GPATH not found. -i option ignored.\n");
+		iflag = 0;
 	}
 	if (!test("d", dbpath))
 		die("directory '%s' not found.", dbpath);
@@ -572,8 +572,16 @@ int	type;
 
 		if (exitflag)
 			break;
-		if (db == GSYMS && !test("f", makepath(dbpath, dbname(db), NULL)))
+		/*
+		 * GTAGS needed at least.
+		 */
+		if ((db == GRTAGS || db == GSYMS) && !test("f", makepath(dbpath, dbname(db), NULL)))
 			continue;
+		/*
+		 * GTAGS needed to make GRTAGS.
+		 */
+		if (db == GRTAGS && !test("f", makepath(dbpath, dbname(GTAGS), NULL)))
+			die("GTAGS needed to create GRTAGS.");
 		if (vflag)
 			fprintf(stderr, "%s", dbname(db));
 		/*
@@ -583,11 +591,6 @@ int	type;
 		if (!getconfs(dbname(db), sb))
 			die("cannot get tag command. (%s)", dbname(db));
 		gtop = gtagsopen(dbpath, root, db, GTAGS_MODIFY, 0);
-		/*
-		 * GTAGS needed to make GRTAGS.
-		 */
-		if (db == GRTAGS && !test("f", makepath(dbpath, dbname(GTAGS), NULL)))
-			die("GTAGS needed to create GRTAGS.");
 		if (type != 1)
 			gtagsdelete(gtop, path);
 		if (vflag)
