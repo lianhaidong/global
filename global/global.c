@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999
  *             Shigio Yamaguchi. All rights reserved.
- * Copyright (c) 1999, 2000, 2001
+ * Copyright (c) 1999, 2000, 2001, 2002
  *             Tama Communications Corporation. All rights reserved.
  *
  * This file is part of GNU GLOBAL.
@@ -66,7 +66,6 @@ int	includepath(char *, char *);
 void	ffformat(char *, int, char *);
 
 char	sort_command[MAXFILLEN+1];	/* sort command		*/
-char	sed_command[MAXFILLEN+1];	/* sed command		*/
 STRBUF	*sortfilter;			/* sort filter		*/
 STRBUF	*pathfilter;			/* path convert filter	*/
 char	*localprefix;			/* local prefix		*/
@@ -341,7 +340,7 @@ char	*argv[];
 		exit(0);
 	}
 	/*
-	 * get command name of sort and sed.
+	 * get command name of sort.
 	 */
 	{
 		STRBUF	*sb = strbuf_open(0);
@@ -352,14 +351,6 @@ char	*argv[];
 			strbuf_puts(sb, ".exe");
 #endif
 		strcpy(sort_command, strbuf_value(sb));
-		strbuf_reset(sb);
-		if (!getconfs("sed_command", sb))
-			die("cannot get sed command name.");
-#if defined(_WIN32) || defined(__DJGPP__)
-		if (!locatestring(strbuf_value(sb), ".exe", MATCH_LAST))
-			strbuf_puts(sb, ".exe");
-#endif
-		strcpy(sed_command, strbuf_value(sb));
 		strbuf_close(sb);
 	}
 	/*

@@ -893,6 +893,7 @@ char	*cwd;
 	if (strlen(cwd) > MAXPATHLEN)
 		die("current directory name too long.");
 	strcpy(cwd_base, cwd);
+	/* leave root_base unclosed. */
 }
 void
 put_with_convert(line, absolute)
