@@ -67,6 +67,11 @@ foreach $c ('sort', 'gtags', 'global', 'btreeop') {
 		&'error("'$c' command is required but not found.");
 	}
 }
+#
+# find filter
+#
+$'gtags = &'usable("gtags");
+$'findcom = "$'gtags --find";
 #-------------------------------------------------------------------------
 # CONFIGURATION
 #-------------------------------------------------------------------------
@@ -307,7 +312,7 @@ sub set_header {
 # UTILITIES
 #-------------------------------------------------------------------------
 sub getcwd {
-        local($dir) = `gtags --pwd`;
+        local($dir) = `$'gtags --pwd`;
 	if ($'w32) { $dir =~ s!\\!/!g; }
         chop($dir);
         $dir;
@@ -321,7 +326,7 @@ sub realpath {
 	$new;
 }
 sub date {
-	local($date) = `gtags --date`;
+	local($date) = `$'gtags --date`;
 	chop($date);
 	$date;
 }
@@ -374,7 +379,7 @@ sub copy {
 sub getconf {
 	local($name) = @_;
 	local($val);
-	chop($val = `gtags --config $name`);
+	chop($val = `$'gtags --config $name`);
 	if ($? != 0) { $val = ''; }
 	$val;
 }
@@ -421,7 +426,7 @@ require($'prolog_script) if ($'prolog_script && -f $'prolog_script);
 #
 # save config values and option values.
 #
-$save_config = `gtags --config`;
+$save_config = `$'gtags --config`;
 chop($save_config);
 $save_config =~ s/'/'"'"'/g;			# keep single quote
 $save_argv   = '';
@@ -601,10 +606,6 @@ if ($'fflag || $'cflag) {
 } else {
 	$'Sflag = $'cgidir = '';
 }
-#
-# find filter
-#
-$'findcom = "gtags --find";
 #-------------------------------------------------------------------------
 # MAKE FILES
 #-------------------------------------------------------------------------
@@ -1657,7 +1658,7 @@ sub src2html {
 	# load tags belonging to this file.
 	#
 	&anchor'load($file);
-	$command = "gtags --expand -$tabs ";
+	$command = "$'gtags --expand -$tabs ";
 	$command .= ($'w32) ? "\"$file\"" : "'$file'";
 	open(SRC, "$command |") || &'error("cannot fork.");
 	#
