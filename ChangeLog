@@ -21,7 +21,7 @@ ChangeLog about GNU GLOBAL
 
 Current, Shigio Yamaguchi  <shigio@gnu.org>
 
-	* conf.c: add GPATH,GTAGS,GRTAGS,GSYMS,tags,TAGS to DEFAULTSKIP.
+	* conf.c: add GPATH,GTAGS,GRTAGS,GSYMS,tags,TAGS,ID to DEFAULTSKIP.
 	* find.c: decrease dependency on find(1).
 	  remove length argument from find_read().
 	* global.texi: reconstuct documentation.
