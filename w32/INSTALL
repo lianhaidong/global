@@ -1,0 +1,58 @@
+___________________________________
+|      |  |  |     |  _  |     |  |
+|  |___|  |  |  |  |    _|  |  |  |    GNU GLOBAL source code tag system
+|  |   |  |  |  |  |     |     |  |
+|  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Installation of GNU GLOBAL under Windows 32
+
+1. Required programs.
+
+You need following programs to install and execute GLOBAL for Windows 32.
+
+o Borland C++ compiler 5.0 or later.
+	It may be downloaded at:
+	http://community.borland.com/
+
+o GNU sed and sort for Windows 32.
+	It may be downloaded at:
+	http://www.edv.agrar.tu-muenchen.de/~syring/win32/UnxUtils.html
+
+o perl for Windows 32.
+	It may be downloaded at Active STATE:
+	http://www.activestate.com/
+
+
+2. How to install.
+
+Setup above programs and path for them then try this:
+
+C:\global>xcopy /s w32\*.* .
+
+C:\global>make		<- Invoke make.bat
+
+C:\global>make install
+
+C:\global>mkdir \tmp
+
+C:\global>make clean
+
+
+3. Some notes about GLOBAL for Windows 32.
+
+Global requires the GNU programs sed.exe, sort.exe be the path.
+Note that the sort that comes with Windows does not support multikey sorting
+which is required by global. To avoid using that version of sort, the directory
+containing the GNU version must be first in your PATH.
+
+All paths are expected to use the UNIX directory separator '/' instead of
+the DOS/Windows '\'. This includes the Global-specific environment variables
+as well as paths given on command lines.  However, the path separators
+expected for the PATH and GTAGSLIBPATH environment variables are expected
+to be the DOS-style ';' instead of the UNIX-style ':'.
+
+Global 4.0 has been tested under Windows NT 4.0 with Borland C++ 5.5.
+
+Dan Fandrich <dan@fch.wimsey.bc.ca>
+Shigio Yamaguchi <shigio@tamacom.com>
