@@ -103,7 +103,7 @@ It is similar to CVS.
 You can get the relative path of your object from anywhere in the source tree.
 
 You need not specify where the tag file is.
-GLOBAL will locate the tag file by itself.
+Instead, GLOBAL will locate the tag file by itself.
 User's position (current directory) is the first argument for GLOBAL's command.
 
 @section Features.
