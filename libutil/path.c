@@ -1,8 +1,11 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999
  *             Shigio Yamaguchi. All rights reserved.
- * Copyright (c) 1999, 2000
+ * Copyright (c) 1999, 2000, 2001
  *             Tama Communications Corporation. All rights reserved.
+ * #ifdef __DJGPP__
+ * Contributed by Jason Hood <jadoxa@yahoo.com.au>, 2001.
+ # #endif
  *
  * This file is part of GNU GLOBAL.
  *
@@ -30,6 +33,11 @@
 #include <strings.h>
 #endif
 
+#ifdef __DJGPP__
+#include <dos.h>			/* for intdos() */
+#include <fcntl.h>			/* for _USE_LFN */
+#endif
+
 #include "path.h"
 
 /*
@@ -44,7 +52,7 @@ char *p;
 {
 	if (p[0] == '/')
 		return 1;
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__DJGPP__)
 	if (p[0] == '\\')
 		return 1;
 	if (isdrivechar(p[0]) && p[1] == ':' && (p[2] == '\\' || p[2] == '/'))
@@ -65,6 +73,43 @@ char   *
 canonpath(path)
 char *path;
 {
+#ifdef __DJGPP__
+	char *p;
+
+	if (_USE_LFN) {
+		/* Ensure we're using a complete long name, not a mixture
+		 * of long and short.
+		 */
+		union REGS regs;
+		regs.x.ax = 0x7160;
+		regs.x.cx = 0x8002;
+		regs.x.si = (unsigned)path;
+		regs.x.di = (unsigned)path;
+		intdos( &regs, &regs );
+		/*
+		 * A non-existant file returns error code 3; get the path,
+		 * strip the filename, LFN the path and put the filename back.
+		 */
+		if (regs.x.cflag && regs.h.al == 3) {
+			char filename[261];
+			regs.x.ax = 0x7160;
+			regs.h.cl = 0;
+			intdos(&regs, &regs);
+			p = basename(path);
+			strcpy(filename, p);
+			*p = 0;
+			regs.x.ax = 0x7160;
+			regs.h.cl = 2;
+			intdos( &regs, &regs );
+			strcat(path, filename);
+		}
+	}
+	/* Lowercase the drive letter and convert to slashes. */
+	path[0] = tolower(path[0]);
+	for (p = path+2; *p; ++p)
+		if (*p == '\\')
+			*p = '/';
+#else
 #ifdef _WIN32
 	char *p, *s;
 	p = path;
@@ -88,5 +133,29 @@ char *path;
 	}
 #endif /* __CYGWIN__ */
 #endif /* _WIN32 */
+#endif /* __DJGPP__ */
 	return path;
 }
+
+#ifdef __DJGPP__
+/*
+ * realpath: get the complete path
+ */
+char   *
+realpath(in_path, out_path)
+char *in_path;
+char *out_path;
+{
+	/*
+	 * I don't use _fixpath or _truename in LFN because neither guarantee
+	 * a complete long name. This is mainly DOS's fault, since the cwd can
+	 * be a mixture of long and short components.
+	 */
+	if (_USE_LFN) {
+		strcpy(out_path, in_path);
+		canonpath(out_path);
+	} else
+		_fixpath(in_path, out_path);
+	return out_path;
+}
+#endif

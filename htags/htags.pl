@@ -21,7 +21,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #
-$'w32 = ($^O =~ /^ms(dos|win(32|nt))/i) ? 1 : 0;
+$'w32 = ($^O =~ /^(ms)?(dos|win(32|nt))/i) ? 1 : 0;
 $com = $0;
 $com =~ s/.*\///;
 $usage = "Usage: $com [-a][-c][-f][-F][-l][-n][-v][-w][-d tagdir][-S cgidir][-t title][dir]";

@@ -388,7 +388,7 @@ char	*argv[];
 		STRBUF	*sb = strbuf_open(0);
 		if (!getconfs("sort_command", sb))
 			die("cannot get sort command name.");
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__DJGPP__)
 		if (!locatestring(strbuf_value(sb), ".exe", MATCH_LAST))
 			strbuf_puts(sb, ".exe");
 #endif
@@ -396,7 +396,7 @@ char	*argv[];
 		strbuf_reset(sb);
 		if (!getconfs("sed_command", sb))
 			die("cannot get sed command name.");
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__DJGPP__)
 		if (!locatestring(strbuf_value(sb), ".exe", MATCH_LAST))
 			strbuf_puts(sb, ".exe");
 #endif

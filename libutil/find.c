@@ -55,6 +55,7 @@
 #include "conf.h"
 #include "die.h"
 #include "find.h"
+#include "is_unixy.h"
 #include "locatestring.h"
 #include "makepath.h"
 #include "strbuf.h"
@@ -516,7 +517,10 @@ find_open()
 		die("short of memory.");
 	trim(sufflist);
 	strbuf_reset(sb);
-	strbuf_puts(sb, "find . \\( -type f -o -type l \\) \\(");
+	if (is_unixy())
+		strbuf_puts(sb, "find . -type f \\(");
+	else
+		strbuf_puts(sb, "find . -type f (");
 	for (p = sufflist; p; ) {
 		char	*suff = p;
 		if ((p = locatestring(p, ",", MATCH_FIRST)) != NULL)
@@ -527,7 +531,10 @@ find_open()
 		if (p)
 			strbuf_puts(sb, " -o");
 	}
-	strbuf_puts(sb, " \\) -print");
+	if (is_unixy())
+		strbuf_puts(sb, " \\) -print");
+	else
+		strbuf_puts(sb, " ) -print");
 	findcom = strbuf_value(sb);
 	if (debug)
 		fprintf(stderr, "find com: %s\n", findcom);

@@ -36,6 +36,13 @@
 
 #include <sys/types.h>
 
+#ifdef __DJGPP__
+typedef unsigned char	u_char;
+typedef unsigned int	u_int;
+typedef unsigned long	u_long;
+typedef unsigned short	u_short;
+#endif /* __DJGPP__ */
+
 #ifdef	NO_POSIX_SIGNALS
 #define	sigemptyset(set)	(*(set) = 0)
 #define	sigfillset(set)		(*(set) = ~(sigset_t)0, 0)

@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999
  *             Shigio Yamaguchi. All rights reserved.
- * Copyright (c) 1999, 2000
+ * Copyright (c) 1999, 2000, 2001
  *             Tama Communications Corporation. All rights reserved.
  *
  * This file is part of GNU GLOBAL.
@@ -24,14 +24,14 @@
 #ifndef _PATH_H_
 #define _PATH_H_
 
-#if defined(_WIN32) && !defined(__CYGWIN__)
+#if (defined(_WIN32) && !defined(__CYGWIN__)) || defined(__DJGPP__)
 #include <unistd.h>
 #endif
 
 /*
  * PATHSEP - Define OS-specific directory and path seperators
  */
-#if defined(_WIN32) && !defined(__CYGWIN__)
+#if (defined(_WIN32) && !defined(__CYGWIN__)) || defined(__DJGPP__)
 #define PATHSEP ";"
 #else
 #define PATHSEP ":"
@@ -41,5 +41,8 @@
 
 int	isabspath(char *);
 char	*canonpath(char *);
+#ifdef __DJGPP__
+char    *realpath(char *, char *);
+#endif
 
 #endif /* ! _PATH_H_ */

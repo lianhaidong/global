@@ -442,6 +442,8 @@ char	*argv[];
 	 * create idutils index.
 	 */
 	if (Iflag) {
+		char *path;
+
 		if (vflag)
 			fprintf(stderr, "[%s] Creating indexes for idutils.\n", now());
 		strbuf_reset(sb);
@@ -453,13 +455,19 @@ char	*argv[];
 			strbuf_putc(sb, ' ');
 			strbuf_puts(sb, extra_options);
 		}
-		strbuf_putc(sb, ' ');
-		strbuf_puts(sb, "`gtags --find`");
-		strbuf_putc(sb, ' ');
-		if (vflag)
-			strbuf_puts(sb, "1>&2");
-		else
-			strbuf_puts(sb, ">/dev/null");
+		/* append file list */
+		for (find_open(); (path = find_read(NULL)) != NULL; ) {
+			strbuf_putc(sb, ' ');
+			strbuf_puts(sb, path);
+		}
+		if (vflag) {
+#ifdef __DJGPP__
+			if (is_unixy())	/* test for 4DOS as well? */
+#endif
+			strbuf_puts(sb, " 1>&2");
+		} else {
+			strbuf_puts(sb, " >/dev/null");
+		}
 		if (debug)
 			fprintf(stderr, "executing mkid like: %s\n", strbuf_value(sb));
 		if (system(strbuf_value(sb)))

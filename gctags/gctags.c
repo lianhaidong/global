@@ -177,7 +177,7 @@ main(argc, argv)
 	for (; argc > 0; argv++, argc--) {
 		if (!opentoken(argv[0]))
 			die("'%s' cannot open.", argv[0]);
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__DJGPP__)
 		/* Lower case the file name since names are case insensitive */
 		strlwr(argv[0]);
 #endif

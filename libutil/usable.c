@@ -42,7 +42,7 @@
 #include "strbuf.h"
 #include "usable.h"
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__DJGPP__)
 static const char *suffix[] = {".exe", ".com", ".bat",};
 #endif
 
@@ -60,7 +60,7 @@ char	*command;
 	STRBUF	*sb;
 	char *p, *dir;
 	static char path[MAXPATHLEN+1];
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__DJGPP__)
 	int	i, lim = sizeof(suffix)/sizeof(char *);
 #endif
 
@@ -90,7 +90,7 @@ char	*command;
 			path[sizeof(path) - 1] = '\0';
 			goto finish;
 		}
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(__DJGPP__)
 		for (i = 0; i < lim; i++)
 			if (test("f", makepath(dir, command, suffix[i]))) {
 				strncpy(path, makepath(dir, command, suffix[i]), sizeof(path));

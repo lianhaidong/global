@@ -24,6 +24,9 @@ The DB library was written by Mike Olson.
 Port to Windows 32 (for Borland C++ Compiler) by Dan Fandrich.
 (w32/INSTALL, w32/machine/unistd.h and most of #ifdef _WIN32.)
 
+Port to DJGPP by Jason Hood.
+(libutil/is_unixy.[ch] and most of #ifdef __DJGPP__.)
+
 There are also many others who have contributed patches and fixes.
 Please see files ChangeLog and THANKS.
 

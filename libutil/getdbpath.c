@@ -119,6 +119,7 @@ int	verbose;
 		snprintf(dbpath, size, "%s/%s", candidate, makeobjdir);
 		return 1;
 	}
+#if !defined(_WIN32) && !defined(__DJGPP__)
 	snprintf(path, sizeof(path),
 		"%s%s/%s", makeobjdirprefix, candidate, dbname(GTAGS));
 	if (verbose)
@@ -129,6 +130,7 @@ int	verbose;
 		snprintf(dbpath, size, "%s%s", makeobjdirprefix, candidate);
 		return 1;
 	}
+#endif
 	return 0;
 }
 /*

@@ -224,7 +224,7 @@ __bt_open(fname, flags, mode, openinfo, dflags)
 		F_SET(t, B_INMEM);
 	}
 
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__DJGPP__)
 	if (fcntl(t->bt_fd, F_SETFD, 1) == -1)
 		goto err;
 #endif

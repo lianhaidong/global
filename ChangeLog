@@ -19,6 +19,12 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+***********, Shigio Yamaguchi  <shigio@tamacom.com>
+
+	* DJGPP support code added.
+	  Jason Hood ported Global-4.0.1 into DJGPP environment.
+	  I have merged his code into this version.
+
 Nov 23 2001, Shigio Yamaguchi  <shigio@tamacom.com>
 
 	* gtags: format char for strftime() changed (%e -> %d).

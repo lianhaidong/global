@@ -20,6 +20,10 @@ ___________________________________
 GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version *.* - ,**********, by Shigio Yamaguchi
+
+* DJGPP support added.
+
 Version 4.2 - Nov 24 2001, by Shigio Yamaguchi
 
 * postgres support added.

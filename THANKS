@@ -44,6 +44,7 @@ Hideki Iwamoto		bug report about the parser - gctags(1).
 Hideki Mori		advice about the name of parser.
 Hidetaka KOIE		bug report and advice about configure.in for Solaris7.
 Hiroshi MIURA		idea about printing file name on browser's status bar.
+Jason Hood		port to DJGPP environment.
 Jeff Trawick		idea about -l option of htags(1).
 Jordan K. Hubbard	idea about supporting BSD's obj directory.
 Julien Gilles		idea about -T option of global(1).

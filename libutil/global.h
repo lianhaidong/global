@@ -32,6 +32,7 @@
 #include "find.h"
 #include "getdbpath.h"
 #include "gtagsop.h"
+#include "is_unixy.h"
 #include "locatestring.h"
 #include "makepath.h"
 #include "path.h"
