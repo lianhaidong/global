@@ -1,0 +1,41 @@
+___________________________________
+|      |  |  |     |  _  |     |  |
+|  |___|  |  |  |  |    _|  |  |  |    GNU GLOBAL source code tag system
+|  |   |  |  |  |  |     |     |  |
+|  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Copyright (c) 1996, 1997, 1998, 1999
+           Shigio Yamaguchi. All rights reserved.
+Copyright (c) 1999, 2000
+           Tama Communications Corporation. All rights reserved.
+
+GNU GLOBAL is a source code tag system that works the same way across diverse
+environments. It supports C, C++, Yacc and Java source code.
+
+* Installation
+
+	If your system is a UNIX then please see 'INSTALL',
+	else if your system is a Windows32 (Windows95/98, Windows-NT) then
+	please see 'w32/INSTALL'.
+
+* Documentation
+
+	Please see 'doc/global.texi'(texinfo format) to know how to use GLOBAL.
+	The real GLOBAL documentation is incomplete, and will be revised.
+
+* License
+
+	You may redistribute copies of GNU GLOBAL under the terms of
+	the GNU General Public License.
+	For more information about these matters, see the files named COPYING.
+
+* Latest information
+
+	You can see the latest information on GLOBAL's home page.
+
+	http://www.tamacom.com/global/
+
+Enjoy!
+
+Shigio Yamaguchi <shigio@tamacom.com>

@@ -1,0 +1,90 @@
+___________________________________
+|      |  |  |     |  _  |     |  |
+|  |___|  |  |  |  |    _|  |  |  |    GNU GLOBAL source code tag system
+|  |   |  |  |  |  |     |     |  |
+|  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Frequentry Asked Questions about GLOBAL.
+
+----------------------------------------------------------------------------
+Q1. Htags(1) aborts by short of memory. Why? Any workaround?
+
+	% htags
+	Out of memory!
+	% _
+
+A1. It seems that Perl4 and some Perl5 leaks memory.
+    Please replace it with the latest Perl(currently 5.6.0) and retry.
+
+    If it occurs with Perl-5.6.0 or later, please let me know.
+----------------------------------------------------------------------------
+Q2. GLOBAL skip some functions.
+    For example, GLOBAL skip the function 'func' in this example.
+
+	#define M(a)	static char *string = a;
+
+	M(a)
+
+	func() {		<= GLOBAL skip func().
+		...
+	}
+
+A2. GLOBAL cannot recognize that pattern, because M(a) seems to be
+    a function definition.
+
+    It should be follows.
+
+	#define M(a)	static char *string = a
+
+	M(a);			<= end with ';'
+
+	func() {
+		...
+	}
+
+    Otherwise, you can tell gtags(1) that by listing the macros in
+    '.notfunction' file in current directory.
+
+	[.notfunction]
+	+---------------
+	|M
+	|...
+
+----------------------------------------------------------------------------
+Q3. I have set up 'global.conf' to use emacs's ctags command with GLOBAL
+    but I cannot use htags.
+
+	% gtags
+	% htags
+	htags: GTAGS and GRTAGS not found. Please make them.
+	% ls G*
+	GPATH   GTAGS
+
+A3. Emacs's ctags cannot locate function referencies. So, gtags cannot make
+    GRTAGS tag file with it. With the result that you cannot use htags and
+    global's -r option.
+
+----------------------------------------------------------------------------
+Q4. The man program on my machine does not understand the manual files
+    in GLOBAL
+
+A4. Online manuals in GLOBAL are written with 'mandoc' macro which is a part
+    of GNU groff package. You can format these manuals by following command
+    line manually.
+
+        % groff -Wall -Tascii -mandoc global.1
+
+    If you replace your system's nroff(1) with GNU's one(nroff.sh) then
+    you can use man(1) to see GLOBAL's online manuals.
+
+----------------------------------------------------------------------------
+Q5. I have built GLOBAL in Windows 32 environment. But gtags(1) failed by sort
+    command error.
+
+A5. It seems that MS sort is executed. Please set your path so that unix
+    sort will be executed.
+
+----------------------------------------------------------------------------
+
+Shigio Yamaguchi <shigio@tamacom.com>
