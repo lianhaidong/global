@@ -23,7 +23,7 @@ Borland C++ compiler support in Windows32 was finished because
   - Borland C++ compiler is not free software.
 
   The w32/ directory is leaved in this release but will be removed in the
-  future release.
+  future release. At least, it is not maintained any longer.
 
                 ----------------------------------
 
