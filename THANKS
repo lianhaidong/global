@@ -72,6 +72,7 @@ Sergio Talens-Oliag	writing online manual for systags(1).
 Shankar Chakkere	useful method to use vim editor with GLOBAL.
 Shigeyuki Yamano	idea about -h option of htags(1).
 Silas S. Brown		proofreading about manuals.
+Sven Verdoolaege	support for gtags.pl(nvi-1.81.5).
 Steve Kirkendall	two commands of Elvis for external tag system.
 Takao Yamashita		advice about assembler parsing.
 Takeshi Hojo		idea about -c option of gtags(1).

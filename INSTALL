@@ -77,7 +77,7 @@ o If you want to use the -I option of global(1) then id-utils(1) is needed.
 
 3. Using GLOBAL with editors.
 
-o Nvi
+o Nvi-1.79
 
    Please get nvi-1.79 at:
 
@@ -94,6 +94,31 @@ o Nvi
 	# make install
 
    ('nvi-1.79-gtags.diff' is included in GLOBAL package.)
+
+o Nvi-1.81.5
+
+   Please get nvi-1.81.5 at:
+
+
+	   http://www.kotnet.org/~skimo/nvi/
+
+   and do the followings.
+   ($HOME/perl is an example. Please replace it with any directory you like.)
+
+	% mkdir $HOME/perl
+	% cp gtags.pl $HOME/perl
+	% vi $HOME/.nexrc
+	+-----------------------------------------
+	|perl use lib qw($ENV{HOME}/perl)
+	|perl require 'gtags.pl'
+	|map ^P :tagprev^M
+	|map ^N :tagnext^M
+	|map ^] :perl tag^M
+	|ab gtag perl tag qw(
+	|ab gta perl tag qw(
+	|ab gt perl tag qw(
+
+   ('gtags.pl' is included in GLOBAL package.)
 
 o Emacs
 
