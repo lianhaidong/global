@@ -112,6 +112,7 @@ help()
 static struct option const long_options[] = {
 	{"absolute", no_argument, NULL, 'a'},
 	{"completion", no_argument, NULL, 'c'},
+	{"regexp", required_argument, NULL, 'e'},
 	{"file", no_argument, NULL, 'f'},
 	{"local", no_argument, NULL, 'l'},
 	{"nofilter", no_argument, NULL, 'n'},
@@ -154,7 +155,7 @@ main(argc, argv)
 int	argc;
 char	*argv[];
 {
-	char	*av;
+	char	*av = NULL;
 	int	count;
 	int	db;
 	int	optchar;
@@ -164,7 +165,7 @@ char	*argv[];
 	char	dbpath[MAXPATHLEN+1];		/* dbpath directory	*/
 	char	*gtags;
 
-	while ((optchar = getopt_long(argc, argv, "acifgGIlnopPqrstTuvx", long_options, &option_index)) != EOF) {
+	while ((optchar = getopt_long(argc, argv, "ace:ifgGIlnopPqrstTuvx", long_options, &option_index)) != EOF) {
 		switch (optchar) {
 		case 0:
 			if (!strcmp("idutils", long_options[option_index].name))
@@ -176,6 +177,9 @@ char	*argv[];
 		case 'c':
 			cflag++;
 			setcom(optchar);
+			break;
+		case 'e':
+			av = optarg;
 			break;
 		case 'f':
 			fflag++;
@@ -248,7 +252,12 @@ char	*argv[];
 
 	argc -= optind;
 	argv += optind;
-	av = (argc > 0) ? *argv : NULL;
+	/*
+	 * At first, we pickup pattern from -e option. If it is not found
+	 * then use argument which is not option.
+	 */
+	if (!av)
+		av = (argc > 0) ? *argv : NULL;
 
 	if (show_version)
 		version(av, vflag);
@@ -781,6 +790,7 @@ char	*dbpath;
 		strbuf_puts(ib, "-n ");
 	if (iflag)
 		strbuf_puts(ib, "-i ");
+	strbuf_puts(ib, "-e ");
 	strbuf_putc(ib, '\'');
 	strbuf_puts(ib, pattern);
 	strbuf_putc(ib, '\'');

@@ -86,6 +86,9 @@
 	@begin_itemize
 	@item{@option{-a}, @option{--absolute}}
 		Print absolute path name. By default, print relative path name.
+	@item{@option{-e}, @option{--regexp} @arg{pattern}}
+		Use @arg{pattern} as the pattern; useful to protect  patterns
+		beginning with -.
 	@item{@option{-i}, @option{--ignore-case}}
 		ignore case distinctions in pattern.
 	@item{@option{-l}, @option{--local}}
