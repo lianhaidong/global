@@ -167,7 +167,12 @@ makedupindex()
 					cache_put(db, prev, buf);
 					recover(&ptable);
 				}
-				strlimcpy(first_line, _, sizeof(first_line));
+				/*
+				 * Chop the tail of the line. It is not important.
+				 * strlimcpy(first_line, _, sizeof(first_line));
+				 */
+				strncpy(first_line, _, sizeof(first_line));
+				first_line[sizeof(first_line) - 1] = '\0';
 				strlimcpy(prev, tag, sizeof(prev));
 				entry_count = 0;
 			} else {
