@@ -197,7 +197,7 @@ int flags;
 	strbuf_close(reg);
 }
 /*
- * skipthisfile: check weather or not we accept this file.
+ * skipthisfile: check whether or not we accept this file.
  *
  *	i)	path	path name (must start with ./)
  *	r)		1: skip, 0: dont skip
