@@ -205,7 +205,15 @@ configpath() {
 	static char config[MAXPATHLEN+1];
 	char *p;
 
-	if ((p = getenv("HOME")) && test("r", makepath(p, GTAGSRC, NULL)))
+	/*
+	 * at first, check environment variable GTAGSCONF.
+	 */
+	if (getenv("GTAGSCONF") != NULL)
+		strncpy(config, getenv("GTAGSCONF"), sizeof(config));
+	/*
+	 * if GTAGSCONF not set then check standard config files.
+	 */
+	else if ((p = getenv("HOME")) && test("r", makepath(p, GTAGSRC, NULL)))
 		strncpy(config, makepath(p, GTAGSRC, NULL), sizeof(config));
 	else if (test("r", GTAGSCONF))
 		strncpy(config, GTAGSCONF, sizeof(config));
@@ -236,14 +244,9 @@ openconf()
 	opened = 1;
 
 	/*
-	 * if GTAGSCONF not set then check standard config files.
-	 */
-	if ((config = getenv("GTAGSCONF")) == NULL)
-		config = configpath();
-	/*
 	 * if config file not found then return default value.
 	 */
-	if (!config) {
+	if (!(config = configpath())) {
 		if (vflag)
 			fprintf(stderr, " Using default configuration.\n");
 		confline = strdup("");
