@@ -20,6 +20,10 @@ ___________________________________
 GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 4.* - *** **, 2001, by Shigio Yamaguchi
+
+* gtags: when no parser specified in config file, overloaded by default values.
+
 Version 4.1.1 - July 31, 2001, by Shigio Yamaguchi
 
 * htags: bug fixed. bless.sh removed 'TARGET=mains'.

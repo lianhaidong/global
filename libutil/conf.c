@@ -176,6 +176,7 @@ openconf()
 	extern int vflag;
 
 	assert(opened == 0);
+	opened = 1;
 
 	/*
 	 * if GTAGSCONF not set then check standard config files.
@@ -188,23 +189,7 @@ openconf()
 	if (!config) {
 		if (vflag)
 			fprintf(stderr, " Using default configuration.\n");
-		sb = strbuf_open(0);
-		strbuf_putc(sb, ':');
-		strbuf_puts(sb, "suffixes=");
-		strbuf_puts(sb, DEFAULTSUFFIXES);
-		strbuf_putc(sb, ':');
-		strbuf_puts(sb, "skip=");
-		strbuf_puts(sb, DEFAULTSKIP);
-		strbuf_putc(sb, ':');
-		strbuf_puts(sb, "format=standard:");
-		strbuf_puts(sb, "extractmethod:");
-		strbuf_puts(sb, "GTAGS=gctags %s:");
-		strbuf_puts(sb, "GRTAGS=gctags -r %s:");
-		strbuf_puts(sb, "GSYMS=gctags -s %s:");
-		strbuf_puts(sb, "sort_command=sort:");
-		strbuf_puts(sb, "sed_command=sed:");
-		line = strdup(strbuf_value(sb));
-		strbuf_close(sb);
+		line = "";
 	}
 	/*
 	 * if it doesn't start with '/' then assumed config value itself.
@@ -239,9 +224,40 @@ openconf()
 		strbuf_close(sb);
 		fclose(fp);
 	}
+	/*
+	 * make up lacked variables.
+	 */
+	sb = strbuf_open(0);
+	strbuf_puts(sb, line);
+	strbuf_unputc(sb, ':');
+	if (!getconfs("suffixes", NULL)) {
+		strbuf_puts(sb, ":suffixes=");
+		strbuf_puts(sb, DEFAULTSUFFIXES);
+	}
+	if (!getconfs("skip", NULL)) {
+		strbuf_puts(sb, ":skip=");
+		strbuf_puts(sb, DEFAULTSKIP);
+	}
+	/*
+	 * GTAGS, GRTAGS and GSYMS have no default values but non of them
+	 * specified then use default values.
+	 * (Otherwise, nothing to do for gtags.)
+	 */
+	if (!getconfs("GTAGS", NULL) && !getconfs("GRTAGS", NULL) && !getconfs("GSYMS", NULL)) {
+		strbuf_puts(sb, ":GTAGS=gctags %s");
+		strbuf_puts(sb, ":GRTAGS=gctags -r %s");
+		strbuf_puts(sb, ":GSYMS=gctags -s %s");
+	}
+	if (!getconfs("sort_command", NULL))
+		strbuf_puts(sb, ":sort_command=sort");
+	if (!getconfs("sed_command", NULL))
+		strbuf_puts(sb, ":sed_command=sed");
+	strbuf_unputc(sb, ':');
+	strbuf_putc(sb, ':');
+	line = strdup(strbuf_value(sb));
+	strbuf_close(sb);
 	if (!line)
 		die("short of memory.");
-	opened = 1;
 	return;
 }
 /*
@@ -313,27 +329,6 @@ STRBUF	*sb;
 		}
 		if (!all)
 			break;
-	}
-	/*
-	 * It may be that these code should be moved to applications.
-	 * But nothing cannot start without them.
-	 */
-	if (!exist) {
-		exist = 1;
-		if (!strcmp(name, "suffixes")) {
-			if (sb)
-				strbuf_puts(sb, DEFAULTSUFFIXES);
-		} else if (!strcmp(name, "skip")) {
-			if (sb)
-				strbuf_puts(sb, DEFAULTSKIP);
-		} else if (!strcmp(name, "sort_command")) {
-			if (sb)
-				strbuf_puts(sb, "sort");
-		} else if (!strcmp(name, "sed_command")) {
-			if (sb)
-				strbuf_puts(sb, "sed");
-		} else
-			exist = 0;
 	}
 	return exist;
 }
