@@ -95,7 +95,6 @@ Usage: global [-alnrstvx] pattern\n\
        global -c[sv] [prefix]\n\
        global -f[anrstvx] files\n\
        global -g[alntvx] pattern\n\
-       global -G[alntvx] pattern\n\
        global -i[v]\n\
        global -I[alntvx] pattern\n\
        global -p[rv]\n\
