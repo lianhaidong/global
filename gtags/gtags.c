@@ -977,10 +977,18 @@ int	db;
 	if (db == GRTAGS && !test("f", makepath(dbpath, dbname(GTAGS), NULL)))
 		die("GTAGS needed to create GRTAGS.");
 	flags = 0;
+	/*
+	 * Compact format:
+	 *
+	 * -c: COMPACT format.
+	 * -cc: PATHINDEX format.
+	 * Ths -cc is undocumented.
+	 * In the future, it may become the standard format of GLOBAL.
+	 */
 	if (cflag) {
-		if (cflag > 1)
-			flags |= GTAGS_COMPACT;
 		flags |= GTAGS_PATHINDEX;
+		if (cflag == 1)
+			flags |= GTAGS_COMPACT;
 	}
 	if (Pflag) {
 		flags |= GTAGS_POSTGRES;
