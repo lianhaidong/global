@@ -154,9 +154,12 @@ $'java_reserved_words  = "abstract,boolean,break,byte,case,catch,char,class," .
 		"package,private,protected,public,return,short," .
 		"static,super,switch,synchronized,this,throw,throws," .
 		"union,transient,true,try,void,volatile,while";
+$'sharp_macros = "assert,define,elif,else,endif,error,ident,ifdef,ifndef,if," .
+		"include,line,pragma,undef,warning";
 $'c_reserved_words    =~ s/,/|/g;
 $'cpp_reserved_words  =~ s/,/|/g;
 $'java_reserved_words =~ s/,/|/g;
+$'sharp_macros        =~ s/,/|/g;
 {
 	#
 	# extract --gtagsconf <config file>.
@@ -1756,7 +1759,7 @@ sub src2html {
 		&protect_line();	# protect quoted char, strings and comments
 		# painting source code
 		s/({|})/$'brace_begin$1$'brace_end/g;
-		local($sharp) = s/^(#[ \t]*\w+)// ? $1 : '';
+		local($sharp) = s/^(#[ \t]*($'sharp_macros))// ? $1 : '';
 		if ($sharp !~ '#[ \t]*include') {
 			if ($isjava) {
 				s/\b($'java_reserved_words)\b/$'reserved_begin$1$'reserved_end/go;
