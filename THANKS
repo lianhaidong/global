@@ -4,6 +4,18 @@ ___________________________________
 |  |   |  |  |  |  |     |     |  |
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Copyright (c) 2000
+        Tama Communications Corporation. All rights reserved.
+
+ This file is free software; as a special exception the author gives
+ unlimited permission to copy and/or distribute it, with or without
+ modifications, as long as this notice is preserved.
+
+ This program is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
+ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+		----------------------------------
 
 Thanks to the following people for their contributions.
 
@@ -30,6 +42,7 @@ Hidetaka KOIE		bug report and advice about configure.in for Solaris7.
 Hiroshi MIURA		idea about printing file name on browser's status bar.
 Jeff Trawick		idea about -l option of htags(1).
 Jordan K. Hubbard	idea about supporting BSD's obj directory.
+Julien Gilles		idea about -T option of global(1).
 Jun Obama		improvements on gtags.el.
 Justin Tripp		software evaluation for GNU standard.
 Katsuyuki Okabe		advice about deciding emacs version.

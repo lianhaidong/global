@@ -4,11 +4,18 @@ ___________________________________
 |  |   |  |  |  |  |     |     |  |
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Copyright (c) 2000
+        Tama Communications Corporation. All rights reserved.
 
-Copyright (c) 1996, 1997, 1998, 1999
-           Shigio Yamaguchi. All rights reserved.
-Copyright (c) 1999, 2000
-           Tama Communications Corporation. All rights reserved.
+ This file is free software; as a special exception the author gives
+ unlimited permission to copy and/or distribute it, with or without
+ modifications, as long as this notice is preserved.
+
+ This program is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
+ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+		----------------------------------
 
 GNU GLOBAL is a source code tag system that works the same way across diverse
 environments. It supports C, C++, Yacc and Java source code.
