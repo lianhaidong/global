@@ -37,6 +37,7 @@
 #include <unistd.h>
 #endif
 
+#include "char.h"
 #include "conf.h"
 #include "gparam.h"
 #include "dbop.h"
@@ -77,7 +78,6 @@ static regex_t reg;
 static int	support_version = 3;	/* acceptable format version   */
 static const char *tagslist[] = {"GPATH", "GTAGS", "GRTAGS", "GSYMS"};
 static int init;
-static char regexchar[256];
 static STRBUF *output;
 /*
  * dbname: return db name
@@ -121,23 +121,6 @@ STRBUF	*sb;
 		strbuf_putc(sb, ' ');
 		strbuf_puts(sb, path);
 	}
-}
-/*
- * isregex: test whether or not regular expression
- *
- *	i)	s	string
- *	r)		1: is regex, 0: not regex
- */
-int
-isregex(s)
-char	*s;
-{
-	int	c;
-
-	while ((c = *s++) != '\0')
-		if (isregexchar(c))
-			return 1;
-	return 0;
 }
 /*
  * formatcheck: check format of tag command's output
@@ -249,14 +232,6 @@ int	flags;
 	int	dbmode = 0;
 	int	dbopflags = 0;
 
-	/* initialize for isregex() */
-	if (!init) {
-		regexchar['^'] = regexchar['$'] = regexchar['{'] =
-		regexchar['}'] = regexchar['('] = regexchar[')'] =
-		regexchar['.'] = regexchar['*'] = regexchar['+'] =
-		regexchar['['] = regexchar[']'] = regexchar['?'] =
-		regexchar['\\'] = init = 1;
-	}
 	if ((gtop = (GTOP *)calloc(sizeof(GTOP), 1)) == NULL)
 		die("short of memory.");
 	gtop->db = db;

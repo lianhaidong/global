@@ -58,8 +58,6 @@
 #define GTOP_NOREGEX		8	/* don't use regular expression */
 #define GTOP_IGNORECASE		16	/* ignore case distinction */
 
-#define isregexchar(c)	(regexchar[(unsigned char)(c)])
-
 typedef struct {
 	DBOP	*dbop;			/* descripter of DBOP */
 	int	format_version;		/* format version */
@@ -90,7 +88,6 @@ const char *dbname(int);
 void	makecommand(char *, char *, STRBUF *);
 void	formatcheck(char *, int);
 int	notnamechar(char *);
-int	isregex(char *);
 void	gtags_setinfo(char *);
 GTOP	*gtags_open(char *, char *, int, int, int);
 void	gtags_put(GTOP *, char *, char *, char *);
