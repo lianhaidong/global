@@ -216,6 +216,10 @@ nexttoken(interested, reserved)
 			} else if (percent) {
 				percent = 0;
 				*p++ = '%';
+			} else if (c == 'L') {
+				int	tmp = peekc(1);
+				if (tmp == '\"' || tmp == '\'')
+					continue;
 			}
 			for (*p++ = c; (c = nextchar()) != EOF && (c & 0x80 || isalnum(c) || c == '_'); *p++ = c)
 				;
