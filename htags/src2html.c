@@ -379,8 +379,8 @@ put_anchor(name, type, lineno)
 			strbuf_sprintf(outbuf, " TITLE=\"%s\">%s</A>", tooltip(type, -1, count), name);
 		} else {
 			int lno = atoi(line);
-			char *filename = strmake(locatestring(line, " ", MATCH_FIRST) + 1, " ");
-			filename += 2;			/* remove './' */
+			char *filename = strmake(locatestring(line, " ", MATCH_FIRST) + 1, " ")
+						+ 2;	/* remove './' */
 			char *url = path2url(filename);
 			strbuf_sprintf(outbuf, "<A HREF=../%s/%s#%d TITLE=\"%s\">%s</A>",
 				SRCS, url, lno, tooltip(type, lno, filename), name);
