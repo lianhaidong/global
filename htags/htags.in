@@ -148,9 +148,6 @@ $'sharp_macros        =~ s/,/|/g;
 	}
 	@ARGV = @a;
 }
-#
-# load configuration variables.
-#
 if ($var1 = &'getconf('ncol')) {
 	if ($var1 < 1 || $var1 > 10) {
 		print STDERR "Warning: parameter 'ncol' ignored becase the value is too large or too small.\n";
@@ -293,10 +290,10 @@ $'status_line  =
 # DEFINITION
 #-------------------------------------------------------------------------
 # unit for a path
-$'SRCS   = 'S';				# source file directory.
-$'DEFS   = 'D';				# object definition directory.
-$'REFS   = 'R';				# object reference directory.
-$'INCS   = 'I';				# include file directory.
+$'SRCS   = 'S';
+$'DEFS   = 'D';
+$'REFS   = 'R';
+$'INCS   = 'I';
 sub set_header {
 	local($title) = @_;
 	local($head) = '';
@@ -314,18 +311,12 @@ sub set_header {
 #-------------------------------------------------------------------------
 # UTILITIES
 #-------------------------------------------------------------------------
-#
-# get current working directory.
-#
 sub getcwd {
         local($dir) = `$'gtags --pwd`;
 	if ($'w32) { $dir =~ s!\\!/!g; }
         chop($dir);
         $dir;
 }
-#
-# get real absolute path name.
-#
 sub realpath {
         local($path) = @_;
         local($cwd) = &getcwd;		# for recovery
@@ -344,25 +335,16 @@ sub realpath {
         chdir($cwd) || &'error("cannot recover current directory '$cwd'.");
         $path;
 }
-#
-# get date string.
-#
 sub date {
 	local($date) = `$'gtags --date`;
 	chop($date);
 	$date;
 }
-#
-# print message and exit with error status.
-#
 sub error {
 	&clean();
 	printf STDERR "$program: $_[0]\n";
 	exit 1;
 }
-#
-# set things right before exiting.
-#
 sub clean {
 	&anchor'finish();
 	&cache'close();
@@ -371,9 +353,6 @@ sub escape {
 	local($c) = @_;
 	'%' . sprintf("%x", ord($c));
 }
-#
-# locate executable command and return it's absolute path name.
-#
 sub usable {
 	local($command) = @_;
 	local($pathsep) = ($'w32) ? ';' : ':';
@@ -387,9 +366,6 @@ sub usable {
 	}
 	return '';
 }
-#
-# duplicate file. if possible, link it without making a copy.
-#
 sub duplicatefile {
 	local($file, $from, $to) = @_;
 	if ($'w32) {
@@ -401,9 +377,6 @@ sub duplicatefile {
 			|| &'error("cannot copy $file.");
 	}
 }
-#
-# copy file.
-#
 sub copy {
 	local($from, $to) = @_;
 	open(FROM, $from) || return 0;
@@ -413,9 +386,6 @@ sub copy {
 	close(FROM);
 	return 1;
 }
-#
-# get value of configuration variable.
-#
 sub getconf {
 	local($name) = @_;
 	local($val);
@@ -423,9 +393,6 @@ sub getconf {
 	if ($? != 0) { $val = ''; }
 	$val;
 }
-#
-# convert source file path name into url.
-#
 sub path2url {
 	local($path) = @_;
 	$path = './' . $path if ($path !~ /^\./);
@@ -499,7 +466,6 @@ $'aflag = $'cflag = $'fflag = $'Fflag = $'nflag = $'Sflag = $'vflag = $'wflag = 
 $show_version = 0;
 $show_help = 0;
 $exec_gtags = 0;
-$map_file = 0;
 $include_caution = '';
 $action_value = '';
 $id_value = '';
@@ -534,8 +500,8 @@ while ($ARGV[0] =~ /^-/) {
 		;		# --gtagsconf is estimated only once.
 	} elsif ($opt =~ /^--gtagsconf$/) {
 		shift;		# --gtagsconf is estimated only once.
-	} elsif ($opt =~ /^--map-file$/) {
-		$map_file = 1;
+	} elsif ($opt =~ /^--index$/) {
+		$'iflag = 'i';
 	} elsif ($opt =~ /^--line-number$/) {
 		$'nflag = 'n';
 	} elsif ($opt =~ /^--other$/) {
@@ -571,7 +537,7 @@ while ($ARGV[0] =~ /^-/) {
 	} elsif ($opt =~ /^--/) {
 		print STDERR $usage_const, "\n";
 		exit 1;
-	} elsif ($opt =~ /[^-acdfFlmnosStvwtd]/) {
+	} elsif ($opt =~ /[^-acdfFilmnosStvwtd]/) {
 				# include 'l' for backward compatibility.
 		print STDERR $usage_const, "\n";
 		exit 1;
@@ -580,6 +546,7 @@ while ($ARGV[0] =~ /^-/) {
 		if ($opt =~ /c/) { $'cflag = 'c'; }
 		if ($opt =~ /f/) { $'fflag = 'f'; }
 		if ($opt =~ /F/) { $'Fflag = 'F'; }
+		if ($opt =~ /i/) { $'iflag = 'i'; }
 		if ($opt =~ /n/) { $'nflag = 'n'; }
 		if ($opt =~ /o/) { $'oflag = 'o'; }
 		if ($opt =~ /v/) { $'vflag = 'v'; }
@@ -1288,8 +1255,8 @@ sub makedefineindex {
 	local($indexlink) = ($'Fflag) ? "../defines.$'normal_suffix" : "../mains.$'normal_suffix";
 	local($target) = ($'Fflag) ? 'mains' : '_top';
 
-	if ($'map_file) {
-		open(MAP, ">$'dist/MAP") || &'error("cannot open.");
+	if ($'iflag) {
+		open(INDEX, "|btreeop -C $'dist/INDEX") || &'error("cannot fork.");
 	}
 	open(DEFINES, ">$file") || &'error("cannot make function index '$file'.");
 	print DEFINES $'html_begin, "\n";
@@ -1369,8 +1336,8 @@ sub makedefineindex {
 			$url = "$'SRCS/$filename#$lno";
 		}
 		print "<LI><A HREF=", ($'aflag) ? "../" : "", $url, " TARGET=$target>$tag</A>\n";
-		if ($'map_file) {
-			print MAP "$tag\t$url\n";
+		if ($'iflag) {
+			print INDEX "$tag $url\n";
 		}
 	}
 	close(TAGS);
@@ -1394,8 +1361,8 @@ sub makedefineindex {
 	print DEFINES $'body_end, "\n";
 	print DEFINES $'html_end, "\n";
 	close(DEFINES);
-	if ($'map_file) {
-		close(MAP);
+	if ($'iflag) {
+		close(INDEX);
 	}
 	$count;
 }
