@@ -51,6 +51,7 @@
 #include "strmake.h"
 #include "tab.h"
 
+static char	*unpack_pathindex(char *);
 static char	*genrecord(GTOP *);
 static int	belongto(GTOP *, char *, char *);
 static regex_t reg;
@@ -73,6 +74,7 @@ static int	support_version = 2;	/* acceptable format version   */
 static const char *tagslist[] = {"GPATH", "GTAGS", "GRTAGS", "GSYMS"};
 static int init;
 static char regexchar[256];
+static STRBUF *output;
 /*
  * dbname: return db name
  *
@@ -296,18 +298,20 @@ int	flags;
 		gtop->format |= GTAGS_COMPACT;
 	if (gtop->mode == GTAGS_CREATE) {
 		if (flags & GTAGS_COMPACT) {
+			gtop->format |= GTAGS_COMPACT;
+			dbop_put(gtop->dbop, COMPACTKEY, COMPACTKEY, "0");
+		}
+		if (flags & GTAGS_PATHINDEX) {
+			gtop->format |= GTAGS_PATHINDEX;
+			dbop_put(gtop->dbop, PATHINDEXKEY, PATHINDEXKEY, "0");
+		}
+		if (flags & (GTAGS_COMPACT|GTAGS_PATHINDEX)) {
 			char	buf[80];
 
 			gtop->format_version = 2;
 			snprintf(buf, sizeof(buf),
 				"%s %d", VERSIONKEY, gtop->format_version);
 			dbop_put(gtop->dbop, VERSIONKEY, buf, "0");
-			gtop->format |= GTAGS_COMPACT;
-			dbop_put(gtop->dbop, COMPACTKEY, COMPACTKEY, "0");
-			if (flags & GTAGS_PATHINDEX) {
-				gtop->format |= GTAGS_PATHINDEX;
-				dbop_put(gtop->dbop, PATHINDEXKEY, PATHINDEXKEY, "0");
-			}
 		}
 	} else {
 		/*
@@ -374,7 +378,7 @@ char	*fid;
 	char *line, *path;
 	char *parts[PARTS];
 
-	if (gtop->format == GTAGS_STANDARD) {
+	if (gtop->format == GTAGS_STANDARD || gtop->format == GTAGS_PATHINDEX) {
 		/* entab(record); */
 		dbop_put(gtop->dbop, tag, record, fid);
 		return;
@@ -653,6 +657,8 @@ int	flags;
 		return NULL;
 	if (gtop->format == GTAGS_STANDARD || gtop->flags & GTOP_KEY)
 		return line;
+	if (gtop->format == GTAGS_PATHINDEX)
+		return unpack_pathindex(line);
 	/*
 	 * Compact format.
 	 */
@@ -679,6 +685,15 @@ GTOP	*gtop;
 	 */
 	if (gtop->format == GTAGS_STANDARD || gtop->flags & GTOP_KEY)
 		return dbop_next(gtop->dbop);
+	/*
+	 * Pathindex format.
+	 */
+	if (gtop->format == GTAGS_PATHINDEX) {
+		line = dbop_next(gtop->dbop);
+		if (line == NULL)
+			return NULL;
+		return unpack_pathindex(line);
+	}
 	/*
 	 * gtop->format & GTAGS_COMPACT
 	 */
@@ -712,6 +727,65 @@ GTOP	*gtop;
 		strbuf_close(gtop->ib);
 	dbop_close(gtop->dbop);
 	free(gtop);
+}
+/*
+ * unpack_pathindex: convert pathindex format into standard format.
+ *
+ *	i)	line	tag line
+ */
+static char *
+unpack_pathindex(line)
+char *line;
+{
+	char *p, *q, *path;
+
+	if (output == NULL)
+		output = strbuf_open(MAXBUFLEN);
+	else
+		strbuf_reset(output);
+	p = line;
+	while (*p && !isspace(*p))	/* tag name */
+		strbuf_putc(output, *p++);
+	if (*p == 0)
+		die("invalid tag format. '%s'", line);
+	while (*p && isspace(*p))
+		strbuf_putc(output, *p++);
+	if (*p == 0)
+		die("invalid tag format. '%s'", line);
+	while (*p && isdigit(*p))	/* line number */
+		strbuf_putc(output, *p++);
+	if (*p == 0)
+		die("invalid tag format. '%s'", line);
+	while (*p && isspace(*p))
+		strbuf_putc(output, *p++);
+	if (*p == 0)
+		die("invalid tag format. '%s'", line);
+	/*
+	 * read path and convert.
+	 */
+	path = p;
+	while (*p && !isspace(*p))
+		p++;
+	if (*p == 0)
+		die("invalid tag format. '%s'", line);
+	{
+		int savechar = *p;
+		char *result;
+
+		/*
+		 * Convert fid into path.
+		 */
+		*p = '\0';
+		result = gpath_fid2path(path);
+		if (result == NULL)
+			die("GPATH is corrupted.('%s' not found)", path);
+		while (*result)
+			strbuf_putc(output, *result++);
+		*p = savechar;
+	}
+	while (*p)		/* copy until end of line */
+		strbuf_putc(output, *p++);;
+	return strbuf_value(output);
 }
 static char *
 genrecord(gtop)

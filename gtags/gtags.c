@@ -591,7 +591,7 @@ char	*argv[];
 	if (getconfb("extractmethod"))
 		extractmethod = 1;
 	strbuf_reset(sb);
-	if (getconfs("format", sb) && !strcmp(strbuf_value(sb), "compact"))
+	if (cflag == 0 && getconfs("format", sb) && !strcmp(strbuf_value(sb), "compact"))
 		cflag++;
 	/*
 	 * teach gctags(1) where is dbpath by environment variable.
@@ -978,7 +978,8 @@ int	db;
 		die("GTAGS needed to create GRTAGS.");
 	flags = 0;
 	if (cflag) {
-		flags |= GTAGS_COMPACT;
+		if (cflag > 1)
+			flags |= GTAGS_COMPACT;
 		flags |= GTAGS_PATHINDEX;
 	}
 	if (Pflag) {
