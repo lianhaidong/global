@@ -72,6 +72,7 @@ int	aflag;				/* [option]		*/
 int	cflag;				/* command		*/
 int	fflag;				/* command		*/
 int	gflag;				/* command		*/
+int	Gflag;				/* [option]		*/
 int	iflag;				/* [option]		*/
 int	Iflag;				/* command		*/
 int	lflag;				/* [option]		*/
@@ -117,6 +118,7 @@ static struct option const long_options[] = {
 	{"local", no_argument, NULL, 'l'},
 	{"nofilter", no_argument, NULL, 'n'},
 	{"grep", no_argument, NULL, 'g'},
+	{"basic-regexp", no_argument, NULL, 'G'},
 	{"ignore-case", no_argument, NULL, 'i'},
 	{"other", no_argument, NULL, 'o'},
 	{"print-dbpath", no_argument, NULL, 'p'},
@@ -195,6 +197,9 @@ char	*argv[];
 		case 'g':
 			gflag++;
 			setcom(optchar);
+			break;
+		case 'G':
+			Gflag++;
 			break;
 		case 'i':
 			iflag++;
@@ -765,6 +770,7 @@ char	*dbpath;
 	char	edit[IDENTLEN+1];
 	char	*buffer;
 	int	linenum, count, editlen;
+	int	flags = 0;
 	regex_t	preg;
 
 	/*
@@ -773,7 +779,9 @@ char	*dbpath;
 	ffformat(edit, sizeof(edit), pattern);
 	editlen = strlen(edit);
 
-	if (regcomp(&preg, pattern, REG_EXTENDED) != 0)
+	if (!Gflag)
+		flags |= REG_EXTENDED;
+	if (regcomp(&preg, pattern, flags) != 0)
 		die("invalid regular expression.");
 	if (!(op = openfilter()))
 		die("cannot open output filter.");
@@ -831,8 +839,10 @@ char	*av;
 	int	count;
 
 	if (av) {
-		int	flags = REG_EXTENDED;
+		int	flags = 0;
 
+		if (!Gflag)
+			flags |= REG_EXTENDED;
 		if (iflag || getconfb("icase_path"))
 			flags |= REG_ICASE;
 #ifdef _WIN32
@@ -1032,6 +1042,8 @@ int	db;
 		}
 		flags |= GTOP_IGNORECASE;
 	}
+	if (Gflag)
+		flags |= GTOP_BASICREGEX;
 	for (p = gtags_first(gtop, pattern, flags); p; p = gtags_next(gtop)) {
 		if (lflag) {
 			char	*q;

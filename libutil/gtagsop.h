@@ -57,6 +57,7 @@
 #define GTOP_NOSOURCE		4	/* don't read source file */
 #define GTOP_NOREGEX		8	/* don't use regular expression */
 #define GTOP_IGNORECASE		16	/* ignore case distinction */
+#define GTOP_BASICREGEX		32	/* use basic regular expression */
 
 typedef struct {
 	DBOP	*dbop;			/* descripter of DBOP */

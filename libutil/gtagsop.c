@@ -601,6 +601,7 @@ char	*path;
  *			GTOP_NOSOURCE	don't read source file(compact format)
  *			GTOP_NOREGEX	don't use regular expression.
  *			GTOP_IGNORECASE	ignore case distinction.
+ *			GTOP_BASICREGEX	use basic regular expression.
  *	r)		record
  */
 char *
@@ -614,13 +615,16 @@ int	flags;
 	char    prefix[IDENTLEN+1], *p;
 	regex_t *preg = &reg;
 	char	*key;
-	int	regflags = REG_EXTENDED;
+	int	regflags = 0;
 
 	gtop->flags = flags;
 	if (flags & GTOP_PREFIX && pattern != NULL)
 		dbflags |= DBOP_PREFIX;
 	if (flags & GTOP_KEY)
 		dbflags |= DBOP_KEY;
+
+	if (!(flags & GTOP_BASICREGEX))
+		regflags |= REG_EXTENDED;
 	if (flags & GTOP_IGNORECASE)
 		regflags |= REG_ICASE;
 

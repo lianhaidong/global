@@ -26,13 +26,13 @@
 @HEADER	GLOBAL,1,Jul 2002,GNU Project
 @NAME	global - print the locations of specified object.
 @SYNOPSIS
-	@name{global} [-ailnqrstTvx][-e] @arg{pattern}
+	@name{global} [-aGilnqrstTvx][-e] @arg{pattern}
 	@name{global} -c[qsv] @arg{prefix}
 	@name{global} -f[anqrstvx] @arg{files}
-	@name{global} -g[ailnoqtvx][-e] @arg{pattern}
+	@name{global} -g[aGilnoqtvx][-e] @arg{pattern}
 	@name{global} -I[ailnqtvx][-e] @arg{pattern}
 	@name{global} -p[qrv]
-	@name{global} -P[ailnqtvx][-e] @arg{pattern}
+	@name{global} -P[aGilnqtvx][-e] @arg{pattern}
 	@name{global} -u[qv]
 @DESCRIPTION
 	@name{Global} find the locations of specified object
@@ -89,6 +89,10 @@
 	@item{@option{-e}, @option{--regexp} @arg{pattern}}
 		Use @arg{pattern} as the pattern; useful to protect  patterns
 		beginning with -.
+	@item{@option{-G}, @option{--basic-regexp}}
+		Interpret @arg{pattern} as a  basic regular expression.
+		The default is extended regular expression.
+		This option is valid for the @option{-g} and @option{-P} command.
 	@item{@option{-i}, @option{--ignore-case}}
 		ignore case distinctions in pattern.
 	@item{@option{-l}, @option{--local}}
