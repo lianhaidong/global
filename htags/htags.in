@@ -301,7 +301,6 @@ $'meta_generator = "<META NAME='GENERATOR' CONTENT='GLOBAL-$version'>";
 $'title_define_index = 'DEFINITIONS';
 $'title_file_index = 'FILES';
 $'title_included_from = 'INCLUDED FROM';
-$'title_cvs_repository = 'CVS REPOSITORY';
 
 # Anchor image
 @anchor_label = ('&lt;', '&gt;', '^', 'v', 'top', 'bottom', 'index', 'help');
@@ -2204,6 +2203,11 @@ sub src2html {
 	#
 	print "<A NAME=TOP><H2>";
 	print &fill_anchor($file);
+	if ($'cvsweb_url) {
+		print "&nbsp;<A HREF=$'cvsweb_url$file";
+		print "?cvsroot=$'cvsweb_cvsroot" if ($'cvsweb_cvsroot);
+		print "><FONT SIZE=-1>[CVS]</FONT></A>\n";
+	}
 	print "</H2>\n";
 	print "$'comment_begin/* ";
 	print &link_format(&anchor'getlinks(0));
@@ -2219,12 +2223,6 @@ sub src2html {
 	# It is not source file.
 	#
 	if ($notsource) {
-		if ($'cvsweb_url) {
-			print "<H2><A HREF=$'cvsweb_url$file";
-			print "?cvsroot=$'cvsweb_cvsroot" if ($'cvsweb_cvsroot);
-			print ">$'title_cvs_repository</A></H2>\n";
-			print "$'hr\n";
-		}
 		print "<PRE>\n";
 		while (<SRC>) {
 			s/([&<>])/$ctab{$1}/ge;
@@ -2237,6 +2235,17 @@ sub src2html {
 	# Source file.
 	#
 	else {
+		#
+		# DEFINITIONS index.
+		#
+		local($basename) = ($file =~ /([^\/]+)$/);
+		if (defined $'included_from{$basename}) {
+			print "<H2><A HREF=$'included_from{$basename}>$'title_included_from</A></H2>\n";
+			print "$'hr\n";
+		}
+		#
+		# INCLUDED FROM index.
+		#
 		local($define_index) = '';
 		local($lno, $tag, $type);
 		for (($lno, $tag, $type) = &anchor'first(); $lno; ($lno, $tag, $type) = &anchor'next()) {
@@ -2254,20 +2263,6 @@ sub src2html {
 			print "</OL>\n";
 			print "$'hr\n";
 		}
-
-		local($basename) = ($file =~ /([^\/]+)$/);
-		if (defined $'included_from{$basename}) {
-			print "<H2><A HREF=$'included_from{$basename}>$'title_included_from</A></H2>\n";
-			print "$'hr\n";
-		}
-
-		if ($'cvsweb_url) {
-			print "<H2><A HREF=$'cvsweb_url$file";
-			print "?cvsroot=$'cvsweb_cvsroot" if ($'cvsweb_cvsroot);
-			print ">$'title_cvs_repository</A></H2>\n";
-			print "$'hr\n";
-		}
-
 		#
 		# print source code
 		#
