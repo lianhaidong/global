@@ -1414,8 +1414,16 @@ sub makedupindex {
 		local($first_line);
 		local($writing) = 0;
 		local($count) = 0;
+		local($command);
 
-		local($command) = "global -nx$option \".*\" | $'gtags --sort";
+		#
+		# It is not necessary to sort here. In addition, the line
+		# image of the source code is also unnecessary with the
+		# --dynamic option, 
+		#
+		$option .= $'dynamic ? 'nn' : 'n';
+
+		$command = "global -x$option \".*\" | $'gtags --sort";
 		open(LIST, "$command |") || &'error("cannot fork.");
 		while (<LIST>) {
 			chop;
