@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999
  *             Shigio Yamaguchi. All rights reserved.
- * Copyright (c) 1999, 2000
+ * Copyright (c) 1999, 2000, 2001
  *             Tama Communications Corporation. All rights reserved.
  *
  * This file is part of GNU GLOBAL.
@@ -759,21 +759,12 @@ GTOP	*gtop;
 				gtop->lno++;
 			}
 		}
-		if (strlen(gtop->tag) >= 16 && tagline >= 1000)
 #ifdef HAVE_SNPRINTF
-			snprintf(output, sizeof(output), "%-16s %4d %-16s %s",
-					gtop->tag, tagline, gtop->path, buffer);
+		snprintf(output, sizeof(output), "%-16s %3d %-16s %s",
+				gtop->tag, tagline, gtop->path, buffer);
 #else
-			sprintf(output, "%-16s %4d %-16s %s",
-					gtop->tag, tagline, gtop->path, buffer);
-#endif /* HAVE_SNPRINTF */
-		else
-#ifdef HAVE_SNPRINTF
-			snprintf(output, sizeof(output), "%-16s%4d %-16s %s",
-					gtop->tag, tagline, gtop->path, buffer);
-#else
-			sprintf(output, "%-16s%4d %-16s %s",
-					gtop->tag, tagline, gtop->path, buffer);
+		sprintf(output, "%-16s %3d %-16s %s",
+				gtop->tag, tagline, gtop->path, buffer);
 #endif /* HAVE_SNPRINTF */
 		return output;
 	}

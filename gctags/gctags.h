@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999
  *             Shigio Yamaguchi. All rights reserved.
- * Copyright (c) 1999, 2000
+ * Copyright (c) 1999, 2000, 2001
  *             Tama Communications Corporation. All rights reserved.
  *
  * This file is part of GNU GLOBAL.
@@ -48,14 +48,8 @@ struct words {
 
 #define PUT(tag, lno, line) do {					\
 	DBG_PRINT(level, line);						\
-	if (!nflag) {							\
-		if (strlen(tag) >= 16 && lno >= 1000)			\
-			printf("%-16s %4d %-16s %s\n",			\
-					tag, lno, curfile, line);	\
-		else							\
-			printf("%-16s%4d %-16s %s\n",			\
-					tag, lno, curfile, line);	\
-	}								\
+	if (!nflag)							\
+		printf("%-16s %3d %-16s %s\n",tag, lno, curfile, line);	\
 } while (0)
 
 #define IS_RESERVED(a)  ((a) > 1000)

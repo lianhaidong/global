@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999
  *             Shigio Yamaguchi. All rights reserved.
- * Copyright (c) 1999, 2000
+ * Copyright (c) 1999, 2000, 2001
  *             Tama Communications Corporation. All rights reserved.
  *
  * This file is part of GNU GLOBAL.
@@ -820,11 +820,7 @@ char	*dbpath;
 #else
 			sprintf(buf, "./%s", path);
 #endif /* HAVE_SNPRINTF */
-			if (editlen >= 16 && linenum >= 1000)
-				fprintf(op, "%-16s %4d %-16s %s\n",
-					edit, linenum, buf, p);
-			else
-				fprintf(op, "%-16s%4d %-16s %s\n",
+			fprintf(op, "%-16s %3d %-16s %s\n",
 					edit, linenum, buf, p);
 		}
 	}
@@ -919,13 +915,10 @@ char	*dbpath;
 		if (tflag)
 			fprintf(op, "%s\t%s\t%d\n",
 				edit, path, linenum);
-		else if (!xflag) {
+		else if (!xflag)
 			fprintf(op, "%s\n", path);
-		} else if (editlen >= 16 && linenum >= 1000)
-			fprintf(op, "%-16s %4d %-16s %s\n",
-				edit, linenum, path, p);
 		else
-			fprintf(op, "%-16s%4d %-16s %s\n",
+			fprintf(op, "%-16s %3d %-16s %s\n",
 				edit, linenum, path, p);
 	}
 	pclose(ip);
@@ -980,12 +973,10 @@ char	*dbpath;
 				else if (!xflag) {
 					fprintf(op, "%s\n", path);
 					break;
-				} else if (editlen >= 16 && linenum >= 1000)
-					fprintf(op, "%-16s %4d %-16s %s\n",
+				} else {
+					fprintf(op, "%-16s %3d %-16s %s\n",
 						edit, linenum, path, buffer);
-				else
-					fprintf(op, "%-16s%4d %-16s %s\n",
-						edit, linenum, path, buffer);
+				}
 			}
 		}
 		fclose(fp);
