@@ -160,8 +160,8 @@ For example, if you want to browse vi's source code:
 
 @example
 
-    % cd /usr/src/usr.bin/vi
-    % gtags
+    $ cd /usr/src/usr.bin/vi
+    $ gtags
 
 @end example
 
@@ -170,7 +170,7 @@ the source tree.
 
 @example
 
-    % ls G*
+    $ ls G*
     GPATH   GRTAGS  GSYMS   GTAGS
 
 @end example
@@ -231,14 +231,14 @@ Global will locate the tag file by itself.
 
 @example
 
-    % cd ROOT
-    % global func1
+    $ cd ROOT
+    $ global func1
     DIR1/fileB.c            # @r{func1() is defined in fileB.c}
-    % cd DIR1
-    % global func1
+    $ cd DIR1
+    $ global func1
     fileB.c                 # @r{relative path from DIR1}
-    % cd ../DIR2
-    % global func1
+    $ cd ../DIR2
+    $ global func1
     ../DIR1/fileB.c         # @r{relative path from DIR2}
 
 @end example
@@ -248,7 +248,7 @@ Global will locate the tag file by itself.
 
 @example
 
-    % global -r func2
+    $ global -r func2
     ../DIR1/fileA.c         # @r{func2() is referred from fileA.c}
 
 @end example
@@ -257,8 +257,8 @@ Global will locate the tag file by itself.
 
 @example
 
-    % cd ROOT
-    % global 'func[1-3]'
+    $ cd ROOT
+    $ global 'func[1-3]'
     DIR1/fileB.c            # @r{func1, func2 and func3 are matched}
     DIR2/fileC.c
 
@@ -270,9 +270,9 @@ It is similar to the @samp{-x} option in ctags(1).
 
 @example
 
-    % global func2
+    $ global func2
     DIR2/fileC.c
-    % global -x func2
+    $ global -x func2
     func2              2 DIR2/fileC.c       func2()@{ i++; @}
     func2              4 DIR2/fileC.c       func2()@{ i--; @}
 
@@ -283,7 +283,7 @@ It is similar to the @samp{-x} option in ctags(1).
 
 @example
 
-    % global -a func1
+    $ global -a func1
     /home/user/ROOT/DIR1/fileB.c
 
 @end example
@@ -293,7 +293,7 @@ It is similar to the @samp{-x} option in ctags(1).
 
 @example
 
-    % global -xs X
+    $ global -xs X
     X                  1 DIR2/fileC.c #ifdef X
 
 @end example
@@ -304,7 +304,7 @@ It is similar to grep(1).
 
 @example
 
-    % global -xg '#ifdef'
+    $ global -xg '#ifdef'
     #ifdef             1 DIR2/fileC.c #ifdef X
 
 @end example
@@ -315,12 +315,12 @@ string.
 
 @example
 
-    % global -P fileB
+    $ global -P fileB
     DIR1/fileB.c
-    % global -P '1/'
+    $ global -P '1/'
     DIR1/fileA.c
     DIR1/fileB.c
-    % global -P '\.c$'
+    $ global -P '\.c$'
     DIR1/fileA.c
     DIR1/fileB.c
     DIR2/fileC.c
@@ -332,7 +332,7 @@ string.
 
 @example
 
-    % global -f DIR2/fileC.c
+    $ global -f DIR2/fileC.c
     func2              2 DIR2/fileC.c   func2()@{ i++; @}
     func2              4 DIR2/fileC.c   func2()@{ i--; @}
     func3              6 DIR2/fileC.c   func3()@{
@@ -374,8 +374,8 @@ that are in version1.0.
 
 @example
 
-    % cd ROOT/version1.0
-    % global -x func1
+    $ cd ROOT/version1.0
+    $ global -x func1
     func1              1 file.c          func1()@{ i++; @}
 
 @end example
@@ -385,8 +385,8 @@ are in version2.0.
 
 @example
 
-    % cd ROOT/version2.0
-    % global -x func1
+    $ cd ROOT/version2.0
+    $ global -x func1
     func1              1 file.c          func1()@{ i--; @}
 
 @end example
@@ -396,8 +396,8 @@ then global will locate objects in both directories.
 
 @example
 
-    % cd ROOT
-    % global -x func1
+    $ cd ROOT
+    $ global -x func1
     func1              1 version1.0/file.c  func1()@{ i++; @}
     func1              1 version2.0/file.c  func1()@{ i--; @}
 
@@ -415,12 +415,12 @@ In such cases, please do the following:
 
 @example
 
-    % mkdir /var/dbpath
-    % cd /cdrom/src                 # @r{the root of source tree}
-    % gtags /var/dbpath             # @r{make tag file in /var/dbpath}
-    % setenv GTAGSROOT `pwd`
-    % setenv GTAGSDBPATH /var/dbpath
-    % global func
+    $ mkdir /var/dbpath
+    $ cd /cdrom/src                 # @r{the root of source tree}
+    $ gtags /var/dbpath             # @r{make tag file in /var/dbpath}
+    $ export GTAGSROOT=`pwd`
+    $ export GTAGSDBPATH=/var/dbpath
+    $ global func
 
 @end example
 
@@ -434,20 +434,20 @@ If @file{GTAGS} is not found in a directory, global ignores that directory.
 
 @example
 
-    % pwd
+    $ pwd
     /develop/src/mh                         # @r{this is the source tree}
-    % gtags
-    % ls G*TAGS
+    $ gtags
+    $ ls G*TAGS
     GRTAGS  GTAGS
-    % global mhl
+    $ global mhl
     uip/mhlsbr.c                            # @r{mhl() is found}
-    % global strlen                         # @r{strlen() is not found}
-    % (cd /usr/src/lib; gtags)              # @r{library source}
-    % (cd /usr/src/sys; gtags)              # @r{kernel source}
-    % setenv GTAGSLIBPATH /usr/src/lib:/usr/src/sys
-    % global strlen
+    $ global strlen                         # @r{strlen() is not found}
+    $ (cd /usr/src/lib; gtags)              # @r{library source}
+    $ (cd /usr/src/sys; gtags)              # @r{kernel source}
+    $ export GTAGSLIBPATH=/usr/src/lib:/usr/src/sys
+    $ global strlen
     ../../../usr/src/lib/libc/string/strlen.c  # @r{found in library}
-    % global access
+    $ global access
     ../../../usr/src/sys/kern/vfs_syscalls.c   # @r{found in kernel}
 
 @end example
@@ -461,7 +461,7 @@ but at least it is useful.
 
 @example
 
-    % global -c kmem                # @r{maybe k..k.. kmem..}
+    $ global -c kmem                # @r{maybe k..k.. kmem..}
     kmem_alloc
     kmem_alloc_pageable
     kmem_alloc_wait
@@ -470,7 +470,7 @@ but at least it is useful.
     kmem_init
     kmem_malloc
     kmem_suballoc                   # @r{This is what I need!}
-    % global kmem_suballoc
+    $ global kmem_suballoc
     ../vm/vm_kern.c
 
 @end example
@@ -479,15 +479,15 @@ but at least it is useful.
 
 @example
 
-    % set funcs=(`global -c`)
-    % complete global 'n/*/$funcs/'
-    % global kmem_@kbd{TAB}
+    $ set funcs=(`global -c`)
+    $ complete global 'n/*/$funcs/'
+    $ global kmem_@kbd{TAB}
     kmem_alloc          kmem_free_wakeup
     kmem_alloc_pageable kmem_init
     kmem_alloc_wait     kmem_malloc
     kmem_free           kmem_suballoc
-    % global kmem_s@kbd{TAB}
-    % global kmem_suballoc
+    $ global kmem_s@kbd{TAB}
+    $ global kmem_suballoc
     ../vm/vm_kern.c
 
 @end example
@@ -497,7 +497,7 @@ one command, for example:
 
 @example
 
-    % vi `global func1`     # @r{edit fileB.c}
+    $ vi `global func1`     # @r{edit fileB.c}
 
 @end example
 
@@ -505,7 +505,7 @@ one command, for example:
 
 @example
 
-    % global -xr fork | awk '@{printf "view +%s %s\n",$2,$3@}'
+    $ global -xr fork | awk '@{printf "view +%s %s\n",$2,$3@}'
     view +650 ../dev/aic7xxx/aic7xxx_asm.c
     view +250 ibcs2/ibcs2_misc.c
     view +401 linux/linux_misc.c
@@ -513,7 +513,7 @@ one command, for example:
     view +318 ../kern/init_main.c
     view +336 ../kern/init_main.c
     view +351 ../kern/init_main.c
-    % !! | sh            # @r{from now on, go to next tag with 'ZZ'.}
+    $ !! | sh            # @r{from now on, go to next tag with 'ZZ'.}
 
 @end example
 
@@ -576,7 +576,7 @@ First, do the preparation of global. (Please see @xref{Preparation}.).
 And you can invoke bash(1) with ---rcfile option.
 @example
 
-    % bash --rcfile /usr/local/share/gtags/globash.rc
+    $ bash --rcfile /usr/local/share/gtags/globash.rc
 
 @end example
 
@@ -773,7 +773,7 @@ Second, to use global from less, you need to set environment variable
 
 @example
 
-    % setenv LESSGLOBALTAGS global
+    $ export LESSGLOBALTAGS=global
 
 @end example
 
@@ -785,7 +785,7 @@ Second, to use global from less, you need to set environment variable
 @item To go to func1, you can say
 @example
 
-    % less -t func1
+    $ less -t func1
 
 @end example
 
@@ -795,14 +795,14 @@ then please specify tag file explicitly like this.
 
 @example
 
-    % less -TGTAGS -t func1
+    $ less -TGTAGS -t func1
 
 @end example
 
 @item To go to the referenced point of func1, please specify @file{GRTAGS}.
 @example
 
-    % less -TGRTAGS -t func1
+    $ less -TGRTAGS -t func1
 
 @end example
 
@@ -835,7 +835,7 @@ But in this case, you cannot change tag file from one specified by
 It is very valuable. You can connect global and less with pipe line.
 @example
 
-    % global -x func | less -T-
+    $ global -x func | less -T-
 
 @end example
 
@@ -843,16 +843,16 @@ In the same way, you can use following command lines.
 
 @example
     # pattern match with grep(1).
-    % global -xg 'lseek(.*)' | less -T-
+    $ global -xg 'lseek(.*)' | less -T-
 
     # pattern match with id-utils(1).
-    % global -xI func | less -T-
+    $ global -xI func | less -T-
 
     # all objects definitions in *.c.
-    % global -f *.c | less -T-
+    $ global -f *.c | less -T-
 
     # all files includes 'init' in its path.
-    % global -Px init | less -T-
+    $ global -Px init | less -T-
 @end example
 
 @item If your editor doesn't support GLOBAL directly then you can use less
@@ -860,7 +860,7 @@ as a footstool.
 
 @example
     # invoke less
-    % less -t main
+    $ less -t main
     main(int argc, char **argv)
     @{
     int i;
@@ -935,7 +935,7 @@ Start nvi with @samp{-G} option
 
 @example
 
-    % nvi -G file.c
+    $ nvi -G file.c
 
 @end example
 
@@ -944,7 +944,7 @@ Start nvi and execute @code{set gtagsmode}.
 
 @example
 
-    % nvi file.c
+    $ nvi file.c
     ~
     ~
     ~
@@ -1047,7 +1047,7 @@ Display the tags stack.
 @item In large projects that include many main() function like MH, you can start nvi like this:
 @example
 
-    % nvi -G -t main
+    $ nvi -G -t main
 
 @end example
 You can browse all commands sequentially.
@@ -1055,7 +1055,7 @@ You can browse all commands sequentially.
 @item When you want to check objects the name of which start with "set" or "get", use:
 @example
 
-    % nvi -G -t '^[sg]et'
+    $ nvi -G -t '^[sg]et'
 
 @end example
 
@@ -1070,12 +1070,12 @@ Of course, the following command is also available:
 the following:
 @example
 
-    % mkdir /var/dbpath             # @r{directory for the tag file}
-    % cd /cdrom/src                 # @r{the root of the source tree}
-    % gtags /var/dbpath             # @r{make tag files in /var/dbpath}
-    % setenv GTAGSROOT `pwd`
-    % setenv GTAGSDBPATH /var/dbpath
-    % nvi -G -t main
+    $ mkdir /var/dbpath             # @r{directory for the tag file}
+    $ cd /cdrom/src                 # @r{the root of the source tree}
+    $ gtags /var/dbpath             # @r{make tag files in /var/dbpath}
+    $ export GTAGSROOT=`pwd`
+    $ export GTAGSDBPATH=/var/dbpath
+    $ nvi -G -t main
 
 @end example
 
@@ -1084,19 +1084,19 @@ the following:
         do the following:
 @example
 
-    % cd /usr/src/lib
-    % gtags                         # @r{probably as a root}
-    % cd /usr/src/sys
-    % gtags
-    % setenv GTAGSLIBPATH /usr/src/lib:/usr/src/sys
+    $ cd /usr/src/lib
+    $ gtags                         # @r{probably as a root}
+    $ cd /usr/src/sys
+    $ gtags
+    $ export GTAGSLIBPATH=/usr/src/lib:/usr/src/sys
 
 @end example
 @item If you examine vi's source,
 @example
 
-    % cd /usr/src/usr.bin/vi
-    % gtags
-    % nvi -G -t main
+    $ cd /usr/src/usr.bin/vi
+    $ gtags
+    $ nvi -G -t main
 
 @end example
 
@@ -1280,7 +1280,7 @@ Second, start elvis and execute @code{set tagprg="global -t $1"} like this.
 
 @example
 
-    % elvis
+    $ elvis
     ~
     ~
     ~
@@ -1473,7 +1473,7 @@ from your vimrc.
 
 @example
 
-    % cp /usr/local/share/gtags/gtags.vim ~/.vim/plugin
+    $ cp /usr/local/share/gtags/gtags.vim $HOME/.vim/plugin
 
 @end example
 
@@ -1647,7 +1647,7 @@ If you are editing @file{main.c} itself, you can use '%' instead.
 
 @example
 
-    % vim '+Gtags main'
+    $ vim '+Gtags main'
 
 @end example
 @end itemize
@@ -1704,7 +1704,7 @@ and execute gtags-mode function in it.
     |(setq load-path (cons "/home/owner/global" load-path))
     |(autoload 'gtags-mode "gtags" "" t)
     
-    % emacs
+    $ emacs
     
     |
     |J_:-----Mule: *scratch*       (Lisp Interaction)--L16--All----
@@ -1828,12 +1828,12 @@ otherwise it is equivalent to @kbd{Find tag: @var{current token}RET}.
      the following:
 @example
 
-    % mkdir /var/dbpath             # @r{directory for the tag file}
-    % cd /cdrom/src                 # @r{the root of the source tree}
-    % gtags /var/dbpath             # @r{make tag files in /var/dbpath}
-    % setenv GTAGSROOT `pwd`
-    % setenv GTAGSDBPATH /var/dbpath
-    % emacs -f gtags-mode
+    $ mkdir /var/dbpath             # @r{directory for the tag file}
+    $ cd /cdrom/src                 # @r{the root of the source tree}
+    $ gtags /var/dbpath             # @r{make tag files in /var/dbpath}
+    $ export GTAGSROOT=`pwd`
+    $ export GTAGSDBPATH=/var/dbpath
+    $ emacs -f gtags-mode
 
 @end example
 
@@ -1843,12 +1843,12 @@ otherwise it is equivalent to @kbd{Find tag: @var{current token}RET}.
  
 @example
 
-    % cd /usr/src/lib
-    % gtags                         <- @r{probably as a root}
-    % cd /usr/src/sys
-    % gtags
-    % setenv GTAGSLIBPATH /usr/src/lib:/usr/src/sys
-    % emacs -f gtags-mode
+    $ cd /usr/src/lib
+    $ gtags                         <- @r{probably as a root}
+    $ cd /usr/src/sys
+    $ gtags
+    $ export GTAGSLIBPATH=/usr/src/lib:/usr/src/sys
+    $ emacs -f gtags-mode
 
 @end example
 
@@ -1916,8 +1916,8 @@ in order like this:
 @example
 
     (at your source directory)
-    % gtags                 # @r{make the tag database(GTAGS,GRTAGS,GSYMS)}
-    % htags                 # @r{make the hypertext(HTML/)}
+    $ gtags                 # @r{make the tag database(GTAGS,GRTAGS,GSYMS)}
+    $ htags                 # @r{make the hypertext(HTML/)}
 
 @end example
 
@@ -1932,7 +1932,7 @@ Please start a web browser like this:
 
 @example
 
-    % lynx HTML/index.html
+    $ lynx HTML/index.html
 
 @end example
 
@@ -1944,10 +1944,10 @@ source code.
 Using mozilla, you can also utilize hypertext from your command line like this:
 @example
 
-    % mozilla				# @r{load mozilla}
-    % global -x main
+    $ mozilla				# @r{load mozilla}
+    $ global -x main
     main        10 main.c main(int argc, char *argv[]) @{
-    % gozilla +10 main.c		# @r{usage is similar to vi editor.}
+    $ gozilla +10 main.c		# @r{usage is similar to vi editor.}
     (show main.c at 10 on mozilla's screen.)
     
 @end example
@@ -1977,8 +1977,8 @@ You can customize GLOBAL using configuration file.
     # cp gtags.conf /etc/gtags.conf         # system wide configuration file.
     # vi /etc/gtags.conf
 
-    % cp gtags.conf $HOME/.globalrc         # personal configuration file.
-    % vi $HOME/.globalrc
+    $ cp gtags.conf $HOME/.globalrc         # personal configuration file.
+    $ vi $HOME/.globalrc
 
 @end example
 
@@ -2001,12 +2001,12 @@ by Emacs),
 
 @example
 
-    % cd /@var{emacs source directory}/lib-src
-    % make ctags
+    $ cd /@var{emacs source directory}/lib-src
+    $ make ctags
     # cp ctags /usr/local/bin/ctags-emacs
-    % setenv GTAGSLABEL ctags-emacs         # @r{see gtags.conf}
-    % gtags
-    % ls G*
+    $ export GTAGSLABEL=ctags-emacs         # @r{see gtags.conf}
+    $ gtags
+    $ ls G*
     GPATH   GTAGS
 
 @end example
@@ -2015,13 +2015,13 @@ Or if you would like to use exuberant ctags (included by Vim editor),
 
 @example
 
-    % cd /@var{vim source directory}/src/ctags
-    % cp Makefile.unix Makefile
-    % make
+    $ cd /@var{vim source directory}/src/ctags
+    $ cp Makefile.unix Makefile
+    $ make
     # cp ctags /usr/local/bin/ctags-exuberant
-    % setenv GTAGSLABEL ctags-exuberant     # @r{see gtags.conf}
-    % gtags
-    % ls G*
+    $ export GTAGSLABEL=ctags-exuberant     # @r{see gtags.conf}
+    $ gtags
+    $ ls G*
     GPATH   GTAGS
 
 @end example
@@ -2061,7 +2061,7 @@ You can save disk space with the compact format.
 @opindex -c
 @example
 
-    % gtags -c
+    $ gtags -c
 
 @end example
 
@@ -2080,7 +2080,7 @@ You can save disk space with the compact format.
 @opindex -c
 @example
 
-    % htags -c
+    $ htags -c
 
 @end example
 
@@ -2115,19 +2115,19 @@ Instead, you can use incremental updating facility (@samp{-u} option).
 @opindex -u
 @example
 
-    % gtags
-    % cd kern
-    % vi tty.c                              # @r{modify tty.c}
+    $ gtags
+    $ cd kern
+    $ vi tty.c                              # @r{modify tty.c}
     ...
     :wq
-    % global -vu                            # @r{-v means verbose}
+    $ global -vu                            # @r{-v means verbose}
     [Sun Dec  6 16:27:47 JST 1998] Gtags started
      Tag found in '/usr/src/sys'.
      Incremental update.
      Updating tags of 'kern/tty.c' ...GTAGS..GRTAGS..GSYMS.. Done.
      Global databases have been modified.
     [Sun Dec  6 16:28:30 JST 1998] Done.
-    % global -vu                            # @r{try again}
+    $ global -vu                            # @r{try again}
     [Sun Dec  6 16:28:48 JST 1998] Gtags started
      Tag found in '/usr/src/sys'.
      Incremental update.
