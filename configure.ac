@@ -30,6 +30,11 @@ AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 AC_PROG_RANLIB
+dnl
+dnl GLOBAL needs following tools for execution.
+dnl	perl, sed, sort
+dnl (Find is no longer needed.)
+dnl
 AC_PATH_PROG(PERL, perl, no)
 if test ${ac_cv_path_PERL} = no; then
 	AC_MSG_ERROR([PERL is required but not found.])
@@ -45,8 +50,6 @@ fi
 AC_PATH_PROG(FIND, find, no)
 if test ${ac_cv_path_FIND} != no; then
 	AC_DEFINE(HAVE_FIND,1,[Define if your system have find(1).])
-else
-	AC_MSG_ERROR([FIND is required but not found.])
 fi
 
 dnl Checks for libraries.
