@@ -99,7 +99,7 @@ makedefineindex(file, total, defines)
 	snprintf(command, sizeof(command), "global -c");
 	if ((TAGS = popen(command, "r")) == NULL)
 		die("cannot fork.");
-	alpha[0] = NULL;
+	alpha[0] = '\0';
 	while ((_ = strbuf_fgets(sb, TAGS, STRBUF_NOCRLF)) != NULL) {
 		char *line, *tag;
 		char guide[1024], url_for_map[1024];
@@ -107,7 +107,7 @@ makedefineindex(file, total, defines)
 		count++;
 		tag = _;
 		message(" [%d/%d] adding %s", count, total, tag);
-		if (aflag && (alpha[0] == NULL || strncmp(tag, alpha, strlen(alpha)))) {
+		if (aflag && (alpha[0] == '\0' || strncmp(tag, alpha, strlen(alpha)))) {
 			char *msg = (alpha_count == 1) ? "definition is containded." : "definitions are containded.";
 
 			if (alpha[0]) {
