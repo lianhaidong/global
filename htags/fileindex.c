@@ -634,7 +634,7 @@ makefileindex(file, files)
 	fprintf(FILES, "%s\n", html_begin);
 	fprintf(FILES, set_header(title_file_index));
 	fprintf(FILES, "%s\n", body_begin);
-	fprintf(FILES, "<h2><a href='files.%s'>%s</a></h2>\n", normal_suffix, title_file_index);
+	fprintf(FILES, "%s<a href='files.%s'>%s</a>%s\n", header_begin, normal_suffix, title_file_index, header_end);
 	if (!no_order_list)
 		fprintf(FILES, "%s\n", list_begin);
 	STDOUT = FILES;
@@ -733,8 +733,7 @@ makefileindex(file, files)
 				strbuf_putc(sb, '/');
 				fprintf(STDOUT, set_header(strbuf_value(sb)));
 				fprintf(STDOUT, "%s\n", body_begin);
-				fprintf(STDOUT, "<h2>");
-				fprintf(STDOUT, "<a href='%s'>root</a>/", indexlink);
+				fprintf(STDOUT, "%s<a href='%s'>root</a>/", header_begin, indexlink);
 				{
 					struct dirstack *p = make_stack("tmp");
 					char *s;
@@ -752,7 +751,7 @@ makefileindex(file, files)
 					}
 					delete_stack(p);
 				}
-				fprintf(STDOUT, "</h2>\n");
+				fprintf(STDOUT, "%s\n", header_end);
 				fprintf(STDOUT, "<a href='%s' title='Parent Directory'>", parent);
 				if (icon_list)
 					fprintf(STDOUT, "<img src='../icons/%s.%s' alt='[..]' %s>", back_icon, icon_suffix, icon_spec);

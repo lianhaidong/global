@@ -715,7 +715,7 @@ src2html(src, html, notsource)
 	/*
          * print the header
          */
-        fputs("<a name='TOP'><h2>", out);
+        fprintf(out, "<a name='TOP'>%s", header_begin);
         fputs(fill_anchor(indexlink, src), out);
 	if (cvsweb_url) {
 		static STRBUF *sb = NULL;
@@ -736,10 +736,10 @@ src2html(src, html, notsource)
         	fprintf(out, "%s<a href='%s%s", quote_space, cvsweb_url, strbuf_value(sb));
 		if (cvsweb_cvsroot)
         		fprintf(out, "?cvsroot=%s", cvsweb_cvsroot);
-        	fprintf(out, "'><font size='-1'>[CVS]</font></a>\n");
+        	fprintf(out, "'>%s[CVS]%s</a>\n", cvslink_begin, cvslink_end);
 		/* doesn't close string buffer */
 	}
-	fprintf(out, "</h2>\n");
+	fprintf(out, "%s\n", header_end);
         fprintf(out, "%s/* ", comment_begin);
 
 	fputs(link_format(anchor_getlinks(0)), out);
@@ -794,7 +794,7 @@ src2html(src, html, notsource)
 			basename = src;
 		incref = get_included(basename);
 		if (incref) {
-			fputs("<h2><a href='", out);
+			fprintf(out, "%s<a href='", header_begin);
 			if (incref->count > 1) {
 				char s_count[32];
 
@@ -817,7 +817,7 @@ src2html(src, html, notsource)
 				fprintf(out, "' title='%s'>", tooltip('I', atoi(lno), filename));
 				*save = ' ';
 			}
-			fprintf(out, "%s</a></h2>\n", title_included_from);
+			fprintf(out, "%s</a>%s\n", title_included_from, header_end);
 			fprintf(out, "%s\n", hr);
 		}
 		/*
@@ -829,19 +829,18 @@ src2html(src, html, notsource)
 			define_index = strbuf_open(0);
 		for (ancref = anchor_first(); ancref; ancref = anchor_next()) {
 			if (ancref->type == 'D') {
-				strbuf_sprintf(define_index, "<li><a href='#%d' title='%s'>%s</a>\n",
+				strbuf_sprintf(define_index, "%s<a href='#%d' title='%s'>%s</a>%s\n",
+					item_begin,
 					ancref->lineno,
 					tooltip('R', ancref->lineno, NULL),
-					gettag(ancref));
+					gettag(ancref),
+					item_end);
 			}
 		}
 		if (strbuf_getlen(define_index) > 0) {
-			fprintf(out, "<h2>%s</h2>\n", title_define_index);
+			fprintf(out, "%s%s%s\n", header_begin, title_define_index, header_end);
 			fputs("This source file includes following definitions.\n", out);
-			fputs("<ol>\n", out);
-			fputs(strbuf_value(define_index), out);
-			fputs("</ol>\n", out);
-			fprintf(out, "%s\n", hr);
+			fprintf(out, "%s\n%s%s\n%s\n", list_begin, strbuf_value(define_index), list_end, hr);
 		}
 		/*
 		 * print source code

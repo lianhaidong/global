@@ -74,9 +74,9 @@ makedefineindex(file, total, defines)
 	fprintf(DEFINES, "%s", set_header(title_define_index));
 	fprintf(DEFINES, "%s\n", body_begin);
 	if (Fflag)
-		fprintf(DEFINES, "<h2><a href='defines.%s'>%s</a></h2>\n", normal_suffix, title_define_index);
+		fprintf(DEFINES, "%s<a href='defines.%s'>%s</a>%s\n", header_begin, normal_suffix, title_define_index, header_end);
 	else
-		fprintf(DEFINES, "<h2>%s</h2>\n", title_define_index);
+		fprintf(DEFINES, "%s%s%s\n", header_begin, title_define_index, header_end);
 	if (!aflag && !Fflag) {
 		snprintf(indexlink, sizeof(indexlink), "mains.%s", normal_suffix);
 		fprintf(DEFINES, "<a href='%s' title='%s'>", indexlink, index_string);
@@ -176,7 +176,7 @@ makedefineindex(file, total, defines)
 			snprintf(buf, sizeof(buf), "[%s]", alpha);
 			fprintf(ALPHA, "%s", set_header(buf));
 			fprintf(ALPHA, "%s\n", body_begin);
-			fprintf(ALPHA, "<h2>[%s]</h2>\n", alpha);
+			fprintf(ALPHA, "%s[%s]%s\n", header_begin, alpha, header_end);
 			fprintf(ALPHA, "<a href='%s' title='%s'>", indexlink, index_string);
 			if (icon_list)
 				fprintf(ALPHA, "<img src='../icons/%s.%s' alt='[..]' %s>", back_icon, icon_suffix, icon_spec);

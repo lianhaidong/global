@@ -56,6 +56,12 @@ char *head_begin;
 char *head_end;
 char *title_begin;
 char *title_end;
+char *header_begin;
+char *header_end;
+char *cvslink_begin;
+char *cvslink_end;
+char *caution_begin;
+char *caution_end;
 char *list_begin;
 char *item_begin;
 char *item_end;
@@ -76,6 +82,10 @@ char *position_begin;
 char *position_end;
 char *warned_line_begin;
 char *warned_line_end;
+char *error_begin;
+char *error_end;
+char *message_begin;
+char *message_end;
 char *string_begin;
 char *string_end;
 char *quote_great;
@@ -98,6 +108,12 @@ setup_html()
 	head_end	= "</head>";
 	title_begin	= "<h1><font color='#cc0000'>";
 	title_end	= "</font></h1>";
+	header_begin	= "<h2>";
+	header_end	= "</h2>";
+	cvslink_begin	= "<font size='-1'>";
+	cvslink_end	= "</font>";
+	caution_begin	= "<center>\n<blockquote>";
+	caution_end	= "</blockquote>\n</center>";
 	list_begin	= "<ol>";
 	item_begin	= "<li>";
 	item_end	= "";
@@ -118,6 +134,10 @@ setup_html()
 	position_end	= "</font>";
 	warned_line_begin = "<span style='background-color:yellow'>";
 	warned_line_end   = "</span>";
+	error_begin     = "<h1><font color='#cc0000'>";
+	error_end       = "</font></h1>";
+	message_begin   = "<h3>";
+	message_end     = "</h3>";
 	string_begin	= "<u>";
 	string_end	= "</u>";
 	quote_great	= "&gt;";
@@ -171,13 +191,12 @@ set_header(title)
 		sb = strbuf_open(0);
 	else
 		strbuf_reset(sb);
-	strbuf_puts(sb, "<head>\n<title>");
-	strbuf_puts(sb, title);
-	strbuf_puts(sb, "</title>\n");
+	strbuf_sprintf(sb, "%s\n", head_begin);
+	strbuf_sprintf(sb, "<title>%s</title>\n", title);
 	strbuf_puts(sb, meta_record());
 	if (style_sheet)
 		strbuf_puts(sb, style_sheet);
-	strbuf_puts(sb, "</head>\n");
+	strbuf_sprintf(sb, "%s\n", head_end);
 
 	return strbuf_value(sb);
 }

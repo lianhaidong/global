@@ -21,8 +21,8 @@ print "@html_begin@\n";
 print "@body_begin@\n";
 $htmlbase = $ENV{'HTTP_REFERER'};
 if (!$htmlbase) {
-	print "<h1><font color='#cc0000'>Error</font></h1>\n";
-	print "<h3>Your browser doesn't send HTTP_REFERER.</h3>\n";
+	print "@error_begin@Error@error_end@\n";
+	print "@message_begin@Your browser doesn't send HTTP_REFERER.@message_end@\n";
 	print "@body_end@\n";
 	print "@html_end@\n";
 	exit 0;
@@ -32,8 +32,8 @@ $htmlbase =~ s!/defines$!!;
 $htmlbase =~ s!/S$!!;
 $htmlbase =~ s!/$!!;
 if (! -x '@globalpath@' || ! -x '@gtagspath@') {
-	print "<h1><font color='#cc0000'>Error</font></h1>\n";
-	print "<h3>Server side command not found. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a></h3>\n";
+	print "@error_begin@Error@error_end@\n";
+	print "@message_begin@Server side command not found. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a>@message_end@\n";
 	print "@body_end@\n";
 	print "@html_end@\n";
 	exit 0;
@@ -46,8 +46,8 @@ foreach $p (@pairs) {
 	$form{$name} = $value;
 }
 if ($form{'pattern'} eq '') {
-	print "<h1><font color='#cc0000'>Error</font></h1>\n";
-	print "<h3>Pattern not specified. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a></h3>\n";
+	print "@error_begin@Error@error_end@\n";
+	print "@message_begin@Pattern not specified. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a>@message_end@\n";
 	print "@body_end@\n";
 	print "@html_end@\n";
 	exit 0;
@@ -83,8 +83,8 @@ if ($form{'other'} && ($flag eq 'g' || $flag eq 'P')) {
 if ($form{'id'}) {
 	chdir("$form{'id'}/cgi-bin");
 	if ($?) {	
-		print "<h1><font color='#cc0000'>Error</font></h1>\n";
-		print "<h3>Couldn't find tag directory in secure mode. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a></h3>\n";
+		print "@error_begin@Error@error_end@\n";
+		print "@message_begin@Couldn't find tag directory in secure mode. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a>@message_end@\n";
 		print "@body_end@\n";
 		print "@html_end@\n";
 		exit 0;
@@ -95,16 +95,16 @@ if ($flag eq 'g' || $flag eq 'I' || $form{'type'} eq 'source' || ($flag eq 'P' &
 	 || ($flag eq 'I' && ! -f "../../ID")
 	 || ($form{'type'} eq 'source' && ! -f "../../GTAGS")
 	 || ($flag eq 'P' && $oflag && ! -f "../../GTAGS")) {
-		print "<h1><font color='#cc0000'>Error</font></h1>\n";
-		print "<h3>Couldn't execute command. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a></h3>\n";
+		print "@error_begin@Error@error_end@\n";
+		print "@message_begin@Couldn't execute command. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a>@message_end@\n";
 		print "@body_end@\n";
 		print "@html_end@\n";
 		exit 0;
 	}
 	chdir("../..");
 	if ($?) {	
-		print "<h1><font color='#cc0000'>Error</font></h1>\n";
-		print "<h3>Couldn't change directory for $form{'type'} search. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a></h3>\n";
+		print "@error_begin@Error@error_end@\n";
+		print "@message_begin@Couldn't change directory for $form{'type'} search. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a>@message_end@\n";
 		print "@body_end@\n";
 		print "@html_end@\n";
 		exit 0;
@@ -119,20 +119,20 @@ local(%ctab) = ('&', '&amp;', '<', '&lt;', '>', '&gt;');
 if ($form{'type'} eq 'source') {
 	open(PIPE, "-|") || exec '@gtagspath@', '--secure', '--expand', '-@tabs@', './'.$pattern;
 	if ($?) {	
-		print "<h1><font color='#cc0000'>Error</font></h1>\n";
-		print "<h3>Cannot execute gtags. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a></h3>\n";
+		print "@error_begin@Error@error_end@\n";
+		print "@message_begin@Cannot execute gtags. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a>@message_end@\n";
 		print "@body_end@\n";
 		print "@html_end@\n";
 		exit 0;
 	}
-	print "<pre>\n";
+	print "@verbatim_begin@\n";
 	while (<PIPE>) {
 		s/([&<>])/$ctab{$1}/ge;
 		print "<a name=$.>";
 		print;
 	}
 	close(PIPE);
-	print "</pre>\n";
+	print "@verbatim_end@\n";
 	print "@body_end@\n";
 	print "@html_end@\n";
 	exit 0;
@@ -142,22 +142,22 @@ if ($form{'type'} eq 'source') {
 #
 open(PIPE, "-|") || exec '@globalpath@', '-x'.$flag.$iflag.$oflag, '-e', $pattern;
 if ($?) {	
-	print "<h1><font color='#cc0000'>Error</font></h1>\n";
-	print "<h3>Cannot execute global. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a></h3>\n";
+	print "@error_begin@Error@error_end@\n";
+	print "@message_begin@Cannot execute global. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a>@message_end@\n";
 	print "@body_end@\n";
 	print "@html_end@\n";
 	exit 0;
 }
 $pattern =~ s/([&<>])/$ctab{$1}/ge;
-print "<h1><font color='#cc0000'>" . $pattern . "</font></h1>\n";
+print "@error_begin@" . $pattern . "@error_end@\n";
 print "Following $words are matched to above pattern.@hr@\n";
 $cnt = 0;
 local($tag, $lno, $filename, $fileno);
-print "<pre>\n";
+print "@verbatim_begin@\n";
 open(PIPEOUT, "| @gtagspath@ --convert");
 if ($?) {	
-	print "<h1><font color='#cc0000'>Error</font></h1>\n";
-	print "<h3>Cannot execute gtags --convert. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a></h3>\n";
+	print "@error_begin@Error@error_end@\n";
+	print "@message_begin@Cannot execute gtags --convert. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a>@message_end@\n";
 	print "@body_end@\n";
 	print "@html_end@\n";
 	exit 0;
@@ -174,9 +174,9 @@ while (<PIPE>) {
 $| = 1;	# flush buffer
 close(PIPE);
 close(PIPEOUT);
-print "</pre>\n";
+print "@verbatim_end@\n";
 if ($cnt == 0) {
-	print "<h3>Pattern not found. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a></h3>\n";
+	print "@message_begin@Pattern not found. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a>@message_end@\n";
 }
 print "@body_end@\n";
 print "@html_end@\n";
