@@ -110,7 +110,7 @@ dnl for Postgres support
 dnl
 AC_MSG_CHECKING(for postgres support)
 AC_ARG_WITH(postgres,
-[  --with-postgres[=DIR]   include postgres support ],
+[  --with-postgres[=DIR]     include postgres support ],
 [
         if test "$withval" = 'no'; then
                 AC_MSG_RESULT(no)
@@ -135,7 +135,7 @@ dnl for CFLAGS
 dnl
 AC_MSG_CHECKING(for optional CFLAGS)
 AC_ARG_WITH(cflags,
-[  --with-cflags[=VAL]     additional CFLAGS value ],
+[  --with-cflags[=VAL]       additional CFLAGS value ],
 [
         if test "$withval" = 'no'; then
         	AC_MSG_RESULT(no)
