@@ -40,6 +40,7 @@ other changes
 * global: the -T(--through) option added.
 * gtags, htags: --gtagsconf option added.
 * global.conf: 'htags_options' added.
+* globa.texi: the method to use vim with GLOBAL added.
 
 Version 4.0.1 - September 26, 2000, by Shigio Yamaguchi
 
