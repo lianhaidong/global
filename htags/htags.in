@@ -1181,7 +1181,7 @@ sub makedefineindex {
 	}
 	if (!$'aflag && !$'Fflag) {
 		$indexlink = "mains.$'normal_suffix";
-		print DEFINES "<A HREF=$indexlink>[index]</A>\n";
+		print DEFINES "<A HREF=$indexlink>[..]</A>\n";
 	}
 	print DEFINES "<OL>\n" if (!$'aflag);
 	local($old) = select(DEFINES);
@@ -1198,7 +1198,7 @@ sub makedefineindex {
 			if ($alpha) {
 				print ALPHA "</OL>\n";
 				print ALPHA "<A HREF=$indexlink>";
-				print ALPHA $'icon_list ? "<IMG SRC=../icons/$'back_icon ALT='[index]' HSPACE=3 BORDER=0>" : "[index]";
+				print ALPHA $'icon_list ? "<IMG SRC=../icons/$'back_icon ALT='[..]' HSPACE=3 BORDER=0>" : "[..]";
 				print ALPHA "</A>\n";
 				print ALPHA $'body_end, "\n";
 				print ALPHA $'html_end, "\n";
@@ -1230,7 +1230,7 @@ sub makedefineindex {
 			print ALPHA $'body_begin, "\n";
 			print ALPHA "<H2>[$alpha]</H2>\n";
 			print ALPHA "<A HREF=$indexlink>";
-			print ALPHA $'icon_list ? "<IMG SRC=../icons/$'back_icon ALT='[index]' HSPACE=3 BORDER=0>" : "[index]";
+			print ALPHA $'icon_list ? "<IMG SRC=../icons/$'back_icon ALT='[..]' HSPACE=3 BORDER=0>" : "[..]";
 			print ALPHA "</A>\n";
 			print ALPHA "<OL>\n";
 			select(ALPHA);
@@ -1250,7 +1250,7 @@ sub makedefineindex {
 	if ($'aflag) {
 		print ALPHA "</OL>\n";
 		print ALPHA "<A HREF=$indexlink>";
-		print ALPHA $'icon_list ? "<IMG SRC=../icons/$'back_icon ALT='[index]' HSPACE=3 BORDER=0>" : "[index]";
+		print ALPHA $'icon_list ? "<IMG SRC=../icons/$'back_icon ALT='[..]' HSPACE=3 BORDER=0>" : "[..]";
 		print ALPHA "</A>\n";
 		print ALPHA $'body_end, "\n";
 		print ALPHA $'html_end, "\n";
@@ -1260,7 +1260,7 @@ sub makedefineindex {
 	}
 	print DEFINES "</OL>\n" if (!$'aflag);
 	if (!$'aflag && !$'Fflag) {
-		print DEFINES "<A HREF=$indexlink>[index]</A>\n";
+		print DEFINES "<A HREF=$indexlink>[..]</A>\n";
 	}
 	print DEFINES $'body_end, "\n";
 	print DEFINES $'html_end, "\n";
