@@ -395,7 +395,7 @@ char	*argv[];
 	} else if (do_expand) {
 		/*
 		 * The 'gtags --expand' is nearly equivalent with 'expand'.
-		 * We made this command to decrease dependency to an external
+		 * We made this command to decrease dependency to external
 		 * command. But now, the --secure option use this command
 		 * positively.
 		 */
@@ -433,6 +433,18 @@ char	*argv[];
 		fprintf(stdout, "%s\n", cwd);
 		exit(0);
 	} else if (do_find) {
+		/*
+		 * This code is used by htags(1) to traverse file system.
+		 *
+		 * If the --other option is not specified, 'gtags --find'
+		 * read GPATH instead of traversing file. But if the option
+		 * is specified, it traverse file system every time.
+		 * It is because gtags doesn't record the paths other than
+		 * source file in GPATH.
+		 * Since it is slow, gtags should record not only source
+		 * files but also other files in GPATH in the future.
+		 * But it needs adding a new format version.
+		 */
 		char	*path;
 		char *local = (argc) ? argv[0] : NULL;
 
