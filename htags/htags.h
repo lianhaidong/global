@@ -63,7 +63,6 @@ extern char dbpath[MAXPATHLEN];
 extern char distpath[MAXPATHLEN];
 extern char gtagsconf[MAXPATHLEN];
 
-extern char sed_path[MAXFILLEN];
 extern char sort_path[MAXFILLEN];
 extern char gtags_path[MAXFILLEN];
 extern char global_path[MAXFILLEN];
