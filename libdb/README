@@ -1,0 +1,2 @@
+Btree library derived from db(3) 1.85 with patch 2, 3, 4 applied.
+Some code was modified for compatibility.
