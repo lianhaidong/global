@@ -446,7 +446,7 @@ gtags_add(gtop, comline, path, flags)
 	char *fid;
 
 	/*
-	 * get command name of sort and sed.
+	 * get command name of sort.
 	 */
 	if (!getconfs("sort_command", sort_command))
 		die("cannot get sort command name.");
