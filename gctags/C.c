@@ -332,11 +332,10 @@ C(yacc)
 						default:
 							break;
 						}
-						if (c == ';') {
-							if (savetok[0])
+						if (c == ';' && level == typedef_savelevel) {
+							if (savetok[0] && target == DEF)
 								PUT(savetok, savelineno, sp);
-							if (level == typedef_savelevel)
-								break;
+							break;
 						} else if (c == '{')
 							level++;
 						else if (c == '}') {
