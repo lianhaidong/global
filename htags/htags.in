@@ -69,7 +69,6 @@ $'icon_list = '';				# use icon for file index
 $'icon_spec = 'BORDER=0 ALIGN=middle';		# parameter in IMG tag
 $'prolog_script = '';				# include script at first
 $'epilog_script = '';				# include script at last
-$'use_javascript = 1;				# use javascript
 $'show_position = 0;				# show current position
 $'table_list = 0;				# tag list using table tag
 $'colorize_warned_line = 0;			# colorize warned line
@@ -220,9 +219,6 @@ if ($var1 = &'getconf('prolog_script')) {
 if ($var1 = &'getconf('epilog_script')) {
 	$'epilog_script = $var1;
 }
-if (&'getconf('no_javascript')) {
-	$'use_javascript = 0;
-}
 if (&'getconf('no_map_file')) {
 	$'map_file = 0;
 }
@@ -318,37 +314,6 @@ $file_icon = 'c.jpg';
 		'Return to index page.',
 		'You are seeing now.',
 );
-#-------------------------------------------------------------------------
-# JAVASCRIPT PARTS
-#-------------------------------------------------------------------------
-$'begin_script="<SCRIPT LANGUAGE=javascript>\n<!--\n";
-$'end_script="<!-- end of script -->\n</SCRIPT>\n";
-# staus line
-$'status_line  =
-"function show(type, lno, file) {\n" .
-"	if (lno > 0) {\n" .
-"		if (type == 'R')\n" .
-"			msg = 'Defined at';\n" .
-"		else if (type == 'Y')\n" .
-"			msg = 'Used at';\n" .
-"		else\n" .
-"			msg = 'Refered from';\n" .
-"		msg += ' ' + lno;\n" .
-"		if (file != '')\n" .
-"			msg += ' in ' + file;\n" .
-"	} else {\n" .
-"		msg = 'Multiple ';\n" .
-"		if (type == 'R')\n" .
-"			msg += 'defined';\n" .
-"		else if (type == 'Y')\n" .
-"			msg += 'used';\n" .
-"		else\n" .
-"			msg += 'refered';\n" .
-"	}\n" .
-"	msg += '.';\n" .
-"	self.status = msg;\n" .
-"}\n";
-
 #
 # This is alternative for title string.
 #
@@ -537,17 +502,11 @@ sub path2url {
 # return header.
 #
 sub set_header {
-	local($title, $javascript) = @_;
+	local($title) = @_;
 	local($head) = '';
 	$head .= "<HEAD>\n";
 	$head .= "<TITLE>$title</TITLE>\n";
 	$head .= "$'meta_robots\n$'meta_generator\n";
-	if ($javascript && $'use_javascript) {
-		$head .= $'begin_script;
-		$head .= "self.defaultStatus = '$title'\n";
-		$head .= $'status_line;
-		$head .= $'end_script;	
-	}
 	$head .= $'style_sheet if ($'style_sheet);
 	$head .= "</HEAD>\n";
 	$head;
@@ -675,8 +634,6 @@ while ($ARGV[0] =~ /^-/) {
 		$'symbol = 1;
 	} elsif ($opt =~ /^--symbols$/) {	# for backward compatibility
 		$'symbol = 1;
-	} elsif ($opt =~ /^--no-javascript$/) {
-		$'use_javascript = 0;
 	} elsif ($opt =~ /^--verbose$/) {
 		$'vflag = 'v';
 	} elsif ($opt =~ /^--warning$/) {
@@ -2138,7 +2095,7 @@ sub src2html {
 	$file =~ s/^\.\///;
 
 	print $'html_begin, "\n";
-	print &'set_header($file, 1);		# 1: use javascript
+	print &'set_header($file);
 	print $'body_begin, "\n";
 	if ($notsource) {
 		if ($'cvsweb_url) {
@@ -2181,7 +2138,6 @@ sub src2html {
 			if ($type eq 'D') {
 				$define_index .= "<LI><A HREF=#$lno";
 				$define_index .= " title=\"" . &'show('R',$lno,'') . "\"";
-				$define_index .= " onMouseOver=\"show('R',$lno,'')\"" if ($'use_javascript);
 				$define_index .=  ">$tag</A>\n";
 			}
 		}
@@ -2298,7 +2254,6 @@ sub src2html {
 						}
 						$href = "<A HREF=$url";
 						$href .= " title=\"" . &'show($TYPE,-1,'') . "\"";
-						$href .= " onMouseOver=\"show('$TYPE',-1,'')\"" if ($'use_javascript);
 						$href .= ">$TAG</A>";
 					} else {
 						local($lno, $filename) = split(/[ \t]+/, $line);
@@ -2306,7 +2261,6 @@ sub src2html {
 						$filename =~ s!\./!!; 
 						$href = "<A HREF=../$'SRCS/$url#$lno";
 						$href .= " title=\"" . &'show($TYPE,$lno,$filename) . "\"";
-						$href .= " onMouseOver=\"show('$TYPE',$lno,'$filename')\"" if ($'use_javascript);
 						$href .= ">$TAG</A>";
 					}
 					# set tag marks and save hyperlink into @links

@@ -88,9 +88,6 @@
 		Specify the main function name. The default is @code{main}.
 	@item{@option{-n}, @option{--line-number}}
 		Print the line numbers. By default, doesn't print it.
-	@item{@option{--no-javascript}}
-		Doesn't generate javascript code.
-		By default, @name{htags} generates javascript code.
 	@item{@option{--no-map-file}}
 		Doesn't generate @file{MAP} file. By default, @name{htags} generates it.
 	@item{@option{-o}, @option{--other}}
