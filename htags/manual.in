@@ -93,6 +93,8 @@
 	@item{@option{-o}, @option{--other}}
 		Pick up not only source files but also other files except for
 		binary files.
+	@item{@option{--statistics}}
+		Print statistics information.
 	@item{@option{--style-sheet} @arg{file}}
 		Load style sheet file and insert it into <HEAD> tag.
 	@item{@option{-s}, @option{--symbol}}
