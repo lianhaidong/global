@@ -577,7 +577,7 @@ First, do the preparation of global. (Please see @xref{Preparation}.).
 And you can invoke bash(1) with ---rcfile option.
 @example
 
-    % bash --rcfile globash.rc
+    % bash --rcfile /usr/local/share/gtags/globash.rc
 
 @end example
 
