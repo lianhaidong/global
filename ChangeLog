@@ -4,7 +4,8 @@ ___________________________________
 |  |   |  |  |  |  |     |     |  |
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Copyright (c) 2000, 2001, 2002, 2003, 2004 Tama Communications Corporation
+ Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005
+	Tama Communications Corporation
 
  This file is free software; as a special exception the author gives
  unlimited permission to copy and/or distribute it, with or without
@@ -17,6 +18,20 @@ ___________________________________
 		----------------------------------
 
 ChangeLog about GNU GLOBAL
+
+February 26 2005, Shigio Yamaguchi
+
+        * Required version of autotools was updated.
+          - autoconf 2.59
+          - automake 1.9.3
+          Configure.ac was modified according to the new style.
+        * Install gtags.el into the site lisp directory.
+        * When child process terminates abnormally, the program
+          execution is ended.
+        * The gctags directory was renamed to gtags-parser according to
+          the renaming of the command.
+        * gtags-parser: Modified to use a switch table for switching
+          language.
 
 November 11 2004, Shigio Yamaguchi
 
