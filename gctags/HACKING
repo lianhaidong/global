@@ -20,7 +20,7 @@ ___________________________________
 
 You need to have the following package installed:
 
-	- GNU flex
+	- flex
 	- GNU gperf
 
 (1) Generate gperf(1) source from each reserved word file.
