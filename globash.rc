@@ -281,16 +281,18 @@ __gtags_select_cookie() {
 
 	if [ ! -s $COOKIE ]; then
 		echo "Cookie not found."
-		return
+		return 1
 	fi
 	select selection in `cat $COOKIE`; do
 		if [ $selection ]; then
 			break
 		else
 			echo "Invalid selection."
+			return 1
 		fi
 	done
 	cd $selection
+	return 0
 }
 __gtags_warp_cookie() {
 	__gtags_load_cookie
@@ -302,7 +304,7 @@ __gtags_warp_cookie() {
 			n=$1
 		else
 			echo "Out of range."
-			return
+			return 1
 		fi
 	else
 		case $1 in
@@ -312,12 +314,13 @@ __gtags_warp_cookie() {
 			n=$size;;
 		'')	n=1;;
 		*)	echo "Such cookie not found."
-			return
+			return 1
 			;;
 		esac
 	fi
 	(( --n ))
 	cd ${__gtags_cookie[$n]}
+	return 0
 }
 cookie() {
 	case $1 in
@@ -355,7 +358,7 @@ __gtags_edit_marked_file()
 		filter=`global --filter -x`
 		case $filter in
 		'')	echo "Cannot get internal filter."
-			return;;
+			return 1;;
 		esac
 		com="cat $MARKER | $filter | sed -n '${1}p'"
 		line=$( eval $com )
@@ -363,18 +366,19 @@ __gtags_edit_marked_file()
 			set $line
 			${EDITOR-vi} +$2 $3
 		fi
-		return
 	fi
+	return 0
 }
 __gtags_add_maker()
 {
 	if [ "$__gtags_current" = "" ]; then
 		echo "No current tag."
-		return
+		return 1
 	fi
 	if [ -s $XREF ]; then
 		cat $XREF | sed -n "${__gtags_current}p" >> $MARKER
 	fi
+	return 0
 }
 mark()
 {
@@ -386,7 +390,7 @@ mark()
 			filter=`global --filter -x`
 			case $filter in
 			'')	echo "Cannot get internal filter."
-				return;;
+				return 1;;
 			esac
 			com="cat $MARKER | $filter | cat -n"
 			eval $com
@@ -464,6 +468,7 @@ __gtags_gen_xref()
 			__gtags_count=`wc -l < $XREF | sed 's/ //g'`
 		else
 			echo "tag not specified."
+			return 1
 		fi
 	elif [ "$__gtags_count" = "" ]; then
 		__gtags_count=1
@@ -482,7 +487,7 @@ __gtags_list_xref()
 	esac
 	case $filter in
 	'')	echo "Cannot get internal filter."
-		return;;
+		return 1;;
 	esac
 	com="cat $XREF | $filter | cat -n | sed '${__gtags_current}s/^ />/'"
 	if (( __gtags_count > LINES - 1 )); then
@@ -519,7 +524,7 @@ f() {
 	if [ "$1" = "" ]; then
 		if [ "$__gtags_prev_file" = "" ]; then
 			echo "file not specified."
-			return
+			return 1
 		fi
 		absolute=$__gtags_prev_file
 	else
@@ -527,7 +532,7 @@ f() {
 	fi
 	if [ ! -f $absolute ]; then
 		echo "file not found."
-		return
+		return 1
 	fi
 	__gtags_prev_file=$absolute
 	__gtags_push_stack
@@ -552,9 +557,12 @@ pop()
 		__gtags_list_xref
 	elif (( ${#__gtags_stack[@]} == 0 )); then
 		echo "The tags stack is empty."
+		return 1
 	else
 		echo "Too many pop count."
+		return 1
 	fi
+	return 0
 }
 __gtags_view_tag() {
 	if [ ! -s $XREF ]; then
@@ -581,7 +589,7 @@ __gtags_view_tag() {
 		next)
 			if (( __gtags_current == __gtags_count )); then
 				echo "Already at the last tag of this group."
-				return
+				return 1
 			fi
 			if __gtags_is_num $2; then
 				(( __gtags_current += $2 ))
