@@ -19,7 +19,7 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #
 prog='autoconf automake aclocal autoheader'	# required programs
-file='convert.pl configure.in Makefile.am'	# required files
+file='convert.pl configure.ac Makefile.am'	# required files
 
 echo "- File existent checking..."
 for f in `echo $file`; do
