@@ -713,7 +713,7 @@ makefileindex(file, files)
 					path2url(path),
 					path);
 				if (icon_list) {
-					strbuf_sprintf(sb, "<img src='%sicons/%s.%s' alt='[%s/]' hspace=3 %s>",
+					strbuf_sprintf(sb, "<img src='%sicons/%s.%s' alt='[%s/]' hspace='3' %s>",
 						count_stack(dirstack) == 1 ? "" : "../", dir_icon, icon_suffix, path, icon_spec);
 				}
 				strbuf_sprintf(sb, "%s/</a>\n", last);
