@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1996, 1997, 1998, 1999
+ * Copyright (c) 1998, 1999
  *             Shigio Yamaguchi. All rights reserved.
  * Copyright (c) 1999, 2000
  *             Tama Communications Corporation. All rights reserved.
