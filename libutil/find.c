@@ -75,7 +75,7 @@ static int	opened;
 static int	retval;
 
 static void	trim(char *);
-
+extern int	debug;
 /*
  * trim: remove blanks and '\'.
  */
@@ -248,6 +248,8 @@ ffindopen()
 		 * compile regular expression.
 		 */
 		retval = regcomp(suff, strbuf_value(sb), flags);
+		if (debug)
+			fprintf(stderr, "find regex: %s\n", strbuf_value(sb));
 		if (retval != 0)
 			die("cannot compile regular expression.");
 	}
@@ -278,6 +280,8 @@ ffindopen()
 		 * compile regular expression.
 		 */
 		retval = regcomp(skip, strbuf_value(sb), flags);
+		if (debug)
+			fprintf(stderr, "skip regex: %s\n", strbuf_value(sb));
 		if (retval != 0)
 			die("cannot compile regular expression.");
 	} else {
@@ -414,6 +418,8 @@ ffindopen()
 	}
 	strbuf_puts(sb, " \\) -print");
 	findcom = strbuf_value(sb);
+	if (debug)
+		fprintf(stderr, "find com: %s\n", findcom);
 
 	if (skiplist) {
 		char	*reg;
@@ -443,6 +449,8 @@ ffindopen()
 		 * compile regular expression.
 		 */
 		retval = regcomp(skip, reg, flags);
+		if (debug)
+			fprintf(stderr, "skip regex: %s\n", reg);
 		if (retval != 0)
 			die("cannot compile regular expression.");
 		strbuf_close(sbb);
