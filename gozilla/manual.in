@@ -31,7 +31,7 @@
 	@name{gozilla} [+no][-b browser][-p] file
 @DESCRIPTION
 	@name{Gozilla} force mozilla to display specified source
-	file as a hypertext. If mozilla has not loaded then gozilla loads it.
+	file as a hypertext.
 
 	In advance of using this command, [1] you must execute @xref{gtags,1}
 	and @xref{htags,1} at the root directory of the source tree
@@ -82,6 +82,8 @@
 		browser to use. By default, it is assumed mozilla.
 	@end_itemize
 @EXAMPLES
+	% gtags
+	% htags
 	% mozilla &
 	% global -x main
 	main              82 ctags.c          main(argc, argv)
