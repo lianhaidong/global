@@ -81,7 +81,7 @@ close_dup_file(op)
 	FILE *op;
 {
 	if (cflag) {
-		if (pclose(op) < 0)
+		if (pclose(op) != 0)
 			die("'%s' failed.", command);
 	} else {
 		fclose(op);
@@ -193,7 +193,7 @@ makedupindex()
 		}
 		if (db == GTAGS)
 			definition_count = count;
-		if (pclose(ip) < 0)
+		if (pclose(ip) != 0)
 			die("'%s' failed.", command);
 		if (writing) {
 			if (!dynamic) {

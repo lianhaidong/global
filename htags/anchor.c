@@ -140,7 +140,7 @@ anchor_load(file)
 			settag(a, tag);
 			recover(&ptable);
 		}
-		if (pclose(ip) < 0)
+		if (pclose(ip) != 0)
 			die("command '%s' failed.", command);
 	}
 	strbuf_close(sb);

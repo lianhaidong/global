@@ -139,7 +139,7 @@ close_file_queue(path)
 	if (file == NULL)
 		die("cannot close no existent file.");
 	if (file->compress) {
-		if (pclose(file->op) < 0) {
+		if (pclose(file->op) != 0) {
 			char command[MAXFILLEN];
 			snprintf(command, sizeof(command), "gzip -c >%s", file->path);
 			die("command '%s' failed.", command);
@@ -831,7 +831,7 @@ makefileindex(file, files)
 	}
 	if (map_file)
 		fclose(FILEMAP);
-	if (pclose(FIND) < 0)
+	if (pclose(FIND) != 0)
 		die("cannot traverse directory.(%s)", command);
 	while (count_stack(dirstack) > 0) {
 		char *parent;
@@ -934,7 +934,7 @@ makeincludeindex()
 		}
 		put_included(last, buf);
 	}
-	if (pclose(PIPE) < 0)
+	if (pclose(PIPE) != 0)
 		die("terminated abnormally.");
 
 	for (inc = first_inc(); inc; inc = next_inc()) {

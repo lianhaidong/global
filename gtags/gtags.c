@@ -465,7 +465,7 @@ main(argc, argv)
 				} while ((line = strbuf_fgets(ib, stdin, 0)) != NULL
 					&& match(strbuf_value(curtag), line));
 			}
-			if (pclose(op) < 0)
+			if (pclose(op) != 0)
 				die("terminated abnormally.");
 		}
 		exit(0);

@@ -130,7 +130,7 @@ makedefineindex(file, total, defines)
 				fprintf(ALPHA, "%s\n", body_end);
 				fprintf(ALPHA, "%s\n", html_end);
 				if (cflag) {
-					if (pclose(ALPHA) < 0)
+					if (pclose(ALPHA) != 0)
 						die("terminated abnormally.");
 				} else
 					fclose(ALPHA);
@@ -258,7 +258,7 @@ makedefineindex(file, total, defines)
 		if (map_file)
 			fprintf(MAP, "%s\t%s\n", tag, url_for_map);
 	}
-	if (pclose(TAGS) < 0)
+	if (pclose(TAGS) != 0)
 		die("'%s' failed.", command);
 	STDOUT = old;
 	if (aflag && alpha[0]) {

@@ -151,7 +151,7 @@ static void
 close_input_file(ip)
 	FILE *ip;
 {
-	if (pclose(ip) < 0)
+	if (pclose(ip) != 0)
 		die("command 'gtags --expand -%d' failed.", tabs);
 }
 /*
@@ -191,7 +191,7 @@ close_output_file(op)
 	FILE *op;
 {
 	if (cflag) {
-		if (pclose(op) < 0)
+		if (pclose(op) != 0)
 			die("command 'gzip -c' failed.");
 	} else
 		fclose(op);

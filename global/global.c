@@ -572,7 +572,7 @@ closefilter(op)
 FILE *op;
 {
 	if (op != stdout)
-		if (pclose(op) < 0)
+		if (pclose(op) != 0)
 			die("terminated abnormally.");
 }
 /*

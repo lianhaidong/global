@@ -751,7 +751,7 @@ makehtml(total)
 		snprintf(path, sizeof(path), "%s/%s/%s", distpath, SRCS, p);
 		src2html(_, path, notsource);
 	}
-	if (pclose(ip) < 0)
+	if (pclose(ip) != 0)
 		die("cannot traverse directory.(%s)", command);
 	strbuf_close(sb);
 }
@@ -867,7 +867,7 @@ makecommonpart(title, defines, files)
 	}
 	strbuf_puts(sb, gen_list_end());
 	strbuf_putc(sb, '\n');
-	if (pclose(ip) < 0)
+	if (pclose(ip) != 0)
 		die("cannot execute command '%s'.", command);
 	strbuf_sprintf(sb, "%s\n", hr);
 	if (aflag && !Fflag) {
@@ -1300,7 +1300,7 @@ save_environment(argc, argv)
 				strbuf_putc(save_c, *p);
 		}
 	}
-	if (pclose(ip) < 0)
+	if (pclose(ip) != 0)
 		die("cannot execute '%s'.", command);
 	strbuf_close(sb);
 	save_config = strbuf_value(save_c);
