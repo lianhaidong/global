@@ -2002,8 +2002,7 @@ Otherwise, you can make a suitable wrapper for the plug-in parser.
 @node   Compact format
 @section Compact format.
 
-You can save disk space with the compact format. The compact format
-needs source files.
+You can save disk space with the compact format.
 
 @itemize @bullet
 @item To specify the use of the compact format on the command line,
