@@ -20,15 +20,15 @@
  */
 
 /*
- * If dirent(3) is available, then use it to traverse directory tree.
- * Otherwise use find(1).
+ * If find(1) is available, then use it to traverse directory tree.
+ * Otherwise use dirent(3).
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
 #include <assert.h>
 #include <ctype.h>
-#ifdef HAVE_DIRENT_H
+#ifndef HAVE_FIND
 #include <sys/types.h>
 #include <dirent.h>
 #ifndef HAVE_DP_D_TYPE
@@ -321,7 +321,7 @@ skipthisfile(path)
 	}
 	return 0;
 }
-#ifdef HAVE_DIRENT_H
+#ifndef HAVE_FIND
 /*----------------------------------------------------------------------*/
 /* dirent version find_xxx()						*/
 /*----------------------------------------------------------------------*/
@@ -525,7 +525,7 @@ find_close(void)
 		regfree(skip);
 	opened = 0;
 }
-#else /* HAVE_DIRENT_H */
+#else /* !HAVE_FIND */
 /*----------------------------------------------------------------------*/
 /* find command version							*/
 /*----------------------------------------------------------------------*/
@@ -606,4 +606,4 @@ find_close(void)
 	if (skip)
 		regfree(skip);
 }
-#endif /* HAVE_DIRENT_H */
+#endif /* !HAVE_FIND */
