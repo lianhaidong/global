@@ -40,7 +40,9 @@ extern int nflag;
 extern int rflag;
 extern int sflag;
 extern int tflag;
+extern int vflag;
 extern int wflag;
+extern int debug;
 
 #define PUT(tag, lno, line) do {					\
 	DBG_PRINT(level, line);						\

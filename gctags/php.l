@@ -26,7 +26,11 @@
 #include <config.h>
 #endif
 #include <stdio.h>
+#ifdef HAVE_STDARG_H
 #include <stdarg.h>
+#else
+#include <varargs.h>
+#endif
 #ifdef STDC_HEADERS
 #include <stdlib.h>
 #endif
@@ -56,25 +60,36 @@
 #define PHP_LBRACK		'['
 #define PHP_RBRACK		']'
 
+#ifdef HAVE_STDARG_H
 static void debug_print(const char *, ...);
+#else
+static void debug_print();
+#endif
 
 static int level;			/* block nest level */
 static STRBUF *string;			/* string */
-extern int vflag;
-extern int wflag;
-extern int debug;
 
 /*
  * For debug.
  */
 static void
+#ifdef HAVE_STDARG_H
 debug_print(const char *s, ...)
+#else
+debug_print(s, va_alist)
+const char *s;
+va_dcl;
+#endif
 {
 	va_list ap;
 
 	if (!debug)
 		return;
+#ifdef HAVE_STDARG_H
 	va_start(ap, s);
+#else
+	va_start(ap);
+#endif
 	(void)vfprintf(stderr, s, ap);
 	va_end(ap);
 }
@@ -117,7 +132,7 @@ ALPHA		[a-zA-Z_\x80-\xff]
 ALPHANUM	[a-zA-Z_\x80-\xff0-9]
 WORD		{ALPHA}{ALPHANUM}*
 %start	PHP STRING LITERAL
-%option 8bit caseless noyywrap yylineno prefix="php"
+%option 8bit caseless noyywrap nounput yylineno prefix="php"
 %%
 \n			ECHO;
  /* Start PHP */
@@ -251,6 +266,7 @@ const char *file;
 	int token;
 	int target = (sflag) ? SYM : (rflag) ? REF : DEF;
 
+	level = 0;
 	string = strbuf_open(0);
 	if (linetable_open(file) == -1)
 		die("'%s' cannot open.", file);
