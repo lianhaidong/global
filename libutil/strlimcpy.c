@@ -35,21 +35,19 @@
  * NOTE: This function is similar to strlcpy() in OpenBSD
  * but was made to avoid compatibility problems.
  */
-int
+void
 strlimcpy(dist, source, size)
 char *dist;
 const char *source;
 const int size;
 {
-	int n = (int)size;
+	int n = (int)size - 1;
 	char *d = dist;
 
 	while (n--)
 		if (!(*d++ = *source++))
-			break;
-	if (n < 0)
+			return;
+	if (*source)
 		die("buffer overflow (strlimcpy).");
-	if (n < 0)
-		*d++ = '\0';
-	return d - dist - 1;
+	*d = '\0';
 }

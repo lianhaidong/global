@@ -22,6 +22,6 @@
 #ifndef _STRLIMCPY_H_
 #define _STRLIMCPY_H_
 
-int	strlimcpy(char *, const char *, const int);
+void	strlimcpy(char *, const char *, const int);
 
 #endif /* ! _STRLIMCPY_H_ */
