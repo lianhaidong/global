@@ -2575,7 +2575,12 @@ sub protect_line {
 			} else {
 				s/($quote.*)$/\003/;
 				push(@quoted_strings, $1);
-				$quote = '' if ($quote eq "'");
+				#
+				# Accept the single quoted string which
+				# consists of two or more lines for PHP
+				# support.
+				#
+				# $quote = '' if ($quote eq "'");
 			}
 		}
 	}
