@@ -26,7 +26,7 @@
 @HEADER	HTAGS,1,Mar 2003,GNU Project
 @NAME	htags - generate hypertext from source code.
 @SYNOPSIS
-	@name{htags} [-a][-c][-D][-f][-F][-g][-m][-n][-o][-s][-v][-w][-d @arg{dbpath}][-S @arg{cgidir}][-t @arg{title}][@arg{htmldir}]
+	@name{htags} [-a][-c][-D][-f][-F][-g][-n][-o][-s][-v][-w][-d @arg{dbpath}][-m @arg{name}][-S @arg{cgidir}][-t @arg{title}][@arg{htmldir}]
 @DESCRIPTION
 	@name{Htags} makes hypertext from C, C++, Yacc and Java source code.
 
@@ -73,7 +73,7 @@
 	@item{@option{--gtagslabel} @arg{label}}
 		@arg{label} is used as the label of configuration file.
 		The default is @code{default}.
-	@item{@option{-m}, @option{--main-func}}
+	@item{@option{-m}, @option{--main-func} @arg{name}}
 		Specify the main function name. The default is @code{main}.
 	@item{@option{-n}, @option{--line-number}}
 		Print the line numbers. By default, doesn't print it.
