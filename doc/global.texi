@@ -67,6 +67,7 @@ This manual documents version @value{VERSION} of the GLOBAL source code tag syst
 * Introduction::                        Overview of the tools.
 * Global::                              Command line GLOBAL.
 * GloBash::                             Global facility for Bash.
+* Less viewer::                         Less using GLOBAL.
 * Nvi editor::                          Extended nvi using GLOBAL.
 * Elvis editor::                        Elvis using GLOBAL.
 * Vim editor::                          Vim using GLOBAL.
@@ -718,6 +719,162 @@ current bash session.
 Cookie directories are valid until you delete them.
 
 @end itemize
+
+@c ***************************************************************************
+@c Less viewer
+@c ***************************************************************************
+@node Less viewer
+@chapter Less using GLOBAL.
+
+You can use GLOBAL as a tag system of Nvi editor instead of ctags.
+
+@menu
+* Features(less)::                       Features.
+* Preparation(less)::                    Preparation.
+* Basic usage(less)::                    Basic usage.
+* Applied usage(less)::                  Applied usage.
+@end menu
+
+@c ***************************************************************************
+@node   Features(less)
+@section Features.
+
+@itemize @bullet
+@item
+You can use most of GLOBAL's facilities from less-370 or the later.
+@item
+Less viewer support duplicated tag.
+@end itemize
+
+@c ***************************************************************************
+@node   Preparation(less)
+@section Preparation.
+
+First, do the preparation of global. (Please see @xref{Preparation}.).
+
+Second, to use global from less, you need to set environment variable
+@code{LESSGLOBALTAGS} to "global".
+
+@example
+
+    % setenv LESSGLOBALTAGS global
+
+@end example
+
+@c ***************************************************************************
+@node   Basic usage(less)
+@section Basic usage.
+
+@itemize @bullet
+@item To go to func1, you can say
+@example
+
+    % less -t func1
+
+@end example
+
+Please note that if @file{tags} exist then less use it.
+If you want to use @file{GTAGS} even if @file{tags} exist
+then please specify tag file explicitly like this.
+
+@example
+
+    % less -TGTAGS -t func1
+
+@end example
+
+@item To go to the referenced point of func1, please specify @file{GRTAGS}.
+@example
+
+    % less -TGRTAGS -t func1
+
+@end example
+
+In the same way, you can use @file{GTAGS}, @file{GRTAGS}, @file{GSYMS},
+@file{GPATH} as tag file.
+
+@item If a number of functions are located, less goes to the first tag.
+You can go to next tag by typing @kbd{t} and back by typing @kbd{T}.
+
+@table @code
+@item @kbd{t}
+go to next tag.
+@item @kbd{T}
+go to previous tag.
+@end table
+
+@item
+From less session, you can use @kbd{:t} command to locate new symbol.
+But in this case, you cannot change tag file from one specified by
+@kbd{-T} option.
+
+@end itemize
+
+@c ***************************************************************************
+@node   Applied usage(less)
+@section Applied usage.
+
+@itemize @bullet
+@item With @kbd{-T-} option, less read standard input as tag file.
+It is very valuable. You can connect global and less with pipe line.
+@example
+
+    % global -x func | less -T-
+
+@end example
+
+In the same way, you can use following command lines.
+
+@example
+    # pattern match with grep(1).
+    % global -xg 'lseek(.*)' | less -T-
+
+    # pattern match with idutils(1).
+    % global -xI func | less -T-
+
+    # all function definitions in *.c.
+    % global -f *.c | less -T-
+
+    # all files includes 'init' in its path.
+    % global -Px init | less -T-
+@end example
+
+@item If your editor doesn't support GLOBAL directly then you can use less
+as a footstool.
+
+@example
+    # invoke less
+    % less -t main
+    main(int argc, char **argv)
+    @{
+    int i;
+    .....
+    [xxx/main.c (tag 1 of 55)]
+
+    # type 'v'(vi) command in less session.
+    v
+
+    # load vi and show the same position.
+    .....
+    main((int argc, char **argv)
+    @{
+    int i;
+    .....
+    [xxx/main.c 313 lines, 7783 char]
+
+    # type 'ZZ' command in vi session.
+    ZZ
+
+    # exit vi and back to less session.
+    main(int argc, char **argv)
+    @{
+    int i;
+    .....
+    [xxx/main.c (tag 1 of 55)]
+@end example
+
+@end itemize
+
 @c ***************************************************************************
 @c Nvi editor
 @c ***************************************************************************
