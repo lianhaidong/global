@@ -214,7 +214,7 @@ if ($var1 = &'getconf('script_alias')) {
 	$'script_alias =~ s!/$!!;
 }
 if (&'getconf('symbols')) {
-	$'sflag = 's';
+	$'symbols = 1;
 }
 if (($var1 = &'getconf('body_begin')) && ($var2 = &'getconf('body_end'))) {
 	$'body_begin  = $var1;
@@ -318,12 +318,12 @@ $'INCS   = 'I';				# include file directory.
 $'SYMS   = 'Y';				# symbols directory.
 sub get_dirlist {
 	local(@dir) = (files, defines, $'SRCS, $'INCS, $'DEFS, ,$'REFS);
-	push(@dir, $'SYMS) if ($'sflag);
+	push(@dir, $'SYMS) if ($'symbols);
 	@dir;
 }
 sub get_taglist {
 	local(@tags) = ('GTAGS', 'GRTAGS');
-	push(@tags, 'GSYMS') if ($'sflag);
+	push(@tags, 'GSYMS') if ($'symbols);
 	@tags;
 }
 sub get_dirhash {
@@ -582,7 +582,7 @@ while ($ARGV[0] =~ /^-/) {
 	} elsif ($opt =~ /^--style-sheet$/) {
 		$'style_sheet = shift;
 	} elsif ($opt =~ /^--symbols$/) {
-		$'sflag = 's';
+		$'symbols = 1;
 	} elsif ($opt =~ /^--no-javascript$/) {
 		$'use_javascript = 0;
 	} elsif ($opt =~ /^--verbose$/) {
@@ -670,6 +670,9 @@ if ($'cflag && !&'usable('gzip')) {
 if ($'oflag) {
 	$'other_files = 1;
 }
+if ($'sflag) {
+	$'symbols = 1;
+}
 if (!$title) {
 	@cwd = split('/', &'getcwd);
 	$title = $cwd[$#cwd];
@@ -726,7 +729,7 @@ if (!$dbpath) {
 unless (-r "$dbpath/GTAGS" && -r "$dbpath/GRTAGS") {
 	&'error("GTAGS and/or GRTAGS not found. Htags needs both of them.");
 }
-if ($'sflag && ! -r "$dbpath/GSYMS") {
+if ($'symbols && ! -r "$dbpath/GSYMS") {
 	&'error("-s(--symbols) option needs GSYMS tag file.");
 }
 $dbpath = &'realpath($dbpath);
