@@ -155,15 +155,11 @@ makedupindex()
 				}				
 				/* single entry */
 				if (first_line[0]) {
-					char *lno, *filename;
-
 					if (split(first_line, 3, &ptable) < 3) {
 						recover(&ptable);
 						die("too small number of parts.(2)\n'%s'", _);
 					}
-					lno = ptable.part[1].start;
-					filename = ptable.part[2].start;
-					snprintf(buf, sizeof(buf), "%s %s", lno, filename);
+					snprintf(buf, sizeof(buf), "%s %s", ptable.part[PART_LNO].start, ptable.part[PART_PATH].start);
 					cache_put(db, prev, buf);
 					recover(&ptable);
 				}
@@ -215,15 +211,12 @@ makedupindex()
 		}
 		if (first_line[0]) {
 			SPLIT ptable;
-			char *lno, *filename;
 
 			if (split(first_line, 3, &ptable) < 3) {
 				recover(&ptable);
 				die("too small number of parts.(3)\n'%s'", _);
 			}
-			lno = ptable.part[1].start;
-			filename = ptable.part[2].start;
-			snprintf(buf, sizeof(buf), "%s %s", lno, filename);
+			snprintf(buf, sizeof(buf), "%s %s", ptable.part[PART_LNO].start, ptable.part[PART_PATH].start);
 			cache_put(db, prev, buf);
 			recover(&ptable);
 		}

@@ -23,6 +23,18 @@
 
 #define NPART 10
 
+/*
+ * Element id for ctags -x format.
+ *
+ * PART_TAG     PART_LNO PART_PATH      PART_LINE
+ * +----------------------------------------------
+ * |main             227 src/main       main()
+ */
+#define PART_TAG  0
+#define PART_LNO  1
+#define PART_PATH 2
+#define PART_LINE 3
+
 typedef struct {
         int npart;
 	struct part {

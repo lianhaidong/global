@@ -416,8 +416,7 @@ gen_list_body(srcdir, string)
 	char *string;
 {
 	STATIC_STRBUF(sb);
-	char *name, *lno, *filename, *line, *fid;
-	char *p;
+	char *p, *filename, *fid;
 	SPLIT ptable;
 
 	strbuf_init(sb);
@@ -425,31 +424,26 @@ gen_list_body(srcdir, string)
 		recover(&ptable);
 		die("too small number of parts in list_body().\n'%s'", string);
 	}
-	name = ptable.part[0].start;
-	lno = ptable.part[1].start;
-	filename = ptable.part[2].start;
-	line = ptable.part[3].start;
-	filename += 2;				/* remove './' */
+	filename = ptable.part[2].start + 2;		/* remove './' */
 	fid = path2fid(filename);
-
 	if (table_list) {
 		if (enable_xhtml) {
 			strbuf_puts(sb, "<tr><td class='tag'>");
-			strbuf_puts(sb, gen_href_begin(srcdir, fid, HTML, lno));
-			strbuf_puts(sb, name);
+			strbuf_puts(sb, gen_href_begin(srcdir, fid, HTML, ptable.part[PART_LNO].start));
+			strbuf_puts(sb, ptable.part[PART_TAG].start);
 			strbuf_puts(sb, gen_href_end());
 			strbuf_sprintf(sb, "</td><td class='line'>%s</td><td class='file'>%s</td><td class='code'>",
-				lno, filename);
+				ptable.part[PART_LNO].start, filename);
 		} else {
 			strbuf_puts(sb, "<tr><td nowrap>");
-			strbuf_puts(sb, gen_href_begin(srcdir, fid, HTML, lno));
-			strbuf_puts(sb, name);
+			strbuf_puts(sb, gen_href_begin(srcdir, fid, HTML, ptable.part[PART_LNO].start));
+			strbuf_puts(sb, ptable.part[PART_TAG].start);
 			strbuf_puts(sb, gen_href_end());
 			strbuf_sprintf(sb, "</td><td nowrap align='right'>%s</td><td nowrap align='left'>%s</td><td nowrap>",
-				lno, filename);
+				ptable.part[PART_LNO].start, filename);
 		}
 
-		for (p = line; *p; p++) {
+		for (p = ptable.part[PART_LINE].start; *p; p++) {
 			unsigned char c = *p;
 
 			if (c == '&')
@@ -471,10 +465,10 @@ gen_list_body(srcdir, string)
 	} else {
 		int done = 0;
 
-		strbuf_puts(sb, gen_href_begin(srcdir, fid, HTML, lno));
-		strbuf_puts(sb, name);
+		strbuf_puts(sb, gen_href_begin(srcdir, fid, HTML, ptable.part[PART_LNO].start));
+		strbuf_puts(sb, ptable.part[PART_TAG].start);
 		strbuf_puts(sb, gen_href_end());
-		p = string + strlen(name);
+		p = string + strlen(ptable.part[PART_TAG].start);
 		recover(&ptable);
 
 		for (; *p; p++) {

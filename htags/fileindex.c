@@ -936,7 +936,6 @@ makeincludeindex()
 	strbuf_reset(input);
 	while ((_ = strbuf_fgets(input, PIPE, STRBUF_NOCRLF)) != NULL) {
 		SPLIT ptable;
-                char *nouse, *lno, *filename, *image;
 		char *last, buf[MAXBUFLEN];
 		int is_php = 0;
 		const char *lang, *suffix;
@@ -945,16 +944,11 @@ makeincludeindex()
 			recover(&ptable);
 			die("too small number of parts in makefileindex().");
 		}
-		nouse = ptable.part[0].start;
-		lno = ptable.part[1].start;
-		filename = ptable.part[2].start;
-		image = ptable.part[3].start;
-
-		if ((suffix = locatestring(filename, ".", MATCH_LAST)) != NULL
+		if ((suffix = locatestring(ptable.part[PART_PATH].start, ".", MATCH_LAST)) != NULL
 		    && (lang = decide_lang(suffix)) != NULL
 		    && strcmp(lang, "php") == 0)
 			is_php = 1;
-		last = extract_lastname(image, is_php);
+		last = extract_lastname(ptable.part[PART_LINE].start, is_php);
 		if (last == NULL || get_inc(last) == NULL)
 			continue;
 		recover(&ptable);
@@ -1017,17 +1011,13 @@ makeincludeindex()
 			continue;
 		if (data->count == 1) {
 			SPLIT ptable;
-			char *nouse, *lno, *filename;
 			char buf[1024];
 
 			if (split(strbuf_value(data->contents), 4, &ptable) < 4) {
 				recover(&ptable);
 				die("too small number of parts in makefileindex().");
 			}
-			nouse = ptable.part[0].start;
-			lno = ptable.part[1].start;
-			filename = ptable.part[2].start;
-			snprintf(buf, sizeof(buf), "%s %s", lno, filename);
+			snprintf(buf, sizeof(buf), "%s %s", ptable.part[PART_LNO].start, ptable.part[PART_PATH].start);
 			recover(&ptable);
 			strbuf_reset(data->contents);
 			strbuf_puts(data->contents, buf);

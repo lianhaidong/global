@@ -39,7 +39,8 @@ struct anchor {
 };
 
 #define gettag(a)	(a->tag[0] ? a->tag : a->reserve)
-#define settag(a, tag)	do {						\
+#define settag(a, b)	do {						\
+	char *tag = b;							\
 	(a)->length = strlen(tag);					\
 	if ((a)->length < ANCHOR_NAMELEN) {				\
 		strlimcpy((a)->tag, tag, sizeof((a)->tag));		\

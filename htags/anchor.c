@@ -93,7 +93,6 @@ anchor_load(file)
 			die("cannot execute command '%s'.", command);
 		while ((_ = strbuf_fgets(sb, ip, STRBUF_NOCRLF)) != NULL) {
 			SPLIT ptable;
-			char *tag, *lineno, *path, *image;
 			struct anchor *a;
 			int type;
 
@@ -101,15 +100,10 @@ anchor_load(file)
 				recover(&ptable);
 				die("too small number of parts in anchor_load().\n'%s'", _);
 			}
-			tag = ptable.part[0].start;
-			lineno = ptable.part[1].start;
-			path = ptable.part[2].start;
-			image = ptable.part[3].start;
-
 			if (db == GTAGS) {
 				char *p;
 
-				for (p = image; *p && isspace((unsigned char)*p); p++)
+				for (p = ptable.part[PART_LINE].start; *p && isspace((unsigned char)*p); p++)
 					;
 				if (!*p) {
 					recover(&ptable);
@@ -133,10 +127,10 @@ anchor_load(file)
 				type = 'Y';
 			/* allocate an entry */
 			a = varray_append(vb);
-			a->lineno = atoi(lineno);
+			a->lineno = atoi(ptable.part[PART_LNO].start);
 			a->type = type;
 			a->done = 0;
-			settag(a, tag);
+			settag(a, ptable.part[PART_TAG].start);
 			recover(&ptable);
 		}
 		if (pclose(ip) != 0)
