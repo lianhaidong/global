@@ -177,6 +177,7 @@ char	*argv[];
 			else if (!strcmp(p, "idutils"))
 				extra_options = optarg;
 			else if (gtagsconf) {
+				gtagsconf = 0;
 				if (!optarg)
 					usage();
 				else
@@ -244,7 +245,7 @@ char	*argv[];
 		if (debug)
 			fprintf(stdout, "getconfline: %s\n", getconfline());
 		if (argc == 0)
-			fprintf(stdout, "%s\n", configpath());
+			fprintf(stdout, "%s\n", getconfline());
 		else if (!printconf(argv[0]))
 				exit(1);
 		exit(0);

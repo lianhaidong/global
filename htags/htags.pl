@@ -83,9 +83,6 @@ if (defined($ENV{'TMPDIR'}) && -d $ENV{'TMPDIR'}) {
 if (! -d $tmp || ! -w $tmp) {
 	&'error("temporary directory '$tmp' not exist or not writable.");
 }
-if (defined($ENV{'GTAGSCONF'}) && ! -f $ENV{'GTAGSCONF'}) {
-	&'error("config file '$ENV{'GTAGSCONF'}' not found.");
-}
 $'ncol = 4;					# columns of line number
 $'tabs = 8;					# tab skip
 $'full_path = 0;				# file index format
@@ -141,21 +138,25 @@ $'java_reserved_words  = "abstract,boolean,break,byte,case,catch,char,class," .
 $'c_reserved_words    =~ s/,/|/g;
 $'cpp_reserved_words  =~ s/,/|/g;
 $'java_reserved_words =~ s/,/|/g;
-#
-# read values from gtags.conf
-#
-for ($i = 0; $i < @ARGV; $i++) {
-	if ($ARGV[$i] =~ /^--gtagsconf$/) {
-		if (++$i >= @ARGV) {
-			&'error("--gtagsconf needs file name.");
-		} elsif (! -f $ARGV[$i]) {
-			&'error("config file '$ARGV[$i]' not found.");
+{
+	#
+	# extract --gtagsconf <config file>.
+	#
+	local(@a);
+	for ($i = 0; $i < @ARGV; $i++) {
+		if ($ARGV[$i] =~ /^--gtagsconf$/) {
+			if (++$i >= @ARGV) {
+				&'error("--gtagsconf needs file name.");
+			} elsif (! -f $ARGV[$i]) {
+				&'error("config file '$ARGV[$i]' not found.");
+			}
+			$ENV{'GTAGSCONF'} = $ARGV[$i];
+		} else {
+			push(@a, $ARGV[$i]);
 		}
-		$ENV{'GTAGSCONF'} = $ARGV[$i];
 	}
+	@ARGV = @a;
 }
-chop($config = `gtags --config`);
-if ($config) {
 if ($var1 = &'getconf('ncol')) {
 	if ($var1 < 1 || $var1 > 10) {
 		print STDERR "Warning: parameter 'ncol' ignored becase the value is too large or too small.\n";
@@ -231,16 +232,7 @@ if (($var1 = &'getconf('position_begin')) && ($var2 = &'getconf('position_end'))
 }
 # insert htags_options into the head of ARGSV array.
 if (($var1 = &'getconf('htags_options'))) {
-	local($a) = $var1;
-	local(@a);
-	while ($a) {
-		$a =~ s/^[ \t]+//;
-		if ($a =~ s/^'([^']*)'// || $a =~ s/^"([^']*)"// || $a =~ s/^([^ \t]+)//) {
-			push(@a, $1);
-		}
-	}
-	@ARGV = (@a, @ARGV);
-}
+	$'htags_options = $var1;
 }
 # HTML tag
 $'html_begin  = '<HTML>';
@@ -426,6 +418,25 @@ sub list_end {
 #-------------------------------------------------------------------------
 # include prolog_script if needed.
 require($'prolog_script) if ($'prolog_script && -f $'prolog_script);
+# save config values and option values.
+$save_config = `gtags --config`;
+chop($save_config);
+$save_config =~ s/'/'"'"'/g;
+$save_argv   = "@ARGV";
+if ($'htags_options) {
+	#
+	# insert $'htags_options at the head of ARGV.
+	#
+	local($a) = $'htags_options;
+	local(@a, $skip);
+	while ($a) {
+		$a =~ s/^[ \t]+//;
+		if ($a =~ s/^'([^']*)'// || $a =~ s/^"([^"]*)"// || $a =~ s/^([^ \t]+)//) {
+			push(@a, $1);
+		}
+	}
+	@ARGV = (@a, @ARGV);
+}
 #
 # options check.
 #
@@ -456,6 +467,7 @@ while ($ARGV[0] =~ /^-/) {
 	} elsif ($opt =~ /^--frame$/) {
 		$'Fflag = 'F';
 	} elsif ($opt =~ /^--gtagsconf$/) {
+		# --gtagsconf is estimated only once.
 		shift;
 	} elsif ($opt =~ /^--each-line-tag$/) {
 		$'lflag = 'l';
@@ -607,6 +619,7 @@ $'findcom = "gtags --find";
 #	HTML/$SRCS/		... source files (8)
 #	HTML/$INCS/		... include file index (8)
 #	HTML/search.html	... search index (9)
+#	HTML/rebuild.sh		... rebuild script (10)
 #-------------------------------------------------------------------------
 $'HTML = ($'cflag) ? $'gzipped_suffix : $'normal_suffix;
 print STDERR "[", &'date, "] ", "Htags started\n" if ($'vflag);
@@ -745,6 +758,10 @@ if ($'Fflag && $'fflag) {
 	print STDERR "[", &'date, "] ", "(9) making search index ...\n" if ($'vflag);
 	&makesearchindex("$dist/search.$'normal_suffix");
 }
+#
+# (10) rebuild script. (rebuild.sh)
+#
+&makerebuild("$dist/rebuild.sh");
 &'clean();
 print STDERR "[", &'date, "] ", "Done.\n" if ($'vflag);
 if ($'vflag && $'cgi && ($'cflag || $'fflag)) {
@@ -979,6 +996,16 @@ Action htags-gzipped-html /cgi-bin/ghtml.cgi
 END_OF_SCRIPT
 	print SKELTON $skelton;
 	close(SKELTON);
+}
+#
+# makerebuild: make rebuild script
+#
+sub makerebuild {
+	local($file) = @_;
+	open(FILE, ">$file") || &'error("cannot make rebuild script.");
+	print FILE "#!/bin/sh\n";
+	print FILE "GTAGSCONF='$save_config' htags $save_argv\n";
+	close(FILE);
 }
 #
 # makehelp: make help file

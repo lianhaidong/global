@@ -144,20 +144,12 @@ int	level;
 /*
  * configpath: get path of configuration file.
  */
-char *
+static char *
 configpath() {
 	static char config[MAXPATHLEN+1];
 	char *p;
 
-	if ((p = getenv("GTAGSCONF")) != NULL) {
-		if (test("d", p))
-			die("config file '%s' is a directory.", p);
-		if (!test("f", p))
-			die("config file '%s' not found.", p);
-		if (!test("r", p))
-			die("config file '%s' is not readable.", p);
-		strcpy(config, p);
-	} else if ((p = getenv("HOME")) && test("r", makepath(p, GTAGSRC, NULL)))
+	if ((p = getenv("HOME")) && test("r", makepath(p, GTAGSRC, NULL)))
 		strcpy(config, makepath(p, GTAGSRC, NULL));
 	else if (test("r", GTAGSCONF))
 		strcpy(config, GTAGSCONF);
@@ -168,7 +160,7 @@ configpath() {
 	else if (test("r", OLD_DEBIANCONF))
 		strcpy(config, OLD_DEBIANCONF);
 	else
-		config[0] = 0;
+		return NULL;
 	return config;
 }
 /*
@@ -179,18 +171,21 @@ configpath() {
 void
 openconf()
 {
-	const char *label, *config;
-	STRBUF	*sb;
+	STRBUF *sb;
+	char *config;
 	extern int vflag;
 
 	assert(opened == 0);
 
-	config = configpath();
 	/*
-	 * if configuration file is not found, default values are set
-	 * for upper compatibility.
+	 * if GTAGSCONF not set then check standard config files.
 	 */
-	if (*config == 0) {
+	if ((config = getenv("GTAGSCONF")) == NULL)
+		config = configpath();
+	/*
+	 * if config file not found then return default value.
+	 */
+	if (!config) {
 		if (vflag)
 			fprintf(stderr, " Using default configuration.\n");
 		sb = strbuf_open(0);
@@ -209,25 +204,43 @@ openconf()
 		strbuf_puts(sb, "sort_command=sort:");
 		strbuf_puts(sb, "sed_command=sed:");
 		line = strdup(strbuf_value(sb));
-		if (!line)
-			die("short of memory.");
 		strbuf_close(sb);
-		opened = 1;
-		return;
 	}
-	if ((label = getenv("GTAGSLABEL")) == NULL)
-		label = "default";
-	if (!(fp = fopen(config, "r")))
-		die("cannot open '%s'.", config);
-	if (vflag)
-		fprintf(stderr, " Using config file '%s'.\n", config);
-	ib = strbuf_open(MAXBUFLEN);
-	sb = strbuf_open(0);
-	includelabel(sb, label, 0);
-	line = strdup(strbuf_value(sb));
-	strbuf_close(ib);
-	strbuf_close(sb);
-	fclose(fp);
+	/*
+	 * if it doesn't start with '/' then assumed config value itself.
+	 */
+	else if (*config != '/') {
+		line = strdup(config);
+	}
+	/*
+	 * else load value from config file.
+	 */
+	else {
+		const char *label;
+
+		if (test("d", config))
+			die("config file '%s' is a directory.", config);
+		if (!test("f", config))
+			die("config file '%s' not found.", config);
+		if (!test("r", config))
+			die("config file '%s' is not readable.", config);
+		if ((label = getenv("GTAGSLABEL")) == NULL)
+			label = "default";
+	
+		if (!(fp = fopen(config, "r")))
+			die("cannot open '%s'.", config);
+		if (vflag)
+			fprintf(stderr, " Using config file '%s'.\n", config);
+		ib = strbuf_open(MAXBUFLEN);
+		sb = strbuf_open(0);
+		includelabel(sb, label, 0);
+		line = strdup(strbuf_value(sb));
+		strbuf_close(ib);
+		strbuf_close(sb);
+		fclose(fp);
+	}
+	if (!line)
+		die("short of memory.");
 	opened = 1;
 	return;
 }
