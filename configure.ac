@@ -134,7 +134,7 @@ dnl
 dnl The definition of config variable skip and suffixes.
 dnl
 DEFAULTSUFFIXES='c,h,y,c++,cc,cpp,cxx,hxx,C,H,s,S,java,php,php3,phtml'
-DEFAULTSKIP='GPATH,GTAGS,GRTAGS,GSYMS,HTML/,tags,TAGS,ID,y.tab.c,y.tab.h,.notfunction,cscope.out,.gdbinit,SCCS/,RCS/,CVS/,CVSROOT/,{arch}/,.cvsrc,.cvsignore,.cvspass,.cvswrappers,.deps/,autom4te.cache/'
+DEFAULTSKIP='GPATH,GTAGS,GRTAGS,GSYMS,HTML/,tags,TAGS,ID,y.tab.c,y.tab.h,.notfunction,cscope.out,.gdbinit,SCCS/,RCS/,CVS/,CVSROOT/,{arch}/,.svn/,.cvsrc,.cvsignore,.cvspass,.cvswrappers,.deps/,autom4te.cache/'
 AC_SUBST(DEFAULTSUFFIXES)
 AC_SUBST(DEFAULTSKIP)
 
