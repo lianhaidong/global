@@ -687,6 +687,7 @@ if ($show_help) {
 if ($'gflag) {
 	local($command) = $'gtags;
 	$command .= " -v" if ($'vflag);
+	$command .= " -w" if ($'wflag);
 	$command .= " $dbpath" if ($dbpath);
 	system($command);
 	if ($?) { &'error("cannot execute gtags(1) command."); }
