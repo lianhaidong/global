@@ -48,7 +48,6 @@ extern int continued_line;
 #define atfirst (sp && sp == (cp ? cp - 1 : lp))
 
 int opentoken(const char *);
-void rewindtoken(void);
 void closetoken(void);
 int nexttoken(const char *, int (*)(const char *, int));
 void pushbacktoken(void);

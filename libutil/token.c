@@ -75,17 +75,6 @@ opentoken(file)
 	return 1;
 }
 /*
- * rewindtoken:
- */
-void
-rewindtoken()
-{
-	sp = cp = lp = NULL; ptok[0] = '\0'; lineno = 0;
-	crflag = cmode = cppmode = ymode = 0;
-	continued_line = 0;
-	rewind(ip);
-}
-/*
  * closetoken:
  */
 void
