@@ -432,9 +432,9 @@ put_anchor(name, type, lineno)
 			char *dir, *file, *suffix = NULL;
 
 			if (dynamic) {
-				dir = (*action == '/') ? NULL : "..";
 				char *s;
 
+				dir = (*action == '/') ? NULL : "..";
 				if (db == GTAGS)
 					s = "definitions";
 				else if (db == GRTAGS)
