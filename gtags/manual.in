@@ -114,7 +114,6 @@
 	@item{@var{GTAGSCACHE}}
 		If this variable is set, its value is used as the size of
 		btree cache. The default is 500000 (bytes).
-		10000000 (bytes) is recommended if enough memory exists.
 	@end_itemize
 @CONFIGURATION
 	The following configuration variables affect the execution of @name{gtags}:
