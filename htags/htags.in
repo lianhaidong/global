@@ -2359,7 +2359,7 @@ sub create {
 
 	foreach $db (&'get_taglist()) {
 		local($option) = &'get_option($db);
-		local($pipein) = "global -nnx$option \".*\"";
+		local($pipein) = "global -nx$option \".*\"";
 		open(PIPE, "$pipein |") || &'error("cannot fork.");
 		while (<PIPE>) {
 			local($tag, $lno, $filename, $image) = split(/\s+/, $_, 4);
