@@ -28,7 +28,7 @@
 #endif
 #include <assert.h>
 #include <ctype.h>
-#ifndef HAVE_FIND
+#ifdef HAVE_DIRENT_H
 #include <sys/types.h>
 #include <dirent.h>
 #ifndef HAVE_DP_D_TYPE
@@ -321,7 +321,7 @@ char *path;
 	}
 	return 0;
 }
-#ifndef HAVE_FIND
+#ifdef HAVE_DIRENT_H
 /*----------------------------------------------------------------------*/
 /* dirent version find_xxx()						*/
 /*----------------------------------------------------------------------*/
@@ -520,7 +520,7 @@ find_close(void)
 		regfree(skip);
 	opened = 0;
 }
-#else /* !HAVE_FIND */
+#else /* HAVE_DIRENT_H */
 /*----------------------------------------------------------------------*/
 /* find command version							*/
 /*----------------------------------------------------------------------*/
@@ -594,4 +594,4 @@ find_close(void)
 	if (skip)
 		regfree(skip);
 }
-#endif /* !HAVE_FIND */
+#endif /* HAVE_DIRENT_H */
