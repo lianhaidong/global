@@ -80,7 +80,7 @@ WORD		{ALPHA}{ALPHANUM}*
 <LITERAL>\'	{ ECHO; yy_pop_state(); }
 <LITERAL>\\.	{ put_char(LEXTEXT[0]); put_char(LEXTEXT[1]); }
 
-<C>^[ \t]*\#[ \t]*include {
+<C>^[ \t]*\#[ \t]*(include|include_next) {
 		int c;
 
 		put_macro(LEXTEXT);

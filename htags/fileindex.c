@@ -508,7 +508,7 @@ extract_lastname(image, is_php)
 	 * PHP: include('xxx/yyy/zzz');
 	 */
 	p = image;
-	while (*p && isspace(*p))		/* skip space */
+	while (*p && isspace((unsigned char)*p))		/* skip space */
 		p++;
 	if (!*p)
 		return NULL;
@@ -516,7 +516,7 @@ extract_lastname(image, is_php)
 		if (is_php)
 			return NULL;
 		p++;
-		while (*p && isspace(*p))	/* skip space */
+		while (*p && isspace((unsigned char)*p))	/* skip space */
 			p++;
 		if (!*p)
 			return NULL;
@@ -524,7 +524,9 @@ extract_lastname(image, is_php)
 	if (strncmp(p, KEYWORD, KEYWORD_LENGTH))
 		return NULL;
 	p += KEYWORD_LENGTH;
-	while (*p && isspace(*p))		/* skip space */
+	if (!is_php && strncmp(p, "_next", 5) == 0)
+		p += 5;
+	while (*p && isspace((unsigned char)*p))		/* skip space */
 		p++;
 	sep = *p;
 	if (is_php) {
@@ -861,7 +863,7 @@ makeincludeindex()
 {
 	FILE *PIPE;
 	STRBUF *input = strbuf_open(0);
-	char *command = "global -gnx \"^[ \\t]*(#[ \\t]*include|include[ \\t]*\\()\"";
+	char *command;
 	char *_;
 	struct data *inc;
 
