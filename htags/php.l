@@ -41,10 +41,9 @@
 #include "htags.h"
 #include "path2url.h"
 #include "../gtags-parser/php_res.h"
-#include "lexcommon.h"
 
-#define LEXTEXT	phptext
-#define LEXLENG	phpleng
+#define lex_symbol_generation_rule(x) php_ ## x
+#include "lexcommon.h"
 
 #ifdef ECHO
 #undef ECHO
@@ -66,7 +65,7 @@ ALPHANUM	[a-zA-Z_\x80-\xff0-9]
 WORD		{ALPHA}{ALPHANUM}*
 
 %start	PHP C_COMMENT CPP_COMMENT SHELL_COMMENT STRING LITERAL PREPROCESSOR_LINE
-%option 8bit noyywrap noyy_top_state stack prefix="php"
+%option 8bit noyywrap noyy_top_state stack prefix="php_"
 %%
  /* Start PHP */
 <INITIAL>"<?="		{ put_string(LEXTEXT); BEGIN PHP; }

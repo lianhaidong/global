@@ -36,10 +36,9 @@
 #include "common.h"
 #include "htags.h"
 #include "../gtags-parser/asm_res.h"
-#include "lexcommon.h"
 
-#define LEXTEXT	asmtext
-#define LEXLENG	asmleng
+#define lex_symbol_generation_rule(x) asm_ ## x
+#include "lexcommon.h"
 
 #ifdef ECHO
 #undef ECHO
@@ -62,7 +61,7 @@ ALPHANUM	[a-zA-Z_\x80-\xff0-9]
 WORD		{ALPHA}{ALPHANUM}*
 
 %start	ASM C_COMMENT CPP_COMMENT SHELL_COMMENT STRING LITERAL PREPROCESSOR_LINE
-%option 8bit noyywrap noyy_top_state stack prefix="asm"
+%option 8bit noyywrap noyy_top_state stack prefix="asm_"
 %%
  /* Backslash-newline */
 \\\n		DEFAULT_BACKSLASH_NEWLINE_ACTION

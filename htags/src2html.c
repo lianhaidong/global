@@ -64,23 +64,23 @@ void php_parser_init(FILE *);
 void asm_parser_init(FILE *);
 
 /* executing procedures */
-int clex(void);
-int cpplex(void);
-int javalex(void);
-int phplex(void);
-int asmlex(void);
+int c_lex(void);
+int cpp_lex(void);
+int java_lex(void);
+int php_lex(void);
+int asm_lex(void);
 
 /*
  * The first entry is default language.
  */
 struct lang_entry lang_switch[] = {
 	/* lang_name	init_proc 		exec_proc */
-	{"c",		c_parser_init,		clex},		/* DEFAULT */
-	{"yacc",	yacc_parser_init,	clex},
-	{"cpp",		cpp_parser_init,	cpplex},
-	{"java",	java_parser_init,	javalex},
-	{"php",		php_parser_init,	phplex},
-	{"asm",		asm_parser_init,	asmlex}
+	{"c",		c_parser_init,		c_lex},		/* DEFAULT */
+	{"yacc",	yacc_parser_init,	c_lex},
+	{"cpp",		cpp_parser_init,	cpp_lex},
+	{"java",	java_parser_init,	java_lex},
+	{"php",		php_parser_init,	php_lex},
+	{"asm",		asm_parser_init,	asm_lex}
 };
 #define DEFAULT_ENTRY &lang_switch[0]
 

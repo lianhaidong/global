@@ -34,10 +34,9 @@
 #include "common.h"
 #include "htags.h"
 #include "../gtags-parser/java_res.h"
-#include "lexcommon.h"
 
-#define LEXTEXT	javatext
-#define LEXLENG	javaleng
+#define lex_symbol_generation_rule(x) java_ ## x
+#include "lexcommon.h"
 
 #ifdef ECHO
 #undef ECHO
@@ -59,7 +58,7 @@ ALPHANUM	[a-zA-Z_\x80-\xff0-9]
 WORD		{ALPHA}{ALPHANUM}*
 
 %start	JAVA C_COMMENT CPP_COMMENT SHELL_COMMENT STRING LITERAL PREPROCESSOR_LINE
-%option 8bit noyywrap noyy_top_state stack prefix="java"
+%option 8bit noyywrap noyy_top_state stack prefix="java_"
 %%
  /* Comment */
 <JAVA>"/*"	{ echos(comment_begin); ECHO; yy_push_state(C_COMMENT); }

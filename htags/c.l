@@ -36,10 +36,9 @@
 #include "common.h"
 #include "htags.h"
 #include "../gtags-parser/c_res.h"
-#include "lexcommon.h"
 
-#define LEXTEXT	ctext
-#define LEXLENG	cleng
+#define lex_symbol_generation_rule(x) c_ ## x
+#include "lexcommon.h"
 
 #ifdef ECHO
 #undef ECHO
@@ -66,7 +65,7 @@ YACC_IDENTIFIER	({ALPHA}|\.)({ALPHANUM}|\.)*
 
 %start	C C_COMMENT CPP_COMMENT SHELL_COMMENT STRING LITERAL PREPROCESSOR_LINE
 %start	YACC_DECLARATIONS YACC_RULES YACC_PROLOGUE BRACED_CODE
-%option 8bit noyywrap noyy_top_state stack prefix="c"
+%option 8bit noyywrap noyy_top_state stack prefix="c_"
 %%
  /* Backslash-newline */
 \\\n		DEFAULT_BACKSLASH_NEWLINE_ACTION

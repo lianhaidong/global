@@ -21,6 +21,27 @@
 #define _LEXCOMMON_H
 
 #include "incop.h"
+
+/*
+ * Definition of LEXTEXT, LEXLENG, LEXIN and LEXRESTART.
+ *
+ * These symbol are the substitutions of yytext, yyleng, yyin and yyrestart.
+ * You should write code using them.
+ * How to include this file. For example, in c.l:
+ *
+ * #define lex_symbol_generation_rule(x) c_ ## x
+ * #include "lexcommon.h"
+ */
+#ifndef lex_symbol_generation_rule
+ERROR: lex_symbol_generation_rule(x) macro not defined.
+lexcommon.h requires the lex_symbol_generation_rule(x) macro for each language
+to generate language specific symbols.
+#endif
+#define LEXTEXT lex_symbol_generation_rule(text)
+#define LEXLENG lex_symbol_generation_rule(leng)
+#define LEXIN lex_symbol_generation_rule(in)
+#define LEXRESTART lex_symbol_generation_rule(restart)
+
 /*
  * The default action for line control.
  * These can be applicable to most languages.
@@ -38,8 +59,8 @@ static int newline_terminate_string = 0;
 #define LINENO	lineno
 
 #define DEFAULT_BEGIN_OF_FILE_ACTION {					\
-        yyin = ip;							\
-        yyrestart(yyin);						\
+        LEXIN = ip;							\
+        LEXRESTART(LEXIN);						\
         lineno = 1;							\
         begin_line = 1;							\
 }
@@ -95,11 +116,6 @@ static int newline_terminate_string = 0;
 	lineno++;							\
 	begin_line = 1;							\
 }
-
-/*
- * Input.
- */
-extern FILE *yyin;
 
 /*
  * Output routine.

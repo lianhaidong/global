@@ -36,10 +36,9 @@
 #include "common.h"
 #include "htags.h"
 #include "../gtags-parser/cpp_res.h"
-#include "lexcommon.h"
 
-#define LEXTEXT	cpptext
-#define LEXLENG	cppleng
+#define lex_symbol_generation_rule(x) cpp_ ## x
+#include "lexcommon.h"
 
 #ifdef ECHO
 #undef ECHO
@@ -62,7 +61,7 @@ ALPHANUM	[a-zA-Z_\x80-\xff0-9]
 WORD		{ALPHA}{ALPHANUM}*
 
 %start	CPP C_COMMENT CPP_COMMENT SHELL_COMMENT STRING LITERAL PREPROCESSOR_LINE
-%option 8bit noyywrap noyy_top_state stack prefix="cpp"
+%option 8bit noyywrap noyy_top_state stack prefix="cpp_"
 %%
  /* Backslash-newline */
 \\\n		DEFAULT_BACKSLASH_NEWLINE_ACTION
