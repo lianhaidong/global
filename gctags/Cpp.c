@@ -759,7 +759,12 @@ static struct words words[] = {
 static void
 inittable()
 {
-	qsort(words, sizeof(words)/sizeof(struct words), sizeof(struct words), cmp);
+	static int done = 0;
+
+	if (done == 0) {
+		qsort(words, sizeof(words)/sizeof(struct words), sizeof(struct words), cmp);
+		done = 1;
+	}
 }
 static int
 reserved(word)
@@ -782,6 +787,11 @@ isCpp()
 	int Cpp = 0;
 	cmode = 1;			/* allow token like '#xxx' */
 	cppmode = 1;			/* treat '::' as a token */
+
+	/*
+	 * set up reserved word table.
+	 */
+	inittable();
 
 	while ((cc = nexttoken(NULL, reserved)) != EOF) {
 		if (cc == CPP_CLASS || cc == CPP_TEMPLATE ||
