@@ -54,6 +54,8 @@ if [ ! -d $GHOME ]; then
 	echo
 	echo "Welcome to Globash! When you need help, please type 'ghelp'."
 	echo
+else
+	echo "When you need help, please type 'ghelp'."
 fi
 if [ ! -d $GHOME ]; then
 	echo "Cannot make '$GHOME' directory."
