@@ -25,6 +25,7 @@ Version 4.1.1 - *******, 2001, by Shigio Yamaguchi
 * globash.rc: when GTAGSROOT specified, prompt is changed to "$root!$cwd"
   instead of "[$root]/...".
 * globash.rc: bug fixed. number was ignored in 'next <no>' and 'prev <no>'.
+* globash.rc: The -e option of show use emacsclient instead of emacs.
 
 Version 4.1 - July 12, 2001, by Shigio Yamaguchi
 
