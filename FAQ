@@ -117,7 +117,7 @@ Q7. It seems that gtags cannot treat files which include blanks in the path.
     Why?
 
 A7. Because it is hard for GLOBAL to treat them correctly with keeping
-    upper compatibility. If you can do it, please send a patch for it.
+    upper compatibility. If you can do it, please send the patch to me.
 ----------------------------------------------------------------------------
 
 Shigio Yamaguchi
