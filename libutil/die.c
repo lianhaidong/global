@@ -88,7 +88,7 @@ void
 #ifdef HAVE_STDARG_H
 die_with_code(int n, const char *s, ...)
 #else
-die_with_code(int n, s, va_alist)
+die_with_code(n, s, va_alist)
 	int n;
 	char *s;
 	va_dcl;
