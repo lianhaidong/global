@@ -597,8 +597,10 @@ char	*prefix;
 		flags |= GTOP_PREFIX;
 	db = (sflag) ? GSYMS : GTAGS;
 	gtop = gtags_open(dbpath, root, db, GTAGS_READ, 0);
-	for (p = gtags_first(gtop, prefix, flags); p; p = gtags_next(gtop))
-		(void)fprintf(stdout, "%s\n", p);
+	for (p = gtags_first(gtop, prefix, flags); p; p = gtags_next(gtop)) {
+		fputs(p, stdout);
+		fputc('\n', stdout);
+	}
 	gtags_close(gtop);
 }
 /*
@@ -635,8 +637,10 @@ char	*line;
 			die("invalid tag format (path not found).");
 		fputs(strmake(p, " \t"), op);
 		(void)putc('\n', op);
-	} else
-		fprintf(op, "%s\n", line); 
+	} else {
+		fputs(line, op);
+		fputc('\n', op);
+	}
 }
 /*
  * idutils:  lid(id-utils) pattern
@@ -813,7 +817,8 @@ char	*dbpath;
 		*p++ = 0;
 		count++;
 		if (!xflag && !tflag) {
-			fprintf(op, "%s\n", path);
+			fputs(path, op);
+			fputc('\n', op);
 			continue;
 		}
 		/* extract line number */
@@ -834,9 +839,10 @@ char	*dbpath;
 		if (tflag)
 			fprintf(op, "%s\t%s\t%d\n",
 				edit, path, linenum);
-		else if (!xflag)
-			fprintf(op, "%s\n", path);
-		else
+		else if (!xflag) {
+			fputs(path, op);
+			fputc('\n', op);
+		} else
 			fprintf(op, "%-16s %4d %-16s %s\n",
 				edit, linenum, path, p);
 	}
@@ -890,7 +896,8 @@ char	*dbpath;
 					fprintf(op, "%s\t%s\t%d\n",
 						edit, path, linenum);
 				else if (!xflag) {
-					fprintf(op, "%s\n", path);
+					fputs(path, op);
+					fputc('\n', op);
 					break;
 				} else {
 					fprintf(op, "%-16s %4d %-16s %s\n",
@@ -957,8 +964,10 @@ char	*av;
 			fprintf(op, "path\t1 %s \n", path);
 		else if (tflag)
 			fprintf(op, "path\t%s\t1\n", path);
-		else
-			fprintf(op, "%s\n", path);
+		else {
+			fputs(path, op);
+			fputc('\n', op);
+		}
 		count++;
 	}
 	gfind_close();

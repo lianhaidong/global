@@ -382,8 +382,10 @@ char	*argv[];
 		dbop = dbop_open(btree_dbname, 0, 0, 0);
 		if (dbop == NULL)
 			die("cannot open '%s'.", btree_dbname);
-		for (p = dbop_first(dbop, argv[0], NULL, 0); p; p = dbop_next(dbop))
-			fprintf(stdout, "%s\n", p);
+		for (p = dbop_first(dbop, argv[0], NULL, 0); p; p = dbop_next(dbop)) {
+			fputs(p, stdout);
+			fputc('\n', stdout);
+		}
 		dbop_close(dbop);
 		exit(0);
 	} else if (do_scandb) {
@@ -428,14 +430,18 @@ char	*argv[];
 		char	*path;
 
 		if (other_files) {
-			for (find_open(); (path = find_read()) != NULL; )
-				fprintf(stdout, "%s\n", path);
+			for (find_open(); (path = find_read()) != NULL; ) {
+				fputs(path, stdout);
+				fputc('\n', stdout);
+			}
 			find_close();
 		} else {
 			char *local = (argc) ? argv[0] : "./";
 			getdbpath(cwd, root, dbpath, 0);
-			for (gfind_open(dbpath, local); (path = gfind_read()) != NULL; )
-				fprintf(stdout, "%s\n", path);
+			for (gfind_open(dbpath, local); (path = gfind_read()) != NULL; ) {
+				fputs(path, stdout);
+				fputc('\n', stdout);
+			}
 			gfind_close();
 		}
 		exit(0);
