@@ -20,7 +20,7 @@
 @ifinfo
 This file documents the GNU GLOBAL source code tag system.
 
-Copyright (c) 2000, 2001 Tama Communications Corporation. All rights reserved.
+Copyright (c) 2000, 2001, 2002 Tama Communications Corporation. All rights reserved.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.1
@@ -39,7 +39,7 @@ Free Documentation License".
 @c copyright page
 @page
 @vskip 0pt plus 1filll
-Copyright @copyright{} 2000, 2001 Tama Communications Corporation.
+Copyright @copyright{} 2000, 2001, 2002 Tama Communications Corporation.
 @sp 2
 This is the first edition of the GNU GLOBAL documentation,@*
 and is consistent with @value{VERSION}.@*
@@ -68,7 +68,8 @@ This manual documents version @value{VERSION} of the GNU GLOBAL source code tag 
 * Global::                              Command line GLOBAL.
 * GloBash::                             Global facility for Bash.
 * Less viewer::                         Less using GLOBAL.
-* Nvi editor::                          Extended nvi using GLOBAL.
+* Nvi-1.79 editor::                     Extended nvi-1.79 using GLOBAL.
+* Nvi-1.81.5 editor::                   nvi-1.81.5 using GLOBAL.
 * Elvis editor::                        Elvis using GLOBAL.
 * Vim editor::                          Vim using GLOBAL.
 * Emacs editor::                        Extended emacs using GLOBAL.
@@ -726,7 +727,7 @@ Cookie directories are valid until you delete them.
 @node Less viewer
 @chapter Less using GLOBAL.
 
-You can use GLOBAL as a tag system of Nvi editor instead of ctags.
+You can use GLOBAL as a tag system of less instead of ctags.
 
 @menu
 * Features(less)::                       Features.
@@ -878,20 +879,20 @@ as a footstool.
 @c ***************************************************************************
 @c Nvi editor
 @c ***************************************************************************
-@node Nvi editor
-@chapter Extended nvi using global
+@node Nvi-1.79 editor
+@chapter Extended nvi-1.79 using GLOBAL.
 
 You can use GLOBAL as a tag system of Nvi editor instead of ctags.
 
 @menu
-* Features(nvi)::			Features.
-* Preparation(nvi)::                    Preparation.
-* Basic usage(nvi)::                    Basic usage.
-* Applied usage(nvi)::                  Applied usage.
+* Features(nvi-1.79)::			Features.
+* Preparation(nvi-1.79)::               Preparation.
+* Basic usage(nvi-1.79)::               Basic usage.
+* Applied usage(nvi-1.79)::             Applied usage.
 @end menu
 
 @c ***************************************************************************
-@node   Features(nvi)
+@node   Features(nvi-1.79)
 @section Features.
 
 @itemize @bullet
@@ -905,30 +906,30 @@ You can use GLOBAL's facilities only in 'gtags mode'.
 @end itemize
 
 @c ***************************************************************************
-@node   Preparation(nvi)
+@node   Preparation(nvi-1.79)
 @section Preparation.
 
 First, do the preparation of global. (Please see @xref{Preparation}.).
 
-Second, to use global from vi, you need to get into @dfn{gtagsmode}.
+Second, to use global from nvi, you need to get into @dfn{gtagsmode}.
 There are several ways to do this:
 
 @enumerate
 @item
-Start vi with @samp{-G} option
+Start nvi with @samp{-G} option
 
 @example
 
-    % vi -G file.c
+    % nvi -G file.c
 
 @end example
 
 @item
-Start vi and execute @code{set gtagsmode}.
+Start nvi and execute @code{set gtagsmode}.
 
 @example
 
-    % vi file.c
+    % nvi file.c
     ~
     ~
     ~
@@ -937,7 +938,7 @@ Start vi and execute @code{set gtagsmode}.
 @end example
 
 @item
-Write the above set command to the @file{.exrc} or @file{.nexrc} and start vi
+Write the above set command to the @file{.exrc} or @file{.nexrc} and start nvi
 
 @example
 
@@ -947,11 +948,11 @@ Write the above set command to the @file{.exrc} or @file{.nexrc} and start vi
 
 @end example
 
-You must start vi under the source tree described in @xref{Preparation}.
+You must start nvi under the source tree described in @xref{Preparation}.
 @end enumerate
 
 @c ***************************************************************************
-@node   Basic usage(nvi)
+@node   Basic usage(nvi-1.79)
 @section Basic usage.
 
 @itemize @bullet
@@ -962,7 +963,7 @@ You must start vi under the source tree described in @xref{Preparation}.
 
 @end example
 
-It seemes the same as original vi, but extended vi use @file{GTAGS}
+It seemes the same as original nvi, but extended nvi use @file{GTAGS}
 instead of @file{tags}.
 
 @item To go to the referenced point of func1, add the option @kbd{-r}
@@ -974,7 +975,7 @@ instead of @file{tags}.
 
 Extended nvi use @file{GRTAGS}.
 
-@item If a number of functions are located, extended vi goes to the first tag.
+@item If a number of functions are located, extended nvi goes to the first tag.
 You can go to next tag by typing @kbd{:tagnext} and back by typing @kbd{:tagprev}.
 
 @example
@@ -1024,14 +1025,14 @@ Display the tags stack.
 
 
 @c ***************************************************************************
-@node   Applied usage(nvi)
+@node   Applied usage(nvi-1.79)
 @section Applied usage.
 
 @itemize @bullet
-@item In large projects that include many main() function like MH, you can start vi like this:
+@item In large projects that include many main() function like MH, you can start nvi like this:
 @example
 
-    % vi -G -t main
+    % nvi -G -t main
 
 @end example
 You can browse all commands sequentially.
@@ -1039,7 +1040,7 @@ You can browse all commands sequentially.
 @item When you want to check functions the name of which start with "set" or "get", use:
 @example
 
-    % vi -G -t '^[sg]et'
+    % nvi -G -t '^[sg]et'
 
 @end example
 
@@ -1059,7 +1060,7 @@ the following:
     % gtags /var/dbpath             # @r{make tag files in /var/dbpath}
     % setenv GTAGSROOT `pwd`
     % setenv GTAGSDBPATH /var/dbpath
-    % vi -G -t main
+    % nvi -G -t main
 
 @end example
 
@@ -1080,12 +1081,152 @@ the following:
 
     % cd /usr/src/usr.bin/vi
     % gtags
-    % vi -G -t main
+    % nvi -G -t main
 
 @end example
 
-You can start from vi and browse the whole unix world as if you were
+You can start from nvi and browse the whole unix world as if you were
 using hypertext.
+@end itemize
+
+@c ***************************************************************************
+@c Nvi-1.81.5 editor
+@c ***************************************************************************
+@node Nvi-1.81.5 editor
+@chapter nvi-1.81.5 using GLOBAL.
+
+You can use GLOBAL as a tag system of Nvi editor instead of ctags.
+
+@menu
+* Features(nvi-1.81.5)::		Features.
+* Preparation(nvi-1.81.5)::             Preparation.
+* Basic usage(nvi-1.81.5)::             Basic usage.
+@end menu
+
+@c ***************************************************************************
+@node   Features(nvi-1.81.5)
+@section Features.
+
+@itemize @bullet
+@item
+You can use most of GLOBAL's facilities from the editor.
+@item
+Recognition of the current token and its type.
+@end itemize
+
+@c ***************************************************************************
+@node   Preparation(nvi-1.81.5)
+@section Preparation.
+
+First, do the preparation of global. (Please see @xref{Preparation}.).
+
+Second, to use global from nvi, you need write to @file{.nexrc} like this:
+It assumed that gtags.pl is put on @file{$HOME/perl}.
+
+@example
+
+    $HOME/.nexrc
+    +----------------------------
+    |perl use lib "$ENV@{'HOME'@}/perl"
+    |perl require 'gtags.pl'
+    |map ^P :tagprev^M
+    |map ^N :tagnext^M
+    |map ^] :perl tag^M
+    |ab gtag perl tag qw(
+    |ab gta perl tag qw(
+    |ab gt perl tag qw(
+
+@end example
+
+You must start nvi under the source tree described in @xref{Preparation}.
+
+@c ***************************************************************************
+@node   Basic usage(nvi-1.81.5)
+@section Basic usage.
+
+@itemize @bullet
+@item To go to func1, you can say
+@example
+
+    :perl tag qw(func1)
+
+@end example
+@example
+
+    Suggested .nexrc:
+    ab gtag perl tag qw(
+    ab gta perl tag qw(
+    ab gt perl tag qw(
+
+@end example
+
+@item To go to the referenced point of func1, add the option @kbd{-r}
+@example
+
+    :perl tag qw(-r func1)
+
+@end example
+
+@item If a number of functions are located, nvi goes to the first tag.
+You can go to next tag by typing @kbd{:tagnext} and back by typing @kbd{:tagprev}.
+
+@example
+
+    Suggested .nexrc:
+    map ^N :tagnext^M
+    map ^P :tagprev^M
+
+@end example
+
+@item If you don't specify any argument. ':perl tag' command do the followins:
+If current token is not a function then it is equivalent to
+@kbd{:perl tag qw(-s @var{current token})}.
+Otherwise, if you are in the first column of a line,
+it is equivalent to @kbd{:perl tag qw(-r @var{current token})} else it is equivalent
+to @kbd{:perl tag qw(@var{current token})}.
+
+@example
+
+    Suggested .nexrc:
+    map ^] :perl tag^M
+
+@end example
+
+It is similar to @kbd{CTL-]} command.
+
+@item You can use the @kbd{-s} option. It locates any symbols other than
+functions.
+@example
+
+    :perl tag qw(-s pat)
+
+@end example
+
+@item The @kbd{-g}, @kbd{-f} and @kbd{-P} option are also available.
+It works like command line.
+@example
+
+    :perl tag qw(-g pat)
+
+@end example
+
+@item When you want to check functions the name of which start with "set" or "get", use:
+@example
+
+    :perl tag qw(^[sg]et)
+
+@end example
+@item Other tag commands are also available:
+@table @code
+@item @kbd{CTL-T}
+Return to the most recent tag context.
+@item @kbd{:tagpop}
+Go to the specified tag in the tags stack.
+@item @kbd{:tagtop}
+Go to the top tag in the tags stack.
+@item @kbd{:display tags}
+Display the tags stack.
+@end table
 @end itemize
 
 @c ***************************************************************************
