@@ -54,7 +54,7 @@ rm -f config.cache
 
 # do the job
 echo "- Generating configure items..."
-(set -x; aclocal && autoheader && automake --add-missing && autoconf) &&
+(set -x; aclocal && autoheader && automake --add-missing && automake && autoconf) &&
 if [ "$1" = "-c" ]; then
 	./configure
 else

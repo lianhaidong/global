@@ -19,7 +19,7 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
-********* 2000, Shigio Yamaguchi  <shigio@tamacom.com>
+July 12 2001, Shigio Yamaguchi  <shigio@tamacom.com>
 
 	* config variable HAVE_SNPRINTF and AC_FUNC_ALLOCA added.
 	* stop using MAXENVLEN because it brings buffer overflow.

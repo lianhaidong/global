@@ -26,7 +26,6 @@ AC_INIT(global/global.c)
 AM_CONFIG_HEADER(machine/config.h)
 AM_INIT_AUTOMAKE(global, $VERSION)
 AC_PREREQ(2.12)
-AC_ARG_PROGRAM
 
 dnl Checks for programs.
 AC_PROG_CC

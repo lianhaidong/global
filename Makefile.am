@@ -13,7 +13,8 @@
 #
 SUBDIRS= libdb libglibc libutil btreeop gctags global gtags htags machine doc
 
-EXTRA_DIST = VERSION FAQ LICENSE gtags.conf gtags.el nvi-1.79-gtags.diff reconf.sh \
+EXTRA_DIST = VERSION FAQ LICENSE \
+	gtags.conf gtags.el nvi-1.79-gtags.diff reconf.sh globash.rc \
 	w32/INSTALL w32/libs w32/make.bat w32/makefile.inc \
 	w32/btreeop/makefile w32/gctags/makefile w32/global/makefile \
 	w32/gtags/makefile w32/htags/makefile w32/libdb/makefile \
