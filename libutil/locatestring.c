@@ -28,6 +28,10 @@
 #else
 #include <strings.h>
 #endif
+#ifdef DEBUG
+#include <stdio.h>
+extern int debug;
+#endif
 
 #include "locatestring.h"
 
@@ -83,6 +87,10 @@ int	flag;
 	const char *p = NULL;
 	int	slen;
 	int	(*cmpfunc) ();
+#ifdef DEBUG
+	FILE *dbg = stderr;
+	const char *pre = string;
+#endif
 
 	cmpfunc = (flag & IGNORE_CASE) ? strincmp : strncmp;
 	flag &= ~IGNORE_CASE;
@@ -105,5 +113,26 @@ int	flag;
 		if (flag == MATCH_AT_FIRST || flag == MATCH_AT_LAST)
 			break;
 	}
+#ifdef DEBUG
+	if (debug) {
+		fprintf(dbg, "locatestring: ");
+		if (p == NULL)
+			fprintf(dbg, "%s", pre);
+		else {
+			const char *pp = p;
+			const char *post = pp + strlen(pattern);
+
+			for (; *pre && pre < pp; pre++)
+				fputc(*pre, dbg);
+			fputc('[', dbg);
+			for (; *pp && pp < post; pp++)
+				fputc(*pp, dbg);
+			fputc(']', dbg);
+			for (; *post; post++)
+				fputc(*post, dbg);
+		}
+		fputc('\n', dbg);
+	}
+#endif
 	return (char *)p;
 }

@@ -505,8 +505,10 @@ int	flags;
 	}
 	if (flags & GTAGS_UNIQUE)
 		strbuf_puts(sb, " -u");
+#ifdef DEBUG
 	if (flags & GTAGS_DEBUG)
 		fprintf(stderr, "gtags_add() executing '%s'\n", strbuf_value(sb));
+#endif
 	if (!(ip = popen(strbuf_value(sb), "r")))
 		die("cannot execute '%s'.", strbuf_value(sb));
 	while ((ctags_x = strbuf_fgets(ib, ip, STRBUF_NOCRLF)) != NULL) {
