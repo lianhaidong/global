@@ -77,6 +77,7 @@ Richard Stallman	advice about gtags.el and GNU style packaging.
 Rob Fitzgerald		bug fix patch for global(1).
 Ron Lee			Debian package, htmake(1) and many bug reports.
 Rui Lopes		report about build error in *BSD and revision of term.
+Ruppert Koch		bug report about htags(1).
 Sadaichi Hayashida	idea about generating relative path.
 Sergio Talens-Oliag	writing online manual for systags(1).
 Shankar Chakkere	useful method to use vim editor with GLOBAL.

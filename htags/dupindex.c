@@ -63,11 +63,11 @@ open_dup_file(db, count)
 		snprintf(command, sizeof(command), "gzip -c >%s", path);
 		op = popen(command, "w");
 		if (op == NULL)
-			die("cannot create file '%s'.", path);
+			die("cannot execute command '%s'.", command);
 	} else {
 		op = fopen(path, "w");
 		if (op == NULL)
-			die("cannot execute command '%s'.", command);
+			die("cannot create file '%s'.", path);
 	}
 	return op;
 }
