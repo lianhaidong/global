@@ -26,7 +26,7 @@
 @HEADER	GCTAGS,1,Jul 2002,GNU Project
 @NAME	gctags - print cross reference list for gtags.
 @SYNOPSIS
-	@name{gctags} [-bdenrsvw] @arg{file} ...
+	@name{gctags} [-bdenrstvw] @arg{file} ...
 @DESCRIPTION
 	@name{Gctags} print cross reference list for @xref{gtags,1}
 	from the specified C, C++, YACC, JAVA and assembler source
@@ -77,6 +77,9 @@
 	@item{@option{-s}, @option{--symbol}}
 		Collect symbols other than functions.
 		By default, locate function definitions.
+	@item{@option{-t}, @option{--typedef}}
+		Pick up not only function but also typedef name and enum member
+		as a definition.
 	@item{@option{-v}, @option{--verbose}}
 		Verbose mode.
 	@item{@option{-w}, @option{--warning}}
