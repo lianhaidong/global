@@ -103,13 +103,17 @@ $'position_end   = '</FONT>';
 # Reserved words for C and Java are hard coded.
 # (configuration parameter 'reserved_words' was deleted.)
 #
-$'c_reserved_words =	"auto,break,case,char,const,continue,default,do,double," .
+$'c89_reserved_words =	"auto,break,case,char,const,continue,default,do,double," .
 		"else,enum,extern,float,for,goto,if,int,long,register,return," .
 		"short,signed,sizeof,static,struct,switch,typedef,union," .
 		"unsigned,void,volatile,while";
-$'cpp_reserved_words =	"catch,class,delete,friend,inline,new,operator," .
-		"private,protected,public,template,this,throw,try,virtual," .
-		$'c_reserved_words;
+$'c_reserved_words = 	"_Bool,_Complex,_Imaginary,inline,restrict," .
+		$'c89_reserved_words;
+$'cpp_reserved_words =	"asm,bool,catch,const_cast,class,delete,dynamic_cast," .
+		"explicit,export,false,friend,inline,mutable,namespace,new," .
+		"operator,private,protected,public,reinterpret_cast,static_cast," .
+		"template,this,throw,true,try,typeid,typename,using,virtual,wchar_t," .
+		$'c89_reserved_words;
 $'java_reserved_words  = "abstract,boolean,break,byte,case,catch,char,class," .
 		"const,continue,default,do,double,else,extends,false," .
 		"final,finally,float,for,goto,if,implements,import," .
