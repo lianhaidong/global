@@ -86,5 +86,9 @@ while			word
 %token			yacc
 %type			yacc
 %union			yacc
+%expect			yacc
+%pure_parser		yacc
+%no_lines		yacc
+%token_table		yacc
 %{			yacc
 %}			yacc
