@@ -2175,6 +2175,25 @@ sub src2html {
 	print $'html_begin, "\n";
 	print &'set_header($file);
 	print $'body_begin, "\n";
+	#
+	# print the header
+	#
+	print "<A NAME=TOP><H2>";
+	print &fill_anchor($file);
+	print "</H2>\n";
+	print "$'comment_begin/* ";
+	print &link_format(&anchor'getlinks(0));
+	if ($'show_position) {
+		print $'position_begin;
+		print "[+1 $file]";
+		print $'position_end;
+	}
+	print " */$'comment_end";
+	print "\n<HR>\n";
+
+	#
+	# It is not source file.
+	#
 	if ($notsource) {
 		if ($'cvsweb_url) {
 			print "<H2><A HREF=$'cvsweb_url$file";
@@ -2182,10 +2201,6 @@ sub src2html {
 			print ">$'title_cvs_repository</A></H2>\n";
 			print "<HR>\n";
 		}
-
-		#
-		# It is not source file.
-		#
 		print "<PRE>\n";
 		while (<SRC>) {
 			s/([&<>])/$ctab{$1}/ge;
@@ -2193,23 +2208,11 @@ sub src2html {
 			print;
 		}
 		print "</PRE>\n";
-	} else {
-		#
-		# print the header
-		#
-		print "<A NAME=TOP><H2>";
-		print &fill_anchor($file);
-		print "</H2>\n";
-		print "$'comment_begin/* ";
-		print &link_format(&anchor'getlinks(0));
-		if ($'show_position) {
-			print $'position_begin;
-			print "[+1 $file]";
-			print $'position_end;
-		}
-		print " */$'comment_end";
-		print "\n<HR>\n";
-
+	}
+	#
+	# Source file.
+	#
+	else {
 		local($define_index) = '';
 		local($lno, $tag, $type);
 		for (($lno, $tag, $type) = &anchor'first(); $lno; ($lno, $tag, $type) = &anchor'next()) {
@@ -2419,18 +2422,18 @@ sub src2html {
 			}
 		}
 		print "</PRE>\n";
-		print "<HR>\n";
-		print "<A NAME=BOTTOM>\n";
-		print "$'comment_begin/* ";
-		print &link_format(&anchor'getlinks(-1));
-		if ($'show_position) {
-			print $'position_begin;
-			print "[+$. $file]";
-			print $'position_end;
-		}
-		print " */$'comment_end";
-		print "\n";
 	}
+	print "<HR>\n";
+	print "<A NAME=BOTTOM>\n";
+	print "$'comment_begin/* ";
+	print &link_format(&anchor'getlinks(-1));
+	if ($'show_position) {
+		print $'position_begin;
+		print "[+$. $file]";
+		print $'position_end;
+	}
+	print " */$'comment_end";
+	print "\n";
 	print $'body_end, "\n";
 	print $'html_end, "\n";
 
