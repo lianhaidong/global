@@ -360,13 +360,13 @@ generate_file(dist, file)
 	if (regcomp(&preg, strbuf_value(sb), REG_EXTENDED) != 0)
 		die("cannot compile regular expression.");
 	/*
-	 * construct skelton file name in the system datadir directory.
+	 * construct skeleton file name in the system datadir directory.
 	 */
 	strbuf_reset(sb);
 	strbuf_sprintf(sb, "%s/gtags/%s.tmpl", datadir, file);
 	ip = fopen(strbuf_value(sb), "r");
 	if (!ip)
-		die("skelton file '%s' not found.", strbuf_value(sb));
+		die("skeleton file '%s' not found.", strbuf_value(sb));
 	op = fopen(makepath(dist, file, NULL), "w");
 	if (!op)
 		die("cannot create file '%s'.", file);
