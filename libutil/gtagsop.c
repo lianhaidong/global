@@ -244,7 +244,8 @@ int	flags;
 		regexchar['^'] = regexchar['$'] = regexchar['{'] =
 		regexchar['}'] = regexchar['('] = regexchar[')'] =
 		regexchar['.'] = regexchar['*'] = regexchar['+'] =
-		regexchar['?'] = regexchar['\\'] = init = 1;
+		regexchar['['] = regexchar[']'] = regexchar['?'] =
+		regexchar['\\'] = init = 1;
 	}
 	if ((gtop = (GTOP *)calloc(sizeof(GTOP), 1)) == NULL)
 		die("short of memory.");
