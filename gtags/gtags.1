@@ -1,0 +1,143 @@
+.\"
+.\" Copyright (c) 1996, 1997, 1998, 1999
+.\"             Shigio Yamaguchi. All rights reserved.
+.\" Copyright (c) 1999, 2000
+.\"             Tama Communications Corporation. All rights reserved.
+.\"
+.\" This file is part of GNU GLOBAL.
+.\"
+.\" GNU GLOBAL is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 2, or (at your option)
+.\" any later version.
+.\"
+.\" GNU GLOBAL is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\" GNU General Public License for more details.
+.\"
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program; if not, write to the Free Software
+.\" Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+.\"
+.Dd Dec 6, 1999
+.Dt GTAGS 1
+.Os FreeBSD
+.Sh NAME
+.Nm gtags
+.Nd create tag files for global.
+.Sh SYNOPSIS
+.Nm gtags
+.Op Fl c
+.Op Fl i
+.Op Fl I
+.Op Fl o
+.Op Fl w
+.Op Fl v
+.Op Ar dbpath
+.Sh DESCRIPTION
+.Nm Gtags
+makes GTAGS, GRTAGS, GSYMS and GPATH file for
+.Xr global 1 .
+.Nm Gtags
+trace subdirectories, read source files,
+locate symbols and save the information into tag files.
+C, C++, yacc, java and assembler source files are supported.
+You should execute this command at the root of the source tree.
+.Pp
+If your source directory is on a read only device like CDROM, specify
+.Ar dbpath
+of the directory on which make tag files.
+.Pp
+.Bl -tag -width Ds -compact
+.It Fl c
+.It Fl -compact
+Make tag files with compact format.
+.It Fl i
+.It Fl -incremental
+Update tag files incrementally.
+.It Fl I
+.It Fl -idutils
+Make index files for id-utils(1).
+.It Fl o
+.It Fl -omit-gsyms
+Suppress making GSYMS file.
+Use this option if you don't use -s option of
+.Xr global 1 .
+.It Fl v
+.It Fl -verbose
+Verbose mode.
+.It Fl w
+.It Fl -warning
+Print warning messages.
+.El
+.Pp
+Files whose names end in
+.Nm \&.c
+or
+.Nm \&.h
+are assumed to be C
+source files and are searched for C style routine and macro definitions.
+Files whose names end in
+.Nm \&.c++
+.Nm \&.cc
+.Nm \&.cpp
+.Nm \&.cxx
+.Nm \&.hxx
+.Nm \&.C
+.Nm \&.H
+are assumed to be C++
+source files.
+Files whose names end in
+.Nm \&.y
+are assumed to be
+.Tn YACC
+source files.
+Files whose names end in
+.Nm \&.java
+are assumed to be Java source files.
+Files whose names end in
+.Nm \&.s
+or
+.Nm \&.S
+are assumed to be Assembler
+source files.
+Other files are searched for C style definitions.
+.Sh FILES
+.Bl -tag -width tags -compact
+.It Pa GTAGS
+Tag file for function definitions.
+.It Pa GRTAGS
+Tag file for function references.
+.It Pa GSYMS
+Tag file for other symbols.
+.It Pa GPATH
+Tag file for path of source files.
+.El
+.Sh DIAGNOSTICS
+.Nm Gtags
+exits with a non 0 value if an error occurred, 0 otherwise.
+.Sh SEE ALSO
+.Xr btreeop 1 ,
+.Xr gctags 1 ,
+.Xr global 1 ,
+.Xr gozilla 1 ,
+.Xr htags 1 ,
+.Xr vi 1 .
+.Sh BUG
+GTAGS, GRTAGS and GSYMS are very large.
+In advance of using this command, check the space of your disk.
+.Pp
+Assembler support is far from complete.  It extracts only ENTRY()
+and ALTENTRY() from source file. Probably valid only for FreeBSD and Linux
+kernel source.
+.Pp
+There is no concurrency control about tag files.
+.Pp
+Symbols in assembler source files are not extracted for GSYMS.
+.Sh AUTHORS
+Shigio Yamaguchi (shigio@tamacom.com)
+.Sh HISTORY
+The
+.Nm
+command appeared in FreeBSD 2.2.2.

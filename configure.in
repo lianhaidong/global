@@ -1,0 +1,127 @@
+dnl
+dnl Configuration script for GLOBAL.
+dnl Process this file with autoconf to produce a configure script.
+dnl
+dnl Copyright (c) 2000
+dnl             Tama Communications Corporation. All rights reserved.
+dnl
+dnl This file is part of GNU GLOBAL.
+dnl
+dnl GNU GLOBAL is free software; you can redistribute it and/or modify
+dnl it under the terms of the GNU General Public License as published by
+dnl the Free Software Foundation; either version 2, or (at your option)
+dnl any later version.
+dnl
+dnl GNU GLOBAL is distributed in the hope that it will be useful,
+dnl but WITHOUT ANY WARRANTY; without even the implied warranty of
+dnl MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+dnl GNU General Public License for more details.
+dnl
+dnl You should have received a copy of the GNU General Public License
+dnl along with this program; if not, write to the Free Software
+dnl Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+dnl
+AC_INIT(global/global.c)
+. ./VERSION
+AM_CONFIG_HEADER(machine/config.h)
+AM_INIT_AUTOMAKE(global, $VERSION)
+AC_PREREQ(2.12)
+AC_ARG_PROGRAM
+
+dnl Checks for programs.
+AC_PROG_CC
+AC_PROG_INSTALL
+AC_PROG_MAKE_SET
+AC_PROG_RANLIB
+AC_PATH_PROG(PERL, perl, no)
+if test ${ac_cv_path_PERL} = no; then
+	AC_MSG_ERROR([PERL is required but not found.])
+fi
+AC_PATH_PROG(SORT, sort, no)
+if test ${ac_cv_path_SORT} = no; then
+	AC_MSG_ERROR([SORT is required but not found.])
+fi
+AC_PATH_PROG(SED, sed, no)
+if test ${ac_cv_path_SED} = no; then
+	AC_MSG_ERROR([SED is required but not found.])
+fi
+AC_PATH_PROG(FIND, find, no)
+if test ${ac_cv_path_FIND} != no; then
+	AC_DEFINE(HAVE_FIND)
+else
+	AC_MSG_ERROR([FIND is required but not found.])
+fi
+AC_PATH_PROG(XARGS, xargs, no)
+if test ${ac_cv_path_XARGS} != no; then
+	AC_DEFINE(HAVE_XARGS)
+fi
+AC_PATH_PROG(GREP, grep, no)
+if test ${ac_cv_path_GREP} != no; then
+	AC_DEFINE(HAVE_GREP)
+fi
+
+dnl Checks for libraries.
+
+dnl Checks for header files.
+AC_CHECK_HEADERS(limits.h string.h unistd.h stdarg.h)
+AC_HEADER_DIRENT
+AC_HEADER_STDC
+AC_HEADER_STAT
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_TYPE_OFF_T
+AC_TYPE_SIZE_T
+AC_STRUCT_ST_BLKSIZE
+AG_STRUCT_DP_D_NAMLEN
+AG_STRUCT_DP_D_TYPE
+AG_BYTE_ORDER
+AC_CHECK_TYPE(int8_t, signed char)
+AC_CHECK_TYPE(int16_t, short)
+AC_CHECK_TYPE(int32_t, int)
+AC_CHECK_TYPE(u_int8_t, unsigned char)
+AC_CHECK_TYPE(u_int16_t, unsigned short)
+AC_CHECK_TYPE(u_int32_t, unsigned int)
+AC_CHECK_TYPE(ssize_t, int)
+AC_CHECK_TYPE(caddr_t, char *)
+AC_CHECK_SIZEOF(int, 4)
+if test ${ac_cv_sizeof_int} != 4; then
+	AC_MSG_ERROR([Integer size isn't 32 bit.])
+fi
+AC_CHECK_SIZEOF(short, 2)
+if test ${ac_cv_sizeof_short} != 2; then
+	AC_MSG_ERROR([Short integer size isn't 16 bit.])
+fi
+AC_CHECK_SIZEOF(char, 1)
+if test ${ac_cv_sizeof_char} != 1; then
+	AC_MSG_ERROR([Char size isn't 8 bit.])
+fi
+
+dnl Checks for library functions.
+AC_FUNC_MEMCMP
+AC_TYPE_SIGNAL
+AC_FUNC_STRFTIME
+AC_CHECK_FUNCS(getcwd putenv strdup lstat snprintf)
+
+INCLUDES='-I$(top_srcdir)/libutil -I$(top_srcdir)/libdb -I$(top_srcdir)/libregex'
+AC_SUBST(INCLUDES)
+LDADD='../libutil/libgloutil.a ../libdb/libglodb.a ../libregex/libgloregex.a'
+AC_SUBST(LDADD)
+
+AC_ARG_ENABLE(statistics,dnl
+[  --enable-statistics     enable statistics option],
+	CFLAGS="$CFLAGS -DSTATISTICS"
+)dnl
+
+AC_OUTPUT([Makefile
+	libutil/Makefile
+	gtags/Makefile
+	htags/Makefile
+	gctags/Makefile
+	libdb/Makefile
+	btreeop/Makefile
+	global/Makefile
+	libregex/Makefile
+	machine/Makefile
+	doc/Makefile
+])

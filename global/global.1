@@ -1,0 +1,192 @@
+.\"
+.\" Copyright (c) 1996, 1997, 1998, 1999
+.\"             Shigio Yamaguchi. All rights reserved.
+.\" Copyright (c) 1999, 2000
+.\"             Tama Communications Corporation. All rights reserved.
+.\"
+.\" This file is part of GNU GLOBAL.
+.\"
+.\" GNU GLOBAL is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 2, or (at your option)
+.\" any later version.
+.\"
+.\" GNU GLOBAL is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\" GNU General Public License for more details.
+.\"
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program; if not, write to the Free Software
+.\" Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+.\"
+.Dd Dec 6, 1999
+.Dt GLOBAL 1
+.Os FreeBSD
+.Sh NAME
+.Nm global
+.Nd print the locations of specified object.
+.Sh SYNOPSIS
+.Nm global
+.Op Fl alnrstvx
+.Ar pattern
+.Nm global
+.Fl c[sv]
+.Op Ar prefix
+.Nm global
+.Fl f[anrstvx]
+.Ar files
+.Nm global
+.Fl g[alntvx]
+.Ar pattern
+.Nm global
+.Fl i[v]
+.Nm global
+.Fl I[alntvx]
+.Ar pattern
+.Nm global
+.Fl p[rv]
+.Nm global
+.Fl P[alntvx]
+.Op Ar pattern
+.Sh DESCRIPTION
+.Nm Global
+find the locations of specified object in C, C++, Yacc, Java and assembler
+source files.
+.Nm Global
+can treat a source tree, that is, a directory that has subdirectories and
+source files.
+You can get the relative path of objects from anywhere within the tree.
+.Nm Global
+can locate not only function definitions but also function references and
+other symbols.
+Duplicate entries are allowed.
+.Pp
+In advance of using this command, you must execute
+.Xr gtags 1
+at the root directory of the source tree to make tag files.
+Then you can execute
+.Nm
+at anywhere in the source tree.
+.Sh COMMANDS
+The following commands are available:
+.Pp
+.Bl -tag -width Ds -compact
+.It Ar pattern
+Print object which match to the
+.Ar pattern .
+It can include POSIX 1003.2 regular expression.
+.It Fl c
+.It Fl -completion Op Ar prefix
+Print candidate function names which start with specified
+.Ar prefix .
+If
+.Ar prefix
+is not specified, print all function names.
+.It Fl f
+.It Fl -file Ar files
+Print all function definitions in the
+.Ar files .
+This option implies -x option.
+.It Fl g
+.It Fl -grep Ar pattern
+Print all lines which match to the
+.Ar pattern .
+This function use grep(1) as a search engine.
+.It Fl i
+.It Fl -incremental
+Locate tag files and reconstruct them incrementally.
+.It Fl I
+.It Fl -idutils Ar pattern
+Print all lines which match to the
+.Ar pattern .
+This function use id-utils(1) as a search engine.
+To use this command, you need to install id-utils(1) in your system
+and you must execute
+.Xr gtags 1
+with -I option.
+.It Fl p
+.It Fl -print-dbpath
+Print the location of GTAGS.
+.It Fl P
+.It Fl -path Op Ar pattern
+Print the path which match to the
+.Ar pattern .
+If no pattern specified, print all.
+.It Fl s
+.It Fl -symbol Ar pattern
+Print the locations of specified symbol other than function names.
+You need GSYMS tags file. See
+.Xr gtags 1 .
+.It Fl -version
+Show version number.
+.It Fl -help
+Show help.
+.Sh OPTIONS
+The following options are available:
+.Pp
+.Bl -tag -width Ds -compact
+.It Fl a
+.It Fl -absolute
+Print absolute path name. By default, print relative path name.
+.It Fl l
+.It Fl -local
+Print just objects which exist under the current directory.
+.It Fl n
+.It Fl -nofilter
+Suppress sort filter and path conversion filter.
+.It Fl r
+.It Fl -reference
+.It Fl -rootdir
+Print the locations of object references. By default, print object
+definitions. With the -p option, print the root directory of source tree.
+.It Fl t
+.It Fl -tags
+Print with standard ctags format.
+.It Fl v
+.It Fl -verbose
+Verbose mode.
+.It Fl x
+.It Fl -cxref
+In addition to the default output, produce the line number and
+the line contents.
+.Sh FILES
+.Bl -tag -width tags -compact
+.It Pa GTAGS
+Tag file for function definitions.
+.It Pa GRTAGS
+Tag file for function references.
+.It Pa GSYMS
+Tag file for symbols other then functions.
+.It Pa GPATH
+Tag file for path of source files.
+.El
+.Sh ENVIRONMENT
+The following environment variables affect the execution of global.
+.Pp
+.Bl -tag -width indent
+.It Ev GTAGSROOT
+The directory which is the root of source tree.
+.It Ev GTAGSDBPATH
+The directory on which gtags database exist. This value is ignored
+when GTAGSROOT is not defined.
+.It Ev GTAGSLIBPATH
+If this variable is set, its value is used as the path to search for library
+functions. If specified function is not found in a source tree,
+global search in these path too.
+.Sh DIAGNOSTICS
+.Nm Global
+exits with a non 0 value if an error occurred, 0 otherwise.
+.Sh SEE ALSO
+.Xr btreeop 1 ,
+.Xr gctags 1 ,
+.Xr gozilla 1 ,
+.Xr gtags 1 ,
+.Xr htags 1 ,
+.Xr vi 1 .
+.Sh AUTHORS
+Shigio Yamaguchi (shigio@tamacom.com)
+.Sh HISTORY
+The
+.Nm
+command appeared in FreeBSD 2.2.2.
