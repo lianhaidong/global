@@ -103,8 +103,32 @@ AC_FUNC_STRFTIME
 AC_CHECK_FUNCS(getcwd putenv strdup lstat snprintf utimes)
 
 INCLUDES='-I$(top_srcdir)/libutil -I$(top_srcdir)/libdb -I$(top_srcdir)/libglibc'
-AC_SUBST(INCLUDES)
 LDADD='../libutil/libgloutil.a ../libdb/libglodb.a ../libglibc/libgloglibc.a'
+
+AC_MSG_CHECKING(for postgres support)
+AC_ARG_WITH(postgres,
+[  --with-postgres[=DIR]     include postgres support ],
+[
+        if test "$withval" = 'no'; then
+                AC_MSG_RESULT(yes)
+        else
+                case $withval in
+                ''|yes) POSTGRES=/usr/local/pgsql;;
+                *)      POSTGRES=$withval;;
+                esac
+                if ! test -d $POSTGRES; then
+                        AC_MSG_ERROR([directory '$POSTGRES' not found.])
+                fi
+                INCLUDES="$INCLUDES -I$POSTGRES/include"
+                CFLAGS="$CFLAGS -DUSE_POSTGRES"
+                LDADD="$LDADD $POSTGRES/lib/libpq.a -lcrypt"
+                AC_MSG_RESULT([yes, using $POSTGRES])
+        fi
+],[
+        AC_MSG_RESULT(no)
+])
+
+AC_SUBST(INCLUDES)
 AC_SUBST(LDADD)
 
 AC_OUTPUT([Makefile

@@ -50,7 +50,7 @@
 const char *dbdefault = "btree";   	/* default database name */
 const char *progname  = "btreeop";		/* command name */
 int vflag;
-
+int debug;
 static void	usage(void);
 void	signal_setup(void);
 void	onintr(int);

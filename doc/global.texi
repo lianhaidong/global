@@ -1570,6 +1570,7 @@ source code.
 * Plugin::                              How to plug in a parser.
 * Compact format::                      Compact format.
 * Incremental updating::                Incremental updating.
+* Postgres::                            Using postgres.
 @end menu
 
 @c ***************************************************************************
@@ -1722,6 +1723,31 @@ Instead, you can use incremental updating facility (@samp{-u} option).
 @end example
 
 @c ***************************************************************************
+@node   Postgres
+@section Using postgres.
+
+You can make tag files in postgres database instead of normal files.
+To do this, you must setup postgres database system and make a database
+so that you can access to it. You need a database for a project.
+At the first time of creating tag files, you need specify info string with
+@option{--info}. The info string is passed to PQconnectdb(3) as is.
+@opindex -P
+@example
+
+    # setup postgres database system
+    % set DBNAME=gtagsdb
+    % createdb $DBNAME
+    % gtags -P --info="dbname=$DBNAME user=`whoami`"
+
+@end example
+Once tag files are created, you need not use @option{--info}.
+If info string is not specified then gtags load it from tag files.
+
+Please be careful of info string using @option{--info}.
+Info string is passed to external system as is.
+If you mistake the value then program may abort with core dump.
+
+@c ***************************************************************************
 @c Reference manual.
 @c ***************************************************************************
 @node Reference
@@ -1740,7 +1766,7 @@ Instead, you can use incremental updating facility (@samp{-u} option).
 @subsection NAME
 gtags - create tag files for global.
 @subsection SYNOPSIS
-gtags [-c] [-i] [-I] [-o] [-w] [-v] [dbpath]
+gtags [-c] [-i] [-I] [-o] [-P] [-w] [-v] [dbpath]
 @subsection DESCRIPTION
 Gtags makes @file{GTAGS}, @file{GRTAGS}, @file{GSYMS} and @file{GPATH}
  file for global(1)(See @xref{global}.).
@@ -1763,11 +1789,17 @@ Load user's configuration from file.
 @item @option{-i}, @option{--incremental}
 Update tag files incrementally. You had better use global(1)(See @xref{global}.)
 with the -u option.
+@item @option{--info} info
+Pass info string to external system as is.
+Currently you can use it with -P option.
 @item @option{-I}, @option{--idutils}
 Make index files for id-utils(1).
 @item @option{-o}, @option{--omit-gsyms}
 Suppress making GSYMS file.  Use this option if you don't use -s option of
 global(1)(See @xref{global}.).
+@item @option{-P}, @option{--postgres}
+Use postgres database system (http://www.postgresql.org) instead of db(3).
+You can pass info string to PQconnectdb(3) using @option{--info} option.
 @item @option{-v}, @option{--verbose}
 Verbose mode.
 @item @option{-w}, @option{--warning}
@@ -1821,6 +1853,22 @@ main              10 src/main.c  main (argc, argv) @{
 
 @subsection DIAGNOSTICS
 Gtags exits with a non 0 value if an error occurred, 0 otherwise.
+
+@subsection BUGS
+GTAGS, GRTAGS and GSYMS are very large.
+In advance of using this command, check the space of your disk.
+
+Assembler support is far from complete.  It extracts only ENTRY()
+and ALTENTRY() from source file. Probably valid only for FreeBSD and Linux
+kernel source.
+
+There is no concurrency control about tag files.
+
+Symbols in assembler source files are not extracted for GSYMS.
+
+Please be careful of using @option{--info}.
+Info string is passed to external system as is.
+If you mistake the value then program may abort with core dump.
 
 @c ***************************************************************************
 @node   htags

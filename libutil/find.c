@@ -110,6 +110,17 @@ static regex_t	*suff = &suff_area;
 
 static int getdirs(char *, STRBUF *);
 
+/*
+ * getdirs: get directory list
+ *
+ *	i)	dir	directory
+ *	o)	sb	string buffer
+ *	r)		-1: error, 0: normal
+ *
+ * format of directory list:
+ * |ddir1\0ffile1\0llink\0|
+ * means directory 'dir1', file 'file1' and symbolic link 'link'.
+ */
 static int
 getdirs(dir, sb)
 char    *dir;
@@ -175,6 +186,9 @@ STRBUF  *sb;
 	(void)closedir(dirp);
 	return 0;
 }
+/*
+ * ffindopen: start iterator without GPATH.
+ */
 void
 ffindopen()
 {
@@ -293,6 +307,12 @@ ffindopen()
 	if (skiplist)
 		free(skiplist);
 }
+/*
+ * ffindread: read path without GPATH.
+ *
+ *	i)	length	length of path
+ *	r)		path
+ */
 char    *
 ffindread(length)
 int	*length;
@@ -351,6 +371,9 @@ int	*length;
 	}
 	return NULL;
 }
+/*
+ * ffindclose: close iterator.
+ */
 void
 ffindclose(void)
 {
@@ -369,6 +392,9 @@ ffindclose(void)
 /*----------------------------------------------------------------------*/
 static FILE	*ip;
 
+/*
+ * ffindopen: start iterator without GPATH.
+ */
 void
 ffindopen()
 {
@@ -465,6 +491,12 @@ ffindopen()
 	if (skiplist)
 		free(skiplist);
 }
+/*
+ * ffindread: read path without GPATH.
+ *
+ *	i)	length	length of path
+ *	r)		path
+ */
 char	*
 ffindread(length)
 int	*length;
@@ -489,6 +521,9 @@ int	*length;
 	}
 	return NULL;
 }
+/*
+ * ffindclose: close iterator.
+ */
 void
 ffindclose(void)
 {
@@ -499,7 +534,7 @@ ffindclose(void)
 #endif /* !HAVE_FIND */
 
 /*
- * Faster findXXX() using GPATH.
+ * Fast findXXX() using GPATH.
  *
  * gfindxxx() does almost same with findxxx() but much faster,
  * because gfindxxx() use GPATH (file index).
@@ -513,20 +548,34 @@ static int      opened;
 static int      first;
 static char	prefix[MAXPATHLEN+1];
 
+/*
+ * gfindopen: start iterator using GPATH.
+ */
 void
 gfindopen(dbpath, local)
 char	*dbpath;
 char	*local;
 {
+	char *path;
+
 	assert(opened == 0);
 	assert(first == 0);
-	dbop = dbop_open(makepath(dbpath, dbname(GPATH), NULL), 0, 0, 0);
+	path = strdup(makepath(dbpath, dbname(GPATH), NULL));
+	if (path == NULL)
+		die("short of memory.");
+	dbop = dbop_open(path, 0, 0, 0);
+	free(path);
 	if (dbop == NULL)
 		die("GPATH not found.");
 	strcpy(prefix, (local) ? local : "./");
 	opened = 1;
 	first = 1;
 }
+/*
+ * gfindread: read path without GPATH.
+ *
+ *	r)		path
+ */
 char	*
 gfindread()
 {
@@ -537,6 +586,9 @@ gfindread()
 	}
 	return dbop_next(dbop);
 }
+/*
+ * gfindclose: close iterator.
+ */
 void
 gfindclose(void)
 {

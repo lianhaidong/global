@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999
  *             Shigio Yamaguchi. All rights reserved.
- * Copyright (c) 1999, 2000
+ * Copyright (c) 1999, 2000, 2001
  *             Tama Communications Corporation. All rights reserved.
  *
  * This file is part of GNU GLOBAL.
@@ -27,6 +27,11 @@
 #ifdef STDC_HEADERS
 #include <stdlib.h>
 #endif
+#ifdef HAVE_STRING_H
+#include <string.h>
+#else
+#include <strings.h>
+#endif
 
 #include "die.h"
 #include "dbop.h"
@@ -43,6 +48,8 @@ int
 defined(name)
 const char *name;
 {
+	char *path;
+
 	if (dbop == NULL) {
 		const char *dbpath;
 
@@ -51,9 +58,13 @@ const char *name;
 		 */
 		if (!(dbpath = getenv("GTAGSDBPATH")))
 			dbpath = ".";
-		dbop = dbop_open(makepath(dbpath, "GTAGS", NULL), 0, 0, 0);
+		path = strdup(makepath(dbpath, "GTAGS", NULL));
+		if (path == NULL)
+			die("short of memory.");
+		dbop = dbop_open(path, 0, 0, 0);
+		free(path);
 		if (dbop == NULL)
-			die("GTAGS not found. (%s)", makepath(dbpath, "GTAGS", NULL));
+			die("'%s' not found.", path);
 	}
 	if (dbop_get(dbop, name))
 		return 1;

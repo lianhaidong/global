@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999
  *             Shigio Yamaguchi. All rights reserved.
- * Copyright (c) 1999, 2000
+ * Copyright (c) 1999, 2000, 2001
  *             Tama Communications Corporation. All rights reserved.
  *
  * This file is part of GNU GLOBAL.
@@ -49,16 +49,19 @@ static int	created;
 /*
  * gpath_open: open gpath tag file
  *
+ *	i)	dbpath	GTAGSDBPATH
  *	i)	mode	0: read only
  *			1: create
  *			2: modify
+ *	i)	flags	DBOP_POSTGRES
  *	r)		0: normal
  *			-1: error
  */
 int
-gpath_open(dbpath, mode)
+gpath_open(dbpath, mode, flags)
 const char *dbpath;
 int	mode;
+int	flags;
 {
 	char	*p;
 
@@ -69,7 +72,11 @@ int	mode;
 	_mode = mode;
 	if (mode == 1 && created)
 		mode = 0;
-	dbop = dbop_open(makepath(dbpath, dbname(GPATH), NULL), mode, 0644, 0);
+	p = strdup(makepath(dbpath, dbname(GPATH), NULL));
+	if (p == NULL)
+		die("short of memory.");
+	dbop = dbop_open(p, mode, 0644, flags);
+	free(p);
 	if (dbop == NULL)
 		return -1;
 	if (mode == 1)
@@ -91,25 +98,33 @@ void
 gpath_put(path)
 const char *path;
 {
-	char	buf[10];
+	char	fid[32];
 
 	assert(opened == 1);
 	if (_mode == 1 && created)
 		return;
 	if (dbop_get(dbop, path) != NULL)
 		return;
-	snprintf(buf, sizeof(buf), "%d", _nextkey++);
-	dbop_put(dbop, path, buf, 0);
-	dbop_put(dbop, buf, path, 0);
+	snprintf(fid, sizeof(fid), "%d", _nextkey++);
+#ifdef USE_POSTGRES
+	if (dbop->openflags & DBOP_POSTGRES) {
+		dbop_put(dbop, path, fid, fid);
+	} else {
+#endif
+		dbop_put(dbop, path, fid, "0");
+		dbop_put(dbop, fid, path, "0");
+#ifdef USE_POSTGRES
+	}
+#endif
 }
 /*
- * gpath_path2ids: convert path into id
+ * gpath_path2fid: convert path into id
  *
  *	i)	path	path name
- *	r)		path id
+ *	r)		file id
  */
 char *
-gpath_path2ids(path)
+gpath_path2fid(path)
 const char *path;
 {
 	char	*id;
@@ -118,31 +133,20 @@ const char *path;
 	return dbop_get(dbop, path);
 }
 /*
- * gpath_ids2path: convert id into path
+ * gpath_fid2path: convert id into path
  *
- *	i)	ids	path id
+ *	i)	fid	file id
  *	r)		path name
  */
 char *
-gpath_ids2path(ids)
-const char *ids;
+gpath_fid2path(fid)
+const char *fid;
 {
-	return dbop_get(dbop, ids);
-}
-/*
- * gpath_id2path: convert id into path
- *
- *	i)	id	path id
- *	r)		path name
- */
-char *
-gpath_id2path(id)
-int	id;
-{
-	char	ids[80];
-	assert(opened == 1);
-	snprintf(ids, sizeof(ids), "%d", id);
-	return gpath_ids2path(ids);
+#ifdef USE_POSTGRES
+	if (dbop->openflags & DBOP_POSTGRES)
+		return dbop_getkey_by_fid(dbop, fid);
+#endif
+	return dbop_get(dbop, fid);
 }
 /*
  * gpath_delete: delete specified path record
@@ -153,16 +157,24 @@ void
 gpath_delete(path)
 const char *path;
 {
-	char	*id;
+	char	*fid;
 
 	assert(opened == 1);
 	assert(_mode == 2);
 	assert(path[0] == '.' && path[1] == '/');
-	id = dbop_get(dbop, path);
-	if (id == NULL)
+	fid = dbop_get(dbop, path);
+	if (fid == NULL)
 		return;
-	dbop_delete(dbop, id);
-	dbop_delete(dbop, path);
+#ifdef USE_POSTGRES
+	if (dbop->openflags & DBOP_POSTGRES) {
+		dbop_delete_by_fid(dbop, fid);
+	} else {
+#endif
+		dbop_delete(dbop, fid);
+		dbop_delete(dbop, path);
+#ifdef USE_POSTGRES
+	}
+#endif
 }
 /*
  * gpath_nextkey: return next key
@@ -191,7 +203,7 @@ gpath_close(void)
 	}
 	snprintf(buf, sizeof(buf), "%d", _nextkey);
 	if (_mode == 1 || _mode == 2)
-		dbop_put(dbop, NEXTKEY, buf, 0);
+		dbop_update(dbop, NEXTKEY, buf, "0");
 	dbop_close(dbop);
 	if (_mode == 1)
 		created = 1;

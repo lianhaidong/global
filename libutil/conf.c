@@ -47,6 +47,9 @@
 static FILE	*fp;
 static STRBUF	*ib;
 static char	*line;
+/*
+ * 8 level nested tc= or include= is allowed.
+ */
 static int	allowed_nest_level = 8;
 static int	opened;
 
@@ -58,6 +61,14 @@ static void	includelabel(STRBUF *, const char *, int);
 #define isblank(c)	((c) == ' ' || (c) == '\t')
 #endif
 
+/*
+ * trim: trim string.
+ *
+ * : var1=a b :
+ *	|
+ *	v
+ * :var1=a b :
+ */
 static void
 trim(l)
 char	*l;
@@ -74,6 +85,17 @@ char	*l;
 	}
 	*b = 0;
 }
+/*
+ * readrecord: read recoed indexed by label.
+ *
+ *	i)	label	label in config file
+ *	r)		record
+ *
+ * Jobs:
+ * o skip comment.
+ * o append following line.
+ * o format check.
+ */
 static char	*
 readrecord(label)
 const char *label;
@@ -115,6 +137,13 @@ const char *label;
 	}
 	return NULL;
 }
+/*
+ * includelabel: procedure for tc= (or include=)
+ *
+ *	o)	sb	string buffer
+ *	i)	label	record label
+ *	i)	level	nest level for check
+ */
 static	void
 includelabel(sb, label, level)
 STRBUF	*sb;
@@ -150,17 +179,18 @@ configpath() {
 	char *p;
 
 	if ((p = getenv("HOME")) && test("r", makepath(p, GTAGSRC, NULL)))
-		strcpy(config, makepath(p, GTAGSRC, NULL));
+		strncpy(config, makepath(p, GTAGSRC, NULL), sizeof(config));
 	else if (test("r", GTAGSCONF))
-		strcpy(config, GTAGSCONF);
+		strncpy(config, GTAGSCONF, sizeof(config));
 	else if (test("r", OLD_GTAGSCONF))
-		strcpy(config, OLD_GTAGSCONF);
+		strncpy(config, OLD_GTAGSCONF, sizeof(config));
 	else if (test("r", DEBIANCONF))
-		strcpy(config, DEBIANCONF);
+		strncpy(config, DEBIANCONF, sizeof(config));
 	else if (test("r", OLD_DEBIANCONF))
-		strcpy(config, OLD_DEBIANCONF);
+		strncpy(config, OLD_DEBIANCONF, sizeof(config));
 	else
 		return NULL;
+	config[sizeof(config) - 1] = '\0';
 	return config;
 }
 /*

@@ -22,6 +22,7 @@ At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
 Version 4.* - *** **, 2001, by Shigio Yamaguchi
 
+* postgres support added.
 * gtags: when no parser specified in config file, overloaded by default values.
 * htags: changed to refer to macros which is defined in other C source.
 * global.texi: reference manual added.

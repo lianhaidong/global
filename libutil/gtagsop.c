@@ -197,6 +197,19 @@ int	flags;
 	return 0;
 }
 /*
+ * gtags_setinfo: set info string.
+ *
+ *      i)      info    info string
+ *
+ * Currently this method is used for postgres.
+ */
+void
+gtags_setinfo(info)
+char *info;
+{
+	dbop_setinfo(info);
+}
+/*
  * gtags_open: open global tag.
  *
  *	i)	dbpath	dbpath directory
@@ -207,6 +220,7 @@ int	flags;
  *			GTAGS_MODIFY: modify tag
  *	i)	flags	GTAGS_COMPACT
  *			GTAGS_PATHINDEX
+ *			GTAGS_POSTGRES
  *	r)		GTOP structure
  *
  * when error occurred, gtagopen doesn't return.
@@ -221,7 +235,9 @@ int	mode;
 int	flags;
 {
 	GTOP	*gtop;
+	char	*path;
 	int	dbmode = 0;
+	int	dbopflags = 0;
 
 	/* initialize for isregex() */
 	if (!init) {
@@ -234,6 +250,7 @@ int	flags;
 		die("short of memory.");
 	gtop->db = db;
 	gtop->mode = mode;
+	gtop->openflags = flags;
 	switch (gtop->mode) {
 	case GTAGS_READ:
 		dbmode = 0;
@@ -251,12 +268,21 @@ int	flags;
 	/*
 	 * allow duplicate records.
 	 */
-	gtop->dbop = dbop_open(makepath(dbpath, dbname(db), NULL), dbmode, 0644, DBOP_DUP);
+	dbopflags = DBOP_DUP;
+	if (flags & GTAGS_POSTGRES)
+		dbopflags |= DBOP_POSTGRES;
+	path = strdup(makepath(dbpath, dbname(db), NULL));
+	if (path == NULL)
+		die("short of memory.");
+	gtop->dbop = dbop_open(path, dbmode, 0644, dbopflags);
+	free(path);
 	if (gtop->dbop == NULL) {
 		if (dbmode == 1)
 			die("cannot make %s.", dbname(db));
 		die("%s not found.", dbname(db));
 	}
+	if (gtop->dbop->openflags & DBOP_POSTGRES)
+		gtop->openflags |= GTAGS_POSTGRES;
 	/*
 	 * decide format version.
 	 */
@@ -275,12 +301,12 @@ int	flags;
 			gtop->format_version = 2;
 			snprintf(buf, sizeof(buf),
 				"%s %d", VERSIONKEY, gtop->format_version);
-			dbop_put(gtop->dbop, VERSIONKEY, buf, 0);
+			dbop_put(gtop->dbop, VERSIONKEY, buf, "0");
 			gtop->format |= GTAGS_COMPACT;
-			dbop_put(gtop->dbop, COMPACTKEY, COMPACTKEY, 0);
+			dbop_put(gtop->dbop, COMPACTKEY, COMPACTKEY, "0");
 			if (flags & GTAGS_PATHINDEX) {
 				gtop->format |= GTAGS_PATHINDEX;
-				dbop_put(gtop->dbop, PATHINDEXKEY, PATHINDEXKEY, 0);
+				dbop_put(gtop->dbop, PATHINDEXKEY, PATHINDEXKEY, "0");
 			}
 		}
 	} else {
@@ -307,7 +333,7 @@ int	flags;
 		}
 	}
 	if (gtop->format & GTAGS_PATHINDEX || gtop->mode != GTAGS_READ) {
-		if (gpath_open(dbpath, dbmode) < 0) {
+		if (gpath_open(dbpath, dbmode, dbopflags) < 0) {
 			if (dbmode == 1)
 				die("cannot create GPATH.");
 			else
@@ -333,20 +359,22 @@ int	flags;
  *	i)	gtop	descripter of GTOP
  *	i)	tag	tag name
  *	i)	record	ctags -x image
+ *	i)	fid	file id.
  */
 void
-gtags_put(gtop, tag, record)
+gtags_put(gtop, tag, record, fid)
 GTOP	*gtop;
 char	*tag;
 char	*record;
+char	*fid;
 {
 	char	*p, *q;
-	char	lno[10];
+	char	lno[32];
 	char	path[MAXPATHLEN+1];
 
 	if (gtop->format == GTAGS_STANDARD) {
 		/* entab(record); */
-		dbop_put(gtop->dbop, tag, record, 0);
+		dbop_put(gtop->dbop, tag, record, fid);
 		return;
 	}
 	/*
@@ -371,10 +399,12 @@ char	*record;
 	 * First time, it occurs, because 'prev_tag' and 'prev_path' are NULL.
 	 */
 	if (strcmp(gtop->prev_tag, tag) || strcmp(gtop->prev_path, path)) {
-		if (gtop->prev_tag[0])
-			dbop_put(gtop->dbop, gtop->prev_tag, strbuf_value(gtop->sb), 0);
+		if (gtop->prev_tag[0]) {
+			dbop_put(gtop->dbop, gtop->prev_tag, strbuf_value(gtop->sb), gtop->prev_fid);
+		}
 		strcpy(gtop->prev_tag, tag);
 		strcpy(gtop->prev_path, path);
+		strcpy(gtop->prev_fid, fid);
 		/*
 		 * Start creating new record.
 		 */
@@ -410,6 +440,7 @@ int	flags;
 	STRBUF	*ib = strbuf_open(MAXBUFLEN);
 	char	sort_command[MAXFILLEN+1];
 	char	sed_command[MAXFILLEN+1];
+	char	*fid;
 
 	/*
 	 * get command name of sort and sed.
@@ -439,20 +470,24 @@ int	flags;
 	strbuf_reset(sb);
 	makecommand(comline, path, sb);
 	/*
+	 * get file id.
+	 */
+	if (gtop->format & GTAGS_PATHINDEX || gtop->openflags & GTAGS_POSTGRES) {
+		if (!(fid = gpath_path2fid(path)))
+			die("GPATH is corrupted.('%s' not found)", path);
+	} else
+		fid = "0";
+	/*
 	 * Compact format.
 	 */
 	if (gtop->format & GTAGS_PATHINDEX) {
-		char	*pno;
-
-		if (!(pno = gpath_path2ids(path)))
-			die("GPATH is corrupted.('%s' not found)", path);
 		strbuf_puts(sb, "| ");
 		strbuf_puts(sb, sed_command);
 		strbuf_putc(sb, ' ');
 		strbuf_puts(sb, "\"s@");
 		strbuf_puts(sb, path);
 		strbuf_puts(sb, "@");
-		strbuf_puts(sb, pno);
+		strbuf_puts(sb, fid);
 		strbuf_puts(sb, "@\"");
 	}
 	if (gtop->format & GTAGS_COMPACT) {
@@ -488,7 +523,7 @@ int	flags;
 			else if ((p = locatestring(tag, "::", MATCH_LAST)) != NULL)
 				tag = p + 2;
 		}
-		gtags_put(gtop, tag, tagline);
+		gtags_put(gtop, tag, tagline, fid);
 	}
 	pclose(ip);
 	strbuf_close(sb);
@@ -541,20 +576,28 @@ gtags_delete(gtop, path)
 GTOP	*gtop;
 char	*path;
 {
-	char	*p, *key;
-
+	char *p, *fid;
 	/*
 	 * In compact format, a path is saved as a file number.
 	 */
-	key = path;
 	if (gtop->format & GTAGS_PATHINDEX)
-		if ((key = gpath_ids2path(path)) == NULL)
+		if ((path = gpath_fid2path(path)) == NULL)
 			die("GPATH is corrupted.('%s' not found)", path);
+#ifdef USE_POSTGRES
+	if (gtop->openflags & GTAGS_POSTGRES) {
+		char *fid;
+
+		if ((fid = gpath_path2fid(path)) == NULL)
+			die("GPATH is corrupted.('%s' not found)", path);
+		dbop_delete_by_fid(gtop->dbop, fid);
+		return;
+	}
+#endif
 	/*
 	 * read sequentially, because db(1) has just one index.
 	 */
 	for (p = dbop_first(gtop->dbop, NULL, NULL, 0); p; p = dbop_next(gtop->dbop))
-		if (belongto(gtop, key, p))
+		if (belongto(gtop, path, p))
 			dbop_delete(gtop->dbop, NULL);
 	/*
 	 * don't delete from path index.
@@ -674,7 +717,7 @@ GTOP	*gtop;
 	if (gtop->format & GTAGS_PATHINDEX || gtop->mode != GTAGS_READ)
 		gpath_close();
 	if (gtop->sb && gtop->prev_tag[0])
-		dbop_put(gtop->dbop, gtop->prev_tag, strbuf_value(gtop->sb), 0);
+		dbop_put(gtop->dbop, gtop->prev_tag, strbuf_value(gtop->sb), "0");
 	if (gtop->sb)
 		strbuf_close(gtop->sb);
 	if (gtop->ib)
@@ -711,7 +754,7 @@ GTOP	*gtop;
 			while (!isspace(*p))
 				*q++ = *p++;
 			*q = 0;
-			if ((name = gpath_ids2path(path)) == NULL)
+			if ((name = gpath_fid2path(path)) == NULL)
 				die("GPATH is corrupted.('%s' not found)", path);
 			strcpy(gtop->path, name);
 		} else {

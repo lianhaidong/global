@@ -42,7 +42,6 @@
 #include "die.h"
 #include "getdbpath.h"
 #include "gtagsop.h"
-#include "makepath.h"
 #include "path.h"
 #include "test.h"
 

@@ -20,7 +20,7 @@
 .\" along with this program; if not, write to the Free Software
 .\" Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .\"
-.Dd July 20, 2001
+.Dd Oct 25, 2001
 .Dt GTAGS 1
 .Os FreeBSD
 .Sh NAME
@@ -32,6 +32,7 @@
 .Op Fl i
 .Op Fl I
 .Op Fl o
+.Op Fl P
 .Op Fl w
 .Op Fl v
 .Op Ar dbpath
@@ -70,11 +71,18 @@ with the -u option.
 .It Fl I
 .It Fl -idutils
 Make index files for id-utils(1).
+.It Fl -info Ar info
+Pass info string to external system.
+Currently you can use it with -P option.
 .It Fl o
 .It Fl -omit-gsyms
 Suppress making GSYMS file.
 Use this option if you don't use -s option of
 .Xr global 1 .
+.It Fl P
+.It Fl -postgres
+Use postgres database system instead of db(3).
+you can pass info string to PQconnectdb(3) using --info option.
 .It Fl v
 .It Fl -verbose
 Verbose mode.
@@ -165,6 +173,10 @@ kernel source.
 There is no concurrency control about tag files.
 .Pp
 Symbols in assembler source files are not extracted for GSYMS.
+.Pp
+Please be careful of info string using --info option.
+Info string is passed to external system as is.
+If you mistake the value then program may abort with core dump.
 .Sh AUTHORS
 Shigio Yamaguchi
 .Sh HISTORY

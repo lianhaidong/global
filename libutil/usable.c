@@ -86,13 +86,15 @@ char	*command;
 		if ((p = locatestring(p, PATHSEP, MATCH_FIRST)) != NULL)
 			*p++ = 0;
 		if (test("fx", makepath(dir, command, NULL))) {
-			strcpy(path, makepath(dir, command, NULL));
+			strncpy(path, makepath(dir, command, NULL), sizeof(path));
+			path[sizeof(path) - 1] = '\0';
 			goto finish;
 		}
 #if defined(_WIN32)
 		for (i = 0; i < lim; i++)
 			if (test("f", makepath(dir, command, suffix[i]))) {
-				strcpy(path, makepath(dir, command, suffix[i]));
+				strncpy(path, makepath(dir, command, suffix[i]), sizeof(path));
+				path[sizeof(path) - 1] = '\0';
 				goto finish;
 			}
 #endif

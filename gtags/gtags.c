@@ -63,6 +63,7 @@ int	cflag;					/* compact format */
 int	iflag;					/* incremental update */
 int	Iflag;					/* make  idutils index */
 int	oflag;					/* suppress making GSYMS */
+int	Pflag;					/* use postgres */
 int	wflag;					/* warning message */
 int	vflag;					/* verbose mode */
 int     show_version;
@@ -73,12 +74,14 @@ int	do_expand;
 int	do_date;
 int	do_pwd;
 int	gtagsconf;
+int	info;
 int	debug;
 char	*extra_options;
+char	*info_string;
 
 int	extractmethod;
 int	total;
-const char *usage_const = "Usage: gtags [-c][-i][-I][-o][-v][-w][dbpath]\n";
+const char *usage_const = "Usage: gtags [-c][-i][-I][-o][-P][-v][-w][dbpath]\n";
 const char *help_const = "\
 Options:\n\
      -c, --compact\n\
@@ -89,8 +92,14 @@ Options:\n\
              load configuration file.\n\
      -I, --idutils\n\
              make index files for idutils(1).\n\
+     --info info\n\
+             info string is passed to external system as is.\n\
+             currently you can use it with -P option.\n\
      -o, --omit-gsyms\n\
              suppress making GSYMS file.\n\
+     -P, --postgres\n\
+             use postgres database.\n\
+             you can pass info string to PQconnectdb(3) using --info option.
      -v, --verbose\n\
              verbose mode.\n\
      -w, --warning\n\
@@ -125,7 +134,9 @@ static struct option const long_options[] = {
 	{"expand", required_argument, &do_expand, 1},
 	{"find", no_argument, &do_find, 1},
 	{"gtagsconf", required_argument, &gtagsconf, 1},
-	{"idutils", optional_argument, &Iflag, 1},
+	{"idutils", no_argument, NULL, 'I'},
+	{"info", required_argument, &info, 1},
+	{"postgres", no_argument, NULL, 'P'},
 	{"pwd", no_argument, &do_pwd, 1},
 	{"version", no_argument, &show_version, 1},
 	{"help", no_argument, &show_help, 1},
@@ -172,15 +183,19 @@ char	*argv[];
 	int	optchar;
 	int	option_index = 0;
 
-	while ((optchar = getopt_long(argc, argv, "cGiIovw", long_options, &option_index)) != EOF) {
+	while ((optchar = getopt_long(argc, argv, "cGiIoPvw", long_options, &option_index)) != EOF) {
 		switch (optchar) {
 		case 0:
 			p = long_options[option_index].name;
 			if (!strcmp(p, "expand"))
 				settabs(atoi(optarg + 1));
-			else if (!strcmp(p, "idutils"))
-				extra_options = optarg;
-			else if (gtagsconf) {
+			else if (info) {
+				info = 0;
+				if (!optarg)
+					usage();
+				else
+					info_string = optarg;
+			} else if (gtagsconf) {
 				gtagsconf = 0;
 				if (!optarg)
 					usage();
@@ -212,6 +227,9 @@ char	*argv[];
 		case 'o':
 			oflag++;
 			break;
+		case 'P':
+			Pflag++;
+			break;
 		case 'w':
 			wflag++;
 			break;
@@ -226,6 +244,19 @@ char	*argv[];
 			usage();
 			break;
 		}
+	}
+#ifndef USE_POSTGRES
+	if (Pflag)
+		die("The -P option not available. Please rebuild GLOBAL.");
+#endif
+	/* pass info string to PQconnectdb(3) */
+	if (info_string) {
+		if (Pflag)
+			gtags_setinfo(info_string);
+		/*
+		else if (Iflag)
+			extra_options = info_string;
+		*/
 	}
 	if (show_version)
 		version(NULL, vflag);
@@ -306,6 +337,11 @@ char	*argv[];
 		if (wflag)
 			fprintf(stderr, "Warning: GTAGS or GPATH not found. -i option ignored.\n");
 		iflag = 0;
+	}
+	if (Pflag && iflag) {
+		if (wflag)
+			fprintf(stderr, "Warning: existing tag files are used. -P option ignored.\n");
+		Pflag = 0;
 	}
 	if (!test("d", dbpath))
 		die("directory '%s' not found.", dbpath);
@@ -472,7 +508,7 @@ char	*root;
 		die("stat failed '%s'.", path);
 	gtags_mtime = statp.st_mtime;
 
-	if (gpath_open(dbpath, 0) < 0)
+	if (gpath_open(dbpath, 0, 0) < 0)
 		die("GPATH not found.");
 	/*
 	 * make add list and update list.
@@ -485,7 +521,7 @@ char	*root;
 		}
 		if (stat(path, &statp) < 0)
 			die("stat failed '%s'.", path);
-		if (!gpath_path2ids(path))
+		if (!gpath_path2fid(path))
 			strbuf_puts0(addlist, path);
 		else if (gtags_mtime < statp.st_mtime)
 			strbuf_puts0(updatelist, path);
@@ -495,10 +531,12 @@ char	*root;
 	 * make delete list.
 	 */
 	{
+		char    fid[32];
 		int i, limit = gpath_nextkey();
 
-		for (i = 0; i < limit; i++) {
-			if ((path = gpath_id2path(i)) == NULL)
+		for (i = 1; i < limit; i++) {
+			snprintf(fid, sizeof(fid), "%d", i);
+			if ((path = gpath_fid2path(fid)) == NULL)
 				continue;
 			if (!test("f", path))
 				strbuf_puts0(deletelist, path);
@@ -546,7 +584,7 @@ char	*root;
 				exit(1);
 		}
 
-		gpath_open(dbpath, 2);
+		gpath_open(dbpath, 2, 0);
 		for (p = start; p < end; p += strlen(p) + 1) {
 			if (exitflag)
 				break;
@@ -644,6 +682,8 @@ int	type;
 				gflags |= GTAGS_EXTRACTMETHOD;
 			if (debug)
 				gflags |= GTAGS_DEBUG;
+			if (Pflag)
+				gflags |= GTAGS_POSTGRES;
 			gtags_add(gtop, strbuf_value(sb), path, gflags);
 		}
 		gtags_close(gtop);
@@ -692,6 +732,9 @@ int	db;
 		flags |= GTAGS_COMPACT;
 		flags |= GTAGS_PATHINDEX;
 	}
+	if (Pflag) {
+		flags |= GTAGS_POSTGRES;
+	}
 	strbuf_reset(sb);
 	if (vflag > 1 && getconfs(dbname(db), sb))
 		fprintf(stderr, " using tag command '%s <path>'.\n", strbuf_value(sb));
@@ -734,6 +777,8 @@ int	db;
 			gflags |= GTAGS_EXTRACTMETHOD;
 		if (debug)
 			gflags |= GTAGS_DEBUG;
+		if (Pflag)
+			gflags |= GTAGS_POSTGRES;
 		gtags_add(gtop, comline, path, gflags);
 	}
 	total = count;				/* save total count */

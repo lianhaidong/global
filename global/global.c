@@ -1119,7 +1119,7 @@ int	db;
 
 	if (!(op = openfilter()))
 		die("cannot open output filter.");
-	if (gpath_open(dbpath, 0) < 0)
+	if (gpath_open(dbpath, 0, 0) < 0)
 		die("GPATH not found.");
 	count = 0;
 	for (; argc > 0; argv++, argc--) {
@@ -1145,7 +1145,7 @@ int	db;
 		}
 		path += strlen(root) - 1;
 		*path = '.';
-		if (!gpath_path2ids(path)) {
+		if (!gpath_path2fid(path)) {
 			fprintf(stderr, "'%s' not found in GPATH.\n", path);
 			continue;
 		}

@@ -48,10 +48,11 @@
 #define GTAGS_STANDARD		0	/* standard format */
 #define GTAGS_COMPACT		1	/* compact format */
 #define GTAGS_PATHINDEX		2	/* use path index */
+#define GTAGS_POSTGRES		4	/* use postgres database */
 /* gtags_add() */
 #define GTAGS_UNIQUE		1	/* compress duplicate lines */
 #define GTAGS_EXTRACTMETHOD	2	/* extract method from class definition */
-#define GTAGS_DEBUG		4	/* print information for debug */
+#define GTAGS_DEBUG		65536	/* print information for debug */
 /* gtags_first() */
 #define GTOP_KEY		1	/* read key part */
 #define GTOP_PREFIX		2	/* prefixed read */
@@ -67,6 +68,7 @@ typedef struct {
 	int	format;			/* GTAGS_STANDARD, GTAGS_COMPACT */
 	int	mode;			/* mode */
 	int	db;			/* 0:GTAGS, 1:GRTAGS, 2:GSYMS */
+	int	openflags;		/* flags value of gtags_open() */
 	int	flags;			/* flags */
 	char	root[MAXPATHLEN+1];	/* root directory of source tree */
 	/*
@@ -78,6 +80,7 @@ typedef struct {
 	char	prev_tag[IDENTLEN+1];	/* previous tag */
 	char	path[MAXPATHLEN+1];	/* current path */
 	char	prev_path[MAXPATHLEN+1];/* previous path */
+	char	prev_fid[32];		/* previous fid (postgres) */
 	STRBUF	*sb;			/* string buffer */
 	STRBUF	*ib;			/* input buffer */
 	FILE	*fp;			/* descriptor of 'path' */
@@ -90,8 +93,9 @@ void	makecommand(char *, char *, STRBUF *);
 int	formatcheck(char *, int);
 int	notnamechar(char *);
 int	isregex(char *);
+void	gtags_setinfo(char *);
 GTOP	*gtags_open(char *, char *, int, int, int);
-void	gtags_put(GTOP *, char *, char *);
+void	gtags_put(GTOP *, char *, char *, char *);
 char	*gtags_get(GTOP *, char *);
 void    gtags_add(GTOP *, char *, char *, int);
 void	gtags_delete(GTOP *, char *);
