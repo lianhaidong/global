@@ -14,7 +14,7 @@ SUBDIRS= libdb libglibc libutil gctags global gozilla gtags htags doc
 
 EXTRA_DIST = FAQ LICENSE \
 	gtags.conf gtags.el nvi-1.79-gtags.diff reconf.sh globash.rc \
-	convert.pl gtags.pl \
+	convert.pl gtags.pl gtags.vim \
 	w32/INSTALL w32/libs w32/make.bat w32/makefile.inc \
 	w32/gctags/makefile w32/global/makefile \
 	w32/gtags/makefile w32/htags/makefile w32/libdb/makefile \

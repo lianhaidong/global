@@ -20,7 +20,7 @@
 @ifinfo
 This file documents the GNU GLOBAL source code tag system.
 
-Copyright (c) 2000, 2001, 2002, 2003 Tama Communications Corporation
+Copyright (c) 2000, 2001, 2002, 2003, 2004 Tama Communications Corporation
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.1
@@ -39,7 +39,7 @@ Free Documentation License".
 @c copyright page
 @page
 @vskip 0pt plus 1filll
-Copyright @copyright{} 2000, 2001, 2002, 2003 Tama Communications Corporation
+Copyright @copyright{} 2000, 2001, 2002, 2003, 2004 Tama Communications Corporation
 @sp 2
 This is the first edition of the GNU GLOBAL documentation,@*
 and is consistent with @value{VERSION}.@*
@@ -1168,12 +1168,10 @@ You must start nvi under the source tree described in @xref{Preparation}.
 
 @end example
 @example
-
     Suggested .nexrc:
     ab gtag perl tag qw(
     ab gta perl tag qw(
     ab gt perl tag qw(
-
 @end example
 
 @item To go to the referenced point of func1, add the option @kbd{-r}
@@ -1187,11 +1185,9 @@ You must start nvi under the source tree described in @xref{Preparation}.
 You can go to next tag by typing @kbd{:tagnext} and back by typing @kbd{:tagprev}.
 
 @example
-
     Suggested .nexrc:
     map ^N :tagnext^M
     map ^P :tagprev^M
-
 @end example
 
 @item If you don't specify any argument. ':perl tag' command do the followins:
@@ -1445,8 +1441,7 @@ To come back, double click on the right button.
 @node Vim editor
 @section Vim using global
 
-Vim 5.2 or later has @code{grepprg} and @code{grepformat} variables for
-running an external grep like search program. You can use them with GLOBAL.
+In vim 6.2 or later, you can use gtags.vim script.
 
 @menu
 * Features(vim)::                       Features.
@@ -1463,9 +1458,9 @@ running an external grep like search program. You can use them with GLOBAL.
 @item
 You can use most of GLOBAL's facilities from the editor.
 @item
-No source level patch is needed.
+Intelligent recognition of the current token and its type.
 @item
-(But tag stack cannot be available.)
+Special charactor '%', '#' and input completion are available.
 @end itemize
 
 @c ***************************************************************************
@@ -1474,88 +1469,43 @@ No source level patch is needed.
 
 First, do the preparation of global. (Please see @xref{Preparation}.).
 
-Second, write the following set command to the @file{.vimrc} and start vim.
+Second, copy @file{gtags.vim} to your plugin directory or source it
+from your vimrc.
 
 @example
 
-    $HOME/.vimrc
-    +----------------------------
-    |set grepprg=global\ -t
-    |set grepformat=%m%\\t%f%\\t%l
-or
-    $HOME/.vimrc
-    +----------------------------
-    |set grepprg=global\ -x
-    |set grepformat=%m%\\s%\\+%l%\\s%f%.%#
+    % cp /usr/local/share/gtags/gtags.vim ~/.vim/plugin
 
 @end example
-@opindex -t
 
 @c ***************************************************************************
 @node   Basic usage(vim)
 @subsection Basic usage.
 
 @itemize @bullet
-@item To go to func1, you can say
+@item To go to main, you can say
 @example
 
-    :grep func1
+    :Gtags main
 
 @end example
 
-Vim execute @code{global -t func1}, parse the output and list located
-objects. You can go to the first entry with @kbd{RET}.
-
-@item To go to the referenced point of func1, add @samp{-r} option.
-@opindex -r
+Vim execute @code{global -t main}, parse the output, list located
+objects in quickfix window and load the first entry.
+The quickfix windows is like this:
 @example
 
-    :grep -r func1
+gctags/gctags.c|119| main
+global/global.c|154| main
+gozilla/gozilla.c|156| main
+gtags/gtags.c|199| main
+libglibc/getopt.c|701| main
+libglibc/getopt1.c|93| main
+[Error List]
 
 @end example
 
-vim executes command like @code{global -t -r func1} internally.
-
-@item To go to any symbols which are not defined in @file{GTAGS}, try this.
-@opindex -s
-@example
-
-    :grep -s lbolt
-
-@end example
-
-@item To go to any strings other than symbols, try this.
-@opindex -g
-@example
-
-    :grep -g Copyright
-
-@end example
-
-If many objects are located, vim list all of the them.
-
-@example
-
-main    /usr/src/sys/i386/linux/linux_genassym.c        14
-main    /usr/src/sys/kern/init_main.c   183
-main    /usr/src/sys/pc98/boot/netboot/main.c   37
-main    /usr/src/sys/pc98/boot/netboot/makerom.c        14
-
-Hit ENTER or type command to continue
-
-@end example
-
-You can go to any entry with @kbd{cc}n command.
-
-@item To get list of objects in a file, use -f command.
-@opindex -f
-@example
-
-    :grep -f main.c               <- @r{locate objects in main.c}
-
-@end example
-
-@item Other grep related commands are also available:
+You can go to any entry using quickfix command.
 
 @table @code
 @item @kbd{:cn}
@@ -1567,6 +1517,55 @@ You can go to any entry with @kbd{cc}n command.
 @item @kbd{:cl}
         list all entries.
 @end table
+
+You can see the help of quickfix like this:
+@example
+
+    :h quickfix
+
+@end example
+
+@item To go to the referenced point of func1, add @samp{-r} option.
+@opindex -r
+@example
+
+    :Gtags -r func1
+
+@end example
+
+vim executes command like @code{global -t -r func1} internally.
+
+@item To go to any symbols which are not defined in @file{GTAGS}, try this.
+@opindex -s
+@example
+
+    :Gtags -s lbolt
+
+@end example
+
+@item To go to any strings other than symbols, try this.
+@opindex -g
+@example
+
+    :Gtags -g Copyright
+
+@end example
+
+
+@item To get list of objects in a file, use -f command.
+@opindex -f
+@example
+
+    :Gtags -f main.c               <- @r{locate objects in main.c}
+
+@end example
+
+If you are editing @file{main.c} itself, you can use '%' instead.
+@example
+
+    :Gtags -f %                    <- @r{locate objects in main.c}
+
+@end example
 @end itemize
 
 @c ***************************************************************************
@@ -1578,30 +1577,78 @@ You can go to any entry with @kbd{cc}n command.
 @opindex -g
 @example
 
-    :grep ^put_                  <- @r{locate objects start with 'put_'}
+    :Gtags ^put_                <- @r{locate objects start with 'put_'}
     
-    :grep -g 'fseek(.*L_SET)' <- @r{locate fseek() using L_SET argument}
+    :Gtags -g fseek(.*SEEK_SET) <- @r{locate fseek() using SEEK_SET}
 
 @end example
 
-@item You can browse object list of many files.
-@opindex -f
-@example
+@item Input completion is available.
 
-    :grep -f *.c              <- @r{locate objects in *.c}
+    :Gtags fu@kbd{TAB}
 
-@end example
+    :Gtags func1               <- @r{'nc1' is appended by vim}
 
 @item You can browse project files whose path includs specified pattern.
 @opindex -P
 @example
 
-    :grep -P /vm/             <- @r{under vm/ directory}
-    :grep -P \.h$             <- @r{all include files}
-    :grep -P init             <- @r{path including 'init'}
+    :Gtags -P /vm/             <- @r{under vm/ directory}
+    :Gtags -P \.h$             <- @r{all include files}
+    :Gtags -P init             <- @r{path including 'init'}
 
 @end example
 
+@item You can use all options of global(1) except for the -c, -p, -u and
+	all long name options. They are sent to global(1) as is.
+	For example,
+
+@example
+
+    :Gtags -gi paTtern         <- @r{match to both 'PATTERN' and 'pattern'.}
+
+@end example
+	About the other options, See @xref{global}.
+
+@item The GtagsCursor command brings you to the definition or reference of
+	the current token. If current token is not a function then
+	it is equivalent to @kbd{:Gtags -s @var{current token}}.
+	Otherwise, if you are in the first column of a line,
+	it is equivalent to @kbd{:Gtags -r @var{current token}}
+	else it is equivalent to @kbd{:Gtags @var{current token}}.
+
+@example
+
+    :GtagsCursor
+
+@end example
+
+@example
+    Suggested map:
+    map <C-]> :GtagsCursor<CR>
+@end example
+
+@item If you have the hypertext generated by htags(1) then you can display
+	the same place on mozilla browser. Let's try this:
+
+@example
+
+    :Gozilla
+
+@end example
+
+@example
+    Suggested map:
+    map <C-g> :Gozilla<CR>
+@end example
+
+@item If you want to load vim with all main()s then following command line is useful.
+
+@example
+
+    % vim '+Gtags main'
+
+@end example
 @end itemize
 
 @c ***************************************************************************
