@@ -218,7 +218,6 @@ char	*argv[];
 			} else if (gtagsconf || gtagslabel) {
 				char    value[MAXPATHLEN+1];
 				char	*name = (gtagsconf) ? "GTAGSCONF" : "GTAGSLABEL";
-				char	*env;
 
 				if (gtagsconf) {
 					if (realpath(optarg, value) == NULL)

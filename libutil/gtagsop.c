@@ -77,7 +77,6 @@ static regex_t reg;
  */
 static int	support_version = 3;	/* acceptable format version   */
 static const char *tagslist[] = {"GPATH", "GTAGS", "GRTAGS", "GSYMS"};
-static int init;
 static STRBUF *output;
 /*
  * dbname: return db name
