@@ -58,6 +58,9 @@
 		If @arg{name} is not specified then show whole of config entry.
 	@item{@option{--gtagsconf} @arg{file}}
 		Load user's configuration from @arg{file}.
+	@item{@option{--gtagslabel} @arg{label}}
+		@arg{label} is used as the label of configuration file.
+		The default is @code{default}.
 	@item{@option{-i}, @option{--incremental}}
 		Update tag files incrementally. You had better use
 		@xref{global,1} with the -u option.

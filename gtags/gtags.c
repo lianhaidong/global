@@ -83,6 +83,7 @@ int	do_expand;
 int	do_date;
 int	do_pwd;
 int	gtagsconf;
+int	gtagslabel;
 int	other_files;
 int	info;
 int	debug;
@@ -126,6 +127,7 @@ static struct option const long_options[] = {
 	{"expand", required_argument, &do_expand, 1},
 	{"find", no_argument, &do_find, 1},
 	{"gtagsconf", required_argument, &gtagsconf, 1},
+	{"gtagslabel", required_argument, &gtagslabel, 1},
 	{"idutils", no_argument, NULL, 'I'},
 	{"info", required_argument, &info, 1},
 	{"other", no_argument, &other_files, 1},
@@ -210,23 +212,31 @@ char	*argv[];
 			} else if (!strcmp(p, "createdb") || !strcmp(p, "readdb") || !strcmp(p, "scandb")) {
 				if (optarg)
 					btree_dbname = optarg;
-			} else if (gtagsconf) {
-				char    conf[MAXPATHLEN+1];
+			} else if (gtagsconf || gtagslabel) {
+				char    value[MAXPATHLEN+1];
+				char	*name = (gtagsconf) ? "GTAGSCONF" : "GTAGSLABEL";
 				char	*env;
 
-				gtagsconf = 0;
-				if (realpath(optarg, conf) == NULL)
-					die("%s not found.", optarg);
+				if (gtagsconf) {
+					if (realpath(optarg, value) == NULL)
+						die("%s not found.", optarg);
+				} else {
+					strlimcpy(value, optarg, sizeof(value));
+				}
 #ifdef HAVE_PUTENV
-				env = (char *)malloc(strlen("GTAGSCONF=")+strlen(conf)+1);
+				/* '=' and '\0' require +2 bytes. */
+				env = (char *)malloc(strlen(name)+strlen(value)+2);
 				if (!env)	
 					die("short of memory.");
-				strcpy(env, "GTAGSCONF=");
-				strcat(env, conf);
+				strcpy(env, name);
+				strcat(env, "=");
+				strcat(env, value);
 				putenv(env);
+				/* Don't free memory. putenv(3) require it. */
 #else
-				setenv("GTAGSCONF", conf, 1);
+				setenv(name, value, 1);
 #endif /* HAVE_PUTENV */
+				gtagsconf = gtagslabel = 0;
 			}
 			break;
 		case 'c':

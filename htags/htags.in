@@ -125,16 +125,16 @@ $'java_reserved_words =~ s/,/|/g;
 $'sharp_macros        =~ s/,/|/g;
 {
 	#
-	# extract --gtagsconf=<config file>.
+	# extract --gtagsconf=<config file> and --gtagslabel=<label>.
 	#
-	local(@a, $confpath);
+	local(@a, $confpath, $label);
 	for ($i = 0; $i < @ARGV; $i++) {
 		if ($ARGV[$i] =~ /^--gtagsconf/) {
 			if ($ARGV[$i] =~ /^--gtagsconf=(.*)$/) {
 				$confpath = $1;
 			} elsif ($ARGV[$i] =~ /^--gtagsconf$/) {
 				if (++$i >= @ARGV) {
-					&'error("--gtagsconf needs file name.");
+					&'error("--gtagsconf needs an argument.");
 				}
 				$confpath = $ARGV[$i];
 			}
@@ -142,6 +142,16 @@ $'sharp_macros        =~ s/,/|/g;
 				&'error("config file '$confpath' not found.");
 			}
 			$ENV{'GTAGSCONF'} = &realpath($confpath);
+		} elsif ($ARGV[$i] =~ /^--gtagslabel/) {
+			if ($ARGV[$i] =~ /^--gtagslabel=(.*)$/) {
+				$label = $1;
+			} elsif ($ARGV[$i] =~ /^--gtagslabel$/) {
+				if (++$i >= @ARGV) {
+					&'error("--gtagslabel needs an argument.");
+				}
+				$label = $ARGV[$i];
+			}
+			$ENV{'GTAGSLABEL'} = $label;
 		} else {
 			push(@a, $ARGV[$i]);
 		}
@@ -580,6 +590,10 @@ while ($ARGV[0] =~ /^-/) {
 		;		# --gtagsconf is estimated only once.
 	} elsif ($opt =~ /^--gtagsconf$/) {
 		shift;		# --gtagsconf is estimated only once.
+	} elsif ($opt =~ /^--gtagslabel=(.*)$/) {
+		;		# --gtagslabel is estimated only once.
+	} elsif ($opt =~ /^--gtagslabel$/) {
+		shift;		# --gtagslabel is estimated only once.
 	} elsif ($opt =~ /^--line-number$/) {
 		$'nflag = 'n';
 	} elsif ($opt =~ /^--other$/) {

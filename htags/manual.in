@@ -65,6 +65,9 @@
 		Execute @xref{gtags,1} before creating hypertext.
 	@item{@option{--gtagsconf} @arg{file}}
 		Load user's configuration from @arg{file}.
+	@item{@option{--gtagslabel} @arg{label}}
+		@arg{label} is used as the label of configuration file.
+		The default is @code{default}.
 	@item{@option{-m}, @option{--main-func}}
 		Specify the main function name. The default is @code{main}.
 	@item{@option{-n}, @option{--line-number}}

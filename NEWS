@@ -27,6 +27,7 @@ Version 4.* - **** * 2002, by Shigio Yamaguchi
 
 [OTHER CHANGES]
 
+* gtags,htags: --gtagslabel option added.
 * htags: -D(--dynamic) option added.
 
 Version 4.5 - July 4 2002, by Shigio Yamaguchi
