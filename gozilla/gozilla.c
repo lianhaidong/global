@@ -105,7 +105,7 @@ char	*alias_name;
 		goto end;
 	if (!(ip = fopen(makepath(p, gozillarc, NULL), "r")))
 		goto end;
-	while (p = strbuf_fgets(sb, ip, flag)) {
+	while ((p = strbuf_fgets(sb, ip, flag)) != NULL) {
 		char *name, *value;
 
 		flag &= ~STRBUF_APPEND;
@@ -148,15 +148,13 @@ main(argc, argv)
 int	argc;
 char	*argv[];
 {
-	char	c, *p, *q;
+	char	c, *p;
 	char	*browser = NULL;
-	char	*command = NULL;
 	char	*definition = NULL;
 	STRBUF	*arg = strbuf_open(0);
 	STRBUF	*URL = strbuf_open(0);
-	int	status;
 
-	while (--argc > 0 && (c = (++argv)[0][0]) == '-' || c == '+') {
+	while (--argc > 0 && ((c = (++argv)[0][0]) == '-' || c == '+')) {
 		if (argv[0][1] == '-') {
 			if (!strcmp("--help", argv[0]))
 				help();
@@ -213,7 +211,7 @@ char	*argv[];
 		/*
 		 * Replace with alias value.
 		 */
-		if (p = alias(strbuf_value(arg))) {
+		if ((p = alias(strbuf_value(arg))) != NULL) {
 			strbuf_reset(arg);
 			strbuf_puts(arg, p);
 		}
@@ -270,7 +268,7 @@ STRBUF *URL;
 	char	dbpath[MAXPATHLEN+1];
 	char	htmldir[MAXPATHLEN+1];
 	char	*path, *p;
-	DBOP	*dbop;
+	DBOP	*dbop = NULL;
 	char	*args[2];
 	int	status = -1;
 
@@ -307,7 +305,7 @@ STRBUF *URL;
 
 		fp = fopen(path, "r");
 		if (fp) {
-			while (p = strbuf_fgets(sb, fp, STRBUF_NOCRLF)) {
+			while ((p = strbuf_fgets(sb, fp, STRBUF_NOCRLF)) != NULL) {
 				if (split(p, '\t', 2, args) != 2)
 					die("illegal format.");
 				if (!strcmp(arg, args[0])) {
@@ -549,7 +547,7 @@ char	*browser;
 char	*url;
 {
 	int	pid;
-	char	com[1024], *name, *path;
+	char	com[1024], *path;
 
 	if (!(path = usable(browser)))
 		die("%s not found in your path.", browser);
