@@ -23,11 +23,10 @@
 #include <stdio.h>
 
 /*
- * This is the simplest version of snprintf, that is, it exits after
+ * This is the simplest version of snprintf, that is, it just exits after
  * writing over MAXLEN characters. It is used in the system which doesn't
  * have snprintf(3).
  */
-extern char *program;
 
 #ifndef HAVE_SNPRINTF
 /* Write formatted output into S, according to the format
@@ -41,9 +40,10 @@ snprintf (char *s, size_t maxlen, const char *format, ...)
 
   va_start (arg, format);
 /*  done = __vsnprintf (s, maxlen, format, arg); */
-  done = sprintf (s, format, arg);
+  done = vsprintf (s, format, arg);
   if (strlen(s) >= maxlen) {
-    fprintf(stderr, "%s: buffer overflow in snprintf.\n", program);
+    fprintf(stderr, "This program exit because vsprintf(3) destroy memory.\n");
+    fprintf(stderr, "You shoule install snprintf(3) instead.\n");
     exit(1);
   }
   va_end (arg);
