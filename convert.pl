@@ -33,18 +33,24 @@ while ($ARGV[0] =~ /^-/) {
                 $man = 1;
 	} elsif ($opt eq '--info') {
                 $info = 1;
+	} elsif ($opt eq '--menu') {
+                $menu = 1;
 	}
 }
-$infile = $ARGV[0];
-open(INFILE, $infile) || die("cannot open '$infile'\n");
-if ($c) {
-	&c'gen();
-} elsif ($perl) {
-	&perl'gen();
-} elsif ($man) {
-	&man'gen();
-} elsif ($info) {
-	&info'gen();
+if ($menu) {
+	&menu'gen(@ARGV);
+} else {
+	$infile = $ARGV[0];
+	open(INFILE, $infile) || die("cannot open '$infile'\n");
+	if ($c) {
+		&c'gen();
+	} elsif ($perl) {
+		&perl'gen();
+	} elsif ($man) {
+		&man'gen();
+	} elsif ($info) {
+		&info'gen();
+	}
 }
 close(INFILE);
 exit 0;
@@ -363,5 +369,45 @@ sub gen {
 			}
 			print "\@end example\n" if ($varbatim);
 		}
+	}
+}
+#------------------------------------------------------------------
+#
+# Menu package.
+#
+#------------------------------------------------------------------
+package menu;
+sub gen {
+	local(@args) = @_;
+	local($line, $name);
+	foreach $dir (@args) {
+		$infile = "$dir/manual.in";
+		open(INFILE, $infile) || die("cannot open '$infile'\n");
+		while (<INFILE>) {
+			if (/^\@NAME\s+((\w+)\s+\-\s+.*)$/) {
+				$line = $1;
+				$name = $2;
+				last;
+			}
+		}
+		close(INFILE);
+		push(@name, $name);
+		push(@line, $line);
+	}
+	print "\@c This file is generated automatically by $'com from a set of manual.in.\n";
+	print "\@menu\n";
+	for ($i = 0; $i < @name; $i++) {
+		$name = $name[$i];
+		$line = $line[$i];
+		$name .= '::';
+		printf "* %-16s %s\n", $name, $line;
+	}
+	print "\@end menu\n\n";
+	for ($i = 0; $i < @name; $i++) {
+		$name = $name[$i];
+		$line = $line[$i];
+		printf "\@node %s\n", $name;
+		printf "\@section %s\n", $line;
+		printf "\@include $name.ref\n";
 	}
 }

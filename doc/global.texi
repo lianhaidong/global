@@ -1924,30 +1924,7 @@ If you mistake the value then program may abort with core dump.
 @c ***************************************************************************
 @node Reference
 @chapter Reference manual
-
-@menu
-* gtags::              gtags - create tag files for global.
-* htags::              htags - generate hypertext from source code.
-* global::             global - print the locations of specified object.
-* gctags::             gctags - print cross reference list for gtags.
-* btreeop::            btreeop - btree database maintenance tool.
-@end menu
-
-@node   gtags
-@section gtags - create tag files for global.
-@include gtags.ref
-@node   htags
-@section htags - generate hypertext from source code.
-@include htags.ref
-@node   global
-@section global - print the locations of specified object.
-@include global.ref
-@node   gctags
-@section gctags - print cross reference list for gtags.
-@include gctags.ref
-@node   btreeop
-@section btreeop - btree database maintenance tool.
-@include btreeop.ref
+@include reference.texi
 
 @c ***************************************************************************
 @c FDL

@@ -13,6 +13,7 @@
 #
 info_TEXINFOS = global.texi
 
-global_TEXINFOS = fdl.texi btreeop.ref gctags.ref gtags.ref global.ref htags.ref
+global_TEXINFOS = fdl.texi reference.texi \
+	global.ref gtags.ref htags.ref gctags.ref btreeop.ref
 
 EXTRA_DIST = texinfo.tex
