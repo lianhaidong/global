@@ -564,7 +564,7 @@ makefileindex(file, files)
 	char *file;
 	STRBUF *files;
 {
-	FILE *FIND, *FILEMAP, *PIPE, *FILES, *STDOUT, *op = NULL;
+	FILE *FIND, *FILEMAP, *FILES, *STDOUT, *op = NULL;
 	char *_;
 	int count = 0;
 	char indexlink[80];
@@ -581,7 +581,6 @@ makefileindex(file, files)
 	/*
 	 * for collecting include files.
 	 */
-	struct data *inc;
 	int flags = REG_EXTENDED;
 	regex_t is_include_file;
 
@@ -848,6 +847,24 @@ makefileindex(file, files)
 	fclose(FILES);
 	file_count++;
 
+	delete_stack(dirstack);
+	delete_stack(fdstack);
+	delete_stack(push);
+	delete_stack(pop);
+
+	strbuf_close(sb);
+	strbuf_close(input);
+	return count;
+}
+void
+makeincludeindex()
+{
+	FILE *PIPE;
+	STRBUF *input = strbuf_open(0);
+	char *command = "global -gnx \"^[ \\t]*(#[ \\t]*include|include[ \\t]*\\()\"";
+	char *_;
+	struct data *inc;
+
 	/*
 	 * Pick up include pattern.
 	 *
@@ -978,12 +995,5 @@ makefileindex(file, files)
 			data->id = no;
 		}
 	}
-	delete_stack(dirstack);
-	delete_stack(fdstack);
-	delete_stack(push);
-	delete_stack(pop);
-
-	strbuf_close(sb);
 	strbuf_close(input);
-	return count;
 }

@@ -49,6 +49,7 @@ void src2html(char *, char *, int);
 int makedupindex(void);
 int makedefineindex(char *, int, STRBUF *);
 int makefileindex(char *, STRBUF *);
+void makeincludeindex();
 
 /*
  * Global data.
@@ -1354,7 +1355,8 @@ main(argc, argv)
 	int optchar;
         int option_index = 0;
 	time_t start_time, end_time, start_all_time, end_all_time,
-		T_makedupindex, T_makedefineindex, T_makefileindex, T_makehtml, T_all;
+		T_makedupindex, T_makedefineindex, T_makefileindex,
+		T_makeincludeindex, T_makehtml, T_all;
 
 	arg_dbpath[0] = 0;
 	basic_check();
@@ -1767,6 +1769,14 @@ main(argc, argv)
 		T_makefileindex = end_time - start_time;
 		file_count += file_total;
 		/*
+		 * [#] make include file index.
+		 */
+		message("[%s] (#) making include file index ...", now());
+		start_time = time(NULL);
+		makeincludeindex();
+		end_time = time(NULL);
+		T_makeincludeindex = end_time - start_time;
+		/*
 		 * [#] make a common part for mains.html and index.html
 		 *     USING @defines @files
 		 */
@@ -1837,6 +1847,7 @@ main(argc, argv)
 		message("- Elapsed time of making duplicate entries ............ %10ld seconds.", T_makedupindex);
 		message("- Elapsed time of making function index ............... %10ld seconds.", T_makedefineindex);
 		message("- Elapsed time of making file index ................... %10ld seconds.", T_makefileindex);
+		message("- Elapsed time of making include file index ........... %10ld seconds.", T_makeincludeindex);
 		message("- Elapsed time of making hypertext .................... %10ld seconds.", T_makehtml);
 		message("- The entire elapsed time ............................. %10ld seconds.", T_all);
 	}
