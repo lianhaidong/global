@@ -127,11 +127,20 @@ AC_ARG_WITH(postgres,
 ],[
         AC_MSG_RESULT(no)
 ])
-
 AC_SUBST(INCLUDES)
 AC_SUBST(LDADD)
 
+dnl
+dnl The definition of config variable skip and suffixes.
+dnl
+DEFAULTSUFFIXES='c,h,y,c++,cc,cpp,cxx,hxx,C,H,s,S,java,php,php3,phtml'
+DEFAULTSKIP='GPATH,GTAGS,GRTAGS,GSYMS,HTML/,tags,TAGS,ID,y.tab.c,y.tab.h,.notfunction,cscope.out,SCCS/,RCS/,CVS/,CVSROOT/,{arch}/,.cvsrc,.cvsignore,.cvspass,.cvswrappers,.deps/,autom4te.cache/'
+AC_SUBST(DEFAULTSUFFIXES)
+AC_SUBST(DEFAULTSKIP)
+
 AC_OUTPUT([Makefile
+	gtags.conf
+	libutil/conf.h
 	libutil/Makefile
 	gtags/Makefile
 	htags/Makefile

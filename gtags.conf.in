@@ -36,11 +36,7 @@ default:\
 # See gtags(1).
 #---------------------------------------------------------------------
 common:\
-	:skip=GPATH,GTAGS,GRTAGS,GSYMS,HTML/,tags,TAGS,ID:\
-	:skip=y.tab.c,y.tab.h,.notfunction,cscope.out:\
-	:skip=SCCS/,RCS/,CVS/,CVSROOT/,{arch}/:\
-	:skip=.cvsrc,.cvsignore,.cvspass,.cvswrappers:\
-	:skip=.deps/,autom4te.cache/:\
+	:skip=@DEFAULTSKIP@:\
 	:format=standard:
 #
 # [gctags]
@@ -56,7 +52,7 @@ common:\
 #
 gctags|tag command for GLOBAL:\
 	:tc=common:\
-	:suffixes=c,h,y,c++,cc,cpp,cxx,hxx,C,H,s,S,java,php,php3,phtml:\
+	:suffixes=@DEFAULTSUFFIXES@:\
 	:sort_command=sort:\
 	:sed_command=sed:\
 	:GTAGS=gctags -dt %s:\
