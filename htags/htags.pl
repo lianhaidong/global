@@ -308,7 +308,7 @@ sub set_header {
 #-------------------------------------------------------------------------
 sub getcwd {
         local($dir) = `gtags --pwd`;
-	if ($w32) { $dir =~ s!\\!/!g; }
+	if ($'w32) { $dir =~ s!\\!/!g; }
         chop($dir);
         $dir;
 }
@@ -342,7 +342,7 @@ sub usable {
 	local($command) = @_;
 	local($pathsep) = ($'w32) ? ';' : ':';
 	foreach (split(/$pathsep/, $ENV{'PATH'})) {
-		if ($w32) {
+		if ($'w32) {
 			return "$_/$command.com" if (-f "$_/$command.com");
 			return "$_/$command.exe" if (-f "$_/$command.exe");
 		} else {
