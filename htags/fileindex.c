@@ -704,8 +704,7 @@ makefileindex(file, files)
 
 				strbuf_reset(sb);
 				if (!no_order_list)
-					strbuf_puts(sb, list_item);
-
+					strbuf_puts(sb, item_begin);
 				strbuf_sprintf(sb, "<a href='%s%s' title='%s/'>",
 					count_stack(dirstack) == 1 ? "files/" : "",
 					path2url(path),
@@ -715,9 +714,12 @@ makefileindex(file, files)
 						count_stack(dirstack) == 1 ? "" : "../", dir_icon, icon_suffix, path, icon_spec);
 					strbuf_puts(sb, quote_space);
 				}
-				strbuf_sprintf(sb, "%s/</a>\n", last);
-				if (no_order_list)
+				strbuf_sprintf(sb, "%s/</a>", last);
+				if (!no_order_list)
+					strbuf_puts(sb, item_end);
+				else
 					strbuf_puts(sb, br);
+				strbuf_putc(sb, '\n');
 				if (count_stack(dirstack) == 1)
 					strbuf_puts(files, strbuf_value(sb));
 				else
@@ -775,7 +777,7 @@ makefileindex(file, files)
 			put_inc(fname, _, count);
 		strbuf_reset(sb);
 		if (!no_order_list)
-			strbuf_puts(sb, list_item);
+			strbuf_puts(sb, item_begin);
 		strbuf_puts(sb, "<a href='");
 		if (notsource && dynamic) {
 			if (!(*action == '/' || count_stack(dirstack) == 0))
@@ -815,9 +817,12 @@ makefileindex(file, files)
 				last = _;
 			strbuf_puts(sb, last);
 		}
-		strbuf_puts(sb, "</a>\n");
-		if (no_order_list)
-			strbuf_sprintf(sb, "%s\n", br);
+		strbuf_puts(sb, "</a>");
+		if (!no_order_list)
+			strbuf_puts(sb, item_end);
+		else
+			strbuf_puts(sb, br);
+		strbuf_putc(sb, '\n');
 		if (map_file)
 			fprintf(FILEMAP, "%s\t%s/%s\n", _, SRCS, path2url(_));
 		if (count_stack(dirstack) == 0)

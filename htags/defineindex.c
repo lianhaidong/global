@@ -247,10 +247,13 @@ makedefineindex(file, total, defines)
 			recover(&ptable);
 		}
 		if (!no_order_list)
-			fprintf(STDOUT, list_item);
-		fprintf(STDOUT, "<a href='%s' target='%s' title='%s'>%s</a>\n", strbuf_value(url), target, guide, tag);
-		if (no_order_list)
-			fprintf(STDOUT, br);
+			fputs(item_begin, STDOUT);
+		fprintf(STDOUT, "<a href='%s' target='%s' title='%s'>%s</a>", strbuf_value(url), target, guide, tag);
+		if (!no_order_list)
+			fputs(item_end, STDOUT);
+		else
+			fputs(br, STDOUT);
+		fputc('\n', STDOUT);
 		if (map_file)
 			fprintf(MAP, "%s\t%s\n", tag, url_for_map);
 	}
