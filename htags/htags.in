@@ -664,8 +664,8 @@ if ($'fflag || $'cflag) {
 #	HTML/cgi-bin/ghtml.cgi	... unzip script (1)
 #	HTML/.htaccess		... skelton of .htaccess (1)
 #	HTML/help.html		... help file (2)
-#	HTML/$REFS/*		... references (3)
-#	HTML/$DEFS/*		... definitions (3)
+#	HTML/R/*		... references (3)
+#	HTML/D/*		... definitions (3)
 #	HTML/search.html	... search index (4)
 #	HTML/defines.html	... definitions index (5)
 #	HTML/defines/*		... definitions index (5)
@@ -674,8 +674,8 @@ if ($'fflag || $'cflag) {
 #	HTML/index.html		... index file (7)
 #	HTML/mains.html		... main index (8)
 #	HTML/null.html		... main null html (8)
-#	HTML/$SRCS/		... source files (9)
-#	HTML/$INCS/		... include file index (9)
+#	HTML/S/			... source files (9)
+#	HTML/I/			... include file index (9)
 #	HTML/rebuild.sh		... rebuild script (10)
 #-------------------------------------------------------------------------
 $'HTML = ($'cflag) ? $'gzipped_suffix : $'normal_suffix;
