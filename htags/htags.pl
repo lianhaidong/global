@@ -58,10 +58,6 @@ Options:
              print help message.
      dir     the directory in which hypertext is generated.
 END_OF_HELP
-$version = `global --version`;
-chop($version);
-
-$'w32 = ($^O =~ /^ms(dos|win(32|nt))/i) ? 1 : 0;
 #-------------------------------------------------------------------------
 # COMMAND EXISTENCE CHECK
 #-------------------------------------------------------------------------
@@ -73,6 +69,9 @@ foreach $c ('sort', 'gtags', 'global', 'btreeop') {
 #-------------------------------------------------------------------------
 # CONFIGURATION
 #-------------------------------------------------------------------------
+$version = `global --version`;
+chop($version);
+$'w32 = ($^O =~ /^ms(dos|win(32|nt))/i) ? 1 : 0;
 # null device
 $'null_device = $'w32 ? 'NUL' : '/dev/null';
 # temporary directory
@@ -308,7 +307,7 @@ sub set_header {
 # UTILITIES
 #-------------------------------------------------------------------------
 sub getcwd {
-        local($dir) = `pwd`;
+        local($dir) = `gtags --pwd`;
 	if ($w32) { $dir =~ s!\\!/!g; }
         chop($dir);
         $dir;
@@ -322,7 +321,7 @@ sub realpath {
 	$new;
 }
 sub date {
-	local($date) = `date`;
+	local($date) = `gtags --date`;
 	chop($date);
 	$date;
 }

@@ -70,6 +70,8 @@ int     show_help;
 int	show_config;
 int	do_find;
 int	do_expand;
+int	do_date;
+int	do_pwd;
 int	gtagsconf;
 int	debug;
 char	*extra_options;
@@ -118,11 +120,13 @@ static struct option const long_options[] = {
 
 	/* long name only */
 	{"config", no_argument, &show_config, 1},
+	{"date", no_argument, &do_date, 1},
 	{"debug", no_argument, &debug, 1},
 	{"expand", required_argument, &do_expand, 1},
 	{"find", no_argument, &do_find, 1},
 	{"gtagsconf", required_argument, &gtagsconf, 1},
 	{"idutils", optional_argument, &Iflag, 1},
+	{"pwd", no_argument, &do_pwd, 1},
 	{"version", no_argument, &show_version, 1},
 	{"help", no_argument, &show_help, 1},
 	{ 0 }
@@ -241,6 +245,15 @@ char	*argv[];
 		while (strbuf_fgets(ib, ip, STRBUF_NOCRLF) != NULL)
 			detab(stdout, strbuf_value(ib));
 		strbuf_close(ib);
+		exit(0);
+	} else if (do_date) {
+		fprintf(stdout, "%s\n", now());
+		exit(0);
+	} else if (do_pwd) {
+		if (!getcwd(cwd, MAXPATHLEN))
+			die("cannot get current directory.");
+		canonpath(cwd);
+		fprintf(stdout, "%s\n", cwd);
 		exit(0);
 	} else if (show_config) {
 		if (debug)
