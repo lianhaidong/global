@@ -1231,11 +1231,13 @@ int	db;
 	if (nflag > 1)
 		flags |= GTOP_NOSOURCE;
 	if (iflag) {
-		sb = strbuf_open(0);
-		strbuf_putc(sb, '^');
-		strbuf_puts(sb, pattern);
-		strbuf_putc(sb, '$');
-		pattern = strbuf_value(sb);
+		if (!isregex(pattern)) {
+			sb = strbuf_open(0);
+			strbuf_putc(sb, '^');
+			strbuf_puts(sb, pattern);
+			strbuf_putc(sb, '$');
+			pattern = strbuf_value(sb);
+		}
 		flags |= GTOP_IGNORECASE;
 	}
 	for (p = gtags_first(gtop, pattern, flags); p; p = gtags_next(gtop)) {
