@@ -19,11 +19,12 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
-July 16 2001, Shigio Yamaguchi  <shigio@tamacom.com>
+July 27 2001, Shigio Yamaguchi  <shigio@tamacom.com>
 
 	* VERSION: removed.
 	* compat.h: moved to libdb/.
 	* machine/: removed.
+	* htags: WWW link in hypertext was modified.
 
 July 12 2001, Shigio Yamaguchi  <shigio@tamacom.com>
 

@@ -24,7 +24,7 @@
 $com = $0;
 $com =~ s/.*\///;
 $usage = "Usage: $com [-a][-c][-f][-F][-l][-n][-v][-w][-d tagdir][-S cgidir][-t title][dir]";
-$www = "http://tamacom.com/global/";
+$www = "http://www.gnu.org/software/global/global.html";
 $help = <<END_OF_HELP;
 $usage
 Options:
