@@ -49,8 +49,8 @@ static const char *suffix[] = {".exe", ".com", ".bat",};
  * usable: check if command is executable or not.
  *
  *	i)	command
- *	r)		1: executable
- *			0: non executable
+ *	r)		==NULL: not found.
+ *			!=NULL: absolute path of command.
  */
 char *
 usable(command)
