@@ -321,7 +321,7 @@ $file_icon = 'c.jpg';
 #
 # This is alternative for title string.
 #
-#	i)	type	D, R, Y
+#	i)	type	D, I, R, Y
 #	i)	lno	>0: line number, -1: multi line
 #	i)	opt	lno > 0: file name
 #			lno == -1: entry count
@@ -331,7 +331,9 @@ sub show {
 	local($msg) = '';
 
 	if ($lno > 0) {
-		if ($type eq 'R') {
+		if ($type eq 'I') {
+			$msg .= 'Included from';
+		} elsif ($type eq 'R') {
 			$msg .= 'Defined at';
 		} elsif ($type eq 'Y') {
 			$msg .= 'Used at';
@@ -344,7 +346,9 @@ sub show {
 		}
 	} else {
 		$msg .= 'Multiple ';
-		if ($type eq 'R') {
+		if ($type eq 'I') {
+			$msg .= 'included from';
+		} elsif ($type eq 'R') {
 			$msg .= 'defined in';
 		} elsif ($type eq 'Y') {
 			$msg .= 'used in';
@@ -1870,6 +1874,7 @@ sub makefileindex {
 	select($org);
 	foreach $last (keys %includes) {
 		if (!defined $included_from{$last}) {
+			delete $includes{$last};
 			next;
 		}
 		local($no, @incs) = split(/\n/, $includes{$last});
@@ -1898,9 +1903,8 @@ sub makefileindex {
 		}
 		local(@refs) = split(/\n/, $included_from{$last});
 		if (@refs == 1) {
-			local($nouse, $lno, $filename, $image) = split(/\s+/, $refs[0], 4);
-			local($url) = &'path2url($filename);
-			$included_from{$last} = "$url#$lno";
+			local($nouse, $lno, $filename) = split(/\s+/, $refs[0]);
+			$included_from{$last} = "$lno $filename";
 		} else {
 			local($path) = "$dist/$'INCREFS/$no.$'HTML";
 			if ($'cflag) {
@@ -1920,7 +1924,7 @@ sub makefileindex {
 			print INCLUDE $'html_end, "\n";
 			close(INCLUDE);
 			$'file_count++;
-			$included_from{$last} = "../$'INCREFS/$no.$'HTML";
+			$included_from{$last} = " $no " . @refs;
 		}
 	}
 	$count;
@@ -2243,15 +2247,26 @@ sub src2html {
 	#
 	else {
 		#
-		# DEFINITIONS index.
+		# INCLUDED FROM index.
 		#
 		local($basename) = ($file =~ /([^\/]+)$/);
-		if (defined $'included_from{$basename}) {
-			print "<H2><A HREF=$'included_from{$basename}>$'title_included_from</A></H2>\n";
+		local($incref) = $'included_from{$basename};
+		if (defined $incref) {
+			local($url, $title);
+			if ($incref =~ /^ (\d+) (\d+)/) {
+				$url = "../$'INCREFS/$1.$'HTML";
+				$title = &'show('I', -1, $2);
+			} else {
+				local($lno, $filename) = split(/\s+/, $incref);
+				$url = &'path2url($filename) . "#$lno";
+				$filename =~ s!\./!!;
+				$title = &'show('I', $lno, $filename);
+			}
+			print "<H2><A HREF=$url TITLE='$title'>$'title_included_from</A></H2>\n";
 			print "$'hr\n";
 		}
 		#
-		# INCLUDED FROM index.
+		# DEFINITIONS index.
 		#
 		local($define_index) = '';
 		local($lno, $tag, $type);
