@@ -19,6 +19,15 @@ ___________________________________
 GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 4.8 - August 26 2004, by Shigio Yamaguchi
+
+* The htags(1) was rewritten in C language completely. It is compatible
+  with the perl version and the performance has improved greatly.
+  The perl version is left in the package for the time being as
+  '/usr/local/bin/htags.pl' by default.
+* htags: In PHP language, pickup variables in strings. ("${aaa}")
+* gctags: Reserved word __thread added in C and C++.
+
 Version 4.7.2 - June 7 2004, by Shigio Yamaguchi
 
 Fixed bugs:

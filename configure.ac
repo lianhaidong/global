@@ -22,7 +22,7 @@ dnl Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 dnl
 AC_INIT(global/global.c)
 AM_CONFIG_HEADER(config.h:config-h.in)
-AM_INIT_AUTOMAKE(global, 4.7.2)
+AM_INIT_AUTOMAKE(global, 4.8)
 AC_PREREQ(2.57)
 
 dnl Checks for programs.

@@ -18,6 +18,16 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+August 26 2004, Shigio Yamaguchi  <shigio@gnu.org>
+
+	* Moved function now() from gtags.c to libutil/date.c.
+	* htags: Changed so that the path passed to CGI might be encoded to %xx.
+	* htags: Rewritten in C language.
+	* htags: The use of the 'gtags --write' was stopped.
+	* die.c: New function sethandler() and warning() added.
+	* gctags/reserved.pl: The use of the --key-positions option of gperf(1)
+	  was stopped. We need gperf-3.0.1 instead.
+
 June 1 2004, Shigio Yamaguchi  <shigio@gnu.org>
 
 	* htags: Function usable() was changed to the same specification
