@@ -61,7 +61,6 @@ int sep = '/';
 char *save_config;
 char *save_argv;
 
-char rootpath[MAXPATHLEN];
 char cwdpath[MAXPATHLEN];
 char dbpath[MAXPATHLEN];
 char distpath[MAXPATHLEN];
@@ -1481,11 +1480,14 @@ main(argc, argv)
 		strbuf_close(sb);
 	}
 	/*
-	 * get root, cwd and dbpath.
+	 * get dbpath.
 	 */
-	getdbpath(cwdpath, rootpath, dbpath, 0);
+	if (!getcwd(cwdpath, sizeof(cwdpath)))
+		die("cannot get current directory.");
 	if (arg_dbpath[0])
 		strlimcpy(dbpath, arg_dbpath, sizeof(dbpath));
+	else
+		strlimcpy(dbpath, cwdpath, sizeof(cwdpath));
 
 	if (cflag && !usable("gzip")) {
 		warning("'gzip' command not found. -c option ignored.");

@@ -59,7 +59,6 @@ extern int exitflag;
 extern char *save_config;
 extern char *save_argv;
 
-extern char rootpath[MAXPATHLEN];
 extern char cwdpath[MAXPATHLEN];
 extern char dbpath[MAXPATHLEN];
 extern char distpath[MAXPATHLEN];
