@@ -91,7 +91,7 @@ int	flag;
 
 	if (flag == MATCH_COMPLETE) {
 		if (strlen(string) == slen && !(*cmpfunc)(string, pattern, plen))
-			return string;
+			return (char *)string;
 		else
 			return NULL;
 	}
