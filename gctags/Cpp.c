@@ -345,7 +345,7 @@ int	target;
 	int     brace_level, isdefine;
 
 	brace_level = isdefine = 0;
-	while ((c = nexttoken("(,)", reserved)) != EOF) {
+	while ((c = nexttoken("()", reserved)) != EOF) {
 		switch (c) {
 		case CP_IFDEF:
 		case CP_IFNDEF:
@@ -376,7 +376,7 @@ int	target;
 		return 0;
 	}
 	brace_level = 0;
-	while ((c = nexttoken(",;(){}=", reserved)) != EOF) {
+	while ((c = nexttoken(",;[](){}=", reserved)) != EOF) {
 		switch (c) {
 		case CP_IFDEF:
 		case CP_IFNDEF:
@@ -390,9 +390,9 @@ int	target;
 		default:
 			break;
 		}
-		if (c == '('/* ) */)
+		if (c == '('/* ) */ || c == '[')
 			brace_level++;
-		else if (c == /* ( */')')
+		else if (c == /* ( */')' || c == ']')
 			brace_level--;
 		else if (brace_level == 0 && (c == SYMBOL || IS_RESERVED(c)))
 			isdefine = 1;
