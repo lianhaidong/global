@@ -1905,11 +1905,32 @@ But in this case, you must not move HTML directory from the source directory.
 @chapter Other topics
 
 @menu
+* Configuration::                       How to config GLOBAL.
 * Plugin::                              How to plug in a parser.
 * Compact format::                      Compact format.
 * Incremental updating::                Incremental updating.
 * Postgres::                            Using Postgres.
 @end menu
+
+@c ***************************************************************************
+@node   Configuration
+@section How to config GLOBAL.
+
+You can customize GLOBAL using configuration file.
+
+@example
+
+    # cp gtags.conf /etc/gtags.conf         # system wide configuration file.
+    # vi /etc/gtags.conf
+
+    % cp gtags.conf $HOME/.globalrc         # personal configuration file.
+    % vi $HOME/.globalrc
+
+@end example
+
+If @file{$HOME/.globalrc} exists then GLOBAL use it.
+The format of @file{gtags.conf} is resemble to termcap(5).
+About the capabilities, please see each command manual. (@xref{gtags}, @xref{htags} and @xref{global}).
 
 @c ***************************************************************************
 @node   Plugin
