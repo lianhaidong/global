@@ -49,7 +49,7 @@
 
 const char *dbdefault = "btree";   	/* default database name */
 const char *progname  = "btreeop";		/* command name */
-int statistics;
+int vflag;
 
 static void	usage(void);
 void	signal_setup(void);

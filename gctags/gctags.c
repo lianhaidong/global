@@ -61,6 +61,7 @@ int	rflag;			/* -r: function reference */
 int	sflag;			/* -s: collect symbols */
 int	tflag;			/* -t: treat typedefs, structs, unions, and enums. */
 int	wflag;			/* -w: warning message */
+int	vflag;			/* -v: verbose mode */
 int	show_version;
 int	show_help;
 int	debug;
