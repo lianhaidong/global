@@ -55,7 +55,7 @@ You need to have the following package installed:
 	+-------------------------------------
 
 
-2. The format of resreved word file.
+2. The format of reserved word file.
 
 	o One word and 'word' which means 'reserved word' a line.
 	o Null line and the line start with ';' is skipped.
