@@ -24,6 +24,8 @@ ChangeLog about GNU GLOBAL
 	* gtags: format char for strftime() changed (%e -> %d).
 	* htags: use gtags --date and gtags --pwd instead of date and pwd.
 	  Above changes are for Windows 32 environment.
+	* rename file: pathop.[ch] -> gpathop.[ch].
+	* rename functions: pathxxx -> gpath_xxx, gtagsxxx -> gtags_xxx.
 
 July 31 2001, Shigio Yamaguchi  <shigio@tamacom.com>
 
