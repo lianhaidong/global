@@ -2141,7 +2141,7 @@ sub src2html {
 			print "<A NAME=$.>";
 			print;
 		}
-		print "<PRE>\n";
+		print "</PRE>\n";
 	} else {
 		#
 		# print the header
