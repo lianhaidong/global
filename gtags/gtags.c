@@ -329,28 +329,12 @@ char	*argv[];
 				printf("%s: ERROR(1): %s", progname, strbuf_value(ib));
 				continue;
 			}
-			/*
-			 * <A HREF="http://xxx/global/S/ ./main.c .html#110">main</A>\n
-			 * ^                         ^
-			 * p                         |
-			 *                           q
-			 */
+			/* Print just before "/S/ " and skip "/S/ ". */
 			for (; p < q; p++)
 				putc(*p, stdout);
-			/*
-			 * <A HREF="http://xxx/global/S/ ./main.c .html#110">main</A>\n
-			 *                           ^
-			 *                           p
-			 *                           q
-			 */
 			for (; *p && *p != ' '; p++)
 				;
-			/*
-			 * <A HREF="http://xxx/global/S/ ./main.c .html#110">main</A>\n
-			 *                           ^  ^
-			 *                           |  p
-			 *                           q
-			 */
+			/* Extract path name. */
 			for (q = ++p; *q && *q != ' '; q++)
 				;
 			if (*q == '\0') {
@@ -359,34 +343,28 @@ char	*argv[];
 			}
 			*q++ = '\0';
 			/*
-			 * <A HREF="http://xxx/global/S/ ./main.c\0.html#110">main</A>\n
-			 *                               ^         ^
-			 *                               p         |
-			 *                                         q
+			 * Convert path name into URL.
+			 * The output of 'global -xgo' may include lines about
+			 * files other than source code. In this case, file id
+			 * doesn't exist in GPATH.
 			 */
 			fid = gpath_path2fid(p);
 			if (fid) {
 				fputs("/S/", stdout);
 				fputs(fid, stdout);
 				fputs(q, stdout);
-				continue;
+			} else {
+				fputs("/cgi-bin/global.cgi?pattern=", stdout);
+				fputs(p + 2, stdout);
+				fputs("&type=source", stdout);
+				for (; *q && *q != '#'; q++)
+					;
+				if (*q == '\0') {
+					printf("%s: ERROR(2): %s", progname, strbuf_value(ib));
+					continue;
+				}
+				fputs(q, stdout);
 			}
-			fputs("/cgi-bin/global.cgi?pattern=", stdout);
-			fputs(p + 2, stdout);
-			fputs("&type=source", stdout);
-			for (; *q && *q != '#'; q++)
-				;
-			if (*q == '\0') {
-				printf("%s: ERROR(2): %s", progname, strbuf_value(ib));
-				continue;
-			}
-			/*
-			 * <A HREF="http://xxx/global/S/ ./main.c\0.html#110">main</A>\n
-			 *                               ^              ^
-			 *                               p              |
-			 *                                              q
-			 */
-			fputs(q, stdout);
 		}
 		gpath_close();
 		strbuf_close(ib);
