@@ -919,8 +919,17 @@ int	absolute;
 	if (absolute) {
 		(void)fputs(strbuf_value(abspath), stdout);
 	} else {
-		if (!abs2rel(strbuf_value(abspath), basedir, buf, sizeof(buf)))
-			die("abs2rel failed. (path=%s, base=%s).", strbuf_value(abspath), basedir);
+		char *a = strbuf_value(abspath);
+		char *b = basedir;
+#if defined(_WIN32) || defined(__DJGPP__)
+		/* skip drive char in 'c:/usr/bin' */
+		while (*a != '/')
+			a++;
+		while (*b != '/')
+			b++;
+#endif
+		if (!abs2rel(a, b, buf, sizeof(buf)))
+			die("abs2rel failed. (path=%s, base=%s).", a, b);
 		(void)fputs(buf, stdout);
 	}
 	/*

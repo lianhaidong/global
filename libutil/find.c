@@ -118,9 +118,9 @@ prepare_source()
 	 */
 	if (getconfb("icase_path"))
 		flags |= REG_ICASE;
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__DJGPP__)
 	flags |= REG_ICASE;
-#endif /* _WIN32 */
+#endif
 	strbuf_reset(sb);
 	if (!getconfs("suffixes", sb))
 		die("cannot get suffixes data.");
@@ -181,9 +181,9 @@ prepare_skip()
 	 */
 	if (getconfb("icase_path"))
 		flags |= REG_ICASE;
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__DJGPP__)
 	flags |= REG_ICASE;
-#endif /* _WIN32 */
+#endif
 	/*
 	 * initinalize common data.
 	 */
