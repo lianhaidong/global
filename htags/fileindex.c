@@ -711,8 +711,7 @@ makefileindex(file, files)
 				strbuf_sprintf(sb, "<A HREF=%s%s TITLE='%s/'>",
 					count_stack(dirstack) == 1 ? "files/" : "",
 					path2url(path),
-					path,
-					last);
+					path);
 				if (icon_list) {
 					strbuf_sprintf(sb, "<IMG SRC=%sicons/%s.%s ALT=[%s/] HSPACE=3 %s>",
 						count_stack(dirstack) == 1 ? "" : "../", dir_icon, icon_suffix, path, icon_spec);
