@@ -20,7 +20,7 @@
 .\" along with this program; if not, write to the Free Software
 .\" Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .\"
-.Dd Dec 9, 2000
+.Dd Mar 23, 2001
 .Dt GLOBAL 1
 .Os FreeBSD
 .Sh NAME
@@ -28,7 +28,7 @@
 .Nd print the locations of specified object.
 .Sh SYNOPSIS
 .Nm global
-.Op Fl alnrstTvx
+.Op Fl aClnrstTvx
 .Ar pattern
 .Nm global
 .Fl c[sv]
@@ -37,17 +37,17 @@
 .Fl f[anrstvx]
 .Ar files
 .Nm global
-.Fl g[alntvx]
+.Fl g[aClntvx]
 .Ar pattern
 .Nm global
 .Fl i[v]
 .Nm global
-.Fl I[alntvx]
+.Fl I[aClntvx]
 .Ar pattern
 .Nm global
 .Fl p[rv]
 .Nm global
-.Fl P[alntvx]
+.Fl P[aClntvx]
 .Op Ar pattern
 .Sh DESCRIPTION
 .Nm Global
@@ -130,6 +130,9 @@ The following options are available:
 .It Fl a
 .It Fl -absolute
 Print absolute path name. By default, print relative path name.
+.It Fl C
+.It Fl -ignore-case
+ignore case distinctions in pattern.
 .It Fl l
 .It Fl -local
 Print just objects which exist under the current directory.
