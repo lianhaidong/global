@@ -22,10 +22,14 @@
 #include <config.h>
 #endif
 #include <stdio.h>
+#ifdef STDC_HEADERS
 #include <stdlib.h>
-#include <stdarg.h>
+#endif
+#ifdef HAVE_STRING_H
 #include <string.h>
-
+#else
+#include <strings.h>
+#endif
 #include "global.h"
 #include "anchor.h"
 #include "htags.h"

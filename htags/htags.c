@@ -24,8 +24,12 @@
 #endif
 #include <fcntl.h>
 #include <stdio.h>
+#ifdef STDC_HEADERS
 #include <stdlib.h>
+#endif
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/stat.h>

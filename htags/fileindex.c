@@ -24,10 +24,14 @@
 #endif
 #include <ctype.h>
 #include <stdio.h>
+#ifdef STDC_HEADERS
 #include <stdlib.h>
-#include <stdarg.h>
+#endif
+#ifdef HAVE_STRING_H
 #include <string.h>
-
+#else
+#include <strings.h>
+#endif
 #include "regex.h"
 #include "queue.h"
 #include "global.h"

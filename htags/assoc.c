@@ -20,7 +20,9 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+#ifdef STDC_HEADERS
 #include <stdlib.h>
+#endif
 #include "die.h"
 #include "htags.h"
 #include "assoc.h"

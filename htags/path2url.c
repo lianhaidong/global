@@ -20,8 +20,14 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+#ifdef STDC_HEADERS
 #include <stdlib.h>
+#endif
+#ifdef HAVE_STRING_H
+#include <string.h>
+#else
 #include <strings.h>
+#endif
 
 #include "global.h"
 #include "assoc.h"

@@ -23,7 +23,9 @@
 #include <config.h>
 #endif
 #include <stdio.h>
+#ifdef STDC_HEADERS
 #include <stdlib.h>
+#endif
 #include <ctype.h>
 
 #include "global.h"

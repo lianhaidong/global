@@ -22,8 +22,11 @@
 #include <config.h>
 #endif
 #include <stdio.h>
-#include <stdarg.h>
+#ifdef HAVE_STRING_H
 #include <string.h>
+#else
+#include <strings.h>
+#endif
 #include "cache.h"
 #include "common.h"
 #include "queue.h"

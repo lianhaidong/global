@@ -21,11 +21,19 @@
 #include "config.h"
 #endif
 #include <stdio.h>
+#ifdef STDC_HEADERS
 #include <stdlib.h>
+#endif
+#ifdef HAVE_STRING_H
 #include <string.h>
+#else
+#include <strings.h>
+#endif
 #include <ctype.h>
 #include <sys/types.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 #include <fcntl.h>
 
 #include "global.h"
