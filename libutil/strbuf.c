@@ -214,7 +214,7 @@ strbuf_putn(sb, n)
  * strbuf_unputc: remove specified char from the last of buffer
  *
  *	i)	sb	STRBUF structure
- *	i)	c	charactor
+ *	i)	c	character
  *	r)		0: do nothing, 1: removed
  */
 int

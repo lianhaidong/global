@@ -407,7 +407,7 @@ getconfs(name, sb)
 			strbuf_putc(sb, ',');		
 		exist = 1;
 		for (p += strlen(buf); *p && *p != ':'; p++) {
-			if (*p == '\\')	/* quoted charactor */
+			if (*p == '\\')	/* quoted character */
 				p++;
 			if (sb)
 				strbuf_putc(sb, *p);

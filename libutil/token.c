@@ -95,14 +95,14 @@ closetoken()
 /*
  * nexttoken: get next token
  *
- *	i)	interested	interested special charactor
- *				if NULL then all charactor.
+ *	i)	interested	interested special character
+ *				if NULL then all character.
  *	i)	reserved	converter from token to token number
  *				if this is specified, nexttoken() return
  *				word number, else return symbol.
  *	r)	EOF(-1)	end of file
  *		c ==0		symbol ('tok' has the value.)
- *		c < 256		interested special charactor
+ *		c < 256		interested special character
  *		c > 1000	reserved word
  *
  * nexttoken() doesn't return followings.
@@ -307,9 +307,9 @@ atfirst_exceptspace()
 	return (start == end) ? 1 : 0;
 }
 /*
- * pushbackchar: push back charactor.
+ * pushbackchar: push back character.
  *
- *	following nextchar() return same charactor again.
+ *	following nextchar() return same character again.
  * 
  */
 static void

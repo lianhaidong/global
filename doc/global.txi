@@ -1460,7 +1460,7 @@ You can use most of GLOBAL's facilities from the editor.
 @item
 Intelligent recognition of the current token and its type.
 @item
-Special charactor '%', '#' and input completion are available.
+Special character '%', '#' and input completion are available.
 @end itemize
 
 @c ***************************************************************************
