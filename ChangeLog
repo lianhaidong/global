@@ -19,6 +19,10 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+July 16 2001, Shigio Yamaguchi  <shigio@tamacom.com>
+
+	* VERSION: removed. (version number was moved to configure.in.)
+
 July 12 2001, Shigio Yamaguchi  <shigio@tamacom.com>
 
 	* config variable HAVE_SNPRINTF and AC_FUNC_ALLOCA added.
