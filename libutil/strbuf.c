@@ -206,7 +206,6 @@ strbuf_putn(sb, n)
 	if (i == 0) {
 		strbuf_putc(sb, '0');
 	} else {
-		int j = 0;
 		while (--i >= 0)
 			strbuf_putc(sb, num[i]);
 	}
