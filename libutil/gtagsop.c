@@ -528,7 +528,7 @@ GTOP	*gtop;
 char	*path;
 char	*line;
 {
-	char *p;
+	char *p = NULL;
 	int status, n;
 	SPLIT ptable;
 
