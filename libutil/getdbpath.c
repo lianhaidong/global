@@ -42,6 +42,7 @@
 #include "die.h"
 #include "getdbpath.h"
 #include "gtagsop.h"
+#include "makepath.h"
 #include "path.h"
 #include "test.h"
 
@@ -207,5 +208,42 @@ int	verbose;
 		}
 		if (*root == 0)
 			die("GTAGS not found.");
+		/*
+		 * If file 'GTAGSROOT' found without environment variable
+		 * GTAGSDBPATH, use the value of it as GTAGSROOT.
+		 */
+		do {
+			FILE *fp;
+			STRBUF *sb;
+			char *s, *path;
+
+			path = makepath(root, "GTAGSROOT", NULL);
+			if (!test("fr", path)) {
+				break;
+			}
+			fp = fopen(path, "r");
+			if (fp == NULL) {
+				if (verbose)
+					fprintf(stderr, "'%s' ignored because it cannot be opened.\n", path);
+				break;
+			}
+			sb = strbuf_open(0);
+			s = strbuf_fgets(sb, fp, STRBUF_NOCRLF);
+			if (!test("d", s)) {
+				if (verbose)
+					fprintf(stderr, "'%s' ignored because it doesn't include existent directory name.\n", path);
+			} else {
+				if (verbose)
+					fprintf(stderr, "GTAGSROOT found at '%s'.\n", path);
+				if (*s != '/') {
+					char buf[MAXPATHLEN+1];
+					s = realpath(makepath(root, s, NULL), buf);
+				}
+				strcpy(root, s);
+			}
+			fclose(fp);
+			strbuf_close(sb);
+			break;
+		} while (0);
 	}
 }

@@ -26,6 +26,7 @@ Version *.* - ,**********, by Shigio Yamaguchi
 * global,gtags: the -q option added.
 * htags: fill anchors into path name.
 * global.texi: chapter of less viewer and reference manuals added.
+* global: GTAGSROOT file supported.
 
 Version 4.2 - Nov 24 2001, by Shigio Yamaguchi
 
