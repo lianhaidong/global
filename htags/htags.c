@@ -349,7 +349,8 @@ generate_file(dist, file)
 	while ((_ = strbuf_fgets(sb, ip, STRBUF_NOCRLF)) != NULL)
 		fprintf(op, "%s\n", _);
 	fclose(op);
-	pclose(ip);
+	if (pclose(ip) < 0)
+		die("terminated abnormally.");
 	strbuf_close(sb);
 	file_count++;
 }

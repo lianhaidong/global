@@ -129,9 +129,10 @@ makedefineindex(file, total, defines)
 				fprintf(ALPHA, "</A>\n");
 				fprintf(ALPHA, "%s\n", body_end);
 				fprintf(ALPHA, "%s\n", html_end);
-				if (cflag)
-					pclose(ALPHA);
-				else
+				if (cflag) {
+					if (pclose(ALPHA) < 0)
+						die("terminated abnormally.");
+				} else
 					fclose(ALPHA);
 				file_count++;
 			}

@@ -532,7 +532,8 @@ gtags_add(gtop, comline, path, flags)
 		}
 		gtags_put(gtop, tag, ctags_x, fid);
 	}
-	pclose(ip);
+	if (pclose(ip) < 0)
+		die("terminated abnormally.");
 	strbuf_close(sort_command);
 	strbuf_close(sed_command);
 	strbuf_close(sb);

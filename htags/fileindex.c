@@ -934,7 +934,8 @@ makeincludeindex()
 		}
 		put_included(last, buf);
 	}
-	pclose(PIPE);
+	if (pclose(PIPE) < 0)
+		die("terminated abnormally.");
 
 	for (inc = first_inc(); inc; inc = next_inc()) {
 		char *last = inc->name;

@@ -575,7 +575,8 @@ closefilter(op)
 FILE *op;
 {
 	if (op != stdout)
-		pclose(op);
+		if (pclose(op) < 0)
+			die("terminated abnormally.");
 }
 /*
  * completion: print completion list of specified prefix
@@ -740,7 +741,8 @@ idutils(pattern, dbpath)
 					edit, linenum, buf, p);
 		}
 	}
-	pclose(ip);
+	if (pclose(ip) < 0)
+		die("terminated abnormally.");
 	closefilter(op);
 	strbuf_close(ib);
 	if (vflag) {
@@ -981,7 +983,8 @@ parsefile(argc, argv, cwd, root, dbpath, db)
 			count++;
 			printtag(op, p);
 		}
-		pclose(ip);
+		if (pclose(ip) < 0)
+			die("terminated abnormally.");
 		if (chdir(cwd) < 0)
 			die("cannot move to '%s' directory.", cwd);
 	}

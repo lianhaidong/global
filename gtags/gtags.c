@@ -459,7 +459,8 @@ main(argc, argv)
 				} while ((line = strbuf_fgets(ib, stdin, 0)) != NULL
 					&& match(strbuf_value(curtag), line));
 			}
-			pclose(op);
+			if (pclose(op) < 0)
+				die("terminated abnormally.");
 		}
 		exit(0);
 	} else if (do_relative || do_absolute) {
@@ -512,7 +513,7 @@ main(argc, argv)
 			}
 		}
 		strbuf_close(ib);
-		pclose(ip);
+		pclose(ip);		/* don't check error status */
 	}
 	if (!getcwd(cwd, MAXPATHLEN))
 		die("cannot get current directory.");
