@@ -298,6 +298,8 @@ main(argc, argv)
 	}
 	if (fflag)
 		lflag = 0;
+	if (tflag)
+		xflag = 0;
 	/*
 	 * remove leading blanks.
 	 */
@@ -620,7 +622,9 @@ printtag(op, line)
 	FILE *op;
 	char *line;
 {
-	if (tflag) {
+	if (xflag) {
+		fputs(line, op);
+	} else {
 		SPLIT ptable;
 		int n;
 
@@ -629,24 +633,18 @@ printtag(op, line)
 		 */
 		n = split(line, 4, &ptable);
 
-		fputs(ptable.part[0].start, op);	/* tag */
-		(void)putc('\t', op);
-		fputs(ptable.part[2].start, op);	/* path */
-		(void)putc('\t', op);
-		fputs(ptable.part[1].start, op);	/* line number */
-		(void)putc('\n', op);
+		if (tflag) {
+			fputs(ptable.part[0].start, op);	/* tag */
+			(void)putc('\t', op);
+			fputs(ptable.part[2].start, op);	/* path */
+			(void)putc('\t', op);
+			fputs(ptable.part[1].start, op);	/* line number */
+		} else {
+			fputs(ptable.part[2].start, op);	/* path */
+		}
 		recover(&ptable);
-	} else if (!xflag) {
-		char	*p = locatestring(line, "./", MATCH_FIRST);
-
-		if (p == NULL)
-			die("invalid tag format (path not found).");
-		fputs(strmake(p, " \t"), op);
-		(void)putc('\n', op);
-	} else {
-		fputs(line, op);
-		fputc('\n', op);
 	}
+	fputc('\n', op);
 }
 /*
  * idutils:  lid(id-utils) pattern
