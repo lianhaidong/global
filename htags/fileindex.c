@@ -713,8 +713,9 @@ makefileindex(file, files)
 					path2url(path),
 					path);
 				if (icon_list) {
-					strbuf_sprintf(sb, "<img src='%sicons/%s.%s' alt='[%s/]' hspace='3' %s>",
+					strbuf_sprintf(sb, "<img src='%sicons/%s.%s' alt='[%s/]' %s>",
 						count_stack(dirstack) == 1 ? "" : "../", dir_icon, icon_suffix, path, icon_spec);
+					strbuf_puts(sb, quote_space);
 				}
 				strbuf_sprintf(sb, "%s/</a>\n", last);
 				if (no_order_list)
@@ -802,8 +803,9 @@ makefileindex(file, files)
 			strbuf_puts(sb, "<img src='");
 			if (count_stack(dirstack))
 				strbuf_puts(sb, "../");
-			strbuf_sprintf(sb, "icons/%s.%s' alt='[%s]' hspace='3' %s>",
+			strbuf_sprintf(sb, "icons/%s.%s' alt='[%s]' %s>",
 				text_icon, icon_suffix, _, icon_spec);
+			strbuf_puts(sb, quote_space);
 		}
 		if (full_path) {
 			strbuf_puts(sb, _);
