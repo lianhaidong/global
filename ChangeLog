@@ -16,6 +16,7 @@ ChangeLog about GNU GLOBAL
 	* libutil/conf.c: error check added.
 	* libutil/gtagsop.c: replace notnamechar() with isregex().
 	* put '#assert' into reserved word.
+	* reconf.sh: command for generating configure added.
 
 September 26 2000, Shigio Yamaguchi  <shigio@tamacom.com>
 
