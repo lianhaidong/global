@@ -305,6 +305,7 @@ main(argc, argv)
 	} else if (do_convert) {
 		STRBUF *ib = strbuf_open(MAXBUFLEN);
 		char *p, *q, *fid;
+		int c;
 
 		/*
 		 * [Job]
@@ -360,7 +361,13 @@ main(argc, argv)
 				fputs(q, stdout);
 			} else {
 				fputs("/cgi-bin/global.cgi?pattern=", stdout);
-				fputs(p + 2, stdout);
+				p += 2;
+				while ((c = (unsigned char)*p++) != '\0') {
+					if (isalnum(c))
+						putc(c, stdout);
+					else
+						printf("%%%02x", c);
+				}
 				fputs("&type=source", stdout);
 				for (; *q && *q != '#'; q++)
 					;

@@ -1885,7 +1885,9 @@ sub makefileindex {
 		local($url);
 		if ($notsource && $'dynamic) {
 			local($cgi) = ($'action =~ /^\// || @dirstack == 0) ? $'action : "../$'action";
-			$url = "${cgi}?pattern=$_&type=source";
+			local($path) = $_;
+			$path =~ s/(\W)/'%'.unpack("H2", $1)/ego;
+			$url = "${cgi}?pattern=$path&type=source";
 		} else {
 			$url = (@dirstack == 0 ? '' : '../') . "$'SRCS/" . &'path2url($_);
 		}
@@ -2319,7 +2321,9 @@ sub src2html {
 	print "<A NAME=TOP><H2>";
 	print &fill_anchor($indexlink, $file);
 	if ($'cvsweb_url) {
-		print "&nbsp;<A HREF=$'cvsweb_url$file";
+		local($path) = $file;
+		$path =~ s/([^a-zA-Z0-9\/])/'%'.unpack("H2", $1)/ego;
+		print "&nbsp;<A HREF=$'cvsweb_url$path";
 		print "?cvsroot=$'cvsweb_cvsroot" if ($'cvsweb_cvsroot);
 		print "><FONT SIZE=-1>[CVS]</FONT></A>\n";
 	}
