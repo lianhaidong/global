@@ -28,6 +28,7 @@ ChangeLog about GNU GLOBAL
 	* conf.c find.c: shut buffer overflow.
 	* gtags, htags: './' removed from path name in verbose message.
 	* *.c, *.h: copyright year fixed.
+	* configure.in: macro AG_BYTE_ORDER recovered.
 
 March 30 2002, Shigio Yamaguchi  <shigio@gnu.org>
 
