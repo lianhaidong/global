@@ -1259,7 +1259,7 @@ sub makedupindex {
 	local($dist) = @_;
 	local($count) = 0;
 	local($srcdir) = "../$'SRCS";
-	local(%kind) = ('GTAGS', 'definitions', 'GRTAGS', 'references', 'GSYMS', 'symbols');
+	local(%kind) = ('GTAGS', 'definition', 'GRTAGS', 'reference', 'GSYMS', 'symbol');
 	local(%dir) = &'get_dirhash();
 
 	foreach $db (&'get_taglist()) {
@@ -1277,7 +1277,7 @@ sub makedupindex {
 			local($tag) = split;
 			if ($prev ne $tag) {
 				$count++;
-				print STDERR " [$count] adding $tag $kind\n" if ($'vflag);
+				print STDERR " [$count] adding $tag as $kind\n" if ($'vflag);
 				if ($writing) {
 					print FILE &'list_end;
 					print FILE $'body_end, "\n";
