@@ -102,7 +102,7 @@ AC_FUNC_ALLOCA
 AC_FUNC_MEMCMP
 AC_TYPE_SIGNAL
 AC_FUNC_STRFTIME
-AC_CHECK_FUNCS(getcwd putenv strdup lstat snprintf)
+AC_CHECK_FUNCS(getcwd putenv strdup lstat snprintf utimes)
 
 INCLUDES='-I$(top_srcdir)/libutil -I$(top_srcdir)/libdb -I$(top_srcdir)/libregex'
 AC_SUBST(INCLUDES)

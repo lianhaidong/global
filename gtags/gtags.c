@@ -519,7 +519,11 @@ char	*root;
 		 * because they may have no definitions.
 		 */
 		for (db = GTAGS; db < GTAGLIM; db++)
+#ifdef HAVE_UTIMES
 			utimes(makepath(dbpath, dbname(db), NULL), NULL);
+#else
+			utime(makepath(dbpath, dbname(db), NULL), NULL);
+#endif /* HAVE_UTIMES */
 	}
 	if (vflag) {
 		if (updated)
