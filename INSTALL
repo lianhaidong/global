@@ -4,7 +4,7 @@ ___________________________________
 |  |   |  |  |  |  |     |     |  |
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Copyright (c) 2000, 2002 Tama Communications Corporation
+ Copyright (c) 2000, 2002, 2003 Tama Communications Corporation
 
  This file is free software; as a special exception the author gives
  unlimited permission to copy and/or distribute it, with or without
@@ -16,7 +16,7 @@ ___________________________________
 
 		----------------------------------
 
-Installation of GNU GLOBAL under UNIX.
+Installation of GNU GLOBAL under UNIX or CYGWIN.
 
 1. Preparation.
 
@@ -28,9 +28,10 @@ o PERL version 4 or later is needed for htags.
 
 
 o If your environment is Windows32(Windows95,98,NT...), you need to
-  install DJGPP tools to your environment. See following site:
+  install DJGPP or CYGWIN tools to your environment. See following site:
 
-	http://www.delorie.com/djgpp/
+	CYGWIN: http://cygwin.com/
+	DJGPP:  http://www.delorie.com/djgpp/
 
   You should install the following tools:
 
@@ -52,9 +53,7 @@ o If you want to use the -I option of global(1) then id-utils(1) is needed.
 
 2. How to install.
 
-   You need GNU make. It may be named 'gmake' on your system.
-
-   UNIX:
+   UNIX or CYGWIN:
 
 	% ./configure
 	% make
