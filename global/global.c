@@ -77,6 +77,7 @@ int	iflag;				/* [option]		*/
 int	Iflag;				/* command		*/
 int	lflag;				/* [option]		*/
 int	nflag;				/* [option]		*/
+int	oflag;				/* [option]		*/
 int	pflag;				/* command		*/
 int	Pflag;				/* command		*/
 int	qflag;				/* [option]		*/
@@ -117,6 +118,7 @@ static struct option const long_options[] = {
 	{"nofilter", no_argument, NULL, 'n'},
 	{"grep", no_argument, NULL, 'g'},
 	{"ignore-case", no_argument, NULL, 'i'},
+	{"other", no_argument, NULL, 'o'},
 	{"print-dbpath", no_argument, NULL, 'p'},
 	{"path", no_argument, NULL, 'P'},
 	{"quiet", no_argument, NULL, 'q'},
@@ -163,7 +165,7 @@ char	*argv[];
 	char	dbpath[MAXPATHLEN+1];		/* dbpath directory	*/
 	char	*gtags;
 
-	while ((optchar = getopt_long(argc, argv, "acifgGIlnpPqrstTuvx", long_options, &option_index)) != EOF) {
+	while ((optchar = getopt_long(argc, argv, "acifgGIlnopPqrstTuvx", long_options, &option_index)) != EOF) {
 		switch (optchar) {
 		case 0:
 			if (!strcmp("idutils", long_options[option_index].name))
@@ -197,6 +199,9 @@ char	*argv[];
 		case 'I':
 			Iflag++;
 			setcom(optchar);
+			break;
+		case 'o':
+			oflag++;
 			break;
 		case 'p':
 			pflag++;
@@ -758,6 +763,8 @@ char	*dbpath;
 		die("gtags command not found.");
 	strbuf_puts(ib, gtags);
 	strbuf_puts(ib, " --find ");
+	if (oflag)
+		strbuf_puts(ib, "--other ");
 	if (lflag)
 		strbuf_puts(ib, localprefix);
 	strbuf_puts(ib, "| xargs grep ");

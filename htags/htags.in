@@ -886,7 +886,7 @@ if ($form{'type'} eq 'reference') {
 	$flag = 'P';
 	$words = 'paths';
 } elsif ($form{'type'} eq 'grep') {
-	$flag = 'g';
+	$flag = 'go';
 	$words = 'patterns';
 } elsif ($form{'type'} eq 'idutils') {
 	$flag = 'I';

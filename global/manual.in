@@ -31,7 +31,7 @@
 	@name{global} [-ailnqrstTvx] @arg{pattern}
 	@name{global} -c[qsv] @arg{prefix}
 	@name{global} -f[anqrstvx] @arg{files}
-	@name{global} -g[ailnqtvx] @arg{pattern}
+	@name{global} -g[ailnoqtvx] @arg{pattern}
 	@name{global} -I[ailnqtvx] @arg{pattern}
 	@name{global} -p[qrv]
 	@name{global} -P[ailnqtvx] @arg{pattern}
@@ -94,6 +94,10 @@
 		Print just objects which exist under the current directory.
 	@item{@option{-n}, @option{--nofilter}}
 		Suppress sort filter and path conversion filter.
+	@item{@option{-o}, @option{--other}}
+		Search pattern in not only source files but also other files
+		like @file{README}.
+		This options is valid only with @option{-g} option.
 	@item{@option{-q}, @option{--quiet}}
 		Quiet mode.
 	@item{@option{-r}, @option{--reference}, @option{--rootdir}}

@@ -25,6 +25,8 @@ Current version by Shigio Yamaguchi
 * gozilla: gozilla return to GLOBAL.
 * htags: -o(--other) option added. This option list not only source files
   but also other files like 'README'.
+* global: -o(--other) option added. This option search in not only source
+  files but also other files like 'README'.
 * htags: configuration variable other_files added.
 * htags: configuration variable definition_header={no|after|before} added.
 * htags: configuration variable enable_grep and enable_idutils added.
