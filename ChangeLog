@@ -31,6 +31,7 @@ Current, Shigio Yamaguchi  <shigio@gnu.org>
 	  is replaced gtags(1) --relative or --absolute.
 	* global: use lid(1) rather than gid(1).
 	* usable.c: locate command for BINDIR additionally to PATH.
+	* htags: bless.sh remove cgi-bin/global.cgi because it is not needed.
 
 Jan 22 2002, Shigio Yamaguchi  <shigio@gnu.org>
 

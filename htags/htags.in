@@ -1009,6 +1009,7 @@ for f in mains.html index.html search.html; do
 		fi
 	fi
 done
+rm -f cgi-bin/global.cgi
 END_OF_SCRIPT
 	$script =~ s/\@null_device\@/$'null_device/g;
 	$script =~ s/\@action\@/$action/g;
