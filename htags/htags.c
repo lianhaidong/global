@@ -979,6 +979,8 @@ configuration(argc, argv)
 		table_list = 1;
 	if (getconfb("no_order_list"))
 		no_order_list = 1;
+	if (getconfb("no_map_file"))
+		no_map_file = 1;
 	strbuf_reset(sb);
 	if (getconfs("icon_list", sb)) {
 		p = strdup(strbuf_value(sb));
