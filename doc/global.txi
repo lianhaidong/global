@@ -109,7 +109,7 @@ User's position (current directory) is the first argument for GLOBAL's command.
 GNU GLOBAL has following features:
 
 @itemize @bullet
-@item support C, C++, Yacc, Java, PHP and assembly.
+@item support C, C++, Yacc, Java, PHP4 and assembly.
 @item work the same way across diverse environments. Currently, support followings:
 	@itemize @minus
 	@item Shell command line
