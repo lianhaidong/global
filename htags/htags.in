@@ -2272,7 +2272,7 @@ package anchor;
 #	go)	%PATHLIST
 #
 sub create {
-	$ANCH = "$'tmp/ANCH$$";
+	$ANCH = "$'tmp/htaga$$";
 	open(ANCH, ">$ANCH") || &'error("cannot create file '$ANCH'.");
 	close(ANCH);
 	chmod ($ANCH, 0600);
@@ -2455,12 +2455,12 @@ package cache;
 #			other: sized cache
 #
 sub open {
-	$GTAGS  = "$'tmp/CACD$$";
+	$GTAGS  = "$'tmp/htagd$$";
 	dbmopen(%GTAGS, $GTAGS, 0600) || &'error("cannot make cache file '$GTAGS'.");
-	$GRTAGS = "$'tmp/CACR$$";
+	$GRTAGS = "$'tmp/htagr$$";
 	dbmopen(%GRTAGS, $GRTAGS, 0600) || &'error("cannot make cache file '$GRTAGS'.");
 	if ($'symbols) {
-		$GSYMS  = "$'tmp/CACY$$";
+		$GSYMS  = "$'tmp/htagy$$";
 		dbmopen(%GSYMS, $GSYMS, 0600) || &'error("cannot make cache file '$GSYMS'.");
 	}
 }
