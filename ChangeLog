@@ -18,6 +18,11 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+**** * 2002, Shigio Yamaguchi  <shigio@gnu.org>
+
+	* gtags.c: --convert option added.
+	* global.cgi: btreeop replaced with gtags --convert.
+
 July 4 2002, Shigio Yamaguchi  <shigio@gnu.org>
 
 	* gctags.c: allows second argument in *ENTRY for 4.3BSD.

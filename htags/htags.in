@@ -969,7 +969,7 @@ exit 0;
 sub makeprogram {
 	local($file) = @_;
 	local($globalpath) = &'usable('global');
-	local($btreeoppath) = &'usable('btreeop');
+	local($gtagspath) = &'usable('gtags');
 
 	open(PROGRAM, ">$file") || &'error("cannot make CGI program.");
 	local($script) = <<'END_OF_SCRIPT';
@@ -995,7 +995,7 @@ $htmlbase =~ s!/[^\/]+$!!;		# remove file name.
 $htmlbase =~ s!/defines$!!;
 $htmlbase =~ s!/S$!!;
 $htmlbase =~ s!/$!!;
-if (! -x '@globalpath@' || ! -x '@btreeoppath@') {
+if (! -x '@globalpath@' || ! -x '@gtagspath@') {
 	print "<H1><FONT COLOR=#cc0000>Error</FONT></H1>\n";
 	print "<H3>Server side command not found. <A HREF=$htmlbase/mains.@normal_suffix@>[return]</A></H3>\n";
 	print "@body_end@\n";
@@ -1084,14 +1084,25 @@ print "Following $words are matched to above pattern.<HR>\n";
 $cnt = 0;
 local($tag, $lno, $filename, $fileno);
 print "<PRE>\n";
+open(PIPEOUT, "| @gtagspath@ --convert");
+if ($?) {	
+	print "<H1><FONT COLOR=#cc0000>Error</FONT></H1>\n";
+	print "<H3>Cannot execute gtags --convert. <A HREF=$htmlbase/mains.@normal_suffix@>[return]</A></H3>\n";
+	print "@body_end@\n";
+	print "@html_end@\n";
+	exit 0;
+}
+$| = 1;	# flush buffer
 while (<PIPE>) {
 	$cnt++;
 	($tag, $lno, $filename) = split;
-	chop($fileno = `@btreeoppath@ -K "./$filename" GPATH`);
-	s!($tag)!<A HREF=$htmlbase/S/$fileno.@HTML@#$lno>$1<\/A>!;
-	print;
+	# " ./$filename " is replaced with file number by gtags --convert.
+	s!($tag)!<A HREF=$htmlbase/S/ ./$filename .@HTML@#$lno>$1<\/A>!;
+	print PIPEOUT;
 }
+$| = 1;	# flush buffer
 close(PIPE);
+close(PIPEOUT);
 print "</PRE>\n";
 if ($cnt == 0) {
 	print "<H3>Pattern not found. <A HREF=$htmlbase/mains.@normal_suffix@>[return]</A></H3>\n";
@@ -1119,7 +1130,7 @@ END_OF_SCRIPT
 	$script =~ s/\@SRCS\@/$'SRCS/g;
 	$script =~ s/\@HTML\@/$'HTML/g;
 	$script =~ s/\@globalpath\@/$globalpath/g;
-	$script =~ s/\@btreeoppath\@/$btreeoppath/g;
+	$script =~ s/\@gtagspath\@/$gtagspath/g;
 	print PROGRAM $script;
 	close(PROGRAM) || &'error("cannot make CGI program.");
 	$'file_count++;

@@ -70,6 +70,7 @@ int	vflag;					/* verbose mode */
 int     show_version;
 int     show_help;
 int	show_config;
+int	do_convert;
 int	do_find;
 int	do_sort;
 int	do_write;
@@ -114,6 +115,7 @@ static struct option const long_options[] = {
 
 	/* long name only */
 	{"config", optional_argument, &show_config, 1},
+	{"convert", no_argument, &do_convert, 1},
 	{"date", no_argument, &do_date, 1},
 	{"debug", no_argument, &debug, 1},
 	{"expand", required_argument, &do_expand, 1},
@@ -281,6 +283,49 @@ char	*argv[];
 		} else {
 			fprintf(stdout, "%s\n", getconfline());
 		}
+		exit(0);
+	} else if (do_convert) {
+		STRBUF *ib = strbuf_open(MAXBUFLEN);
+		char *p, *q;
+
+		/*
+		 * [Job]
+		 *
+		 * Read line from stdin and replace " ./<file name> "
+		 * with the file number like this.
+		 *
+		 * <A HREF="http://xxx/global/S/ ./main.c .html#110">main</A>\n
+		 *				|
+		 *				v
+		 * <A HREF="http://xxx/global/S/39..html#110">main</A>\n
+		 *
+		 */
+		if (gpath_open(".", 0, 0) < 0)
+			die("GPATH not found.");
+		while (strbuf_fgets(ib, stdin, 0) != NULL) {
+			p = strbuf_value(ib);
+			if (strncmp("<A ", p, 3))
+				continue;
+			q = locatestring(p, "/S/ ", MATCH_FIRST);
+			if (q == NULL) {
+				printf("%s: ERROR(1): %s", progname, strbuf_value(ib));
+				continue;
+			}
+			for (; p < q; p++)
+				putc(*p, stdout);
+			for (; *p && *p != ' '; p++)
+				putc(*p, stdout);
+			for (q = ++p; *q && *q != ' '; q++)
+				;
+			if (*q == NULL) {
+				printf("%s: ERROR(2): %s", progname, strbuf_value(ib));
+				continue;
+			}
+			*q++ = '\0';
+			fputs(gpath_path2fid(p), stdout);
+			fputs(q, stdout);
+		}
+		gpath_close();
 		exit(0);
 	} else if (do_expand) {
 		FILE *ip;
