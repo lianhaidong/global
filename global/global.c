@@ -1126,12 +1126,11 @@ int	db;
 	count = 0;
 	for (; argc > 0; argv++, argc--) {
 		av = argv[0];
-		if (test("d", av)) {
-			fprintf(stderr, "'%s' is a directory.\n", av);
-			continue;
-		}
-		if (!test("f", NULL)) {
-			fprintf(stderr, "'%s' not found.\n", av);
+		if (!test("f", av)) {
+			if (test("d", av))
+				fprintf(stderr, "'%s' is a directory.\n", av);
+			else
+				fprintf(stderr, "'%s' not found.\n", av);
 			continue;
 		}
 		/*
