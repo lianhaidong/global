@@ -2125,6 +2125,7 @@ sub src2html {
 	local(%ctab) = ('&', '&amp;', '<', '&lt;', '>', '&gt;');
 	local($isjava) = ($file =~ /\.java$/) ? 1 : 0;
 	local($iscpp) = ($file =~ /\.(h|c\+\+|cc|cpp|cxx|hxx|C|H)$/) ? 1 : 0;
+	local($isphp) = ($file =~ /\.(php|php3|phtml)$/) ? 1 : 0;
 	local($command);
 
 	if ($'cflag) {
@@ -2255,6 +2256,8 @@ sub src2html {
 					s/\b($'java_reserved_words)\b/\022$1\023/go;
 				} elsif ($iscpp) {
 					s/\b($'cpp_reserved_words)\b/\022$1\023/go;
+				} elsif ($isphp) {
+					s/\b($'php_reserved_words)\b/\022$1\023/go;
 				} else {
 					s/\b($'c_reserved_words)\b/\022$1\023/go;
 				}
