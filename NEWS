@@ -27,6 +27,9 @@ Current version by Shigio Yamaguchi
   but also other files like 'README'.
 * htags: configuration variable other_files added.
 * htags: configuration variable definition_header={no|after|before} added.
+* htags: configuration variable enable_grep and enable_idutils added.
+* htags: -l(--each-line-tag) option deleted.
+  From now on, htags works as if -l flag is always specified.
 * global: path conversion optimized and bug fixed.
 
 Version 4.3.1 - Jan 22 2002, by Shigio Yamaguchi

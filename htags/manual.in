@@ -28,7 +28,7 @@
 @HEADER	HTAGS,1,December 2001,GNU Project
 @NAME	htags - generate hypertext from source code.
 @SYNOPSIS
-	@name{htags} [-a][-c][-f][-F][-l][-n][-o][-s][-v][-w][-d @arg{dir}][-S @arg{dir}][-t @arg{title}][@arg{dir}]
+	@name{htags} [-a][-c][-f][-F][-n][-o][-s][-v][-w][-d @arg{dir}][-S @arg{dir}][-t @arg{title}][@arg{dir}]
 @DESCRIPTION
 	@name{Htags} makes hypertext from C, C++, Yacc and Java source code.
 
@@ -59,10 +59,6 @@
 		Use frame for each part of the contents.
 	@item{@option{--gtagsconf} @arg{file}}
 		Load user's configuration from @arg{file}.
-	@item{@option{-l}, @option{--each-line-tag}}
-		Make a name tag(<A NAME=line number>) for each line, so that
-		other hypertext can link to any line of this hypertext.
-		By default, htags makes it only for lines that are referred to.
 	@item{@option{-n}, @option{--line-number}}
 		Print the line numbers. By default, doesn't print it.
 	@item{@option{-o}, @option{--other}}

@@ -174,6 +174,12 @@ if ($var1 = &'getconf('definition_header')) {
 if ($var1 = &'getconf('other_files')) {
 	$'other_files = $var1;
 }
+if ($var1 = &'getconf('enable_grep')) {
+	$'enable_grep = $var1;
+}
+if ($var1 = &'getconf('enable_idutils')) {
+	$'enable_idutils = $var1;
+}
 if ($var1 = &'getconf('full_path')) {
 	$'full_path = $var1;
 }
@@ -455,7 +461,7 @@ if ($'htags_options) {
 #
 # options check.
 #
-$'aflag = $'cflag = $'fflag = $'Fflag = $'lflag = $'nflag = $'Sflag = $'vflag = $'wflag = '';
+$'aflag = $'cflag = $'fflag = $'Fflag = $'nflag = $'Sflag = $'vflag = $'wflag = '';
 $show_version = 0;
 $show_help = 0;
 $include_caution = 0;
@@ -478,6 +484,8 @@ while ($ARGV[0] =~ /^-/) {
 		$'aflag = 'a';
 	} elsif ($opt =~ /^--compact$/) {
 		$'cflag = 'c';
+	} elsif ($opt =~ /^--each-line-tag$/) {
+		;		# for backward compatibility.
 	} elsif ($opt =~ /^--form$/) {
 		$'fflag = 'f';
 	} elsif ($opt =~ /^--frame$/) {
@@ -486,8 +494,6 @@ while ($ARGV[0] =~ /^-/) {
 		;		# --gtagsconf is estimated only once.
 	} elsif ($opt =~ /^--gtagsconf$/) {
 		shift;		# --gtagsconf is estimated only once.
-	} elsif ($opt =~ /^--each-line-tag$/) {
-		$'lflag = 'l';
 	} elsif ($opt =~ /^--line-number$/) {
 		$'nflag = 'n';
 	} elsif ($opt =~ /^--other$/) {
@@ -516,6 +522,7 @@ while ($ARGV[0] =~ /^-/) {
 		print STDERR $usage_const, "\n";
 		exit 1;
 	} elsif ($opt =~ /[^-acdfFlnosStvwtd]/) {
+				# include 'l' for backward compatibility.
 		print STDERR $usage_const, "\n";
 		exit 1;
 	} else {
@@ -523,7 +530,6 @@ while ($ARGV[0] =~ /^-/) {
 		if ($opt =~ /c/) { $'cflag = 'c'; }
 		if ($opt =~ /f/) { $'fflag = 'f'; }
 		if ($opt =~ /F/) { $'Fflag = 'F'; }
-		if ($opt =~ /l/) { $'lflag = 'l'; }
 		if ($opt =~ /n/) { $'nflag = 'n'; }
 		if ($opt =~ /o/) { $'oflag = 'o'; }
 		if ($opt =~ /v/) { $'vflag = 'v'; }
@@ -879,12 +885,35 @@ if ($form{'type'} eq 'reference') {
 } elsif ($form{'type'} eq 'path') {
 	$flag = 'P';
 	$words = 'paths';
+} elsif ($form{'type'} eq 'grep') {
+	$flag = 'g';
+	$words = 'patterns';
+} elsif ($form{'type'} eq 'idutils') {
+	$flag = 'I';
+	$words = 'patterns';
 }
 if ($form{'id'}) {
 	chdir("$form{'id'}/cgi-bin");
 	if ($?) {	
 		print "<H1><FONT COLOR=#cc0000>Error</FONT></H1>\n";
 		print "<H3>Couldn't find tag directory in secure mode. <A HREF=$htmlbase/mains.@normal_suffix@>[return]</A></H3>\n";
+		print "@body_end@\n";
+		print "@html_end@\n";
+		exit 0;
+	}
+}
+if ($flag eq 'g' || $flag eq 'I') {
+	if ($flag eq 'g' && ! -f "../../GTAGS" || $flag eq 'I' && ! -f "../../ID") {
+		print "<H1><FONT COLOR=#cc0000>Error</FONT></H1>\n";
+		print "<H3>Couldn't execute command. <A HREF=$htmlbase/mains.@normal_suffix@>[return]</A></H3>\n";
+		print "@body_end@\n";
+		print "@html_end@\n";
+		exit 0;
+	}
+	chdir("../..");
+	if ($?) {	
+		print "<H1><FONT COLOR=#cc0000>Error</FONT></H1>\n";
+		print "<H3>Couldn't change directory for $form{'type'} search. <A HREF=$htmlbase/mains.@normal_suffix@>[return]</A></H3>\n";
 		print "@body_end@\n";
 		print "@html_end@\n";
 		exit 0;
@@ -1495,6 +1524,14 @@ sub makesearchpart {
 	}
 	$index .= "\n<INPUT TYPE=radio NAME=type VALUE=path>";
 	$index .= ($target) ? "Path" : "Path name";
+	if ($'enable_grep) {
+		$index .= "\n<INPUT TYPE=radio NAME=type VALUE=grep>";
+		$index .= ($target) ? "Grep" : "Grep pattern";
+	}
+	if ($'enable_idutils && -f "$dbpath/ID") {
+		$index .= "\n<INPUT TYPE=radio NAME=type VALUE=idutils>";
+		$index .= ($target) ? "Id" : "Id pattern";
+	}
 	$index .= "\n</FORM>\n";
 	$index;
 }
@@ -1793,17 +1830,9 @@ sub src2html {
 			local($define_line) = 0;
 			local(@links) = ();
 			local($count) = 0;
-			local($lno_printed) = 0;
 
-			if ($'lflag || $. == 1) {
-				print "<A NAME=$.>";
-				$lno_printed = 1;
-			}
+			print "<A NAME=$.>";
 			for (; int($LNO) == $.; ($LNO, $TAG, $TYPE) = &anchor'next()) {
-				if (!$lno_printed) {
-					print "<A NAME=$.>";
-					$lno_printed = 1;
-				}
 				$define_line = $LNO if ($TYPE eq 'D');
 				$db = ($TYPE eq 'R') ? 'GTAGS' : 'GRTAGS';
 				local($line) = &cache'get($db, $TAG);

@@ -412,7 +412,7 @@ char	*argv[];
 		exit(0);
 	}
 	/*
-	 * exec gid(idutils).
+	 * exec lid(idutils).
 	 */
 	if (Iflag) {
 		chdir(root);
@@ -619,7 +619,7 @@ char	*bp;
 		fprintf(op, "%s\n", bp); 
 }
 /*
- * idutils:  gid(idutils) pattern
+ * idutils:  lid(idutils) pattern
  *
  *	i)	pattern	POSIX regular expression
  *	i)	dbpath	GTAGS directory
@@ -634,20 +634,20 @@ char	*dbpath;
 	char	edit[IDENTLEN+1];
 	char    *line, *p, *path, *lno;
 	int     linenum, count, editlen;
-	char	*gid;
+	char	*lid;
 
-	gid = usable("gid");
-	if (!gid)
-		die("gid(idutils) not found.");
+	lid = usable("lid");
+	if (!lid)
+		die("lid(idutils) not found.");
 	/*
 	 * convert spaces into %FF format.
 	 */
 	ffformat(edit, sizeof(edit), pattern);
 	editlen = strlen(edit);
 	/*
-	 * make gid command line.
+	 * make lid command line.
 	 */
-	strbuf_puts(ib, gid);
+	strbuf_puts(ib, lid);
 	strbuf_putc(ib, ' ');
 	strbuf_puts(ib, "--separator=newline ");
 	if (!tflag && !xflag)
@@ -677,7 +677,7 @@ char	*dbpath;
 		while (*p && *p != ':')
 			p++;
 		if ((xflag || tflag) && !*p)
-			die("invalid gid(idutils) output format. '%s'", line);
+			die("invalid lid(idutils) output format. '%s'", line);
 		*p++ = 0;
 		if (lflag) {
 			if (!locatestring(path, localprefix + 2, MATCH_AT_FIRST))
