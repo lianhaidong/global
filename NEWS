@@ -32,6 +32,7 @@ Current version by Shigio Yamaguchi
 * htags: configuration variable enable_grep and enable_idutils added.
 * htags: -l(--each-line-tag) option deleted.
   From now on, htags works as if -l flag is always specified.
+  But -l(--each-line-tag) option is accepted for backward compatibility.
 * global: path conversion optimized and bug fixed.
 * gtags.conf: added documentation about variables.
 
