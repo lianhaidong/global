@@ -120,18 +120,24 @@ A7. Because it is hard for GLOBAL to treat them correctly with keeping
     upper compatibility. If you can do it, please send the patch to me.
 
 ----------------------------------------------------------------------------
-Q8. Htags(1) works only on one directory. So, we cannot refer library functions
-    like printf from my project. Any solutions?
+Q8. Gtags(1) and htags(1) works only on one directory. So, we cannot refer
+    library functions like strlen from my project. Any solutions?
 
-A8. You can do it by copying them into your source project.
-    For example:
+A8. In global(1), you can use GTAGSLIBPATH environment variable.
 
-	[library]	/usr/src/lib/libc
-	[include file]	/usr/src/include
+	[library]	/usr/src/lib
 	[your project]	/usr/home/project
 
+	% (cd /usr/src/lib; gtags)
+	% setenv GTAGSLIBPATH /usr/src/lib
+	% global strlen
+	../../../usr/src/lib/libc/string/strlen.c
+
+    In htags(1), you can do it by copying them into your source project.
+    For example:
+
 	% cd /usr/home/project
-	% cp -r /usr/src/lib/libc /usr/src/include .
+	% cp -r /usr/src/lib .
 	% gtags
 	% htags
 
