@@ -30,6 +30,7 @@ Current, Shigio Yamaguchi  <shigio@gnu.org>
 	* abs2rel.c: added for path conversion. pathfilter with sed(1)
 	  is replaced gtags(1) --relative or --absolute.
 	* global: use lid(1) rather than gid(1).
+	* usable.c: locate command for BINDIR additionally to PATH.
 
 Jan 22 2002, Shigio Yamaguchi  <shigio@gnu.org>
 
