@@ -78,36 +78,38 @@ int npart;
 SPLIT *list;
 {
 	char *s = line;
-	struct part *part;
+	struct part *part = &list->part[0];
 	int count;
 
 	if (npart > NPART)
 		npart = NPART;
 	npart--;
-	for (count = 0; count < npart; count++) {
+	for (count = 0; *s && count < npart; count++) {
 		while (*s && isblank(*s))
 			s++;
 		if (*s == '\0')
 			break;
-		part = &list->part[count];
 		part->start = s;
 		while (*s && !isblank(*s))
 			s++;
 		part->end = s;
 		part->savec = *s;
-		if (*s == '\0')
-			break;
-		*s++ = '\0';
+		part++;
 	}
 	if (*s) {
 		while (*s && isblank(*s))
 			s++;
-		part = &list->part[count];
 		part->start = s;
 		part->end = (char *)0;
 		part->savec = 0;
+		count++;
+		part++;
 	}
-	return list->npart = count + 1;
+	while (part-- > &list->part[0]) {
+		if (part->savec != '\0')
+			*part->end = '\0';
+	}
+	return list->npart = count;
 }
 /*
  * recover: recover initial status of line.
