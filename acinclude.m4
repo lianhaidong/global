@@ -80,5 +80,7 @@ XXXXXX
 ac_cv_djgpp=yes, ac_cv_djgpp=no)])
 if test $ac_cv_djgpp = yes; then
   AM_CONDITIONAL(DJGPP, true)
+else
+  AM_CONDITIONAL(DJGPP, false)
 fi
 ])
