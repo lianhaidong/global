@@ -112,7 +112,7 @@ static struct option const long_options[] = {
 	{"warning", no_argument, NULL, 'w'},
 
 	/* long name only */
-	{"config", no_argument, &show_config, 1},
+	{"config", optional_argument, &show_config, 1},
 	{"date", no_argument, &do_date, 1},
 	{"debug", no_argument, &debug, 1},
 	{"expand", required_argument, &do_expand, 1},
@@ -121,7 +121,7 @@ static struct option const long_options[] = {
 	{"idutils", no_argument, NULL, 'I'},
 	{"info", required_argument, &info, 1},
 	{"other", no_argument, &other_files, 1},
-	{"postgres", no_argument, NULL, 'P'},
+	{"postgres", optional_argument, NULL, 'P'},
 	{"pwd", no_argument, &do_pwd, 1},
 	{"relative", no_argument, &do_relative, 1},
 	{"version", no_argument, &show_version, 1},
@@ -173,21 +173,18 @@ char	*argv[];
 		switch (optchar) {
 		case 0:
 			p = long_options[option_index].name;
-			if (!strcmp(p, "expand"))
+			if (!strcmp(p, "expand")) {
 				settabs(atoi(optarg + 1));
-			else if (info) {
-				info = 0;
-				if (!optarg)
-					usage();
-				else
+			} else if (!strcmp(p, "info")) {
+				info_string = optarg;
+			} else if (!strcmp(p, "config")) {
+				if (optarg)
 					info_string = optarg;
 			} else if (gtagsconf) {
 				char    conf[MAXPATHLEN+1];
 				char	*env;
 
 				gtagsconf = 0;
-				if (!optarg)
-					usage();
 				if (realpath(optarg, conf) == NULL)
 					die("%s not found.", optarg);
 #ifdef HAVE_PUTENV
@@ -216,6 +213,9 @@ char	*argv[];
 			break;
 		case 'P':
 			Pflag++;
+			/* pass info string to PQconnectdb(3) */
+			if (optarg)
+				gtags_setinfo(optarg);
 			break;
 		case 'q':
 			qflag++;
@@ -242,14 +242,10 @@ char	*argv[];
 	if (Pflag)
 		die_with_code(2, "The -P option not available. Please configure GLOBAL with --with-postgres and rebuild it.");
 #endif
-	/* pass info string to PQconnectdb(3) */
-	if (info_string) {
-		if (Pflag)
+	if (Pflag) {
+		/* for backward compatibility */
+		if (info_string)
 			gtags_setinfo(info_string);
-		/*
-		else if (Iflag)
-			extra_options = info_string;
-		*/
 	}
 	if (show_version)
 		version(NULL, vflag);
@@ -259,7 +255,17 @@ char	*argv[];
 	argc -= optind;
         argv += optind;
 
-	if (do_expand) {
+	if (show_config) {
+		if (!info_string && argc)
+			info_string = argv[0];
+		if (info_string) {
+			if (!printconf(info_string))
+				exit(1);
+		} else {
+			fprintf(stdout, "%s\n", getconfline());
+		}
+		exit(0);
+	} else if (do_expand) {
 		FILE *ip;
 		STRBUF *ib = strbuf_open(MAXBUFLEN);
 
@@ -278,14 +284,6 @@ char	*argv[];
 			die("cannot get current directory.");
 		canonpath(cwd);
 		fprintf(stdout, "%s\n", cwd);
-		exit(0);
-	} else if (show_config) {
-		if (debug)
-			fprintf(stdout, "getconfline: %s\n", getconfline());
-		if (argc == 0)
-			fprintf(stdout, "%s\n", getconfline());
-		else if (!printconf(argv[0]))
-				exit(1);
 		exit(0);
 	} else if (do_find) {
 		char	*path;

@@ -666,7 +666,7 @@ int flags;
 			if (pgop_load_tagfile(dir, sb))
 				snprintf(sql, sizeof(sql), "%s\n", strbuf_value(sb));
 			else
-				die("Please specify info string for PQconnectdb(3) using --info option.");
+				die("Please specify info string for PQconnectdb(3) using --postgres='info'.");
 			strbuf_close(sb);
 		}
 		fp = fopen(path, "w");
