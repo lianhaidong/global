@@ -92,7 +92,7 @@ struct lang_entry lang_switch[] = {
  */
 static struct lang_entry *
 get_lang_entry(lang)
-	char *lang;
+	const char *lang;
 {
 	int i, size = sizeof(lang_switch) / sizeof(struct lang_entry);
 
