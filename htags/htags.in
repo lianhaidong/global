@@ -24,7 +24,7 @@ $file_count = 0;
 $caution_message = <<'END_OF_CAUTION';
 <CENTER>
 <BLOCKQUOTE>
-<FONT SIEZE=+3 COLOR=red>CAUTION</FONT><BR>
+<FONT SIZE=+3 COLOR=red>CAUTION</FONT><BR>
 This hypertext consist of @FILE_COUNT@ files.
 Please don't download whole hypertext using hypertext copy tools.
 Our network cannot afford such traffic.
