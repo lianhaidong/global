@@ -491,7 +491,18 @@ if ($action_value) {
 if ($id_value) {
 	$'id = $id_value;
 }
-$dbpath = '.' if (!$dbpath);
+# If $dbpath is not specified then listen to global(1).
+if (!$dbpath) {
+	local($cwd) = &'getcwd();
+	local($root) = `global -pr 2>/dev/null`;
+	chop($root);
+	if ($cwd eq $root) {
+		$dbpath = `global -p 2>/dev/null`;
+		chop($dbpath);
+	} else {
+		$dbpath = '.';
+	}
+}
 unless (-r "$dbpath/GTAGS" && -r "$dbpath/GRTAGS") {
 	&'error("GTAGS and/or GRTAGS not found. Htags needs both of them.");
 }
@@ -522,19 +533,6 @@ if ($'fflag || $'cflag) {
 # find filter
 #
 $'findcom = "gtags --find";
-#
-# check if GTAGS, GRTAGS is the latest.
-#
-$gtags_ctime = (stat("$dbpath/GTAGS"))[10];
-open(FIND, "$'findcom |") || &'error("cannot fork.");
-while (<FIND>) {
-	chop;
-	if ($gtags_ctime < (stat($_))[10]) {
-		&'error("GTAGS is not the latest one. Please remake it.");
-	}
-}
-close(FIND);
-if ($?) { &'error("cannot traverse directory."); }
 #-------------------------------------------------------------------------
 # MAKE FILES
 #-------------------------------------------------------------------------
@@ -557,6 +555,20 @@ if ($?) { &'error("cannot traverse directory."); }
 #-------------------------------------------------------------------------
 $'HTML = ($'cflag) ? $'gzipped_suffix : $'normal_suffix;
 print STDERR "[", &'date, "] ", "Htags started\n" if ($'vflag);
+#
+# (#) check if GTAGS, GRTAGS is the latest.
+#
+print STDERR "[", &'date, "] ", "(#) checking tag files ...\n" if ($'vflag);
+$gtags_ctime = (stat("$dbpath/GTAGS"))[10];
+open(FIND, "$'findcom |") || &'error("cannot fork.");
+while (<FIND>) {
+	chop;
+	if ($gtags_ctime < (stat($_))[10]) {
+		&'error("GTAGS is not the latest one. Please remake it.");
+	}
+}
+close(FIND);
+if ($?) { &'error("cannot traverse directory."); }
 #
 # (0) make directories
 #
