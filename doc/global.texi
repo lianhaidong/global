@@ -1778,11 +1778,11 @@ If you mistake the value then program may abort with core dump.
 @node   gtags
 @section gtags - create tag files for global.
 
-@subsection NAME
+@unnumberedsubsec NAME
 gtags - create tag files for global.
-@subsection SYNOPSIS
+@unnumberedsubsec SYNOPSIS
 gtags [-c] [-i] [-I] [-o] [-P] [-w] [-v] [dbpath]
-@subsection DESCRIPTION
+@unnumberedsubsec DESCRIPTION
 Gtags makes @file{GTAGS}, @file{GRTAGS}, @file{GSYMS} and @file{GPATH}
  file for global(1)(See @xref{global}.).
 Gtags trace subdirectories, read source files, locate symbols
@@ -1829,7 +1829,7 @@ Files whose names end in .java are assumed to be Java source files.
 Files whose names end in .s or .S are assumed to be Assembler source
 files.  Other files are searched for C style definitions.
 
-@subsection FILES
+@unnumberedsubsec FILES
 
 @table @asis
 @item @file{GTAGS}
@@ -1844,7 +1844,7 @@ Tag file for path of source files.
 Configuration file.
 @end table
 
-@subsection ENVIRONMENT
+@unnumberedsubsec ENVIRONMENT
 The following environment variables affect the execution of gtags.
 
 @table @asis
@@ -1856,7 +1856,7 @@ If this variable is set, its value is used as the label of configuration file.
 The default is @kbd{default}.
 @end table
 
-@subsection EXAMPLES
+@unnumberedsubsec EXAMPLES
 
 @example
 % ls -F
@@ -1866,10 +1866,10 @@ Makefile      src/    lib/
 main              10 src/main.c  main (argc, argv) @{
 @end example
 
-@subsection DIAGNOSTICS
+@unnumberedsubsec DIAGNOSTICS
 Gtags exits with a non 0 value if an error occurred, 0 otherwise.
 
-@subsection BUGS
+@unnumberedsubsec BUGS
 GTAGS, GRTAGS and GSYMS are very large.
 In advance of using this command, check the space of your disk.
 
@@ -1889,11 +1889,11 @@ If you mistake the value then program may abort with core dump.
 @node   htags
 @section htags - generate hypertext from source code.
 
-@subsection NAME
+@unnumberedsubsec NAME
 htags - generate hypertext from C, C++, Yacc, Java and assembler
-@subsection SYNOPSIS
+@unnumberedsubsec SYNOPSIS
 htags [-a] [-c] [-f] [-F] [-l] [-n] [-v] [-s] [-w] [-d tagdir] [-S cgidir] [-t title] [dir]
-@subsection DESCRIPTION
+@unnumberedsubsec DESCRIPTION
 Htags makes hypertext from C, C++, Yacc and Java source code.
 
 In advance of using this command, you must execute gtags(1)(See @xref{gtags}.)
@@ -1946,7 +1946,7 @@ The directory in which hypertext is generated.
 The default is the current directory.
 @end table
 
-@subsection EXAMPLES
+@unnumberedsubsec EXAMPLES
 @example
 % cd /usr/src/sys
 # gtags -v
@@ -1954,7 +1954,7 @@ The default is the current directory.
 % lynx HTML/index.html
 @end example
 
-@subsection FILES
+@unnumberedsubsec FILES
 @table @asis
 @item @file{HTML/index.html}
 Index file of hypertext.
@@ -1970,7 +1970,7 @@ Tag file for path of source files.
 Configuration file.
 @end table
 
-@subsection ENVIRONMENT
+@unnumberedsubsec ENVIRONMENT
 The following environment variables affect the execution of gtags.
 
 @table @asis
@@ -1985,19 +1985,19 @@ If this variable is set, its value is used as the label of configuration file.
 The default is @kbd{default}.
 @end table
 
-@subsection DIAGNOSTICS
+@unnumberedsubsec DIAGNOSTICS
 Htags exits with a non 0 value if an error occurred, 0 otherwise.
 
-@subsection BUG
+@unnumberedsubsec BUG
 Generated hypertext is VERY LARGE. In advance, check the space of your disk.
 
 @c ***************************************************************************
 @node   global
 @section global - print the locations of specified object.
 
-@subsection NAME
+@unnumberedsubsec NAME
 global - print the locations of specified object.
-@subsection SYNOPSIS
+@unnumberedsubsec SYNOPSIS
 @noindent
 @quotation
 global [-ailnrstTvx] pattern@*
@@ -2010,7 +2010,7 @@ global -P[ailntvx] [pattern]@*
 global -u[v]
 @end quotation
 
-@subsection DESCRIPTION
+@unnumberedsubsec DESCRIPTION
 Global find the locations of specified object in C, C++, Yacc, Java and
 assembler source files.  Global can treat a source tree, that is,
 a directory that has subdirectories and source files.
@@ -2022,7 +2022,7 @@ In advance of using this command, you must execute gtags(1)(See @xref{global}.)
 at the root directory of the source tree to make tag files.
 Then you can execute global at anywhere in the source tree.
 
-@subsection COMMANDS
+@unnumberedsubsec COMMANDS
 The following commands are available:
 
 @table @asis
@@ -2056,7 +2056,7 @@ Show version number.
 Show help.
 @end table
 
-@subsection OPTIONS
+@unnumberedsubsec OPTIONS
 The following options are available:
 
 @table @asis
@@ -2086,7 +2086,7 @@ Verbose mode.
 In addition to the default output, produce the line number and the line contents.
 @end table
 
-@subsection FILES
+@unnumberedsubsec FILES
 
 @table @asis
 @item @file{GTAGS}
@@ -2101,7 +2101,7 @@ Tag file for path of source files.
 Configuration file.
 @end table
 
-@subsection ENVIRONMENT
+@unnumberedsubsec ENVIRONMENT
 The following environment variables affect the execution of gtags.
 
 @table @asis
@@ -2116,7 +2116,7 @@ If the specified function is not found in a source tree, global also search
 in these paths.
 @end table
 
-@subsection EXAMPLES
+@unnumberedsubsec EXAMPLES
 
 @example
 % ls -F
@@ -2149,7 +2149,7 @@ get_num           90 ../src/op.c            while (get_num() > 0) @{
 ../../../usr/src/lib/libc/string/strlen.c
 @end example
 
-@subsection DIAGNOSTICS
+@unnumberedsubsec DIAGNOSTICS
 Global exits with a non 0 value if an error occurred, 0 otherwise.
 
 @c ***************************************************************************
