@@ -443,7 +443,7 @@ find_read(void)
 				 */
 				if (locatestring(path, " ", MATCH_FIRST)) {
 					if (!qflag)
-						warning("'%s' ignored, because it includes blank in the path.", path);
+						warning("'%s' ignored, because it includes blank in the path.", &path[2]);
 					continue;
 				}
 				/*

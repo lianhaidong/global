@@ -828,7 +828,7 @@ updatetags(dbpath, root, path, type)
 	case 2:	msg = "Deleting"; break;
 	}
 	if (vflag)
-		fprintf(stderr, " %s tags of '%s' ...", msg, path + 2);
+		fprintf(stderr, " %s tags of %s ...", msg, path + 2);
 	for (db = GTAGS; db < GTAGLIM; db++) {
 		int gflags = 0;
 
