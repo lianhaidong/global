@@ -32,6 +32,7 @@
 #include "global.h"
 #include "assoc.h"
 #include "htags.h"
+#include "path2url.h"
 
 static ASSOC *assoc;
 static int nextkey;
