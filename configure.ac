@@ -120,8 +120,8 @@ AC_ARG_WITH(postgres,
                         AC_MSG_ERROR([directory '$POSTGRES' not found.])
                 fi
                 INCLUDES="$INCLUDES -I$POSTGRES/include"
-                CFLAGS="$CFLAGS -DUSE_POSTGRES"
                 LDFLAGS="$LDFLAGS -L$POSTGRES/lib -lpq -lcrypt"
+                AC_DEFINE(USE_POSTGRES,1,[Define if you use postgres.])
                 AC_MSG_RESULT([yes, using $POSTGRES])
         fi
 ],[
@@ -148,8 +148,8 @@ AC_ARG_WITH(home-etc,
                         AC_MSG_ERROR([header '$HOMEETC/include/home_etc.h' not found.])
                 fi
                 INCLUDES="$INCLUDES -I$HOMEETC/include"
-                CFLAGS="$CFLAGS -DHAVE_HOME_ETC_H"
-		LDFLAGS="$LDFLAGS -L$HOMEETC/lib -lhome_etc"
+                LDFLAGS="$LDFLAGS -L$HOMEETC/lib -lhome_etc"
+                AC_DEFINE(HAVE_HOME_ETC_H,1,[Define if you use home-etc facility.])
                 AC_MSG_RESULT([yes, using $HOMEETC])
         fi
 ],[
