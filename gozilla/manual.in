@@ -90,12 +90,12 @@
 		browser to use. By default, it is assumed mozilla.
 	@end_itemize
 @EXAMPLES
-	% gtags
-	% htags
-	% mozilla &
-	% global -x main
+	$ gtags
+	$ htags
+	$ mozilla &
+	$ global -x main
 	main              82 ctags.c          main(argc, argv)
-	% gozilla +82 ctags.c
+	$ gozilla +82 ctags.c
 @DIAGNOSTICS
 	@name{Gozilla} exits with a non 0 value if an error occurred, 0 otherwise.
 @SEE ALSO

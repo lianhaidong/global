@@ -118,18 +118,18 @@
 		The default is the current directory.
 	@end_itemize
 @EXAMPLES
-	% cd /usr/src/sys
+	$ cd /usr/src/sys
 	# gtags -v
 	# htags -fFnvat 'Welcom to FreeBSD kernel source tour!'
-	% lynx HTML/index.html
+	$ lynx HTML/index.html
 
-	% htags -v --gtags
-	% awk '$1 == "main" {print $2}' HTML/MAP
+	$ htags -v --gtags
+	$ awk '$1 == "main" {print $2}' HTML/MAP
 	D/348.html
-	% lynx HTML/D/348.html
+	$ lynx HTML/D/348.html
 
-	% cd global
-	% htags -gv --cvsweb=http://savannah.gnu.org/cgi-bin/viewcvs/global/global/
+	$ cd global
+	$ htags -gv --cvsweb=http://savannah.gnu.org/cgi-bin/viewcvs/global/global/
 
 @FILES
 	@begin_itemize

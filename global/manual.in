@@ -126,33 +126,33 @@
 		the line contents.
 	@end_itemize
 @EXAMPLES
-	% ls -F
+	$ ls -F
 	Makefile      src/    lib/
-	% gtags
-	% global main
+	$ gtags
+	$ global main
 	src/main.c
-	% global -x main
+	$ global -x main
 	main              10 src/main.c  main (argc, argv) {
-	% global -x '^[sg]et'
+	$ global -x '^[sg]et'
 	set_num           20 lib/util.c  set_num(values)
 	get_num           30 lib/util.c  get_num() {
-	% global -rx '^[sg]et'
+	$ global -rx '^[sg]et'
 	set_num          113 src/op.c            set_num(32);
 	set_num          225 src/opop.c               if (set_num(0) > 0) {
 	get_num           90 src/op.c            while (get_num() > 0) {
-	% cd lib
-	% global -rx '^[sg]et'
+	$ cd lib
+	$ global -rx '^[sg]et'
 	set_num          113 ../src/op.c            set_num(32);
 	set_num          225 ../src/opop.c               if (set_num(0) > 0) {
 	get_num           90 ../src/op.c            while (get_num() > 0) {
-	% global strlen
-	% (cd /usr/src/sys; gtags)
-	% setenv GTAGSLIBPATH /usr/src/sys
-	% global strlen
+	$ global strlen
+	$ (cd /usr/src/sys; gtags)
+	$ export GTAGSLIBPATH=/usr/src/sys
+	$ global strlen
 	../../../usr/src/sys/libkern/strlen.c
-	% (cd /usr/src/lib; gtags)
-	% setenv GTAGSLIBPATH /usr/src/lib:/usr/src/sys
-	% global strlen
+	$ (cd /usr/src/lib; gtags)
+	$ GTAGSLIBPATH=/usr/src/lib:/usr/src/sys
+	$ global strlen
 	../../../usr/src/lib/libc/string/strlen.c
 @FILES
 	@begin_itemize

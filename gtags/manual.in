@@ -82,10 +82,10 @@
 		Print warning messages.
 	@end_itemize
 @EXAMPLES
-	% ls -F
+	$ ls -F
 	Makefile      src/    lib/
-	% gtags -v
-	% global -x main
+	$ gtags -v
+	$ global -x main
 	main              10 src/main.c  main (argc, argv) {
 @FILES
 	@begin_itemize
