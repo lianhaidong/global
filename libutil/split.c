@@ -21,8 +21,9 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-
+#include <stdio.h>
 #include "split.h"
+
 /*
  * Substring manager like perl's split.
  *
@@ -124,5 +125,23 @@ SPLIT *list;
 	for (i = 0; i < list->npart; i++) {
 		if ((c = list->part[i].savec) != '\0')
 			*(list->part[i].end) = c;
+	}
+}
+/*
+ * split_dump: dump split structure.
+ */
+void
+split_dump(list)
+SPLIT *list;
+{
+	int i, c;
+	struct part *part;
+
+	fprintf(stderr, "npart: %d\n", list->npart);
+	
+	for (i = 0; i < list->npart; i++) {
+		part = &list->part[i];
+		fprintf(stderr, "string[%d]: |%s|\n", i, part->start);
+		fprintf(stderr, "savec[%d] : |%c|\n", i, part->savec);
 	}
 }
