@@ -189,7 +189,7 @@ int	verbose;
 			strcpy(dbpath, getenv("GTAGSDBPATH"));
 		} else {
 			if (!gtagsexist(root, dbpath, MAXPATHLEN, verbose))
-				die("GTAGS not found.");
+				die_with_code(3, "GTAGS not found.");
 		}
 	} else {
 		if (verbose && getenv("GTAGSDBPATH"))
@@ -207,7 +207,7 @@ int	verbose;
 				break;
 		}
 		if (*root == 0)
-			die("GTAGS not found.");
+			die_with_code(3, "GTAGS not found.");
 		/*
 		 * If file 'GTAGSROOT' found without environment variable
 		 * GTAGSDBPATH, use the value of it as GTAGSROOT.

@@ -99,9 +99,7 @@ char	*extra_options;
 static void
 usage()
 {
-	if (!qflag)
-		fputs(usage_const, stderr);
-	exit(2);
+	die_with_code(2, "%s\n", usage_const);
 }
 static void
 help()
@@ -209,6 +207,7 @@ char	*argv[];
 			break;
 		case 'q':
 			qflag++;
+			setquiet();
 			break;
 		case 'r':
 			rflag++;
@@ -237,10 +236,8 @@ char	*argv[];
 			break;
 		}
 	}
-	if (qflag) {
+	if (qflag)
 		vflag = 0;
-		setquiet();
-	}
 	if (show_help)
 		help();
 
@@ -254,7 +251,7 @@ char	*argv[];
 	 * invalid options.
 	 */
 	if (sflag && rflag)
-		die("both of -s and -r are not allowed.");
+		die_with_code(2, "both of -s and -r are not allowed.");
 	/*
 	 * only -c, -i, -P and -p allows no argument.
 	 */
@@ -291,7 +288,7 @@ char	*argv[];
 		for (; *av == ' ' || *av == '\t'; av++)
 			;
 	if (cflag && av && isregex(av))
-		die("only name char is allowed with -c option.");
+		die_with_code(2, "only name char is allowed with -c option.");
 	/*
 	 * get path of following directories.
 	 *	o current directory

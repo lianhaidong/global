@@ -85,8 +85,7 @@ int	total;
 static void
 usage()
 {
-	fputs(usage_const, stderr);
-	exit(2);
+	die_with_code(2, "%s\n", usage_const);
 }
 static void
 help()
@@ -210,6 +209,7 @@ char	*argv[];
 			break;
 		case 'q':
 			qflag++;
+			setquiet();
 			break;
 		case 'w':
 			wflag++;
@@ -226,13 +226,11 @@ char	*argv[];
 			break;
 		}
 	}
-	if (qflag) {
+	if (qflag)
 		vflag = 0;
-		setquiet();
-	}
 #ifndef USE_POSTGRES
 	if (Pflag)
-		die("The -P option not available. Please configure GLOBAL with --with-postgres and rebuild it.");
+		die_with_code(2, "The -P option not available. Please configure GLOBAL with --with-postgres and rebuild it.");
 #endif
 	/* pass info string to PQconnectdb(3) */
 	if (info_string) {
