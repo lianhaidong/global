@@ -63,8 +63,6 @@ void setup_html();
 void setup_xhtml();
 void setup_tex();
 char *meta_record();
-char *Hn(int, char *);
-char *anchor(char *, char *);
 char *set_header(char *);
 char *gen_list_begin();
 char *gen_list_body(char *, char *);

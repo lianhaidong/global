@@ -157,35 +157,11 @@ meta_record()
 	return buf;
 }
 /*
- * Generate <hn> ... </hn> tag.
+ * Generate header tag.
  */
 char *
-Hn(n, label)
-	int n;
-	char *label;
-{
-	static char buf[512];
-	if (n < 1)
-		n = 1;
-	if (n > 5)
-		n = 5;
-	snprintf(buf, sizeof(buf), "<h%d>%s</h%d>", n, label, n);
-	return buf;
-}
-/*
- * Generate anchor tag.
- */
-char *
-anchor(label, link)
-	char *label;
-	char *link;
-{
-	static char buf[512];
-	snprintf(buf, sizeof(buf), "<a href='%s'>%s</a>", link, label);
-	return buf;
-}
-static STRBUF *
-edit_buffer()
+set_header(title)
+	char *title;
 {
 	static STRBUF *sb = NULL;
 
@@ -193,18 +169,6 @@ edit_buffer()
 		sb = strbuf_open(0);
 	else
 		strbuf_reset(sb);
-	return sb;
-}
-
-/*
- * Generate header tag.
- */
-char *
-set_header(title)
-	char *title;
-{
-	STRBUF *sb = edit_buffer();
-
 	strbuf_puts(sb, "<head>\n<title>");
 	strbuf_puts(sb, title);
 	strbuf_puts(sb, "</title>\n");
@@ -212,6 +176,7 @@ set_header(title)
 	if (style_sheet)
 		strbuf_puts(sb, style_sheet);
 	strbuf_puts(sb, "</head>\n");
+
 	return strbuf_value(sb);
 }
 
@@ -221,19 +186,19 @@ set_header(title)
 char *
 gen_list_begin()
 {
-	STRBUF *sb = edit_buffer();
+	static char buf[1024];
 
 	if (table_list) {
-		strbuf_puts(sb, table_begin);
-		strbuf_putc(sb, '\n');
-		strbuf_puts(sb, "<tr><th nowrap align='left'>tag</th>");
-		strbuf_puts(sb, "<th nowrap align='right'>line</th>");
-		strbuf_puts(sb, "<th nowrap align='center'>file</th>");
-		strbuf_puts(sb, "<th nowrap align='left'>source code</th></tr>");
+		snprintf(buf, sizeof(buf), "%s\n%s%s%s%s",
+			table_begin, 
+			"<tr><th nowrap align='left'>tag</th>",
+			"<th nowrap align='right'>line</th>",
+			"<th nowrap align='center'>file</th>",
+			"<th nowrap align='left'>source code</th></tr>");
 	} else {
-		strbuf_puts(sb, "<pre>");
+		strlimcpy(buf, verbatim_begin, sizeof(buf));
 	}
-	return strbuf_value(sb);
+	return buf;
 }
 /*
  * Generate list body.
@@ -245,11 +210,15 @@ gen_list_body(srcdir, string)
 	char *srcdir;
 	char *string;
 {
-	STRBUF *sb = edit_buffer();
+	static STRBUF *sb = NULL;
 	char *name, *lno, *filename, *line, *html;
 	char *p;
 	SPLIT ptable;
 
+	if (sb == NULL)
+		sb = strbuf_open(0);
+	else
+		strbuf_reset(sb);
 	if (split(string, 4, &ptable) < 4) {
 		recover(&ptable);
 		die("too small number of parts in list_body().\n'%s'", string);
@@ -320,13 +289,7 @@ gen_list_body(srcdir, string)
 char *
 gen_list_end()
 {
-	STRBUF *sb = edit_buffer();
-
-	if (table_list)
-		strbuf_puts(sb, table_end);
-	else
-		strbuf_puts(sb, "</pre>");
-	return strbuf_value(sb);
+	return table_list ? table_end : verbatim_end;
 }
 
 /*
