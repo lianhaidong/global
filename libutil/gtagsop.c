@@ -118,13 +118,13 @@ dbname(db)
 /*
  * makecommand: make command line to make global tag file
  *
- *	i)	comline	skelton command line
+ *	i)	comline	skeleton command line
  *	i)	path	path name
  *	o)	sb	command line
  *
- * command skelton is like this:
+ * command skeleton is like this:
  *	'gctags -r %s'
- * following skelton is allowed too.
+ * following skeleton is allowed too.
  *	'gctags -r'
  */
 void
