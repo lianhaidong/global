@@ -1188,6 +1188,9 @@ $| = 1;	# flush buffer
 while (<PIPE>) {
 	$cnt++;
 	($tag, $lno, $filename) = split;
+	s/&/&amp;/g;
+	s/</&lt;/g;
+	s/>/&gt;/g;
 	# " ./$filename " is replaced with file number by gtags --convert.
 	s!($tag)!<A HREF=$htmlbase/S/ ./$filename .@HTML@#$lno>$1<\/A>!;
 	print PIPEOUT;
