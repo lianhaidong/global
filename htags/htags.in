@@ -820,6 +820,8 @@ if ($'cgi && $'fflag) {
 			&duplicatefile($f, $dbpath, "$dist/cgi-bin");
 		}
 	}
+} else {
+	print STDERR "[", &'date, "] ", "(1) making CGI program ...(skipped)\n" if ($'vflag);
 }
 if ($'cgi && $'cflag) {
 	&makehtaccess("$dist/.htaccess");
