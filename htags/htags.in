@@ -1681,7 +1681,7 @@ sub makefileindex {
 		# collect include files. format is
 		#	counter + '\n' + path1 + '\n' + path2 ...
 		if (/.*\.(h|hxx|H)$/) {
-			if (! defined $includes{$file}) {
+			if (!defined $includes{$file}) {
 				$includes{$file} = "$count\n$_";
 			} else {
 				# duplicate entries
@@ -1726,17 +1726,17 @@ sub makefileindex {
         close(FILES);
 	$'file_count++;
 
-	local($command) = "global -gnx '^[ \t]*#[ \t]*include'";
+	local($command) = "global -gnx \"^[ \t]*#[ \t]*include\"";
 	open(PIPE, "$command |") || &'error("cannot fork.");
 	while (<PIPE>) {
 		chop;
 		local($nouse, $lno, $filename, $image) = split(/\s+/, $_, 4);
 		local($last, $sep) = ($image =~ m![</"]([^</"]+)([">])!);
-		if (! defined $includes{$last}) {
+		if (!defined $includes{$last}) {
 			next;
 		}
-		s/\^\[%20%09]\*#\[%20%09]\*include/$last/;
-		if (! defined $included_from{$last}) {
+		s/^[^ \t]+/$last/;
+		if (!defined $included_from{$last}) {
 			$included_from{$last} = "$_";
 		} else {
 			$included_from{$last} = "$included_from{$last}\n$_";
@@ -1746,7 +1746,7 @@ sub makefileindex {
 
 	select($org);
 	foreach $last (keys %includes) {
-		if (! defined $included_from{$last}) {
+		if (!defined $included_from{$last}) {
 			next;
 		}
 		local($no, @incs) = split(/\n/, $includes{$last});
