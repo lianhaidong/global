@@ -28,6 +28,7 @@
 #include <sys/stat.h>
 
 #include <ctype.h>
+#include <utime.h>
 #include <signal.h>
 #include <stdio.h>
 #include <time.h>
@@ -493,9 +494,16 @@ char	*root;
 	if (exitflag)
 		exit(1);
 	if (vflag) {
-		if (updated)
+		if (updated) {
+			int	db;
+			/*
+			 * Update modification time of tag files
+			 * because they may have no definitions.
+			 */
+			for (db = GTAGS; db < GTAGLIM; db++)
+				utimes(makepath(dbpath, dbname(db), NULL), NULL);
 			fprintf(stderr, " Global databases have been modified.\n");
-		else
+		} else
 			fprintf(stderr, " Global databases are up to date.\n");
 		fprintf(stderr, "[%s] Done.\n", now());
 	}
