@@ -232,11 +232,26 @@ $file_icon = 'c.jpg';
 #-------------------------------------------------------------------------
 # JAVASCRIPT PARTS
 #-------------------------------------------------------------------------
+$'begin_script="<SCRIPT LANGUAGE=javascript>\n<!--\n";
+$'end_script="<!-- end of script -->\n</SCRIPT>\n";
 # escaped angle
 $'langle  = sprintf("unescape('%s')", &'escape('<'));
 $'rangle  = sprintf("unescape('%s')", &'escape('>'));
-$'begin_script="<SCRIPT LANGUAGE=javascript>\n<!--\n";
-$'end_script="<!-- end of script -->\n</SCRIPT>\n";
+# staus line
+$'status_line  =
+"function show(type, lno, file) {\n" .
+"	if (lno > 0) {\n" .
+"		msg = (type == 'R') ? 'Defined at' : 'Refered from';\n" .
+"		msg += ' ' + lno;\n" .
+"		if (file != '')\n" .
+"			msg += ' in ' + file;\n" .
+"	} else {\n" .
+"		msg = 'Multiple ';\n" .
+"		msg += (type == 'R') ? 'defined' : 'refered';\n" .
+"	}\n" .
+"	msg += '.';\n" .
+"	self.status = msg;\n" .
+"}\n";
 #-------------------------------------------------------------------------
 # DEFINITION
 #-------------------------------------------------------------------------
@@ -253,6 +268,7 @@ sub set_header {
 	$head .= "$'meta_robots\n$'meta_generator\n";
 	$head .= $'begin_script;
 	$head .= "self.defaultStatus = '$title'\n";
+	$head .= $'status_line;
 	$head .= $'end_script;	
 	$head .= "</HEAD>\n";
 	$head;
@@ -1577,7 +1593,7 @@ sub src2html {
 	print "<OL>\n";
 	local($lno, $tag, $type);
 	for (($lno, $tag, $type) = &anchor'first(); $lno; ($lno, $tag, $type) = &anchor'next()) {
-		print "<LI><A HREF=#$lno>$tag</A>\n" if ($type eq 'D');
+		print "<LI><A HREF=#$lno onMouseOver=\"show('R',$lno,'')\">$tag</A>\n" if ($type eq 'D');
 	}
 	print "</OL>\n";
 	print "<HR>\n";
@@ -1648,12 +1664,16 @@ sub src2html {
 				local($href);
 				if ($line =~ /^ (.*)/) {
 					local($type) = ($TYPE eq 'R') ? $'DEFS : $'REFS;
-					$href = "<A HREF=../$type/$1.$'HTML>$TAG</A>";
+					local($msg) = 'Multiple ';
+					$msg .= ($TYPE eq 'R') ? 'defined.' : 'refered.';
+					$href = "<A HREF=../$type/$1.$'HTML onMouseOver=\"show('$TYPE',-1,'')\">$TAG</A>";
 				} else {
 					local($nouse, $lno, $filename) = split(/[ \t]+/, $line);
 					$nouse = '';	# to make perl quiet
-					$filename = &'path2url($filename);
-					$href = "<A HREF=../$'SRCS/$filename#$lno>$TAG</A>";
+					local($url) = &'path2url($filename);
+					$filename =~ s!\./!!; 
+					local($msg) = ($TYPE eq 'R') ? 'Defined at' : 'Refered from';
+					$href = "<A HREF=../$'SRCS/$url#$lno onMouseOver=\"show('$TYPE',$lno,'$filename')\">$TAG</A>";
 				}
 				# set tag marks and save hyperlink into @links
 				if (ord($TAG) > 127) {	# for multi-byte code

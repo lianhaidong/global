@@ -59,7 +59,7 @@ Tomohiko Morioka	advice about deciding emacs version.
 Toshiyasu Kojima	advice about deciding emacs version.
 Van Trinh		bug report about db(3) and patch information.
 Wolfgang Helbig		bug report about generating wrong path name.
-Yann Dirson		bug report about gctags(1) and global.conf.
+Yann Dirson		many bug reports and many valuable suggestions.
 Yoshiharu Ito		advice about SunOS 4.1.3.
 Yoshinori Tomita	advice about compat.h for Solaris.
 Y. Yoshinaga		advice about makefile for Debian GNU/Linux.

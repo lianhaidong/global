@@ -14,6 +14,7 @@ Version 4.1.0a
   icase_path added.
 * htags: path name search facility added.
 * htags: locate dbpath like global(1) does.
+* htags: show addtional information on status bar.
 * gtags: the -i option also locate tag files among cadedite directories.
 * global, gtags: make icase_path allways enable in Windows32 environment.
 * global: the -T(--through) option added.
