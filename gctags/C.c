@@ -636,7 +636,8 @@ condition_macro(cc, target)
 		}
 		DBG_PRINT(piflevel, "#endif");
 		if (minus) {
-			warning("#if block unmatched. reseted. [+%d %s]", lineno, curfile);
+			if (wflag)
+				warning("#if block unmatched. reseted. [+%d %s]", lineno, curfile);
 		} else {
 			if (cur->if0only)
 				level = cur->start;

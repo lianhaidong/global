@@ -160,7 +160,8 @@ Cpp()
 					if (target == REF)
 						PUT(token, lineno, sp);
 				} else {
-					warning("missing namespace name. [+%d %s].", lineno, curfile);
+					if (wflag)
+						warning("missing namespace name. [+%d %s].", lineno, curfile);
 					pushbacktoken();
 				}
 			} else
@@ -179,7 +180,8 @@ Cpp()
 			if (c == '{') /* } */ {
 				namespacelevel++;
 			} else {
-				warning("missing namespace block. [+%d %s](0x%x).", lineno, curfile, c);
+				if (wflag)
+					warning("missing namespace block. [+%d %s](0x%x).", lineno, curfile, c);
 			}
 			break;
 		case CPP_CLASS:
@@ -690,7 +692,8 @@ condition_macro(cc, target)
 		}
 		DBG_PRINT(piflevel, "#endif");
 		if (minus) {
-			warning("#if block unmatched. reseted. [+%d %s]", lineno, curfile);
+			if (wflag)
+				warning("#if block unmatched. reseted. [+%d %s]", lineno, curfile);
 		} else {
 			if (cur->if0only)
 				level = cur->start;
