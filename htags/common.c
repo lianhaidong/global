@@ -578,6 +578,8 @@ gen_list_end()
 }
 /*
  * Generate div begin tag.
+ *
+ *	i)	align	right,left,center
  */
 char *
 gen_div_begin(align)
@@ -585,7 +587,13 @@ gen_div_begin(align)
 {
 	if (align) {
 		static char buf[32];
-		snprintf(buf, sizeof(buf), "<div align='%s'>", align);
+		/*
+		 * In XHTML, alignment is defined in the file 'style.css'.
+		 */
+		if (enable_xhtml)
+			snprintf(buf, sizeof(buf), "<div class='%s'>", align);
+		else
+			snprintf(buf, sizeof(buf), "<div align='%s'>", align);
 		return buf;
 	}
 	return "<div>";
