@@ -17,7 +17,19 @@ ___________________________________
 
 		----------------------------------
 
-The GLOBAL was written by Tama Communications Corporation.
+Copyright holder of GNU GLOBAL
+==============================
+
+Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004
+	Tama Communications Corporation. All rights reserved.
+
+Contributers of GNU GLOBAL
+==========================
+
+The undermentioned people wrote the code, and the right was abandoned
+or transferred to Tama Communications Corporation with legal paper.
+
+The original author is Shigio Yamaguchi.
 
 Port to Windows 32 (for Borland C++ Compiler) by Dan Fandrich.
 (most of #ifdef _WIN32.)
@@ -29,13 +41,16 @@ Improvements to htags and gctags by Hideki IWAMOTO.
 * INCLUDED FROM index(htags)
 * CVS REPOSITORY link(htags)
 * Real support of Yacc source code(htags)
-* Rewrite parser for assembly language using Yacc(gctags)
+* Rewrite parser for assembly language using Yacc(asm_scan.l,asm_parse.y)
 Besides he has contributed many improvements to GLOBAL.
 
 There are also many others who have contributed patches and fixes.
 Please see files ChangeLog and THANKS.
 
-Note: GLOBAL is distributed with the files:
+Separate packages
+=================
+
+GLOBAL is distributed with the files:
 
 (GNU C Library)
 regex.c, regex.h, snprintf.c, getopt.c, getopt1.c and getopt.h
