@@ -47,7 +47,7 @@
 #define ADD_SYM() do {							\
 	yylval = strbuf_getlen(asm_symtable);				\
 	yylloc.first_line = yylineno;					\
-	strbuf_nputs(asm_symtable, yytext, yyleng + 1);			\
+	strbuf_puts0(asm_symtable, yytext);				\
 } while (0)
 
 extern const char *asm_input_file;
