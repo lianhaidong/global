@@ -401,9 +401,8 @@ main(argc, argv)
 
 		sortfilter = strbuf_open(0);
 		strbuf_puts(sortfilter, sort_command);
-		strbuf_putc(sortfilter, ' ');
 		if (sflag) {
-			strbuf_puts(sortfilter, "-u");
+			strbuf_puts(sortfilter, " -u");
 			unique = 1;
 		}
 		if (tflag) 			/* ctags format */
@@ -421,11 +420,12 @@ main(argc, argv)
 	pathfilter = strbuf_open(0);
 	strbuf_puts(pathfilter, gtags);
 	if (aflag)	/* absolute path name */
-		strbuf_puts(pathfilter, " --absolute ");
+		strbuf_puts(pathfilter, " --absolute");
 	else		/* relative path name */
-		strbuf_puts(pathfilter, " --relative ");
+		strbuf_puts(pathfilter, " --relative");
 	if (xflag || tflag)
-		strbuf_puts(pathfilter, " --cxref ");
+		strbuf_puts(pathfilter, " --cxref");
+	strbuf_putc(pathfilter, ' ');
 	strbuf_puts(pathfilter, root);
 	strbuf_putc(pathfilter, ' ');
 	strbuf_puts(pathfilter, cwd);
@@ -499,11 +499,12 @@ main(argc, argv)
 			strbuf_reset(pathfilter);
 			strbuf_puts(pathfilter, gtags);
 			if (aflag)	/* absolute path name */
-				strbuf_puts(pathfilter, " --absolute ");
+				strbuf_puts(pathfilter, " --absolute");
 			else		/* relative path name */
-				strbuf_puts(pathfilter, " --relative ");
+				strbuf_puts(pathfilter, " --relative");
 			if (xflag || tflag)
-				strbuf_puts(pathfilter, " --cxref ");
+				strbuf_puts(pathfilter, " --cxref");
+			strbuf_putc(pathfilter, ' ');
 			strbuf_puts(pathfilter, lib);
 			strbuf_putc(pathfilter, ' ');
 			strbuf_puts(pathfilter, cwd);
@@ -676,18 +677,18 @@ idutils(pattern, dbpath)
 	 * make lid command line.
 	 */
 	strbuf_puts(ib, lid);
-	strbuf_putc(ib, ' ');
-	strbuf_puts(ib, "--separator=newline ");
+	strbuf_puts(ib, " --separator=newline");
 	if (!tflag && !xflag)
-		strbuf_puts(ib, "--result=filenames --key=none ");
+		strbuf_puts(ib, " --result=filenames --key=none");
 	else
-		strbuf_puts(ib, "--result=grep ");
+		strbuf_puts(ib, " --result=grep");
 	if (iflag)
-		strbuf_puts(ib, "--ignore-case ");
+		strbuf_puts(ib, " --ignore-case");
 	if (extra_options) {
-		strbuf_puts(ib, extra_options);
 		strbuf_putc(ib, ' ');
+		strbuf_puts(ib, extra_options);
 	}
+	strbuf_putc(ib, ' ');
 	strbuf_puts(ib, quote_string(pattern));
 	if (debug)
 		fprintf(stderr, "id-utils: %s\n", strbuf_value(ib));
