@@ -483,9 +483,6 @@ delete_stack(sp)
 /*----------------------------------------------------------------------*/
 /* Main procedure							*/
 /*----------------------------------------------------------------------*/
-#define KEYWORD		"include"
-#define KEYWORD_LENGTH	7
-
 /*
  * extract_lastname: extract the last name of include line.
  *
@@ -521,23 +518,24 @@ extract_lastname(image, is_php)
 		if (!*p)
 			return NULL;
 	}
-	switch (is_php) {
-	case 0:
-		if (strncmp(p, "include_next", sizeof "include_next" - 1) == 0) {
-			p += sizeof "include_next" - 1;
-			break;
-		}
-		if (strncmp(p, "import", sizeof "import" - 1) == 0) {
-			p += sizeof "import" - 1;
-			break;
-		}
-		/* FALLTHROUGH */
-	default:
-		if (strncmp(p, KEYWORD, KEYWORD_LENGTH) == 0) {
-			p += KEYWORD_LENGTH;
-			break;
-		}
-		return NULL;
+	/*
+	 * If match to one of the include keywords then points
+	 * the following character of the keyword.
+	 *            p
+	 *            v
+	 * ... include ....
+	 */
+	if (is_php) {
+		if ((p = locatestring(p, "include", MATCH_AT_FIRST)) == NULL)
+			return NULL;
+	} else {
+		char *q;
+
+		if (((q = locatestring(p, "include_next", MATCH_AT_FIRST)) == NULL) &&
+		    ((q = locatestring(p, "import", MATCH_AT_FIRST)) == NULL) &&
+		    ((q = locatestring(p, "include", MATCH_AT_FIRST)) == NULL))
+			return NULL;
+		p = q;
 	}
 	while (*p && isspace((unsigned char)*p))		/* skip space */
 		p++;

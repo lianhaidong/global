@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1997, 1998, 1999 Shigio Yamaguchi
- * Copyright (c) 1999, 2000 Tama Communications Corporation
+ * Copyright (c) 1999, 2000, 2004 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -71,6 +71,9 @@ strincmp(string, pattern, len)
  *			MATCH_COMPLETE	match completely
  *			IGNORE_CASE:	Ignore case
  *	r)		pointer or NULL
+ *			If the flag == MATCH_AT_FIRST then the pointer
+ *			points the following character of the matched
+ *			string, else points at the head of it.
  *
  * This function is made to avoid compatibility problems.
  */
@@ -134,5 +137,7 @@ int flag;
 		fputc('\n', dbg);
 	}
 #endif
+	if (p && flag == MATCH_AT_FIRST)
+		p += plen;
 	return (char *)p;
 }
