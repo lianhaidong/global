@@ -236,6 +236,10 @@ C(yacc)
 				warning("'%%}' appeared in Yacc mode. [+%d %s].", lineno, curfile);
 			inC = 0;
 			break;
+		case YACC_UNION:	/* %union {...} */
+			if (yaccstatus == DECLARATIONS && target == DEF)
+				PUT("YYSTYPE", lineno, sp);
+			break;
 		/*
 		 * #xxx
 		 */
