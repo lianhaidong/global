@@ -667,7 +667,7 @@ print STDERR "[", &'date, "] ", "(2) making help.html ...\n" if ($'vflag);
 #
 # (#) load GPATH
 #
-local($command) = "btreeop -L2 -k './' \"$dbpath/GPATH\"";
+local($command) = "btreeop -L2 -k \"./\" \"$dbpath/GPATH\"";
 open(GPATH, "$command |") || &'error("cannot fork.");
 $nextkey = 0;
 while (<GPATH>) {
