@@ -227,6 +227,8 @@ main(argc, argv)
 		 * Don't free *p.
 		 */
 		p = (char *)malloc(strbuf_getlen(sb) + 1);
+		if (p == NULL)
+			die("short of memory.");
 		memcpy(p, strbuf_value(sb), strbuf_getlen(sb) + 1);
 		for (i = 0; i < tablesize; i++) {
 			words[i].name = p;

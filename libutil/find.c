@@ -248,6 +248,8 @@ prepare_skip()
 	if (list_count > 0) {
 		int i;
 		listarray = (char **)malloc(sizeof(char *) * list_count);
+		if (listarray == NULL)
+			die("short of memory.");
 		p = strbuf_value(list);
 		if (debug)
 			fprintf(stderr, "skip list: ");
