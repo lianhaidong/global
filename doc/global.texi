@@ -1529,7 +1529,8 @@ of FreeBSD kernel needs:
 
 @end example
 
-Please do the following:
+Please invoke gtags(1)(See @xref{gtags}.) and htags(1)(See @xref{htags}.)
+in order like this:
 
 @example
 
