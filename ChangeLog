@@ -1,0 +1,237 @@
+___________________________________
+|      |  |  |     |  _  |     |  |
+|  |___|  |  |  |  |    _|  |  |  |    GNU GLOBAL source code tag system
+|  |   |  |  |  |  |     |     |  |
+|  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ChangeLog about GNU GLOBAL
+
+September 3 2000, Shigio Yamaguchi  <shigio@tamacom.com>
+
+	* license changed from BSD-style to GPL.
+	* now generated automatically by automake and autoconf.
+	* nvi-1.79-gtags.diff: put into the public domain.
+	* htags.pl: command path in global.cgi becomes generated
+	  at execution time. usable() changed to return path.
+	* htags.pl: optimized about temporary database.
+	* htags.pl: most code which depend on javascript are removed
+	  because most of browsers don't support the language.
+	* mgets.c: now belongs strbuf.c as strbuf_fgets().
+	* strbuf.c: new argment 'initial buffer size' of strbuf_open().
+	* global.conf: one line script for ctags-exuberant fixed.
+	* Cpp.h, java.h: MAXCLASSSTACK changed from 10 to 100.
+	* use snprintf(3) instead of sprintf(3). 
+	* replace Henry Spencer's regex(3) with GNU's one.
+	* gctags/C.c: ignore 'extern' to treat 'extern func() { ...}'. 
+	* global.c: use grep(1) if grep and xargs(1) are available.
+	* global.c: use find(1) if find is available.
+	* gtags.el: reimplement as a minor mode (gtags-mode) and
+	  a major mode (gtags-select-mode) to work with other major mode
+	  like c-mode.
+	  prefix 'gtags-' added to all functions to avoid conflicts with
+	  other packages..
+
+December 23, 1999, Shigio Yamaguchi  <shigio@tamacom.com>
+
+	* htags.pl: change the process of removing cache file.
+	* global.c, gtagsop.c, dbop.c: processing of regular expression
+	  is moved from command level (global.c) to library level
+	  (gtagsop.c) for optimizing -s option.
+	* find.c: gfindopen(), gfindread(), gfindclose() added for
+	  optimizing -g option.
+
+November 3, 1999, Shigio Yamaguchi  <shigio@tamacom.com>
+
+	* htags: stop memory cache.
+	* token.c: change buffer type from char to unsigned char.
+
+September 17, 1999, Shigio Yamaguchi  <shigio@tamacom.com>
+
+	* compat.h: macro for solaris added.
+	* Makefile.bsd: delete libregex.a target because BSD has it in libc.
+
+August 29, 1999, Shigio Yamaguchi  <shigio@tamacom.com>
+
+	* gozilla: add DDE communication code in Windows 32.
+
+August 26, 1999, Shigio Yamaguchi  <shigio@tamacom.com>
+
+	* Cygwin support code added.
+	  David Aspinwall ported Global-3.44 into cygwin32 environment.
+	  I refered his code but I didn't use it in as is style, because it
+	  conflicted against Dan Fandrich's Windows 32 code. I wrote new
+	  code for cygwin32 borrowing David's idea.
+	  So any bugs in this area are therefore my fault, not David's.
+	* htags: stop using cp(1).
+
+August 23, 1999, Shigio Yamaguchi  <shigio@tamacom.com>
+
+	* Windows 32 support code added.
+	  Dan Fandrich ported Global-3.44 into Windows 32 environment.
+	  I have included his code into this version (3.5) and altered them
+	  for some (mainly licensing) reasons, so any bugs in this area
+	  are therefore my fault, not Dan's.
+	* copyright notice of Tama Communications Corporation added.
+	* Henry Spencer's regex(3) imported.
+	* gtags.el: now detect XEmacs.
+	* htags: rewrite header #!/usr/bin/perl -> #!/usr/bin/env perl
+	* find.c: USEFIND undefined by default.
+
+March 22, 1999, Shigio Yamaguchi  <shigio@wafu.netgate.net>
+
+	* htags: internal path changed for ISO9660 file system.
+	* htags: --action=url, --id=id and --nocgi options added to realize
+	  Ron Lee's htmake. (internal use only - undocumented)
+	* Makefile.generic: DESTDIR macro added.
+	* db(3) 1.85 imported to keep machine independency in generic make.
+	  'dbpatches' already has been applied.
+
+January 20, 1999, Shigio Yamaguchi  <shigio@wafu.netgate.net>
+
+	* wrong copyright notice fixed. (regents -> author)
+	* gtags.el: stop auto execution of gtags-make-complete-list.
+	* gtags: prohibit user from using a path including blanks.
+	* gozilla: path conversion rule added.(It will be used in the future.)
+	* htags: META TAG added to reject robots.
+
+January 8, 1999, Shigio Yamaguchi  <shigio@wafu.netgate.net>
+
+	* 'void main()' changed into 'int main()'.
+
+December 10, 1998, Shigio Yamaguchi  <shigio@wafu.netgate.net>
+
+	* rename db_XXX to dbop_XXX because some of them conflict against
+	  functions in db-2.X.
+	* nvi-1.79-m17n.diff: deleted because it is hard for me to maintain
+	  it. Sorry.
+
+November 8, 1998, Shigio Yamaguchi  <shigio@wafu.netgate.net>
+
+	* global: --filter option added. (internal use only - undocumented)
+	* htags: tabs parameter added in global.conf to change tab stop.
+	* Makefile.generic: make sub makefiles inherit the macros from
+	  the root Makefile.
+
+September 13, 1998, Shigio Yamaguchi  <shigio@wafu.netgate.net>
+
+	* Makefile: library name changed from libutil.a to libgloutil.a
+	  becase that conflicts against other library.
+	* gctags: rewritten completely.
+	  Thanks to Ken Arnold and the other people who developped BSD ctags(1).
+	  Without it, GLOBAL had never been here.
+
+August 31, 1998, Shigio Yamaguchi  <shigio@wafu.netgate.net>
+
+	* nvi-1.79-m17n.diff: patch for multilingual nvi added.
+	* nvi-1.66.diff: patch for nvi-1.66 added.
+	* nvi-1.34.diff: deleted because it is old enough to support.
+	* gozilla/Imakefile: make it possible to build gozilla alone without
+	  building libgloutil.a.
+
+August 4, 1998, Shigio Yamaguchi  <shigio@wafu.netgate.net>
+
+	* gtags: --find option and --expand option added.
+	  (internal use only - undocumented)
+	* global.conf, lib/conf.c: 'CVS/' added to 'skip' parameter.
+	* gtags.conf: 'reserved_words' variable for htags(1) deleted.
+	  It is now hard coded.
+	* find.c: dirent version added.
+
+July 5, 1998, Shigio Yamaguchi  <shigio@wafu.netgate.net>
+
+	* fixed warning by -Wall -Wmissing-prototypes.
+
+June 25, 1998, Shigio Yamaguchi  <shigio@wafu.netgate.net>
+
+	* gctags, gtags: -c option moved from gctags to gtags.
+	  (It is needed for supporting plugged-in parser.)
+	* htags: URL of GLOBAL home page changed.
+	* gtags.c: replace "%+" of strftime with "%a %b %e %H:%M:%S %Z %Y".
+	  for Debian GNU linux 1.3.1.
+
+January 13, 1998, Shigio Yamaguchi  <shigio@wafu.netgate.net>
+
+	* gctags/Makefile, gctags/Makefile.generic, gctags/ctags.h:
+	  definitions of GLOBAL and YACC moved from Makefile to ctags.h.
+
+December 11, 1997, Shigio Yamaguchi  <shigio@wafu.netgate.net>
+
+	* lib/Makefile.generic:
+	  change MANDIR definition from /usr/share/man to /usr/man.
+	  replace `lorder $(OBJS) | tsort -q` to already sorted list
+	  for S.u.S.E Linux 5.1.
+	* gtags, lib/test.c: a few changes for Solaris environment.
+	* htags/Makefile, systags/Makefile:
+	  rewrite ${DESTDIR}/usr/bin to ${DESTDIR}${BINDIR}.
+
+December 7, 1997, Shigio Yamaguchi  <shigio@wafu.netgate.net>
+
+	* global,gtags,gozilla: rewritten with C for performance.
+	* htags: shape up anchor database.
+
+November 7, 1997, Shigio Yamaguchi  <shigio@wafu.netgate.net>
+
+	* Makefile.generic: a few change for Debian GNU/Linux.
+
+September 20, 1997, Shigio Yamaguchi  <shigio@wafu.netgate.net>
+
+	* gctags, btreeop: remove <err.h> for portability.
+	* btreeop: 'detab() + fprintf' is replaced with 'detab_print()'.
+	* gtags, htags, global: don't restrict PATH to '/bin:/usr/bin'
+	  like version 1.9 and the former.
+	* htags: shut a security hole.
+	* all command: description of exit code in online manual fixed.
+	* gozilla: support X-property communication to mozilla.
+	  See http://home.netscape.com/newsref/std/x-remote.html.
+
+July 7, 1997, Shigio Yamaguchi  <shigio@wafu.netgate.net>
+
+	* htags: tuned for performance.
+	* gtags, gctags: move some code for assembler source from gtags
+	  to gctags.
+	* gtags, htags, global: restrict PATH to '/bin:/usr/bin'.
+	* nvi-1.76.diff: deleted because it is old enough.
+
+April 21, 1997, Shigio Yamaguchi  <shigio@wafu.netgate.net>
+
+	* gctags, btreeop: a few changes for SunOS 4.1.3.
+	* global: 'format version record' implemented.
+	  (It will be used in the furture.)
+	* htags: use temporary directory specified by TMPDIR environment
+	  variable.
+	* nvi-1.79.diff: added for nvi-1.79.
+
+April 5, 1997, Shigio Yamaguchi  <shigio@wafu.netgate.net>
+
+	* gctags, btreeop, Makefile: a few changed for Linux and Solaris.
+	* htags: changed internal separator from '|' to ' ', because some OS
+	  cannot treat '|' in a path.
+	* gctags, htags: regard 'entry' as a reserved word.
+
+February 17, 1997, Shigio Yamaguchi  <shigio@wafu.netgate.net>
+
+	* htags: htags no longer makes frame.html. index.html includes frame.
+	* htags: tuned for performance.
+
+January 21, 1997, Shigio Yamaguchi  <shigio@wafu.netgate.net>
+
+	* gctags: import ctags.c and apply ctags.diff for generic UNIX.
+	* htags: cease using <BLOCKQUOTE> because lynx doesn't understand it.
+	* global,htags: replace 'sort -u' with 'sort | uniq' for compatibility.
+	* nvi-1.76.diff: added for nvi 1.76.
+
+October 26, 1996, Shigio Yamaguchi  <shigio@ca2.so-net.or.jp>
+
+	* ctags.diff: now search all part of a yacc file for C functions.
+	  (original only 3rd part)
+	* ctags.diff: no longer consider a yacc rule to be an object.
+
+June 7, 1996, Shigio Yamaguchi  <shigio@ca2.so-net.or.jp>
+
+	* use bsearch(3) for searching reserved words.
+
+April 21, 1996, Shigio Yamaguchi  <shigio@ca2.so-net.or.jp>
+
+	* global.pl, gtags.sh, btreeop.c, ctags.diff, Makefile.
+	* only support FreeBSD 2.0.5R, 2.1R and 2.1.5R.
