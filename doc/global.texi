@@ -1891,7 +1891,7 @@ Using mozilla, you can also utilize hypertext from your command line like this:
 
     % mozilla				# @r{load mozilla}
     % global -x main
-    main        10 main.c main(int argc, char *argv[]) {
+    main        10 main.c main(int argc, char *argv[]) @{
     % gozilla +10 main.c		# @r{usage is similar to vi editor.}
     (show main.c at 10 on mozilla's screen.)
     
