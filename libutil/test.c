@@ -32,8 +32,14 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
+#ifdef HAVE_FCNTL_H
+#include <fcntl.h>
+#else
+#include <sys/file.h>
+#endif
 
 #include "locatestring.h"
+#include "die.h"
 #include "test.h"
 
 /*
