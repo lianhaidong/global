@@ -641,21 +641,20 @@ char	*cwd;
 	 * remove redundancy.
 	 */
 	if (*branch) {
-		char	unit[256];
+		STRBUF	*unit = strbuf_open(0);
 
-		p = unit;
 		for (c = branch + 1; ; c++) {
 			if (*c == 0 || *c == '/') {
-				*p = 0;
 				strbuf_puts(sb, " -e \"s@\\.\\./");
-				strbuf_puts(sb, unit);
+				strbuf_puts(sb, strbuf_value(unit));
 				strbuf_puts(sb, "/@@\"");
 				if (*c == 0)
 					break;
-				p = unit;
+				strbuf_reset(unit);
 			} else
-				*p++ = *c;
+				strbuf_putc(unit, *c);
 		}
+		strbuf_close(unit);
 	}
 }
 /*
