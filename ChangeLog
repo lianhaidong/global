@@ -21,7 +21,9 @@ ChangeLog about GNU GLOBAL
 
 July 16 2001, Shigio Yamaguchi  <shigio@tamacom.com>
 
-	* VERSION: removed. (version number was moved to configure.in.)
+	* VERSION: removed.
+	* compat.h: moved to libdb/.
+	* machine/: removed.
 
 July 12 2001, Shigio Yamaguchi  <shigio@tamacom.com>
 
