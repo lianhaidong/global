@@ -20,6 +20,12 @@ ___________________________________
 GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 4.8.4 - March 4 2005, by Shigio YAMAGUCHI
+
+Fixed bugs:
+* gtags-parser: C and C++ parser was broken.
+* gnusort: Compile error in Solaris environment.
+
 Version 4.8.3 - February 26 2005, by Shigio YAMAGUCHI
 
 [INCOMPATIBLE CHANGES]
