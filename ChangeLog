@@ -19,7 +19,7 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
-Current, Shigio Yamaguchi  <shigio@gnu.org>
+March 30 2002, Shigio Yamaguchi  <shigio@gnu.org>
 
 	* conf.c: added GPATH,GTAGS,GRTAGS,GSYMS,tags,TAGS,ID to DEFAULTSKIP.
 	* find.c: decreased dependency on find(1).
@@ -35,12 +35,12 @@ Current, Shigio Yamaguchi  <shigio@gnu.org>
 	* htags: changed open into 'open + exec' to avoid command substitutions
 	  in pattern.
 
-Jan 22 2002, Shigio Yamaguchi  <shigio@gnu.org>
+January 22 2002, Shigio Yamaguchi  <shigio@gnu.org>
 
 	* htags: build trouble fixed.
 	  global.cgi wasn't generated correctly.
 
-Jan 10 2002, Shigio Yamaguchi  <shigio@gnu.org>
+January 10 2002, Shigio Yamaguchi  <shigio@gnu.org>
 
 	* DJGPP support code added.
 	  Jason Hood ported Global-4.0.1 into DJGPP environment.
@@ -51,7 +51,7 @@ Jan 10 2002, Shigio Yamaguchi  <shigio@gnu.org>
 	* gtags, global: make exit code rule:
 	  0:normal, 1:exception, 2:usage, 3:GTAGS not found.
 
-Nov 23 2001, Shigio Yamaguchi  <shigio@tamacom.com>
+November 23 2001, Shigio Yamaguchi  <shigio@tamacom.com>
 
 	* gtags: format char for strftime() changed (%e -> %d).
 	* gtags: the path of gctags changed from 'gctags' to '$bindir/gctags'.

@@ -114,34 +114,34 @@
 @CONFIGURATION
 	The following configuration variables affect the execution of @name{gtags}:
 	@begin_itemize
-	@item{@var{GTAGS}(string)}
+	@item{@code{GTAGS}(string)}
 		If this variable is set, its value is used as the
 		command line of parser for GTAGS. The default is @file{gctags %s}.
-	@item{@var{GRTAGS}(string)}
+	@item{@code{GRTAGS}(string)}
 		If this variable is set, its value is used as the
 		command line of parser for GRTAGS. The default is @file{gctags -r %s}.
-	@item{@var{GSYMS}(string)}
+	@item{@code{GSYMS}(string)}
 		If this variable is set, its value is used as the
 		command line of parser for GSYMS. The default is @file{gctags -s %s}.
-	@item{@var{skip}(comma separated list)}
+	@item{@code{skip}(comma separated list)}
 		@name{Gtags} skips files which listed in this list.
-		As a special exception, @name{gtags} collect values from multiple @var{skip} variables.
+		As a special exception, @name{gtags} collect values from multiple @code{skip} variables.
 		If the value ends with '/', it assumed as a directory and @name{gtags} skips all files under it.
 		If the value start with '/', it assumed relative path from the root of source directory.
 		By default, it assumes GPATH, GTAGS, GRTAGS, GSYMS, HTML/, tags, TAGS, ID, y.tab.c, y.tab.h, SCCS/, RCS/, CVS/, CVSROOT/, .deps/.
-	@item{@var{suffixes}(comma separated list)}
+	@item{@code{suffixes}(comma separated list)}
 		Suffixes of target source file.
-		As a special exception, @name{gtags} collect values from multiple @var{suffixes} variables.
+		As a special exception, @name{gtags} collect values from multiple @code{suffixes} variables.
 		By default, it assumes c, h, y, c++, cc, cpp, cxx, hxx, C, H, s, S, java.
-	@item{@var{format}(standard|compact)}
-		Format of tag files. The default is @var{standard}.
+	@item{@code{format}(standard|compact)}
+		Format of tag files. The default is @code{standard}.
 		Compact format is same to @option{-c}(@option{--compact}).
-	@item{@var{icase_path}(boolean)}
+	@item{@code{icase_path}(boolean)}
 		Ignore case distinctions in the path.
 		Suffixes check are affected by this capability.
-	@item{@var{sed_command}(string)}
+	@item{@code{sed_command}(string)}
 		Use specified @xref{sed,1} command, which is used internally.
-	@item{@var{sort_command}(string)}
+	@item{@code{sort_command}(string)}
 		Use specified @xref{sort,1} command, which is used internally.
 	@end_itemize
 @DIAGNOSTICS

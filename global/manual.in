@@ -185,11 +185,11 @@
 @CONFIGURATION
 	The following configuration variables affect the execution of @name{global}:
 	@begin_itemize
-	@item{@var{icase_path}(boolean)}
+	@item{@code{icase_path}(boolean)}
 		Ignore case distinctions in the @arg{pattern}.
-	@item{@var{sed_command}(string)}
+	@item{@code{sed_command}(string)}
 		Use specified @xref{sed,1} command, which is used internally.
-	@item{@var{sort_command}(string)}
+	@item{@code{sort_command}(string)}
 		Use specified @xref{sort,1} command, which is used internally.
 	@end_itemize
 @DIAGNOSTICS

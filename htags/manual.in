@@ -117,61 +117,61 @@
 @CONFIGURATION
 	The following configuration variables affect the execution of @name{htags}:
 	@begin_itemize
-	@item{@var{htags_options}(string)}
+	@item{@code{htags_options}(string)}
 		Default options for @name{htags}. This value is inserted into
 		the head of arguments.
-	@item{@var{body_begin}(string)}
+	@item{@code{body_begin}(string)}
 		Begin tag for body. The default is '<BODY>'.
-	@item{@var{body_end}(string)}
+	@item{@code{body_end}(string)}
 		End tag for body. The default is '</BODY>'.
-	@item{@var{title_begin}(string)}
+	@item{@code{title_begin}(string)}
 		Begin tag for Title. The default is '<FONT COLOR=#cc0000>'.
-	@item{@var{title_end}(string)}
+	@item{@code{title_end}(string)}
 		End tag for Title. The default is '</FONT>'.
-	@item{@var{comment_begin}(string)}
+	@item{@code{comment_begin}(string)}
 		Begin tag for comments. The default is '<I><FONT COLOR=green>'.
-	@item{@var{comment_end}(string)}
+	@item{@code{comment_end}(string)}
 		End tag for comments. The default is '</FONT></I>'.
-	@item{@var{sharp_begin}(string)}
+	@item{@code{sharp_begin}(string)}
 		Begin tag for 'define'. The default is '<FONT COLOR=darkred>'.
-	@item{@var{sharp_end}(string)}
+	@item{@code{sharp_end}(string)}
 		End tag for 'define'. The default is '</FONT>'.
-	@item{@var{brace_begin}(string)}
+	@item{@code{brace_begin}(string)}
 		Begin tag for brace. The default is '<FONT COLOR=blue>'.
-	@item{@var{brace_end}(string)}
+	@item{@code{brace_end}(string)}
 		End tag for brace. The default is '</FONT>'.
-	@item{@var{reserved_begin}(string)}
+	@item{@code{reserved_begin}(string)}
 		Begin tag for reserved word. The default is '<B>'.
-	@item{@var{reserved_end}(string)}
+	@item{@code{reserved_end}(string)}
 		End tag for reserved word. The default is '</B>'.
-	@item{@var{position_begin}(string)}
+	@item{@code{position_begin}(string)}
 		Begin tag for posiotion mark. The default is '<FONT COLOR=gray>'.
-	@item{@var{position_end}(string)}
+	@item{@code{position_end}(string)}
 		End tag for posiotion mark. The default is '</FONT>'.
-	@item{@var{ncol}(number)}
+	@item{@code{ncol}(number)}
 		Columns of line number. The default is 4.
-	@item{@var{tabs}(number)}
+	@item{@code{tabs}(number)}
 		Tab stop. The default is 8.
-	@item{@var{full_path}(boolean)}
+	@item{@code{full_path}(boolean)}
 		List file names with full path in file index.
 		By default, list just the last component of a path.
-	@item{@var{table_list}(boolean)}
+	@item{@code{table_list}(boolean)}
 		List tags using table tag. The default is false.
-	@item{@var{normal_suffix}(string)}
+	@item{@code{normal_suffix}(string)}
 		Suffix for normal html file. The default is 'html'.
-	@item{@var{gzipped_suffix}(string)}
+	@item{@code{gzipped_suffix}(string)}
 		Suffix for compressed html file. The default is 'ghtml'.
-	@item{@var{script_alias}(string)}
+	@item{@code{script_alias}(string)}
 		Script alias for safe cgi script (@option{-S}).
-	@item{@var{show_position}(boolean)}
+	@item{@code{show_position}(boolean)}
 		Show position per function definition. The default is false.
-	@item{@var{definition_header}(no|before|after)}
+	@item{@code{definition_header}(no|before|after)}
 		Position of link header. The default is after.
-	@item{@var{other_files}(boolean)}
+	@item{@code{other_files}(boolean)}
 		File index includes not only source files but also other files. The default is false.
-	@item{@var{enable_grep}(boolean)}
+	@item{@code{enable_grep}(boolean)}
 		Enable grep search using CGI program. The default is false.
-	@item{@var{enable_idutils}(boolean)}
+	@item{@code{enable_idutils}(boolean)}
 		Enable idutils search using CGI program. The default is false.
 	@end_itemize
 @DIAGNOSTICS
