@@ -42,6 +42,8 @@ Setup above programs and path for them then try this:
 
 C:\global>xcopy /s w32\*.* .
 
+(Edit makefile.inc if you need.)
+
 C:\global>make		<- Invoke make.bat
 
 C:\global>make install
