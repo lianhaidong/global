@@ -39,6 +39,7 @@ Emile Heyns		advice about writing code for generic UNIX.
 Eric Paire		bug report about gctags's memory violation.
 Gary Kline		advice about the name of parser.
 Hideaki Okada		idea about -g option of global(1).
+Hideki Iwamoto		bug report about the parser - gctags(1).
 Hideki Mori		advice about the name of parser.
 Hidetaka KOIE		bug report and advice about configure.in for Solaris7.
 Hiroshi MIURA		idea about printing file name on browser's status bar.

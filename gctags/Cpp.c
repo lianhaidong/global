@@ -375,7 +375,8 @@ int	target;
 		(void)nexttoken(";", NULL);
 		return 0;
 	}
-	while ((c = nexttoken(",;{}=", reserved)) != EOF) {
+	brace_level = 0;
+	while ((c = nexttoken(",;(){}=", reserved)) != EOF) {
 		switch (c) {
 		case CP_IFDEF:
 		case CP_IFNDEF:
@@ -389,7 +390,11 @@ int	target;
 		default:
 			break;
 		}
-		if (c == SYMBOL || IS_RESERVED(c))
+		if (c == '('/* ) */)
+			brace_level++;
+		else if (c == /* ( */')')
+			brace_level--;
+		else if (brace_level == 0 && (c == SYMBOL || IS_RESERVED(c)))
 			isdefine = 1;
 		else if (c == ';' || c == ',') {
 			if (!isdefine)
