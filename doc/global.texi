@@ -662,6 +662,8 @@ environment variable or temporarily by option.
     (Load emacs and show boot/alpha/boot1/boot1.c at line 227.)
     [/usr/src/sys] show -l 3
     (Load less and show boot/alpha/boot1/boot1.c at line 227.)
+    [/usr/src/sys] show -g 3
+    (Preloaded mozilla show boot/alpha/boot1/boot1.c at line 227.)
 
 @end example
 
@@ -1883,6 +1885,18 @@ You will understand the usage by looking at the examples.
 
 You can move the HTML directory to anywhere. It is independent of the
 source code.
+
+Using mozilla, you can also utilize hypertext from your command line like this:
+@example
+
+    % mozilla				# @r{load mozilla}
+    % global -x main
+    main        10 main.c main(int argc, char *argv[]) {
+    % gozilla +10 main.c		# @r{usage is similar to vi editor.}
+    (show main.c at 10 on mozilla's screen.)
+    
+@end example
+But in this case, you must not move HTML directory from the source directory.
 
 @c ***************************************************************************
 @c Other topics
