@@ -2160,7 +2160,7 @@ sub src2html {
 					}
 					# set tag marks and save hyperlink into @links
 					if (ord($TAG) > 127) {	# for multi-byte code
-						if (s/([\x00-\x7f])$TAG([ \t\004]*\()/$1\005$count\005$2/ || s/([\x00-\x7f])$TAG([\x00-\x7f])/$1\005$count\005$2/) {
+						if (s/([\x00-\x7f]|^)$TAG([ \t\004]*\()/$1\005$count\005$2/ || s/([\x00-\x7f]|^)$TAG([\x00-\x7f])/$1\005$count\005$2/) {
 							$count++;
 							push(@links, $href);
 						} else {
