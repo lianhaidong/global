@@ -794,17 +794,22 @@ print STDERR "[", &'date, "] ", "Htags started\n" if ($'vflag);
 #
 # (#) check if GTAGS, GRTAGS is the latest.
 #
-print STDERR "[", &'date, "] ", "(#) checking tag files ...\n" if ($'vflag);
-$gtags_ctime = (stat("$dbpath/GTAGS"))[10];
-open(FIND, "$'findcom |") || &'error("cannot fork.");
-while (<FIND>) {
-	chop;
-	if ($gtags_ctime < (stat($_))[10]) {
-		&'error("GTAGS is not the latest one. Please remake it.");
+if (!$'w32) {
+	# This test is not done for Windows32 environment because many
+	# Cygwin users reported this code didn't work well.
+	# I don't know why, but anyway, program works without this code.
+	print STDERR "[", &'date, "] ", "(#) checking tag files ...\n" if ($'vflag);
+	$gtags_ctime = (stat("$dbpath/GTAGS"))[10];
+	open(FIND, "$'findcom |") || &'error("cannot fork.");
+	while (<FIND>) {
+		chop;
+		if ($gtags_ctime < (stat($_))[10]) {
+			&'error("GTAGS is not the latest one. Please remake it.");
+		}
 	}
+	close(FIND);
+	if ($?) { &'error("cannot traverse directory."); }
 }
-close(FIND);
-if ($?) { &'error("cannot traverse directory."); }
 #
 # (0) make directories
 #
