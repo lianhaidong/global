@@ -585,7 +585,7 @@ gen_div_begin(align)
 {
 	if (align) {
 		static char buf[32];
-		snprintf(buf, sizeof(buf), "<div class='%s'>", align);
+		snprintf(buf, sizeof(buf), "<div align='%s'>", align);
 		return buf;
 	}
 	return "<div>";
