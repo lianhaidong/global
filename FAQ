@@ -82,7 +82,9 @@ Q6. It seems that gtags cannot treat files which include blanks in the path.
     Why?
 
 A6. Because it is hard for GLOBAL to treat them correctly with keeping
-    upper compatibility. If you can do it, please send the patch to me.
+    upper compatibility. Gtags(1) currently ignores files which include
+    blanks in the path. We put the improvement to our TODO list but
+    the priority is not high. The best way is no to use blanks in path name.
 
 ----------------------------------------------------------------------------
 Q7. Gtags(1) and htags(1) works only on one directory. So, we cannot refer
