@@ -20,7 +20,7 @@
 .\" along with this program; if not, write to the Free Software
 .\" Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .\"
-.Dd Jun 7, 2001
+.Dd July 20, 2001
 .Dt GTAGS 1
 .Os FreeBSD
 .Sh NAME
@@ -53,6 +53,12 @@ C, C++, yacc, java and assembler source files are supported.
 .It Fl c
 .It Fl -compact
 Make tag files with compact format.
+.It Fl -config Ar name
+Show the value of config variable
+.Ar name .
+If
+.Ar name
+is not specified then show whole of config entry.
 .It Fl -gtagsconf Ar file
 Load user's configuration from
 .Ar file .
