@@ -108,7 +108,7 @@ case $1 in
 	;;
 --debug)
 	./configure CFLAGS='-g -p -Wall -DDEBUG'
-	make | tee make.log 2>&1
+	make -s
 	;;
 -c|--configure|--make|--install)
 	./configure
