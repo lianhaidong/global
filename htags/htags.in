@@ -345,8 +345,11 @@ $'REFS   = 'R';				# object reference directory.
 $'INCS   = 'I';				# include file directory.
 $'SYMS   = 'Y';				# symbols directory.
 sub get_dirlist {
-	local(@dir) = (files, defines, $'SRCS, $'INCS, $'DEFS, ,$'REFS);
-	push(@dir, $'SYMS) if ($'symbol);
+	local(@dir) = (files, defines, $'SRCS, $'INCS);
+	if (!$'dynamic) {
+		push(@dir, $'DEFS, $'REFS);
+		push(@dir, $'SYMS) if ($'symbol);
+	}
 	@dir;
 }
 sub get_taglist {
