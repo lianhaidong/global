@@ -19,6 +19,11 @@ ___________________________________
 GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 4.7.2 - June 7 2004, by Shigio Yamaguchi
+
+Fixed bugs:
+* Obsolete style of sort(1) still remained.
+
 Version 4.7.1 - June 1 2004, by Shigio Yamaguchi
 
 New features:
@@ -27,7 +32,7 @@ New features:
 
 Fixed bugs:
 * GLOBAL doesn't work with the GNU sort(1) based on POSIX 1003.1-2001.
-  The GNU sort(1) with the latest glibc doesn't accept obosolete
+  The GNU sort(1) with the latest glibc doesn't accept obsolete
   +POS1[-POS2] style option.
 * GLOBAL-4.3 and the later couldn't treat shadow tree.
 
