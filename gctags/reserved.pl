@@ -147,6 +147,7 @@ $n_yacc = $START_YACC;
 
 open(IP, $keyword_file) || die("$com: cannot open file '$keyword_file'.\n");
 print "%{\n";
+print "#include \"strmake.h\"\n";
 print "#define START_VARIABLE\t$n_variable\n";
 print "#define START_WORD\t$n_word\n";
 print "#define START_SHARP\t$n_sharp\n";
@@ -236,7 +237,12 @@ sub generate_procedure {
 	print "const char *str;\n";
 	print "int len;\n";
 	print "{\n";
-	print "\tstruct keyword *keyword = ${pre}_lookup(str, len);\n";
+	if ($type eq 'sharp') {
+		print "\tchar *p = strtrim(str, TRIM_ALL, &len);\n";
+		print "\tstruct keyword *keyword = ${pre}_lookup(p, len);\n";
+	} else {
+		print "\tstruct keyword *keyword = ${pre}_lookup(str, len);\n";
+	}
 	print "\tint n = keyword ? keyword->token : 0;\n";
 	print "\treturn IS_RESERVED_${TYPE}(n) ? n : 0;\n";
 	print "}\n";

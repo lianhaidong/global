@@ -137,30 +137,7 @@ WORD		{ALPHA}{ALPHANUM}*
 		}
 	}
 <ASM>^[ \t]*\#[ \t]*{WORD} {
-		int i = 0;
-		char *p;
-
-		p = locatestring(LEXTEXT, " ", MATCH_LAST);
-
-		if (!p) {
-			p = LEXTEXT;
-			i = LEXLENG;
-		} else {
-			static char buf[IDENTLEN];
-
-			p++;
-			if (*p == '#')
-				p++;
-			buf[i++] = '#';
-			while (*p) {
-				buf[i++] = *p++;
-				if (i >= sizeof(buf))
-					die("Too long name '%s'.", LEXTEXT);
-			}
-			buf[i] = '\0';
-			p = buf;
-		}
-		if (i > 0 && (last_directive = reserved_sharp(p, i))) {
+		if ((last_directive = reserved_sharp(LEXTEXT, LEXLENG)) != 0) {
 			put_macro(LEXTEXT);
 			yy_push_state(PREPROCESSOR_LINE);
 		} else {

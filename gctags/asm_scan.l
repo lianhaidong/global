@@ -23,10 +23,17 @@
 #include <config.h>
 #endif
 #include <stdio.h>
+#ifdef HAVE_STRING_H
+#include <string.h>
+#else
+#include <strings.h>
+#endif
 
 #include "asm_parse.h"
+#include "asm_res.h"
 #include "die.h"
 #include "gctags.h"
+#include "gparam.h"
 #include "linetable.h"
 #include "strbuf.h"
 
@@ -116,7 +123,14 @@ WORD		{ALPHA}{ALPHANUM}*
 <INITIAL>{
 	^[ \t]*\#[ \t]*define	{ yy_push_state(PREPROCESSOR_LINE); return ASM_DEFINE; }
 	^[ \t]*\#[ \t]*undef	{ yy_push_state(PREPROCESSOR_LINE); return ASM_UNDEF; }
-	^[ \t]*\#[ \t]*{WORD}	|
+	^[ \t]*\#[ \t]*{WORD} {
+		if (reserved_sharp(yytext, yyleng)) {
+			yy_push_state(PREPROCESSOR_LINE);
+			return ASM_DIRECTIVE;
+		} else {
+			yy_push_state(LINE_COMMENT);
+		}
+	}
 	^[ \t]*\#		{ yy_push_state(PREPROCESSOR_LINE); return ASM_DIRECTIVE; }
 	(call|jsr)	{ return ASM_CALL; }
 	^(ENTRY|ALTENTRY|NENTRY|GLOBAL_ENTRY|JSBENTRY|C_SYMBOL_NAME|C_ENTRY) {
