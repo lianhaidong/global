@@ -45,8 +45,8 @@ o If you want to use --form(-f) or --dynamic option of htags then
 
 2. How to install.
 
-	% ./configure
-	% make
+	$ ./configure
+	$ make
 	# make install
 
 3. Using GLOBAL with editors.
@@ -59,12 +59,12 @@ o Nvi-1.79
 
    and do the followings.
 
-	% tar xzvf nvi-1.79.tar.gz
-	% cd nvi-1.79
-	% patch -p < nvi-1.79-gtags.diff
-	% cd build
-	% ./configure
-	% make
+	$ tar xzvf nvi-1.79.tar.gz
+	$ cd nvi-1.79
+	$ patch -p < nvi-1.79-gtags.diff
+	$ cd build
+	$ ./configure
+	$ make
 	# make install
 
    ('nvi-1.79-gtags.diff' is included in GLOBAL package.)
@@ -79,9 +79,9 @@ o Nvi-1.81.5
    build it with '--enable-perlinterp' option and do the followings.
    ($HOME/perl is an example. Please replace it with any directory you like.)
 
-	% mkdir $HOME/perl
-	% cp gtags.pl $HOME/perl
-	% vi $HOME/.nexrc
+	$ mkdir $HOME/perl
+	$ cp gtags.pl $HOME/perl
+	$ vi $HOME/.nexrc
 	+-----------------------------------------
 	|perl use lib qw($ENV{HOME}/perl)
 	|perl require 'gtags.pl'

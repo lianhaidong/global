@@ -63,10 +63,10 @@ A2. GLOBAL cannot recognize that pattern, because M(a) seems to be
 Q3. I have set up 'gtags.conf' to use emacs's ctags command with GLOBAL
     but I cannot use htags.
 
-	% gtags
-	% htags
+	$ gtags
+	$ htags
 	htags: GTAGS and GRTAGS not found. Please make them.
-	% ls G*
+	$ ls G*
 	GPATH   GTAGS
 
 A3. Emacs's ctags cannot locate function referencies. So, gtags cannot make
@@ -84,8 +84,8 @@ Q5. I invoked gtags but it failed with a message like this:
 
 A5. Please check what is the gctags? You can check it with this command like.
 
-	% which gctags
-	% gctags --version
+	$ which gctags
+	$ gctags --version
 
     If the gctags is not the GLOBAL's one then you should set your PATH
     so that GLOBAL's gctags will be invoked.
@@ -106,18 +106,18 @@ A7. In global(1), you can use GTAGSLIBPATH environment variable.
 	[library]	/usr/src/lib
 	[your project]	/usr/home/project
 
-	% (cd /usr/src/lib; gtags)
-	% setenv GTAGSLIBPATH /usr/src/lib
-	% global strlen
+	$ (cd /usr/src/lib; gtags)
+	$ export GTAGSLIBPATH=/usr/src/lib
+	$ global strlen
 	../../../usr/src/lib/libc/string/strlen.c
 
     In htags(1), you can do it by copying them into your source project.
     For example:
 
-	% cd /usr/home/project
-	% cp -r /usr/src/lib .
-	% gtags
-	% htags
+	$ cd /usr/home/project
+	$ cp -r /usr/src/lib .
+	$ gtags
+	$ htags
 
 ----------------------------------------------------------------------------
 Q8. Deleted.
