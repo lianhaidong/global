@@ -43,6 +43,7 @@
 #include "strbuf.h"
 #include "strmake.h"
 #include "test.h"
+#include "usable.h"
 
 static FILE	*fp;
 static STRBUF	*ib;
