@@ -66,7 +66,7 @@ This manual documents version @value{VERSION} of the GNU GLOBAL source code tag 
 @menu
 * Introduction::                        Overview of the tools.
 * Global::                              Command line GLOBAL.
-* Environments::			GLOBAL in diverse environments.
+* Applications::			Various applications.
 * Other topics::                        Other topics.
 * Reference::				Reference manual.
 * GNU Free Documentation License::	GNU Free Documentation License.
@@ -520,10 +520,10 @@ one command, for example:
 @end itemize
 
 @c ***************************************************************************
-@c Environments
+@c Applications
 @c ***************************************************************************
-@node Environments
-@chapter Command line GLOBAL.
+@node Applications
+@chapter Various applications
 
 @menu
 * GloBash::                             Global facility for Bash.
