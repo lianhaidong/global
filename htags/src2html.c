@@ -124,11 +124,14 @@ static int warned;
 static int last_lineno;
 
 /*
- * IO routine.
+ * Open source file.
+ *
+ *	i)	file	source file name
+ *	r)		file pointer
  */
 static FILE *
 open_input_file(file)
-char *file;
+	char *file;
 {
 	char command[MAXFILLEN];
 	FILE *ip;
@@ -141,12 +144,22 @@ char *file;
 	warned = 0;
 	return ip;
 }
+/*
+ * Close source file.
+ */
 static void
-close_input_file()
+close_input_file(ip)
+	FILE *ip;
 {
-	if (pclose(in) < 0)
+	if (pclose(ip) < 0)
 		die("command 'gtags --expand -%d' failed.", tabs);
 }
+/*
+ * Open HTML file.
+ *
+ *	i)	file	HTML file name
+ *	r)		file pointer
+ */
 static FILE *
 open_output_file(file)
 	char *file;
@@ -170,21 +183,35 @@ open_output_file(file)
 		strbuf_reset(outbuf);
 	return op;
 }
+/*
+ * Close HTML file.
+ */
 static void
-close_output_file()
+close_output_file(op)
+	FILE *op;
 {
 	if (cflag) {
-		if (pclose(out) < 0)
+		if (pclose(op) < 0)
 			die("command 'gzip -c' failed.");
 	} else
-		fclose(out);
+		fclose(op);
 }
+/*
+ * Put a character to HTML as is.
+ *
+ * You should use this function to put a control character.
+ */
 void
 echoc(c)
 	int c;
 {
         strbuf_putc(outbuf, c);
 }
+/*
+ * Put a string to HTML as is.
+ *
+ * You should use this function to put a control sequence.
+ */
 void
 echos(s)
 	const char *s;
@@ -476,7 +503,7 @@ put_include_anchor(inc, path)
 	strbuf_puts(outbuf, "</A>");
 }
 /*
- * Tag level output functions.
+ * Put a reserved word. (if, while, ...)
  */
 void
 put_reserved_word(word)
@@ -486,6 +513,9 @@ put_reserved_word(word)
 	strbuf_puts(outbuf, word);
 	strbuf_puts(outbuf, reserved_end);
 }
+/*
+ * Put a macro (#define,#undef,...) 
+ */
 void
 put_macro(word)
         char *word;
@@ -494,6 +524,9 @@ put_macro(word)
 	strbuf_puts(outbuf, word);
 	strbuf_puts(outbuf, sharp_end);
 }
+/*
+ * Print warning message when unkown preprocessing directive is found.
+ */
 void
 unknown_preprocessing_directive(word, lineno)
 	char *word;
@@ -503,6 +536,9 @@ unknown_preprocessing_directive(word, lineno)
 	if (colorize_warned_line)
 		warned = 1;
 }
+/*
+ * Print warning message when unexpected eof.
+ */
 void
 unexpected_eof(lineno)
 	int lineno;
@@ -511,6 +547,9 @@ unexpected_eof(lineno)
 	if (colorize_warned_line)
 		warned = 1;
 }
+/*
+ * Print warning message when unknown yacc directive is found.
+ */
 void
 unknown_yacc_directive(word, lineno)
 	char *word;
@@ -520,6 +559,9 @@ unknown_yacc_directive(word, lineno)
 	if (colorize_warned_line)
 		warned = 1;
 }
+/*
+ * Print warning message when unmatched brace is found.
+ */
 void
 missing_left(word, lineno)
 	char *word;
@@ -529,6 +571,11 @@ missing_left(word, lineno)
 	if (colorize_warned_line)
 		warned = 1;
 }
+/*
+ * Put a character with HTML quoting.
+ *
+ * If you want to put '<', '>' and '&', you should echoc() instead.
+ */
 void
 put_char(c)
         int c;
@@ -542,6 +589,11 @@ put_char(c)
         else
 		strbuf_putc(outbuf, c);
 }
+/*
+ * Put a string with HTML quoting.
+ *
+ * If you want to put HTML tag itself, you should echoc() instead.
+ */
 void
 put_string(s)
         char *s;
@@ -549,6 +601,9 @@ put_string(s)
 	for (; *s; s++)
 		put_char(*s);
 }
+/*
+ * Put brace ('{', '}')
+ */
 void
 put_brace(text)
         char *text;
@@ -564,6 +619,9 @@ put_brace(text)
 static char lineno_format[32];
 static char *guide = NULL;
 
+/*
+ * Begin of line processing.
+ */
 void
 put_begin_of_line(lineno)
         int lineno;
@@ -580,6 +638,15 @@ put_begin_of_line(lineno)
                 guide = NULL;
         }
 }
+/*
+ * End of line processing.
+ *
+ *	i)	lineno	current line number
+ *	gi)	outbuf	HTML line image
+ *
+ * The outbuf(string buffer) has HTML image of the line.
+ * This function flush and clear it.
+ */
 void
 put_end_of_line(lineno)
 	int lineno;
@@ -825,6 +892,6 @@ src2html(src, html, notsource)
 
 	if (!notsource)
 		anchor_unload();
-	close_output_file();
-	close_input_file();
+	close_output_file(out);
+	close_input_file(in);
 }
