@@ -1781,7 +1781,7 @@ If you mistake the value then program may abort with core dump.
 @unnumberedsubsec NAME
 gtags - create tag files for global.
 @unnumberedsubsec SYNOPSIS
-gtags [-c] [-i] [-I] [-o] [-P] [-w] [-v] [dbpath]
+gtags [-c] [-i] [-I] [-o] [-P] [-q] [-w] [-v] [dbpath]
 @unnumberedsubsec DESCRIPTION
 Gtags makes @file{GTAGS}, @file{GRTAGS}, @file{GSYMS} and @file{GPATH}
  file for global(1)(See @xref{global}.).
@@ -1815,6 +1815,8 @@ global(1)(See @xref{global}.).
 @item @option{-P}, @option{--postgres}
 Use postgres database system (http://www.postgresql.org) instead of db(3).
 You can pass info string to PQconnectdb(3) using @option{--info} option.
+@item @option{-q}, @option{--quiet}
+Quiet mode.
 @item @option{-v}, @option{--verbose}
 Verbose mode.
 @item @option{-w}, @option{--warning}
@@ -2000,14 +2002,14 @@ global - print the locations of specified object.
 @unnumberedsubsec SYNOPSIS
 @noindent
 @quotation
-global [-ailnrstTvx] pattern@*
-global -c[sv] [prefix]@*
-global -f[anrstvx] files@*
-global -g[ailntvx] pattern@*
-global -I[ailntvx] pattern@*
-global -p[rv]@*
-global -P[ailntvx] [pattern]@*
-global -u[v]
+global [-ailnqrstTvx] pattern@*
+global -c[qsv] [prefix]@*
+global -f[anqrstvx] files@*
+global -g[ailnqtvx] pattern@*
+global -I[ailnqtvx] pattern@*
+global -p[qrv]@*
+global -P[ailnqtvx] [pattern]@*
+global -u[qv]
 @end quotation
 
 @unnumberedsubsec DESCRIPTION
@@ -2068,6 +2070,8 @@ ignore case distinctions in pattern.
 Print just objects which exist under the current directory.
 @item @option{-n}, @option{--nofilter}
 Suppress sort filter and path conversion filter.
+@item @option{-q}, @option{--quiet}
+Quiet mode.
 @item @option{-r}, @option{--reference}, @option{--rootdir}
 Print the locations of object references. By default, print object definitions.
 With the -p option, print the root directory of source tree.

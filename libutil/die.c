@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999
  *             Shigio Yamaguchi. All rights reserved.
- * Copyright (c) 1999, 2000
+ * Copyright (c) 1999, 2000, 2001
  *             Tama Communications Corporation. All rights reserved.
  *
  * This file is part of GNU GLOBAL.
@@ -28,6 +28,14 @@
 
 #include "die.h"
 
+static int quiet;
+
+void
+setquiet()
+{
+	quiet = 1;
+}
+
 void
 #ifdef HAVE_STDARG_H
 die(const char *s, ...)
@@ -39,14 +47,16 @@ die(s, va_alist)
 {
 	va_list ap;
 
-	fprintf(stderr, "%s: ", progname);
+	if (!quiet) {
+		fprintf(stderr, "%s: ", progname);
 #ifdef HAVE_STDARG_H
-	va_start(ap, s);
+		va_start(ap, s);
 #else
-	va_start(ap);
+		va_start(ap);
 #endif
-	(void)vfprintf(stderr, s, ap);
-	va_end(ap);
-	fputs("\n", stderr);
+		(void)vfprintf(stderr, s, ap);
+		va_end(ap);
+		fputs("\n", stderr);
+	}
 	exit(1);
 }

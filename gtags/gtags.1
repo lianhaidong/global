@@ -20,7 +20,7 @@
 .\" along with this program; if not, write to the Free Software
 .\" Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .\"
-.Dd Oct 25, 2001
+.Dd Dec 1, 2001
 .Dt GTAGS 1
 .Os FreeBSD
 .Sh NAME
@@ -33,6 +33,7 @@
 .Op Fl I
 .Op Fl o
 .Op Fl P
+.Op Fl q
 .Op Fl w
 .Op Fl v
 .Op Ar dbpath
@@ -83,6 +84,9 @@ Use this option if you don't use -s option of
 .It Fl -postgres
 Use postgres database system instead of db(3).
 you can pass info string to PQconnectdb(3) using --info option.
+.It Fl q
+.It Fl -quiet
+Quiet mode.
 .It Fl v
 .It Fl -verbose
 Verbose mode.

@@ -64,6 +64,7 @@ int	iflag;					/* incremental update */
 int	Iflag;					/* make  idutils index */
 int	oflag;					/* suppress making GSYMS */
 int	Pflag;					/* use postgres */
+int	qflag;					/* quiet mode */
 int	wflag;					/* warning message */
 int	vflag;					/* verbose mode */
 int     show_version;
@@ -81,7 +82,7 @@ char	*info_string;
 
 int	extractmethod;
 int	total;
-const char *usage_const = "Usage: gtags [-c][-i][-I][-o][-P][-v][-w][dbpath]\n";
+const char *usage_const = "Usage: gtags [-c][-i][-I][-o][-P][-q][-v][-w][dbpath]\n";
 const char *help_const = "\
 Options:\n\
      -c, --compact\n\
@@ -100,6 +101,8 @@ Options:\n\
      -P, --postgres\n\
              use postgres database.\n\
              you can pass info string to PQconnectdb(3) using --info option.\n\
+     -q, --quiet\n\
+             quiet mode.\n\
      -v, --verbose\n\
              verbose mode.\n\
      -w, --warning\n\
@@ -124,6 +127,7 @@ static struct option const long_options[] = {
 	{"compact", no_argument, NULL, 'c'},
 	{"incremental", no_argument, NULL, 'i'},
 	{"omit-gsyms", no_argument, NULL, 'o'},
+	{"quiet", no_argument, NULL, 'q'},
 	{"verbose", no_argument, NULL, 'v'},
 	{"warning", no_argument, NULL, 'w'},
 
@@ -183,7 +187,7 @@ char	*argv[];
 	int	optchar;
 	int	option_index = 0;
 
-	while ((optchar = getopt_long(argc, argv, "cGiIoPvw", long_options, &option_index)) != EOF) {
+	while ((optchar = getopt_long(argc, argv, "cGiIoPqvw", long_options, &option_index)) != EOF) {
 		switch (optchar) {
 		case 0:
 			p = long_options[option_index].name;
@@ -231,6 +235,9 @@ char	*argv[];
 		case 'P':
 			Pflag++;
 			break;
+		case 'q':
+			qflag++;
+			break;
 		case 'w':
 			wflag++;
 			break;
@@ -245,6 +252,10 @@ char	*argv[];
 			usage();
 			break;
 		}
+	}
+	if (qflag) {
+		vflag = 0;
+		setquiet();
 	}
 #ifndef USE_POSTGRES
 	if (Pflag)

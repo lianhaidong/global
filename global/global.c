@@ -81,6 +81,7 @@ int	lflag;				/* [option]		*/
 int	nflag;				/* [option]		*/
 int	pflag;				/* command		*/
 int	Pflag;				/* command		*/
+int	qflag;				/* [option]		*/
 int	rflag;				/* [option]		*/
 int	sflag;				/* [option]		*/
 int	tflag;				/* [option]		*/
@@ -95,14 +96,14 @@ int	use_tagfiles;
 int	debug;
 char	*extra_options;
 const char *usage_const = "\
-Usage: global [-ailnrstTvx] pattern\n\
-       global -c[sv] [prefix]\n\
-       global -f[anrstvx] files\n\
-       global -g[ailntvx] pattern\n\
-       global -I[ailntvx] pattern\n\
-       global -p[rv]\n\
-       global -P[ailntvx] [pattern]\n\
-       global -u[v]\n";
+Usage: global [-ailnqrstTvx] pattern\n\
+       global -c[qsv] [prefix]\n\
+       global -f[anqrstvx] files\n\
+       global -g[ailnqtvx] pattern\n\
+       global -I[ailnqtvx] pattern\n\
+       global -p[qrv]\n\
+       global -P[ailnqtvx] [pattern]\n\
+       global -u[qv]\n";
 const char *help_const = "\
 Pattern accept POSIX 1003.2 regular expression.\n\
 Commands:\n\
@@ -136,6 +137,8 @@ Options:\n\
              print just objects which exist under the current directory.\n\
      -n, --nofilter\n\
              suppress sort filter and path conversion filter.\n\
+     -q, --quiet\n\
+             quiet mode.\n\
      -r, --reference (--rootdir)\n\
              print the locations of object references.\n\
              with the -p option print the root directory of source tree.\n\
@@ -173,6 +176,7 @@ static struct option const long_options[] = {
 	{"ignore-case", no_argument, NULL, 'i'},
 	{"print-dbpath", no_argument, NULL, 'p'},
 	{"path", no_argument, NULL, 'P'},
+	{"quiet", no_argument, NULL, 'q'},
 	{"reference", no_argument, NULL, 'r'},
 	{"rootdir", no_argument, NULL, 'r'},
 	{"symbol", no_argument, NULL, 's'},
@@ -215,7 +219,7 @@ char	*argv[];
 	char	root[MAXPATHLEN+1];		/* root of source tree	*/
 	char	dbpath[MAXPATHLEN+1];		/* dbpath directory	*/
 
-	while ((optchar = getopt_long(argc, argv, "acifgGIlnpPrstTuvx", long_options, &option_index)) != EOF) {
+	while ((optchar = getopt_long(argc, argv, "acifgGIlnpPqrstTuvx", long_options, &option_index)) != EOF) {
 		switch (optchar) {
 		case 0:
 			if (!strcmp("idutils", long_options[option_index].name))
@@ -258,6 +262,9 @@ char	*argv[];
 			Pflag++;
 			setcom(optchar);
 			break;
+		case 'q':
+			qflag++;
+			break;
 		case 'r':
 			rflag++;
 			break;
@@ -284,6 +291,10 @@ char	*argv[];
 			usage();
 			break;
 		}
+	}
+	if (qflag) {
+		vflag = 0;
+		setquiet();
 	}
 	if (show_help)
 		help();

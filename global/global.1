@@ -20,7 +20,7 @@
 .\" along with this program; if not, write to the Free Software
 .\" Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .\"
-.Dd Jun 7, 2001
+.Dd Dec 1, 2001
 .Dt GLOBAL 1
 .Os FreeBSD
 .Sh NAME
@@ -28,27 +28,27 @@
 .Nd print the locations of specified object.
 .Sh SYNOPSIS
 .Nm global
-.Op Fl ailnrstTvx
+.Op Fl ailnqrstTvx
 .Ar pattern
 .Nm global
-.Fl c[sv]
+.Fl c[qsv]
 .Op Ar prefix
 .Nm global
-.Fl f[anrstvx]
+.Fl f[anqrstvx]
 .Ar files
 .Nm global
-.Fl g[ailntvx]
+.Fl g[ailnqtvx]
 .Ar pattern
 .Nm global
-.Fl I[ailntvx]
+.Fl I[ailnqtvx]
 .Ar pattern
 .Nm global
-.Fl p[rv]
+.Fl p[qrv]
 .Nm global
-.Fl P[ailntvx]
+.Fl P[ailnqtvx]
 .Op Ar pattern
 .Nm global
-.Fl u[v]
+.Fl u[qv]
 .Sh DESCRIPTION
 .Nm Global
 find the locations of specified object in C, C++, Yacc, Java and assembler
@@ -134,6 +134,9 @@ Print just objects which exist under the current directory.
 .It Fl n
 .It Fl -nofilter
 Suppress sort filter and path conversion filter.
+.It Fl q
+.It Fl -quiet
+Quiet mode.
 .It Fl r
 .It Fl -reference
 .It Fl -rootdir
