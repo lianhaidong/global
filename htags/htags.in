@@ -1294,7 +1294,7 @@ sub makehelp {
 #
 sub makedupindex {
 	local($dist) = @_;
-	local($count) = 0;
+	local($definition_count) = 0;
 	local($srcdir) = "../$'SRCS";
 	local(%kind) = ('GTAGS', 'definition', 'GRTAGS', 'reference', 'GSYMS', 'symbol');
 	local(%dir) = &'get_dirhash();
@@ -1313,8 +1313,8 @@ sub makedupindex {
 		local($prev) = '';
 		local($first_line);
 		local($writing) = 0;
+		local($count) = 0;
 
-		$count = 0;
 		local($command) = "global -nx$option \".*\" | $'gtags --sort";
 		open(LIST, "$command |") || &'error("cannot fork.");
 		while (<LIST>) {
@@ -1362,6 +1362,7 @@ sub makedupindex {
 				}
 			}
 		}
+		$definition_count = $count if ($db eq 'GTAGS');
 		close(LIST);
 		$'file_count++;
 		if ($?) { &'error("'$command' failed."); }
@@ -1378,7 +1379,7 @@ sub makedupindex {
 	if (!$'dynamic) {
 		close(FILE);
 	}
-	$count;
+	$definition_count;
 }
 #
 # makedefineindex: make definition index (including alphabetic index)
