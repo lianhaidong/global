@@ -684,9 +684,7 @@ char	*dbpath;
 		strbuf_puts(ib, extra_options);
 		strbuf_putc(ib, ' ');
 	}
-	strbuf_putc(ib, '\'');
-	strbuf_puts(ib, pattern);
-	strbuf_putc(ib, '\'');
+	strbuf_puts(ib, quote_string(pattern));
 	if (debug)
 		fprintf(stderr, "id-utils: %s\n", strbuf_value(ib));
 	if (!(ip = popen(strbuf_value(ib), "r")))
