@@ -53,7 +53,6 @@ common:\
 gctags|tag command for GLOBAL:\
 	:tc=common:\
 	:suffixes=@DEFAULTSUFFIXES@:\
-	:sort_command=sort:\
 	:GTAGS=gctags -dt %s:\
 	:GRTAGS=gctags -dtr %s:\
 	:GSYMS=gctags -dts %s:

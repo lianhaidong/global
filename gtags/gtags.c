@@ -449,7 +449,7 @@ main(argc, argv)
 
 		while (line != NULL) {
 			int count = 0;
-			FILE *op = popen("sort -k 1,1 -k 3,3 -k 2,2n -u", "w");
+			FILE *op = popen("gnusort -k 1,1 -k 3,3 -k 2,2n -u", "w");
 			do {
 				fputs(line, op);
 			} while ((line = strbuf_fgets(ib, stdin, 0)) != NULL && ++count < unit);

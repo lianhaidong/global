@@ -4,7 +4,8 @@ ___________________________________
 |  |   |  |  |  |  |     |     |  |
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Copyright (c) 2000, 2001, 2002, 2003 Tama Communications Corporation
+ Copyright (c) 2000, 2001, 2002, 2003, 2004
+		Tama Communications Corporation
 
  This file is free software; as a special exception the author gives
  unlimited permission to copy and/or distribute it, with or without
@@ -42,5 +43,9 @@ regex.c, regex.h, snprintf.c, getopt.c, getopt1.c and getopt.h
 bt_close.c, bt_open.c, bt_seq.c, db.c, queue.h, bt_conv.c, bt_overflow.c,
 bt_split.c, db.h bt_debug.c, bt_page.c, bt_utils.c, extern.h bt_delete.c,
 bt_put.c, btree.h, mpool.c bt_get.c, bt_search.c, compat.h, mpool.h
+(GNU sort)
+closeout.c, closeout.h, error.c, error.h, hard-locale.c, hard-locale.h,
+long-options.c, long-options.h, memcoll.c, memcoll.h, sort.c, sys2.h,
+system.h, version-etc.c, version-etc.h, xalloc.h, xmalloc.c
 
 they are considered a separate package, not part of GLOBAL proper.

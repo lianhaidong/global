@@ -592,7 +592,7 @@ makefileindex(file, files)
 	char *target = (Fflag) ? "mains" : "_top";
 	struct dirstack *dirstack = make_stack("dirstack");
 	struct dirstack *fdstack = make_stack("fdstack");
-	char *command = (other_files) ? "gtags --find --other | sort -t / -k 2"
+	char *command = (other_files) ? "gtags --find --other | gnusort -t / -k 2"
 					: "gtags --find";
 	struct dirstack *push = make_stack("push");
 	struct dirstack *pop = make_stack("pop");

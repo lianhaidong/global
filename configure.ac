@@ -30,22 +30,6 @@ AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 AC_PROG_RANLIB
-dnl
-dnl GLOBAL needs following tools for execution.
-dnl	perl, sed, sort
-dnl
-AC_PATH_PROG(PERL, perl, no)
-if test ${ac_cv_path_PERL} = no; then
-	AC_MSG_ERROR([PERL is required but not found.])
-fi
-AC_PATH_PROG(SORT, sort, no)
-if test ${ac_cv_path_SORT} = no; then
-	AC_MSG_ERROR([SORT is required but not found.])
-fi
-AC_PATH_PROG(SED, sed, no)
-if test ${ac_cv_path_SED} = no; then
-	AC_MSG_ERROR([SED is required but not found.])
-fi
 
 dnl Checks for libraries.
 
@@ -93,6 +77,7 @@ AC_TYPE_SIGNAL
 AC_FUNC_STRFTIME
 AC_CHECK_FUNCS(getcwd putenv strdup lstat snprintf utimes)
 AC_CHECK_FUNCS(index rindex bzero bcmp bcopy strchr strrchr memset memcmp memmove)
+AC_CHECK_FUNCS(malloc realloc alloca vprintf doprnt strerror strerror_r)
 AG_DJGPP
 
 INCLUDES='-I$(top_srcdir)/libutil -I$(top_srcdir)/libdb -I$(top_srcdir)/libglibc -I../libutil'
@@ -147,6 +132,7 @@ AC_OUTPUT([Makefile
 	gtags/Makefile
 	htags/Makefile
 	gctags/Makefile
+	gnusort/Makefile
 	libdb/Makefile
 	global/Makefile
 	gozilla/Makefile

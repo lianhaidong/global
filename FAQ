@@ -68,12 +68,7 @@ A3. Emacs's ctags cannot locate function referencies. So, gtags cannot make
     global's -r option.
 
 ----------------------------------------------------------------------------
-Q4. I have built GLOBAL in Windows 32 environment. But gtags(1) failed by sort
-    command error.
-
-A4. It seems that MS sort is executed. Please set your path so that unix
-    sort will be executed.
-
+Q4. Deleted.
 ----------------------------------------------------------------------------
 Q5. I invoked gtags but it failed with a message like this:
 
@@ -119,16 +114,7 @@ A7. In global(1), you can use GTAGSLIBPATH environment variable.
 	% htags
 
 ----------------------------------------------------------------------------
-Q8. I have updated operating system for my computer and have noticed that
-    the speed of GLOBAL became very slow.
-
-A8. Some operating system, for example Redhat9, is shipped with
-    internationalized sort command. This reduces the performance of GLOBAL
-    remarkably. Please obey one of the followings:
-
-      1. Use C locale.
-      2. Replace sort command with one which is not internationalized.
-
+Q8. Deleted.
 ----------------------------------------------------------------------------
 Q9. Deleted.
 ----------------------------------------------------------------------------

@@ -340,8 +340,6 @@ openconf()
 		strbuf_puts(sb, path);
 		strbuf_puts(sb, " -dts %s");
 	}
-	if (!getconfs("sort_command", NULL))
-		strbuf_puts(sb, ":sort_command=sort");
 	strbuf_unputc(sb, ':');
 	strbuf_putc(sb, ':');
 	confline = strdup(strbuf_value(sb));

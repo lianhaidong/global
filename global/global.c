@@ -62,7 +62,6 @@ int search(char *, char *, char *, int);
 int includepath(char *, char *);
 void ffformat(char *, int, char *);
 
-char sort_command[MAXFILLEN+1];	/* sort command		*/
 STRBUF *sortfilter;			/* sort filter		*/
 STRBUF *pathfilter;			/* path convert filter	*/
 char *localprefix;			/* local prefix		*/
@@ -361,20 +360,6 @@ main(argc, argv)
 		exit(0);
 	}
 	/*
-	 * get command name of sort.
-	 */
-	{
-		STRBUF	*sb = strbuf_open(0);
-		if (!getconfs("sort_command", sb))
-			die("cannot get sort command name.");
-#if defined(_WIN32) || defined(__DJGPP__)
-		if (!locatestring(strbuf_value(sb), ".exe", MATCH_LAST))
-			strbuf_puts(sb, ".exe");
-#endif
-		strlimcpy(sort_command, strbuf_value(sb), sizeof(sort_command));
-		strbuf_close(sb);
-	}
-	/*
 	 * make local prefix.
 	 */
 	if (lflag) {
@@ -402,7 +387,7 @@ main(argc, argv)
 		int unique = 0;
 
 		sortfilter = strbuf_open(0);
-		strbuf_puts(sortfilter, sort_command);
+		strbuf_puts(sortfilter, "gnusort");
 		if (sflag) {
 			strbuf_puts(sortfilter, " -u");
 			unique = 1;

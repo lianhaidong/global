@@ -140,8 +140,6 @@
 	@item{@code{icase_path}(boolean)}
 		Ignore case distinctions in the path.
 		Suffixes check are affected by this capability.
-	@item{@code{sort_command}(string)}
-		Use specified @xref{sort,1} command, which is used internally.
 	@end_itemize
 @DIAGNOSTICS
 	@name{Gtags} exits with a non 0 value if an error occurred, 0 otherwise.

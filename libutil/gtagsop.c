@@ -421,18 +421,8 @@ gtags_add(gtop, comline, path, flags)
 	FILE *ip;
 	STRBUF *sb = strbuf_open(0);
 	STRBUF *ib = strbuf_open(MAXBUFLEN);
-	STRBUF *sort_command = strbuf_open(0);
 	char *fid;
 
-	/*
-	 * get command name of sort.
-	 */
-	if (!getconfs("sort_command", sort_command))
-		die("cannot get sort command name.");
-#if defined(_WIN32) || defined(__DJGPP__)
-	if (!locatestring(strbuf_value(sort_command), ".exe", MATCH_LAST))
-		strbuf_puts(sort_command, ".exe");
-#endif
 	/*
 	 * add path index if not yet.
 	 */
@@ -457,12 +447,8 @@ gtags_add(gtop, comline, path, flags)
 		strbuf_putc(sb, ' ');
 		strbuf_puts(sb, fid);
 	}
-	if (gtop->format & GTAGS_COMPACT) {
-		strbuf_puts(sb, "| ");
-		strbuf_puts(sb, strbuf_value(sort_command));
-		strbuf_putc(sb, ' ');
-		strbuf_puts(sb, "-k 1,1 -k 2,2n");
-	}
+	if (gtop->format & GTAGS_COMPACT)
+		strbuf_puts(sb, "| gnusort -k 1,1 -k 2,2n");
 	if (flags & GTAGS_UNIQUE)
 		strbuf_puts(sb, " -u");
 #ifdef DEBUG
@@ -500,7 +486,6 @@ gtags_add(gtop, comline, path, flags)
 	}
 	if (pclose(ip) < 0)
 		die("terminated abnormally.");
-	strbuf_close(sort_command);
 	strbuf_close(sb);
 	strbuf_close(ib);
 }
