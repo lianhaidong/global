@@ -226,6 +226,8 @@ sub convert {
 	while (s/\@xref\{($arg),($arg)\}/\\fB$1\\fP($2)/) {
 		;
 	}
+	s/\@{/{/g;
+	s/\@}/}/g;
 	s/\@br$/\n.br/;
 }
 sub gen {
