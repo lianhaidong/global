@@ -100,7 +100,7 @@
 	Assembler support is far from complete.  It extracts only ENTRY()
 	and ALTENTRY() from source file.
 	Probably valid only for FreeBSD and Linux kernel source.
-@AUTHORS
+@AUTHOR
 	Shigio Yamaguchi
 @HISTORY
 	The @name{gctags} command appeared in FreeBSD 2.2.2.

@@ -136,7 +136,7 @@
 	Please be careful of info string using @option{--info} option.
 	Info string is passed to external system as is.
 	If you mistake the value then program may abort with core dump.
-@AUTHORS
+@AUTHOR
 	Shigio Yamaguchi
 @HISTORY
 	The @name{gtags} command appeared in FreeBSD 2.2.2.

@@ -181,7 +181,7 @@
 
         GNU GLOBAL source code tag system@br
         (http://www.gnu.org/software/global/).
-@AUTHORS
+@AUTHOR
 	Shigio Yamaguchi
 @HISTORY
 	The @name{global} command appeared in FreeBSD 2.2.2.

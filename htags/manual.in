@@ -128,7 +128,7 @@
 @BUG
 	Generated hypertext is VERY LARGE.
 	In advance, check the space of your disk.
-@AUTHORS
+@AUTHOR
 	Shigio Yamaguchi
 @HISTORY
 	The @name{htags} command appeared in FreeBSD 2.2.2.
