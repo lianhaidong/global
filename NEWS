@@ -36,6 +36,7 @@ Version 4.4 - March 30 2002, by Shigio Yamaguchi
 * global: path conversion optimized and bug fixed.
 * gtags.conf: added documentation about variables.
 * htags: shut another security hole.
+* Some bugs are fixed.
 
 Version 4.3.1 - January 22 2002, by Shigio Yamaguchi
 
