@@ -27,10 +27,12 @@
 # $ bash --rcfile <this file>
 # [/usr/src/sys] ghelp<RET>
 #
-if !(( BASH_VERSINFO[0] >= 2 && BASH_VERSINFO[1] >= 4 )); then
+bash_minorversion=$(echo ${BASH_VERSINFO[1]} | sed 's/[[:alpha:]]//')
+if !(( BASH_VERSINFO[0] >= 2 && bash_minorversion >= 4 )); then
 	echo "GloBash needs Bash version 2.04 or later."
 	exit 1
 fi
+unset bash_minorversion
 ###########################################################################
 # Global variables and utilities.
 ###########################################################################
