@@ -111,6 +111,37 @@
 		If this variable is set, its value is used as the label
 		of configuration file. The default is 'default'.
 	@end_itemize
+@CONFIGURATION
+	The following configuration variables affect the execution of @name{gtags}:
+	@begin_itemize
+	@item{@var{GTAGS}(string)}
+		If this variable is set, its value is used as the
+		command line of parser for GTAGS. The default is @file{$BINDIR/gctags %s}.
+		($BINDIR means path for GLOBAL command installation.)
+	@item{@var{GRTAGS}(string)}
+		If this variable is set, its value is used as the
+		command line of parser for GRTAGS. The default is @file{$BINDIR/gctags -r %s}.
+		($BINDIR means path for GLOBAL command installation.)
+	@item{@var{GSYMS}(string)}
+		If this variable is set, its value is used as the
+		command line of parser for GSYMS. The default is @file{$BINDIR/gctags -s %s}.
+		($BINDIR means path for GLOBAL command installation.)
+	@item{@var{skip}(comma separated list)}
+		@name{Gtags} skips files which listed in this list.
+		As a special exception, @name{gtags} collect values from multiple skip variables.
+		If the value ends with '/', it assumed as a directory and @name{gtags} skips all files under it.
+		If the value start with '/', it assumed relative path from the root of source directory.
+		By default, it assumes GPATH, GTAGS, GRTAGS, GSYMS, HTML/, tags, TAGS, y.tab.c, y.tab.h, SCCS/, RCS/, CVS/, CVSROOT/, .deps/.
+	@item{@var{suffixes}(comma separated list)}
+		Suffixes of target source file.
+		By default, it assumes c, h, y, c++, cc, cpp, cxx, hxx, C, H, s, S, java.
+	@item{@var{format}(standard|compact)}
+		Format of tag files. The default is @var{standard}.
+		Compact format is same to @option{-c}(@option{--compact}).
+	@item{@var{icase_path}(boolean)}
+		Ignore case distinctions in the path.
+		Suffixes check are affected by this capability.
+	@end_itemize
 @DIAGNOSTICS
 	@name{Gtags} exits with a non 0 value if an error occurred, 0 otherwise.
 @SEE ALSO
