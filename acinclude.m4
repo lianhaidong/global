@@ -1,6 +1,6 @@
 # Local additions to Autoconf macros.
 #
-# Copyright (c) 2000
+# Copyright (c) 2000, 2001
 #        Tama Communications Corporation. All rights reserved.
 #
 # This file is part of GNU GLOBAL.
@@ -42,7 +42,7 @@ fi
 AC_DEFUN(AG_DJGPP,
 [AC_CACHE_CHECK([whether we are using the GNU DJGPP compiler], ac_cv_djgpp,
 [AC_TRY_COMPILE([], [#ifdef __DJGPP__
-main() {}
+int a;
 #else
 XXXXXX
 #endif],
