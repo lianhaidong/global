@@ -563,9 +563,9 @@ function_definition(target)
 	int target;
 {
 	int c;
-	int brace_level, isdefine;
+	int brace_level;
 
-	brace_level = isdefine = 0;
+	brace_level = 0;
 	while ((c = nexttoken("()", reserved_word)) != EOF) {
 		switch (c) {
 		case SHARP_IFDEF:
@@ -623,12 +623,9 @@ function_definition(target)
 			brace_level++;
 		else if (c == /* ( */')' || c == ']')
 			brace_level--;
-		else if (brace_level == 0 && (c == SYMBOL || IS_RESERVED(c)))
-			isdefine = 1;
-		else if (c == ';' || c == ',') {
-			if (!isdefine)
-				break;
-		} else if (c == '{' /* } */) {
+		else if (brace_level == 0 && (c == ';' || c == ','))
+			break;
+		else if (c == '{' /* } */) {
 			pushbacktoken();
 			return 1;
 		} else if (c == /* { */'}')
