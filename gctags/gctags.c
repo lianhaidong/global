@@ -276,7 +276,7 @@ main(argc, argv)
 		 * call language specific parser.
 		 */
 		if (!strcmp(lang, "c")) {
-			if (!locatestring(suffix, ".h", MATCH_COMPLETE) && isCpp())
+			if (locatestring(suffix, ".h", MATCH_COMPLETE) && isCpp())
 				Cpp();
 			else
 				C(0);
