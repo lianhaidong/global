@@ -20,14 +20,12 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #
-# gtags.doc - common source file for various purpose.
-#
 # This file is converted to the following files:
 #	o command source file(for usage and help).
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	GTAGS,1,December 2001,GNU GLOBAL-4.2
+@HEADER	GTAGS,1,December 2001,GNU Project
 @NAME	gtags - create tag files for global.
 @SYNOPSIS
 	@name{gtags} [-c][-i][-I][-o][-P][-q][-v][-w][@arg{dbpath}]
@@ -53,7 +51,7 @@
 	are assumed to be Assembler source files.
 	Other files are searched for C style definitions.
 @OPTIONS
-	The following options are available.
+	The following options are available:
 	@begin_itemize
 	@item{@option{-c}, @option{--compact}}
 		Make tag files with compact format.
@@ -71,7 +69,7 @@
 		Pass info string to external system.
 		Currently you can use it with -P option.
 	@item{@option{-o}, @option{--omit-gsyms}}
-		Suppress making GSYMS file.
+		Suppress making @file{GSYMS} file.
 		Use this option if you don't use -s option of @xref{global,1}.
 	@item{@option{-P}, @option{--postgres}}
 		Use postgres database system instead of @xref{db,3}.
@@ -94,11 +92,11 @@
 		Tag file for other symbols.
 	@item{@file{GPATH}}
 		Tag file for path of source files.
-	@item{@file{/etc/gtags.conf $HOME/.globalrc}}
+	@item{@file{/etc/gtags.conf}, @file{$HOME/.globalrc}}
 		Configuration file.
 	@end_itemize
 @ENVIRONMENT
-	The following environment variables affect the execution of @name{gtags}.
+	The following environment variables affect the execution of @name{gtags}:
 	@begin_itemize
 	@item{@var{GTAGSCONF}}
 		If this variable is set, its value is used as the
@@ -112,16 +110,14 @@
 	Makefile      src/    lib/
 	% gtags -v
 	% global -x main
-	main              10 src/main.c  main (argc, argv) @{
+	main              10 src/main.c  main (argc, argv) {
 @DIAGNOSTICS
 	@name{Gtags} exits with a non 0 value if an error occurred, 0 otherwise.
 @SEE ALSO
 	@xref{btreeop,1},
 	@xref{gctags,1},
 	@xref{global,1},
-	@xref{gozilla,1},
-	@xref{htags,1},
-	@xref{vi,1}.
+	@xref{htags,1}.
 @BUG
 	@file{GTAGS}, @file{GRTAGS} and @file{GSYMS} are very large.
 	In advance of using this command, check the space of your disk.
@@ -132,7 +128,7 @@
 
 	There is no concurrency control about tag files.
 
-	Symbols in assembler source files are not extracted for GSYMS.
+	Symbols in assembler source files are not extracted for @file{GSYMS}.
 
 	Please be careful of info string using @option{--info} option.
 	Info string is passed to external system as is.

@@ -20,14 +20,12 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #
-# btreeop.doc - common source file for various purpose.
-#
 # This file is converted to the following files:
 #	o command source file(for usage and help).
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	BTREEOP,1,December 2001,GNU GLOBAL-4.2
+@HEADER	BTREEOP,1,December 2001,GNU Project
 @NAME	btreeop - btree database maintenance tool.
 @SYNOPSIS
 	@name{btreeop} [-A][-C][-D[n] @arg{key}][-K[n] @arg{key}][-L[2]][-k @arg{prefix}][@arg{dbname}]
@@ -57,14 +55,14 @@
 		List all primary keys.
 		If @arg{2} is specified, list all the key and data pairs.
 	@item{@arg{dbname}}
-		Database name. default is @file{btree}.
+		Database name. By default, it assume @file{btree}.
 	@end_itemize
 @OPTIONS
 	@begin_itemize
 	@item{@option{-k} @arg{prefix}}
 		Scan records which have the @arg{prefix} as a primary key.
 		This option is valid only with sequential read operation
-		@option{-L} command or non command.
+		@option{-L} command or no command.
 	@end_itemize
 @FORMAT
 To creat (or append) database, btreeop read data from stdin.
@@ -73,7 +71,7 @@ The format of the data is the following.
   Primary-key  Secondary-key-1  Secondary-key-2  Data
   (keyno = 0)  (keyno = 1)      (keyno = 2)
   --------------------------------------------------------------
-  main         246              main.c           main ()@{
+  main         246              main.c           main () {
   func         120              library.c        func(a1, a2)
   .
   .
@@ -145,8 +143,8 @@ Delete record.
 @DIAGNOSTICS
 	@name{Btreeop} exits with a non 0 value if an error occurred, 0 otherwise.
 @SEE ALSO
-	@xref{btree,3}
+	@xref{btree,3}.
 @AUTHORS
 	Shigio Yamaguchi
 @HISTORY
-	The gtags command appeared in FreeBSD 2.2.2.
+	The @name{btreeop} command appeared in FreeBSD 2.2.2.

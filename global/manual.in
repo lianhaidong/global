@@ -20,14 +20,12 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #
-# global.doc - common source file for various purpose.
-#
 # This file is converted to the following files:
 #	o command source file(for usage and help).
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	GLOBAL,1,December 2001,GNU GLOBAL-4.2
+@HEADER	GLOBAL,1,December 2001,GNU Project
 @NAME	global - print the locations of specified object.
 @SYNOPSIS
 	@name{global} [-ailnqrstTvx] @arg{pattern}
@@ -86,7 +84,7 @@
 		Show help.
 	@end_itemize
 @OPTIONS
-	The following options are available.
+	The following options are available:
 	@begin_itemize
 	@item{@option{-a}, @option{--absolute}}
 		Print absolute path name. By default, print relative path name.
@@ -132,7 +130,7 @@
 		Configuration file.
 	@end_itemize
 @ENVIRONMENT
-	The following environment variables affect the execution of @name{global}.
+	The following environment variables affect the execution of @name{global}:
 	@begin_itemize
 	@item{@var{GTAGSROOT}}
 		The directory which is the root of source tree.
@@ -151,19 +149,19 @@
 	% global main
 	src/main.c
 	% global -x main
-	main              10 src/main.c  main (argc, argv) @{
+	main              10 src/main.c  main (argc, argv) {
 	% global -x '^[sg]et'
 	set_num           20 lib/util.c  set_num(values)
-	get_num           30 lib/util.c  get_num() @{
+	get_num           30 lib/util.c  get_num() {
 	% global -rx '^[sg]et'
 	set_num          113 src/op.c            set_num(32);
-	set_num          225 src/opop.c               if (set_num(0) > 0) @{
-	get_num           90 src/op.c            while (get_num() > 0) @{
+	set_num          225 src/opop.c               if (set_num(0) > 0) {
+	get_num           90 src/op.c            while (get_num() > 0) {
 	% cd lib
 	% global -rx '^[sg]et'
 	set_num          113 ../src/op.c            set_num(32);
-	set_num          225 ../src/opop.c               if (set_num(0) > 0) @{
-	get_num           90 ../src/op.c            while (get_num() > 0) @{
+	set_num          225 ../src/opop.c               if (set_num(0) > 0) {
+	get_num           90 ../src/op.c            while (get_num() > 0) {
 	% global strlen
 	% (cd /usr/src/sys; gtags)
 	% setenv GTAGSLIBPATH /usr/src/sys
@@ -178,11 +176,9 @@
 @SEE ALSO
 	@xref{btreeop,1},
 	@xref{gctags,1},
-	@xref{gozilla,1},
 	@xref{gtags,1},
-	@xref{htags,1},
-	@xref{vi,1}.
+	@xref{htags,1}.
 @AUTHORS
 	Shigio Yamaguchi
 @HISTORY
-	The gtags command appeared in FreeBSD 2.2.2.
+	The @name{global} command appeared in FreeBSD 2.2.2.

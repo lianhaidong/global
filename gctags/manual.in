@@ -20,14 +20,12 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #
-# gctags.doc - common source file for various purpose.
-#
 # This file is converted to the following files:
 #	o command source file(for usage and help).
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	GCTAGS,1,December 2001,GNU GLOBAL-4.2
+@HEADER	GCTAGS,1,December 2001,GNU Project
 @NAME	gctags - print cross reference list for gtags.
 @SYNOPSIS
 	@name{gctags} [-benrsw] @arg{file} ...
@@ -60,13 +58,13 @@
 
 	This command is the default parser of GLOBAL source code tag system.
 @OPTIONS
-	The following options are available.
+	The following options are available:
 	@begin_itemize
 	@item{@option{-b}, @option{--begin-block}}
-		Force level 1 block to begin when reach a '@{' at the first column.
+		Force level 1 block to begin when reach a left brace at the first column.
 		(C only)
 	@item{@option{-e}, @option{--end-block}}
-		Force level 1 block to end when reach a '@}' at the first column.
+		Force level 1 block to end when reach a right brace at the first column.
 		(C only)
 	@item{@option{-n}, @option{--no-tags}}
 		Suppress output of tags. It is useful to use with @option{-w} option.
@@ -81,11 +79,17 @@
 	@item{@option{-w}, @option{--warning}}
 		Print warning message.
 	@end_itemize
+
 	The @option{-r} and @option{-s} options override each other;
 	the last one specified determines the method used.
 @DIAGNOSTICS
 	@name{Gctags} exits with a non 0 value if an error occurred, 0 otherwise.
 	Duplicate objects are not considered errors.
+@SEE ALSO
+	@xref{btreeop,1},
+	@xref{global,1},
+	@xref{gtags,1},
+	@xref{htags,1}.
 @BUG
 	@name{Gctags} relies on the input being well formed,
 	and any syntactical errors will completely confuse it.

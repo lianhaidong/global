@@ -207,15 +207,15 @@ sub convert {
 	while (s/\@arg\{($arg)\}/\\fI$1\\fP/) {
 		;
 	}
-	while (s/\@file\{($arg)\}/'$1'/) {
-		;
-	}
 	while (/\@code\{($arg)\}/) {
 		$val = $1;
 		$val =~ s/\./\\./g;
 		s/\@code\{$arg\}/$val/;
 	}
-	while (s/\@(code|var|name|option)\{($arg)\}/\\fB$2\\fP/) {
+	while (s/\@file\{($arg)\}/\\'$1\\'/) {
+		;
+	}
+	while (s/\@(var|name|option)\{($arg)\}/\\fB$2\\fP/) {
 		;
 	}
 	while (s/\@xref\{($arg),($arg)\}/\\fB$1\\fP($2)/) {
@@ -229,10 +229,10 @@ sub gen {
 		next if (/^#/);		# comment
 		if (/^\@HEADER\s+($arg),($arg),($arg),($arg)\n$/) {
 			print ".TH $1 $2 \"$3\" \"$4\"\n";
-		} elsif (/^\@(NAME)\s+(.*)$/) {
-			local($name) = $2;
+		} elsif (/^\@NAME\s+(.*)$/) {
+			local($name) = $1;
 			$name =~ s/-/\\-/;
-			print ".SH $1\n$name\n";
+			print ".SH NAME\n$name\n";
 		} elsif (/^\@(SYNOPSIS)$/) {
 			print ".SH $1\n";
 			while (&'getline()) {
@@ -262,6 +262,9 @@ sub gen {
 					last;
 				} elsif (/^$/) {
 					print ".PP\n";
+					next;
+				} elsif ($varbatim) {
+					print;
 					next;
 				}
 				convert();
@@ -338,6 +341,11 @@ sub gen {
 					&'ungetline();
 					last;
 				} elsif (/^$/) {
+					print;
+					next;
+				} elsif ($varbatim) {
+					s/\{/@\{/g;
+					s/\}/@\}/g;
 					print;
 					next;
 				}

@@ -20,30 +20,28 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #
-# htags.doc - common source file for various purpose.
-#
 # This file is converted to the following files:
 #	o command source file(for usage and help).
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	HTAGS,1,December 2001,GNU GLOBAL-4.2
+@HEADER	HTAGS,1,December 2001,GNU Project
 @NAME	htags - generate hypertext from C, C++, Yacc, Java and assembler source code.
 @SYNOPSIS
-	@name{htags} [-a][-c][-f][-F][-l][-n][-v][-s][-w][-d @arg{tagdir}][-S @arg{cgidir}][-t @arg{title}][@arg{dir}]
+	@name{htags} [-a][-c][-f][-F][-l][-n][-v][-s][-w][-d @arg{dir}][-S @arg{dir}][-t @arg{title}][@arg{dir}]
 @DESCRIPTION
 	@name{Htags} makes hypertext from C, C++, Yacc and Java source code.
 
 	In advance of using this command, you must execute
 	@xref{gtags,1} from the root directory of the source tree.
 	Then you can execute @name{htags} from the same place.
-	@name{Htags} makes an HTML directory and generates hypertext in it.
+	@name{Htags} makes an @file{HTML} directory and generates hypertext in it.
 
 	You can start browsing from @file{HTML/index.html}.
 	Once the hypertext is generated, you can move it anywhere and browse it
 	with any browser.
 @OPTIONS
-	The following options are available.
+	The following options are available:
 	@begin_itemize
 	@item{@option{-a}, @option{--alphabet}}
 		Make an alphabetical function index, suitable for a large project.
@@ -71,11 +69,11 @@
 		Verbose mode.
 	@item{@option{-w}, @option{--warning}}
 		Print warning messages.
-	@item{@option{-d}, @option{--dbpath} @arg{tagdir}}
+	@item{@option{-d}, @option{--dbpath} @arg{dir}}
 		Specifies the directory in which @file{GTAGS} and @file{GRTAGS}
 		exist. The default is the current directory.
-	@item{@option{-S}, @option{--secure-cgi} @arg{cgidir}}
-		write cgi script into @arg{cgidir} to realize a centralised
+	@item{@option{-S}, @option{--secure-cgi} @arg{dir}}
+		write cgi script into @arg{dir} to realize a centralised
 		cgi script. Script alias is @file{/cgi-bin} by default.
 		You can overwrite this value with config variable
 		@code{script_alias} in @file{gtags.conf}.
@@ -101,11 +99,11 @@
 		Tag file for other symbols.
 	@item{@file{GPATH}}
 		Tag file for path of source files.
-	@item{@file{/etc/gtags.conf $HOME/.globalrc}}
+	@item{@file{/etc/gtags.conf}, @file{$HOME/.globalrc}}
 		Configuration file.
 	@end_itemize
 @ENVIRONMENT
-	The following environment variables affect the execution of @name{htags}.
+	The following environment variables affect the execution of @name{htags}:
 	@begin_itemize
 	@item{@var{TMPDIR}}
 		If this variable is set, its value is used as the directory
@@ -121,8 +119,8 @@
 	@name{Htags} exits with a non 0 value if an error occurred, 0 otherwise.
 @SEE ALSO
 	@xref{btreeop,1},
+	@xref{gctags,1},
 	@xref{global,1},
-	@xref{gozilla,1},
 	@xref{gtags,1}.
 @BUG
 	Generated hypertext is VERY LARGE.
