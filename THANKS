@@ -90,6 +90,7 @@ Yann Dirson		many bug reports and many valuable suggestions.
 Yoshiharu Ito		advice about SunOS 4.1.3.
 Yoshinori Tomita	advice about compat.h for Solaris.
 Y. Yoshinaga		advice about makefile for Debian GNU/Linux.
+Yushi Oka		bug report about config path.
 ---------------------------------------------------------------------------
 
 If you cannot find your contributions on this list or you find mistakes,

@@ -256,9 +256,9 @@ openconf()
 			die("short of memory.");
 	}
 	/*
-	 * if it doesn't start with '/' then assumed config value itself.
+	 * if it is not an absolute path then assumed config value itself.
 	 */
-	else if (*config != '/') {
+	else if (!isabspath(config)) {
 		confline = strdup(config);
 		if (!confline)
 			die("short of memory.");
