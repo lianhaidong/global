@@ -20,6 +20,11 @@ ___________________________________
 GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 4.1.1 - *******, 2001, by Shigio Yamaguchi
+
+* globash.rc: when GTAGSROOT specified, prompt is changed to "$root!$cwd"
+  instead of "[$root]/...".
+
 Version 4.1 - July 12, 2001, by Shigio Yamaguchi
 
 [INCOMPATIBLE CHANGES]

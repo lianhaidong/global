@@ -89,7 +89,7 @@ __gtags_lastcom=			# last command
 __gtags_current=			# current tag number
 
 __gtags_prev_file=
-__gtags_prevdbpath=
+__gtags_prev_root=
 
 ### Cookie management
 declare -r COOKIE=$GHOME/cookie		# cookie in file
@@ -198,17 +198,19 @@ __gtags_pwd() {
 }
 __gtags_prompt() {
 	local cwd=`__gtags_pwd`
-	local dbpath=`global -pr 2>/dev/null`
+	local root=`global -pr 2>/dev/null`
 	local ps
 
-	if [ "$dbpath" ]; then
-		local path=`echo $cwd | sed "s!^$dbpath!!"`
-		ps="[$dbpath]$path"
+	if [ "$root" ] && echo $cwd | grep "^$root" >/dev/null; then
+		local path=`echo $cwd | sed "s!^$root!!"`
+		ps="[$root]$path"
+	elif [ "$root" ]; then
+		ps="$root!$cwd"
 	else
 		ps=$cwd
 	fi
 	# We cannot keep context (except for cookies) across projects.
-	if [ "$__gtags_prevdbpath" ] && [ "$__gtags_prevdbpath" != "$dbpath" ]; then
+	if [ "$__gtags_prev_root" ] && [ "$__gtags_prev_root" != "$root" ]; then
 		msg="You are going to get out of current project."
 		yesno="Tag stack and marker will be removed. Sure? ([y]/n) "
 		echo $msg
@@ -228,7 +230,7 @@ __gtags_prompt() {
 		cp /dev/null $MARKER
 	fi
 	PS1="$ps "
-	__gtags_prevdbpath=$dbpath
+	__gtags_prev_root=$root
 }
 cd() {
 	builtin cd $*
@@ -243,7 +245,7 @@ popd() {
 	__gtags_prompt
 }
 __gtags_prompt
-if [ "$__gtags_prevdbpath" = "" ]; then
+if [ "$__gtags_prev_root" = "" ]; then
 	# we cannot find tag files (GTAGS).
 	echo "Warning: Out of project."
 fi
