@@ -315,7 +315,7 @@ $'SRCS   = 'S';				# source file directory.
 $'DEFS   = 'D';				# object definition directory.
 $'REFS   = 'R';				# object reference directory.
 $'INCS   = 'I';				# include file directory.
-$'SYMS   = 'B';				# symbols directory.
+$'SYMS   = 'Y';				# symbols directory.
 sub get_dirlist {
 	local(@dir) = (files, defines, $'SRCS, $'INCS, $'DEFS, ,$'REFS);
 	push(@dir, $'SYMS) if ($'sflag);
@@ -1249,7 +1249,7 @@ sub makehelp {
 	$'file_count++;
 }
 #
-# makedupindex: make duplicate entries index (D/*, R/* and S/*)
+# makedupindex: make duplicate entries index (D/*, R/* and Y/*)
 #
 #	go)	tag cache
 #	r)	$count
