@@ -602,7 +602,7 @@ if ($id_value) {
 # If $dbpath is not specified then listen to global(1).
 if (!$dbpath) {
 	local($cwd) = &'getcwd();
-	local($root) = `global -pr 2>$'null_device`;
+	local($root) = `global -pr`;
 	chop($root);
 	if ($cwd eq $root) {
 		$dbpath = `global -p`;
