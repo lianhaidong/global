@@ -1015,7 +1015,7 @@ char	*av;
 	if (av) {
 		int	flags = REG_EXTENDED;
 
-		if (getconfb("ignore_case"))
+		if (getconfb("icase_path"))
 			flags |= REG_ICASE;
 		if (regcomp(&preg, av, flags) != 0)
 			die("illegal regular expression.");

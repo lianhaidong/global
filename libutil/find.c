@@ -187,9 +187,9 @@ ffindopen()
 	opened = 1;
 
 	/*
-	 * load ignore_case option.
+	 * load icase_path option.
 	 */
-	if (getconfb("ignore_case"))
+	if (getconfb("icase_path"))
 		flags |= REG_ICASE;
 	/*
 	 * setup stack.
@@ -375,9 +375,9 @@ ffindopen()
 	opened = 1;
 
 	/*
-	 * load ignore_case option.
+	 * load icase_path option.
 	 */
-	if (getconfb("ignore_case"))
+	if (getconfb("icase_path"))
 		flags |= REG_ICASE;
 	sb = strbuf_open(0);
 	if (!getconfs("suffixes", sb))
