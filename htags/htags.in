@@ -1489,11 +1489,11 @@ sub makesearchpart {
 	$index .= ($target) ? "Def" : "Definition";
 	$index .= "\n<INPUT TYPE=radio NAME=type VALUE=reference>";
 	$index .= ($target) ? "Ref" : "Reference";
-	$index .= "\n<INPUT TYPE=radio NAME=type VALUE=symbol>";
 	if (-f "$dbpath/GSYMS") {
+		$index .= "\n<INPUT TYPE=radio NAME=type VALUE=symbol>";
 		$index .= ($target) ? "Sym" : "Other symbol";
-		$index .= "\n<INPUT TYPE=radio NAME=type VALUE=path>";
 	}
+	$index .= "\n<INPUT TYPE=radio NAME=type VALUE=path>";
 	$index .= ($target) ? "Path" : "Path name";
 	$index .= "\n</FORM>\n";
 	$index;
