@@ -299,7 +299,9 @@ openconf()
 #if defined(_WIN32) || defined(__DJGPP__)
 		path = "gctags.exe";
 #else
-		path = makepath(BINDIR, "gctags", NULL);
+		path = usable("gctags");
+		if (!path)
+			path = "gctags";
 #endif /* _WIN32 */
 		strbuf_puts(sb, ":GTAGS=");
 		strbuf_puts(sb, path);
