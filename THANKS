@@ -24,7 +24,7 @@ A.E. Brouwer		advice about writing code for generic UNIX.
 Andrew Gallatin		bug report about generating wrong path.
 Andy Newman		bug report about treating tab character.
 Andy Zhou		bug report about gctags overlook 'extern' prefixed function.
-Bakken, Luke		bug fix patch about stat() in htags(1).
+Bakken, Luke		bug fix method about stat() in htags(1).
 Bert Gijsbers		investigation about mandoc macro and a bug report.
 Bob Bentley		bug report about bless.sh and gtags.
 Christoph Conrad	bug report and advice about S.u.S.E Linux 5.1.
