@@ -466,7 +466,6 @@ sub error {
 # set things right before exiting.
 #
 sub clean {
-	&anchor'finish();
 	&cache'close();
 }
 #
@@ -1017,11 +1016,6 @@ print STDERR "[", &'date, "] ", "(7) making index file ...\n" if ($'vflag);
 #
 print STDERR "[", &'date, "] ", "(8) making main index ...\n" if ($'vflag);
 &makemainindex("$dist/mains.$'normal_suffix", $index);
-#
-# (#) make anchor database
-#
-print STDERR "[", &'date, "] ", "(#) making temporary database ...\n" if ($'vflag);
-&anchor'create();
 #
 # (9) make HTML files ($SRCS/*)
 #     USING TAG CACHE, %includes and anchor database.
@@ -2137,7 +2131,7 @@ sub src2html {
 	#
 	# load tags belonging to this file.
 	#
-	&anchor'load($file);
+	&anchor'load($file) unless ($notsource);
 	$command = "$'gtags --expand -$tabs ";
 	$command .= ($'w32) ? "\"$file\"" : "'$file'";
 	open(SRC, "$command |") || &'error("cannot fork.");
@@ -2550,30 +2544,27 @@ sub link_format {
 #=========================================================================
 package anchor;
 #
-# create: create anchors temporary database
+# load: load anchors belonging to specified file.
 #
-#	go)	%PATHLIST
+#	i)	$file	source file
+#	go)	FIRST	first definition
+#	go)	LAST	last definition
 #
-sub create {
-	$ANCH = "$'tmp/htaga$$";
-	open(ANCH, ">$ANCH") || &'error("cannot create file '$ANCH'.");
-	close(ANCH);
-	chmod ($ANCH, 0600);
-	local($pipeout) = "$'gtags --createdb=$ANCH";
-	open(ANCH, "| $pipeout") || &'error("cannot fork.");
-	local($fcount) = 1;
-	local($fnumber);
+sub load {
+	local($file) = @_;
+	local(@keys);
+
+	@ANCHORS = ();
+	$FIRST = $LAST = 0;
 
 	foreach $db (&'get_taglist()) {
 		local($option) = &'get_option($db);
-		local($pipein) = "global -nx$option \".*\"";
+		local($pipein) = "global -fn$option ";
+		$pipein .= ($'w32) ? "\"$file\"" : "'$file'";
 		open(PIPE, "$pipein |") || &'error("cannot fork.");
 		while (<PIPE>) {
 			local($tag, $lno, $filename, $image) = split(/\s+/, $_, 4);
-			$fnumber = $PATHLIST{$filename};
-			if (!$fnumber) {
-				$PATHLIST{$filename} = $fnumber = $fcount++;
-			}
+			local($type);
 			if ($db eq 'GTAGS') {
 				$type = ($image =~ /^#[ \t]*(define|undef)/) ? 'M' : 'D';
 			} elsif ($db eq 'GRTAGS') {
@@ -2581,53 +2572,12 @@ sub create {
 			} else {
 				$type = 'Y';
 			}
-			#
-			# key: $fnumber
-			# dat: $lno$type$tag
-			#
-			print ANCH "$fnumber $lno$type$tag\n";
+			push(@keys, int($lno));
+			push(@ANCHORS, "$lno$type$tag");
 		}
 		close(PIPE);
 		if ($?) { &'error("'$pipein' failed."); }
 	}
-	close(ANCH);
-	if ($?) { &'error("'$pipeout' failed."); }
-}
-#
-# finish: remove anchors database
-#
-sub finish {
-	unlink("$ANCH") if (defined($ANCH));
-}
-#
-# load: load anchors belonging to specified file.
-#
-#	i)	$file	source file
-#	gi)	%PATHLIST
-#	go)	FIRST	first definition
-#	go)	LAST	last definition
-#
-sub load {
-	local($file) = @_;
-	local($fnumber);
-
-	@ANCHORS = ();
-	$FIRST = $LAST = 0;
-
-	$file = './' . $file if ($file !~ /^\.\//);
-	if (!($fnumber = $PATHLIST{$file})) {
-		return;
-	}
-	local(@keys);
-	local($command) = "$'gtags --readdb=$ANCH $fnumber";
-	open(ANCH, "$command |") || &'error("cannot fork.");
-	while (<ANCH>) {
-		chop;
-		push(@keys, int);	# int($lno)
-		push(@ANCHORS, $_);	# "$lno$type$tag"
-	}
-	close(ANCH);
-	if ($?) {&'error("'$command' failed."); }
 	sub compare { $keys[$a] <=> $keys[$b]; }
 	@ANCHORS = @ANCHORS[sort compare 0 .. $#keys];
 	local($c);
