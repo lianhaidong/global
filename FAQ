@@ -19,11 +19,12 @@ ___________________________________
 Frequentry Asked Questions about GLOBAL.
 
 ----------------------------------------------------------------------------
-Q1. Does GLOBAL support Windows 32 environment?
+Q1. Does GLOBAL support DOS and Windows 32 environment?
 
-A1. No.
-    But we will accept the code for Windows 32 environment as is.
-    It is hoped that someone makes the package for it.
+A1. Though GNU GLOBAL supports only UNIX(POSIX) environment,
+    some outsite projects develop DOS and Windows 32 version of it.
+    Please see:
+           http://www.gnu.org/software/global/download.html
 
 ----------------------------------------------------------------------------
 Q2. GLOBAL skip some functions.

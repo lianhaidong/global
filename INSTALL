@@ -18,6 +18,11 @@ ___________________________________
 
 Installation of GNU GLOBAL.
 
+[Note]  Though GNU GLOBAL supports only UNIX(POSIX) environment,
+        some outsite projects develop DOS or Windows 32 version of it.
+        Please see:
+                http://www.gnu.org/software/global/download.html
+
 1. Preparation.
 
 o If you want to format man files then nroff is needed.
