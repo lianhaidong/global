@@ -51,15 +51,22 @@ const char *file;
 const char *suffix;
 {
 	int	length;
+	char	sep = '/';
 
 	if (sb == NULL)
 		sb = strbuf_open(0);
 	strbuf_reset(sb);
 	if ((length = strlen(dir)) > MAXPATHLEN)
 		die("path name too long. '%s'\n", dir);
+
+#if defined(_WIN32) || defined(__DJGPP__)
+	/* follows native way. */
+	if (dir[0] == '\\' || dir[2] == '\\')
+		sep = '\\';
+#endif
 	strbuf_puts(sb, dir);
-	strbuf_unputc(sb, '/');
-	strbuf_putc(sb, '/');
+	strbuf_unputc(sb, sep);
+	strbuf_putc(sb, sep);
 	strbuf_puts(sb, file);
 	if (suffix) {
 		if (*suffix != '.')
