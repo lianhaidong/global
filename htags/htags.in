@@ -63,11 +63,12 @@ foreach $c ('sort', 'gtags', 'global') {
 # find filter
 #
 $'gtags = &'usable("gtags");
+$'global = &'usable("global");
 $'findcom = "$'gtags --find";
 #-------------------------------------------------------------------------
 # CONFIGURATION
 #-------------------------------------------------------------------------
-$version = `global --version`;
+$version = `$'global --version`;
 chop($version);
 # null device
 $'null_device = $'w32 ? 'NUL' : '/dev/null';
@@ -735,7 +736,7 @@ while ($ARGV[0] =~ /^-/) {
 	}
 }
 if ($show_version) {
-	local($command) = 'global --version';
+	local($command) = "$'global --version";
 	$command .= ' --verbose' if ($vflag);
 	$command .= ' htags';
 	system($command);
@@ -816,10 +817,10 @@ if ($id_value) {
 # If $dbpath is not specified then listen to global(1).
 if (!$dbpath) {
 	local($cwd) = &'getcwd();
-	local($root) = `global -pqr`;
+	local($root) = `$'global -pqr`;
 	chop($root);
 	if ($cwd eq $root) {
-		$dbpath = `global -pq`;
+		$dbpath = `$'global -pq`;
 		chop($dbpath);
 	} else {
 		$dbpath = '.';
@@ -1474,7 +1475,7 @@ sub makedupindex {
 		#
 		$option .= $'dynamic ? 'nn' : 'n';
 
-		$command = "global -x$option \".*\" | $'gtags --sort";
+		$command = "$'global -x$option \".*\" | $'gtags --sort";
 		open(LIST, "$command |") || &'error("cannot fork.");
 		while (<LIST>) {
 			chop;
@@ -1595,7 +1596,7 @@ sub makedefineindex {
 		print DEFINES "<OL>\n" if (!$'aflag);
 	}
 	local($old) = select(DEFINES);
-	local($command) = "global -c";
+	local($command) = "$'global -c";
 	open(TAGS, "$command |") || &'error("cannot fork.");
 	local($alpha, $alpha_f);
 	@defines = ();	# [A][B][C]...
@@ -1935,7 +1936,7 @@ sub makefileindex {
 	# C: #include "xxx.h"
 	# PHP: include("xxx.inc.php");
 	#
-	local($command) = "global -gnx \"^[ \\t]*(#[ \\t]*include|include[ \\t]*\\()\"";
+	local($command) = "$'global -gnx \"^[ \\t]*(#[ \\t]*include|include[ \\t]*\\()\"";
 	open(PIPE, "$command |") || &'error("cannot fork.");
 	while (<PIPE>) {
 		chop;
@@ -2101,7 +2102,7 @@ sub makecommonpart {
 		$index .= "$'hr\n";
 	}
 	$index .= "<H2>MAINS</H2>\n";
-	local($command) = "global -nx $'main_func | sort +0 -1 +2 -3 +1n -2";
+	local($command) = "$'global -nx $'main_func | sort +0 -1 +2 -3 +1n -2";
 	open(PIPE, "$command |") || &'error("cannot fork.");
 	$index .= &'list_begin();
 	while (<PIPE>) {
@@ -2769,7 +2770,7 @@ sub load {
 	local(@keys);
 	foreach $db (&'get_taglist()) {
 		local($option) = &'get_option($db);
-		local($pipein) = "global -fn$option ";
+		local($pipein) = "$'global -fn$option ";
 		$pipein .= ($'w32) ? "\"$file\"" : "'$file'";
 		open(PIPE, "$pipein |") || &'error("cannot fork.");
 		while (<PIPE>) {
