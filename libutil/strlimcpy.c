@@ -22,6 +22,7 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+#include "die.h"
 
 /*
  * strlimcpy: copy string by size.
@@ -46,6 +47,8 @@ const int size;
 	while (n--)
 		if (!(*d++ = *source++))
 			break;
+	if (n < 0)
+		die("buffer overflow (strlimcpy).");
 	if (n < 0)
 		*d++ = '\0';
 	return d - dist - 1;
