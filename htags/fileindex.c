@@ -840,7 +840,7 @@ makefileindex(file, files)
 	if ((PIPE = popen(command, "r")) == NULL)
 		die("cannot fork.");
 	strbuf_reset(input);
-	while ((_ = strbuf_fgets(input, FIND, STRBUF_NOCRLF)) != NULL) {
+	while ((_ = strbuf_fgets(input, PIPE, STRBUF_NOCRLF)) != NULL) {
 		SPLIT ptable;
                 char *nouse, *lno, *filename, *image;
 		char *last, buf[MAXBUFLEN];
