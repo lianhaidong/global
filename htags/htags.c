@@ -227,6 +227,7 @@ static struct option const long_options[] = {
         {"gtagsconf", required_argument, NULL, 1},
         {"gtagslabel", required_argument, NULL, 1},
         {"id", required_argument, NULL, 1},
+        {"nocgi", no_argument, NULL, 1},
         {"no-map-file", no_argument, &no_map_file, 1},
         {"statistics", no_argument, &statistics, 1},
         {"style-sheet", required_argument, NULL, 1},
@@ -1379,9 +1380,11 @@ main(argc, argv)
                 case 0:
                 case 1:
 			if (!strcmp("action", long_options[option_index].name))
-                                action = optarg;
+                                action_value = optarg;
+			else if (!strcmp("nocgi", long_options[option_index].name))
+                                cgi = 0;
 			else if (!strcmp("id", long_options[option_index].name))
-                                id = optarg;
+                                id_value = optarg;
 			else if (!strcmp("cvsweb", long_options[option_index].name))
                                 cvsweb_url = optarg;
 			else if (!strcmp("cvsweb-cvsroot", long_options[option_index].name))
