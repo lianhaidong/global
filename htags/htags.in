@@ -81,7 +81,8 @@ $'id = '';					# id (default non)
 $'cgi = 1;					# 1: make cgi-bin/
 $'definition_header='after';			# {no|after|before}
 $'other_files = 0;				# 1: list other files
-$'map_file = 1;
+$'map_file = 1;					# generate HTML/MAP
+$'use_cache_file = 1;				# make temporary db
 #
 # tag
 #
@@ -224,6 +225,12 @@ if (&'getconf('no_javascript')) {
 }
 if (&'getconf('no_map_file')) {
 	$'map_file = 0;
+}
+#
+# If enough momory exist, set this variable.
+#
+if (&'getconf('no_cache_file')) {	# undocumented
+	$'use_cache_file = 0;
 }
 if ($var1 = &'getconf('show_position')) {
 	$'show_position = $var1;
@@ -2733,6 +2740,9 @@ package cache;
 #			other: sized cache
 #
 sub open {
+	unless ($'use_cache_file) {
+		return;
+	}
 	$GTAGS  = "$'tmp/htagd$$";
 	dbmopen(%GTAGS, $GTAGS, 0600) || &'error("cannot make cache file '$GTAGS'.");
 	$GRTAGS = "$'tmp/htagr$$";
@@ -2780,6 +2790,9 @@ sub get {
 # close: close cache
 #
 sub close {
+	unless ($'use_cache_file) {
+		return;
+	}
 	if ($GTAGS) {
 		dbmclose(%GTAGS);
 		unlink("$GTAGS", "$GTAGS.db", "$GTAGS.pag", "$GTAGS.dir");
