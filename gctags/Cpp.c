@@ -123,6 +123,9 @@ Cpp()
 						/* ignore constructor */
 						if (target == DEF && strcmp(stack[classlevel].classname, savetok))
 							PUT(savetok, savelineno, saveline);
+					} else {
+						if (target == SYM)
+							PUT(savetok, savelineno, saveline);
 					}
 				}
 			} else {
@@ -364,10 +367,10 @@ int	target;
 		else if (c == /* ( */')') {
 			if (--brace_level == 0)
 				break;
-		} else if (c == SYMBOL) {
-			if (target == SYM)
-				PUT(token, lineno, sp);
 		}
+		/* pick up symbol */
+		if (c == SYMBOL && target == SYM)
+			PUT(token, lineno, sp);
 	}
 	if (c == EOF)
 		return 0;
@@ -402,10 +405,13 @@ int	target;
 		} else if (c == '{' /* } */) {
 			pushbacktoken();
 			return 1;
-		} else if (c == /* { */'}') {
+		} else if (c == /* { */'}')
 			break;
-		} else if (c == '=')
+		else if (c == '=')
 			break;
+		/* pick up symbol */
+		if (c == SYMBOL && target == SYM)
+			PUT(token, lineno, sp);
 	}
 	return 0;
 }
