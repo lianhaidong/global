@@ -43,8 +43,6 @@
 #include "gctags.h"
 #include "const.h"
 
-char *notfunction;
-
 int main(int, char **);
 static void usage(void);
 static void help(void);
