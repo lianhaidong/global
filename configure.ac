@@ -31,6 +31,7 @@ AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 AC_PROG_RANLIB
+AM_PATH_LISPDIR
 dnl
 dnl Currently, the absolute path name of perl is required only for CGI script.
 dnl So, if you don't use the -f(--form) option of htags(1), it is not required.
