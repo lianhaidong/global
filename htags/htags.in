@@ -1145,7 +1145,7 @@ if ($form{'icase'}) {
 	$iflag = 'i';
 }
 $oflag = '';
-if ($form{'other'} && $flag eq 'g') {
+if ($form{'other'} && ($flag eq 'g' || $flag eq 'P')) {
 	$oflag = 'o';
 }
 if ($form{'id'}) {
@@ -1158,10 +1158,11 @@ if ($form{'id'}) {
 		exit 0;
 	}
 }
-if ($flag eq 'g' || $flag eq 'I' || $form{'type'} eq 'source') {
+if ($flag eq 'g' || $flag eq 'I' || $form{'type'} eq 'source' || ($flag eq 'P' && $oflag)) {
 	if (($flag eq 'g' && ! -f "../../GTAGS")
 	 || ($flag eq 'I' && ! -f "../../ID")
-	 || ($form{'type'} eq 'source' && ! -f "../../GTAGS")) {
+	 || ($form{'type'} eq 'source' && ! -f "../../GTAGS")
+	 || ($flag eq 'P' && $oflag && ! -f "../../GTAGS")) {
 		print "<H1><FONT COLOR=#cc0000>Error</FONT></H1>\n";
 		print "<H3>Couldn't execute command. <A HREF=$htmlbase/mains.@normal_suffix@>[return]</A></H3>\n";
 		print "@body_end@\n";
@@ -2053,7 +2054,7 @@ sub makesearchpart {
 	}
 	$index .= "<BR>\n<INPUT TYPE=checkbox NAME=icase VALUE=1 TITLE='Ignore case distinctions in the pattern.'>";
 	$index .= ($target) ? "Icase" : "Ignore case";
-	if ($'enable_grep && $'other_files) {
+	if ($'other_files) {
 		$index .= "\n<INPUT TYPE=checkbox NAME=other VALUE=1 TITLE='Files other than the source code are also retrieved.'>";
 		$index .= ($target) ? "Other" : "Other files";
 	}
