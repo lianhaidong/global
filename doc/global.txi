@@ -1589,7 +1589,7 @@ If you are editing @file{main.c} itself, you can use '%' instead.
 
     :Gtags func1               <- @r{'nc1' is appended by vim}
 
-@item You can browse project files whose path includs specified pattern.
+@item You can browse project files whose path includes specified pattern.
 @opindex -P
 @example
 

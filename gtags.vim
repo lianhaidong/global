@@ -62,7 +62,7 @@
 "
 "       :Gtags -f main.c
 "
-" You can browse project files whose path includs specified pattern.
+" You can browse project files whose path includes specified pattern.
 " For example, you can browse under 'vm/' directory by this:
 "
 "       :Gtags -P /vm/
