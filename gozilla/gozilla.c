@@ -44,7 +44,7 @@ int	main(int, char **);
 int	isprotocol(char *);
 int	issource(char *);
 int	convertpath(char *, char *, char *, STRBUF *);
-void	sendmozilla(char *);
+void	sendbrowser(char *, char *);
 #ifndef _WIN32
 int	sendcommand(char *);
 #endif
@@ -199,6 +199,8 @@ char	*argv[];
 		version(progname, vflag);
 	if (!browser && getenv("BROWSER"))
 		browser = getenv("BROWSER");
+	if (!browser)
+		browser = "mozilla";
 	if (argc == 0)
 		usage();
 	strcpy(arg, argv[0]);
@@ -252,20 +254,26 @@ char	*argv[];
 	}
 	if (pflag) {
 		fprintf(stdout, "%s\n", URL);
+		if (vflag)
+			fprintf(stdout, "using browser '%s'.\n", browser);
 		exit(0);
+	}
+	/*
+	 * send a command to browser.
+	 */
+	if (locatestring(browser, "mozilla", MATCH_AT_LAST)
+		|| locatestring(browser, "netscape", MATCH_AT_LAST)
+		|| locatestring(browser, "netscape-remote", MATCH_AT_LAST))
+	{
+		sendbrowser(browser, URL);
 	}
 	/*
 	 * execute generic browser.
 	 */
-	if (browser && !locatestring(browser, "mozilla", MATCH_AT_LAST)) {
-		sprintf(com, "%s '%s'", browser, URL);
+	else {
+		sprintf(com, "%s \"%s\"", browser, URL);
 		system(com);
-		exit (0);
 	}
-	/*
-	 * send a command to mozilla.
-	 */
-	sendmozilla(URL);
 	exit(0);
 }
 /*
@@ -399,53 +407,51 @@ STRBUF	*sb;
 	return -1;
 }
 /*
- * sendmozilla: send message to mozilla.
+ * sendbrowser: send message to mozilla.
  *
+ *	i)	browser {mozilla|netscape}
  *	i)	url	URL
  *
  */
 #ifdef _WIN32
 void
-sendmozilla(url)
+sendbrowser(browser, url)
+char	*browser;
 char	*url;
 {
-	char	com[1024], *name, *path;
+	char	com[1024], *path;
 	STARTUPINFO si;
 	PROCESS_INFORMATION pi;
 
-	if (path = usable("mozilla"))
-		name = "mozilla";
-	else
-		die("mozilla not found in your path.");
-	
+	if (!(path = usable(browser)))
+		die("%s not found in your path.", browser);
 	ZeroMemory(&si, sizeof(STARTUPINFO));
 	ZeroMemory(&pi, sizeof(PROCESS_INFORMATION));
 	si.cb = sizeof(STARTUPINFO);
 	si.dwFlags = STARTF_USESHOWWINDOW;
 	si.wShowWindow = SW_SHOWNORMAL;
-	sprintf(com, "%s -remote \"openURL(%s)\"", name, url);
+	snprintf(com, sizeof(com), "%s -remote \"openURL(%s)\"", browser, url);
 	if (!CreateProcess(path, com, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi))
-		die("Cannot load mozilla.(error = 0x%04x)\n", GetLastError());
+		die("Cannot load %s.(error = 0x%04x)\n", browser, GetLastError());
 }
 #else
 void
-sendmozilla(url)
+sendbrowser(browser, url)
+char	*browser;
 char	*url;
 {
 	int	pid;
 	char	com[1024], *name, *path;
 
-	if (path = usable("mozilla"))
-		name = "mozilla";
-	else
-		die("mozilla not found in your path.");
+	if (!(path = usable(browser)))
+		die("%s not found in your path.", browser);
 	snprintf(com, sizeof(com), "openURL(%s)", url);
 	if ((pid = fork()) < 0) {
 		die("cannot load mozilla (fork).");
 	} else if (pid == 0) {
 		(void)close(1);
-		execlp(path, name, "-remote", com, NULL);
-		die("cannot load mozilla (execlp).");
+		execlp(path, browser, "-remote", com, NULL);
+		die("cannot load %s (execlp).", browser);
 	}
 }
 #endif /* !_WIN32 */
