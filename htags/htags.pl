@@ -1018,8 +1018,7 @@ sub makerebuild {
 	print FILE "# rebuild.sh: rebuild hypertext with the previous context.\n";
 	print FILE "#\n";
 	print FILE "# Usage:\n";
-	print FILE "#\t(at the root of source directory)\n";
-	print FILE "#\t% sh HTML/rebuild.sh\n";
+	print FILE "#\t% sh rebuild.sh\n";
 	print FILE "#\n";
 	print FILE "cd $cwd && GTAGSCONF='$save_config' htags $save_argv\n";
 	close(FILE);
