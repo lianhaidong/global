@@ -39,7 +39,7 @@ Dirk Schultheis		advice about compat.h for Solaris.
 Emile Heyns		advice about writing code for generic UNIX.
 Eric Paire		bug report about gctags's memory violation.
 Gary Kline		advice about the name of parser.
-Giuseppe Corbelli	Global.py for glimmer code editor.
+Giuseppe Corbelli	Global.py for glimmer code editor and an advice about vim.
 Hageseter, Trond E.	bug report about gctags.
 Hideaki Okada		idea about -g option of global(1).
 Hideki Iwamoto		many bug reports and improvements about gctags(1), htags(1).

@@ -1481,7 +1481,7 @@ Second, write the following set command to the @file{.vimrc} and start vim.
     $HOME/.vimrc
     +----------------------------
     |set grepprg=global\ -t
-    |set grepformat=%m\@kbd{TAB}%f\@kbd{TAB}%l
+    |set grepformat=%m%\\t%f%\\t%l
 
     TAB means @kbd{CTL-I}
 
