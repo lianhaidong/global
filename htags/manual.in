@@ -57,12 +57,20 @@
 	@item{@option{-D}, @option{--dynamic}}
 		Generate object list dynamically using CGI program.
 		By default, object list is generated statically.
+		If hypertext is moved from source directory, line image will be
+		omitted from the list of other symbols.
+		If -c option of @xref{gtags,1} is used and hypertext is moved from source directory,
+		line image will be omitted from the list of definitions and references.
 	@item{@option{-d}, @option{--dbpath} @arg{dbpath}}
 		Specifies the directory in which @file{GTAGS} and @file{GRTAGS}
 		exist. The default is the current directory.
 	@item{@option{-f}, @option{--form}}
 		Support search form using CGI program.
 		You need to set up a HTTP server for this.
+		If hypertext is moved from source directory, line image will be
+		omitted from the list of other symbols.
+		If -c option of @xref{gtags,1} is used and hypertext is moved from source directory,
+		line image will be omitted from the list of definitions and references.
 	@item{@option{-F}, @option{--frame}}
 		Use frame for each part of the contents.
 	@item{@option{-g}, @option{--gtags}}
@@ -224,8 +232,10 @@
 		File index includes not only source files but also other files. The default is false.
 	@item{@code{enable_grep}(boolean)}
 		Enable grep search using CGI program. The default is false.
+		When this function is enabled, you cannot move hypertext from source directory.
 	@item{@code{enable_idutils}(boolean)}
 		Enable id-utils search using CGI program. The default is false.
+		When this function is enabled, you cannot move hypertext from source directory.
 	@end_itemize
 @DIAGNOSTICS
 	@name{Htags} exits with a non 0 value if an error occurred, 0 otherwise.
