@@ -47,7 +47,7 @@
 
 static	int	function_definition(int);
 static  int     seems_datatype(const char *);
-static	void	condition_macro(int);
+static	void	condition_macro(int, int);
 static	void	inittable();
 static	int	reserved(char *);
 
@@ -259,17 +259,7 @@ Cpp()
 		case CP_ELIF:
 		case CP_ELSE:
 		case CP_ENDIF:
-			condition_macro(cc);
-			while ((c = nexttoken(interested, reserved)) != EOF && c != '\n') {
-				if (!strcmp(token, "defined"))
-					continue;
-				if (c == SYMBOL
-				    && (dflag
-					? ((target == REF && defined(token))
-					   || (target == SYM && !defined(token)))
-					: target == SYM))
-					PUT(token, lineno, sp);
-			}
+			condition_macro(cc, target);
 			break;
 		case CP_SHARP:		/* ## */
 			(void)nexttoken(interested, reserved);
@@ -374,7 +364,7 @@ Cpp()
 						case CP_ELIF:
 						case CP_ELSE:
 						case CP_ENDIF:
-							condition_macro(c);
+							condition_macro(c, target);
 							continue;
 						default:
 							break;
@@ -430,7 +420,7 @@ Cpp()
 					case CP_ELIF:
 					case CP_ELSE:
 					case CP_ENDIF:
-						condition_macro(c);
+						condition_macro(c, target);
 						continue;
 					default:
 						break;
@@ -504,7 +494,7 @@ int	target;
 		case CP_ELIF:
 		case CP_ELSE:
 		case CP_ENDIF:
-			condition_macro(c);
+			condition_macro(c, target);
 			continue;
 		default:
 			break;
@@ -541,7 +531,7 @@ int	target;
 		case CP_ELIF:
 		case CP_ELSE:
 		case CP_ENDIF:
-			condition_macro(c);
+			condition_macro(c, target);
 			continue;
 		default:
 			break;
@@ -578,10 +568,12 @@ int	target;
  * condition_macro: 
  *
  *	i)	cc	token
+ *	i)	target	current target
  */
 static void
-condition_macro(cc)
+condition_macro(cc, target)
 	int	cc;
+	int	target;
 {
 	cur = &pifstack[piflevel];
 	if (cc == CP_IFDEF || cc == CP_IFNDEF || cc == CP_IF) {
@@ -624,6 +616,17 @@ condition_macro(cc)
 				if (cur->end != level && wflag)
 					fprintf(stderr, "Warning: uneven level. [+%d %s]\n", lineno, curfile);
 				level = cur->end;
+			}
+		}
+	}
+	while ((cc = nexttoken(NULL, reserved)) != EOF && cc != '\n') {
+                if (cc == SYMBOL && strcmp(token, "defined") != 0) {
+			if (target == REF) {
+				if (dflag && defined(token))
+		                        PUT(token, lineno, sp);
+			} else if (target == SYM)
+				if (!dflag || !defined(token))
+		                	PUT(token, lineno, sp);
 			}
 		}
 	}
