@@ -21,7 +21,7 @@ ___________________________________
 You need to have the following package installed:
 
 	- flex
-	- GNU gperf
+	- GNU gperf (version 3.0.1 or later)
 
 (1) Generate gperf(1) source from each reserved word file.
 

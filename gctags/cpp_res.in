@@ -17,6 +17,7 @@
 __P				word
 __attribute__,__attribute	word
 __extension__			word
+__thread			word
 asm,__asm,__asm__		word
 const,__const,__const__		word
 inline,__inline,__inline__	word

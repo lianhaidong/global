@@ -76,15 +76,6 @@ if (!$prefix) {
 # [1] Generate option string for gperf(1).
 #
 if ($option) {
-	#
-	# This value should be maintained according to the value of
-	# the reserved words.
-	#
-	if ($prefix eq 'php') {
-		print "--key-positions=1-2,4-6,9,\$\n";
-	} else {
-		print "--key-positions=1-3,6,\$\n";
-	}
 	print "--language=C\n";
 	print "--struct-type\n";
 	print "--slot-name=${slot_name}\n";
