@@ -64,7 +64,9 @@ sub getline {
 		$_ = $lastline;
 		$lastline = '';
 	} else {
-		$_ = <INFILE>;
+		while (<INFILE>) {
+			last unless (/^#/);
+		}
 	}
 	($_) ? 1 : 0;
 }
@@ -234,7 +236,6 @@ sub gen {
 	local($arg) = '[^,]+';
 	print ".\\\" This file is generated automatically by $'com from $'infile.\n";
 	while (&'getline()) {
-		next if (/^#/);		# comment
 		if (/^\@HEADER\s+($arg),($arg),($arg),($arg)\n$/) {
 			print ".TH $1 $2 \"$3\" \"$4\"\n";
 		} elsif (/^\@NAME\s+(.*)$/) {
@@ -312,7 +313,6 @@ sub convert {
 sub gen {
 	print "\@c This file is generated automatically by $'com from $'infile.\n";
 	while (&'getline()) {
-		next if (/^#/);		# comment
 		if (/^\@HEADER/) {
 			;
 		} elsif (/^\@(NAME)\s+(.*)$/) {
