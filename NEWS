@@ -33,6 +33,7 @@ Current version by Shigio Yamaguchi
 * htags: -l(--each-line-tag) option deleted.
   From now on, htags works as if -l flag is always specified.
 * global: path conversion optimized and bug fixed.
+* gtags.conf: added documentation about variables.
 
 Version 4.3.1 - Jan 22 2002, by Shigio Yamaguchi
 

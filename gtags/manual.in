@@ -1,7 +1,7 @@
 #
 # Copyright (c) 1996, 1997, 1998, 1999
 #             Shigio Yamaguchi. All rights reserved.
-# Copyright (c) 1999, 2000, 2001
+# Copyright (c) 1999, 2000, 2001, 2002
 #             Tama Communications Corporation. All rights reserved.
 #
 # This file is part of GNU GLOBAL.
@@ -25,7 +25,7 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	GTAGS,1,December 2001,GNU Project
+@HEADER	GTAGS,25,March 2002,GNU Project
 @NAME	gtags - create tag files for global.
 @SYNOPSIS
 	@name{gtags} [-c][-i][-I][-o][-P][-q][-v][-w][@arg{dbpath}]
