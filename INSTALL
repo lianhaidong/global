@@ -4,7 +4,7 @@ ___________________________________
 |  |   |  |  |  |  |     |     |  |
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Copyright (c) 2000, 2002, 2003 Tama Communications Corporation
+ Copyright (c) 2000, 2002, 2003, 2004 Tama Communications Corporation
 
  This file is free software; as a special exception the author gives
  unlimited permission to copy and/or distribute it, with or without
@@ -33,11 +33,16 @@ o If your environment is Windows32(Windows95,98,NT...), you need to
 	CYGWIN: http://cygwin.com/
 	DJGPP:  http://www.delorie.com/djgpp/
 
-  You should install the following tools:
+  You should install the following GNU tools and set the path so that they
+  are invoked.
 
 	gcc, perl, bash, sed, grep, id-utils
 	find, xargs(Find-utils)
 	sort, cat, tr(Text-utils)
+
+  CAUTION: Windows32 environment also has two commands named 'find' and 'sort'
+           but they are different from GNU's one. Please set the path
+           so that GNU find and GNU sort are invoked.
 
 o nroff is needed for formatting online manuals.
 
