@@ -2134,20 +2134,25 @@ sub src2html {
 		}
 		print " */$'comment_end";
 		print "\n<HR>\n";
-		print "<H2>$'title_define_index</H2>\n";
-		print "This source file includes following functions.\n";
-		print "<OL>\n";
+
+		local($define_index) = '';
 		local($lno, $tag, $type);
 		for (($lno, $tag, $type) = &anchor'first(); $lno; ($lno, $tag, $type) = &anchor'next()) {
 			if ($type eq 'D') {
-				print "<LI><A HREF=#$lno";
-				print " title=\"" . &'show('R',$lno,'') . "\"";
-				print " onMouseOver=\"show('R',$lno,'')\"" if ($'use_javascript);
-				print ">$tag</A>\n";
+				$define_index .= "<LI><A HREF=#$lno";
+				$define_index .= " title=\"" . &'show('R',$lno,'') . "\"";
+				$define_index .= " onMouseOver=\"show('R',$lno,'')\"" if ($'use_javascript);
+				$define_index .=  ">$tag</A>\n";
 			}
 		}
-		print "</OL>\n";
-		print "<HR>\n";
+		if ($define_index) {
+			print "<H2>$'title_define_index</H2>\n";
+			print "This source file includes following definitions.\n";
+			print "<OL>\n";
+			print $define_index;
+			print "</OL>\n";
+			print "<HR>\n";
+		}
 
 		local($basename) = ($file =~ /([^\/]+)$/);
 		if (defined $'included_from{$basename}) {
