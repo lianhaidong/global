@@ -63,13 +63,16 @@ static regex_t reg;
  * GLOBAL-1.9 - 2.24 	understand format version.
  *			support format version 1 (default).
  *			if (format version > 1) then print error message.
- * GLOBAL-3.0 - 4.0	understand format version.
- *			support format version 1 and 2.
+ * GLOBAL-3.0 - 4.5	support format version 1 and 2.
  *			if (format version > 2) then print error message.
+ * GLOBAL-4.6 -		support format version 1, 2 and 3.
+ *			if (format version > 3) then print error message.
  * format version 1:
  *	original format.
  * format version 2:
- *	compact format, path index.
+ *	compact format + pathindex format
+ * format version 3:
+ *	only pathindex format
  */
 static int	support_version = 3;	/* acceptable format version   */
 static const char *tagslist[] = {"GPATH", "GTAGS", "GRTAGS", "GSYMS"};
@@ -779,6 +782,12 @@ char *line;
 
 	return strbuf_value(output);
 }
+/*
+ * genrecord: generate original tag line from compact format.
+ *
+ *	io)	gtop	GTOP structure
+ *	r)		tag line
+ */
 static char *
 genrecord(gtop)
 GTOP	*gtop;
