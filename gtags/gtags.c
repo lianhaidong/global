@@ -62,7 +62,7 @@ void	put_converting(char *, int, int);
 
 int	cflag;					/* compact format */
 int	iflag;					/* incremental update */
-int	Iflag;					/* make  idutils index */
+int	Iflag;					/* make  id-utils index */
 int	oflag;					/* suppress making GSYMS */
 int	Pflag;					/* use postgres */
 int	qflag;					/* quiet mode */
@@ -688,13 +688,13 @@ char	*argv[];
 			exit(1);
 	}
 	/*
-	 * create idutils index.
+	 * create id-utils index.
 	 */
 	if (Iflag) {
 		char *path;
 
 		if (vflag)
-			fprintf(stderr, "[%s] Creating indexes for idutils.\n", now());
+			fprintf(stderr, "[%s] Creating indexes for id-utils.\n", now());
 		strbuf_reset(sb);
 		strbuf_puts(sb, "mkid --file=");
 		strbuf_puts(sb, makepath(dbpath, "ID", NULL));

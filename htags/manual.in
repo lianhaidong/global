@@ -201,7 +201,7 @@
 	@item{@code{enable_grep}(boolean)}
 		Enable grep search using CGI program. The default is false.
 	@item{@code{enable_idutils}(boolean)}
-		Enable idutils search using CGI program. The default is false.
+		Enable id-utils search using CGI program. The default is false.
 	@end_itemize
 @DIAGNOSTICS
 	@name{Htags} exits with a non 0 value if an error occurred, 0 otherwise.

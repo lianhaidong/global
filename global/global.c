@@ -304,7 +304,7 @@ char	*argv[];
 	 */
 	getdbpath(cwd, root, dbpath, (pflag && vflag));
 	if (Iflag && !test("f", makepath(root, "ID", NULL)))
-		die("You must have idutils's index at the root of source tree.");
+		die("You must have id-utils's index at the root of source tree.");
 	/*
 	 * print dbpath or rootdir.
 	 */
@@ -429,7 +429,7 @@ char	*argv[];
 		exit(0);
 	}
 	/*
-	 * exec lid(idutils).
+	 * exec lid(id-utils).
 	 */
 	if (Iflag) {
 		chdir(root);
@@ -628,7 +628,7 @@ char	*line;
 		fprintf(op, "%s\n", line); 
 }
 /*
- * idutils:  lid(idutils) pattern
+ * idutils:  lid(id-utils) pattern
  *
  *	i)	pattern	POSIX regular expression
  *	i)	dbpath	GTAGS directory
@@ -647,7 +647,7 @@ char	*dbpath;
 
 	lid = usable("lid");
 	if (!lid)
-		die("lid(idutils) not found.");
+		die("lid(id-utils) not found.");
 	/*
 	 * convert spaces into %FF format.
 	 */
@@ -673,7 +673,7 @@ char	*dbpath;
 	strbuf_puts(ib, pattern);
 	strbuf_putc(ib, '\'');
 	if (debug)
-		fprintf(stderr, "idutils: %s\n", strbuf_value(ib));
+		fprintf(stderr, "id-utils: %s\n", strbuf_value(ib));
 	if (!(ip = popen(strbuf_value(ib), "r")))
 		die("cannot execute '%s'.", strbuf_value(ib));
 	if (!(op = openfilter()))
@@ -686,7 +686,7 @@ char	*dbpath;
 		while (*p && *p != ':')
 			p++;
 		if ((xflag || tflag) && !*p)
-			die("invalid lid(idutils) output format. '%s'", line);
+			die("invalid lid(id-utils) output format. '%s'", line);
 		*p++ = 0;
 		if (lflag) {
 			if (!locatestring(path, localprefix + 2, MATCH_AT_FIRST))
@@ -732,7 +732,7 @@ char	*dbpath;
 			fprintf(stderr, "%d object located", count);
 		if (count > 1)
 			fprintf(stderr, "%d objects located", count);
-		fprintf(stderr, " (using idutils index in '%s').\n", dbpath);
+		fprintf(stderr, " (using id-utils index in '%s').\n", dbpath);
 	}
 }
 /*

@@ -271,7 +271,7 @@
   (gtags-find-with "g"))
 
 (defun gtags-find-with-idutils ()
-  "Input pattern, search with idutils(1) and move to the locations."
+  "Input pattern, search with id-utils(1) and move to the locations."
   (interactive)
   (gtags-find-with "I"))
 
@@ -379,7 +379,7 @@
 ;; common function
 ;;
 
-;; find with grep or idutils.
+;; find with grep or id-utils.
 (defun gtags-find-with (flag)
   (let (tagname prompt input)
     (setq tagname (gtags-current-token))
@@ -484,7 +484,7 @@ Input symbol and move to the locations.
 	\\[gtags-find-symbol]
 Input pattern, search with grep(1) and move to the locations.
 	\\[gtags-find-with-grep]
-Input pattern, search with idutils(1) and move to the locations.
+Input pattern, search with id-utils(1) and move to the locations.
 	\\[gtags-find-with-idutils]
 Input pattern and move to the top of the file.
 	\\[gtags-find-file]
