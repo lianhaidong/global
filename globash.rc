@@ -640,14 +640,14 @@ last()	{
 }
 next()	{
 	case $1 in
-	-*)	show $1 next;;
-	*)	show next;;
+	-*)	show $1 next $2;;
+	*)	show next $2;;
 	esac
 }
 prev()	{
 	case $1 in
-	-*)	show $1 prev;;
-	*)	show prev;;
+	-*)	show $1 prev $2;;
+	*)	show prev $2;;
 	esac
 }
 show()	{
@@ -664,7 +664,11 @@ show()	{
 		esac
 		;;
 	esac
-	__gtags_view_tag $1
+	case $1 in
+	next|prev)
+		__gtags_view_tag $1 $2;;
+	*)	__gtags_view_tag $1;;
+	esac
 }
 
 ###########################################################################
