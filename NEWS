@@ -20,6 +20,11 @@ ___________________________________
 GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 4.3.1 - Jan 22 2002, by Shigio Yamaguchi
+
+This is bug fix version.
+* htags: global.cgi wasn't generated correctly.
+
 Version 4.3 - Jan 10 2002, by Shigio Yamaguchi
 
 * Support DJGPP.

@@ -48,6 +48,7 @@ Hiroshi MIURA		idea about printing file name on browser's status bar.
 Jason Hood		port to DJGPP environment.
 Jeff Trawick		idea about -l option of htags(1).
 Jordan K. Hubbard	idea about supporting BSD's obj directory.
+Jos Backus		bug report about global.cgi.
 Julien Gilles		idea about -T option of global(1).
 Jun Obama		improvements on gtags.el.
 Justin Tripp		software evaluation for GNU standard.

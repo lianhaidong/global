@@ -19,6 +19,11 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+Jan 22 2002, Shigio Yamaguchi  <shigio@gnu.org>
+
+	* htags: build trouble fixed.
+	  global.cgi wasn't generated correctly.
+
 Jan 10 2002, Shigio Yamaguchi  <shigio@gnu.org>
 
 	* DJGPP support code added.
