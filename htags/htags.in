@@ -221,7 +221,9 @@ if (&'getconf('no_map_file')) {
 	$'map_file = 0;
 }
 #
-# If enough momory exist, set this variable.
+# If enough momory exist and perl is configured so that vfork might be used,
+# set this variable.
+# Note that vfork is no longer used in perl-5.8.
 #
 if (&'getconf('no_cache_file')) {	# undocumented
 	$'use_cache_file = 0;
