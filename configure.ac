@@ -45,7 +45,7 @@ fi
 dnl Checks for libraries.
 
 dnl Checks for header files.
-AC_CHECK_HEADERS(limits.h string.h unistd.h stdarg.h sys/time.h)
+AC_CHECK_HEADERS(limits.h string.h unistd.h stdarg.h sys/time.h fcntl.h)
 AC_HEADER_DIRENT
 if test ${ac_header_dirent} = no; then
         AC_MSG_ERROR([dirent(3) is required but not found.])
