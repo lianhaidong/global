@@ -71,7 +71,7 @@
 		The format is readable by @xref{btreeop,1}.
 	@item{@option{-n}, @option{--line-number}}
 		Print the line numbers. By default, doesn't print it.
-	@item{@option{--no-javascript}
+	@item{@option{--no-javascript}}
 		Doesn't put javascript code.
 		By default, @name{htags} put javascript code.
 	@item{@option{-o}, @option{--other}}
@@ -177,7 +177,7 @@
 		List tags using table tag. The default is false.
 	@item{@code{normal_suffix}(string)}
 		Suffix for normal html file. The default is 'html'.
-	@item{@code{no_javascript}
+	@item{@code{no_javascript}}
 		Doesn't put javascript code. By default, @name{htags} put javascript code.
 	@item{@code{gzipped_suffix}(string)}
 		Suffix for compressed html file. The default is 'ghtml'.
