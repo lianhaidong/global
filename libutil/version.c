@@ -28,8 +28,6 @@
 
 #include "version.h"
 
-extern int vflag;
-
 const char *copy = "\
 Copyright (c) 1996, 1997, 1998, 1999 Shigio Yamaguchi\n\
 Copyright (c) 1999, 2000, 2001, 2002, 2003 Tama Communications Corporation\n\
