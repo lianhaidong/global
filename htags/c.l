@@ -26,8 +26,9 @@
 #include <config.h>
 #endif
 #include <stdio.h>
+#ifdef STDC_HEADERS
 #include <stdlib.h>
-#include <stdarg.h>
+#endif
 #include "global.h"
 #include "anchor.h"
 #include "incop.h"
