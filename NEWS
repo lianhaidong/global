@@ -18,18 +18,19 @@ ___________________________________
 		----------------------------------
 
 GLOBAL NEWS - User visible changes.
+At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
 Version 4.1.0a
 
-incompatible changes
+[INCOMPATIBLE CHANGES]
 
 * global: rename the -i(incremental) option to -u(update) and the new
   -i(--ignore-case) option added. Sorry for my incompatible change from
   the older version. But I believe it should be so.
-* gtags.conf: rename global.conf into gtags.conf because the name was
-  too generic. (Old name is acceptable for compatibility.)
+* gtags.conf: rename global.conf into gtags.conf because the old name was
+  too generic. (GLOBAL also accepts old name for compatibility.)
 
-other changes
+[OTHER CHANGES]
 
 * htags: create bless.sh when the -S option specified.
 * htags: config variables prolog_script, epilog_script, show_position,
@@ -50,7 +51,7 @@ Version 4.0.1 - September 26, 2000, by Shigio Yamaguchi
 
 Version 4.0 - September 3, 2000, by Shigio Yamaguchi
 
-incompatible changes
+[INCOMPATIBLE CHANGES]
 
 * htags: doesn't make frame tags(<FRAME>...</FRAME>) by default to reduce
   dependency on javascript.
@@ -84,7 +85,7 @@ incompatible changes
         (define-key gtags-mode-map "\e." 'etags-style-find-tag)
 ))
 
-other changes
+[OTHER CHANGES]
 
 * Some bugs are fixed.
 * Support long name options.
