@@ -28,7 +28,7 @@
 #
 bash_minorversion=$(echo ${BASH_VERSINFO[1]} | sed 's/[^0-9]//')
 if !(( BASH_VERSINFO[0] > 2 || BASH_VERSINFO[0] == 2 && 10#${bash_minorversion} >= 4 )); then
-	echo "GloBash needs Bash version 2.04 or later."
+	echo "GLOBASH ERROR: GloBash needs Bash version 2.04 or later."
 	exit 1
 fi
 unset bash_minorversion
@@ -54,7 +54,14 @@ if [ ! -d $GHOME ]; then
 	echo -n "Create '$GHOME'? ([y]/n) "
 	while read ans; do
 		case $ans in
-		Y|y|"")	mkdir $GHOME; break;;
+		Y|y|"")
+			if mkdir $GHOME; then
+				break
+			else
+				echo "GLOBASH ERROR: Cannot make '$GHOME' directory."
+				exit 1
+			fi
+			;;
 		N|n)	echo "Bye ..."; exit 1;;
 		esac
 	done
@@ -65,10 +72,6 @@ if [ ! -d $GHOME ]; then
 	echo
 else
 	echo "When you need help, please type 'ghelp'."
-fi
-if [ ! -d $GHOME ]; then
-	echo "Cannot make '$GHOME' directory."
-	exit 1
 fi
 #
 # Temporary file definitions:
