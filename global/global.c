@@ -45,6 +45,7 @@
 
 #include "global.h"
 #include "regex.h"
+#include "usable.h"
 
 const char *progname  = "global";		/* command name */
 
@@ -370,11 +371,16 @@ char	*argv[];
 	 * incremental update of tag files.
 	 */
 	if (uflag) {
+		char *gtags = usable("gtags");
 		STRBUF	*sb = strbuf_open(0);
 
+		if (!gtags)
+			die("gtags command not found.");
 		if (chdir(root) < 0)
 			die("cannot change directory to '%s'.", root);
-		strbuf_puts(sb, "gtags -i");
+		
+		strbuf_puts(sb, gtags);
+		strbuf_puts(sb, " -i");
 		if (vflag)
 			strbuf_putc(sb, 'v');
 		strbuf_putc(sb, ' ');
@@ -874,6 +880,7 @@ char	*dbpath;
 	char	edit[IDENTLEN+1];
 	char    *line, *p, *path, *lno;
 	int     linenum, count, editlen;
+	char *gtags = usable("gtags");
 
 	/*
 	 * convert spaces into %FF format.
@@ -884,7 +891,10 @@ char	*dbpath;
 	 * make grep command line.
 	 * (/dev/null needed when single argument specified.)
 	 */
-	strbuf_puts(ib, "gtags --find ");
+	if (!gtags)
+		die("gtags command not found.");
+	strbuf_puts(ib, gtags);
+	strbuf_puts(ib, " --find ");
 	if (lflag)
 		strbuf_puts(ib, localprefix);
 	strbuf_puts(ib, "| xargs grep ");

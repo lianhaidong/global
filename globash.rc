@@ -713,7 +713,7 @@ ghelp() {
 	echo "	You can specify a editor statically by EDITOR environment"
 	echo "	variable or temporarily by option."
 	echo "	(-l: less, -v: vi, -e: emacs, -g:gozilla, -n: no editor)"
-	echo "	show [-l|-v|-e|-g-n]][<no>|first|last]"
+	echo "	show [-l|-v|-e|-g|-n][<no>|first|last]"
 	echo "			- view specified (default=current) tag."
 	echo "	first [-l|-v|-e|-g|-n]"
 	echo "			- view the first tag."
