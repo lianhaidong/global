@@ -76,12 +76,25 @@ char	*l;
 	char	*f, *b;
 	int	colon = 0;
 
+	/*
+	 * delete blanks.
+	 */
 	for (f = b = l; *f; f++) {
 		if (colon && isblank(*f))
 			continue;
 		colon = 0;
 		if ((*b++ = *f) == ':')
 			colon = 1;
+	}
+	*b = 0;
+	/*
+	 * delete duplicate semi colons.
+	 */
+	for (f = b = l; *f;) {
+		if ((*b++ = *f++) == ':') {
+			while (*f == ':')
+				f++;
+		}
 	}
 	*b = 0;
 }
@@ -100,31 +113,31 @@ static char	*
 readrecord(label)
 const char *label;
 {
-	char	*p, *q;
+	char	*line, *p, *q;
 	int	flag = STRBUF_NOCRLF;
-	int	line = 0;
+	int	count = 0;
 
 	rewind(fp);
-	while ((p = strbuf_fgets(ib, fp, flag)) != NULL) {
-		line++;
+	while ((line = strbuf_fgets(ib, fp, flag)) != NULL) {
+		count++;
 		flag &= ~STRBUF_APPEND;
-		if (*p == '#' || *p == '\0')
+		if (*line == '#' || *line == '\0')
 			continue;
 		if (strbuf_unputc(ib, '\\')) {
 			flag |= STRBUF_APPEND;
 			continue;
 		}
-		trim(p);
-		for (;;) {
+		trim(line);
+		for (p = line;;) {
 			if ((q = strmake(p, "|:")) == NULL)
-				die("invalid config file format (line %d).", line);
+				die("invalid config file format (line %d).", count);
 			if (!strcmp(label, q)) {
-				if (!(p = locatestring(p, ":", MATCH_FIRST)))
+				if (!(p = locatestring(line, ":", MATCH_FIRST)))
 					die("invalid config file format (line %d).", line);
-				p = strdup(p);
-				if (!p)
+				line = strdup(p);
+				if (!line)
 					die("short of memory.");
-				return p;
+				return line;
 			}
 			p += strlen(q);
 			if (*p == ':')
@@ -132,7 +145,7 @@ const char *label;
 			else if (*p == '|')
 				p++;
 			else
-				die("invalid config file format (line %d).", line);
+				die("invalid config file format (line %d).", count);
 		}
 	}
 	return NULL;
@@ -226,6 +239,8 @@ openconf()
 	 */
 	else if (*config != '/') {
 		line = strdup(config);
+		if (!locatestring(line, ":", MATCH_FIRST))
+			die("GTAGSCONF must be absolute path name.");
 	}
 	/*
 	 * else load value from config file.
@@ -302,6 +317,7 @@ openconf()
 	strbuf_close(sb);
 	if (!line)
 		die("short of memory.");
+	trim(line);
 	return;
 }
 /*
