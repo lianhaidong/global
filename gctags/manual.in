@@ -23,7 +23,7 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	GCTAGS,17,Jul 2002,GNU Project
+@HEADER	GCTAGS,1,Jul 2002,GNU Project
 @NAME	gctags - print cross reference list for gtags.
 @SYNOPSIS
 	@name{gctags} [-bdenrsvw] @arg{file} ...
