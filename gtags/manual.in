@@ -37,7 +37,7 @@
 	If your source directory is on a read only device like CDROM,
 	specify @arg{dbpath} of the directory on which make tag files.
 
-	C, C++, yacc, java and assembler source files are supported.
+	C, C++, yacc, java, PHP and assembler source files are supported.
 	Files whose names end in @file{.c} or @file{.h} are assumed to be
 	C source files and are searched for C style routine and macro
 	definitions.
@@ -45,6 +45,8 @@
 	@file{.hxx} @file{.C} @file{.H} are assumed to be C++ source files.
 	Files whose names end in @file{.y} are assumed to be YACC source files.
 	Files whose names end in @file{.java} are assumed to be Java source files.
+	Files whose names end in @file{.php} @file{.php3} @file{.phtml} are
+	assumed to be PHP source files.
 	Files whose names end in @file{.s} or @file{.S}
 	are assumed to be Assembler source files.
 	Other files are searched for C style definitions.
@@ -136,7 +138,7 @@
 	@item{@code{suffixes}(comma separated list)}
 		Suffixes of target source file.
 		As a special exception, @name{gtags} collect values from multiple @code{suffixes} variables.
-		By default, it assumes c, h, y, c++, cc, cpp, cxx, hxx, C, H, s, S, java.
+		By default, it assumes c, h, y, c++, cc, cpp, cxx, hxx, C, H, s, S, java, php, php3, phtml.
 	@item{@code{format}(standard|compact)}
 		Format of tag files. The default is @code{standard}.
 		Compact format is same to @option{-c}(@option{--compact}).

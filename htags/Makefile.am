@@ -18,10 +18,16 @@ endif
 
 PERL = @PERL@
 
-htags: $(srcdir)/htags.in $(srcdir)/const.pl
-	echo "#! @PERL@" | cat - $(srcdir)/const.pl $(srcdir)/htags.in | \
+PHP_RES = $(srcdir)/../gctags/php_res.pl
+
+htags: $(srcdir)/htags.in $(srcdir)/const.pl $(PHP_RES)
+	echo "#! @PERL@" | \
+	cat - $(srcdir)/const.pl $(PHP_RES) $(srcdir)/htags.in | \
 	sed -e 's,@''PERL''@,$(PERL),g' >htags.tmp && \
 	chmod +x htags.tmp && mv htags.tmp htags
+
+$(PHP_RES):
+	(cd ../gctags; make ph_res.pl)
 
 man_MANS = htags.1
 

@@ -11,7 +11,7 @@
 #
 PROG   = gctags
 EXE    = $(PROG).exe
-OBJS   = java.obj gctags.obj assembler.obj C.obj Cpp.obj
+OBJS   = java.obj gctags.obj assembler.obj C.obj Cpp.obj php.obj
 !include ..\makefile.inc
 
 all: $(EXE)

@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 1999 Shigio Yamaguchi
- * Copyright (c) 1999, 2000, 2001, 2002 Tama Communications Corporation
+ * Copyright (c) 1999, 2000, 2001, 2002, 2003 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -36,7 +36,7 @@
 #define DOS_GTAGSRC	"_globalrc"
 #endif
 #define DEFAULTLABEL    "default"
-#define DEFAULTSUFFIXES "c,h,y,c++,cc,cpp,cxx,hxx,C,H,s,S,java"
+#define DEFAULTSUFFIXES "c,h,y,c++,cc,cpp,cxx,hxx,C,H,s,S,java,php,php3,phtml"
 #define DEFAULTSKIP     "GPATH,GTAGS,GRTAGS,GSYMS,HTML/,tags,TAGS,ID,y.tab.c,y.tab.h,.notfunction,cscope.out,SCCS/,RCS/,CVS/,CVSROOT/,.deps/,{arch}/"
 
 void	openconf(void);

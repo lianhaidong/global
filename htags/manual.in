@@ -260,6 +260,8 @@
 @BUG
 	Generated hypertext is VERY LARGE.
 	In advance, check the space of your disk.
+
+	PHP supprt is far from complete.
 @AUTHOR
 	Shigio Yamaguchi
 @HISTORY

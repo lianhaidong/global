@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (c) 2001 Tama Communications Corporation
+# Copyright (c) 2001, 2003 Tama Communications Corporation
 #
 # This file is part of GNU GLOBAL.
 #
@@ -26,8 +26,8 @@ case $1 in
 --help)	echo "Usage: sh reconf.sh [--configure|--make|--install]"
 	exit 0;;
 esac
-prog='autoconf automake aclocal autoheader'	# required programs
-file='convert.pl configure.ac Makefile.am'	# required files
+prog='autoconf automake aclocal autoheader flex gperf'	# required programs
+file='convert.pl configure.ac Makefile.am gctags/reserved.pl'	# required files
 
 echo "- File existent checking..."
 for f in `echo $file`; do
@@ -57,6 +57,21 @@ for p in `echo $prog`; do
 		exit 1;;
 	esac
 done
+
+#
+# We should do this before packaging so that user can build it without
+# flex and gperf.
+#
+echo "- Preparing parser source ..."
+(cd gctags; set -x; for lang in php; do
+	name=${lang}_res
+	perl ./reserved.pl --prefix=$lang --regex ${name}.in > ${name}.pl
+	perl ./reserved.pl --prefix=$lang ${lang}_res.in > ${name}.gpf
+	option=`perl ./reserved.pl --prefix=$lang --option`
+	gperf $option < ${name}.gpf > ${name}.h
+	flex -o$lang.c $lang.l
+done
+)
 
 echo "- Collecting reference manuals ..."
 commands="global gtags htags gctags gozilla";
