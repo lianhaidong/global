@@ -203,35 +203,37 @@ includelabel(sb, label, level)
  * configpath: get path of configuration file.
  */
 static char *
-configpath() {
-	static char config[MAXPATHLEN+1];
+configpath()
+{
+	STATIC_STRBUF(sb);
 	char *p;
 
+	strbuf_clear(sb);
 	/*
 	 * at first, check environment variable GTAGSCONF.
 	 */
 	if (getenv("GTAGSCONF") != NULL)
-		strlimcpy(config, getenv("GTAGSCONF"), sizeof(config));
+		strbuf_puts(sb, getenv("GTAGSCONF"));
 	/*
 	 * if GTAGSCONF not set then check standard config files.
 	 */
 	else if ((p = get_home_directory()) && test("r", makepath(p, GTAGSRC, NULL)))
-		strlimcpy(config, makepath(p, GTAGSRC, NULL), sizeof(config));
+		strbuf_puts(sb, makepath(p, GTAGSRC, NULL));
 #ifdef __DJGPP__
 	else if ((p = get_home_directory()) && test("r", makepath(p, DOS_GTAGSRC, NULL)))
-		strlimcpy(config, makepath(p, DOS_GTAGSRC, NULL), sizeof(config));
+		strbuf_puts(sb, makepath(p, DOS_GTAGSRC, NULL));
 #endif
 	else if (test("r", GTAGSCONF))
-		strlimcpy(config, GTAGSCONF, sizeof(config));
+		strbuf_puts(sb, GTAGSCONF);
 	else if (test("r", OLD_GTAGSCONF))
-		strlimcpy(config, OLD_GTAGSCONF, sizeof(config));
+		strbuf_puts(sb, OLD_GTAGSCONF);
 	else if (test("r", DEBIANCONF))
-		strlimcpy(config, DEBIANCONF, sizeof(config));
+		strbuf_puts(sb, DEBIANCONF);
 	else if (test("r", OLD_DEBIANCONF))
-		strlimcpy(config, OLD_DEBIANCONF, sizeof(config));
+		strbuf_puts(sb, OLD_DEBIANCONF);
 	else
 		return NULL;
-	return config;
+	return strbuf_value(sb);
 }
 /*
  * openconf: load configuration file.
