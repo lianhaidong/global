@@ -26,6 +26,7 @@
 #endif
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <errno.h>
 
 #include <ctype.h>
 #include <stdio.h>
@@ -1137,6 +1138,8 @@ int	db;
 		 * convert path into relative from root directory of source tree.
 		 */
 		path = realpath(av, buf);
+		if (path == NULL)
+			die("realpath(%s, buf) failed. (errno=%d).", av, errno);
 		if (!isabspath(path))
 			die("realpath(3) is not compatible with BSD version.");
 		if (strncmp(path, root, strlen(root))) {
