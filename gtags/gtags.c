@@ -58,7 +58,7 @@ void	createtags(char *, char *, int);
 char	*now(void);
 int	printconf(char *);
 void	set_base_directory(char *, char *);
-void	put_with_convert(char *, int);
+void	put_converting(char *, int);
 
 int	cflag;					/* compact format */
 int	iflag;					/* incremental update */
@@ -311,7 +311,7 @@ char	*argv[];
 			die("do_relative: 2 arguments needed.");
 		set_base_directory(root, cwd);
 		while (strbuf_fgets(ib, stdin, 0) != NULL)
-			put_with_convert(strbuf_value(ib), do_absolute ? 1 : 0);
+			put_converting(strbuf_value(ib), do_absolute ? 1 : 0);
 		strbuf_close(ib);
 		exit(0);
 	} else if (Iflag) {
@@ -870,33 +870,31 @@ char	*name;
 	return exist;
 }
 /*
- * put_with_convert: convert path into relative or absolute and print.
+ * put_converting: convert path into relative or absolute and print.
  *
  *	i)	line	raw output from global(1)
  *	i)	absolute 1: absolute, 0: relative
  */
-static STRBUF *root_base;
-static char cwd_base[MAXPATHLEN+1];
+static STRBUF *abspath;
+static char basedir[MAXPATHLEN+1];
 static int start_point;
 void
 set_base_directory(root, cwd)
 char	*root;
 char	*cwd;
 {
-	char *p;
-
-	root_base = strbuf_open(MAXPATHLEN);
-	strbuf_puts(root_base, root);
-	strbuf_unputc(root_base, '/');
-	start_point = strbuf_getlen(root_base);
+	abspath = strbuf_open(MAXPATHLEN);
+	strbuf_puts(abspath, root);
+	strbuf_unputc(abspath, '/');
+	start_point = strbuf_getlen(abspath);
 
 	if (strlen(cwd) > MAXPATHLEN)
 		die("current directory name too long.");
-	strcpy(cwd_base, cwd);
-	/* leave root_base unclosed. */
+	strcpy(basedir, cwd);
+	/* leave abspath unclosed. */
 }
 void
-put_with_convert(line, absolute)
+put_converting(line, absolute)
 char	*line;
 int	absolute;
 {
@@ -904,19 +902,31 @@ int	absolute;
 	char *p, *q;
 	int i = 0;
 
+	/*
+	 * print until path name.
+	 */
 	for (p = line; *p && *p != '.'; p++)
 		(void)putc(*p, stdout);
 	if (*p++ == '\0')
 		return;
-	strbuf_setlen(root_base, start_point);
+	/*
+	 * make absolute path.
+	 */
+	strbuf_setlen(abspath, start_point);
 	for (; *p && !isspace(*p); p++)
-		strbuf_putc(root_base, *p);
+		strbuf_putc(abspath, *p);
+	/*
+	 * put path with converting.
+	 */
 	if (absolute) {
-		(void)fputs(strbuf_value(root_base), stdout);
+		(void)fputs(strbuf_value(abspath), stdout);
 	} else {
-		if (!abs2rel(strbuf_value(root_base), cwd_base, buf, sizeof(buf)))
-			die("abs2rel failed. (path=%s, base=%s).", strbuf_value(root_base), cwd_base);
+		if (!abs2rel(strbuf_value(abspath), basedir, buf, sizeof(buf)))
+			die("abs2rel failed. (path=%s, base=%s).", strbuf_value(abspath), basedir);
 		(void)fputs(buf, stdout);
 	}
+	/*
+	 * print the rest of the record.
+	 */
 	(void)fputs(p, stdout);
 }
