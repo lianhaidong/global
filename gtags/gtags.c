@@ -47,6 +47,7 @@
 #include "const.h"
 
 static void	usage(void);
+static void	help(void);
 void	signal_setup(void);
 void	onintr(int);
 int	match(char *, char *);
@@ -106,7 +107,7 @@ help()
 {
 	fputs(usage_const, stdout);
 	fputs(help_const, stdout);
-	exit(2);
+	exit(0);
 }
 
 static struct option const long_options[] = {

@@ -682,7 +682,7 @@ if ($show_version) {
 }
 if ($show_help) {
 	print STDOUT $help_const;
-	exit 1;
+	exit 0;
 }
 if ($'gflag) {
 	local($command) = $'gtags;
