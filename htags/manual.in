@@ -168,7 +168,7 @@
 	@item{@var{definition_header}(no|before|after)}
 		Position of link header. The default is after.
 	@item{@var{other_files}(boolean)}
-		Print not only source files but also other files. The default is false.
+		File index includes not only source files but also other files. The default is false.
 	@item{@var{enable_grep}(boolean)}
 		Enable grep search using CGI program. The default is false.
 	@item{@var{enable_idutils}(boolean)}
