@@ -483,6 +483,31 @@ delete_stack(sp)
 /* Main procedure							*/
 /*----------------------------------------------------------------------*/
 /*
+ * Encode URL.
+ *
+ *	i)	url	URL
+ *	r)		encoded URL
+ */
+static char *
+encode(url)
+        char *url;
+{
+	STATIC_STRBUF(sb);
+        char *p;
+
+	strbuf_init(sb);
+        for (p = url; *p; p++) {
+		int c = (unsigned char)*p;
+
+                if (isalnum(c))
+			strbuf_putc(sb, c);
+		else
+			strbuf_sprintf(sb, "%%%02x", c);
+        }
+
+	return strbuf_value(sb);
+}
+/*
  * extract_lastname: extract the last name of include line.
  *
  *	i)	image	source image of include
