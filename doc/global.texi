@@ -66,14 +66,7 @@ This manual documents version @value{VERSION} of the GNU GLOBAL source code tag 
 @menu
 * Introduction::                        Overview of the tools.
 * Global::                              Command line GLOBAL.
-* GloBash::                             Global facility for Bash.
-* Less viewer::                         Less using GLOBAL.
-* Nvi-1.79 editor::                     Extended nvi-1.79 using GLOBAL.
-* Nvi-1.81.5 editor::                   nvi-1.81.5 using GLOBAL.
-* Elvis editor::                        Elvis using GLOBAL.
-* Vim editor::                          Vim using GLOBAL.
-* Emacs editor::                        Extended emacs using GLOBAL.
-* Web browser::                         Hypertext generator.
+* Environments::			GLOBAL in diverse environments.
 * Other topics::                        Other topics.
 * Reference::				Reference manual.
 * GNU Free Documentation License::	GNU Free Documentation License.
@@ -524,10 +517,27 @@ one command, for example:
 @end itemize
 
 @c ***************************************************************************
+@c Environments
+@c ***************************************************************************
+@node Environments
+@chapter Command line GLOBAL.
+
+@menu
+* GloBash::                             Global facility for Bash.
+* Less viewer::                         Less using GLOBAL.
+* Nvi-1.79 editor::                     Extended nvi-1.79 using GLOBAL.
+* Nvi-1.81.5 editor::                   nvi-1.81.5 using GLOBAL.
+* Elvis editor::                        Elvis using GLOBAL.
+* Vim editor::                          Vim using GLOBAL.
+* Emacs editor::                        Extended emacs using GLOBAL.
+* Web browser::                         Hypertext generator.
+@end menu
+
+@c ***************************************************************************
 @c GloBash
 @c ***************************************************************************
 @node GloBash
-@chapter Global facility for Bash
+@section Global facility for Bash
 
 Special support for bash is available.
 
@@ -540,7 +550,7 @@ Special support for bash is available.
 
 @c ***************************************************************************
 @node   Features(globash)
-@section Features.
+@subsection Features.
 
 @itemize @bullet
 @item
@@ -557,7 +567,7 @@ Yor can manage directory list by cookie facility.
 
 @c ***************************************************************************
 @node   Preparation(globash)
-@section Preparation.
+@subsection Preparation.
 
 First, do the preparation of global. (Please see @xref{Preparation}.).
 And you can invoke bash(1) with ---rcfile option.
@@ -594,7 +604,7 @@ If you need help then please type 'ghelp'.
 
 @c ***************************************************************************
 @node   Basic usage(globash)
-@section Basic usage.
+@subsection Basic usage.
 
 @itemize @bullet
 @item Almost global(1)(See @xref{global}.)'s command character is available as a command.
@@ -674,7 +684,7 @@ pop or @kbd{CTL-T} command.
 @end itemize
 @c ***************************************************************************
 @node   Applied usage(globash)
-@section Applied usage.
+@subsection Applied usage.
 
 @itemize @bullet
 @item You can memory tags using 'mark' command.
@@ -725,7 +735,7 @@ Cookie directories are valid until you delete them.
 @c Less viewer
 @c ***************************************************************************
 @node Less viewer
-@chapter Less using GLOBAL.
+@section Less using GLOBAL.
 
 You can use GLOBAL as a tag system of less instead of ctags.
 
@@ -738,7 +748,7 @@ You can use GLOBAL as a tag system of less instead of ctags.
 
 @c ***************************************************************************
 @node   Features(less)
-@section Features.
+@subsection Features.
 
 @itemize @bullet
 @item
@@ -749,7 +759,7 @@ Less viewer support duplicated tag.
 
 @c ***************************************************************************
 @node   Preparation(less)
-@section Preparation.
+@subsection Preparation.
 
 First, do the preparation of global. (Please see @xref{Preparation}.).
 
@@ -764,7 +774,7 @@ Second, to use global from less, you need to set environment variable
 
 @c ***************************************************************************
 @node   Basic usage(less)
-@section Basic usage.
+@subsection Basic usage.
 
 @itemize @bullet
 @item To go to func1, you can say
@@ -813,7 +823,7 @@ But in this case, you cannot change tag file from one specified by
 
 @c ***************************************************************************
 @node   Applied usage(less)
-@section Applied usage.
+@subsection Applied usage.
 
 @itemize @bullet
 @item With @kbd{-T-} option, less read standard input as tag file.
@@ -880,7 +890,7 @@ as a footstool.
 @c Nvi editor
 @c ***************************************************************************
 @node Nvi-1.79 editor
-@chapter Extended nvi-1.79 using GLOBAL.
+@section Extended nvi-1.79 using GLOBAL.
 
 You can use GLOBAL as a tag system of Nvi editor instead of ctags.
 
@@ -893,7 +903,7 @@ You can use GLOBAL as a tag system of Nvi editor instead of ctags.
 
 @c ***************************************************************************
 @node   Features(nvi-1.79)
-@section Features.
+@subsection Features.
 
 @itemize @bullet
 @item
@@ -907,7 +917,7 @@ You can use GLOBAL's facilities only in 'gtags mode'.
 
 @c ***************************************************************************
 @node   Preparation(nvi-1.79)
-@section Preparation.
+@subsection Preparation.
 
 First, do the preparation of global. (Please see @xref{Preparation}.).
 
@@ -953,7 +963,7 @@ You must start nvi under the source tree described in @xref{Preparation}.
 
 @c ***************************************************************************
 @node   Basic usage(nvi-1.79)
-@section Basic usage.
+@subsection Basic usage.
 
 @itemize @bullet
 @item To go to func1, you can say
@@ -1026,7 +1036,7 @@ Display the tags stack.
 
 @c ***************************************************************************
 @node   Applied usage(nvi-1.79)
-@section Applied usage.
+@subsection Applied usage.
 
 @itemize @bullet
 @item In large projects that include many main() function like MH, you can start nvi like this:
@@ -1093,7 +1103,7 @@ using hypertext.
 @c Nvi-1.81.5 editor
 @c ***************************************************************************
 @node Nvi-1.81.5 editor
-@chapter nvi-1.81.5 using GLOBAL.
+@section nvi-1.81.5 using GLOBAL.
 
 You can use GLOBAL as a tag system of Nvi editor instead of ctags.
 
@@ -1105,7 +1115,7 @@ You can use GLOBAL as a tag system of Nvi editor instead of ctags.
 
 @c ***************************************************************************
 @node   Features(nvi-1.81.5)
-@section Features.
+@subsection Features.
 
 @itemize @bullet
 @item
@@ -1116,7 +1126,7 @@ Recognition of the current token and its type.
 
 @c ***************************************************************************
 @node   Preparation(nvi-1.81.5)
-@section Preparation.
+@subsection Preparation.
 
 First, do the preparation of global. (Please see @xref{Preparation}.).
 
@@ -1142,7 +1152,7 @@ You must start nvi under the source tree described in @xref{Preparation}.
 
 @c ***************************************************************************
 @node   Basic usage(nvi-1.81.5)
-@section Basic usage.
+@subsection Basic usage.
 
 @itemize @bullet
 @item To go to func1, you can say
@@ -1233,7 +1243,7 @@ Display the tags stack.
 @c Elvis editor
 @c ***************************************************************************
 @node Elvis editor
-@chapter Elvis using global
+@section Elvis using global
 
 Elvis 2.1 has new @code{tagprg} and @code{tagprgonce} variables for
 running an external tag search program. You can use them with GLOBAL.
@@ -1247,7 +1257,7 @@ running an external tag search program. You can use them with GLOBAL.
 
 @c ***************************************************************************
 @node   Features(elvis)
-@section Features.
+@subsection Features.
 
 @itemize @bullet
 @item
@@ -1260,7 +1270,7 @@ Mouse events are supported.
 
 @c ***************************************************************************
 @node   Preparation(elvis)
-@section Preparation.
+@subsection Preparation.
 
 First, do the preparation of global. (Please see @xref{Preparation}.).
 
@@ -1282,7 +1292,7 @@ Second, start elvis and execute @code{set tagprg="global -t $1"} like this.
 
 @c ***************************************************************************
 @node   Basic usage(elvis)
-@section Basic usage.
+@subsection Basic usage.
 
 @itemize @bullet
 @item To go to func1, you can say
@@ -1373,7 +1383,7 @@ the point.
 
 @c ***************************************************************************
 @node   Applied usage(elvis)
-@section Applied usage.
+@subsection Applied usage.
 
 @itemize @bullet
 @item You can use POSIX regular expressions.
@@ -1427,7 +1437,7 @@ To come back, double click on the right button.
 @c Vim editor
 @c ***************************************************************************
 @node Vim editor
-@chapter Vim using global
+@section Vim using global
 
 Vim 5.2 or later has @code{grepprg} and @code{grepformat} variables for
 running an external grep like search program. You can use them with GLOBAL.
@@ -1441,7 +1451,7 @@ running an external grep like search program. You can use them with GLOBAL.
 
 @c ***************************************************************************
 @node   Features(vim)
-@section Features.
+@subsection Features.
 
 @itemize @bullet
 @item
@@ -1454,7 +1464,7 @@ No source level patch is needed.
 
 @c ***************************************************************************
 @node   Preparation(vim)
-@section Preparation.
+@subsection Preparation.
 
 First, do the preparation of global. (Please see @xref{Preparation}.).
 
@@ -1474,7 +1484,7 @@ Second, write the following set command to the @file{.vimrc} and start vim.
 
 @c ***************************************************************************
 @node   Basic usage(vim)
-@section Basic usage.
+@subsection Basic usage.
 
 @itemize @bullet
 @item To go to func1, you can say
@@ -1552,7 +1562,7 @@ You can go to any entry with @kbd{cc}n command.
 
 @c ***************************************************************************
 @node   Applied usage(vim)
-@section Applied usage.
+@subsection Applied usage.
 
 @itemize @bullet
 @item You can use POSIX regular expressions.
@@ -1589,7 +1599,7 @@ You can go to any entry with @kbd{cc}n command.
 @c Emacs editor
 @c ***************************************************************************
 @node Emacs editor
-@chapter Extended emacs using global
+@section Extended emacs using global
 
 You can use GLOBAL as a tag system of Emacs editor instead of etags.
 
@@ -1602,7 +1612,7 @@ You can use GLOBAL as a tag system of Emacs editor instead of etags.
 
 @c ***************************************************************************
 @node   Features(emacs)
-@section Features.
+@subsection Features.
 
 @itemize @bullet
 @item
@@ -1617,7 +1627,7 @@ Mouse events are supported.
 
 @c ***************************************************************************
 @node   Preparation(emacs)
-@section Preparation.
+@subsection Preparation.
 
 First, do the preparation of global. (Please see @xref{Preparation}.).
 
@@ -1667,7 +1677,7 @@ If you have tag files in /usr/src/sys then please do like this:
 
 @c ***************************************************************************
 @node   Basic usage(emacs)
-@section Basic usage.
+@subsection Basic usage.
 
 @itemize @bullet
 @item To go to func1, invoke @code{gtags-find-tag}
@@ -1743,7 +1753,7 @@ otherwise it is equivalent to @kbd{Find tag: @var{current token}RET}.
 
 @c ***************************************************************************
 @node   Applied usage(emacs)
-@section Applied usage.
+@subsection Applied usage.
 
 @itemize @bullet
 @item You can use POSIX regular expressions.
@@ -1797,7 +1807,7 @@ To return to the previous position, click the right button.
 @c Web browser
 @c ***************************************************************************
 @node Web browser
-@chapter Hypertext generator
+@section Hypertext generator
 
 You can use GLOBAL's facilities from WWW browser.
 
@@ -1809,7 +1819,7 @@ You can use GLOBAL's facilities from WWW browser.
 
 @c ***************************************************************************
 @node   Features(browser)
-@section Features.
+@subsection Features.
 
 @itemize @bullet
 @item Htags makes hypertext from C, C++, Yacc and Java source files.
@@ -1821,7 +1831,7 @@ You can use GLOBAL's facilities from WWW browser.
 
 @c ***************************************************************************
 @node   Preparation(browser)
-@section Preparation.
+@subsection Preparation.
 
 At first, you must ensure that you have a lot of disk space. Hypertext
 needs a great amount of disk space. For example, the source code
@@ -1856,7 +1866,7 @@ Then you will find an @file{HTML} subdirectory in the current directory.
 
 @c ***************************************************************************
 @node   Usage(browser)
-@section Usage.
+@subsection Usage.
 
 Please start a web browser like this:
 
