@@ -41,6 +41,18 @@ static STRBUF	*sb;
  *	i)	file	file
  *	i)	suffix	suffix(optional)
  *	r)		path
+ *
+ * It is necessary to note the usage of makepath(), because it returns
+ * module local area. If makepath() is called again in the function which
+ * is passed the return value of makepath(), then the value is overwritten.
+ * This may cause the bug which is not understood easily.
+ * You must not pass the return value except for the safe functions
+ * described below.
+ * 
+ * Here are safe functions.
+ * o functions in standard C library.
+ * o following libutil functions:
+ *   test(), dbop_open(), strlimcpy(), strbuf_puts(), die()
  */
 char	*
 makepath(dir, file, suffix)
