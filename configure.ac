@@ -30,6 +30,14 @@ AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 AC_PROG_RANLIB
+dnl
+dnl Currenly, the absolute path name of PERL is required only for CGI script.
+dnl So, if you don't use the -f(--form) option of htags(1), it is not required.
+dnl
+AC_PATH_PROG(PERL, perl, no)
+if test ${ac_cv_path_PERL} = no; then
+	PERL=SPECIFY_ABSOLUTE_PATH_OF_PERL
+fi
 
 dnl Checks for libraries.
 

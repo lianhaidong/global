@@ -385,9 +385,19 @@ main(argc, argv)
 	 */
 	{
 		int unique = 0;
+		char *sort;
 
+		/*
+		 * We cannot depend on the command PATH, because global(1)
+		 * might be called from WWW server. Since usable() looks for
+		 * the command in BINDIR directory first, gnusort need not
+		 * be in command PATH.
+		 */
+		sort = usable("gnusort");
+		if (!sort)
+			die("gnusort not found.");
 		sortfilter = strbuf_open(0);
-		strbuf_puts(sortfilter, "gnusort");
+		strbuf_puts(sortfilter, sort);
 		if (sflag) {
 			strbuf_puts(sortfilter, " -u");
 			unique = 1;
