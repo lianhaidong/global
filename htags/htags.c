@@ -1236,6 +1236,65 @@ save_environment(argc, argv)
 	/* strbuf_close(save_a); */
 }
 
+char **
+append_options(argc, argv)
+	int *argc;
+	char *argv[];
+{
+
+	STRBUF *sb = strbuf_open(0);
+	char *p, *opt = strdup(htags_options);
+	int count = 1;
+	int quote = 0;
+	char **newargv;
+	int i = 0, j = 1;
+
+	if (!opt)
+		die("Short of memory.");
+	for (p = opt; *p && isspace(*p); p++)
+		;
+	for (; *p; p++) {
+		int c = *p;
+
+		if (quote) {
+			if (quote == c)
+				quote = 0;
+			else
+				strbuf_putc(sb, c);
+		} else if (c == '\\') {
+			strbuf_putc(sb, c);
+		} else if (c == '\'' || c == '"') {
+			quote = c;
+		} else if (isspace(c)) {
+			strbuf_putc(sb, '\0');
+			count++;
+			while (*p && isspace(*p))
+				p++;
+			p--;
+		} else {
+			strbuf_putc(sb, *p);
+		}
+	}
+	newargv = (char **)malloc(sizeof(char *) * (*argc + count + 1));
+	if (!newargv)
+		die("Short of memory.");
+	newargv[i++] = argv[0];
+	p = strbuf_value(sb);
+	while (count--) {
+		newargv[i++] = p;
+		p += strlen(p) + 1;
+	}
+	while (j < *argc)
+		newargv[i++] = argv[j++];
+	newargv[i] = NULL;
+	argv = newargv;
+	*argc = i;
+	for (i = 0; i < *argc; i++)
+		fprintf(stderr, "argv[%d] = '%s'\n", i, argv[i]);
+	/* doesn't close string buffer. */
+
+	return argv;
+}
 int
 main(argc, argv)
         int argc;
@@ -1251,11 +1310,16 @@ main(argc, argv)
 		T_makedupindex, T_makedefineindex, T_makefileindex, T_makehtml, T_all;
 
 	arg_dbpath[0] = 0;
-
 	basic_check();
 	setup_html();
 	configuration(argc, argv);
 	save_environment(argc, argv);
+
+	/*
+ 	 * insert htags_options at the head of argv.
+	 */
+	if (htags_options)
+		argv = append_options(&argc, argv);
 
 	while ((optchar = getopt_long(argc, argv, "acDd:fFgm:noqsS:t:vw", long_options, &option_index)) != EOF) {
 		switch (optchar) {
