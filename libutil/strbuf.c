@@ -197,7 +197,7 @@ strbuf_clear(sb)
 {
 	if (sb == NULL)
 		die("NULL string buffer. (strbuf_clear)");
-	if (sb->sbufsize == 0) {
+	if (strbuf_empty(sb)) {
 		sb->sbufsize = INITIALSIZE;
 		if (!(sb->sbuf = (char *)malloc(sb->sbufsize + 1))) {
 			(*strbuf_alloc_failed_handler)();
@@ -222,7 +222,7 @@ strbuf_nputs(sb, s, len)
 	const char *s;
 	int len;
 {
-	if (!sb->alloc_failed) {
+	if (!sb->alloc_failed && len > 0) {
 		if (sb->curp + len > sb->endp)
 			__strbuf_expandbuf(sb, len);
 		while (len-- > 0)
@@ -259,18 +259,18 @@ strbuf_putn(sb, n)
 	STRBUF *sb;
 	int n;
 {
-	char num[128];
-	int i = 0;
-
-	while (n) {
-		if (i >= sizeof(num))
-			die("Too big integer value.");
-		num[i++] = n % 10 + '0';
-		n = n / 10;
-	}
-	if (i == 0) {
+	if (n == 0) {
 		strbuf_putc(sb, '0');
 	} else {
+		char num[128];
+		int i = 0;
+
+		while (n) {
+			if (i >= sizeof(num))
+				die("Too big integer value.");
+			num[i++] = n % 10 + '0';
+			n = n / 10;
+		}
 		while (--i >= 0)
 			strbuf_putc(sb, num[i]);
 	}

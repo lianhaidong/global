@@ -78,6 +78,8 @@ typedef struct _strbuf {
  */
 #define STATIC_STRBUF(sb) static STRBUF __##sb, *sb = &__##sb
 
+#define strbuf_empty(sb) (sb->sbufsize == 0)
+
 #define strbuf_putc(sb, c)	do {\
 	if (!sb->alloc_failed) {\
 		if (sb->curp >= sb->endp)\

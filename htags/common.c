@@ -265,16 +265,17 @@ gen_image(where, file, alt)
 	const char *file;
 	const char *alt;
 {
-	static char buf[1024];
+	STATIC_STRBUF(sb);
 	char *dir = (where == PARENT) ? "../icons" : "icons";
-		
+
+	strbuf_clear(sb);
 	if (enable_xhtml)
-		snprintf(buf, sizeof(buf), "<img class='icon' src='%s/%s.%s' alt='[%s]'%s>",
+		strbuf_sprintf(sb, "<img class='icon' src='%s/%s.%s' alt='[%s]'%s>",
 			dir, file, icon_suffix, alt, empty_element);
 	else
-		snprintf(buf, sizeof(buf), "<img src='%s/%s.%s' alt='[%s]' %s%s>",
+		strbuf_sprintf(sb, "<img src='%s/%s.%s' alt='[%s]' %s%s>",
 			dir, file, icon_suffix, alt, icon_spec, empty_element);
-	return buf;
+	return strbuf_value(sb);
 }
 /*
  * Generate name tag.
@@ -283,10 +284,12 @@ char *
 gen_name_number(number)
 	int number;
 {
-	static char buf[128];
+	STATIC_STRBUF(sb);
 	char *id = enable_xhtml ? "id" : "name";
-	snprintf(buf, sizeof(buf), "<a %s='%d'%s>", id, number, empty_element);
-	return buf;
+
+	strbuf_clear(sb);
+	strbuf_sprintf(sb, "<a %s='%d'%s>", id, number, empty_element);
+	return strbuf_value(sb);
 }
 /*
  * Generate name tag.
@@ -295,10 +298,12 @@ char *
 gen_name_string(name)
 	const char *name;
 {
-	static char buf[128];
+	STATIC_STRBUF(sb);
 	char *id = enable_xhtml ? "id" : "name";
-	snprintf(buf, sizeof(buf), "<a %s='%s'%s>", id, name, empty_element);
-	return buf;
+
+	strbuf_clear(sb);
+	strbuf_sprintf(sb, "<a %s='%s'%s>", id, name, empty_element);
+	return strbuf_value(sb);
 }
 /*
  * Generate anchor begin tag.
@@ -400,28 +405,30 @@ gen_href_end()
 char *
 gen_list_begin()
 {
-	static char buf[1024];
+	STATIC_STRBUF(sb);
 
-	if (table_list) {
-		if (enable_xhtml) {
-			snprintf(buf, sizeof(buf), "%s\n%s%s%s%s",
-				table_begin, 
-				"<tr><th class='tag'>tag</th>",
-				"<th class='line'>line</th>",
-				"<th class='file'>file</th>",
-				"<th class='code'>source code</th></tr>");
+	if (strbuf_empty(sb)) {
+		if (table_list) {
+			if (enable_xhtml) {
+				strbuf_sprintf(sb, "%s\n%s%s%s%s",
+					table_begin, 
+					"<tr><th class='tag'>tag</th>",
+					"<th class='line'>line</th>",
+					"<th class='file'>file</th>",
+					"<th class='code'>source code</th></tr>");
+			} else {
+				strbuf_sprintf(sb, "%s\n%s%s%s%s",
+					table_begin, 
+					"<tr><th nowrap align='left'>tag</th>",
+					"<th nowrap align='right'>line</th>",
+					"<th nowrap align='center'>file</th>",
+					"<th nowrap align='left'>source code</th></tr>");
+			}
 		} else {
-			snprintf(buf, sizeof(buf), "%s\n%s%s%s%s",
-				table_begin, 
-				"<tr><th nowrap align='left'>tag</th>",
-				"<th nowrap align='right'>line</th>",
-				"<th nowrap align='center'>file</th>",
-				"<th nowrap align='left'>source code</th></tr>");
+			strbuf_puts(sb, verbatim_begin);
 		}
-	} else {
-		strlimcpy(buf, verbatim_begin, sizeof(buf));
 	}
-	return buf;
+	return strbuf_value(sb);
 }
 /*
  * Generate list body.
@@ -506,8 +513,7 @@ gen_list_body(srcdir, string)
 				strbuf_putc(sb, c);
 		}
 	}
-	p = strbuf_value(sb);
-	return p;
+	return strbuf_value(sb);
 }
 /*
  * Generate list end tag.
@@ -526,18 +532,22 @@ char *
 gen_div_begin(align)
 	const char *align;
 {
-	if (align) {
-		static char buf[32];
-		/*
-		 * In XHTML, alignment is defined in the file 'style.css'.
-		 */
-		if (enable_xhtml)
-			snprintf(buf, sizeof(buf), "<div class='%s'>", align);
-		else
-			snprintf(buf, sizeof(buf), "<div align='%s'>", align);
-		return buf;
+	STATIC_STRBUF(sb);
+
+	if (strbuf_empty(sb)) {
+		if (align) {
+			/*
+			 * In XHTML, alignment is defined in the file 'style.css'.
+			 */
+			if (enable_xhtml)
+				strbuf_sprintf(sb, "<div class='%s'>", align);
+			else
+				strbuf_sprintf(sb, "<div align='%s'>", align);
+		} else {
+			strbuf_puts(sb, "<div>");
+		}
 	}
-	return "<div>";
+	return strbuf_value(sb);
 }
 /*
  * Generate div end tag.
@@ -644,10 +654,11 @@ char *
 gen_frameset_begin(contents)
 	const char *contents;
 {
-	static char buf[128];
+	STATIC_STRBUF(sb);
 
-	snprintf(buf, sizeof(buf), "<frameset %s%s>", contents, empty_element);
-	return buf;
+	strbuf_clear(sb);
+	strbuf_sprintf(sb, "<frameset %s%s>", contents, empty_element);
+	return strbuf_value(sb);
 }
 /*
  * Generate end of frameset
