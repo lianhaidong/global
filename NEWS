@@ -50,6 +50,9 @@ Version 4.5.2 - March 29 2003, by Shigio Yamaguchi
 * gtags: environment variable GTAGSCACHE added.
 * and many bug fixes.
 
+Special thanks to Hideki Iwamoto san. Most of improvemnts and bug fixes
+in this version is by him.
+
 Version 4.5.1 - November 9 2002, by Shigio Yamaguchi
 
 [INCOMPATIBLE CHANGES]
