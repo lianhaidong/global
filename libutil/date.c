@@ -23,6 +23,7 @@
 #endif
 #include <stdio.h>
 #include <time.h>
+#include "die.h"
 #include "strlimcpy.h"
 /*
  * now: current date and time
