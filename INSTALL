@@ -102,7 +102,7 @@ o Nvi-1.81.5
 
 	   http://www.kotnet.org/~skimo/nvi/
 
-   and do the followings.
+   build it with '--enable-perlinterp' option and do the followings.
    ($HOME/perl is an example. Please replace it with any directory you like.)
 
 	% mkdir $HOME/perl
