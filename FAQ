@@ -64,7 +64,7 @@ A2. GLOBAL cannot recognize that pattern, because M(a) seems to be
 	|...
 
 ----------------------------------------------------------------------------
-Q3. I have set up 'global.conf' to use emacs's ctags command with GLOBAL
+Q3. I have set up 'gtags.conf' to use emacs's ctags command with GLOBAL
     but I cannot use htags.
 
 	% gtags
