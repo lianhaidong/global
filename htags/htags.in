@@ -2362,7 +2362,7 @@ sub create {
 		local($pipein) = "global -nnx$option \".*\"";
 		open(PIPE, "$pipein |") || &'error("cannot fork.");
 		while (<PIPE>) {
-			local($tag, $lno, $filename, $image) = split;
+			local($tag, $lno, $filename, $image) = split(/\s+/, $_, 4);
 			$fnumber = $PATHLIST{$filename};
 			if (!$fnumber) {
 				$PATHLIST{$filename} = $fnumber = $fcount++;
