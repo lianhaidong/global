@@ -296,8 +296,8 @@ openconf()
 		 * different from GLOBAL's one.
 		 * BINDIR is defined in Makefile.
 		 */
-#ifdef _WIN32
-		path = "gctags";
+#if defined(_WIN32) || defined(__DJGPP__)
+		path = "gctags.exe";
 #else
 		path = makepath(BINDIR, "gctags", NULL);
 #endif /* _WIN32 */

@@ -11,18 +11,22 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
+if DJGPP
+bin_SCRIPTS = htags htags.bat
+else
 bin_SCRIPTS = htags
+endif
 
 PERL = @PERL@
 
-SUFFIXES = .pl
+SUFFIXES = .in
 
-.pl:
+.in:
 	sed -e 's,@''PERL''@,$(PERL),g' $< >$@.tmp && \
 	chmod +x $@.tmp && mv $@.tmp $@
 
 man_MANS = htags.1
 
-EXTRA_DIST = ${man_MANS} ${bin_SCRIPTS}${SUFFIXES}
+EXTRA_DIST = ${man_MANS} htags.in htags.bat.in
 
 CLEANFILES = ${bin_SCRIPTS}

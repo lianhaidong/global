@@ -127,6 +127,14 @@ AC_ARG_WITH(postgres,
 ],[
         AC_MSG_RESULT(no)
 ])
+AC_MSG_CHECKING(for DJGPP support)
+if test $DJGPP && test -f $DJGPP; then
+        AM_CONDITIONAL(DJGPP, true)
+        AC_MSG_RESULT([yes, using $DJGPP])
+else
+        AM_CONDITIONAL(DJGPP, false)
+        AC_MSG_RESULT(no)
+fi
 
 AC_SUBST(INCLUDES)
 AC_SUBST(LDADD)
