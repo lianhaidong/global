@@ -622,6 +622,7 @@ src2html(src, html, notsource)
 		struct data *incref;
 		struct anchor *ancref;
 		static STRBUF *define_index = NULL;
+		const char *lang, *suffix;
 
                 /*
                  * INCLUDED FROM index.
@@ -682,26 +683,19 @@ src2html(src, html, notsource)
 		/*
 		 * print source code
 		 */
-        	fprintf(out, "%s\n", verbatim_begin);
-		if (locatestring(src, ".java", MATCH_AT_LAST)) {
+		fprintf(out, "%s\n", verbatim_begin);
+		if ((suffix = locatestring(src, ".", MATCH_LAST)) == NULL
+		    || (lang = decide_lang(suffix)) == NULL)
+			lang = "c";
+		if (!strcmp(lang, "java")) {
 			java_parser_init(in);
 			while (javalex())
 				;
-		} else if (locatestring(src, ".php", MATCH_AT_LAST) ||
-			locatestring(src, ".php3", MATCH_AT_LAST) ||
-			locatestring(src, ".phtml", MATCH_AT_LAST)) {
+		} else if (!strcmp(lang, "php")) {
 			php_parser_init(in);
 			while (phplex())
 				;
-		} else if (locatestring(src, ".h", MATCH_AT_LAST) ||
-			locatestring(src, ".c++", MATCH_AT_LAST) ||
-			locatestring(src, ".cc", MATCH_AT_LAST) ||
-			locatestring(src, ".cpp", MATCH_AT_LAST) ||
-			locatestring(src, ".cxx", MATCH_AT_LAST) ||
-			locatestring(src, ".hxx", MATCH_AT_LAST) ||
-			locatestring(src, ".hpp", MATCH_AT_LAST) ||
-			locatestring(src, ".C", MATCH_AT_LAST) ||
-			locatestring(src, ".H", MATCH_AT_LAST)) {
+		} else if (!strcmp(lang, "cpp")) {
 			cpp_parser_init(in);
 			while (cpplex())
 				;

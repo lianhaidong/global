@@ -46,7 +46,6 @@
 int main(int, char **);
 static void usage(void);
 static void help(void);
-static int match_suffix_list(const char *, const char *);
 
 struct words {
         const char *name;
@@ -62,7 +61,6 @@ static int tablesize;
  */
 static const char *default_map = "c:.c.h,yacc:.y,asm:.s.S,java:.java,cpp:.c++.cc.cpp.cxx.hxx.hpp.C.H,php:.php.php3.phtml";
 static char *langmap;
-static STRBUF *active_map;
 
 int bflag;			/* -b: force level 1 block start */
 int dflag;			/* -d: treat #define with no argument */
@@ -119,7 +117,6 @@ main(argc, argv)
 	char **argv;
 {
 	char *p;
-	int flag;
 	int optchar;
 	int option_index = 0;
 
@@ -172,25 +169,7 @@ main(argc, argv)
 		fprintf(stdout, "Part of GLOBAL\n");
 		exit(0);
 	}
-	/*
-	 * construct language map.
-	 */
-	active_map = strbuf_open(0);
-	strbuf_puts(active_map, (langmap) ? langmap : default_map);
-	flag = 0;
-	for (p = strbuf_value(active_map); *p; p++) {
-		/*
-		 * "c:.c.h,java:.java,cpp:.C.H"
-		 */
-		if ((flag == 0 && *p == ',') || (flag == 1 && *p == ':'))
-			die_with_code(2, "syntax error in --langmap option.");
-		if (*p == ':' || *p == ',') {
-			flag ^= 1;
-			*p = 0;
-		}
-	}
-	if (flag == 0)
-		die_with_code(2, "syntax error in --langmap option.");
+	setup_langmap(langmap ? langmap : default_map);
 
         argc -= optind;
         argv += optind;
@@ -245,8 +224,7 @@ main(argc, argv)
 	 * pick up files and parse them.
 	 */
 	for (; argc > 0; argv++, argc--) {
-		char *lang = NULL;
-		char *suffix, *list, *tail;
+		const char *lang, *suffix;
 
 #if defined(_WIN32) || defined(__DJGPP__)
 		/* Lower case the file name since names are case insensitive */
@@ -256,18 +234,7 @@ main(argc, argv)
 		suffix = locatestring(argv[0], ".", MATCH_LAST);
 		if (!suffix)
 			continue;
-		list = strbuf_value(active_map);
-		tail = list + strbuf_getlen(active_map);
-
-		/* check whether or not list includes suffix. */
-		while (list < tail) {
-			lang = list;
-			list = lang + strlen(lang) + 1;
-			if (match_suffix_list(suffix, list))
-				break;
-			lang = NULL;
-			list += strlen(list) + 1;
-		}
+		lang = decide_lang(suffix);
 		if (lang == NULL)
 			continue;
 
@@ -301,23 +268,6 @@ main(argc, argv)
 		}
 		if (strcmp(lang, "php"))
 			closetoken();
-	}
-	return 0;
-}
-
-/*
- * return true if suffix matches with one in suffix list.
- */
-int
-match_suffix_list(suffix, list)
-	const char *suffix;
-	const char *list;
-{
-	while (*list) {
-		if (locatestring(list, suffix, MATCH_AT_FIRST))
-			return 1;
-		for (list++; *list && *list != '.'; list++)
-			;
 	}
 	return 0;
 }

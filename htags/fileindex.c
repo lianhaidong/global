@@ -583,17 +583,27 @@ makefileindex(file, files)
 	 */
 	struct data *inc;
 	int flags = REG_EXTENDED;
-	char *pattern;
-	regex_t is_include_file, is_c_file;
+	regex_t is_include_file;
 
 	if (w32)
 		flags |= REG_ICASE;
-	pattern = "\\.(h|hxx|hpp|H|inc\\.php)$";
-	if (regcomp(&is_include_file, pattern, flags) != 0)
-		die("cannot compile regular expression '%s'.", pattern);
-	pattern = "\\.(h|c|y|c\\+\\+|cc|cpp|cxx|hxx|hpp|C|H)$";
-	if (regcomp(&is_c_file, pattern, flags) != 0)
-		die("cannot compile regular expression '%s'.", pattern);
+	strbuf_reset(sb);
+	strbuf_puts(sb, "\\.(");
+	{
+		char *p = include_file_suffixes;
+		int c;
+
+		while ((c = (unsigned char)*p++) != '\0') {
+			if (isregexchar(c))
+				strbuf_putc(sb, '\\');
+			else if (c == ',')
+				c = '|';
+			strbuf_putc(sb, c);
+		}
+	}
+	strbuf_puts(sb, ")$");
+	if (regcomp(&is_include_file, strbuf_value(sb), flags) != 0)
+		die("cannot compile regular expression '%s'.", strbuf_value(sb));
 
 	/*
 	 * preparations.
@@ -767,7 +777,15 @@ makefileindex(file, files)
 		}
 		strbuf_sprintf(sb, " TARGET=%s TITLE='%s'>", target, _);
 		if (icon_list) {
-			char *text_icon = regexec(&is_c_file, _, 0, 0, 0) == 0 ? c_icon : file_icon;
+			const char *lang, *suffix, *text_icon;
+
+			if ((suffix = locatestring(_, ".", MATCH_LAST)) != NULL
+			    && (lang = decide_lang(suffix)) != NULL
+			    && (strcmp(lang, "c") == 0 || strcmp(lang, "cpp") == 0
+			       || strcmp(lang, "yacc") == 0))
+				text_icon = c_icon;
+			else
+				text_icon = file_icon;
 			strbuf_puts(sb, "<IMG SRC=");
 			if (count_stack(dirstack))
 				strbuf_puts(sb, "../");

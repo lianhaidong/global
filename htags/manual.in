@@ -254,6 +254,12 @@
 	@item{@code{enable_idutils}(boolean)}
 		Enable id-utils search using CGI program. The default is false.
 		When this function is enabled, you cannot move hypertext from source directory.
+	@item{@code{include_file_suffixes}(comma separated list)}
+		Suffixes of include file. The default is 'h,hxx,hpp,H,inc.php'.
+	@item{@code{htags_langmap}(comma separated list)}
+		Language mapping. Each comma-separated map consists of
+		the language name, a colon, and a list of file extensions.
+		Default mapping is 'c:.c,yacc:.y,asm:.s.S,java:.java,cpp:.c++.cc.cpp.cxx.h.hxx.hpp.C.H,php:.php.php3.phtml'.
 	@end_itemize
 @DIAGNOSTICS
 	@name{Htags} exits with a non 0 value if an error occurred, 0 otherwise.

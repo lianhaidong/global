@@ -149,5 +149,6 @@ extern char *target;
 extern int cgi;
 extern int definition_header;
 extern char *htags_options;
+extern char *include_file_suffixes;
 
 #endif /* _HTAGS_H_ */
