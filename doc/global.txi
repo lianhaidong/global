@@ -11,7 +11,7 @@
 @syncodeindex op cp
 
 @ifinfo
-@dircategory Miscellaneous
+@dircategory Development
 @direntry
 * GLOBAL: (global).             GNU GLOBAL source code tag system.
 @end direntry
