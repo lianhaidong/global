@@ -357,8 +357,8 @@ sub usable {
 	local($pathsep) = ($'w32) ? ';' : ':';
 	foreach (split(/$pathsep/, $ENV{'PATH'})) {
 		if ($'w32) {
-			return "$_/$command.com" if (-f "$_/$command.com");
-			return "$_/$command.exe" if (-f "$_/$command.exe");
+			return "$_\\$command.com" if (-f "$_\\$command.com");
+			return "$_\\$command.exe" if (-f "$_\\$command.exe");
 		} else {
 			return "$_/$command" if (-x "$_/$command");
 		}
