@@ -72,6 +72,7 @@ Takao Yamashita		advice about assembler parsing.
 Takeshi Hojo		idea about -c option of gtags(1).
 Thomas Klausner		report about groff's command error of *.1.
 Tomohiko Morioka	advice about deciding emacs version.
+Tom Tromey		GTAGS target in automake.
 Toshiyasu Kojima	advice about deciding emacs version.
 Van Trinh		bug report about db(3) and patch information.
 Wolfgang Helbig		bug report about generating wrong path name.
