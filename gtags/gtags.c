@@ -490,7 +490,7 @@ char	*argv[];
 
 		while (strbuf_fgets(ib, stdin, STRBUF_NOCRLF) != NULL) {
 			char *p = strbuf_value(ib);
-			if (*p == '<') {
+			if (*p == '<' || *p == '\t') {
 				strbuf_putc(ib, '\n');
 				fputs(p, op);
 			} else {

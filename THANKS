@@ -66,7 +66,7 @@ Masato Yoshida		bug report and fix method about <NOFRAME> tag.
 Motonori Iwamuro	bug report and fix method about strbuf_fgets function.
 Oleg Checkulaev		advice about writing code for generic UNIX.
 Oliver Paukstadt	idea about -c (gzipped html) option of htags(1).
-Patrick Strasser	bug report about the--caution option of htags(1).
+Patrick Strasser	bug report about the --caution and --style-sheet option of htags(1).
 Paul Lew		advice about compat.h for Solaris.
 Philippe Defert		building on many plathomes and the problem report.
 Richard Stallman	advice about gtags.el and GNU style packaging.

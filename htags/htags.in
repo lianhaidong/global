@@ -771,6 +771,8 @@ if ($style_sheet) {
 	$style_sheet = '';
 	if (open(SHEET, $style_path)) {
 		while (<SHEET>) {
+			# insert \t for gtags --write command.
+			$style_sheet .= "\t" if (! /^[\t<]/);
 			$style_sheet .= $_;
 		}
 		close(SHEET);
