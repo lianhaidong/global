@@ -24,7 +24,7 @@ gctags_DEPENDENCIES = $(LDADD)
 
 man_MANS = gctags.1
 
-EXTRA_DIST = $(man_MANS) const.h manual.in reserved.pl HACKING
+EXTRA_DIST = $(man_MANS) const.h manual.in reserved.pl HACKING \
 		c_res.in c_res.gpf c_res.pl \
 		cpp_res.in cpp_res.gpf cpp_res.pl \
 		java_res.in java_res.gpf java_res.pl \
@@ -34,6 +34,7 @@ SUFFIXES = .c .h .l .gpf .in .pl
 
 RESERVED = $(srcdir)/reserved.pl
 
+if ENABLE_GPERF
 .l.c:
 	flex -o$@ $<
 .in.gpf:
@@ -46,3 +47,4 @@ RESERVED = $(srcdir)/reserved.pl
 .in.pl:
 	prefix=`echo $* | sed 's/_res//'` && \
 	perl $(RESERVED) --prefix=$$prefix --perl $< > $@
+endif
