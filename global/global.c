@@ -412,7 +412,7 @@ char	*argv[];
 		strbuf_puts(pathfilter, " --absolute ");
 	else		/* relative path name */
 		strbuf_puts(pathfilter, " --relative ");
-	if (xflag)
+	if (xflag || tflag)
 		strbuf_puts(pathfilter, " --cxref ");
 	strbuf_puts(pathfilter, root);
 	strbuf_putc(pathfilter, ' ');
@@ -489,7 +489,7 @@ char	*argv[];
 				strbuf_puts(pathfilter, " --absolute ");
 			else		/* relative path name */
 				strbuf_puts(pathfilter, " --relative ");
-			if (xflag)
+			if (xflag || tflag)
 				strbuf_puts(pathfilter, " --cxref ");
 			strbuf_puts(pathfilter, lib);
 			strbuf_putc(pathfilter, ' ');
