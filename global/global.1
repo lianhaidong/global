@@ -20,7 +20,7 @@
 .\" along with this program; if not, write to the Free Software
 .\" Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .\"
-.Dd Dec 6, 1999
+.Dd Oct 21, 2000
 .Dt GLOBAL 1
 .Os FreeBSD
 .Sh NAME
@@ -162,6 +162,8 @@ Tag file for function references.
 Tag file for symbols other then functions.
 .It Pa GPATH
 Tag file for path of source files.
+.It Pa /etc/global.conf .globalrc
+Configuration file.
 .El
 .Sh ENVIRONMENT
 The following environment variables affect the execution of global.
@@ -173,10 +175,39 @@ The directory which is the root of source tree.
 The directory on which gtags database exist. This value is ignored
 when GTAGSROOT is not defined.
 .It Ev GTAGSLIBPATH
-If this variable is set, its value is used as the path to search for library
-functions. If specified function is not found in a source tree,
-global search in these path too.
+If this variable is set, it is used as the path to search for library
+functions. If the specified function is not found in a source tree,
+global also search in these paths.
 .El
+.Sh EXAMPLES
+  % ls -F
+  Makefile      src/    lib/
+  % gtags
+  % global main
+  src/main.c
+  % global -x main
+  main              10 src/main.c  main (argc, argv) {
+  % global -x '^[sg]et'
+  set_num           20 lib/util.c  set_num(values)
+  get_num           30 lib/util.c  get_num() {
+  % global -rx '^[sg]et'
+  set_num          113 src/op.c            set_num(32);
+  set_num          225 src/opop.c               if (set_num(0) > 0) {
+  get_num           90 src/op.c            while (get_num() > 0) {
+  % cd lib
+  % global -rx '^[sg]et'
+  set_num          113 ../src/op.c            set_num(32);
+  set_num          225 ../src/opop.c               if (set_num(0) > 0) {
+  get_num           90 ../src/op.c            while (get_num() > 0) {
+  % global strlen
+  % (cd /usr/src/sys; gtags)
+  % setenv GTAGSLIBPATH /usr/src/sys
+  % global strlen
+  ../../../usr/src/sys/libkern/strlen.c
+  % (cd /usr/src/lib; gtags)
+  % setenv GTAGSLIBPATH /usr/src/lib:/usr/src/sys
+  % global strlen
+  ../../../usr/src/lib/libc/string/strlen.c
 .Sh DIAGNOSTICS
 .Nm Global
 exits with a non 0 value if an error occurred, 0 otherwise.

@@ -20,7 +20,7 @@
 .\" along with this program; if not, write to the Free Software
 .\" Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .\"
-.Dd Dec 6, 1999
+.Dd Oct 21, 2000
 .Dt GTAGS 1
 .Os FreeBSD
 .Sh NAME
@@ -41,13 +41,13 @@ makes GTAGS, GRTAGS, GSYMS and GPATH file for
 .Xr global 1 .
 .Nm Gtags
 trace subdirectories, read source files,
-locate symbols and save the information into tag files.
-C, C++, yacc, java and assembler source files are supported.
+locate symbols and save the information into tag files in current directory.
 You should execute this command at the root of the source tree.
-.Pp
 If your source directory is on a read only device like CDROM, specify
 .Ar dbpath
 of the directory on which make tag files.
+.Pp
+C, C++, yacc, java and assembler source files are supported.
 .Pp
 .Bl -tag -width Ds -compact
 .It Fl c
@@ -55,7 +55,9 @@ of the directory on which make tag files.
 Make tag files with compact format.
 .It Fl i
 .It Fl -incremental
-Update tag files incrementally.
+Update tag files incrementally. You had better use
+.Xr global 1
+with the -i option.
 .It Fl I
 .It Fl -idutils
 Make index files for id-utils(1).
@@ -113,7 +115,15 @@ Tag file for function references.
 Tag file for other symbols.
 .It Pa GPATH
 Tag file for path of source files.
+.It Pa /etc/global.conf .globalrc
+Configuration file.
 .El
+.Sh EXAMPLES
+  % ls -F
+  Makefile      src/    lib/
+  % gtags -v
+  % global -x main
+  main              10 src/main.c  main (argc, argv) {
 .Sh DIAGNOSTICS
 .Nm Gtags
 exits with a non 0 value if an error occurred, 0 otherwise.
