@@ -2076,18 +2076,18 @@ sub src2html {
 			if (!$converted) { s/([&<>])/$ctab{$1}/ge; }
 			&protect_line();	# protect quoted char, strings and comments
 			# painting source code
-			s/({|})/$'brace_begin$1$'brace_end/g;
+			s/({|})/\016$1\017/g;
 			local($sharp) = s/^(#[ \t]*($'sharp_macros))// ? $1 : '';
 			if ($sharp !~ '#[ \t]*include') {
 				if ($isjava) {
-					s/\b($'java_reserved_words)\b/$'reserved_begin$1$'reserved_end/go;
+					s/\b($'java_reserved_words)\b/\022$1\023/go;
 				} elsif ($iscpp) {
-					s/\b($'cpp_reserved_words)\b/$'reserved_begin$1$'reserved_end/go;
+					s/\b($'cpp_reserved_words)\b/\022$1\023/go;
 				} else {
-					s/\b($'c_reserved_words)\b/$'reserved_begin$1$'reserved_end/go;
+					s/\b($'c_reserved_words)\b/\022$1\023/go;
 				}
 			}
-			s/^/$'sharp_begin$sharp$'sharp_end/ if ($sharp);	# recover macro
+			s/^/\020$sharp\021/ if ($sharp);	# recover macro
 			local($define_line) = 0;
 			local(@links) = ();
 			local($count) = 0;
@@ -2170,6 +2170,12 @@ sub src2html {
 					print STDERR "Error: $file $LNO $TAG($TYPE) tag must exist.\n" if ($'wflag);
 				}
 			}
+			s/\016/$'brace_begin/g;
+			s/\017/$'brace_end/g;
+			s/\020/$'sharp_begin/g;
+			s/\021/$'sharp_end/g;
+			s/\022/$'reserved_begin/g;
+			s/\023/$'reserved_end/g;
 			&unprotect_line();
 			# make guide
 			if ($define_line) {
