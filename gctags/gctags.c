@@ -246,9 +246,6 @@ main(argc, argv)
 		char *lang = NULL;
 		char *suffix, *list, *tail;
 
-		/* initialize token parser. */
-		if (!opentoken(argv[0]))
-			die("'%s' cannot open.", argv[0]);
 #if defined(_WIN32) || defined(__DJGPP__)
 		/* Lower case the file name since names are case insensitive */
 		strlwr(argv[0]);
@@ -273,6 +270,10 @@ main(argc, argv)
 			continue;
 		if (vflag)
 			fprintf(stderr, "suffix '%s' assumed language '%s'.\n", suffix, lang);
+
+		/* initialize token parser. */
+		if (!opentoken(argv[0]))
+			die("'%s' cannot open.", argv[0]);
 		/*
 		 * call language specific parser.
 		 */
