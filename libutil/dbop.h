@@ -30,6 +30,8 @@
 #endif
 #include "strbuf.h"
 
+#define DBOP_PAGESIZE	8192
+
 typedef	struct {
 	/*
 	 * (1) COMMON PART

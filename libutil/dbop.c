@@ -131,6 +131,7 @@ int	flags;
 	memset(&info, 0, sizeof(info));
 	if (flags & DBOP_DUP)
 		info.flags |= R_DUP;
+	info.psize = DBOP_PAGESIZE;
 	/*
 	 * accept user's request but needs 0.5MB at least.
 	 */
