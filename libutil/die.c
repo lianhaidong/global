@@ -32,6 +32,7 @@
 static int quiet;
 static int verbose;
 static int debug;
+static void (*exit_proc)();
 
 void
 setquiet()
@@ -48,7 +49,12 @@ setdebug()
 {
 	debug = 1;
 }
-
+void
+sethandler(proc)
+	void (*proc)();
+{
+	exit_proc = proc;
+}
 void
 #ifdef HAVE_STDARG_H
 die(const char *s, ...)
@@ -71,6 +77,8 @@ die(s, va_alist)
 		va_end(ap);
 		fputs("\n", stderr);
 	}
+	if (exit_proc)
+		(*exit_proc)();
 	if (debug)
 		abort();
 	exit(1);
@@ -99,6 +107,8 @@ die_with_code(int n, s, va_alist)
 		va_end(ap);
 		fputs("\n", stderr);
 	}
+	if (exit_proc)
+		(*exit_proc)();
 	if (debug)
 		abort();
 	exit(n);
