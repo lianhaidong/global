@@ -129,6 +129,8 @@ void strbuf_sprintf(STRBUF *sb, const char *s, ...);
 #else
 void strbuf_sprintf();
 #endif
+STRBUF *strbuf_open_tempbuf();
+void strbuf_release_tempbuf(STRBUF *);
 #ifdef STRBUF_LINK
 void strbuf_setname(STRBUF *, char *);
 STRBUF *strbuf_getbuf(char *);

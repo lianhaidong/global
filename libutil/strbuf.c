@@ -474,6 +474,36 @@ strbuf_close(sb)
 	(void)free(sb->sbuf);
 	(void)free(sb);
 }
+/*
+ * Temporary string buffer for general purpose.
+ *
+ * Usage:
+ *
+ *	STRBUF *sbt = strbuf_open_tempbuf();
+ *	....
+ *	strbuf_puts(sbtemp, "xxx");
+ *	...
+ *	strbuf_release_tempbuf(sbt);
+ *
+ */
+int used = 0;
+
+STRBUF *
+strbuf_open_tempbuf()
+{
+	STATIC_STRBUF(sb);
+	if (used)
+		die("Internal error: temporary string buffer is already used.");
+	used = 1;
+	strbuf_clear(sb);
+	return sb;
+}
+void
+strbuf_release_tempbuf(sb)
+	STRBUF *sb;
+{
+	used = 0;
+}
 #ifdef STRBUF_LINK
 /*
  * strbuf_setname: set name to specified string buffer.
