@@ -225,11 +225,8 @@ strbuf_nputs(sb, s, len)
 	if (!sb->alloc_failed) {
 		if (sb->curp + len > sb->endp)
 			__strbuf_expandbuf(sb, len);
-		while (*s) {
-			if (len-- <= 0)
-				break;
+		while (len-- > 0)
 			*sb->curp++ = *s++;
-		}
 	}
 }
 /*
