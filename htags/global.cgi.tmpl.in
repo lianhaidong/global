@@ -104,7 +104,7 @@ if ($flag eq 'g' || $flag eq 'I' || $form{'type'} eq 'source' || ($flag eq 'P' &
 	chdir("../..");
 	if ($?) {	
 		print "<h1><font color='#cc0000'>Error</font></h1>\n";
-		print "<h3>Couldn't change directory for $form{'type'} search. <A HREF='$htmlbase/mains.@normal_suffix@'>[return]</a></h3>\n";
+		print "<h3>Couldn't change directory for $form{'type'} search. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a></h3>\n";
 		print "@body_end@\n";
 		print "@html_end@\n";
 		exit 0;
