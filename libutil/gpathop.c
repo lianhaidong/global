@@ -193,7 +193,7 @@ gpath_nextkey(void)
 void
 gpath_close(void)
 {
-	char	buf[10];
+	char	fid[32];
 
 	assert(opened == 1);
 	opened = 0;
@@ -201,9 +201,9 @@ gpath_close(void)
 		dbop_close(dbop);
 		return;
 	}
-	snprintf(buf, sizeof(buf), "%d", _nextkey);
+	snprintf(fid, sizeof(fid), "%d", _nextkey);
 	if (_mode == 1 || _mode == 2)
-		dbop_update(dbop, NEXTKEY, buf, "0");
+		dbop_update(dbop, NEXTKEY, fid, "0");
 	dbop_close(dbop);
 	if (_mode == 1)
 		created = 1;
