@@ -71,6 +71,9 @@ int     show_version;
 int     show_help;
 int	show_config;
 int	do_convert;
+int	do_createdb;
+int	do_readdb;
+int	do_scandb;
 int	do_find;
 int	do_sort;
 int	do_write;
@@ -85,6 +88,7 @@ int	info;
 int	debug;
 char	*extra_options;
 char	*info_string;
+char	*btree_dbname;
 
 int	extractmethod;
 int	total;
@@ -116,6 +120,7 @@ static struct option const long_options[] = {
 	/* long name only */
 	{"config", optional_argument, &show_config, 1},
 	{"convert", no_argument, &do_convert, 1},
+	{"createdb", required_argument, &do_createdb, 1},
 	{"date", no_argument, &do_date, 1},
 	{"debug", no_argument, &debug, 1},
 	{"expand", required_argument, &do_expand, 1},
@@ -126,7 +131,9 @@ static struct option const long_options[] = {
 	{"other", no_argument, &other_files, 1},
 	{"postgres", optional_argument, NULL, 'P'},
 	{"pwd", no_argument, &do_pwd, 1},
+	{"readdb", required_argument, &do_readdb, 1},
 	{"relative", no_argument, &do_relative, 1},
+	{"scandb", required_argument, &do_scandb, 1},
 	{"sort", no_argument, &do_sort, 1},
 	{"write", no_argument, &do_write, 1},
 	{"version", no_argument, &show_version, 1},
@@ -200,6 +207,9 @@ char	*argv[];
 			} else if (!strcmp(p, "config")) {
 				if (optarg)
 					info_string = optarg;
+			} else if (!strcmp(p, "createdb") || !strcmp(p, "readdb") || !strcmp(p, "scandb")) {
+				if (optarg)
+					btree_dbname = optarg;
 			} else if (gtagsconf) {
 				char    conf[MAXPATHLEN+1];
 				char	*env;
@@ -326,6 +336,82 @@ char	*argv[];
 			fputs(q, stdout);
 		}
 		gpath_close();
+		strbuf_close(ib);
+		exit(0);
+	} else if (do_createdb) {
+		DBOP *dbop;
+		char keybuf[MAXKEYLEN+1];
+		STRBUF *ib = strbuf_open(MAXBUFLEN);
+		char *p, *q;
+
+		/*
+		 * [Job]
+		 *
+		 * Read line from stdin and write to btree database.
+		 */
+		dbop = dbop_open(btree_dbname, 1, 0644, DBOP_DUP);
+		if (dbop == NULL)
+			die("cannot create '%s'.", btree_dbname);
+		while (strbuf_fgets(ib, stdin, STRBUF_NOCRLF) != NULL) {
+			if (exitflag)
+				break;
+			p = q = strbuf_value(ib);
+			if (*q == ' ') {		/* META record */
+				if (*++q == ' ')
+					die("key cannot include blanks.");
+			}
+			for (; *q && !isspace(*q); q++)	/* skip key part */
+				;
+			if (*q == 0)
+				die("data part not found.");
+			if (q - p > MAXKEYLEN)
+				die("primary key too long.");
+			strncpy(keybuf, p, q - p);
+			keybuf[q - p] = '\0';
+			for (; *q && isspace(*q); q++)
+				;
+			if (*q == 0)
+				die("data part is null.");
+			dbop_put(dbop, keybuf, p, 0);
+		}
+		dbop_close(dbop);
+		strbuf_close(ib);
+		exit(0);
+	} else if (do_readdb) {
+		DBOP *dbop;
+		char *p;
+
+		/*
+		 * [Job]
+		 *
+		 * Read specified key records from btree database and write to stdout.
+		 */
+		if (argc == 0)
+			die("usage: %s --readdb=dbname key", progname);
+		dbop = dbop_open(btree_dbname, 0, 0, 0);
+		if (dbop == NULL)
+			die("cannot open '%s'.", btree_dbname);
+		for (p = dbop_first(dbop, argv[0], NULL, 0); p; p = dbop_next(dbop))
+			fprintf(stdout, "%s\n", p);
+		dbop_close(dbop);
+		exit(0);
+	} else if (do_scandb) {
+		DBOP *dbop;
+		char *p;
+
+		/*
+		 * [Job]
+		 *
+		 * Load GPATH record.
+		 */
+		if (argc == 0)
+			die("usage: %s --scandb=dbname prefix", progname);
+		dbop = dbop_open(btree_dbname, 0, 0, 0);
+		if (dbop == NULL)
+			die("cannot open '%s'.", btree_dbname);
+		for (p = dbop_first(dbop, "./", NULL, DBOP_PREFIX | DBOP_KEY); p; p = dbop_next(dbop))
+			fprintf(stdout, "%s %s\n", p, dbop_lastdat(dbop));
+		dbop_close(dbop);
 		exit(0);
 	} else if (do_expand) {
 		FILE *ip;

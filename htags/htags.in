@@ -37,7 +37,7 @@ END_OF_CAUTION
 #-------------------------------------------------------------------------
 # COMMAND EXISTENCE CHECK
 #-------------------------------------------------------------------------
-foreach $c ('sort', 'gtags', 'global', 'btreeop') {
+foreach $c ('sort', 'gtags', 'global') {
 	if (!&'usable($c)) {
 		&'error("'$c' command is required but not found.");
 	}
@@ -850,7 +850,7 @@ print STDERR "[", &'date, "] ", "(2) making help.html ...\n" if ($'vflag);
 #
 # (#) load GPATH
 #
-local($command) = "btreeop -L2 -k \"./\" \"$dbpath/GPATH\"";
+local($command) = "gtags --scandb=\"$dbpath/GPATH\" \"./\"";
 open(GPATH, "$command |") || &'error("cannot fork.");
 $nextkey = 0;
 while (<GPATH>) {
@@ -2351,7 +2351,7 @@ sub create {
 	open(ANCH, ">$ANCH") || &'error("cannot create file '$ANCH'.");
 	close(ANCH);
 	chmod ($ANCH, 0600);
-	local($command) = "btreeop -C $ANCH";
+	local($command) = "gtags --createdb=$ANCH";
 	open(ANCH, "| $command") || &'error("cannot fork.");
 	local($fcount) = 1;
 	local($fnumber);
@@ -2406,7 +2406,7 @@ sub load {
 	if (!($fnumber = $PATHLIST{$file})) {
 		return;
 	}
-	local($command) = "btreeop -K $fnumber $ANCH";
+	local($command) = "gtags --readdb=$ANCH $fnumber";
 	open(ANCH, "$command |") || &'error("cannot fork.");
 	while (<ANCH>) {
 		local($fnumber, $lno, $tag, $type) = split;
