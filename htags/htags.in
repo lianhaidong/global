@@ -1691,12 +1691,13 @@ sub src2html {
 	$command .= ($'w32) ? "\"$file\"" : "'$file'";
 	open(SRC, "$command |") || &'error("cannot fork.");
 	$file =~ s/^\.\///;
+
 	print $'html_begin, "\n";
 	print &'set_header($file);
 	print $'body_begin, "\n";
 	if ($notsource) {
 		#
-		# If not source file.
+		# It is not source file.
 		#
 		print "<PRE>\n";
 		while (<SRC>) {
@@ -1875,6 +1876,7 @@ sub src2html {
 	}
 	print $'body_end, "\n";
 	print $'html_end, "\n";
+
 	close(SRC);
 	if ($?) { &'error("cannot open file '$file'."); }
 	close(HTML);
