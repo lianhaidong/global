@@ -25,7 +25,7 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	GCTAGS,1,December 2001,GNU Project
+@HEADER	GCTAGS,18,April 2002,GNU Project
 @NAME	gctags - print cross reference list for gtags.
 @SYNOPSIS
 	@name{gctags} [-benrsvw] @arg{file} ...
@@ -81,7 +81,9 @@
 	@item{@option{-w}, @option{--warning}}
 		Print warning message.
 	@item{@option{--langmap}=map}
-		Specify language mapping. Default mapping is 'c:.c.h,yacc:.y,asm:.s.S,java:.java,cpp:.c++.cc.cpp.cxx.hxx.C.H'.
+		Language mapping. Each comma-separated  map  consists of
+		the language name, a colon, and a list of file extensions.
+		Default mapping is 'c:.c.h,yacc:.y,asm:.s.S,java:.java,cpp:.c++.cc.cpp.cxx.hxx.C.H'.
 	@end_itemize
 
 	The @option{-r} and @option{-s} options override each other;
