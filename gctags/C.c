@@ -565,7 +565,8 @@ function_definition(target, arg1)
 			brace_level++;
 		else if (c == /* ( */')' || c == ']')
 			brace_level--;
-		else if (brace_level == 0 && (c == SYMBOL || IS_RESERVED(c)))
+		else if (brace_level == 0
+		    && ((c == SYMBOL && strcmp(token, "__THROW")) || IS_RESERVED(c)))
 			isdefine = 1;
 		else if (c == ';' || c == ',') {
 			if (!isdefine)
