@@ -21,3 +21,7 @@ EXTRA_DIST = FAQ LICENSE \
 	w32/libglibc/makefile w32/libutil/makefile w32/gozilla/makefile \
 	w32/libdb/objs w32/libglibc/objs w32/libutil/objs \
 	w32/htags/htags.bat w32/machine/config.h w32/machine/unistd.h
+
+gtagsdir = ${datadir}/gtags
+gtags_DATA = AUTHORS COPYING ChangeLog FAQ INSTALL LICENSE NEWS README THANKS \
+        globash.rc gtags.conf gtags.el gtags.pl gtags.vim nvi-1.79-gtags.diff
