@@ -54,7 +54,6 @@ gctags|tag command for GLOBAL:\
 	:tc=common:\
 	:suffixes=@DEFAULTSUFFIXES@:\
 	:sort_command=sort:\
-	:sed_command=sed:\
 	:GTAGS=gctags -dt %s:\
 	:GRTAGS=gctags -dtr %s:\
 	:GSYMS=gctags -dts %s:

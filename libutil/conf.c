@@ -342,8 +342,6 @@ openconf()
 	}
 	if (!getconfs("sort_command", NULL))
 		strbuf_puts(sb, ":sort_command=sort");
-	if (!getconfs("sed_command", NULL))
-		strbuf_puts(sb, ":sed_command=sed");
 	strbuf_unputc(sb, ':');
 	strbuf_putc(sb, ':');
 	confline = strdup(strbuf_value(sb));

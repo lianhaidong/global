@@ -82,6 +82,7 @@ int show_help;
 int show_config;
 int do_convert;
 int do_find;
+int do_sed;
 int do_sort;
 int do_relative;
 int do_absolute;
@@ -95,6 +96,7 @@ int debug;
 int secure_mode;
 char *extra_options;
 char *info_string;
+char *sed_string;
 
 int extractmethod;
 int total;
@@ -138,6 +140,7 @@ static struct option const long_options[] = {
 	{"postgres", optional_argument, NULL, 'P'},
 	{"relative", no_argument, &do_relative, 1},
 	{"secure", no_argument, &secure_mode, 1},
+	{"sed", required_argument, &do_sed, 1},
 	{"sort", no_argument, &do_sort, 1},
 	{"version", no_argument, &show_version, 1},
 	{"help", no_argument, &show_help, 1},
@@ -210,6 +213,9 @@ main(argc, argv)
 			} else if (!strcmp(p, "config")) {
 				if (optarg)
 					info_string = optarg;
+			} else if (!strcmp(p, "sed")) {
+				if (optarg)
+					sed_string = optarg;
 			} else if (gtagsconf || gtagslabel) {
 				char value[MAXPATHLEN+1];
 				char *name = (gtagsconf) ? "GTAGSCONF" : "GTAGSLABEL";
@@ -420,6 +426,27 @@ main(argc, argv)
 			fputc('\n', stdout);
 		}
 		vfind_close();
+		exit(0);
+	} else if (do_sed) {
+		/*
+		 * This code is used by gtags(1) to convert from path to
+		 * file id. The 'gtags --sed fid' is equivalent with
+		 * 'sed "s@<path>@fid@"'.
+		 */
+		STRBUF *ib = strbuf_open(MAXBUFLEN);
+		char *ctags_x, *p;
+
+		while (ctags_x = strbuf_fgets(ib, stdin, 0)) {
+			char *p = locatestring(ctags_x, "./", MATCH_FIRST);
+			if (p == NULL)
+				die("gtags --sed: path name not found.");
+			*p++ = '\0';
+			fputs(ctags_x, stdout);
+			while (*p && !isspace(*p))
+				p++;
+			fputs(sed_string, stdout);
+			fputs(p, stdout);
+		}
 		exit(0);
 	} else if (do_sort) {
 		/*

@@ -23,7 +23,7 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	GTAGS,1,May 2004,GNU Project
+@HEADER	GTAGS,1,Nov 2004,GNU Project
 @NAME	gtags - create tag files for global.
 @SYNOPSIS
 	@name{gtags} [-c][-i][-I][-o][-P][-q][-v][-w][@arg{dbpath}]
@@ -144,8 +144,6 @@
 	@item{@code{icase_path}(boolean)}
 		Ignore case distinctions in the path.
 		Suffixes check are affected by this capability.
-	@item{@code{sed_command}(string)}
-		Use specified @xref{sed,1} command, which is used internally.
 	@item{@code{sort_command}(string)}
 		Use specified @xref{sort,1} command, which is used internally.
 	@end_itemize

@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999 Shigio Yamaguchi
- * Copyright (c) 1999, 2000, 2001, 2002, 2003 Tama Communications Corporation
+ * Copyright (c) 1999, 2000, 2001, 2002, 2003, 2004
+ *			Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -37,6 +38,7 @@
 #include <time.h>
 
 #include "getopt.h"
+#include "regex.h"
 #include "global.h"
 #include "cache.h"
 #include "common.h"
@@ -72,7 +74,6 @@ char dbpath[MAXPATHLEN];
 char distpath[MAXPATHLEN];
 char gtagsconf[MAXPATHLEN];
 
-char sed_path[MAXFILLEN];
 char sort_path[MAXFILLEN];
 char gtags_path[MAXFILLEN];
 char global_path[MAXFILLEN];
@@ -301,6 +302,8 @@ generate_file(dist, file)
 	char *dist;
 	char *file;
 {
+	regex_t preg;
+	regmatch_t pmatch[2];
 	STRBUF *sb = strbuf_open(0);
 	FILE *ip, *op;
 	char *_;
@@ -327,31 +330,61 @@ generate_file(dist, file)
 	int tabsize = sizeof(tab) / sizeof(struct map);
 
 	/*
-	 * construct sed script.
+	 * construct regular expression.
 	 */
-	strbuf_puts(sb, sed_path);
-	for (i = 0; i < tabsize; i++)
-		strbuf_sprintf(sb, " -e 's!%s!%s!g'", tab[i].name, tab[i].value);
+	strbuf_putc(sb, '(');
+	for (i = 0; i < tabsize; i++) {
+		strbuf_puts(sb, tab[i].name);
+		strbuf_putc(sb, '|');
+	}
+	strbuf_unputc(sb, '|');
+	strbuf_putc(sb, ')');
+	if (regcomp(&preg, strbuf_value(sb), REG_EXTENDED) != 0)
+		die("cannot compile regular expression.");
 	/*
-	 * skelton file in the system datadir directory.
+	 * construct skelton file name in the system datadir directory.
 	 */
-	strbuf_putc(sb, ' ');
+	strbuf_reset(sb);
 	if (!getconfs("datadir", sb))
 		die("cannot get datadir directory name.");
 	strbuf_sprintf(sb, "/gtags/%s.tmpl", file);
-	ip = popen(strbuf_value(sb), "r");
+	ip = fopen(strbuf_value(sb), "r");
 	if (!ip)
-		die("skelton file '%s.in' not found.", file);
+		die("skelton file '%s' not found.", strbuf_value(sb));
 	op = fopen(makepath(dist, file, NULL), "w");
 	if (!op)
 		die("cannot create file '%s'.", file);
 	strbuf_reset(sb);
-	while ((_ = strbuf_fgets(sb, ip, STRBUF_NOCRLF)) != NULL)
-		fprintf(op, "%s\n", _);
+	/*
+	 * Read templete file and evaluate macros.
+	 */
+	while ((_ = strbuf_fgets(sb, ip, STRBUF_NOCRLF)) != NULL) {
+		char *p;
+
+		/* Pick up macro name */
+		for (p = _; !regexec(&preg, p, 2, pmatch, 0); p += pmatch[0].rm_eo) {
+			char *start = p + pmatch[0].rm_so;
+			int length = pmatch[0].rm_eo - pmatch[0].rm_so;
+
+			/* print before macro */
+			for (i = 0; i < pmatch[0].rm_so; i++)
+				fputc(p[i], op);
+			for (i = 0; i < tabsize; i++)
+				if (!strncmp(start, tab[i].name, length))
+					break;
+			if (i >= tabsize)
+				die("something wrong.");
+			/* print macro value */
+			if (i < tabsize)
+				fputs(tab[i].value, op);
+		}
+		fputs(p, op);
+		fputc('\n', op);
+	}
 	fclose(op);
-	if (pclose(ip) < 0)
-		die("terminated abnormally.");
+	fclose(ip);
 	strbuf_close(sb);
+	regfree(&preg);
 	file_count++;
 }
 
@@ -874,9 +907,6 @@ basic_check()
 	/*
 	 * COMMAND EXISTENCE CHECK
 	 */
-	if (!(p = usable("sed")))
-		die("sed command required but not found.");
-	strlimcpy(sed_path, p, sizeof(sed_path));
 	if (!(p = usable("sort")))
 		die("sort command required but not found.");
 	strlimcpy(sort_path, p, sizeof(sort_path));

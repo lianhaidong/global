@@ -390,8 +390,10 @@ gtags_put(gtop, tag, record, fid)
 	/*
 	 * gtop->format & GTAGS_COMPACT
 	 */
-	if (split(record, 4, &ptable) != 4)
-		die("illegal format.");
+	if (split(record, 4, &ptable) != 4) {
+		recover(&ptable);
+		die("illegal tag format.\n'%s'", record);
+	}
 	line = ptable.part[1].start;
 	path = ptable.part[2].start;
 	/*
@@ -441,7 +443,6 @@ gtags_add(gtop, comline, path, flags)
 	STRBUF *sb = strbuf_open(0);
 	STRBUF *ib = strbuf_open(MAXBUFLEN);
 	STRBUF *sort_command = strbuf_open(0);
-	STRBUF *sed_command = strbuf_open(0);
 	char *fid;
 
 	/*
@@ -452,12 +453,6 @@ gtags_add(gtop, comline, path, flags)
 #if defined(_WIN32) || defined(__DJGPP__)
 	if (!locatestring(strbuf_value(sort_command), ".exe", MATCH_LAST))
 		strbuf_puts(sort_command, ".exe");
-#endif
-	if (!getconfs("sed_command", sed_command))
-		die("cannot get sed command name.");
-#if defined(_WIN32) || defined(__DJGPP__)
-	if (!locatestring(strbuf_value(sed_command), ".exe", MATCH_LAST))
-		strbuf_puts(sed_command, ".exe");
 #endif
 	/*
 	 * add path index if not yet.
@@ -479,14 +474,9 @@ gtags_add(gtop, comline, path, flags)
 	 * Compact format.
 	 */
 	if (gtop->format & GTAGS_PATHINDEX) {
-		strbuf_puts(sb, "| ");
-		strbuf_puts(sb, strbuf_value(sed_command));
+		strbuf_puts(sb, "| gtags --sed");
 		strbuf_putc(sb, ' ');
-		strbuf_puts(sb, "\"s@");
-		strbuf_puts(sb, path);
-		strbuf_puts(sb, "@");
 		strbuf_puts(sb, fid);
-		strbuf_puts(sb, "@\"");
 	}
 	if (gtop->format & GTAGS_COMPACT) {
 		strbuf_puts(sb, "| ");
@@ -532,7 +522,6 @@ gtags_add(gtop, comline, path, flags)
 	if (pclose(ip) < 0)
 		die("terminated abnormally.");
 	strbuf_close(sort_command);
-	strbuf_close(sed_command);
 	strbuf_close(sb);
 	strbuf_close(ib);
 }
