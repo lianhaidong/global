@@ -82,6 +82,12 @@
 	@item{@option{-w}, @option{--warning}}
 		Print warning messages.
 	@end_itemize
+@EXAMPLES
+	% ls -F
+	Makefile      src/    lib/
+	% gtags -v
+	% global -x main
+	main              10 src/main.c  main (argc, argv) {
 @FILES
 	@begin_itemize
 	@item{@file{GTAGS}}
@@ -105,12 +111,6 @@
 		If this variable is set, its value is used as the label
 		of configuration file. The default is 'default'.
 	@end_itemize
-@EXAMPLES
-	% ls -F
-	Makefile      src/    lib/
-	% gtags -v
-	% global -x main
-	main              10 src/main.c  main (argc, argv) {
 @DIAGNOSTICS
 	@name{Gtags} exits with a non 0 value if an error occurred, 0 otherwise.
 @SEE ALSO
