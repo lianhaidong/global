@@ -1474,7 +1474,8 @@ sub makedupindex {
 			$'file_count++;
 		}
 		if ($first_line) {
-			&cache'put($db, $prev, $first_line);
+			local($nouse, $lno, $filename) = split(/[ \t]+/, $first_line);
+			&cache'put($db, $prev, "$lno $filename");
 		}
 	}
 	if (!$'dynamic) {
