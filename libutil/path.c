@@ -38,6 +38,7 @@
 #include <fcntl.h>			/* for _USE_LFN */
 #endif
 
+#include "gparam.h"
 #include "path.h"
 #include "strlimcpy.h"
 
