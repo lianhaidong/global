@@ -580,7 +580,7 @@ condition_macro(cc, target)
 			if (target == REF) {
 				if (dflag && defined(token))
 		                        PUT(token, lineno, sp);
-			} else if (target == SYM)
+			} else if (target == SYM) {
 				if (!dflag || !defined(token))
 		                	PUT(token, lineno, sp);
 			}
