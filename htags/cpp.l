@@ -71,6 +71,11 @@ WORD		{ALPHA}{ALPHANUM}*
 <CPP,PREPROCESSING_DIRECTIVE>"/*"	{ echos(comment_begin); ECHO; yy_push_state(C_COMMENT); }
 <C_COMMENT>"*/"	{ ECHO; echos(comment_end); yy_pop_state(); }
 <C_COMMENT>.	{ put_char(LEXTEXT[0]); }
+<C_COMMENT><<EOF>> {
+		if (wflag)
+			unexpected_eof(LINENO);
+		yyterminate();
+	}
 <CPP,PREPROCESSING_DIRECTIVE>"//"	{ echos(comment_begin); ECHO; yy_push_state(CPP_COMMENT); }
 
  /* String */
@@ -82,12 +87,6 @@ WORD		{ALPHA}{ALPHANUM}*
 <CPP,PREPROCESSING_DIRECTIVE>\'	{ ECHO; yy_push_state(LITERAL); }
 <LITERAL>\'	{ ECHO; yy_pop_state(); }
 <LITERAL>\\.	{ put_char(LEXTEXT[0]); put_char(LEXTEXT[1]); }
-
-<C_COMMENT,STRING,LITERAL><<EOF>> {
-		if (wflag)
-			unexpected_eof(LINENO);
-		yyterminate();
-	}
 
  /* Preprocessing directive */
 <CPP>^[ \t]*\#[ \t]*(include|include_next) {
@@ -193,7 +192,7 @@ WORD		{ALPHA}{ALPHANUM}*
 	}
 <CPP,PREPROCESSING_DIRECTIVE>[{}]	{ put_brace(LEXTEXT); }
  /* New line */
-\n		DEFAULT_END_OF_LINE_ACTION
+\n		C_FAMILY_END_OF_LINE_ACTION
 .		{ put_char(LEXTEXT[0]); }
 
 %%

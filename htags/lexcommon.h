@@ -24,8 +24,7 @@
 /*
  * The default action for line control.
  * These can be applicable to most languages.
- * You must define C_COMMENT, CPP_COMMENT, SHELL_COMMENT
- * and PREPROCESSING_DIRECTIVE as %start values.
+ * You must define C_COMMENT, CPP_COMMENT and SHELL_COMMENT as %start values.
  * It assumed CPP_COMMENT and SHELL_COMMENT is one line comment.
  */
 static int lineno;
@@ -58,10 +57,32 @@ static int begin_line;
 	switch (YY_START) {						\
 	case CPP_COMMENT:						\
 	case SHELL_COMMENT:						\
+		echos(comment_end);					\
 		yy_pop_state();						\
-		/* FALLTHROUGH */					\
+		break;							\
 	case C_COMMENT:							\
 		echos(comment_end);					\
+		break;							\
+	}								\
+	put_end_of_line(lineno);					\
+	/* for the next line */						\
+	lineno++;							\
+	begin_line = 1;							\
+}
+
+#define C_FAMILY_END_OF_LINE_ACTION {					\
+	switch (YY_START) {						\
+	case CPP_COMMENT:						\
+	case SHELL_COMMENT:						\
+		echos(comment_end);					\
+		yy_pop_state();						\
+		break;							\
+	case C_COMMENT:							\
+		echos(comment_end);					\
+		break;							\
+	case STRING:							\
+	case LITERAL:							\
+		yy_pop_state();						\
 		break;							\
 	}								\
 	if (YY_START == PREPROCESSING_DIRECTIVE)			\

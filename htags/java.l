@@ -58,7 +58,7 @@ ALPHA		[a-zA-Z_\x80-\xff]
 ALPHANUM	[a-zA-Z_\x80-\xff0-9]
 WORD		{ALPHA}{ALPHANUM}*
 
-%start	JAVA C_COMMENT CPP_COMMENT SHELL_COMMENT STRING LITERAL PREPROCESSING_DIRECTIVE
+%start	JAVA C_COMMENT CPP_COMMENT SHELL_COMMENT STRING LITERAL
 %option 8bit noyywrap noyy_top_state stack prefix="java"
 %%
  /* Comment */

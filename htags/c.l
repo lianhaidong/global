@@ -75,6 +75,11 @@ YACC_DIRECTIVE	%{ALPHA}({ALPHANUM}|-)*
 }
 <C_COMMENT>"*/"	{ ECHO; echos(comment_end); yy_pop_state(); }
 <C_COMMENT>.	{ put_char(LEXTEXT[0]); }
+<C_COMMENT><<EOF>> {
+		if (wflag)
+			unexpected_eof(LINENO);
+		yyterminate();
+	}
 <C,PREPROCESSING_DIRECTIVE,YACC_DECLARATIONS,YACC_RULES,YACC_PROLOGUE>{
 	"//"	{ echos(comment_begin); ECHO; yy_push_state(CPP_COMMENT); }
 }
@@ -92,12 +97,6 @@ YACC_DIRECTIVE	%{ALPHA}({ALPHANUM}|-)*
 }
 <LITERAL>\'	{ ECHO; yy_pop_state(); }
 <LITERAL>\\.	{ put_char(LEXTEXT[0]); put_char(LEXTEXT[1]); }
-
-<C_COMMENT,STRING,LITERAL><<EOF>> {
-		if (wflag)
-			unexpected_eof(LINENO);
-		yyterminate();
-	}
 
  /* Preprocessing directive */
 <C,YACC_DECLARATIONS,YACC_RULES,YACC_PROLOGUE>{
@@ -228,7 +227,7 @@ YACC_DIRECTIVE	%{ALPHA}({ALPHANUM}|-)*
 }
 
  /* New line */
-\n		DEFAULT_END_OF_LINE_ACTION
+\n		C_FAMILY_END_OF_LINE_ACTION
 .		{ put_char(LEXTEXT[0]); }
 
 %%
