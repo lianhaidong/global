@@ -169,7 +169,7 @@ $'java_reserved_words =~ s/,/|/g;
 			} elsif (! -f $ARGV[$i]) {
 				&'error("config file '$ARGV[$i]' not found.");
 			}
-			$ENV{'GTAGSCONF'} = $ARGV[$i];
+			$ENV{'GTAGSCONF'} = &realpath($ARGV[$i]);
 		} else {
 			push(@a, $ARGV[$i]);
 		}
@@ -333,12 +333,22 @@ sub getcwd {
         $dir;
 }
 sub realpath {
-	local($dir) = @_;
-	local($cwd) = &getcwd;
-	chdir($dir) || &'error("cannot change directory '$dir'.");
-        local($new) = &getcwd;
-	chdir($cwd) || &'error("cannot recover current directory '$cwd'.");
-	$new;
+        local($path) = @_;
+        local($cwd) = &getcwd;		# for recovery
+        local($real);			# real directory
+
+        if (! -d $path && ! -f $path) {
+		&'error("'$path' not found.");
+	}
+        local($dir,$file) = ($path =~ m#^(.*/)?(.*)#);
+	if ($dir) {
+		chdir($dir) || &'error("directory '$dir' not found.");
+	}
+        $real = &getcwd;
+        $path = $real . '/' . $file;
+        $path =~ s!//!/!;
+        chdir($cwd) || &'error("cannot recover current directory '$cwd'.");
+        $path;
 }
 sub date {
 	local($date) = `$'gtags --date`;

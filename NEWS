@@ -28,6 +28,7 @@ Version 4.* - *** **, 2001, by Shigio Yamaguchi
 * htags: changed to refer to macros which is defined in other C source.
 * htags: --caution option added.
 * global.texi: reference manual added.
+* gtags, htags: allow relative path name for --gtagsconf.
 
 Version 4.1.1 - July 31, 2001, by Shigio Yamaguchi
 

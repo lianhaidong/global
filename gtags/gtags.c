@@ -196,22 +196,23 @@ char	*argv[];
 				else
 					info_string = optarg;
 			} else if (gtagsconf) {
+				char    conf[MAXPATHLEN+1];
+				char	*env;
+
 				gtagsconf = 0;
 				if (!optarg)
 					usage();
-				else
+				if (realpath(optarg, conf) == NULL)
+					die("%s not found.", optarg);
 #ifdef HAVE_PUTENV
-				{
-					char *env = (char *)malloc(strlen("GTAGSCONF=")+strlen(optarg)+1);
-
-					if (!env)	
-						die("short of memory.");
-					strcpy(env, "GTAGSCONF=");
-					strcat(env, optarg);
-					putenv(env);
-				}
+				env = (char *)malloc(strlen("GTAGSCONF=")+strlen(conf)+1);
+				if (!env)	
+					die("short of memory.");
+				strcpy(env, "GTAGSCONF=");
+				strcat(env, conf);
+				putenv(env);
 #else
-				setenv("GTAGSCONF", optarg, 1);
+				setenv("GTAGSCONF", conf, 1);
 #endif /* HAVE_PUTENV */
 			}
 			break;
