@@ -82,6 +82,7 @@ int	Pflag;				/* command		*/
 int	rflag;				/* [option]		*/
 int	sflag;				/* [option]		*/
 int	tflag;				/* [option]		*/
+int	Tflag;				/* [option]		*/
 int	vflag;				/* [option]		*/
 int	xflag;				/* [option]		*/
 int	show_version;
@@ -91,7 +92,7 @@ int	use_tagfiles;
 int	debug;
 char	*extra_options;
 const char *usage_const = "\
-Usage: global [-alnrstvx] pattern\n\
+Usage: global [-alnrstTvx] pattern\n\
        global -c[sv] [prefix]\n\
        global -f[anrstvx] files\n\
        global -g[alntvx] pattern\n\
@@ -135,6 +136,8 @@ Options:\n\
              with the -p option print the root directory of source tree.\n\
      -t, --tags\n\
              print with standard ctags format.\n\
+     -T, --through\n\
+             go through all the tag files listed in GTAGSLIBPATH.\n\
      -v, --verbose\n\
              verbose mode.\n\
      -x, --cxref\n\
@@ -169,6 +172,7 @@ static struct option const long_options[] = {
 	{"rootdir", no_argument, NULL, 'r'},
 	{"symbol", no_argument, NULL, 's'},
 	{"tags", no_argument, NULL, 't'},
+	{"through", no_argument, NULL, 'T'},
 	{"verbose", no_argument, NULL, 'v'},
 	{"cxref", no_argument, NULL, 'x'},
 
@@ -205,7 +209,7 @@ char	*argv[];
 	char	root[MAXPATHLEN+1];		/* root of source tree	*/
 	char	dbpath[MAXPATHLEN+1];		/* dbpath directory	*/
 
-	while ((optchar = getopt_long(argc, argv, "acfgGiIlnpPrstvx", long_options, &option_index)) != EOF) {
+	while ((optchar = getopt_long(argc, argv, "acfgGiIlnpPrstTvx", long_options, &option_index)) != EOF) {
 		switch (optchar) {
 		case 0:
 			if (!strcmp("idutils", long_options[option_index].name))
@@ -257,6 +261,9 @@ char	*argv[];
 			break;
 		case 't':
 			tflag++;
+			break;
+		case 'T':
+			Tflag++;
 			break;
 		case 'v':
 			vflag++;
@@ -492,7 +499,7 @@ char	*argv[];
 	/*
 	 * search in library path.
 	 */
-	if (count == 0 && !lflag && !rflag && !sflag && !notnamechar(av) && getenv("GTAGSLIBPATH")) {
+	if (getenv("GTAGSLIBPATH") && (count == 0 || Tflag) && !lflag && !rflag && !sflag) {
 		STRBUF  *sb = strbuf_open(0);
 		char	libdbpath[MAXPATHLEN+1];
 		char	*p, *lib;
@@ -519,7 +526,7 @@ char	*argv[];
 				relative_filter(pathfilter, lib, cwd);
 			}
 			count = search(av, lib, libdbpath, db);
-			if (count > 0) {
+			if (count > 0 && !Tflag) {
 				strcpy(dbpath, libdbpath);
 				break;
 			}
@@ -535,7 +542,8 @@ char	*argv[];
 		} else {
 			fprintf(stderr, "'%s' not found", av);
 		}
-		fprintf(stderr, " (using '%s').\n", makepath(dbpath, dbname(db), NULL));
+		if (!Tflag)
+			fprintf(stderr, " (using '%s').\n", makepath(dbpath, dbname(db), NULL));
 	}
 	strbuf_close(sortfilter);
 	strbuf_close(pathfilter);

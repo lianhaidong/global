@@ -20,7 +20,7 @@
 .\" along with this program; if not, write to the Free Software
 .\" Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 .\"
-.Dd Oct 21, 2000
+.Dd Dec 9, 2000
 .Dt GLOBAL 1
 .Os FreeBSD
 .Sh NAME
@@ -28,7 +28,7 @@
 .Nd print the locations of specified object.
 .Sh SYNOPSIS
 .Nm global
-.Op Fl alnrstvx
+.Op Fl alnrstTvx
 .Ar pattern
 .Nm global
 .Fl c[sv]
@@ -144,6 +144,11 @@ definitions. With the -p option, print the root directory of source tree.
 .It Fl t
 .It Fl -tags
 Print with standard ctags format.
+.It Fl T
+.It Fl -through
+Go through all the tag files listed in GTAGSLIBPATH.
+By default, stop searching when tag is found.
+This option is ignored when either -s, -r or -l option is specified.
 .It Fl v
 .It Fl -verbose
 Verbose mode.
