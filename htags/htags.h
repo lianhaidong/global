@@ -123,6 +123,7 @@ extern char *anchor_comment[];
 extern char *anchor_msg[];
 extern char *back_icon;
 extern char *dir_icon;
+extern char *c_icon;
 extern char *file_icon;
 
 extern int ncol;
@@ -131,6 +132,7 @@ extern char stabs[];
 extern int full_path;
 extern int map_file;
 extern char *icon_list;
+extern char *icon_suffix;
 extern char *icon_spec;
 extern char *prolog_script;
 extern char *epilog_script;

@@ -131,14 +131,14 @@ char *anchor_label[] = {
 	"help"
 };
 char *anchor_icons[] = {
-	"left.jpg",
-	"right.jpg",
-	"first.jpg",
-	"last.jpg",
-	"top.jpg",
-	"bottom.jpg",
-	"index.jpg",
-	"help.jpg"
+	"left",
+	"right",
+	"first",
+	"last",
+	"top",
+	"bottom",
+	"index",
+	"help"
 };
 char *anchor_comment[] = {
 	"previous",
@@ -160,9 +160,10 @@ char *anchor_msg[] = {
 	"Return to index page.",
 	"You are seeing now."
 };
-char *back_icon = "back.jpg";
-char *dir_icon  = "dir.jpg";
-char *file_icon = "c.jpg";
+char *back_icon = "back";
+char *dir_icon  = "dir";
+char *c_icon = "c";
+char *file_icon = "text";
 
 /*
  * Configuration parameters.
@@ -173,7 +174,8 @@ char stabs[8];				/* tab skip (string)		*/
 int full_path = 0;			/* file index format		*/
 int map_file = 1;			/* 1: create MAP file		*/
 char *icon_list = NULL;			/* use icon list		*/
-char *icon_spec = "BORDER=0 ALIGN=middle";/* parameter in IMG tag	*/
+char *icon_suffix = "png";		/* icon suffix (jpg, png etc)	*/
+char *icon_spec = "BORDER=0 ALIGN=top";	/* parameter in IMG tag		*/
 char *prolog_script = NULL;		/* include script at first	*/
 char *epilog_script = NULL;		/* include script at last	*/
 int use_javascript = 1;			/* 1: use javascript		*/
@@ -409,8 +411,8 @@ makehelp(file)
 	fprintf(op, "%s/* ", verbatim_begin);
 	for (n = 0; n <= last; n++) {
 		if (icon_list) {
-			fprintf(op, "<IMG SRC=icons/%s ALT=[%s] %s>",
-					icons[n], label[n], icon_spec);
+			fprintf(op, "<IMG SRC=icons/%s.%s ALT=[%s] %s>",
+					icons[n], icon_suffix, label[n], icon_spec);
 			if (n < last)
 				fputc(' ', op);
 		} else {
@@ -424,8 +426,8 @@ makehelp(file)
 	for (n = 0; n <= last; n++) {
 		fprintf(op, "<DT>");
 		if (icon_list) {
-			fprintf(op, "<IMG SRC=icons/%s ALT=[%s] %s>",
-					icons[n], label[n], icon_spec);
+			fprintf(op, "<IMG SRC=icons/%s.%s ALT=[%s] %s>",
+					icons[n], icon_suffix, label[n], icon_spec);
 		} else {
 			fprintf(op, "[%s]", label[n]);
 		}
@@ -991,6 +993,13 @@ configuration(argc, argv)
 		icon_spec = p;
 	}
 	strbuf_reset(sb);
+	if (getconfs("icon_suffix", sb)) {
+		p = strdup(strbuf_value(sb));
+		if (p == NULL)
+			die("short of memory.");
+		icon_suffix = p;
+	}
+	strbuf_reset(sb);
 	if (getconfs("prolog_script", sb)) {
 		p = strdup(strbuf_value(sb));
 		if (p == NULL)
@@ -1481,6 +1490,8 @@ main(argc, argv)
 		style_sheet = strbuf_value(sb);
 		/* Doesn't close string buffer. */
 	}
+	if (icon_list && !test("f", icon_list))
+		die("icon_list '%s' not found.", icon_list);
 	/*
 	 * decide directory in which we make hypertext.
 	 */

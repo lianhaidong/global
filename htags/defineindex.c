@@ -76,7 +76,12 @@ makedefineindex(file, total, defines)
 		fprintf(DEFINES, "<H2>%s</H2>\n", title_define_index);
 	if (!aflag && !Fflag) {
 		snprintf(indexlink, sizeof(indexlink), "mains.%s", normal_suffix);
-		fprintf(DEFINES, "<A HREF=%s TITLE='%s'>[..]</A>\n", indexlink, index_string);
+		fprintf(DEFINES, "<A HREF=%s TITLE='%s'>", indexlink, index_string);
+		if (icon_list)
+			fprintf(DEFINES, "<IMG SRC=icons/%s.%s ALT='[..]' %s>", back_icon, icon_suffix, icon_spec);
+		else
+			fprintf(DEFINES, "[..]");
+		fprintf(DEFINES, "</A>\n");
 	}
 	if (!aflag) {
 		if (!no_order_list)
@@ -115,7 +120,7 @@ makedefineindex(file, total, defines)
 					fprintf(ALPHA, "%s\n", br);
 				fprintf(ALPHA, "<A HREF=%s TITLE='%s'>", indexlink, index_string);
 				if (icon_list)
-					fprintf(ALPHA, "<IMG SRC=../icons/%s ALT='[..]' %s>", back_icon, icon_spec);
+					fprintf(ALPHA, "<IMG SRC=../icons/%s.%s ALT='[..]' %s>", back_icon, icon_suffix, icon_spec);
 				else
 					fprintf(ALPHA, "[..]");
 				fprintf(ALPHA, "</A>\n");
@@ -174,7 +179,7 @@ makedefineindex(file, total, defines)
 			fprintf(ALPHA, "<H2>[%s]</H2>\n", alpha);
 			fprintf(ALPHA, "<A HREF=%s TITLE='%s'>", indexlink, index_string);
 			if (icon_list)
-				fprintf(ALPHA, "<IMG SRC=../icons/%s ALT='[..]' %s>", back_icon, icon_spec);
+				fprintf(ALPHA, "<IMG SRC=../icons/%s.%s ALT='[..]' %s>", back_icon, icon_suffix, icon_spec);
 			else
 				fprintf(ALPHA, "[..]");
 			fprintf(ALPHA, "</A>\n");
@@ -262,7 +267,7 @@ makedefineindex(file, total, defines)
 			fprintf(ALPHA, "%s\n", br);
 		fprintf(ALPHA, "<A HREF=%s TITLE='%s'>", indexlink, index_string);
 		if (icon_list)
-			fprintf(ALPHA, "<IMG SRC=../icons/%s ALT='[..]' %s>", back_icon, icon_spec);
+			fprintf(ALPHA, "<IMG SRC=../icons/%s.%s ALT='[..]' %s>", back_icon, icon_suffix, icon_spec);
 		else
 			fprintf(ALPHA, "[..]");
 		fprintf(ALPHA, "</A>\n");
@@ -275,8 +280,14 @@ makedefineindex(file, total, defines)
 	}
 	if (!no_order_list && !aflag)
 		fprintf(DEFINES, "%s\n", list_end);
-	if (!aflag && !Fflag)
-		fprintf(DEFINES, "<A HREF=mains.%s TITLE='Index Page'>[..]</A>\n", normal_suffix);
+	if (!aflag && !Fflag) {
+		fprintf(DEFINES, "<A HREF=mains.%s TITLE='Index Page'>", normal_suffix);
+		if (icon_list)
+			fprintf(DEFINES, "<IMG SRC=icons/%s.%s ALT='[..]' %s>", back_icon, icon_suffix, icon_spec);
+		else
+			fprintf(DEFINES, "[..]");
+		fprintf(DEFINES, "</A>\n");
+	}
 	fprintf(DEFINES, "%s\n", body_end);
 	fprintf(DEFINES, "%s\n", html_end);
 	fclose(DEFINES);

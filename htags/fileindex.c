@@ -577,13 +577,17 @@ makefileindex(file, files)
 	 * for collecting include files.
 	 */
 	struct data *inc;
-	char *pattern = "\\.(h|hxx|hpp|H|inc\\.php)$";
 	int flags = REG_EXTENDED;
-	regex_t is_include_file;
+	char *pattern;
+	regex_t is_include_file, is_c_file;
 
 	if (w32)
 		flags |= REG_ICASE;
+	pattern = "\\.(h|hxx|hpp|H|inc\\.php)$";
 	if (regcomp(&is_include_file, pattern, flags) != 0)
+		die("cannot compile regular expression '%s'.", pattern);
+	pattern = "\\.(h|c|y|c\\+\\+|cc|cpp|cxx|hxx|hpp|C|H)$";
+	if (regcomp(&is_c_file, pattern, flags) != 0)
 		die("cannot compile regular expression '%s'.", pattern);
 
 	/*
@@ -646,7 +650,7 @@ makefileindex(file, files)
 					fprintf(STDOUT, "%s\n", list_end);
 				fprintf(STDOUT, "<A HREF=%s TITLE='Parent Directory'>", parent);
 				if (icon_list)
-					fprintf(STDOUT, "<IMG SRC=../icons/%s ALT='[..]' %s>", back_icon, icon_spec);
+					fprintf(STDOUT, "<IMG SRC=../icons/%s.%s ALT='[..]' %s>", back_icon, icon_suffix, icon_spec);
 				else
 					fprintf(STDOUT, "[..]");
 				fprintf(STDOUT, "</A>\n");
@@ -679,8 +683,8 @@ makefileindex(file, files)
 					path,
 					last);
 				if (icon_list) {
-					strbuf_sprintf(sb, "<IMG SRC=%sicons/%s ALT=[%s/] HSPACE=3 %s>",
-						count_stack(dirstack) == 1 ? "../" : "", dir_icon, path, icon_spec);
+					strbuf_sprintf(sb, "<IMG SRC=%sicons/%s.%s ALT=[%s/] HSPACE=3 %s>",
+						count_stack(dirstack) == 1 ? "" : "../", dir_icon, icon_suffix, path, icon_spec);
 				}
 				strbuf_sprintf(sb, "%s/</A>\n", last);
 				if (no_order_list)
@@ -720,7 +724,7 @@ makefileindex(file, files)
 				fprintf(STDOUT, "</H2>\n");
 				fprintf(STDOUT, "<A HREF=%s TITLE='Parent Directory'>", parent);
 				if (icon_list)
-					fprintf(STDOUT, "<IMG SRC=../icons/%s ALT='[..]' %s>", back_icon, icon_spec);
+					fprintf(STDOUT, "<IMG SRC=../icons/%s.%s ALT='[..]' %s>", back_icon, icon_suffix, icon_spec);
 				else
 					fprintf(STDOUT, "[..]");
 				fprintf(STDOUT, "</A>\n");
@@ -758,11 +762,12 @@ makefileindex(file, files)
 		}
 		strbuf_sprintf(sb, " TARGET=%s TITLE='%s'>", target, _);
 		if (icon_list) {
+			char *text_icon = regexec(&is_c_file, _, 0, 0, 0) == 0 ? c_icon : file_icon;
 			strbuf_puts(sb, "<IMG SRC=");
 			if (count_stack(dirstack))
 				strbuf_puts(sb, "../");
-			strbuf_sprintf(sb, "icons/%s ALT=[%s/] HSPACE=3 %s>",
-				file_icon, _, icon_spec);
+			strbuf_sprintf(sb, "icons/%s.%s ALT=[%s] HSPACE=3 %s>",
+				text_icon, icon_suffix, _, icon_spec);
 		}
 		if (full_path) {
 			strbuf_puts(sb, _);
@@ -799,7 +804,7 @@ makefileindex(file, files)
 			fprintf(STDOUT, "%s\n", list_end);
 		fprintf(STDOUT, "<A HREF=%s TITLE='Parent Directory'>", parent);
 		if (icon_list)
-			fprintf(STDOUT, "<IMG SRC=../icons/%s ALT='[..]' %s>", back_icon, icon_spec);
+			fprintf(STDOUT, "<IMG SRC=../icons/%s.%s ALT='[..]' %s>", back_icon, icon_suffix, icon_spec);
 		else
 			fprintf(STDOUT, "[..]");
 		fprintf(STDOUT, "</A>\n");
