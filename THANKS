@@ -56,6 +56,7 @@ Koen Hufkens		advice about HP-UX 10.x.
 Koie Hidetaka		bug report about global.conf.
 Marco Corvi		advice about Digital Unix 4.0C.
 Marius Gedminas		bug report and fix patch for htags(1).
+Mark Nudelman		GLOBAL tag support on less(1).
 Marty Leisner		advice about --version option and some bug reports.
 Masahiro Fujiwara	bug report and fix patch for htags(1).
 Masato Yoshida		bug report and fix method about <NOFRAME> tag.
@@ -75,6 +76,7 @@ Steve Kirkendall	two commands of Elvis for external tag system.
 Takao Yamashita		advice about assembler parsing.
 Takeshi Hojo		idea about -c option of gtags(1).
 Thomas Klausner		report about groff's command error of *.1.
+Tim Vanderhoek		GLOBAL tag support on more(1).
 Tomohiko Morioka	advice about deciding emacs version.
 Tom Tromey		GTAGS target in automake.
 Toshiyasu Kojima	advice about deciding emacs version.
