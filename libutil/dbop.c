@@ -107,7 +107,6 @@ int	flags;
 	dbop->db	= db;
 	dbop->openflags	= flags;
 	dbop->perm	= (mode == 1) ? perm : 0;
-	dbop->lastkey	= NULL;
 	dbop->lastdat	= NULL;
 
 	return dbop;
@@ -132,7 +131,6 @@ const char *name;
 	key.size = strlen(name)+1;
 
 	status = (*db->get)(db, &key, &dat, 0);
-	dbop->lastkey	= (char *)key.data;
 	dbop->lastdat	= (char *)dat.data;
 	switch (status) {
 	case RET_SUCCESS:
@@ -271,7 +269,6 @@ int	flags;
 			break;
 		}
 	}
-	dbop->lastkey	= (char *)key.data;
 	dbop->lastdat	= (char *)dat.data;
 	switch (status) {
 	case RET_SUCCESS:
@@ -318,7 +315,6 @@ DBOP	*dbop;
 				die("primary key too long.");
 			strcpy(dbop->prev, (char *)key.data);
 		}
-		dbop->lastkey	= (char *)key.data;
 		dbop->lastdat	= (char *)dat.data;
 		if (flags & DBOP_PREFIX) {
 			if (strncmp((char *)key.data, dbop->key, dbop->keylen))

@@ -482,7 +482,7 @@ char	*root;
 		}
 		if (stat(path, &statp) < 0)
 			die("stat failed '%s'.", path);
-		if (!pathget(path))
+		if (!path2id(path))
 			strbuf_puts0(addlist, path);
 		else if (gtags_mtime < statp.st_mtime)
 			strbuf_puts0(updatelist, path);
@@ -495,7 +495,7 @@ char	*root;
 		int i, limit = nextkey();
 
 		for (i = 0; i < limit; i++) {
-			if ((path = pathiget(i)) == NULL)
+			if ((path = id2path(i)) == NULL)
 				continue;
 			if (!test("f", path))
 				strbuf_puts0(deletelist, path);

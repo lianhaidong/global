@@ -35,7 +35,6 @@ typedef	struct {
 	int	keylen;			/* key length */
 	regex_t	*preg;			/* compiled regular expression */
 	char	prev[MAXKEYLEN+1];	/* previous key value */
-	char	*lastkey;		/* the key of last located record */
 	char	*lastdat;		/* the data of last located record */
 	int	openflags;		/* flags of dbop_open() */
 	int	ioflags;		/* flags of dbop_first() */

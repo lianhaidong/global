@@ -31,8 +31,8 @@
 #define NEXTKEY		" __.NEXTKEY"
 
 int	pathopen(const char *, int);
-char	*pathget(const char *);
-char	*pathiget(int);
+int	path2id(const char *);
+char	*id2path(int);
 void	pathput(const char *);
 void	pathdel(const char *);
 void	pathclose(void);

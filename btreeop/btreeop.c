@@ -320,7 +320,7 @@ int	keylist;
 
 	for (p = dbop_first(dbop, prefix, NULL, flags); p; p = dbop_next(dbop)) {
 		if (keylist == 2)
-			fprintf(stdout, "%s %s\n", p, dbop->lastdat);
+			fprintf(stdout, "%s %s\n", p, dbop_lastdat(dbop));
 		else
 			detab(stdout, p);
 	}

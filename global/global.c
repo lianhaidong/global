@@ -1149,7 +1149,7 @@ int	db;
 		}
 		path += strlen(root) - 1;
 		*path = '.';
-		if (!pathget(path)) {
+		if (!path2id(path)) {
 			fprintf(stderr, "'%s' not found in GPATH.\n", path);
 			continue;
 		}

@@ -445,17 +445,23 @@ int	flags;
 	 * Compact format.
 	 */
 	if (gtop->format & GTAGS_PATHINDEX) {
-		char	*pno;
+		int	pno;
+		char	pnos[32];
 
-		if ((pno = pathget(path)) == NULL)
+		if (!(pno = path2id(path)))
 			die("GPATH is corrupted.('%s' not found)", path);
+#ifdef HAVE_SNPRINTF
+		snprintf(pnos, sizeof(pnos), "%d", pno);
+#else
+		sprintf(pnos, "%d", pno);
+#endif /* HAVE_SNPRINTF */
 		strbuf_puts(sb, "| ");
 		strbuf_puts(sb, sed_command);
 		strbuf_putc(sb, ' ');
 		strbuf_puts(sb, "\"s@");
 		strbuf_puts(sb, path);
 		strbuf_puts(sb, "@");
-		strbuf_puts(sb, pno);
+		strbuf_puts(sb, pnos);
 		strbuf_puts(sb, "@\"");
 	}
 	if (gtop->format & GTAGS_COMPACT) {
@@ -551,7 +557,7 @@ char	*path;
 	 */
 	key = path;
 	if (gtop->format & GTAGS_PATHINDEX)
-		if ((key = pathget(path)) == NULL)
+		if ((key = id2path(atoi(path))) == NULL)
 			die("GPATH is corrupted.('%s' not found)", path);
 	/*
 	 * read sequentially, because db(1) has just one index.
@@ -714,7 +720,7 @@ GTOP	*gtop;
 			while (!isspace(*p))
 				*q++ = *p++;
 			*q = 0;
-			if ((name = pathget(path)) == NULL)
+			if ((name = id2path(atoi(path))) == NULL)
 				die("GPATH is corrupted.('%s' not found)", path);
 			strcpy(gtop->path, name);
 		} else {

@@ -47,7 +47,7 @@ static int	opened;
 static int	created;
 
 /*
- * pathopen: open path dictionary tag.
+ * pathopen: open gpath tag file
  *
  *	i)	mode	0: read only
  *			1: create
@@ -82,6 +82,11 @@ int	mode;
 	opened = 1;
 	return 0;
 }
+/*
+ * pathput: put path name
+ *
+ *	i)	path	path name
+ */
 void
 pathput(path)
 const char *path;
@@ -101,47 +106,75 @@ const char *path;
 	dbop_put(dbop, path, buf);
 	dbop_put(dbop, buf, path);
 }
-char	*
-pathget(key)
-const char *key;
+/*
+ * path2id: convert path into id
+ *
+ *	i)	path	path name
+ *	r)		path id
+ */
+int
+path2id(path)
+const char *path;
 {
+	char	*id;
+
 	assert(opened == 1);
-	return dbop_get(dbop, key);
+	id = dbop_get(dbop, path);
+	return (id != NULL) ? atoi(id) : 0;
 }
+/*
+ * id2path: convert id into path
+ *
+ *	i)	id	path id
+ *	r)		path name
+ */
 char	*
-pathiget(n)
-int	n;
+id2path(id)
+int	id;
 {
 	char	key[80];
 	assert(opened == 1);
 #ifdef HAVE_SNPRINTF
-	snprintf(key, sizeof(key), "%d", n);
+	snprintf(key, sizeof(key), "%d", id);
 #else
-	sprintf(key, "%d", n);
+	sprintf(key, "%d", id);
 #endif /* HAVE_SNPRINTF */
 	return dbop_get(dbop, key);
 }
+/*
+ * pathdel: delete specified path record
+ *
+ *	i)	path	path name
+ */
 void
-pathdel(key)
-const char *key;
+pathdel(path)
+const char *path;
 {
-	char	*d;
+	char	*id;
 
 	assert(opened == 1);
 	assert(_mode == 2);
-	assert(key[0] == '.' && key[1] == '/');
-	d = dbop_get(dbop, key);
-	if (d == NULL)
+	assert(path[0] == '.' && path[1] == '/');
+	id = dbop_get(dbop, path);
+	if (id == NULL)
 		return;
-	dbop_del(dbop, d);
-	dbop_del(dbop, key);
+	dbop_del(dbop, id);
+	dbop_del(dbop, path);
 }
+/*
+ * nextkey: return next key
+ *
+ *	r)		next id
+ */
 int
 nextkey(void)
 {
 	assert(_mode != 1);
 	return _nextkey;
 }
+/*
+ * pathclose: close gpath tag file
+ */
 void
 pathclose(void)
 {
