@@ -343,7 +343,7 @@ Version 3.44 - March 22, 1999, by Shigio Yamaguchi
 
 * A few bugs are fixed.
 * 'global.conf' support the new 'full_path' and 'normal_suffix' parameters.
-* 'gctags' support definition by 'NENTRY()' in assembler source.
+* 'gctags' support definition by 'NENTRY()' in assembly source.
 
 Version 3.43 - January 20, 1999, by Shigio Yamaguchi
 
@@ -409,7 +409,7 @@ Version 2.23 - January 13, 1998, by Shigio Yamaguchi
 
 Version 2.22 - December 26, 1997, by Shigio Yamaguchi
 
-* gctags support referencies like 'call EXT(xxx)' or 'call _xxx' in assembler
+* gctags support referencies like 'call EXT(xxx)' or 'call _xxx' in assembly
   source.
 
 Version 2.21 - December 11, 1997, by Shigio Yamaguchi

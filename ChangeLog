@@ -342,7 +342,7 @@ September 20, 1997, Shigio Yamaguchi  <shigio@wafu.netgate.net>
 July 7, 1997, Shigio Yamaguchi  <shigio@wafu.netgate.net>
 
 	* htags: tuned for performance.
-	* gtags, gctags: move some code for assembler source from gtags
+	* gtags, gctags: move some code for assembly source from gtags
 	  to gctags.
 	* gtags, htags, global: restrict PATH to '/bin:/usr/bin'.
 	* nvi-1.76.diff: deleted because it is old enough.

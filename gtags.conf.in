@@ -67,7 +67,7 @@ gctags|tag command for GLOBAL:\
 #
 #      lisp: l,el,lsp,lisp,cl,clisp
 #    scheme: sm,scm,scheme,t,sch,ss,SM,SCM
-# assembler: s,a,sa,asm,src,def,ins,inc
+# assembly: s,a,sa,asm,src,def,ins,inc
 #       C++: C,H,cpp,cxx,hxx,cc
 #        C*: cs,hs
 #    c,yacc: c,h,y
