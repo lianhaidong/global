@@ -27,7 +27,7 @@
 
 #define SYMBOL		0
 
-extern unsigned char     *sp, *cp, *lp;
+extern unsigned char *sp, *cp, *lp;
 extern int lineno;
 extern int crflag;
 extern int cmode;
@@ -35,15 +35,16 @@ extern int cppmode;
 extern int ymode;
 extern unsigned char token[MAXTOKEN];
 extern unsigned char curfile[MAXPATHLEN];
+extern int continued_line;
 
 #define nextchar() \
 	(cp == NULL ? \
 		((sp = cp = strbuf_fgets(ib, ip, STRBUF_NOCRLF)) == NULL ? \
 			EOF : \
 			(lineno++, *cp == 0 ? \
-				lp = cp, cp = NULL, '\n' : \
+				(lp = cp, cp = NULL, continued_line = 0, '\n') : \
 				*cp++)) : \
-		(*cp == 0 ? (lp = cp, cp = NULL, '\n') : *cp++))
+		(*cp == 0 ? (lp = cp, cp = NULL, continued_line = 0, '\n') : *cp++))
 #define atfirst (sp && sp == (cp ? cp - 1 : lp))
 
 int opentoken(char *);
