@@ -130,8 +130,11 @@ AC_ARG_WITH(postgres,
 dnl
 dnl Use gperf in Makefile
 dnl
+AC_MSG_CHECKING(for build using gperf)
 AC_ARG_ENABLE(gperf,
-[  --enable-gperf          build using gperf ])
+[  --enable-gperf          build using gperf ],
+AC_MSG_RESULT(yes),
+AC_MSG_RESULT(no))
 AM_CONDITIONAL(ENABLE_GPERF, test x$enable_gperf = xyes)
 
 AC_SUBST(INCLUDES)
