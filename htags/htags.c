@@ -992,7 +992,7 @@ configuration(argc, argv)
 			set_env("GTAGSCONF", real);
 		}
 		if (label)
-			set_env("GTAGSLABEL", gtagslabel);
+			set_env("GTAGSLABEL", label);
 	}
 	/*
 	 * Config variables.
@@ -1452,9 +1452,9 @@ main(argc, argv)
 			else if (!strcmp("cvsweb-cvsroot", long_options[option_index].name))
                                 cvsweb_cvsroot = optarg;
 			else if (!strcmp("gtagsconf", long_options[option_index].name))
-				strlimcpy(gtagsconf, optarg, sizeof(gtagsconf));
+				;	/*  --gtagsconf is estimated only once. */
 			else if (!strcmp("gtagslabel", long_options[option_index].name))
-                                gtagslabel = optarg;
+				;	/* --gtagslabel is estimated only once. */
 			else if (!strcmp("style-sheet", long_options[option_index].name))
                                 style_sheet = optarg;
                         break;
@@ -1633,11 +1633,6 @@ main(argc, argv)
 		if (realpath(dbpath, buf) == NULL)
 			die("cannot get realpath of dbpath.");
 		strlimcpy(dbpath, buf, sizeof(dbpath));
-		if (gtagsconf[0]) {
-			if (realpath(gtagsconf, buf) == NULL)
-				die("cannot get realpath of gtagsconf.");
-			strlimcpy(gtagsconf, buf, sizeof(gtagsconf));
-		}
 	}
 	/*
 	 * for global(1) and gtags(1).
@@ -1645,10 +1640,6 @@ main(argc, argv)
 	set_env("GTAGSROOT", cwdpath);
 	set_env("GTAGSDBPATH", dbpath);
 	set_env("GTAGSLIBPATH", "");
-        if (gtagsconf[0])
-                set_env("GTAGSCONF", gtagsconf);
-        if (gtagslabel)
-                set_env("GTAGSLABEL", gtagslabel);
 	/*
 	 * check directories
 	 */
