@@ -102,54 +102,60 @@ int	verbose;
 		setupvariables(verbose);
 
 #ifdef HAVE_SNPRINTF
-	snprintf(path, sizeof(path), "%s/%s", candidate, dbname(GTAGS));
+	snprintf(path, sizeof(path),
 #else
-	sprintf(path, "%s/%s", candidate, dbname(GTAGS));
+	sprintf(path,
 #endif /* HAVE_SNPRINTF */
+		"%s/%s", candidate, dbname(GTAGS));
 	if (verbose)
 		fprintf(stderr, "checking %s\n", path);
 	if (test("fr", path)) {
 		if (verbose)
 			fprintf(stderr, "GTAGS found at '%s'.\n", path);
 #ifdef HAVE_SNPRINTF
-		snprintf(dbpath, size, "%s", candidate);
+		snprintf(dbpath, size,
 #else
-		sprintf(dbpath, "%s", candidate);
+		sprintf(dbpath,
 #endif /* HAVE_SNPRINTF */
+			"%s", candidate);
 		return 1;
 	}
 #ifdef HAVE_SNPRINTF
-	snprintf(path, sizeof(path), "%s/%s/%s", candidate, makeobjdir, dbname(GTAGS));
+	snprintf(path, sizeof(path),
 #else
-	sprintf(path, "%s/%s/%s", candidate, makeobjdir, dbname(GTAGS));
+	sprintf(path,
 #endif /* HAVE_SNPRINTF */
+		"%s/%s/%s", candidate, makeobjdir, dbname(GTAGS));
 	if (verbose)
 		fprintf(stderr, "checking %s\n", path);
 	if (test("fr", path)) {
 		if (verbose)
 			fprintf(stderr, "GTAGS found at '%s'.\n", path);
 #ifdef HAVE_SNPRINTF
-		snprintf(dbpath, size, "%s/%s", candidate, makeobjdir);
+		snprintf(dbpath, size,
 #else
-		sprintf(dbpath, "%s/%s", candidate, makeobjdir);
+		sprintf(dbpath,
 #endif /* HAVE_SNPRINTF */
+			"%s/%s", candidate, makeobjdir);
 		return 1;
 	}
 #ifdef HAVE_SNPRINTF
-	snprintf(path, sizeof(path), "%s%s/%s", makeobjdirprefix, candidate, dbname(GTAGS));
+	snprintf(path, sizeof(path),
 #else
-	sprintf(path, "%s%s/%s", makeobjdirprefix, candidate, dbname(GTAGS));
+	sprintf(path,
 #endif /* HAVE_SNPRINTF */
+		"%s%s/%s", makeobjdirprefix, candidate, dbname(GTAGS));
 	if (verbose)
 		fprintf(stderr, "checking %s\n", path);
 	if (test("fr", path)) {
 		if (verbose)
 			fprintf(stderr, "GTAGS found at '%s'.\n", path);
 #ifdef HAVE_SNPRINTF
-		snprintf(dbpath, size, "%s%s", makeobjdirprefix, candidate);
+		snprintf(dbpath, size,
 #else
-		sprintf(dbpath, "%s%s", makeobjdirprefix, candidate);
+		sprintf(dbpath,
 #endif /* HAVE_SNPRINTF */
+			"%s%s", makeobjdirprefix, candidate);
 		return 1;
 	}
 	return 0;
