@@ -171,14 +171,16 @@ linetable_print(op, lineno)
 	FILE *op;
 	int lineno;
 {
-	char *s;
+	char *s, *p;
 
 	if (lineno <= 0)
 		die("linetable_print: line number must >= 1 (lineno = %d)", lineno);
 	s = linetable_get(lineno, NULL);
 	if (s == NULL)
 		return;
-	while (*s != '\n')
-		fputc(*s++, op);
+	for (p = s; *p != '\n'; p++)
+		;
+	if (p > s)
+		fwrite(s, 1, p - s, op);
 	fputc('\n', op);
 }
