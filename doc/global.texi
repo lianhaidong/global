@@ -1906,6 +1906,8 @@ generated, you can move it anywhere and browse it with any browser.
 @table @asis
 @item @option{-a}, @option{--alphabet}
 Make an alphabetical function index, suitable for a large project.
+@item @option{--caution}
+Include caution message to prohibit downloading.
 @item @option{-c}, @option{--compact}
 Compress html files  by gzip(1).
 You need to set up an HTTP server so that gzip(1) is invoked for
