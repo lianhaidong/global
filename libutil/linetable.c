@@ -121,6 +121,10 @@ linetable_put(offset, lineno)
 	int offset;
 	int lineno;
 {
+	/*
+	 * Old implementations of realloc() may crash when a null pointer is passed.
+	 * Therefore, we cannot use realloc(NULL, total_lines * sizeof(int)).
+	 */
 	if (!total_lines) {
 		total_lines = EXPAND;
 		linetable = (int *)malloc(total_lines * sizeof(int));

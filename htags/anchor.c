@@ -128,7 +128,12 @@ anchor_load(file)
 				type = 'R';
 			else
 				type = 'Y';
-			/* allocate table if needed */
+			/*
+			 * Allocate table if needed.
+			 *
+			 * Old implementations of realloc() may crash when a null pointer is passed.
+			 * Therefore, we cannot use realloc(NULL, sizeof(struct anchor) * alloced).
+			 */
 			if (alloced == 0) {
 				alloced = 1000;
 				table = (struct anchor *)malloc(sizeof(struct anchor) * alloced);
