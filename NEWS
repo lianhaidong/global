@@ -19,6 +19,21 @@ ___________________________________
 GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 4.8.1 - October 6 2004, by Shigio Yamaguchi
+
+Fixed bugs:
+* htags: The -d option of htags didn't work.
+* htags: didn't recognize continued line and null directive(#).
+
+New features:
+* htags: make suffix list of include file configurable.
+  (See man htags(1). config variables: include_file_suffixes)
+* htags: try TMP if TMPDIR doesn't exist.(only DJGPP)
+* htags: Warn about unknown preprocessing directive. As the exception,
+  when unknown preprocessing directive appeared in assembly source,
+  it will be recognized as the start of a shell comment.  
+* htags: Add all yacc directives understood by bison-1.87.
+
 Version 4.8 - August 26 2004, by Shigio Yamaguchi
 
 * The htags(1) was rewritten in C language completely. It is compatible

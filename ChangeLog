@@ -18,6 +18,35 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+October 6 2004, Shigio Yamaguchi  <shigio@gnu.org>
+
+	* libutil/langmap.c, langmap.h added.
+	  Config variable 'langmap' will be added officially sooner or later.
+	* gctags/asm_res.in and htags/asm.l added.
+	* fileindex.c: makeincludeindex() was cut out from makefileindex()
+	  for statistic.
+	* The priority of the method selection for directory traversing
+	  was changed like follows:
+
+		if find(1) exist then
+			use find(1)
+		else
+			use dirent(3)
+			|
+			v
+		if dirent(3) exist then
+			use dirent(3)
+		else if find(1) exist then
+			use find(1)
+		else
+			ERROR
+
+	* gozilla: removed the Win32 version of sendbrowser, using a direct
+	  call to ShellExecute (since the browser probably isn't on the path,
+	  and -remote doesn't seem to work on Windows).
+	* htags/src2html.c: Modified to use a switch table for switching
+	  language.
+
 August 26 2004, Shigio Yamaguchi  <shigio@gnu.org>
 
 	* Moved function now() from gtags.c to libutil/date.c.
