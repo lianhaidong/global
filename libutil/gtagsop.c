@@ -71,7 +71,7 @@ static regex_t reg;
  * format version 2:
  *	compact format, path index.
  */
-static int	support_version = 2;	/* acceptable format version   */
+static int	support_version = 3;	/* acceptable format version   */
 static const char *tagslist[] = {"GPATH", "GTAGS", "GRTAGS", "GSYMS"};
 static int init;
 static char regexchar[256];
@@ -315,10 +315,13 @@ int	flags;
 			gtop->format |= GTAGS_PATHINDEX;
 			dbop_put(gtop->dbop, PATHINDEXKEY, PATHINDEXKEY, "0");
 		}
-		if (flags & (GTAGS_COMPACT|GTAGS_PATHINDEX)) {
+		if (gtop->format & (GTAGS_COMPACT|GTAGS_PATHINDEX)) {
 			char	buf[80];
 
-			gtop->format_version = 2;
+			if (gtop->format == GTAGS_PATHINDEX)
+				gtop->format_version = 3;
+			else
+				gtop->format_version = 2;
 			snprintf(buf, sizeof(buf),
 				"%s %d", VERSIONKEY, gtop->format_version);
 			dbop_put(gtop->dbop, VERSIONKEY, buf, "0");
