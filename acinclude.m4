@@ -78,9 +78,5 @@ int a;
 XXXXXX
 #endif],
 ac_cv_djgpp=yes, ac_cv_djgpp=no)])
-if test $ac_cv_djgpp = yes; then
-  AM_CONDITIONAL(DJGPP, true)
-else
-  AM_CONDITIONAL(DJGPP, false)
-fi
+AM_CONDITIONAL(DJGPP, test $ac_cv_djgpp = yes)
 ])
