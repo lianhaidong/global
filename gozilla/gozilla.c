@@ -343,7 +343,16 @@ STRBUF *URL;
 	if (status == -1)
 		die("definition %s not found.", arg);
 	strbuf_reset(URL);
-	strbuf_sprintf(URL, "file:%s/%s", htmldir, ptable.part[1].start);
+	/*
+	 * Make URL.
+	 *
+	 * c:/dir/a.html => file://c|/dir/a.html
+	 */
+#if _WIN32 || __DJGPP__
+	if (htmldir[1] == ':')
+		htmldir[1] = '|';
+#endif
+	strbuf_sprintf(URL, "file://%s/%s", htmldir, ptable.part[1].start);
 	recover(&ptable);
 }
 /*
@@ -389,11 +398,30 @@ STRBUF *URL;
 		p = abspath + strlen(root);
 		if (convertpath(dbpath, htmldir, p, sb) == -1)
 			die("cannot find the hypertext.");
-		strbuf_sprintf(URL, "file:%s", strbuf_value(sb));
+		p = strbuf_value(sb);
+		/*
+		 * Make URL.
+		 *
+		 * c:/dir/a.html => file://c|/dir/a.html
+		 */
+#if _WIN32 || __DJGPP__
+		if (p[1] == ':')
+			p[1] = '|';
+#endif
+		strbuf_sprintf(URL, "file://%s", p);
 		if (linenumber)
 			strbuf_sprintf(URL, "#%d", linenumber);
 	} else {
-		strbuf_sprintf(URL, "file:%s", abspath);
+		/*
+		 * Make URL.
+		 *
+		 * c:/dir/a.html => file://c|/dir/a.html
+		 */
+#if _WIN32 || __DJGPP__
+		if (abspath[1] == ':')
+			abspath[1] = '|';
+#endif
+		strbuf_sprintf(URL, "file://%s", abspath);
 	}
 }
 /*
