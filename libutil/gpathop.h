@@ -35,7 +35,7 @@ char	*gpath_path2id(const char *);
 char	*gpath_id2path(int);
 char	*gpath_ids2path(const char *);
 void	gpath_put(const char *);
-void	gpath_del(const char *);
+void	gpath_delete(const char *);
 void	gpath_close(void);
 int	gpath_nextkey(void);
 

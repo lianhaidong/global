@@ -153,12 +153,12 @@ int	id;
 	return gpath_ids2path(ids);
 }
 /*
- * gpath_del: delete specified path record
+ * gpath_delete: delete specified path record
  *
  *	i)	path	path name
  */
 void
-gpath_del(path)
+gpath_delete(path)
 const char *path;
 {
 	char	*id;

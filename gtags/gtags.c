@@ -547,7 +547,7 @@ char	*root;
 		for (p = start; p < end; p += strlen(p) + 1) {
 			if (exitflag)
 				break;
-			gpath_del(p);
+			gpath_delete(p);
 		}
 		gpath_close();
 		updated = 1;
