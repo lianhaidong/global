@@ -192,7 +192,6 @@ main(argc, argv)
 int	argc;
 char	*argv[];
 {
-	char    root[MAXPATHLEN+1];
 	char	dbpath[MAXPATHLEN+1];
 	char	cwd[MAXPATHLEN+1];
 	STRBUF	*sb = strbuf_open(0);
