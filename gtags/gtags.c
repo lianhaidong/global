@@ -384,6 +384,12 @@ char	*argv[];
 		dbop_close(dbop);
 		exit(0);
 	} else if (do_expand) {
+		/*
+		 * The 'gtags --expand' is nearly equivalent with 'expand'.
+		 * We made this command to decrease dependency to an external
+		 * command. But now, the --secure option use this command
+		 * positively.
+		 */
 		FILE *ip;
 		STRBUF *ib = strbuf_open(MAXBUFLEN);
 
@@ -429,8 +435,19 @@ char	*argv[];
 		exit(0);
 	} else if (do_sort) {
 		/*
-		 * This is GLOBAL version of sort.
-		 * We replace sort with this procedure for performance.
+		 * This code and the makedupindex() in htags(1) compose
+		 * a pipeline 'global -x ".*" | gtags --sort'.
+		 * The 'gtags --sort' is equivalent with 'sort +0 -1 +2 -3 +1n -2 -u'
+		 * but the latter is ineffective and needs a lot of temporary
+		 * files when applied to a huge file. (According to circumstances,
+		 * hundreds of files are generated.)
+		 *
+		 * Utilizing the feature that the output of 'global -x ".*"'
+		 * is already sorted in alphabetical order by tag name,
+		 * we splited the output into relatively small unit and
+		 * execute sort for each unit.
+		 *
+		 * It is not certain whether a present unit value is the best.
 		 */
 		int unit = 1500;
 		STRBUF *ib = strbuf_open(MAXBUFLEN);
@@ -458,6 +475,31 @@ char	*argv[];
 		}
 		exit(0);
 	} else if (do_write) {
+		/*
+		 * This code and the makedupindex() in htags(1) compose
+		 * a pipeline 'print <Protocol lines> | gtags --write'.
+		 * This code improve performance a little (about 5%) and
+		 * conceal the details of file IO from htags but it is a
+		 * unsightly hack and we should not adopt it in the future.
+		 *
+		 * The protocol is like follows:
+		 *
+		 * N<file name>\n
+		 * <HTML>\n
+		 * <BODY>
+		 * <PRE>
+		 * <A HREF=../S/77.html#97>DB_SHMEM</A>    97 libdb/db.h     #define
+		 * ...
+		 * C<file name>\n
+		 * <HTML>\n
+		 * ...
+		 *
+		 * The 'N<file name>\n' means making a new file with a name
+		 * <file name> and writing the following HTML to it. The HTML
+		 * lines should start with '<' or '\t'.
+		 * Similarly, the 'C<file name>\n' means making a new file
+		 * but as a compressed file.
+		 */
 		FILE *op = NULL;
 		STRBUF *ib = strbuf_open(MAXBUFLEN);
 		int writing = 0;
@@ -502,6 +544,25 @@ char	*argv[];
 		strbuf_close(ib);
 		exit(0);
 	} else if (do_relative || do_absolute) {
+		/*
+		 * This is a main body of the path filter.
+		 * This code extract path name from tag line and
+		 * replace it with the relative or the absolute path name.
+		 *
+		 * By default, if we are in src/ directory, the output
+		 * should be converted like follws:
+		 *
+		 * main      10 ./src/main.c  main(argc, argv)\n
+		 * main      22 ./libc/func.c   main(argc, argv)\n
+		 *		v
+		 * main      10 main.c  main(argc, argv)\n
+		 * main      22 ../libc/func.c   main(argc, argv)\n
+		 *
+		 * Similarly, the --absolute option specified, then
+		 *		v
+		 * main      10 /prj/xxx/src/main.c  main(argc, argv)\n
+		 * main      22 /prj/xxx/libc/func.c   main(argc, argv)\n
+		 */
 		STRBUF *ib = strbuf_open(MAXBUFLEN);
 		char	*root = argv[0];
 		char	*cwd = argv[1];
