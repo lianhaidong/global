@@ -202,7 +202,7 @@ gen_page_begin(title, subdir)
 	STATIC_STRBUF(sb);
 	char *dir = subdir ? "../" : "";
 
-	strbuf_init(sb);
+	strbuf_clear(sb);
 	if (enable_xhtml) {
 		strbuf_puts(sb, "<?xml version='1.0' encoding='ISO-8859-1'?>\n");
 		strbuf_sprintf(sb, "<?xml-stylesheet type='text/css' href='%sstyle.css'?>\n", dir);
@@ -309,7 +309,7 @@ gen_href_begin_with_title_target(dir, file, suffix, key, title, target)
 {
 	STATIC_STRBUF(sb);
 
-	strbuf_init(sb);
+	strbuf_clear(sb);
 	/*
 	 * Construct URL.
 	 * href='dir/file.suffix#key'
@@ -423,7 +423,7 @@ gen_list_body(srcdir, string)
 	char *p, *filename, *fid;
 	SPLIT ptable;
 
-	strbuf_init(sb);
+	strbuf_clear(sb);
 	if (split(string, 4, &ptable) < 4) {
 		recover(&ptable);
 		die("too small number of parts in list_body().\n'%s'", string);
@@ -544,7 +544,7 @@ gen_form_begin(target)
 {
 	STATIC_STRBUF(sb);
 
-	strbuf_init(sb);
+	strbuf_clear(sb);
 	strbuf_sprintf(sb, "<form method='get' action='%s'", action);
 	if (target)
 		strbuf_sprintf(sb, " target='%s'", target);
@@ -606,7 +606,7 @@ gen_input_with_title_checked(name, value, type, checked, title)
 {
 	STATIC_STRBUF(sb);
 
-	strbuf_init(sb);
+	strbuf_clear(sb);
 	strbuf_puts(sb, "<input");
 	if (type)
 		strbuf_sprintf(sb, " type='%s'", type);
@@ -655,7 +655,7 @@ gen_frame(name, src)
 {
 	STATIC_STRBUF(sb);
 
-	strbuf_init(sb);
+	strbuf_clear(sb);
 	strbuf_sprintf(sb, "<frame name='%s' id='%s' src='%s'%s>", name, name, src, empty_element);
 	return strbuf_value(sb);
 }

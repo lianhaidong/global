@@ -62,14 +62,14 @@ typedef struct _strbuf {
  * This macro is used for static string buffer which is suitable for
  * work area and(or) return value of function. The area allocated once
  * is repeatedly used though the area is never released.
- * You must call strbuf_init(sb) every time before using.
+ * You must call strbuf_clear(sb) every time before using.
  * You must not call strbuf_close(sb) for it.
  *
  * Usage:
  *      function(...) {
  *              STATIC_STRBUF(sb);
  *
- *              strbuf_init(sb);
+ *              strbuf_clear(sb);
  *              ...
  *		strbuf_puts(sb, "xxxxx");
  *              ...
@@ -113,7 +113,7 @@ void strbuf_dump(char *);
 #endif
 void __strbuf_expandbuf(STRBUF *, int);
 STRBUF *strbuf_open(int);
-void strbuf_init(STRBUF *);
+void strbuf_clear(STRBUF *);
 void strbuf_nputs(STRBUF *, const char *, int);
 void strbuf_puts(STRBUF *, const char *);
 void strbuf_putn(STRBUF *, int);

@@ -50,7 +50,7 @@ strmake(p, lim)
 	STATIC_STRBUF(sb);
 	const char *c;
 
-	strbuf_init(sb);
+	strbuf_clear(sb);
 	for (; *p; p++) {
 		for (c = lim; *c; c++)
 			if (*p == *c)
@@ -91,7 +91,7 @@ strtrim(p, flag, len)
 	STATIC_STRBUF(sb);
 	int cut_off = -1;
 
-	strbuf_init(sb);
+	strbuf_clear(sb);
 	/*
 	 * Delete blanks of the head.
 	 */

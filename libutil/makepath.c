@@ -63,7 +63,7 @@ makepath(dir, file, suffix)
 	int length;
 	char sep = '/';
 
-	strbuf_init(sb);
+	strbuf_clear(sb);
 	if (dir != NULL) {
 		if ((length = strlen(dir)) > MAXPATHLEN)
 			die("path name too long. '%s'\n", dir);

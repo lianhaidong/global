@@ -496,7 +496,7 @@ encode(url)
 	STATIC_STRBUF(sb);
         char *p;
 
-	strbuf_init(sb);
+	strbuf_clear(sb);
         for (p = url; *p; p++) {
 		int c = (unsigned char)*p;
 

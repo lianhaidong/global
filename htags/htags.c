@@ -560,7 +560,7 @@ makesearchpart(action, id, target)
 {
 	STATIC_STRBUF(sb);
 
-	strbuf_init(sb);
+	strbuf_clear(sb);
 	strbuf_puts(sb, header_begin);
 	if (Fflag)
 		strbuf_puts(sb, gen_href_begin(NULL, "search", normal_suffix, NULL));

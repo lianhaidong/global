@@ -721,7 +721,7 @@ unpack_pathindex(line)
 	/*
 	 * copy line with converting.
 	 */
-	strbuf_init(output);
+	strbuf_clear(output);
 	strbuf_nputs(output, line, ptable.part[2].start - line);
 	strbuf_puts(output, path);
 	strbuf_puts(output, ptable.part[2].end);

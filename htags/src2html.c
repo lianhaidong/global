@@ -177,7 +177,7 @@ open_output_file(file)
 		if (!op)
 			die("cannot create file '%s'.", file);
 	}
-	strbuf_init(outbuf);
+	strbuf_clear(outbuf);
 	return op;
 }
 /*
@@ -234,7 +234,7 @@ fill_anchor(root, path)
 	STATIC_STRBUF(sb);
 	char buf[MAXBUFLEN], *limit, *p;
 
-	strbuf_init(sb);
+	strbuf_clear(sb);
 	strlimcpy(buf, path, sizeof(buf));
 	for (p = buf; *p; p++)
 		if (*p == sep)
@@ -281,7 +281,7 @@ link_format(ref)
 	char **icons = anchor_icons;
 	int i;
 
-	strbuf_init(sb);
+	strbuf_clear(sb);
 	for (i = 0; i < A_LIMIT; i++) {
 		if (i == A_INDEX) {
 			strbuf_puts(sb, gen_href_begin("..", "mains", normal_suffix, NULL));
@@ -323,7 +323,7 @@ generate_guide(lineno)
 	STATIC_STRBUF(sb);
 	int i = 0;
 
-	strbuf_init(sb);
+	strbuf_clear(sb);
 	if (definition_header == RIGHT_HEADER)
 		i = 4;
 	else if (nflag)
@@ -356,7 +356,7 @@ tooltip(type, lno, opt)
 {
 	STATIC_STRBUF(sb);
 
-	strbuf_init(sb);
+	strbuf_clear(sb);
 	if (lno > 0) {
 		if (type == 'I')
 			strbuf_puts(sb, "Included from");
@@ -716,7 +716,7 @@ src2html(src, html, notsource)
 		STATIC_STRBUF(sb);
 		char *p;
 
-		strbuf_init(sb);
+		strbuf_clear(sb);
 		strbuf_puts(sb, cvsweb_url);
 		for (p = src; *p; p++) {
 			int c = (unsigned char)*p;
@@ -828,7 +828,7 @@ src2html(src, html, notsource)
 		/*
 		 * DEFINITIONS index.
 		 */
-		strbuf_init(define_index);
+		strbuf_clear(define_index);
 		for (ancref = anchor_first(); ancref; ancref = anchor_next()) {
 			if (ancref->type == 'D') {
 				char tmp[32];

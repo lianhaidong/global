@@ -84,7 +84,7 @@ char *s;
 {
 	STATIC_STRBUF(sb);
 
-	strbuf_init(sb);
+	strbuf_clear(sb);
 	for (; *s; s++) {
 		strbuf_putc(sb, '\\');
 		strbuf_putc(sb, *s);

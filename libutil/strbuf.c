@@ -184,7 +184,7 @@ strbuf_open(init)
 	return sb;
 }
 /*
- * strbuf_init: initialize static string buffer.
+ * strbuf_clear: clear static string buffer.
  *
  *	i)	sb	statically defined string buffer
  *
@@ -192,11 +192,11 @@ strbuf_open(init)
  * For the detail, see 'STATIC_STRBUF(sb)' macro in strbuf.h.
  */
 void
-strbuf_init(sb)
+strbuf_clear(sb)
 	STRBUF *sb;
 {
 	if (sb == NULL)
-		die("NULL string buffer. (strbuf_init)");
+		die("NULL string buffer. (strbuf_clear)");
 	if (sb->sbufsize == 0) {
 		sb->sbufsize = INITIALSIZE;
 		if (!(sb->sbuf = (char *)malloc(sb->sbufsize + 1))) {
