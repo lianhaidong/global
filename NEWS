@@ -20,7 +20,7 @@ ___________________________________
 GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
-Version 4.1
+Version 4.1 - July 12, 2001, by Shigio Yamaguchi
 
 [INCOMPATIBLE CHANGES]
 
@@ -44,8 +44,9 @@ Version 4.1
 * global, gtags: make icase_path allways enable in Windows32 environment.
 * global: the -T(--through) option added.
 * gtags, htags: --gtagsconf option added.
-* global.conf: 'htags_options' added.
-* globa.texi: the method to use vim with GLOBAL added.
+* gtags.conf: 'htags_options' added.
+* globa.texi: the method to use vim with GLOBAL and the description
+  about GloBash added.
 
 Version 4.0.1 - September 26, 2000, by Shigio Yamaguchi
 
