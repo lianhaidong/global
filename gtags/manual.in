@@ -133,7 +133,7 @@
 		As a special exception, @name{gtags} collect values from multiple @code{skip} variables.
 		If the value ends with '/', it assumed as a directory and @name{gtags} skips all files under it.
 		If the value start with '/', it assumed relative path from the root of source directory.
-		By default, it assumes GPATH, GTAGS, GRTAGS, GSYMS, HTML/, tags, TAGS, ID, y.tab.c, y.tab.h, .notfunction, SCCS/, RCS/, CVS/, CVSROOT/, .deps/, @{arch@}/.
+		By default, it assumes GPATH, GTAGS, GRTAGS, GSYMS, HTML/, tags, TAGS, ID, y.tab.c, y.tab.h, .notfunction, cscope.out, SCCS/, RCS/, CVS/, CVSROOT/, .deps/, @{arch@}/.
 	@item{@code{suffixes}(comma separated list)}
 		Suffixes of target source file.
 		As a special exception, @name{gtags} collect values from multiple @code{suffixes} variables.
