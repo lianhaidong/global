@@ -153,7 +153,7 @@ char *out_path;
 	 * be a mixture of long and short components.
 	 */
 	if (_USE_LFN) {
-		strlimcpy(out_path, in_path, sizeof(out_path));
+		strlimcpy(out_path, in_path, MAXPATHLEN);
 		canonpath(out_path);
 	} else
 		_fixpath(in_path, out_path);
