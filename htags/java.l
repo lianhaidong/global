@@ -44,6 +44,7 @@
 #endif
 #define ECHO	echos(LEXTEXT)
 
+#define YY_NO_TOP_STATE
 #define YY_USER_ACTION DEFAULT_YY_USER_ACTION
 
 %}
