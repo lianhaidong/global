@@ -79,8 +79,6 @@ char *quote_amp;
 char *quote_space;
 char *hr;
 char *br;
-char *status_line;
-char msgbuf[1024];
 /*
  * HTML tag.
  */

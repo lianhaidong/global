@@ -58,8 +58,6 @@ extern char *quote_amp;
 extern char *quote_space;
 extern char *hr;
 extern char *br;
-extern char *status_line;
-extern char msgbuf[1024];
 
 void setup_html();
 void setup_xhtml();
