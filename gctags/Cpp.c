@@ -125,16 +125,19 @@ Cpp()
 						if (target == DEF && strcmp(stack[classlevel].classname, savetok))
 							PUT(savetok, savelineno, saveline);
 					} else {
-						if (target == SYM)
+						if (target == REF && defined(savetok))
 							PUT(savetok, savelineno, saveline);
 					}
 				}
 			} else {
 				if (dflag) {
-					if (target == REF && defined(token))
-						PUT(token, lineno, sp);
-					else if (target == SYM && !defined(token))
-						PUT(token, lineno, sp);
+					if (target == REF) {
+						if (defined(token))
+							PUT(token, lineno, sp);
+					} else if (target == SYM) {
+						if (!defined(token))
+							PUT(token, lineno, sp);
+					}
 				} else {
 					if (target == SYM)
 						PUT(token, lineno, sp);
