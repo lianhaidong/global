@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004 Tama Communications Corporation
+ * Copyright (c) 2004, 2005 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -52,8 +52,8 @@ static ASSOC *assoc[GTAGLIM];
  *	+---------------------------+
  *	|<line number>' '<file name>|
  *	+---------------------------+
- *    The tag entry is referred to as '<url>#<line number>'. The <url> can be
- *    calculated by path2url(<file name>).
+ *    The tag entry is referred to as '<fid>.html#<line number>'.
+ *    The <fid> can be calculated by path2fid(<file name>).
  */
 
 /*

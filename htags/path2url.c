@@ -77,13 +77,13 @@ unload_gpath()
 	assoc_close(assoc);
 }
 /*
- * path2id: convert the path name into the file id.
+ * path2fid: convert the path name into the file id.
  *
  *	i)	path	path name
  *	r)		id
  */
 char *
-path2id(path)
+path2fid(path)
 	char *path;
 {
 	static char number[32], *p;
@@ -102,20 +102,4 @@ path2id(path)
 		p = number;
 	}
 	return p;
-}
-/*
- * path2url: convert the path name into the url.
- *
- *	i)	path	path name
- *	r)		url
- */
-char *
-path2url(path)
-	char *path;
-{
-	static char buf[MAXPATHLEN];
-	char *id = path2id(path);
-
-	snprintf(buf, sizeof(buf), "%s.%s", id, HTML);
-	return buf;
 }

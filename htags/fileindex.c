@@ -584,7 +584,7 @@ makefileindex(file, files)
 	FILE *FIND, *FILEMAP, *FILES, *STDOUT, *op = NULL;
 	char *_;
 	int count = 0;
-	char indexlink[80];
+	char *indexlink = (Fflag) ? "../files" : "../mains";
 	STRBUF *sb = strbuf_open(0);
 	STRBUF *input = strbuf_open(0);
 	char *target = (Fflag) ? "mains" : "_top";
@@ -623,9 +623,6 @@ makefileindex(file, files)
 	/*
 	 * preparations.
 	 */
-	snprintf(indexlink, sizeof(indexlink),
-		(Fflag) ? "../files.%s" : "../mains.%s", normal_suffix);
-
 	if ((FIND = popen(command, "r")) == NULL)
 		die("cannot fork.");
 	if ((FILES = fopen(makepath(distpath, file, NULL), "w")) == NULL)
@@ -634,7 +631,11 @@ makefileindex(file, files)
 	fprintf(FILES, "%s\n", html_begin);
 	fprintf(FILES, set_header(title_file_index));
 	fprintf(FILES, "%s\n", body_begin);
-	fprintf(FILES, "%s<a href='files.%s'>%s</a>%s\n", header_begin, normal_suffix, title_file_index, header_end);
+	fputs(header_begin, FILES);
+	fputs(gen_href_begin(NULL, "files", normal_suffix, NULL), FILES);
+	fputs(title_file_index, FILES);
+	fputs(gen_href_end(), FILES);
+	fprintf(FILES, "%s\n", header_end);
 	if (!no_order_list)
 		fprintf(FILES, "%s\n", list_begin);
 	STDOUT = FILES;
@@ -668,21 +669,27 @@ makefileindex(file, files)
 			(void)shift_stack(pop);
 		}
 		if (count_stack(push) || count_stack(pop)) {
-			char *parent, *path;
+			char *parent, *path, *suffix;
 
 			while (count_stack(pop)) {
 				(void)pop_stack(dirstack);
-				parent = count_stack(dirstack) ? path2url(join_stack(dirstack)) : indexlink;
+				if (count_stack(dirstack)) {
+					parent = path2fid(join_stack(dirstack));
+					suffix = HTML;
+				} else {
+					parent = indexlink;
+					suffix = normal_suffix;
+				}
 				if (no_order_list)
 					fprintf(STDOUT, "%s\n", br);
 				else
 					fprintf(STDOUT, "%s\n", list_end);
-				fprintf(STDOUT, "<a href='%s' title='Parent Directory'>", parent);
+				fputs(gen_href_begin_with_title(NULL, parent, suffix, NULL, "Parent Directory"), STDOUT);
 				if (icon_list)
 					fputs(gen_image(PARENT, back_icon, ".."), STDOUT);
 				else
 					fputs("[..]", STDOUT);
-				fprintf(STDOUT, "</a>\n");
+				fprintf(STDOUT, "%s\n", gen_href_end());
 				fprintf(STDOUT, "%s\n", body_end);
 				fprintf(STDOUT, "%s\n", html_end);
 				path = pop_stack(fdstack);	
@@ -693,29 +700,30 @@ makefileindex(file, files)
 				pop_stack(pop);
 			}
 			while (count_stack(push)) {
-				char cur[MAXPATHLEN];
+				char cur[MAXPATHLEN], tmp[MAXPATHLEN];
 				char *last;
-
-				parent = count_stack(dirstack) ? path2url(join_stack(dirstack)) : indexlink;
+				if (count_stack(dirstack)) {
+					parent = path2fid(join_stack(dirstack));
+					suffix = HTML;
+				} else {
+					parent = indexlink;
+					suffix = normal_suffix;
+				}
 				push_stack(dirstack, shift_stack(push));
 				path = join_stack(dirstack);
-				snprintf(cur, sizeof(cur), "%s/files/%s", distpath, path2url(path));
+				snprintf(cur, sizeof(cur), "%s/files/%s.%s", distpath, path2fid(path), HTML);
 				last = (full_path) ? path : top_stack(dirstack);
 
 				strbuf_reset(sb);
 				if (!no_order_list)
 					strbuf_puts(sb, item_begin);
-				strbuf_sprintf(sb, "<a href='%s%s' title='%s/'>",
-					count_stack(dirstack) == 1 ? "files/" : "",
-					path2url(path),
-					path);
+				snprintf(tmp, sizeof(tmp), "%s/", path);
+				strbuf_puts(sb, gen_href_begin_with_title(count_stack(dirstack) == 1 ? "files" : NULL, path2fid(path), HTML, NULL, tmp));
 				if (icon_list) {
-					char tmp[MAXPATHLEN];
-					snprintf(tmp, sizeof(tmp), "%s/", path);
 					strbuf_puts(sb, gen_image(count_stack(dirstack) == 1 ? CURRENT : PARENT, dir_icon, tmp));
 					strbuf_puts(sb, quote_space);
 				}
-				strbuf_sprintf(sb, "%s/</a>", last);
+				strbuf_sprintf(sb, "%s/%s", last, gen_href_end());
 				if (!no_order_list)
 					strbuf_puts(sb, item_end);
 				else
@@ -734,7 +742,7 @@ makefileindex(file, files)
 				strbuf_putc(sb, '/');
 				fprintf(STDOUT, set_header(strbuf_value(sb)));
 				fprintf(STDOUT, "%s\n", body_begin);
-				fprintf(STDOUT, "%s<a href='%s'>root</a>/", header_begin, indexlink);
+				fprintf(STDOUT, "%s%sroot%s/", header_begin, gen_href_begin(NULL, indexlink, normal_suffix, NULL), gen_href_end());
 				{
 					struct dirstack *p = make_stack("tmp");
 					char *s;
@@ -744,21 +752,21 @@ makefileindex(file, files)
 						push_stack(p, s);
 						anchor = count_stack(p) < count_stack(dirstack) ? 1 : 0;
 						if (anchor)
-							fprintf(STDOUT, "<a href='%s'>", path2url(join_stack(p)));
+							fputs(gen_href_begin(NULL, path2fid(join_stack(p)), HTML, NULL), STDOUT);
 						fprintf(STDOUT, s);
 						if (anchor)
-							fprintf(STDOUT, "</a>");
-						fprintf(STDOUT, "/");
+							fputs(gen_href_end(), STDOUT);
+						fputc('/', STDOUT);
 					}
 					delete_stack(p);
 				}
 				fprintf(STDOUT, "%s\n", header_end);
-				fprintf(STDOUT, "<a href='%s' title='Parent Directory'>", parent);
+				fputs(gen_href_begin_with_title(NULL, parent, suffix, NULL, "Parent Directory"), STDOUT);
 				if (icon_list)
 					fputs(gen_image(PARENT, back_icon, ".."), STDOUT);
 				else
 					fputs("[..]", STDOUT);
-				fprintf(STDOUT, "</a>\n");
+				fprintf(STDOUT, "%s\n", gen_href_end());
 				if (!no_order_list)
 					fprintf(STDOUT, "%s\n", list_begin);
 				else
@@ -778,18 +786,23 @@ makefileindex(file, files)
 		strbuf_reset(sb);
 		if (!no_order_list)
 			strbuf_puts(sb, item_begin);
-		strbuf_puts(sb, "<a href='");
-		if (notsource && dynamic) {
-			if (!(*action == '/' || count_stack(dirstack) == 0))
-				strbuf_puts(sb, "../");
-			strbuf_sprintf(sb, "%s?pattern=%s&type=source",
-				action, encode(_));
-		} else {
-			if (count_stack(dirstack))
-				strbuf_puts(sb, "../");
-			strbuf_sprintf(sb, "%s/%s", SRCS, path2url(_));
+
+		{
+			char tmp[1024], *file, *suffix = NULL, *dir = NULL;
+
+			if (notsource && dynamic) {
+				if (!(*action == '/' || count_stack(dirstack) == 0))
+					dir = "..";
+				snprintf(tmp, sizeof(tmp), "%s?pattern=%s&type=source",
+					action, encode(_));
+				file = tmp;
+			} else {
+				dir = count_stack(dirstack) ? upperdir(SRCS) : SRCS;
+				file = path2fid(_);
+				suffix = HTML;
+			}
+			strbuf_puts(sb, gen_href_begin_with_title_target(dir, file, suffix, NULL, _, target));
 		}
-		strbuf_sprintf(sb, "' target='%s' title='%s'>", target, _);
 		if (icon_list) {
 			const char *lang, *suffix, *text_icon;
 
@@ -813,14 +826,14 @@ makefileindex(file, files)
 				last = _;
 			strbuf_puts(sb, last);
 		}
-		strbuf_puts(sb, "</a>");
+		strbuf_puts(sb, gen_href_end());
 		if (!no_order_list)
 			strbuf_puts(sb, item_end);
 		else
 			strbuf_puts(sb, br);
 		strbuf_putc(sb, '\n');
 		if (map_file)
-			fprintf(FILEMAP, "%s\t%s/%s\n", _, SRCS, path2url(_));
+			fprintf(FILEMAP, "%s\t%s/%s.%s\n", _, SRCS, path2fid(_), HTML);
 		if (count_stack(dirstack) == 0)
 			strbuf_puts(files, strbuf_value(sb));
 		else
@@ -831,20 +844,26 @@ makefileindex(file, files)
 	if (pclose(FIND) != 0)
 		die("cannot traverse directory.(%s)", command);
 	while (count_stack(dirstack) > 0) {
-		char *parent;
+		char *parent, *suffix;
 
 		pop_stack(dirstack);
-		parent = (count_stack(dirstack) > 0) ? path2url(join_stack(dirstack)) : indexlink;
+		if (count_stack(dirstack) > 0) {
+			parent = path2fid(join_stack(dirstack));
+			suffix = HTML;
+		} else {
+			parent = indexlink;
+			suffix = normal_suffix;
+		}
 		if (no_order_list)
 			fprintf(STDOUT, "%s\n", br);
 		else
 			fprintf(STDOUT, "%s\n", list_end);
-		fprintf(STDOUT, "<a href='%s' title='Parent Directory'>", parent);
+		fputs(gen_href_begin_with_title(NULL, parent, suffix, NULL, "Parent Directory"), STDOUT);
 		if (icon_list)
 			fputs(gen_image(PARENT, back_icon, ".."), STDOUT);
 		else
 			fputs("[..]", STDOUT);
-		fprintf(STDOUT, "</a>\n");
+		fprintf(STDOUT, "%s\n", gen_href_end());
 		fprintf(STDOUT, "%s\n", body_end);
 		fprintf(STDOUT, "%s\n", html_end);
 		close_file_queue(pop_stack(fdstack));
@@ -953,8 +972,11 @@ makeincludeindex()
 				char *filename = strbuf_value(inc->contents);
 				int count = inc->count;
 
-				for (; count; filename += strlen(filename) + 1, count--)
-					fprintf(INCLUDE, "<a href='../%s/%s' target='%s'>%s</a>\n", SRCS, path2url(filename), target, filename);
+				for (; count; filename += strlen(filename) + 1, count--) {
+					fputs(gen_href_begin_with_title_target(upperdir(SRCS), path2fid(filename), HTML, NULL, NULL, target), INCLUDE);
+					fputs(filename, INCLUDE);
+					fprintf(INCLUDE, "%s\n", gen_href_end());
+				}
 			}
 			fprintf(INCLUDE, "%s\n", verbatim_end);
 			fprintf(INCLUDE, "%s\n", body_end);
@@ -1000,7 +1022,7 @@ makeincludeindex()
 				int count = data->count;
 
 				for (; count; line += strlen(line) + 1, count--)
-					fprintf(INCLUDE, "%s\n", gen_list_body("../S", line));
+					fprintf(INCLUDE, "%s\n", gen_list_body(upperdir(SRCS), line));
 			}
 			fprintf(INCLUDE, "%s\n", gen_list_end());
 			fprintf(INCLUDE, "%s\n", body_end);

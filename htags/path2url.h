@@ -21,7 +21,7 @@
 #define _GPATH_H_
 
 void load_gpath(char *);
-char *path2url(char *);
+char *path2fid(char *);
 void unload_gpath(void);
 
 #endif /* ! _GPATH_H_ */

@@ -51,20 +51,24 @@ makedefineindex(file, total, defines)
 {
 	int count = 0;
 	int alpha_count = 0;
-	char indexlink[1024];
-	char *index_string = "Index Page";
-	char *target = (Fflag) ? "mains" : "_top";
 	FILE *MAP = NULL;
 	FILE *DEFINES, *old, *STDOUT, *TAGS, *ALPHA = NULL;
 	STRBUF *sb = strbuf_open(0);
 	STRBUF *url = strbuf_open(0);
 	char *_;
 	char command[1024], buf[1024], alpha[32], alpha_f[32];
+	/* Index link */
+	char *target = (Fflag) ? "mains" : "_top";
+	char *indexlink;
+	char *index_string = "Index Page";
 
-	if (Fflag)
-		snprintf(indexlink, sizeof(indexlink), "../defines.%s", normal_suffix);
+	if (!aflag && !Fflag)
+		indexlink = "mains";
+	else if (Fflag)
+		indexlink = "../defines";
 	else
-		snprintf(indexlink, sizeof(indexlink), "../mains.%s", normal_suffix);
+		indexlink = "../mains";
+
 	if (map_file) {
 		if (!(MAP = fopen(makepath(distpath, "MAP", NULL), "w")))
 			die("cannot open '%s'.", makepath(distpath, "MAP", NULL));
@@ -74,18 +78,20 @@ makedefineindex(file, total, defines)
 	fprintf(DEFINES, "%s\n", html_begin);
 	fprintf(DEFINES, "%s", set_header(title_define_index));
 	fprintf(DEFINES, "%s\n", body_begin);
+	fputs(header_begin, DEFINES);
 	if (Fflag)
-		fprintf(DEFINES, "%s<a href='defines.%s'>%s</a>%s\n", header_begin, normal_suffix, title_define_index, header_end);
-	else
-		fprintf(DEFINES, "%s%s%s\n", header_begin, title_define_index, header_end);
+		fputs(gen_href_begin(NULL, "defines", normal_suffix, NULL), DEFINES);
+	fputs(title_define_index, DEFINES);
+	if (Fflag)
+		fputs(gen_href_end(), DEFINES);
+	fprintf(DEFINES, "%s\n", header_end);
 	if (!aflag && !Fflag) {
-		snprintf(indexlink, sizeof(indexlink), "mains.%s", normal_suffix);
-		fprintf(DEFINES, "<a href='%s' title='%s'>", indexlink, index_string);
+		fputs(gen_href_begin_with_title(NULL, indexlink, normal_suffix, NULL, index_string), DEFINES);
 		if (icon_list)
 			fputs(gen_image(CURRENT, back_icon, ".."), DEFINES);
 		else
 			fputs("[..]", DEFINES);
-		fprintf(DEFINES, "</a>\n");
+		fprintf(DEFINES, "%s\n", gen_href_end());
 	}
 	if (!aflag) {
 		if (!no_order_list)
@@ -112,19 +118,22 @@ makedefineindex(file, total, defines)
 			int c;
 
 			if (alpha[0]) {
-				strbuf_sprintf(defines, "<a href='defines/%s.%s' title='%d %s'>[%s]</a>\n",
-					alpha_f, HTML, alpha_count, msg, alpha);
+				char tmp[128];
+				snprintf(tmp, sizeof(tmp), "%d %s", alpha_count, msg);
+				strbuf_puts(defines, gen_href_begin_with_title("defines", alpha_f, HTML, NULL, tmp));
+				strbuf_sprintf(defines, "[%s]", alpha);
+				strbuf_sprintf(defines, "%s\n", gen_href_end());
 				alpha_count = 0;
 				if (!no_order_list)
 					fprintf(ALPHA, "%s\n", list_end);
 				else
 					fprintf(ALPHA, "%s\n", br);
-				fprintf(ALPHA, "<a href='%s' title='%s'>", indexlink, index_string);
+				fputs(gen_href_begin_with_title(NULL, indexlink, normal_suffix, NULL, index_string), ALPHA);
 				if (icon_list)
 					fputs(gen_image(PARENT, back_icon, ".."), ALPHA);
 				else
 					fputs("[..]", ALPHA);
-				fprintf(ALPHA, "</a>\n");
+				fprintf(ALPHA, "%s\n", gen_href_end());
 				fprintf(ALPHA, "%s\n", body_end);
 				fprintf(ALPHA, "%s\n", html_end);
 				if (cflag) {
@@ -182,12 +191,12 @@ makedefineindex(file, total, defines)
 			fprintf(ALPHA, "%s", set_header(buf));
 			fprintf(ALPHA, "%s\n", body_begin);
 			fprintf(ALPHA, "%s[%s]%s\n", header_begin, alpha, header_end);
-			fprintf(ALPHA, "<a href='%s' title='%s'>", indexlink, index_string);
+			fputs(gen_href_begin_with_title(NULL, indexlink, normal_suffix, NULL, index_string), ALPHA);
 			if (icon_list)
 				fputs(gen_image(PARENT, back_icon, ".."), ALPHA);
 			else
 				fputs("[..]", ALPHA);
-			fprintf(ALPHA, "</a>\n");
+			fprintf(ALPHA, "%s\n", gen_href_end());
 			if (!no_order_list)
 				fprintf(ALPHA, "%s\n", list_begin);
 			else
@@ -232,7 +241,7 @@ makedefineindex(file, total, defines)
 			recover(&ptable);
 		} else {
 			SPLIT ptable;
-			char *lno, *filename, *path;
+			char *lno, *fid, *path;
 
 			if (split(line, 3, &ptable) < 3) {
 				recover(&ptable);
@@ -242,18 +251,20 @@ makedefineindex(file, total, defines)
 			path = ptable.part[1].start;
 			path += 2;		/* remove './' */
 
-			filename = path2url(path);
-			snprintf(url_for_map, sizeof(url_for_map), "%s/%s#%s",
-				SRCS, filename, lno);
+			fid = path2fid(path);
+			snprintf(url_for_map, sizeof(url_for_map), "%s/%s.%s#%s",
+				SRCS, fid, HTML, lno);
 			if (aflag)
 				strbuf_puts(url, "../");
-			strbuf_sprintf(url, "%s/%s#%s", SRCS, filename, lno);
+			strbuf_sprintf(url, "%s/%s.%s#%s", SRCS, fid, HTML, lno);
 			snprintf(guide, sizeof(guide), "Defined at %s in %s.", lno, path);
 			recover(&ptable);
 		}
 		if (!no_order_list)
 			fputs(item_begin, STDOUT);
-		fprintf(STDOUT, "<a href='%s' target='%s' title='%s'>%s</a>", strbuf_value(url), target, guide, tag);
+		fputs(gen_href_begin_with_title_target(NULL, strbuf_value(url), NULL, NULL, guide, target), STDOUT);
+		fputs(tag, STDOUT);
+		fputs(gen_href_end(), STDOUT);
 		if (!no_order_list)
 			fputs(item_end, STDOUT);
 		else
@@ -266,19 +277,23 @@ makedefineindex(file, total, defines)
 		die("'%s' failed.", command);
 	STDOUT = old;
 	if (aflag && alpha[0]) {
+		char tmp[128];
 		char *msg = (alpha_count == 1) ? "definition is contained." : "definitions are contained.";
 
-		strbuf_sprintf(defines, "<a href='defines/%s.%s' title='%d %s'>[%s]</a>\n", alpha_f, HTML, alpha_count, msg, alpha);
+		snprintf(tmp, sizeof(tmp), "%d %s", alpha_count, msg);
+		strbuf_puts(defines, gen_href_begin_with_title("defines", alpha_f, HTML, NULL, tmp));
+		strbuf_sprintf(defines, "[%s]", alpha);
+		strbuf_sprintf(defines, "%s\n", gen_href_end());
 		if (!no_order_list)
 			fprintf(ALPHA, "%s\n", list_end);
 		else
 			fprintf(ALPHA, "%s\n", br);
-		fprintf(ALPHA, "<a href='%s' title='%s'>", indexlink, index_string);
+		fputs(gen_href_begin_with_title(NULL, indexlink, normal_suffix, NULL, index_string), ALPHA);
 		if (icon_list)
 			fputs(gen_image(PARENT, back_icon, ".."), ALPHA);
 		else
 			fputs("[..]", ALPHA);
-		fprintf(ALPHA, "</a>\n");
+		fprintf(ALPHA, "%s\n", gen_href_end());
 		fprintf(ALPHA, "%s\n", body_end);
 		fprintf(ALPHA, "%s\n", html_end);
 		fclose(ALPHA);
@@ -289,12 +304,12 @@ makedefineindex(file, total, defines)
 	if (!no_order_list && !aflag)
 		fprintf(DEFINES, "%s\n", list_end);
 	if (!aflag && !Fflag) {
-		fprintf(DEFINES, "<a href='mains.%s' title='Index Page'>", normal_suffix);
+		fputs(gen_href_begin_with_title(NULL, "mains", normal_suffix, NULL, index_string), DEFINES);
 		if (icon_list)
 			fputs(gen_image(CURRENT, back_icon, ".."), DEFINES);
 		else
 			fputs("[..]", DEFINES);
-		fprintf(DEFINES, "</a>\n");
+		fprintf(DEFINES, "%s\n", gen_href_end());
 	}
 	fprintf(DEFINES, "%s\n", body_end);
 	fprintf(DEFINES, "%s\n", html_end);

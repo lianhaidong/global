@@ -179,6 +179,17 @@ meta_record()
 	return buf;
 }
 /*
+ * Generate upper directory.
+ */
+char *
+upperdir(dir)
+	const char *dir;
+{
+	static char path[MAXPATHLEN];
+	snprintf(path, sizeof(path), "../%s", dir);
+	return path;
+}
+/*
  * Generate header tag.
  */
 char *
@@ -224,6 +235,125 @@ gen_image(where, file, alt)
 	return buf;
 }
 /*
+ * Generate name tag.
+ */
+char *
+gen_name_number(number)
+	int number;
+{
+	static char buf[128];
+	snprintf(buf, sizeof(buf), "<a name='%d'>", number);
+	return buf;
+}
+/*
+ * Generate name tag.
+ */
+char *
+gen_name_string(name)
+	const char *name;
+{
+	static char buf[128];
+	snprintf(buf, sizeof(buf), "<a name='%s'>", name);
+	return buf;
+}
+/*
+ * Generate anchor begin tag.
+ * (complete format)
+ *
+ *	i)	dir	directory
+ *	i)	file	file
+ *	i)	suffix	suffix
+ *	i)	key	key
+ *	i)	title	title='xxx'
+ *	i)	target	target='xxx'
+ *	r)		generated anchor tag
+ */
+char *
+gen_href_begin_with_title_target(dir, file, suffix, key, title, target)
+	const char *dir;
+	const char *file;
+	const char *suffix;
+	const char *key;
+	const char *title;
+	const char *target;
+{
+	static STRBUF *sb = NULL;
+
+	if (sb == NULL)
+		sb = strbuf_open(0);
+	else
+		strbuf_reset(sb);
+	/*
+	 * Construct URL.
+	 * href='dir/file.suffix#key'
+	 */
+	strbuf_puts(sb, "<a href='");
+	if (file) {
+		if (dir) {
+			strbuf_puts(sb, dir);
+			strbuf_putc(sb, '/');
+		}
+		strbuf_puts(sb, file);
+		if (suffix) {
+			strbuf_putc(sb, '.');
+			strbuf_puts(sb, suffix);
+		}
+	}
+	if (key) {
+		strbuf_putc(sb, '#');
+		strbuf_puts(sb, key);
+	}
+	strbuf_putc(sb, '\'');
+	if (target)
+		strbuf_sprintf(sb, " target='%s'", target);
+	if (title)
+		strbuf_sprintf(sb, " title='%s'", title);
+	strbuf_putc(sb, '>');
+	return strbuf_value(sb);
+}
+/*
+ * Generate simple anchor begin tag.
+ */
+char *
+gen_href_begin_simple(file)
+	const char *file;
+{
+	return gen_href_begin_with_title_target(NULL, file, NULL, NULL, NULL, NULL);
+}
+/*
+ * Generate anchor begin tag without title and target.
+ */
+char *
+gen_href_begin(dir, file, suffix, key)
+	const char *dir;
+	const char *file;
+	const char *suffix;
+	const char *key;
+{
+	return gen_href_begin_with_title_target(dir, file, suffix, key, NULL, NULL);
+}
+/*
+ * Generate anchor begin tag without target.
+ */
+char *
+gen_href_begin_with_title(dir, file, suffix, key, title)
+	const char *dir;
+	const char *file;
+	const char *suffix;
+	const char *key;
+	const char *title;
+{
+	return gen_href_begin_with_title_target(dir, file, suffix, key, title, NULL);
+}
+/*
+ * Generate anchor end tag.
+ */
+char *
+gen_href_end()
+{
+	return "</a>";
+}
+/*
  * Generate list begin tag.
  */
 char *
@@ -254,7 +384,7 @@ gen_list_body(srcdir, string)
 	char *string;
 {
 	static STRBUF *sb = NULL;
-	char *name, *lno, *filename, *line, *html;
+	char *name, *lno, *filename, *line, *fid;
 	char *p;
 	SPLIT ptable;
 
@@ -271,12 +401,14 @@ gen_list_body(srcdir, string)
 	filename = ptable.part[2].start;
 	line = ptable.part[3].start;
 	filename += 2;				/* remove './' */
-	html = path2url(filename);
+	fid = path2fid(filename);
 
 	if (table_list) {
-		strbuf_sprintf(sb, "<tr><td nowrap><a href='%s/%s#%s'>%s</a></td>",
-			srcdir, html, lno, name);
-		strbuf_sprintf(sb, "<td nowrap align='right'>%s</td><td nowrap align='left'>%s</td><td nowrap>",
+		strbuf_puts(sb, "<tr><td nowrap>");
+		strbuf_puts(sb, gen_href_begin(srcdir, fid, HTML, lno));
+		strbuf_puts(sb, name);
+		strbuf_puts(sb, gen_href_end());
+		strbuf_sprintf(sb, "</td><td nowrap align='right'>%s</td><td nowrap align='left'>%s</td><td nowrap>",
 			lno, filename);
 
 		for (p = line; *p; p++) {
@@ -301,8 +433,9 @@ gen_list_body(srcdir, string)
 	} else {
 		int done = 0;
 
-		strbuf_sprintf(sb, "<a href='%s/%s#%s'>%s</a>",
-			srcdir, html, lno, name);
+		strbuf_puts(sb, gen_href_begin(srcdir, fid, HTML, lno));
+		strbuf_puts(sb, name);
+		strbuf_puts(sb, gen_href_end());
 		p = string + strlen(name);
 		recover(&ptable);
 

@@ -247,7 +247,7 @@ fill_anchor(root, path)
 			*p = '\0';
 	limit = p;
 
-	strbuf_sprintf(sb, "<a href='%s'>root</a>/", root);
+	strbuf_sprintf(sb, "%sroot%s/", gen_href_begin_simple(root), gen_href_end());
 	{
 		char *next;
 
@@ -262,8 +262,10 @@ fill_anchor(root, path)
 			}
 			if (p > buf)
 				*(p - 1) = sep;
-			strbuf_sprintf(sb, "<a href='../files/%s'>%s</a>/",
-				path2url(path), unit);
+			strbuf_puts(sb, gen_href_begin("../files", path2fid(path), HTML, NULL));
+			strbuf_puts(sb, unit);
+			strbuf_puts(sb, gen_href_end());
+			strbuf_putc(sb, '/');
 		}
 	}
         return strbuf_value(sb);
@@ -273,6 +275,7 @@ fill_anchor(root, path)
  * link_format: make hypertext from anchor array.
  *
  *	i)	(previous, next, first, last, top, bottom)
+ *		-1: top, -2: bottom, other: line number
  *	r)	HTML
  */
 char *
@@ -290,18 +293,19 @@ link_format(ref)
 		sb = strbuf_open(0);
 	for (i = 0; i < A_LIMIT; i++) {
 		if (i == A_INDEX) {
-			strbuf_sprintf(sb, "<a href='../mains.%s'>", normal_suffix);
+			strbuf_puts(sb, gen_href_begin("..", "mains", normal_suffix, NULL));
 		} else if (i == A_HELP) {
-			strbuf_sprintf(sb, "<a href='../help.%s'>", normal_suffix);
+			strbuf_puts(sb, gen_href_begin("..", "help", normal_suffix, NULL));
 		} else if (ref[i]) {
-			strbuf_puts(sb, "<a href='#");
+			char tmp[32], *key = tmp;
+
 			if (ref[i] == -1)
-				strbuf_puts(sb, "TOP");
+				key = "TOP";
 			else if (ref[i] == -2)
-				strbuf_puts(sb, "BOTTOM");
+				key = "BOTTOM";
 			else
-				strbuf_putn(sb, ref[i]);
-			strbuf_puts(sb, "'>");
+				snprintf(tmp, sizeof(tmp), "%d", ref[i]);
+			strbuf_puts(sb, gen_href_begin(NULL, NULL, NULL, key));
 		}
 		if (icon_list) {
 			char tmp[MAXPATHLEN];
@@ -311,7 +315,7 @@ link_format(ref)
 			strbuf_sprintf(sb, "[%s]", label[i]);
 		}
 		if (i == A_INDEX || i == A_HELP || ref[i] != 0)
-			strbuf_puts(sb, "</a>");
+			strbuf_puts(sb, gen_href_end());
 	}
         return strbuf_value(sb);
 }
@@ -433,13 +437,17 @@ put_anchor(name, type, lineno)
 		}
 		strbuf_puts(outbuf, name);
 	} else {
+		/*
+		 * About cache record format, please see the comment in cache.c.
+		 */
 		if (*line == ' ') {
-			int id = atoi(++line);
+			char tmp[MAXPATHLEN];
+			char *id = strmake(++line, " ");
 			char *count = locatestring(line, " ", MATCH_FIRST) + 1;
+			char *dir, *file, *suffix = NULL;
 
-			strbuf_puts(outbuf, "<a href='");
 			if (dynamic) {
-				char *dir = (*action == '/') ? "" : "../";
+				dir = (*action == '/') ? NULL : "..";
 				char *s;
 
 				if (db == GTAGS)
@@ -448,27 +456,32 @@ put_anchor(name, type, lineno)
 					s = "reference";
 				else
 					s = "symbol";
-				strbuf_sprintf(outbuf, "%s%s?pattern=%s&type=%s",
-					dir, action, name, s);
+				snprintf(tmp, sizeof(tmp), "%s?pattern=%s&type=%s",
+					action, name, s);
+				file = tmp;
 			} else {
-				char *dir;
-
 				if (type == 'R')
-					dir = DEFS;
+					dir = upperdir(DEFS);
 				else if (type == 'Y')
-					dir = SYMS;
+					dir = upperdir(SYMS);
 				else	/* 'D', 'M' or 'T' */
-					dir = REFS;
-				strbuf_sprintf(outbuf, "../%s/%d.%s", dir, id, HTML);
+					dir = upperdir(REFS);
+				file = id;
+				suffix = HTML;
 			}
-			strbuf_sprintf(outbuf, "' title='%s'>%s</a>", tooltip(type, -1, count), name);
+			strbuf_puts(outbuf, gen_href_begin_with_title(dir, file, suffix, NULL, tooltip(type, -1, count)));
+			strbuf_puts(outbuf, name);
+			strbuf_puts(outbuf, gen_href_end());
 		} else {
-			int lno = atoi(line);
-			char *filename = strmake(locatestring(line, " ", MATCH_FIRST) + 1, " ")
+			char lno[32];
+			char *filename;
+
+			strlimcpy(lno, strmake(line, " "), sizeof(lno));
+			filename = strmake(locatestring(line, " ", MATCH_FIRST) + 1, " ")
 						+ 2;	/* remove './' */
-			char *url = path2url(filename);
-			strbuf_sprintf(outbuf, "<a href='../%s/%s#%d' title='%s'>%s</a>",
-				SRCS, url, lno, tooltip(type, lno, filename), name);
+			strbuf_puts(outbuf, gen_href_begin_with_title(upperdir(SRCS), path2fid(filename), HTML, lno, tooltip(type, atoi(lno), filename)));
+			strbuf_puts(outbuf, name);
+			strbuf_puts(outbuf, gen_href_end());
 		}
 	}
 }
@@ -483,14 +496,15 @@ put_include_anchor(inc, path)
 	struct data *inc;
 	char *path;
 {
-	strbuf_puts(outbuf, "<a href='");
 	if (inc->count == 1)
-		strbuf_puts(outbuf, path2url(strbuf_value(inc->contents)));
-	else
-		strbuf_sprintf(outbuf, "../%s/%d.%s", INCS, inc->id, HTML);
-	strbuf_puts(outbuf, "'>");
+		strbuf_puts(outbuf, gen_href_begin(NULL, path2fid(strbuf_value(inc->contents)), HTML, NULL));
+	else {
+		char id[32];
+		snprintf(id, sizeof(id), "%d", inc->id);
+		strbuf_puts(outbuf, gen_href_begin(upperdir(INCS), id, HTML, NULL));
+	}
 	strbuf_puts(outbuf, path);
-	strbuf_puts(outbuf, "</a>");
+	strbuf_puts(outbuf, gen_href_end());
 }
 /*
  * Put a reserved word. (if, while, ...)
@@ -642,7 +656,7 @@ void
 put_end_of_line(lineno)
 	int lineno;
 {
-	fprintf(out, "<a name='%d'>", lineno);
+	fputs(gen_name_number(lineno), out);
         if (nflag)
                 fprintf(out, lineno_format, lineno);
 	if (warned)
@@ -711,7 +725,8 @@ src2html(src, html, notsource)
 	/*
          * print the header
          */
-        fprintf(out, "<a name='TOP'>%s", header_begin);
+	fputs(gen_name_string("TOP"), out);
+	fputs(header_begin, out);
         fputs(fill_anchor(indexlink, src), out);
 	if (cvsweb_url) {
 		static STRBUF *sb = NULL;
@@ -721,6 +736,7 @@ src2html(src, html, notsource)
 			strbuf_reset(sb);
 		else
 			sb = strbuf_open(0);
+		strbuf_puts(sb, cvsweb_url);
 		for (p = src; *p; p++) {
 			int c = (unsigned char)*p;
 
@@ -729,10 +745,11 @@ src2html(src, html, notsource)
 			else
 				strbuf_sprintf(sb, "%%%02x", c);
 		}
-        	fprintf(out, "%s<a href='%s%s", quote_space, cvsweb_url, strbuf_value(sb));
 		if (cvsweb_cvsroot)
-        		fprintf(out, "?cvsroot=%s", cvsweb_cvsroot);
-        	fprintf(out, "'>%s[CVS]%s</a>\n", cvslink_begin, cvslink_end);
+			strbuf_sprintf(sb, "?cvsroot=%s", cvsweb_cvsroot);
+		fprintf(out, "%s%s", quote_space, gen_href_begin_simple(strbuf_value(sb)));
+		fprintf(out, "%s[CVS]%s", cvslink_begin, cvslink_end);
+		fprintf(out, "%s\n", gen_href_end());
 		/* doesn't close string buffer */
 	}
 	fprintf(out, "%s\n", header_end);
@@ -753,7 +770,7 @@ src2html(src, html, notsource)
 		fprintf(out, "%s\n", verbatim_begin);
 		last_lineno = 0;
 		while ((_ = strbuf_fgets(sb, in, STRBUF_NOCRLF)) != NULL) {
-			fprintf(out, "<a name='%d'>", ++last_lineno);
+			fputs(gen_name_number(++last_lineno), out);
 			for (; *_; _++) {
 				int c = *_;
 
@@ -790,30 +807,41 @@ src2html(src, html, notsource)
 			basename = src;
 		incref = get_included(basename);
 		if (incref) {
-			fprintf(out, "%s<a href='", header_begin);
+			char s_id[32];
+			char *dir, *file, *suffix, *key, *title;
+
+			fputs(header_begin, out);
 			if (incref->count > 1) {
 				char s_count[32];
 
 				snprintf(s_count, sizeof(s_count), "%d", incref->count);
-				fprintf(out, "../%s/%d.%s", INCREFS, incref->id, HTML);
-				fprintf(out, "' title='%s'>", tooltip('I', -1, s_count));
+				snprintf(s_id, sizeof(s_id), "%d", incref->id);
+				dir = upperdir(INCREFS);
+				file = s_id;
+				suffix = HTML;
+				key = NULL;
+				title = tooltip('I', -1, s_count);
 			} else {
-				char *lno, *filename, *save;
 				char *p = strbuf_value(incref->contents);
+				char *lno = strmake(p, " ");
+				char *filename;
 
-				lno = p;
-				while (*p != ' ')
-					p++;
-				save = p;
-				*p++ = '\0';
-				filename = p;
+				p = locatestring(p, " ", MATCH_FIRST);
+				if (p == NULL)
+					die("internal error.(incref->contents)");
+				filename = p + 1;
 				if (filename[0] == '.' && filename[1] == '/')
 					filename += 2;
-				fprintf(out, "%s#%s", path2url(filename), lno);
-				fprintf(out, "' title='%s'>", tooltip('I', atoi(lno), filename));
-				*save = ' ';
+				dir = NULL;
+				file = path2fid(filename);
+				suffix = HTML;
+				key = lno;
+				title = tooltip('I', atoi(lno), filename);
 			}
-			fprintf(out, "%s</a>%s\n", title_included_from, header_end);
+			fputs(gen_href_begin_with_title(dir, file, suffix, key, title), out);
+			fputs(title_included_from, out);
+			fputs(gen_href_end(), out);
+			fprintf(out, "%s\n", header_end);
 			fprintf(out, "%s\n", hr);
 		}
 		/*
@@ -825,18 +853,25 @@ src2html(src, html, notsource)
 			define_index = strbuf_open(0);
 		for (ancref = anchor_first(); ancref; ancref = anchor_next()) {
 			if (ancref->type == 'D') {
-				strbuf_sprintf(define_index, "%s<a href='#%d' title='%s'>%s</a>%s\n",
-					item_begin,
-					ancref->lineno,
-					tooltip('R', ancref->lineno, NULL),
-					gettag(ancref),
-					item_end);
+				char tmp[32];
+				snprintf(tmp, sizeof(tmp), "%d", ancref->lineno);
+				strbuf_puts(define_index, item_begin);
+				strbuf_puts(define_index, gen_href_begin_with_title(NULL, NULL, NULL, tmp, tooltip('R', ancref->lineno, NULL)));
+				strbuf_puts(define_index, gettag(ancref));
+				strbuf_puts(define_index, gen_href_end());
+				strbuf_puts(define_index, item_end);
+				strbuf_putc(define_index, '\n');
 			}
 		}
 		if (strbuf_getlen(define_index) > 0) {
-			fprintf(out, "%s%s%s\n", header_begin, title_define_index, header_end);
+			fputs(header_begin, out);
+			fputs(title_define_index, out);
+			fprintf(out, "%s\n", header_end);
 			fputs("This source file includes following definitions.\n", out);
-			fprintf(out, "%s\n%s%s\n%s\n", list_begin, strbuf_value(define_index), list_end, hr);
+			fprintf(out, "%s\n", list_begin);
+			fputs(strbuf_value(define_index), out);
+			fprintf(out, "%s\n", list_end);
+			fprintf(out, "%s\n", hr);
 		}
 		/*
 		 * print source code
@@ -871,7 +906,7 @@ src2html(src, html, notsource)
         	fprintf(out, "%s\n", verbatim_end);
 	}
 	fprintf(out, "%s\n", hr);
-	fputs("<a name='BOTTOM'>\n", out);
+	fprintf(out, "%s\n", gen_name_string("BOTTOM"));
         fprintf(out, "%s/* ", comment_begin);
 	fputs(link_format(anchor_getlinks(-1)), out);
 	if (show_position)
