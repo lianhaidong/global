@@ -20,8 +20,8 @@
  */
 
 /*
- * If find(1) is available, then use it to traverse directory tree.
- * Otherwise use dirent(3).
+ * If dirent(3) is available, then use it to traverse directory tree.
+ * Otherwise use find(1).
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>
