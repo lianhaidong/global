@@ -72,7 +72,7 @@ put_pool(head, name, contents, id)
 		data = (struct data *)malloc(sizeof(struct data));
 		if (!data)
 			die("short of memory.");
-		strcpy(data->name, name);
+		strlimcpy(data->name, name, sizeof(data->name));
 		data->id = id;
 		data->contents = strbuf_open(0);
 		data->count = 0;

@@ -84,7 +84,7 @@ open_file_queue(path)
 		die("short of memory.");
 	if (strlen(path) > MAXPATHLEN)
 		die("path name too long.");
-	strcpy(file->path, path);
+	strlimcpy(file->path, path, sizeof(file->path));
 	if (cflag) {
 		char command[MAXFILLEN];
 
@@ -315,7 +315,7 @@ push_stack(sp, s)
 		dump_stack(sp, "abort in push_stack");
 		abort();
 	}
-	strcpy(sp->last, s);
+	strlimcpy(sp->last, s, length);
 	sp->last += length;
 	sp->leaved -= length;
 	if (sp->leaved < 0)

@@ -37,7 +37,7 @@ struct anchor {
 #define settag(a, tag)	do {						\
 	(a)->length = strlen(tag);					\
 	if ((a)->length < ANCHOR_NAMELEN)				\
-		strcpy((a)->tag, tag);					\
+		strlimcpy((a)->tag, tag, sizeof((a)->tag));		\
 	else {								\
 		(a)->reserve = strdup(tag);				\
 		if ((a)->reserve == NULL)				\

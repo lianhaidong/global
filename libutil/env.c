@@ -35,6 +35,7 @@
 
 #include "die.h"
 #include "env.h"
+#include "strbuf.h"
 
 /*
  * set_env: put environment variable.
@@ -48,20 +49,10 @@ set_env(var, val)
 	const char *val;
 {
 #ifdef HAVE_PUTENV
-	char *env;
-	/*
-	 * extra 2 bytes needed for '=' and '\0'.
-	 *
-	 * putenv("TMPDIR=/tmp");
-	 * TMPDIR=/tmp\0
-	 */
-	env = (char *)malloc(strlen(var)+strlen(val)+2);
-	if (!env)
-		die("short of memory.");
-	strcpy(env, var);
-	strcat(env, "=");
-	strcat(env, val);
-	putenv(env);
+	STRBUF *sb = strbuf_open(0);
+
+	strbuf_sprintf(sb, "%s=%s", var, val);
+	putenv(strbuf_value(sb));
 	/* Don't free memory. putenv(3) require it. */
 #else
 	setenv(var, val, 1);
