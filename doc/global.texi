@@ -584,20 +584,20 @@ If you need help then please type 'ghelp'.
 @item Almost global(1)'s command character is available as a command.
 @example
 
-    [/usr/src/sys] x fork
+    [/usr/src/sys] x fork               <- @r{(global -x fork)}
     >    1  fork              94 kern/kern_fork.c fork(p, uap)
-    [/usr/src/sys] r
+    [/usr/src/sys] r                    <- @r{(global -xr fork)}
     >    1  fork              85 alpha/linux/linux_machdep.c
          2  fork             184 i386/linux/linux_machdep.c
-    [/usr/src/sys] s lbolt
+    [/usr/src/sys] s lbolt              <- @r{(global -xs lbolt)}
     >    1  lbolt            1210 i386/isa/wd_cd.c     tsleep((cad
          2  lbolt            1211 i386/isa/wd_cd.c     tsleep((cad
          3  lbolt            709 i386/isa/wfd.c     tsleep ((caddr
     ...
-    [/usr/src/sys] g
+    [/usr/src/sys] g                    <- @r{(global -xg lbolt)}
     >    1  lbolt            1210 i386/isa/wd_cd.c     tsleep((cad
     ...
-    [/usr/src/sys] P init
+    [/usr/src/sys] P init               <- @r{(global -xP init)}
     >    1  path    1 dev/hea/eni_init.c 
          2  path    1 dev/hfa/fore_init.c 
          3  path    1 i386/i386/initcpu.c 
@@ -649,7 +649,7 @@ pop command.
     (Load editor and show boot/alpha/boot1/boot1.c at line 227.)
     [/usr/src/sys] x fork          <- @r{push new tag on tag stack.}
     >    1  fork              94 kern/kern_fork.c fork(p, uap)
-    [/usr/src/sys] pop             <- @r{pop the tag stack.}
+    [/usr/src/sys] pop             <- @r{pop tag stack.}
     [/usr/src/sys] show
     (Load editor and show boot/alpha/boot1/boot1.c at line 227.)
 
@@ -672,9 +672,9 @@ pop command.
          2  main             1500 alpha/alpha/ieee_float.c main(i
          3  main             227 boot/alpha/boot1/boot1.c main()
     ....
-    [/usr/src/sys] mark -l
+    [/usr/src/sys] mark -l              <- @r{show marker list.}
          1  fork              94 kern/kern_fork.c fork(p, uap)
-    [/usr/src/sys] mark 1
+    [/usr/src/sys] mark 1               <- @r{select a marker.}
     (Load editor and show kern/kern_fork.c at line 227.)
     [/usr/src/sys] list
     >    1  main              70 alpha/alpha/gensetdefs.c main(in
@@ -689,14 +689,14 @@ current bash session.
 @item You can memory directories using 'cookie' command.
 @example
 
-    [/usr/src/sys] cookie
+    [/usr/src/sys] cookie               <- @r{drop cookie.}
     [/usr/src/sys] cd kern
-    [/usr/src/sys]/kern cookie
+    [/usr/src/sys]/kern cookie          <- @r{drop cookie again.}
     [/usr/src/sys]/kern cd ../i386
-    [/usr/src/sys]/i386 cookie -l
+    [/usr/src/sys]/i386 cookie -l       <- @r{show cookie list.}
          1  /usr/src/sys/kern
          2  /usr/src/sys
-    [/usr/src/sys]/i386 cookie 2        <- @r{chdir to selected position.}
+    [/usr/src/sys]/i386 warp 2          <- @r{warp to selected cookie.}
     [/usr/src/sys] _
 
 @end example
