@@ -19,6 +19,10 @@ ___________________________________
 GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 4.6.1 - Oct 3 2003, by Shigio Yamaguchi
+
+* gtags, htags, gctags: Added '.hpp' to the suffix list of C++ source file.
+
 Version 4.6 - July 2 2003, by Shigio Yamaguchi
 
 [INCOMPATIBLE CHANGES]
