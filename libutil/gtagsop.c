@@ -75,7 +75,7 @@ static regex_t reg;
  *    any more and display error message.
  * 3. If version number is not found then it assumes version 1.
  *
- * [History fo format version]
+ * [History of format version]
  *
  * GLOBAL-1.0 - 1.8	no idea about format version.
  * GLOBAL-1.9 - 2.24 	understand format version.
