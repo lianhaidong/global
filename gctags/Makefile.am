@@ -48,4 +48,7 @@ if ENABLE_GPERF
 .in.pl:
 	prefix=`echo $* | sed 's/_res//'` && \
 	perl $(RESERVED) --prefix=$$prefix --perl $< > $@
+perl: sharp_res.pl c_res.pl cpp_res.pl java_res.pl php_res.pl
+sharp_res.pl: c_res.in
+	perl $(RESERVED) --prefix=sharp --perl c_res.in > sharp_res.pl
 endif
