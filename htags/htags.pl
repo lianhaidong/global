@@ -1643,7 +1643,7 @@ sub src2html {
 		local($count) = 0;
 		local($lno_printed) = 0;
 
-		if ($'lflag) {
+		if ($'lflag || $. == 1) {
 			print "<A NAME=$.>";
 			$lno_printed = 1;
 		}
