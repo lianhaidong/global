@@ -129,7 +129,7 @@ Tag file for function references.
 Tag file for other symbols.
 .It Pa GPATH
 Tag file for path of source files.
-.It Pa /etc/global.conf .globalrc
+.It Pa /etc/global.conf $HOME/.globalrc
 Configuration file.
 .El
 .Sh ENVIRONMENT
@@ -142,6 +142,9 @@ The default is /tmp.
 .It Ev GTAGSCONF
 If this variable is set, its value is used as the configuration file.
 The default is $HOME/.globalrc.
+.It Ev GTAGSLABEL
+If this variable is set, its value is used as the label of configuration file.
+The default is 'default'.
 .El
 .Sh DIAGNOSTICS
 .Nm Htags
