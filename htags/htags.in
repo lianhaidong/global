@@ -71,6 +71,7 @@ $'icon_list = '';				# use icon for file index
 $'icon_spec = 'BORDER=0 ALIGN=middle';		# parameter in IMG tag
 $'prolog_script = '';				# include script at first
 $'epilog_script = '';				# include script at last
+$'use_javascript = 1;				# use javascript
 $'show_position = 0;				# show current position
 $'table_list = 0;				# tag list using table tag
 $'script_alias = '/cgi-bin';			# script alias of WWW server
@@ -203,6 +204,9 @@ if ($var1 = &'getconf('prolog_script')) {
 if ($var1 = &'getconf('epilog_script')) {
 	$'epilog_script = $var1;
 }
+if (&'getconf('no_javascript')) {
+	$'use_javascript = 0;
+}
 if ($var1 = &'getconf('show_position')) {
 	$'show_position = $var1;
 }
@@ -305,10 +309,12 @@ sub set_header {
 	$head .= "<HEAD>\n";
 	$head .= "<TITLE>$title</TITLE>\n";
 	$head .= "$'meta_robots\n$'meta_generator\n";
-	$head .= $'begin_script;
-	$head .= "self.defaultStatus = '$title'\n";
-	$head .= $'status_line;
-	$head .= $'end_script;	
+	if ($'use_javascript) {
+		$head .= $'begin_script;
+		$head .= "self.defaultStatus = '$title'\n";
+		$head .= $'status_line;
+		$head .= $'end_script;	
+	}
 	$head .= $'style_sheet if ($'style_sheet);
 	$head .= "</HEAD>\n";
 	$head;
@@ -541,6 +547,8 @@ while ($ARGV[0] =~ /^-/) {
 		$'style_sheet = $1;
 	} elsif ($opt =~ /^--style-sheet$/) {
 		$'style_sheet = shift;
+	} elsif ($opt =~ /^--no-javascript$/) {
+		$'use_javascript = 0;
 	} elsif ($opt =~ /^--verbose$/) {
 		$'vflag = 'v';
 	} elsif ($opt =~ /^--warning$/) {
@@ -1894,7 +1902,11 @@ sub src2html {
 		print "<OL>\n";
 		local($lno, $tag, $type);
 		for (($lno, $tag, $type) = &anchor'first(); $lno; ($lno, $tag, $type) = &anchor'next()) {
-			print "<LI><A HREF=#$lno onMouseOver=\"show('R',$lno,'')\">$tag</A>\n" if ($type eq 'D');
+			if ($type eq 'D') {
+				print "<LI><A HREF=#$lno";
+				print " onMouseOver=\"show('R',$lno,'')\"" if ($'use_javascript);
+				print ">$tag</A>\n";
+			}
 		}
 		print "</OL>\n";
 		print "<HR>\n";
@@ -1959,14 +1971,18 @@ sub src2html {
 						local($type) = ($TYPE eq 'R') ? $'DEFS : $'REFS;
 						local($msg) = 'Multiple ';
 						$msg .= ($TYPE eq 'R') ? 'defined.' : 'refered.';
-						$href = "<A HREF=../$type/$1.$'HTML onMouseOver=\"show('$TYPE',-1,'')\">$TAG</A>";
+						$href = "<A HREF=../$type/$1.$'HTML";
+						$href .= " onMouseOver=\"show('$TYPE',-1,'')\"" if ($'use_javascript);
+						$href .= ">$TAG</A>";
 					} else {
 						local($nouse, $lno, $filename) = split(/[ \t]+/, $line);
 						$nouse = '';	# to make perl quiet
 						local($url) = &'path2url($filename);
 						$filename =~ s!\./!!; 
 						local($msg) = ($TYPE eq 'R') ? 'Defined at' : 'Refered from';
-						$href = "<A HREF=../$'SRCS/$url#$lno onMouseOver=\"show('$TYPE',$lno,'$filename')\">$TAG</A>";
+						$href = "<A HREF=../$'SRCS/$url#$lno";
+						$href .= " onMouseOver=\"show('$TYPE',$lno,'$filename')\"" if ($'use_javascript);
+						$href .= ">$TAG</A>";
 					}
 					# set tag marks and save hyperlink into @links
 					if (ord($TAG) > 127) {	# for multi-byte code
