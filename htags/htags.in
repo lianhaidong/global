@@ -288,10 +288,10 @@ $'status_line  =
 "	if (lno > 0) {\n" .
 "		if (type == 'R')\n" .
 "			msg = 'Defined at';\n" .
-"		else if (type == 'D')\n" .
-"			msg = 'Refered from';\n" .
-"		else\n" .
+"		else if (type == 'Y')\n" .
 "			msg = 'Used at';\n" .
+"		else\n" .
+"			msg = 'Refered from';\n" .
 "		msg += ' ' + lno;\n" .
 "		if (file != '')\n" .
 "			msg += ' in ' + file;\n" .
@@ -299,10 +299,10 @@ $'status_line  =
 "		msg = 'Multiple ';\n" .
 "		if (type == 'R')\n" .
 "			msg += 'defined';\n" .
-"		else if (type == 'D')\n" .
-"			msg += 'refered';\n" .
-"		else\n" .
+"		else if (type == 'Y')\n" .
 "			msg += 'used';\n" .
+"		else\n" .
+"			msg += 'refered';\n" .
 "	}\n" .
 "	msg += '.';\n" .
 "	self.status = msg;\n" .
