@@ -24,6 +24,7 @@
 
 #include "gparam.h"
 #include "abs2rel.h"
+#include "char.h"
 #include "conf.h"
 #include "dbop.h"
 #include "defined.h"
