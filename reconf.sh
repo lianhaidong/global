@@ -26,7 +26,7 @@ case $1 in
 --help)	echo "Usage: sh reconf.sh [--configure|--make|--install]"
 	exit 0;;
 esac
-prog='autoreconf flex gperf'	# required programs
+prog='autoreconf flex gperf perl'	# required programs
 file='convert.pl configure.ac Makefile.am gctags/reserved.pl'	# required files
 
 echo "- File existent checking..."
