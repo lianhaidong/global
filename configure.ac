@@ -78,6 +78,7 @@ AC_FUNC_STRFTIME
 AC_CHECK_FUNCS(getcwd putenv strdup lstat snprintf utimes)
 AC_CHECK_FUNCS(index rindex bzero bcmp bcopy strchr strrchr memset memcmp memmove)
 AC_CHECK_FUNCS(malloc realloc alloca vprintf doprnt strerror strerror_r)
+AC_CHECK_DECLS([free, lseek, malloc, memchr, realloc, stpcpy, strstr])
 AG_DJGPP
 
 INCLUDES='-I$(top_srcdir)/libutil -I$(top_srcdir)/libdb -I$(top_srcdir)/libglibc -I../libutil'
