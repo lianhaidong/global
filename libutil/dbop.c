@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999
  *             Shigio Yamaguchi. All rights reserved.
- * Copyright (c) 1999, 2000
+ * Copyright (c) 1999, 2000, 2001
  *             Tama Communications Corporation. All rights reserved.
  *
  * This file is part of GNU GLOBAL.
@@ -179,13 +179,13 @@ const char *data;
 	}
 }
 /*
- * dbop_del: delete record by a key.
+ * dbop_delete: delete record by a key.
  *
  *	i)	dbop	descripter
  *	i)	name	key
  */
 void
-dbop_del(dbop, name)
+dbop_delete(dbop, name)
 DBOP	*dbop;
 const char *name;
 {

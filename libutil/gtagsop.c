@@ -558,7 +558,7 @@ char	*path;
 	 */
 	for (p = dbop_first(gtop->dbop, NULL, NULL, 0); p; p = dbop_next(gtop->dbop))
 		if (belongto(gtop, key, p))
-			dbop_del(gtop->dbop, NULL);
+			dbop_delete(gtop->dbop, NULL);
 	/*
 	 * don't delete from path index.
 	 */

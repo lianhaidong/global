@@ -169,8 +169,8 @@ const char *path;
 	id = dbop_get(dbop, path);
 	if (id == NULL)
 		return;
-	dbop_del(dbop, id);
-	dbop_del(dbop, path);
+	dbop_delete(dbop, id);
+	dbop_delete(dbop, path);
 }
 /*
  * gpath_nextkey: return next key

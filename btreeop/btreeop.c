@@ -341,7 +341,7 @@ int	secondkey;
 {
 	signal_setup();
 	if (!secondkey) {
-		dbop_del(dbop, skey);
+		dbop_delete(dbop, skey);
 		return;
 	}
 	dbbysecondkey(dbop, F_DEL, skey, secondkey);
@@ -393,7 +393,7 @@ int	secondkey;
 				detab(stdout, p);
 				break;
 			case F_DEL:
-				dbop_del(dbop, NULL);
+				dbop_delete(dbop, NULL);
 				break;
 			}
 		}

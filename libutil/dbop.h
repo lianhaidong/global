@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999
  *             Shigio Yamaguchi. All rights reserved.
- * Copyright (c) 1999, 2000
+ * Copyright (c) 1999, 2000, 2001
  *             Tama Communications Corporation. All rights reserved.
  *
  * This file is part of GNU GLOBAL.
@@ -55,7 +55,7 @@ typedef	struct {
 DBOP	*dbop_open(const char *, int, int, int);
 char	*dbop_get(DBOP *, const char *);
 void	dbop_put(DBOP *, const char *, const char *);
-void	dbop_del(DBOP *, const char *);
+void	dbop_delete(DBOP *, const char *);
 char	*dbop_first(DBOP *, const char *, regex_t *, int);
 char	*dbop_next(DBOP *);
 char	*dbop_lastdat(DBOP *);
