@@ -187,7 +187,7 @@ int full_path = 0;			/* file index format		*/
 int map_file = 1;			/* 1: create MAP file		*/
 char *icon_list = NULL;			/* use icon list		*/
 char *icon_suffix = "png";		/* icon suffix (jpg, png etc)	*/
-char *icon_spec = "border=0 align=top";	/* parameter in IMG tag		*/
+char *icon_spec = "border='0' align='top'";/* parameter in IMG tag	*/
 char *prolog_script = NULL;		/* include script at first	*/
 char *epilog_script = NULL;		/* include script at last	*/
 int show_position = 0;			/* show current position	*/
