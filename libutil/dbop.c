@@ -45,7 +45,6 @@
 #include "locatestring.h"
 #include "strbuf.h"
 #include "strlimcpy.h"
-#include "strmake.h"
 #include "test.h"
 
 #ifdef USE_POSTGRES
