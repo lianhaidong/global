@@ -62,7 +62,7 @@ static int tablesize;
  *
  * By default, default_map is used.
  */
-static const char *default_map = "c:.c.h,yacc:.y,asm:.s.S,java:.java,cpp:.c++.cc.cpp.cxx.hxx.C.H,php:.php.php3.phtml";
+static const char *default_map = "c:.c.h,yacc:.y,asm:.s.S,java:.java,cpp:.c++.cc.cpp.cxx.hxx.hpp.C.H,php:.php.php3.phtml";
 static char *langmap;
 static STRBUF *active_map;
 

@@ -23,7 +23,7 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	GTAGS,1,June 2003,GNU Project
+@HEADER	GTAGS,1,Oct 2003,GNU Project
 @NAME	gtags - create tag files for global.
 @SYNOPSIS
 	@name{gtags} [-c][-i][-I][-o][-P][-q][-v][-w][@arg{dbpath}]
@@ -42,7 +42,7 @@
 	C source files and are searched for C style routine and macro
 	definitions.
 	Files whose names end in @file{.c++} @file{.cc} @file{.cpp} @file{.cxx}
-	@file{.hxx} @file{.C} @file{.H} are assumed to be C++ source files.
+	@file{.hxx} @file{.hpp} @file{.C} @file{.H} are assumed to be C++ source files.
 	Files whose names end in @file{.y} are assumed to be YACC source files.
 	Files whose names end in @file{.java} are assumed to be Java source files.
 	Files whose names end in @file{.php} @file{.php3} @file{.phtml} are

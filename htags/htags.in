@@ -1854,13 +1854,13 @@ sub makefileindex {
 		# as a candidate of include file.
 		#
 		# C: .h
-		# C++: .hxx, .H
+		# C++: .hxx, .hpp, .H
 		# PHP: .inc.php
 		#
 		# collect include files. format is
 		#	counter + '\n' + path1 + '\n' + path2 ...
 		#
-		if (/.*\.(h|hxx|H|inc\.php)$/) {
+		if (/.*\.(h|hxx|hpp|H|inc\.php)$/) {
 			if (!defined $includes{$file}) {
 				$includes{$file} = "$count\n$_";
 			} else {
@@ -2268,7 +2268,7 @@ sub src2html {
 	local($tabs) = $'tabs;
 	local(%ctab) = ('&', '&amp;', '<', '&lt;', '>', '&gt;');
 	local($isjava) = ($file =~ /\.java$/) ? 1 : 0;
-	local($iscpp) = ($file =~ /\.(h|c\+\+|cc|cpp|cxx|hxx|C|H)$/) ? 1 : 0;
+	local($iscpp) = ($file =~ /\.(h|c\+\+|cc|cpp|cxx|hxx|hpp|C|H)$/) ? 1 : 0;
 	local($isphp) = ($file =~ /\.(php|php3|phtml)$/) ? 1 : 0;
 	local($indexlink) = ($'Fflag) ? "../files.$'normal_suffix" : "../mains.$'normal_suffix";
 	local($command);

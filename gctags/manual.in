@@ -43,7 +43,7 @@
 	Files whose names end in @file{.c} or @file{.h} are assumed to be C
 	source files and are searched for C style routine and macro definitions.
 	Files whose names end in @file{.c++} @file{.cc} @file{.cpp}
-	@file{.cxx} @file{.hxx} @file{.C} @file{.H} are assumed to be C++
+	@file{.cxx} @file{.hxx} @file{.hpp} @file{.C} @file{.H} are assumed to be C++
 	source files.
 	Files whose names end in @file{.y} are assumed to be YACC source files.
 	Files whose names end in @file{.java} are assumed to be Java source files.
@@ -89,7 +89,7 @@
 	@item{@option{--langmap}=map}
 		Language mapping. Each comma-separated  map  consists of
 		the language name, a colon, and a list of file extensions.
-		Default mapping is 'c:.c.h,yacc:.y,asm:.s.S,java:.java,cpp:.c++.cc.cpp.cxx.hxx.C.H,php:.php.php3.phtml'.
+		Default mapping is 'c:.c.h,yacc:.y,asm:.s.S,java:.java,cpp:.c++.cc.cpp.cxx.hxx.hpp.C.H,php:.php.php3.phtml'.
 	@end_itemize
 
 	The @option{-r} and @option{-s} options override each other;

@@ -68,7 +68,7 @@ gctags|tag command for GLOBAL:\
 #      lisp: l,el,lsp,lisp,cl,clisp
 #    scheme: sm,scm,scheme,t,sch,ss,SM,SCM
 # assembly: s,a,sa,asm,src,def,ins,inc
-#       C++: C,H,cpp,cxx,hxx,cc
+#       C++: C,H,cpp,cxx,hxx,hpp,cc
 #        C*: cs,hs
 #    c,yacc: c,h,y
 #  pl,p,pas: pascal
@@ -81,7 +81,7 @@ gctags|tag command for GLOBAL:\
 #
 ctags-emacs|ctags based on etags|GNU Emacs ctags:\
 	:tc=common:\
-	:suffixes=el,s,a,sa,asm,C,H,cpp,cxx,hxx,cc,c,h,y:\
+	:suffixes=el,s,a,sa,asm,C,H,cpp,cxx,hxx,hpp,cc,c,h,y:\
 	:extractmethod:\
 	:GTAGS=/usr/local/bin/ctags-emacs -x -d -T -w %s:
 #
@@ -96,7 +96,7 @@ ctags-emacs|ctags based on etags|GNU Emacs ctags:\
 #
 ctags-exuberant|Exuberant Ctags|ctags by Darren Hiebert:\
 	:tc=common:\
-	:suffixes=s,a,sa,asm,C,H,cpp,cxx,hxx,cc,c,h,y:\
+	:suffixes=s,a,sa,asm,C,H,cpp,cxx,hxx,hpp,cc,c,h,y:\
 	:extractmethod:\
 	:GTAGS=/usr/local/bin/ctags-exuberant -x %s | perl -ne '\
 		if (/^operator \\S+\\s+function\\s/) { s/^operator //; }\
