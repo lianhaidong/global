@@ -340,7 +340,6 @@ char	*argv[];
 		exit(0);
 	} else if (do_createdb) {
 		DBOP *dbop;
-		char keybuf[MAXKEYLEN+1];
 		STRBUF *ib = strbuf_open(MAXBUFLEN);
 		char *p, *q;
 
@@ -348,6 +347,7 @@ char	*argv[];
 		 * [Job]
 		 *
 		 * Read line from stdin and write to btree database.
+		 * Format: [0-9]+ [0-9]+[MDRY][a-zA-Z_0-9]+
 		 */
 		dbop = dbop_open(btree_dbname, 1, 0644, DBOP_DUP);
 		if (dbop == NULL)
@@ -356,23 +356,14 @@ char	*argv[];
 			if (exitflag)
 				break;
 			p = q = strbuf_value(ib);
-			if (*q == ' ') {		/* META record */
-				if (*++q == ' ')
-					die("key cannot include blanks.");
-			}
-			for (; *q && !isspace(*q); q++)	/* skip key part */
+			for (; *q && isdigit(*q); q++)	/* key part */
 				;
 			if (*q == 0)
 				die("data part not found.");
-			if (q - p > MAXKEYLEN)
-				die("primary key too long.");
-			strncpy(keybuf, p, q - p);
-			keybuf[q - p] = '\0';
-			for (; *q && isspace(*q); q++)
-				;
+			*q++ = '\0';
 			if (*q == 0)
 				die("data part is null.");
-			dbop_put(dbop, keybuf, p, 0);
+			dbop_put(dbop, p, q, 0);
 		}
 		dbop_close(dbop);
 		strbuf_close(ib);

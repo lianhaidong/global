@@ -2374,7 +2374,11 @@ sub create {
 			} else {
 				$type = 'Y';
 			}
-			print ANCH "$fnumber $lno $tag $type\n";
+			#
+			# key: $fnumber
+			# dat: $lno$type$tag
+			#
+			print ANCH "$fnumber $lno$type$tag\n";
 		}
 		close(PIPE);
 		if ($?) { &'error("'$pipein' failed."); }
@@ -2407,30 +2411,28 @@ sub load {
 	if (!($fnumber = $PATHLIST{$file})) {
 		return;
 	}
+	local(@keys);
 	local($command) = "$'gtags --readdb=$ANCH $fnumber";
 	open(ANCH, "$command |") || &'error("cannot fork.");
 	while (<ANCH>) {
-		local($fnumber, $lno, $tag, $type) = split;
-		push(@ANCHORS, "$lno,$tag,$type");
+		chop;
+		push(@keys, int);	# int($lno)
+		push(@ANCHORS, $_);	# "$lno$type$tag"
 	}
 	close(ANCH);
 	if ($?) {&'error("'$command' failed."); }
-	local(@keys);
-	foreach (@ANCHORS) {
-		push(@keys, (split(/,/))[0]);
-	}
 	sub compare { $keys[$a] <=> $keys[$b]; }
 	@ANCHORS = @ANCHORS[sort compare 0 .. $#keys];
 	local($c);
 	for ($c = 0; $c < @ANCHORS; $c++) {
-		local($lno, $tag, $type) = split(/,/, $ANCHORS[$c]);
+		local($lno, $type, $tag) = split(/(\D)/, $ANCHORS[$c], 2);
 		if ($type eq 'D') {
 			$FIRST = $lno;
 			last;
 		}
 	}
 	for ($c = $#ANCHORS; $c >= 0; $c--) {
-		local($lno, $tag, $type) = split(/,/, $ANCHORS[$c]);
+		local($lno, $type, $tag) = split(/(\D)/, $ANCHORS[$c], 2);
 		if ($type eq 'D') {
 			$LAST = $lno;
 			last;
@@ -2442,7 +2444,7 @@ sub load {
 #
 sub first {
 	$CURRENT = 0;
-	local($lno, $tag, $type) = split(/,/, $ANCHORS[$CURRENT]);
+	local($lno, $type, $tag) = split(/(\D)/, $ANCHORS[$CURRENT], 2);
 	$CURRENTDEF = $CURRENT if ($type eq 'D');
 
 	($lno, $tag, $type);
@@ -2454,7 +2456,7 @@ sub next {
 	if (++$CURRENT > $#ANCHORS) {
 		return ('', '', '');
 	}
-	local($lno, $tag, $type) = split(/,/, $ANCHORS[$CURRENT]);
+	local($lno, $type, $tag) = split(/(\D)/, $ANCHORS[$CURRENT], 2);
 	$CURRENTDEF = $CURRENT if ($type eq 'D');
 
 	($lno, $tag, $type);
@@ -2476,7 +2478,7 @@ sub getlinks {
 		local($c, $p, $n);
 		if ($CURRENTDEF == 0) {
 			for ($c = 0; $c <= $#ANCHORS; $c++) {
-				local($lno, $tag, $type) = split(/,/, $ANCHORS[$c]);
+				local($lno, $type, $tag) = split(/(\D)/, $ANCHORS[$c], 2);
 				if ($lno == $linenumber && $type eq 'D') {
 					last;
 				}
@@ -2484,7 +2486,7 @@ sub getlinks {
 			$CURRENTDEF = $c;
 		} else {
 			for ($c = $CURRENTDEF; $c >= 0; $c--) {
-				local($lno, $tag, $type) = split(/,/, $ANCHORS[$c]);
+				local($lno, $type, $tag) = split(/(\D)/, $ANCHORS[$c], 2);
 				if ($lno == $linenumber && $type eq 'D') {
 					last;
 				}
@@ -2492,14 +2494,14 @@ sub getlinks {
 		}
 		$p = $n = $c;
 		while (--$p >= 0) {
-			local($lno, $tag, $type) = split(/,/, $ANCHORS[$p]);
+			local($lno, $type, $tag) = split(/(\D)/, $ANCHORS[$p], 2);
 			if ($type eq 'D') {
 				$prev = $lno;
 				last;
 			}
 		}
 		while (++$n <= $#ANCHORS) {
-			local($lno, $tag, $type) = split(/,/, $ANCHORS[$n]);
+			local($lno, $type, $tag) = split(/(\D)/, $ANCHORS[$n], 2);
 			if ($type eq 'D') {
 				$next = $lno;
 				last;
