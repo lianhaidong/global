@@ -228,7 +228,7 @@
 	@item{@code{warned_line_end}(string)}
 		End tag for line which htags warned. The default is '</span>'.
 	@item{@code{hr}(string)}
-		Horizontal rules. The default is '<hR>'.
+		Horizontal rules. The default is '<hr>'.
 	@item{@code{ncol}(number)}
 		Columns of line number. The default is 4.
 	@item{@code{tabs}(number)}
