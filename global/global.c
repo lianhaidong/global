@@ -71,10 +71,9 @@ STRBUF	*pathfilter;			/* path convert filter	*/
 char	*localprefix;			/* local prefix		*/
 int	aflag;				/* [option]		*/
 int	cflag;				/* command		*/
-int	Cflag;				/* [option]		*/
 int	fflag;				/* command		*/
 int	gflag;				/* command		*/
-int	iflag;				/* command		*/
+int	iflag;				/* [option]		*/
 int	Iflag;				/* command		*/
 int	lflag;				/* [option]		*/
 int	nflag;				/* [option]		*/
@@ -84,6 +83,7 @@ int	rflag;				/* [option]		*/
 int	sflag;				/* [option]		*/
 int	tflag;				/* [option]		*/
 int	Tflag;				/* [option]		*/
+int	uflag;				/* command		*/
 int	vflag;				/* [option]		*/
 int	xflag;				/* [option]		*/
 int	show_version;
@@ -93,14 +93,14 @@ int	use_tagfiles;
 int	debug;
 char	*extra_options;
 const char *usage_const = "\
-Usage: global [-aClnrstTvx] pattern\n\
+Usage: global [-ailnrstTvx] pattern\n\
        global -c[sv] [prefix]\n\
        global -f[anrstvx] files\n\
-       global -g[aClntvx] pattern\n\
-       global -i[v]\n\
-       global -I[aClntvx] pattern\n\
+       global -g[ailntvx] pattern\n\
+       global -I[ailntvx] pattern\n\
        global -p[rv]\n\
-       global -P[aClntvx] [pattern]\n";
+       global -P[ailntvx] [pattern]\n\
+       global -u[v]\n";
 const char *help_const = "\
 Pattern accept POSIX 1003.2 regular expression.\n\
 Commands:\n\
@@ -112,8 +112,6 @@ Commands:\n\
              print all functions in the files.\n\
      -g, --grep pattern\n\
              print all lines which match to the pattern.\n\
-     -i, --incremental\n\
-             locate tag files and reconstruct them incrementally.\n\
      -I, --idutils\n\
              print all lines which match to the pattern using idutils.\n\
      -p, --print-dbpath\n\
@@ -122,13 +120,15 @@ Commands:\n\
              print the path which match to the pattern.\n\
      -s, --symbol pattern\n\
              print the locations of specified symbol other than function.\n\
+     -u, --update\n\
+             locate tag files and update them incrementally.\n\
      --version\n\
              show version number.\n\
      --help  show help.\n\
 Options:\n\
      -a, --absolute\n\
              print absolute path name.\n\
-     -C, --ignore-case\n\
+     -i, --ignore-case\n\
              ignore case distinctions in pattern.\n\
      -l, --local\n\
              print just objects which exist under the current directory.\n\
@@ -163,13 +163,12 @@ help()
 
 static struct option const long_options[] = {
 	{"absolute", no_argument, NULL, 'a'},
-	{"ignore-case", no_argument, NULL, 'C'},
 	{"completion", no_argument, NULL, 'c'},
 	{"file", no_argument, NULL, 'f'},
 	{"local", no_argument, NULL, 'l'},
 	{"nofilter", no_argument, NULL, 'n'},
 	{"grep", no_argument, NULL, 'g'},
-	{"incremental", no_argument, NULL, 'i'},
+	{"ignore-case", no_argument, NULL, 'i'},
 	{"print-dbpath", no_argument, NULL, 'p'},
 	{"path", no_argument, NULL, 'P'},
 	{"reference", no_argument, NULL, 'r'},
@@ -177,6 +176,7 @@ static struct option const long_options[] = {
 	{"symbol", no_argument, NULL, 's'},
 	{"tags", no_argument, NULL, 't'},
 	{"through", no_argument, NULL, 'T'},
+	{"update", no_argument, NULL, 'u'},
 	{"verbose", no_argument, NULL, 'v'},
 	{"cxref", no_argument, NULL, 'x'},
 
@@ -213,7 +213,7 @@ char	*argv[];
 	char	root[MAXPATHLEN+1];		/* root of source tree	*/
 	char	dbpath[MAXPATHLEN+1];		/* dbpath directory	*/
 
-	while ((optchar = getopt_long(argc, argv, "acCfgGiIlnpPrstTvx", long_options, &option_index)) != EOF) {
+	while ((optchar = getopt_long(argc, argv, "acifgGIlnpPrstTuvx", long_options, &option_index)) != EOF) {
 		switch (optchar) {
 		case 0:
 			if (!strcmp("idutils", long_options[option_index].name))
@@ -225,9 +225,6 @@ char	*argv[];
 		case 'c':
 			cflag++;
 			setcom(optchar);
-			break;
-		case 'C':
-			Cflag++;
 			break;
 		case 'f':
 			fflag++;
@@ -246,7 +243,6 @@ char	*argv[];
 			break;
 		case 'i':
 			iflag++;
-			setcom(optchar);
 			break;
 		case 'I':
 			Iflag++;
@@ -271,6 +267,10 @@ char	*argv[];
 			break;
 		case 'T':
 			Tflag++;
+			break;
+		case 'u':
+			uflag++;
+			setcom(optchar);
 			break;
 		case 'v':
 			vflag++;
@@ -303,7 +303,7 @@ char	*argv[];
 	if (!av && !show_filter) {
 		switch (command) {
 		case 'c':
-		case 'i':
+		case 'u':
 		case 'p':
 		case 'P':
 			break;
@@ -313,11 +313,11 @@ char	*argv[];
 		}
 	}
 	/*
-	 * -i and -p cannot have any arguments.
+	 * -u and -p cannot have any arguments.
 	 */
 	if (av) {
 		switch (command) {
-		case 'i':
+		case 'u':
 		case 'p':
 			usage();
 		default:
@@ -356,7 +356,7 @@ char	*argv[];
 	/*
 	 * incremental update of tag files.
 	 */
-	if (iflag) {
+	if (uflag) {
 		STRBUF	*sb = strbuf_open(0);
 
 		if (chdir(root) < 0)
@@ -770,7 +770,7 @@ char	*dbpath;
 		strbuf_puts(ib, "--result=filenames --key=none ");
 	else
 		strbuf_puts(ib, "--result=grep ");
-	if (Cflag)
+	if (iflag)
 		strbuf_puts(ib, "--ignore-case ");
 	if (extra_options) {
 		strbuf_puts(ib, extra_options);
@@ -881,7 +881,7 @@ char	*dbpath;
 		strbuf_puts(ib, "-l ");
 	else
 		strbuf_puts(ib, "-n ");
-	if (Cflag)
+	if (iflag)
 		strbuf_puts(ib, "-i ");
 	strbuf_putc(ib, '\'');
 	strbuf_puts(ib, pattern);
@@ -1025,7 +1025,7 @@ char	*av;
 	if (av) {
 		int	flags = REG_EXTENDED;
 
-		if (Cflag || getconfb("icase_path"))
+		if (iflag || getconfb("icase_path"))
 			flags |= REG_ICASE;
 #ifdef _WIN32
 		flags |= REG_ICASE;
@@ -1217,7 +1217,7 @@ int	db;
 	 */
 	if (nflag > 1)
 		flags |= GTOP_NOSOURCE;
-	if (Cflag) {
+	if (iflag) {
 		sb = strbuf_open(0);
 		strbuf_putc(sb, '^');
 		strbuf_puts(sb, pattern);

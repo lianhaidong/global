@@ -28,7 +28,7 @@
 .Nd print the locations of specified object.
 .Sh SYNOPSIS
 .Nm global
-.Op Fl aClnrstTvx
+.Op Fl ailnrstTvx
 .Ar pattern
 .Nm global
 .Fl c[sv]
@@ -37,18 +37,18 @@
 .Fl f[anrstvx]
 .Ar files
 .Nm global
-.Fl g[aClntvx]
+.Fl g[ailntvx]
 .Ar pattern
 .Nm global
-.Fl i[v]
-.Nm global
-.Fl I[aClntvx]
+.Fl I[ailntvx]
 .Ar pattern
 .Nm global
 .Fl p[rv]
 .Nm global
-.Fl P[aClntvx]
+.Fl P[ailntvx]
 .Op Ar pattern
+.Nm global
+.Fl u[v]
 .Sh DESCRIPTION
 .Nm Global
 find the locations of specified object in C, C++, Yacc, Java and assembler
@@ -93,9 +93,6 @@ This option implies -x option.
 Print all lines which match to the
 .Ar pattern .
 This function use grep(1) as a search engine.
-.It Fl i
-.It Fl -incremental
-Locate tag files and reconstruct them incrementally.
 .It Fl I
 .It Fl -idutils Ar pattern
 Print all lines which match to the
@@ -113,11 +110,9 @@ Print the location of GTAGS.
 Print the path which match to the
 .Ar pattern .
 If no pattern specified, print all.
-.It Fl s
-.It Fl -symbol Ar pattern
-Print the locations of specified symbol other than function names.
-You need GSYMS tags file. See
-.Xr gtags 1 .
+.It Fl u
+.It Fl -update
+Locate tag files and update them incrementally.
 .It Fl -version
 Show version number.
 .It Fl -help
@@ -130,7 +125,7 @@ The following options are available:
 .It Fl a
 .It Fl -absolute
 Print absolute path name. By default, print relative path name.
-.It Fl C
+.It Fl i
 .It Fl -ignore-case
 ignore case distinctions in pattern.
 .It Fl l
@@ -144,6 +139,11 @@ Suppress sort filter and path conversion filter.
 .It Fl -rootdir
 Print the locations of object references. By default, print object
 definitions. With the -p option, print the root directory of source tree.
+.It Fl s
+.It Fl -symbol Ar pattern
+Print the locations of specified symbol other than function names.
+You need GSYMS tags file. See
+.Xr gtags 1 .
 .It Fl t
 .It Fl -tags
 Print with standard ctags format.
