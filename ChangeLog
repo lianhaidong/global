@@ -19,7 +19,7 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
-July 27 2001, Shigio Yamaguchi  <shigio@tamacom.com>
+July 31 2001, Shigio Yamaguchi  <shigio@tamacom.com>
 
 	* VERSION: removed.
 	* compat.h: moved to libdb/.
