@@ -1324,8 +1324,8 @@ You need to set up an HTTP server so that gzipped files can be read
 @section Incremental updating.
 
 Modifying some source files, you need not remake whole tag files.
-Instead, you can use incremental updating facility (@samp{-i} option).
-@opindex -i
+Instead, you can use incremental updating facility (@samp{-u} option).
+@opindex -u
 @example
 
     % gtags
@@ -1333,14 +1333,14 @@ Instead, you can use incremental updating facility (@samp{-i} option).
     % vi tty.c                              # @r{modify tty.c}
     ...
     :wq
-    % global -vi                            # @r{-v means verbose}
+    % global -vu                            # @r{-v means verbose}
     [Sun Dec  6 16:27:47 JST 1998] Gtags started
      Tag found in '/usr/src/sys'.
      Incremental update.
      Updating tags of 'kern/tty.c' ...GTAGS..GRTAGS..GSYMS.. Done.
      Global databases have been modified.
     [Sun Dec  6 16:28:30 JST 1998] Done.
-    % global -vi                            # @r{try again}
+    % global -vu                            # @r{try again}
     [Sun Dec  6 16:28:48 JST 1998] Gtags started
      Tag found in '/usr/src/sys'.
      Incremental update.
