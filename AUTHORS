@@ -19,7 +19,7 @@ ___________________________________
 The GLOBAL was written by Tama Communications Corporation.
 
 Port to Windows 32 (for Borland C++ Compiler) by Dan Fandrich.
-(w32/INSTALL, w32/machine/unistd.h and most of #ifdef _WIN32.)
+(most of #ifdef _WIN32.)
 
 Port to DJGPP by Jason Hood.
 (libutil/is_unixy.[ch] and most of #ifdef __DJGPP__.)
