@@ -195,10 +195,21 @@ strbuf_putn(sb, n)
 	int n;
 {
 	char num[128];
+	int i = 0;
 
-	snprintf(num, sizeof(num), "%d", n);
-	num[sizeof(num) - 1] = '\0';
-	strbuf_puts(sb, num);
+	while (n) {
+		if (i >= sizeof(num))
+			die("Too big integer value.");
+		num[i++] = n % 10 + '0';
+		n = n / 10;
+	}
+	if (i == 0) {
+		strbuf_putc(sb, '0');
+	} else {
+		int j = 0;
+		while (--i >= 0)
+			strbuf_putc(sb, num[i]);
+	}
 }
 /*
  * strbuf_unputc: remove specified char from the last of buffer
