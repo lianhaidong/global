@@ -659,7 +659,7 @@ show()	{
 		-v|-vi)		local EDITOR=vi; shift;;
 		-l|-less)	local EDITOR=less; shift;;
 		-e|-emacs)	local EDITOR='emacsclient --no-wait'; shift;;
-		-m|-mozilla)	local EDITOR=gozilla; shift;;
+		-g|-gozilla)	local EDITOR=gozilla; shift;;
 		-n|-noedit)	local EDITOR=noedit; shift;;
 		*)		echo "invalid option $1."
 				return 1;;
@@ -714,16 +714,16 @@ ghelp() {
 	echo " - Tag selection command:"
 	echo "	You can specify a editor statically by EDITOR environment"
 	echo "	variable or temporarily by option."
-	echo "	(-l: less, -v: vi, -e: emacs, -m:mozilla, -n: no editor)"
-	echo "	show [-l|-v|-e|-m|-n][<no>|first|last]"
+	echo "	(-l: less, -v: vi, -e: emacs, -g:gozilla, -n: no editor)"
+	echo "	show [-l|-v|-e|-g|-n][<no>|first|last]"
 	echo "			- view specified (default=current) tag."
-	echo "	first [-l|-v|-e|-m|-n]"
+	echo "	first [-l|-v|-e|-g|-n]"
 	echo "			- view the first tag."
-	echo "	last  [-l|-v|-e|-m|-n]"
+	echo "	last  [-l|-v|-e|-g|-n]"
 	echo "			- view the last tag."
-	echo "	next  [-l|-v|-e|-m|-n][<no>]"
+	echo "	next  [-l|-v|-e|-g|-n][<no>]"
 	echo "			- view nth (default=1) next tag."
-	echo "	prev  [-l|-v|-e|-m|-n][<no>]"
+	echo "	prev  [-l|-v|-e|-g|-n][<no>]"
 	echo "			- view nth (default=1) previous tag."
 	echo
 	echo " - Tag marker command:"

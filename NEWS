@@ -22,12 +22,6 @@ At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
 Current version by Shigio Yamaguchi
 
-[INCOMPATIBLE CHANGES]
-
-* globash.rc: -g(-gozilla) option changed to -m(-mozilla).
-
-[OTHER CHANGES]
-
 * gozilla: gozilla return to GLOBAL.
 * htags: -o(--other) option added. This option list not only source files
   but also other files like 'README'.
