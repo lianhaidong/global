@@ -272,8 +272,6 @@ main(argc, argv)
 		}
 		if (lang == NULL)
 			continue;
-		if (vflag)
-			fprintf(stderr, "suffix '%s' assumed language '%s'.\n", suffix, lang);
 
 		/*
 		 * Initialize token parser. Php() use different parser.
@@ -281,14 +279,17 @@ main(argc, argv)
 		if (strcmp(lang, "php"))
 			if (!opentoken(argv[0]))
 				die("'%s' cannot open.", argv[0]);
+
+		if (!strcmp(suffix, ".h") && isCpp())
+			lang = "cpp";
+		if (vflag)
+			fprintf(stderr, "suffix '%s' assumed language '%s'.\n", suffix, lang);
+
 		/*
 		 * call language specific parser.
 		 */
 		if (!strcmp(lang, "c")) {
-			if (locatestring(suffix, ".h", MATCH_COMPLETE) && isCpp())
-				Cpp();
-			else
-				C(0);
+			C(0);
 		} else if (!strcmp(lang, "yacc")) {
 			C(YACC);
 		} else if (!strcmp(lang, "asm")) {
