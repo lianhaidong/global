@@ -28,7 +28,8 @@ Current version - **** ** ****, by Shigio Yamaguchi
 * htags: -g(--gtags) option added.
 * htags: -s(--symbols) option added.
 * gctags: --langmap option added.
-* gtags: pick up macros without argument.
+* gctags: -t option added.
+* gtags: pick up macros with noargument, typedef name and enum member.
 * gozilla: -d option added.
 * gctags: assumes __attribute__, const, volatile, wchar_t as a reserved word
   in C language. assumes __attribute__, explicit, mutable, namespace,
