@@ -452,6 +452,7 @@ condition_macro(cc)
 		/* sorted by alphabet */
 static struct words words[] = {
 	{"##",		CP_SHARP},
+	{"#assert",	CP_ASSERT},
 	{"#define",	CP_DEFINE},
 	{"#elif",	CP_ELIF},
 	{"#else",	CP_ELSE},

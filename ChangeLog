@@ -15,6 +15,7 @@ ChangeLog about GNU GLOBAL
 	  to HTML directory.
 	* libutil/conf.c: error check added.
 	* libutil/gtagsop.c: replace notnamechar() with isregex().
+	* put '#assert' into reserved word.
 
 September 26 2000, Shigio Yamaguchi  <shigio@tamacom.com>
 
