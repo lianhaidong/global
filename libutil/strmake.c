@@ -29,10 +29,8 @@
 #include "strbuf.h"
 #include "strmake.h"
 
-static STRBUF *sb;
-
 /*
- * strmake: make string from original string p.
+ * strmake: make string from original string with limit character.
  *
  *	i)	p	original string.
  *	i)	lim	limitter
@@ -41,14 +39,15 @@ static STRBUF *sb;
  * Usage:
  *	strmake("aaa:bbb", ":/=")	=> "aaaa"
  *
- * Note: The result string area is module local. So, following call
- *	 to the function in this module may destroy the area.
+ * Note: The result string area is function local. So, following call
+ *	 to this function may destroy the area.
  */
 char *
 strmake(p, lim)
 	const char *p;
 	const char *lim;
 {
+	static STRBUF *sb;
 	const char *c;
 
 	if (sb == NULL)
@@ -65,7 +64,7 @@ end:
 }
 
 /*
- * strtrim: delete blanks from original string.
+ * strtrim: make string from original string with deleting blanks.
  *
  *	i)	p	original string.
  *	i)	flag	TRIM_HEAD	from only head
@@ -82,8 +81,8 @@ end:
  *	strtrim(" # define ", TRIM_BOTH, NULL)	=> "# define"
  *	strtrim(" # define ", TRIM_ALL, NULL)	=> "#define"
  *
- * Note: The result string area is module local. So, following call
- *	 to the function in this module may destroy the area.
+ * Note: The result string area is function local. So, following call
+ *	 to this function may destroy the area.
  */
 char *
 strtrim(p, flag, len)
@@ -91,6 +90,7 @@ strtrim(p, flag, len)
 	int flag;
 	int *len;
 {
+	static STRBUF *sb;
 	int cut_off = -1;
 
 	if (sb == NULL)
