@@ -53,13 +53,13 @@ void setdebug();
 void sethandler(void (*proc)());
 #ifdef HAVE_STDARG_H
 void die(const char *s, ...)
-	__attribute__ ((__format__ (__printf__, 1, 2)));
+	__attribute__ ((__noreturn__, __format__ (__printf__, 1, 2)));
 #else
 void die();
 #endif
 #ifdef HAVE_STDARG_H
 void die_with_code(int n, const char *s, ...)
-	__attribute__ ((__format__ (__printf__, 2, 3)));
+	__attribute__ ((__noreturn__, __format__ (__printf__, 2, 3)));
 #else
 void die_with_code();
 #endif
