@@ -2166,7 +2166,7 @@ sub src2html {
 	#
 	# load tags belonging to this file.
 	#
-	&anchor'load($file) unless ($notsource);
+	&anchor'load($file, $notsource);
 	$command = "$'gtags --expand -$tabs ";
 	$command .= ($'w32) ? "\"$file\"" : "'$file'";
 	open(SRC, "$command |") || &'error("cannot fork.");
@@ -2584,16 +2584,21 @@ package anchor;
 # load: load anchors belonging to specified file.
 #
 #	i)	$file	source file
+#	i)	$notsource 1: isn't source, 0: source.
 #	go)	FIRST	first definition
 #	go)	LAST	last definition
 #
 sub load {
-	local($file) = @_;
-	local(@keys);
+	local($file, $notsource) = @_;
 
 	@ANCHORS = ();
 	$FIRST = $LAST = 0;
 
+	if ($notsource) {
+		return;
+	}
+
+	local(@keys);
 	foreach $db (&'get_taglist()) {
 		local($option) = &'get_option($db);
 		local($pipein) = "global -fn$option ";
