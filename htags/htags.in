@@ -505,7 +505,7 @@ while ($ARGV[0] =~ /^-/) {
 		$opt = shift;
 		last if ($opt eq '');
 		$dbpath = $opt;
-	if ($opt =~ /^--secure-cgi=(.*)$/) {
+	} elsif ($opt =~ /^--secure-cgi=(.*)$/) {
 		$'Sflag = 'S';
 		$'cgidir = $1;
 	} elsif ($opt =~ /^--secure-cgi$/) {
