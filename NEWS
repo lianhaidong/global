@@ -20,6 +20,10 @@ ___________________________________
 GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Current version - **** ** ****, by Shigio Yamaguchi
+
+* htags: -m(--main-func) option added.
+
 Version 4.4 - March 30 2002, by Shigio Yamaguchi
 
 * gozilla: gozilla return to GLOBAL.
