@@ -2017,15 +2017,6 @@ sub load {
 	open(ANCH, "$command |") || &'error("cannot fork.");
 	while (<ANCH>) {
 		local($fnumber, $lno, $tag, $type) = split;
-		local($line);
-		# don't refer to macros which is defined in other C source.
-		if ($type eq 'R' && ($line = &cache'get('GTAGS', $tag))) {
-			local($nouse1, $nouse2, $f, $def) = split(/[ \t]+/, $line);
-			if ($f !~ /\.h$/ && $f ne $file && $def =~ /^#/) {
-				print STDERR "Information: $file $lno $tag($type) skipped, because this is a macro which is defined in other C source.\n" if ($'wflag);
-				next;
-			}
-		}
 		push(@ANCHORS, "$lno,$tag,$type");
 	}
 	close(ANCH);

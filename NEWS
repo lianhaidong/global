@@ -23,6 +23,7 @@ At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 Version 4.* - *** **, 2001, by Shigio Yamaguchi
 
 * gtags: when no parser specified in config file, overloaded by default values.
+* htags: changed to refer to macros which is defined in other C source.
 
 Version 4.1.1 - July 31, 2001, by Shigio Yamaguchi
 
