@@ -374,6 +374,9 @@ char	*argv[];
 		if (oflag && db == GSYMS)
 			continue;
 		strbuf_reset(sb);
+		/*
+		 * get parser for db. (gctags by default)
+		 */
 		if (!getconfs(dbname(db), sb))
 			continue;
 		if (!usable(strmake(strbuf_value(sb), " \t")))
