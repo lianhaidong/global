@@ -30,12 +30,13 @@
 
 #define NEXTKEY		" __.NEXTKEY"
 
-int	pathopen(const char *, int);
-int	path2id(const char *);
-char	*id2path(int);
-void	pathput(const char *);
-void	pathdel(const char *);
-void	pathclose(void);
-int	nextkey(void);
+int	gpath_open(const char *, int);
+char	*gpath_path2id(const char *);
+char	*gpath_id2path(int);
+char	*gpath_ids2path(const char *);
+void	gpath_put(const char *);
+void	gpath_del(const char *);
+void	gpath_close(void);
+int	gpath_nextkey(void);
 
 #endif /* ! _PATHOP_H_ */

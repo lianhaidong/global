@@ -47,7 +47,7 @@ static int	opened;
 static int	created;
 
 /*
- * pathopen: open gpath tag file
+ * gpath_open: open gpath tag file
  *
  *	i)	mode	0: read only
  *			1: create
@@ -56,7 +56,7 @@ static int	created;
  *			-1: error
  */
 int
-pathopen(dbpath, mode)
+gpath_open(dbpath, mode)
 const char *dbpath;
 int	mode;
 {
@@ -83,12 +83,12 @@ int	mode;
 	return 0;
 }
 /*
- * pathput: put path name
+ * gpath_put: put path name
  *
  *	i)	path	path name
  */
 void
-pathput(path)
+gpath_put(path)
 const char *path;
 {
 	char	buf[10];
@@ -107,47 +107,58 @@ const char *path;
 	dbop_put(dbop, buf, path);
 }
 /*
- * path2id: convert path into id
+ * gpath_path2id: convert path into id
  *
  *	i)	path	path name
  *	r)		path id
  */
-int
-path2id(path)
+char *
+gpath_path2id(path)
 const char *path;
 {
 	char	*id;
 
 	assert(opened == 1);
-	id = dbop_get(dbop, path);
-	return (id != NULL) ? atoi(id) : 0;
+	return dbop_get(dbop, path);
 }
 /*
- * id2path: convert id into path
+ * gpath_ids2path: convert id into path
+ *
+ *	i)	ids	path id
+ *	r)		path name
+ */
+char *
+gpath_ids2path(ids)
+const char *ids;
+{
+	return dbop_get(dbop, ids);
+}
+/*
+ * gpath_id2path: convert id into path
  *
  *	i)	id	path id
  *	r)		path name
  */
-char	*
-id2path(id)
+char *
+gpath_id2path(id)
 int	id;
 {
-	char	key[80];
+	char	ids[80];
 	assert(opened == 1);
 #ifdef HAVE_SNPRINTF
-	snprintf(key, sizeof(key), "%d", id);
+	snprintf(ids, sizeof(ids), "%d", id);
 #else
-	sprintf(key, "%d", id);
+	sprintf(ids, "%d", id);
 #endif /* HAVE_SNPRINTF */
-	return dbop_get(dbop, key);
+	return gpath_ids2path(ids);
 }
 /*
- * pathdel: delete specified path record
+ * gpath_del: delete specified path record
  *
  *	i)	path	path name
  */
 void
-pathdel(path)
+gpath_del(path)
 const char *path;
 {
 	char	*id;
@@ -162,21 +173,21 @@ const char *path;
 	dbop_del(dbop, path);
 }
 /*
- * nextkey: return next key
+ * gpath_nextkey: return next key
  *
  *	r)		next id
  */
 int
-nextkey(void)
+gpath_nextkey(void)
 {
 	assert(_mode != 1);
 	return _nextkey;
 }
 /*
- * pathclose: close gpath tag file
+ * gpath_close: close gpath tag file
  */
 void
-pathclose(void)
+gpath_close(void)
 {
 	char	buf[10];
 

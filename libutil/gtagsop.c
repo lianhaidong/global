@@ -310,7 +310,7 @@ int	flags;
 		}
 	}
 	if (gtop->format & GTAGS_PATHINDEX || gtop->mode != GTAGS_READ) {
-		if (pathopen(dbpath, dbmode) < 0) {
+		if (gpath_open(dbpath, dbmode) < 0) {
 			if (dbmode == 1)
 				die("cannot create GPATH.");
 			else
@@ -435,7 +435,7 @@ int	flags;
 	/*
 	 * add path index if not yet.
 	 */
-	pathput(path);
+	gpath_put(path);
 	/*
 	 * make command line.
 	 */
@@ -445,23 +445,17 @@ int	flags;
 	 * Compact format.
 	 */
 	if (gtop->format & GTAGS_PATHINDEX) {
-		int	pno;
-		char	pnos[32];
+		char	*pno;
 
-		if (!(pno = path2id(path)))
+		if (!(pno = gpath_path2id(path)))
 			die("GPATH is corrupted.('%s' not found)", path);
-#ifdef HAVE_SNPRINTF
-		snprintf(pnos, sizeof(pnos), "%d", pno);
-#else
-		sprintf(pnos, "%d", pno);
-#endif /* HAVE_SNPRINTF */
 		strbuf_puts(sb, "| ");
 		strbuf_puts(sb, sed_command);
 		strbuf_putc(sb, ' ');
 		strbuf_puts(sb, "\"s@");
 		strbuf_puts(sb, path);
 		strbuf_puts(sb, "@");
-		strbuf_puts(sb, pnos);
+		strbuf_puts(sb, pno);
 		strbuf_puts(sb, "@\"");
 	}
 	if (gtop->format & GTAGS_COMPACT) {
@@ -557,7 +551,7 @@ char	*path;
 	 */
 	key = path;
 	if (gtop->format & GTAGS_PATHINDEX)
-		if ((key = id2path(atoi(path))) == NULL)
+		if ((key = gpath_ids2path(path)) == NULL)
 			die("GPATH is corrupted.('%s' not found)", path);
 	/*
 	 * read sequentially, because db(1) has just one index.
@@ -681,7 +675,7 @@ gtagsclose(gtop)
 GTOP	*gtop;
 {
 	if (gtop->format & GTAGS_PATHINDEX || gtop->mode != GTAGS_READ)
-		pathclose();
+		gpath_close();
 	if (gtop->sb && gtop->prev_tag[0])
 		dbop_put(gtop->dbop, gtop->prev_tag, strbuf_value(gtop->sb));
 	if (gtop->sb)
@@ -720,7 +714,7 @@ GTOP	*gtop;
 			while (!isspace(*p))
 				*q++ = *p++;
 			*q = 0;
-			if ((name = id2path(atoi(path))) == NULL)
+			if ((name = gpath_ids2path(path)) == NULL)
 				die("GPATH is corrupted.('%s' not found)", path);
 			strcpy(gtop->path, name);
 		} else {
