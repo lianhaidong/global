@@ -121,6 +121,5 @@ AC_OUTPUT([Makefile
 	btreeop/Makefile
 	global/Makefile
 	libglibc/Makefile
-	machine/Makefile
 	doc/Makefile
 ])
