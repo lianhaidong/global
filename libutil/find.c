@@ -50,6 +50,8 @@
 
 #include "gparam.h"
 #include "regex.h"
+
+#include "char.h"
 #include "conf.h"
 #include "die.h"
 #include "find.h"
@@ -224,7 +226,7 @@ prepare_skip()
 			reg_count++;
 			strbuf_putc(reg, '/');
 			for (q = skipf; *q; q++) {
-				if (*q == '.')
+				if (isregexchar(*q))
 					strbuf_putc(reg, '\\');
 				strbuf_putc(reg, *q);
 			}

@@ -81,6 +81,7 @@ Sven Verdoolaege	support for gtags.pl(nvi-1.81.5).
 Steve Kirkendall	two commands of Elvis for external tag system.
 Takao Yamashita		advice about assembler parsing.
 Takeshi Hojo		idea about -c option of gtags(1).
+Thomas Gerigk		bug report about skip variable in gtags.conf.
 Thomas Klausner		report about groff's command error of *.1.
 Tim Vanderhoek		GLOBAL tag support on more(1).
 Tomohiko Morioka	advice about deciding emacs version.
