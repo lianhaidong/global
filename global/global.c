@@ -320,6 +320,9 @@ char	*argv[];
 	gtags = usable("gtags");
 	if (!gtags)
 		die("gtags command not found.");
+	gtags = strdup(gtags);
+	if (!gtags)
+		die("short of memory.");
 	if (uflag) {
 		STRBUF	*sb = strbuf_open(0);
 
@@ -748,7 +751,7 @@ char	*dbpath;
 	char	edit[IDENTLEN+1];
 	char    *line, *p, *path, *lno;
 	int     linenum, count, editlen;
-	char *gtags = usable("gtags");
+	char	*gtags;
 
 	/*
 	 * convert spaces into %FF format.
@@ -759,6 +762,7 @@ char	*dbpath;
 	 * make grep command line.
 	 * (/dev/null needed when single argument specified.)
 	 */
+	gtags = usable("gtags");
 	if (!gtags)
 		die("gtags command not found.");
 	strbuf_puts(ib, gtags);
