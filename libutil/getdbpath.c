@@ -91,6 +91,7 @@ gtagsexist(candidate, dbpath, size, verbose)
 char	*candidate;
 char	*dbpath;
 int	size;
+int	verbose;
 {
 	char	path[MAXPATHLEN+1];
 
