@@ -243,7 +243,8 @@ main(argc, argv)
 	 * pick up files and parse them.
 	 */
 	for (; argc > 0; argv++, argc--) {
-		char *lang, *suffix, *list, *tail;
+		char *lang = NULL;
+		char *suffix, *list, *tail;
 
 		/* initialize token parser. */
 		if (!opentoken(argv[0]))
