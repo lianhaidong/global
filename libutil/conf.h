@@ -36,8 +36,6 @@
 #define DOS_GTAGSRC	"_globalrc"
 #endif
 #define DEFAULTLABEL    "default"
-#define DEFAULTSUFFIXES "@DEFAULTSUFFIXES@"
-#define DEFAULTSKIP	"@DEFAULTSKIP@"
 
 void openconf(void);
 int getconfn(const char *, int *);

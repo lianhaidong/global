@@ -21,7 +21,14 @@
 #ifndef _LANGMAP_H_
 #define _LANGMAP_H_
 
+#include "strbuf.h"
+
+#define DEFAULTLANGMAP  "@DEFAULTLANGMAP@"
+#define DEFAULTSKIP     "@DEFAULTSKIP@"
+
 void setup_langmap(const char *);
 const char *decide_lang(const char *);
+void make_suffixes(char *, STRBUF *);
+
 
 #endif
