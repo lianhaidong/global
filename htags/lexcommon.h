@@ -20,7 +20,6 @@
 #ifndef _LEXCOMMON_H
 #define _LEXCOMMON_H
 
-#include "strbuf.h"
 #include "incop.h"
 /*
  * The default action for line control.

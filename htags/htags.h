@@ -21,7 +21,7 @@
 #ifndef _HTAGS_H_
 #define _HTAGS_H_
 
-#include "dbop.h"
+#include "gparam.h"
 #include "strbuf.h"
 
 #if defined(_WIN32) || defined(__DJGPP__)

@@ -20,10 +20,6 @@
 #ifndef _ANCHOR_H_
 #define _ANCHOR_H_
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 /*
  * Anchor table.
  */

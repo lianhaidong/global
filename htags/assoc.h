@@ -20,9 +20,6 @@
 #ifndef _ASSOC_H_
 #define _ASSOC_H_
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
 #include "dbop.h"
 
 typedef struct {

@@ -20,8 +20,6 @@
 #ifndef _GPATH_H_
 #define _GPATH_H_
 
-#include "dbop.h"
-
 void load_gpath(char *);
 char *path2url(char *);
 void unload_gpath(void);

@@ -20,10 +20,6 @@
 #ifndef _CACHE_H_
 #define _CACHE_H_
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 void cache_open();
 void cache_put(int, char *, char *);
 char *cache_get(int, char *);

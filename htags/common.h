@@ -20,14 +20,6 @@
 #ifndef _COMMON_H_
 #define _COMMON_H_
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-#include <stdio.h>
-#include <string.h>
-#include "dbop.h"
-#include "strbuf.h"
-
 /*
  * tag
  */
