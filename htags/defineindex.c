@@ -107,7 +107,7 @@ makedefineindex(file, total, defines)
 		tag = _;
 		message(" [%d/%d] adding %s", count, total, tag);
 		if (aflag && (alpha[0] == '\0' || strncmp(tag, alpha, strlen(alpha)))) {
-			char *msg = (alpha_count == 1) ? "definition is containded." : "definitions are containded.";
+			char *msg = (alpha_count == 1) ? "definition is contained." : "definitions are contained.";
 
 			if (alpha[0]) {
 				strbuf_sprintf(defines, "<a href='defines/%s.%s' title='%d %s'>[%s]</a>\n",
@@ -258,7 +258,7 @@ makedefineindex(file, total, defines)
 		die("'%s' failed.", command);
 	STDOUT = old;
 	if (aflag && alpha[0]) {
-		char *msg = (alpha_count == 1) ? "definition is containded." : "definitions are containded.";
+		char *msg = (alpha_count == 1) ? "definition is contained." : "definitions are contained.";
 
 		strbuf_sprintf(defines, "<a href='defines/%s.%s' title='%d %s'>[%s]</a>\n", alpha_f, HTML, alpha_count, msg, alpha);
 		if (!no_order_list)
