@@ -78,6 +78,8 @@ extern char *quote_space;
 extern char *hr;
 extern char *br;
 extern char *empty_element;
+extern char *noframes_begin;
+extern char *noframes_end;
 
 /*
  * Parameter for gen_image();
@@ -105,5 +107,14 @@ char *gen_list_body(char *, char *);
 char *gen_list_end();
 char *gen_div_begin(const char *);
 char *gen_div_end();
+char *gen_form_begin(const char *);
+char *gen_form_end();
+char *gen_input(const char *, const char *, const char *);
+char *gen_input_radio(const char *, const char *, int, const char *);
+char *gen_input_checkbox(const char *, const char *, const char *);
+char *gen_input_with_title_checked(const char *, const char *, const char *, int, const char *);
+char *gen_frameset_begin(const char *);
+char *gen_frameset_end();
+char *gen_frame(const char *, const char *);
 
 #endif /* ! _COMMON_H_ */

@@ -105,6 +105,8 @@ char *quote_space	= "&nbsp;";
 char *hr		= "<hr>";
 char *br		= "<br>";
 char *empty_element	= "";
+char *noframes_begin	= "<noframes>";
+char *noframes_end	= "</noframes>";
 
 /*
  * XHTML support.
@@ -172,6 +174,8 @@ setup_xhtml()
 	hr              = "<hr />";
 	br              = "<br />";
 	empty_element	= " /";
+	noframes_begin	= "<noframes>";
+	noframes_end	= "</noframes>";
 }
 /*
  * Generate upper directory.
@@ -528,4 +532,130 @@ char *
 gen_div_end()
 {
 	return "</div>";
+}
+/*
+ * Generate beginning of form
+ *
+ *	i)	target	target
+ */
+char *
+gen_form_begin(target)
+	const char *target;
+{
+	STATIC_STRBUF(sb);
+
+	strbuf_init(sb);
+	strbuf_sprintf(sb, "<form method='get' action='%s'", action);
+	if (target)
+		strbuf_sprintf(sb, " target='%s'", target);
+	strbuf_sprintf(sb, "%s>", empty_element);
+	return strbuf_value(sb);
+}
+/*
+ * Generate end of form
+ */
+char *
+gen_form_end()
+{
+	return "</form>";
+}
+/*
+ * Generate input tag
+ */
+char *
+gen_input(name, value, type)
+	const char *name;
+	const char *value;
+	const char *type;
+{
+	return gen_input_with_title_checked(name, value, type, NULL, 0);
+}
+/*
+ * Generate input radiobox tag
+ */
+char *
+gen_input_radio(name, value, checked, title)
+	const char *name;
+	const char *value;
+	int checked;
+	const char *title;
+{
+	return gen_input_with_title_checked(name, value, "radio", checked, title);
+}
+/*
+ * Generate input checkbox tag
+ */
+char *
+gen_input_checkbox(name, value, title)
+	const char *name;
+	const char *value;
+	const char *title;
+{
+	return gen_input_with_title_checked(name, value, "checkbox", 0, title);
+}
+/*
+ * Generate input radio tag
+ */
+char *
+gen_input_with_title_checked(name, value, type, checked, title)
+	const char *name;
+	const char *value;
+	const char *type;
+	int checked;
+	const char *title;
+{
+	STATIC_STRBUF(sb);
+
+	strbuf_init(sb);
+	strbuf_puts(sb, "<input");
+	if (type)
+		strbuf_sprintf(sb, " type='%s'", type);
+	if (name)
+		strbuf_sprintf(sb, " name='%s'", name);
+	if (value)
+		strbuf_sprintf(sb, " value='%s'", value);
+	if (checked)
+		strbuf_puts(sb, " checked");
+	if (title)
+		strbuf_sprintf(sb, " title='%s'", title);
+	strbuf_sprintf(sb, "%s>", empty_element);
+	return strbuf_value(sb);
+}
+/*
+ * Generate beginning of frameset
+ *
+ *	i)	target	target
+ */
+char *
+gen_frameset_begin(contents)
+	const char *contents;
+{
+	static char buf[128];
+
+	snprintf(buf, sizeof(buf), "<frameset %s%s>", contents, empty_element);
+	return buf;
+}
+/*
+ * Generate end of frameset
+ */
+char *
+gen_frameset_end()
+{
+	return "</frameset>";
+}
+/*
+ * Generate beginning of frame
+ *
+ *	i)	target	target
+ */
+char *
+gen_frame(name, src)
+	const char *name;
+	const char *src;
+{
+	STATIC_STRBUF(sb);
+
+	strbuf_init(sb);
+	strbuf_sprintf(sb, "<frame name='%s' id='%s' src='%s'%s>", name, name, src, empty_element);
+	return strbuf_value(sb);
 }

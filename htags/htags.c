@@ -558,8 +558,9 @@ makesearchpart(action, id, target)
 	char *id;
 	char *target;
 {
-	STRBUF *sb = strbuf_open(0);
+	STATIC_STRBUF(sb);
 
+	strbuf_init(sb);
 	strbuf_puts(sb, header_begin);
 	if (Fflag)
 		strbuf_puts(sb, gen_href_begin(NULL, "search", normal_suffix, NULL));
@@ -572,44 +573,27 @@ makesearchpart(action, id, target)
 		strbuf_puts(sb, br);
 		strbuf_putc(sb, '\n');
 	}
-	strbuf_sprintf(sb, "<form method='get' action='%s'", action);
-	if (target)
-		strbuf_sprintf(sb, " target='%s'", target);
-	strbuf_sprintf(sb, "%s>\n", empty_element);
-	strbuf_sprintf(sb, "<input name='pattern'%s>\n", empty_element);
+	strbuf_sprintf(sb, "%s\n", gen_form_begin(target));
+	strbuf_sprintf(sb, "%s\n", gen_input("pattern", NULL, NULL));
 	if (id == NULL)
 		id = "";
-	strbuf_sprintf(sb, "<input type='hidden' name='id' value='%s'%s>\n", id, empty_element);
-	strbuf_sprintf(sb, "<input type='submit' value='Search'%s>\n", empty_element);
-	strbuf_sprintf(sb, "<input type='reset' value='Reset'%s>%s\n", empty_element, br);
-	strbuf_sprintf(sb, "<input type='radio' name='type' value='definition' checked title='Retrieve the definition place of the specified symbol.'%s>", empty_element);
-	strbuf_puts(sb, target ? "Def" : "Definition");
-	strbuf_sprintf(sb, "\n<input type='radio' name='type' value='reference' title='Retrieve the reference place of the specified symbol.'%s>", empty_element);
-	strbuf_puts(sb, target ? "Ref" : "Reference");
-	if (test("f", makepath(dbpath, dbname(GSYMS), NULL))) {
-		strbuf_sprintf(sb, "\n<input type='radio' name='type' value='symbol' title='Retrieve the place of the specified symbol is used.'%s>", empty_element);
-		strbuf_puts(sb, target ? "Sym" : "Other symbol");
-	}
-	strbuf_sprintf(sb, "\n<input type='radio' name='type' value='path' title='Look for path name which matches to the specified pattern.'%s>", empty_element);
-	strbuf_puts(sb, target ? "Path" : "Path name");
-	if (enable_grep) {
-		strbuf_sprintf(sb, "\n<input type='radio' name='type' value='grep' title='Retrieve lines which matches to the specified pattern.'%s>", empty_element);
-		strbuf_puts(sb, target ? "Grep" : "Grep pattern");
-	}
-	if (enable_idutils && test("f", makepath(dbpath, "ID", NULL))) {
-		strbuf_sprintf(sb, "\n<input type='radio' name='type' value='idutils' title='Retrieve lines which matches to the specified pattern using idutils(1).'%s>", empty_element);
-		strbuf_puts(sb, target ? "Id" : "Id pattern");
-	}
-	strbuf_sprintf(sb, "%s\n<input type='checkbox' name='icase' value='1' title='Ignore case distinctions in the pattern.'%s>", br, empty_element);
-	strbuf_puts(sb, target ? "Icase" : "Ignore case");
-	if (other_files) {
-		strbuf_sprintf(sb, "\n<input type='checkbox' name='other' value='1' title='Files other than the source code are also retrieved.'%s>", empty_element);
-		strbuf_puts(sb, target ? "Other" : "Other files");
-	}
-	strbuf_puts(sb, "\n</form>\n");
-
+	strbuf_sprintf(sb, "%s\n", gen_input("id", id, "hidden"));
+	strbuf_sprintf(sb, "%s\n", gen_input(NULL, "Search", "submit"));
+	strbuf_sprintf(sb, "%s%s\n", gen_input(NULL, "Reset", "reset"), br);
+	strbuf_sprintf(sb, "%s%s\n", gen_input_radio("type", "definition", 1, "Retrieve the definition place of the specified symbol."), target ? "Def" : "Definition");
+	strbuf_sprintf(sb, "%s%s\n", gen_input_radio("type", "reference", 0, "Retrieve the reference place of the specified symbol."), target ? "Ref" : "Reference");
+	if (test("f", makepath(dbpath, dbname(GSYMS), NULL)))
+		strbuf_sprintf(sb, "%s%s\n", gen_input_radio("type", "symbol", 0, "Retrieve the place of the specified symbol is used."), target ? "Sym" : "Other symbol");
+	strbuf_sprintf(sb, "%s%s%s\n", gen_input_radio("type", "path", 0, "Look for path name which matches to the specified pattern."), target ? "Path" : "Path name", br);
+	if (enable_grep)
+		strbuf_sprintf(sb, "%s%s\n", gen_input_radio("type", "grep", 0, "Retrieve lines which matches to the specified pattern."), target ? "Grep" : "Grep pattern");
+	if (enable_idutils && test("f", makepath(dbpath, "ID", NULL)))
+		strbuf_sprintf(sb, "%s%s\n", gen_input_radio("type", "idutils", 0, "Retrieve lines which matches to the specified pattern using idutils(1)."), target ? "Id" : "Id pattern");
+	strbuf_sprintf(sb, "%s%s\n", gen_input_checkbox("icase", "1", "Ignore case distinctions in the pattern."), target ? "Icase" : "Ignore case");
+	if (other_files)
+		strbuf_sprintf(sb, "%s%s\n", gen_input_checkbox("other", "1", "Files other than the source code are also retrieved."), target ? "Other" : "Other files");
+	strbuf_sprintf(sb, "%s\n", gen_form_end());
 	return strbuf_value(sb);
-	/* doesn't close string buffer */
 }
 /*
  * makeindex: make index file
@@ -632,27 +616,27 @@ makeindex(file, title, index)
 		die("cannot make file '%s'.", file);
 	fprintf(op, "%s\n", gen_page_begin(title, 0));
 	if (Fflag) {
-		fprintf(op, "<frameset cols='200,*'>\n");
+		fprintf(op, "%s\n", gen_frameset_begin("cols='200,*'"));
 		if (fflag) {
-			fprintf(op, "<frameset rows='33%%,33%%,*'>\n");
-			fprintf(op, "<frame %s='search' src='search.%s'%s>\n", name, normal_suffix, empty_element);
+			fprintf(op, "%s\n", gen_frameset_begin("rows='33%,33%,*'"));
+			fprintf(op, "%s\n", gen_frame("search", makepath(NULL, "search", normal_suffix)));
 		} else {
-			fprintf(op, "<frameset rows='50%%,*'>\n");
+			fprintf(op, "%s\n", gen_frameset_begin("rows='50%,*'"));
 		}
 		/*
 		 * id='xxx' for XHTML
 		 * name='xxx' for HTML
 		 */
-		fprintf(op, "<frame name='defines' id='defines' src='defines.%s'%s>\n", normal_suffix, empty_element);
-		fprintf(op, "<frame name='files' id='files' src='files.%s'%s>\n", normal_suffix, empty_element);
-		fprintf(op, "</frameset>\n");
-		fprintf(op, "<frame name='mains' id='mains' src='mains.%s'%s>\n", normal_suffix, empty_element);
-		fprintf(op, "<noframes>\n");
+		fprintf(op, "%s\n", gen_frame("defines", makepath(NULL, "defines", normal_suffix)));
+		fprintf(op, "%s\n", gen_frame("files", makepath(NULL, "files", normal_suffix)));
+		fprintf(op, "%s\n", gen_frameset_end());
+		fprintf(op, "%s\n", gen_frame("mains", makepath(NULL, "mains", normal_suffix)));
+		fprintf(op, "%s\n", noframes_begin);
 		fprintf(op, "%s\n", body_begin);
 		fputs(index, op);
 		fprintf(op, "%s\n", body_end);
-		fprintf(op, "</noframes>\n");
-		fprintf(op, "</frameset>\n");
+		fprintf(op, "%s\n", noframes_end);
+		fprintf(op, "%s\n", gen_frameset_end());
 	} else {
 		fprintf(op, "%s\n", body_begin);
 		fputs(index, op);
