@@ -2352,15 +2352,15 @@ sub create {
 	open(ANCH, ">$ANCH") || &'error("cannot create file '$ANCH'.");
 	close(ANCH);
 	chmod ($ANCH, 0600);
-	local($command) = "$'gtags --createdb=$ANCH";
-	open(ANCH, "| $command") || &'error("cannot fork.");
+	local($pipeout) = "$'gtags --createdb=$ANCH";
+	open(ANCH, "| $pipeout") || &'error("cannot fork.");
 	local($fcount) = 1;
 	local($fnumber);
 
 	foreach $db (&'get_taglist()) {
 		local($option) = &'get_option($db);
-		local($command) = "global -nnx$option \".*\"";
-		open(PIPE, "$command |") || &'error("cannot fork.");
+		local($pipein) = "global -nnx$option \".*\"";
+		open(PIPE, "$pipein |") || &'error("cannot fork.");
 		while (<PIPE>) {
 			local($tag, $lno, $filename, $image) = split;
 			$fnumber = $PATHLIST{$filename};
@@ -2377,10 +2377,10 @@ sub create {
 			print ANCH "$fnumber $lno $tag $type\n";
 		}
 		close(PIPE);
-		if ($?) { &'error("'$command' failed."); }
+		if ($?) { &'error("'$pipein' failed."); }
 	}
 	close(ANCH);
-	if ($?) { &'error("'$command' failed."); }
+	if ($?) { &'error("'$pipeout' failed."); }
 }
 #
 # finish: remove anchors database
