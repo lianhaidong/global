@@ -289,6 +289,7 @@ $'meta_generator = "<META NAME='GENERATOR' CONTENT='GLOBAL-$version'>";
 $'title_define_index = 'DEFINITIONS';
 $'title_file_index = 'FILES';
 $'title_included_from = 'INCLUDED FROM';
+$'title_cvs_repository = 'CVS REPOSITORY';
 
 # Anchor image
 @anchor_label = ('&lt;', '&gt;', '^', 'v', 'top', 'bottom', 'index', 'help');
@@ -615,6 +616,8 @@ $id_value = '';
 $cgidir = '';
 $main_func = 'main';
 $style_sheet = '';
+$cvsweb_url = '';
+$cvsweb_cvsroot = '';
 while ($ARGV[0] =~ /^-/) {
 	$opt = shift;
 	if ($opt =~ /^--action=(.*)$/) {
@@ -687,6 +690,14 @@ while ($ARGV[0] =~ /^-/) {
 	} elsif ($opt =~ /^--secure-cgi$/) {
 		$'Sflag = 'S';
 		$'cgidir = shift;
+	} elsif ($opt =~ /^--cvsweb=(.*)$/) {
+		$'cvsweb_url = $1;
+	} elsif ($opt =~ /^--cvsweb$/) {
+		$'cvsweb_url = shift;
+	} elsif ($opt =~ /^--cvsweb-cvsroot=(.*)$/) {
+		$'cvsweb_cvsroot = $1;
+	} elsif ($opt =~ /^--cvsweb-cvsroot$/) {
+		$'cvsweb_cvsroot = shift;
 	} elsif ($opt =~ /^--/) {
 		print STDERR $usage_const, "\n";
 		exit 1;
@@ -2110,6 +2121,13 @@ sub src2html {
 	print &'set_header($file, 1);		# 1: use javascript
 	print $'body_begin, "\n";
 	if ($notsource) {
+		if ($'cvsweb_url) {
+			print "<H2><A HREF=$'cvsweb_url$file";
+			print "?cvsroot=$'cvsweb_cvsroot" if ($'cvsweb_cvsroot);
+			print ">$'title_cvs_repository</A></H2>\n";
+			print "<HR>\n";
+		}
+
 		#
 		# It is not source file.
 		#
@@ -2159,6 +2177,13 @@ sub src2html {
 		local($basename) = ($file =~ /([^\/]+)$/);
 		if (defined $'included_from{$basename}) {
 			print "<H2><A HREF=$'included_from{$basename}>$'title_included_from</A></H2>\n";
+			print "<HR>\n";
+		}
+
+		if ($'cvsweb_url) {
+			print "<H2><A HREF=$'cvsweb_url$file";
+			print "?cvsroot=$'cvsweb_cvsroot" if ($'cvsweb_cvsroot);
+			print ">$'title_cvs_repository</A></H2>\n";
 			print "<HR>\n";
 		}
 
