@@ -70,11 +70,13 @@ o Nvi
 
 	% tar xzvf nvi-1.79.tar.gz
 	% cd nvi-1.79
-	% patch -p < ../nvi/nvi-1.79-gtags.diff
+	% patch -p < nvi-1.79-gtags.diff
 	% cd build
 	% ./configure
 	% make
 	# make install
+
+   ('nvi-1.79-gtags.diff' is included in GLOBAL package.)
 
 o Emacs
 
