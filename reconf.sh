@@ -77,7 +77,7 @@ for lang in c cpp java php; do
 done
 )
 (cd htags; set -x
-for lang in c java php; do
+for lang in c cpp java php; do
 	flex -o$lang.c $lang.l
 done
 )
