@@ -116,16 +116,6 @@ char	*argv[];
 	for (i = 1; i < argc && argv[i][0] == '-'; ++i) {
 		if (!strcmp(argv[i], "--version"))
 			version(NULL, 0);
-#ifdef STATISTICS
-		else if (!strcmp(argv[i], "--dump")) {
-			command = 'P';
-			continue;
-		}
-		else if (!strcmp(argv[i], "--stat")) {
-			statistics = 1;
-			continue;
-		}
-#endif
 		switch (c = argv[i][1]) {
 		case 'D':
 		case 'K':
@@ -202,16 +192,7 @@ char	*argv[];
 	case 'L':			/* primary key List */
 		dbscan(dbop, prefix, keylist);
 		break;
-#ifdef STATISTICS
-	case 'P':
-		dbop_dump(dbop);
-		break;
-#endif
 	}
-#ifdef STATISTICS
-	if (statistics)
-		dbop_stat(dbop);
-#endif
 	dbop_close(dbop);
 
 	return exitflag;
