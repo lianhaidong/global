@@ -176,6 +176,7 @@ AC_SUBST(DEFAULTSKIP)
 AC_OUTPUT([Makefile
 	gtags.conf
 	libutil/conf.h
+	htags/global.cgi.tmpl
 	libutil/Makefile
 	gtags/Makefile
 	htags/Makefile

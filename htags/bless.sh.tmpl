@@ -1,0 +1,29 @@
+#!/bin/sh
+#
+# Bless.sh: rewrite id's value of html for centralised cgi script.
+#
+# Usage:
+#	% htags -fS		<- works well at generated place.
+#	% mv HTML /var/obj	<- move to another place. It doesn't work.
+#	% cd /var/obj/HTML
+#	% sh bless.sh		<- OK. It will work well!
+#
+pattern1='INPUT TYPE=hidden NAME=id VALUE'
+pattern2='FORM METHOD=GET ACTION'
+action=@action@
+case $1 in
+-v)	verbose=1;;
+esac
+id=`pwd`
+for f in mains.html index.html search.html; do
+	if [ -f $f ]; then
+		sed -e "s!<$pattern1=.*>!<$pattern1=$id>!" -e "s!<$pattern2=[^ >]*!<$pattern2=$action!" $f > $f.new;
+		if cmp $f $f.new >@null_device@; then
+			rm -f $f.new
+		else
+			mv $f.new $f
+			[ $verbose ] && echo "$f was blessed."
+		fi
+	fi
+done
+rm -f cgi-bin/global.cgi

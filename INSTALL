@@ -20,13 +20,6 @@ Installation of GNU GLOBAL under UNIX, CYGWIN or DJGPP.
 
 1. Preparation.
 
-o PERL version 4 or later is needed for htags.
-
-   If you don't have it, you can fetch it from this site.
-
-	http://www.perl.com/CPAN/
-
-
 o If your environment is Windows32(Windows95,98,NT...), you need to
   install DJGPP or CYGWIN tools to your environment. See following site:
 
@@ -44,10 +37,10 @@ o If your environment is Windows32(Windows95,98,NT...), you need to
            but they are different from GNU's one. Please set the path
            so that GNU find and GNU sort are invoked.
 
-o nroff is needed for formatting online manuals.
+o If you want to format man files then nroff is needed.
 
-   If you setup man(1) on your system then you can use man command
-   to read GLOBAL's online manuals.
+   Additionally, if you setup man(1) on your system then you can use man
+   command to read GLOBAL's online manuals.
 
 o If you want to use the -I option of global(1) then id-utils(1) is needed.
 
@@ -55,6 +48,12 @@ o If you want to use the -I option of global(1) then id-utils(1) is needed.
 
 	ftp://ftp.gnu.org/pub/gnu/id-utils/
   
+o If you want to use --form(-f) or --dynamic option of htags then
+  PERL version 4 or later is needed.
+
+   If you don't have it, you can fetch it from this site.
+
+	http://www.perl.com/CPAN/
 
 2. How to install.
 

@@ -76,6 +76,11 @@ for lang in c cpp java php; do
 	fi
 done
 )
+(cd htags; set -x
+for lang in c java php; do
+	flex -o$lang.c $lang.l
+done
+)
 
 echo "- Collecting reference manuals ..."
 commands="global gtags htags gctags gozilla";
@@ -88,10 +93,9 @@ for d in `echo $commands`; do
 	if [ $d = 'htags' ]; then
 		perl ./convert.pl --perl $d/manual.in > $d/const.pl
 		echo "+ $d/const.pl"
-	else
-		perl ./convert.pl --c $d/manual.in > $d/const.h
-		echo "+ $d/const.h"
 	fi
+	perl ./convert.pl --c $d/manual.in > $d/const.h
+	echo "+ $d/const.h"
 done
 
 echo "- Clean up config.cache..."

@@ -1,0 +1,354 @@
+/*
+ * Copyright (c) 1996, 1997, 1998, 1999 Shigio Yamaguchi
+ * Copyright (c) 1999, 2000, 2001, 2002, 2003 Tama Communications Corporation
+ *
+ * This file is part of GNU GLOBAL.
+ *
+ * GNU GLOBAL is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2, or (at your option)
+ * any later version.
+ *
+ * GNU GLOBAL is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdarg.h>
+#include <string.h>
+
+#include "global.h"
+#include "anchor.h"
+#include "htags.h"
+
+static int alloced;
+static int used;
+static struct anchor *table;
+
+static struct anchor *start;
+static struct anchor *curp;
+static struct anchor *end;
+static struct anchor *CURRENT;
+
+/* compare routine for qsort(3) */
+static int
+cmp(s1, s2)
+	const void *s1, *s2;
+{
+	return ((struct anchor *)s1)->lineno - ((struct anchor *)s2)->lineno;
+}
+/*
+ * Pointers (as lineno).
+ */
+static int FIRST;
+static int LAST;
+static struct anchor *CURRENTDEF;
+
+/*
+ * anchor_load: load anchor table
+ *
+ *	i)	file	file name
+ */
+void
+anchor_load(file)
+	char *file;
+{
+	char command[MAXFILLEN];
+	char *options[] = {NULL, "", "r", "s"};
+	STRBUF *sb = strbuf_open(0);
+	FILE *ip;
+	int i, db;
+
+	FIRST = LAST = 0;
+	end = CURRENT = NULL;
+
+	used = 0;
+	for (db = GTAGS; db < GTAGLIM; db++) {
+		char *_;
+
+		if (!symbol && db == GSYMS)
+			continue;
+		/*
+		 * Setup input stream.
+		 */
+		snprintf(command, sizeof(command), "global -fn%s \"%s\"", options[db], file);
+		ip = popen(command, "r");
+		if (ip == NULL)
+			die("cannot execute command '%s'.", command);
+		while ((_ = strbuf_fgets(sb, ip, STRBUF_NOCRLF)) != NULL) {
+			SPLIT ptable;
+			char *tag, *lineno, *path, *image;
+			struct anchor *a;
+			int type;
+
+			if (split(_, 4, &ptable) < 4) {
+				recover(&ptable);
+				die("too small number of parts in anchor_create().\n'%s'", _);
+			}
+			tag = ptable.part[0].start;
+			lineno = ptable.part[1].start;
+			path = ptable.part[2].start;
+			image = ptable.part[3].start;
+
+			if (db == GTAGS) {
+				char *p;
+
+				for (p = image; *p && isspace(*p); p++)
+					;
+				if (!*p) {
+					recover(&ptable);
+					die("The output of global is illegal.\n%s", p);
+				}
+				type = 'D';
+				if (*p == '#') {
+					for (p++; *p && isspace(*p); p++)
+						;
+					if (*p) {
+						if (!strncmp(p, "define", sizeof("define") - 1))
+							type = 'M';
+						else if (!strncmp(p, "undef", sizeof("undef") - 1))
+							type = 'M';
+					}
+				} else if (!strncmp(p, "typedef", sizeof("typedef") - 1))
+					type = 'T';
+			}  else if (db == GRTAGS)
+				type = 'R';
+			else
+				type = 'Y';
+			/* allocate table if needed */
+			if (alloced == 0) {
+				alloced = 1000;
+				table = (struct anchor *)malloc(sizeof(struct anchor) * alloced);
+				used = 0;
+			} else if (used >= alloced) {
+				alloced += 1000;
+				table = (struct anchor *)realloc(table, sizeof(struct anchor) * alloced);
+			}
+			if (table == NULL)
+				die("Short of memory.");
+			/* allocate an entry */
+			a = &table[used++];
+			a->lineno = atoi(lineno);
+			a->type = type;
+			a->done = 0;
+			a->tag[0] = '\0';
+			a->reserve = NULL;
+			settag(a, tag);
+			recover(&ptable);
+		}
+		if (pclose(ip) < 0)
+			die("command '%s' failed.", command);
+	}
+	strbuf_close(sb);
+	/*
+	 * Sort by lineno.
+	 */
+	qsort(table, used, sizeof(struct anchor), cmp); 
+	/*
+	 * Setup some lineno.
+	 */
+	for (i = 0; i < used; i++)
+		if (table[i].type == 'D')
+			break;
+	if (i < used)
+		FIRST = table[i].lineno;
+	for (i = used - 1; i >= 0; i--)
+		if (table[i].type == 'D')
+			break;
+	if (i >= 0)
+		LAST = table[i].lineno;
+
+	/*
+	 * Setup loop range.
+	 */
+	start = table;
+	curp = NULL;
+	end = &table[used];
+	/* anchor_dump(stderr, 0);*/
+}
+/*
+ * anchor_close: close anchor table
+ */
+void
+anchor_close()
+{
+	struct anchor *a;
+
+	for (a = start; a < end; a++) {
+		if (a->reserve) {
+			free(a->reserve);
+			a->reserve = NULL;
+		}
+	}
+	FIRST = LAST = 0;
+	start = curp = end = NULL;
+	used = 0;
+}
+/*
+ * anchor_first: return the first anchor
+ */
+struct anchor *
+anchor_first()
+{
+	if (!start)
+		return NULL;
+	CURRENT = start;
+	if (CURRENT->type == 'D')
+		CURRENTDEF = CURRENT;
+	return CURRENT;
+}
+/*
+ * anchor_next: return the next anchor
+ */
+struct anchor *
+anchor_next()
+{
+	if (!start)
+		return NULL;
+	if (++CURRENT >= end)
+		return NULL;
+	if (CURRENT->type == 'D')
+		CURRENTDEF = CURRENT;
+	return CURRENT;
+}
+/*
+ * anchor_get: return the specified anchor
+ *
+ *	i)	name	name of anchor
+ *	i)	length	lenght of the name
+ *	i)	type	==0: not specified
+ *			!=0: D, M, T, R, Y
+ */
+struct anchor *
+anchor_get(name, length, type, lineno)
+	char *name;
+	int length;
+	int type;
+	int lineno;
+{
+	struct anchor *p = curp ? curp : start;
+
+	if (table == NULL)
+		return NULL;
+	if (p->lineno > lineno)
+		return NULL;
+	/*
+	 * set pointer to the top of the cluster.
+	 */
+	for (; p < end && p->lineno < lineno; p++)
+		;
+	if (p >= end || p->lineno != lineno)
+		return NULL;
+	curp = p;
+	for (; p < end && p->lineno == lineno; p++)
+		if (!p->done && p->length == length && !strcmp(gettag(p), name))
+			if (!type || p->type == type)
+				return p;
+	return NULL;
+}
+/*
+ * define_line: check whether or not this is a define line.
+ *
+ *	i)	lineno	line number
+ *	go)	curp	pointer to the current cluster
+ *	r)		1: definition, 0: not definition
+ */
+int
+define_line(lineno)
+	int lineno;
+{
+	struct anchor *p = curp ? curp : start;
+
+	if (table == NULL)
+		return 0;
+	if (p->lineno > lineno)
+		return 0;
+	/*
+	 * set pointer to the top of the cluster.
+	 */
+	for (; p < end && p->lineno < lineno; p++)
+		;
+	if (p >= end || p->lineno != lineno)
+		return 0;
+	curp = p;
+	for (; p < end && p->lineno == lineno; p++)
+		if (p->type == 'D')
+			return 1;
+	return 0;
+}
+/*
+ * anchor_getlinks: return anchor link array
+ *		(previous, next, first, last, top, bottom)
+ */
+int *
+anchor_getlinks(lineno)
+	int lineno;
+{
+	static int ref[A_SIZE];
+	int i;
+
+	for (i = 0; i < A_SIZE; i++)
+		ref[i] = 0;
+	if (lineno >= 1 && start) {
+		struct anchor *c, *p;
+
+		if (CURRENTDEF == NULL) {
+			for (c = start; c < end; c++)
+				if (c->lineno == lineno && c->type == 'D')
+					break;
+			CURRENTDEF = c;
+		} else {
+			for (c = CURRENTDEF; c >= start; c--)
+				if (c->lineno == lineno && c->type == 'D')
+					break;
+		}
+		for (p = c - 1; p >= start; p--)
+			if (p->type == 'D') {
+				ref[A_PREV] = p->lineno;
+				break;
+			}
+		for (p = c + 1; p < end; p++)
+			if (p->type == 'D') {
+				ref[A_NEXT] = p->lineno;
+				break;
+			}
+	}
+	if (FIRST > 0 && lineno != FIRST)
+		ref[A_FIRST] = FIRST;
+	if (LAST > 0 && lineno != LAST)
+		ref[A_LAST] = LAST;
+	if (lineno != 0)
+		ref[A_TOP] = -1;
+	if (lineno != -1)
+		ref[A_BOTTOM] = -2;
+	if (FIRST > 0 && FIRST == LAST) {
+		if (lineno == 0)
+			ref[A_LAST] = 0;
+		if (lineno == -1)
+			ref[A_FIRST] = 0;
+	}
+	return ref;
+}
+void
+anchor_dump(op, lineno)
+	FILE *op;
+	int lineno;
+{
+	struct anchor *a;
+
+	if (op == NULL)
+		op = stderr;
+	for (a = start; a < end ; a++)
+		if (lineno == 0 || a->lineno == lineno)
+			fprintf(op, "%d %s(%c)\n",
+				a->lineno, gettag(a), a->type);
+}

@@ -1,0 +1,178 @@
+#! @PERL@
+#------------------------------------------------------------------
+# SORRY TO HAVE SURPRISED YOU!
+# IF YOU SEE THIS UNREASONABLE FILE WHILE BROUSING, FORGET PLEASE.
+# IF YOU ARE A ADMINISTRATOR OF THIS SITE, PLEASE SETUP HTTP SERVER
+# SO THAT THIS SCRIPT CAN BE EXECUTED AS A CGI COMMAND. THANK YOU.
+#------------------------------------------------------------------
+print "Content-type: text/html\n\n";
+print "@html_begin@\n";
+print "@body_begin@\n";
+$htmlbase = $ENV{'HTTP_REFERER'};
+if (!$htmlbase) {
+	print "<H1><FONT COLOR=#cc0000>Error</FONT></H1>\n";
+	print "<H3>Your browser doesn't send HTTP_REFERER.</H3>\n";
+	print "@body_end@\n";
+	print "@html_end@\n";
+	exit 0;
+}
+$htmlbase =~ s!/[^\/]+$!!;		# remove file name.
+$htmlbase =~ s!/defines$!!;
+$htmlbase =~ s!/S$!!;
+$htmlbase =~ s!/$!!;
+if (! -x '@globalpath@' || ! -x '@gtagspath@') {
+	print "<H1><FONT COLOR=#cc0000>Error</FONT></H1>\n";
+	print "<H3>Server side command not found. <A HREF=$htmlbase/mains.@normal_suffix@>[return]</A></H3>\n";
+	print "@body_end@\n";
+	print "@html_end@\n";
+	exit 0;
+}
+@pairs = split (/&/, $ENV{'QUERY_STRING'});
+foreach $p (@pairs) {
+	($name, $value) = split(/=/, $p);
+	$value =~ tr/+/ /;
+	$value =~ s/%([\dA-Fa-f][\dA-Fa-f])/pack("C", hex($1))/eg;
+	$form{$name} = $value;
+}
+if ($form{'pattern'} eq '') {
+	print "<H1><FONT COLOR=#cc0000>Error</FONT></H1>\n";
+	print "<H3>Pattern not specified. <A HREF=$htmlbase/mains.@normal_suffix@>[return]</A></H3>\n";
+	print "@body_end@\n";
+	print "@html_end@\n";
+	exit 0;
+}
+$pattern = $form{'pattern'};
+$from = $form{'from'};
+$flag = '';
+$words = 'definitions';
+if ($form{'type'} eq 'reference') {
+	$flag = 'r';
+	$words = 'references';
+} elsif ($form{'type'} eq 'symbol') {
+	$flag = 's';
+	$words = 'symbols';
+} elsif ($form{'type'} eq 'path') {
+	$flag = 'P';
+	$words = 'paths';
+} elsif ($form{'type'} eq 'grep') {
+	$flag = 'g';
+	$words = 'patterns';
+} elsif ($form{'type'} eq 'idutils') {
+	$flag = 'I';
+	$words = 'patterns';
+}
+$iflag = '';
+if ($form{'icase'}) {
+	$iflag = 'i';
+}
+$oflag = '';
+if ($form{'other'} && ($flag eq 'g' || $flag eq 'P')) {
+	$oflag = 'o';
+}
+if ($form{'id'}) {
+	chdir("$form{'id'}/cgi-bin");
+	if ($?) {	
+		print "<H1><FONT COLOR=#cc0000>Error</FONT></H1>\n";
+		print "<H3>Couldn't find tag directory in secure mode. <A HREF=$htmlbase/mains.@normal_suffix@>[return]</A></H3>\n";
+		print "@body_end@\n";
+		print "@html_end@\n";
+		exit 0;
+	}
+}
+if ($flag eq 'g' || $flag eq 'I' || $form{'type'} eq 'source' || ($flag eq 'P' && $oflag)) {
+	if (($flag eq 'g' && ! -f "../../GTAGS")
+	 || ($flag eq 'I' && ! -f "../../ID")
+	 || ($form{'type'} eq 'source' && ! -f "../../GTAGS")
+	 || ($flag eq 'P' && $oflag && ! -f "../../GTAGS")) {
+		print "<H1><FONT COLOR=#cc0000>Error</FONT></H1>\n";
+		print "<H3>Couldn't execute command. <A HREF=$htmlbase/mains.@normal_suffix@>[return]</A></H3>\n";
+		print "@body_end@\n";
+		print "@html_end@\n";
+		exit 0;
+	}
+	chdir("../..");
+	if ($?) {	
+		print "<H1><FONT COLOR=#cc0000>Error</FONT></H1>\n";
+		print "<H3>Couldn't change directory for $form{'type'} search. <A HREF=$htmlbase/mains.@normal_suffix@>[return]</A></H3>\n";
+		print "@body_end@\n";
+		print "@html_end@\n";
+		exit 0;
+	}
+} else {
+	if (-f "../../GTAGS" &&
+	(($flag eq '') || ($flag eq 'r' && -f "../../GRTAGS") || $flag eq 's' && -f "../../GSYMS")) {
+		chdir("../..");
+	}
+}
+local(%ctab) = ('&', '&amp;', '<', '&lt;', '>', '&gt;');
+if ($form{'type'} eq 'source') {
+	open(PIPE, "-|") || exec '@gtagspath@', '--secure', '--expand', '-@tabs@', './'.$pattern;
+	if ($?) {	
+		print "<H1><FONT COLOR=#cc0000>Error</FONT></H1>\n";
+		print "<H3>Cannot execute gtags. <A HREF=$htmlbase/mains.@normal_suffix@>[return]</A></H3>\n";
+		print "@body_end@\n";
+		print "@html_end@\n";
+		exit 0;
+	}
+	print "<PRE>\n";
+	while (<PIPE>) {
+		s/([&<>])/$ctab{$1}/ge;
+		print "<A NAME=$.>";
+		print;
+	}
+	close(PIPE);
+	print "</PRE>\n";
+	print "@body_end@\n";
+	print "@html_end@\n";
+	exit 0;
+}
+#
+# fork and exec global(1) to avoid command substitutions in $pattern.
+#
+open(PIPE, "-|") || exec '@globalpath@', '-x'.$flag.$iflag.$oflag, '-e', $pattern;
+if ($?) {	
+	print "<H1><FONT COLOR=#cc0000>Error</FONT></H1>\n";
+	print "<H3>Cannot execute global. <A HREF=$htmlbase/mains.@normal_suffix@>[return]</A></H3>\n";
+	print "@body_end@\n";
+	print "@html_end@\n";
+	exit 0;
+}
+$pattern =~ s/([&<>])/$ctab{$1}/ge;
+print "<H1><FONT COLOR=#cc0000>" . $pattern . "</FONT></H1>\n";
+print "Following $words are matched to above pattern.@hr@\n";
+$cnt = 0;
+local($tag, $lno, $filename, $fileno);
+print "<PRE>\n";
+open(PIPEOUT, "| @gtagspath@ --convert");
+if ($?) {	
+	print "<H1><FONT COLOR=#cc0000>Error</FONT></H1>\n";
+	print "<H3>Cannot execute gtags --convert. <A HREF=$htmlbase/mains.@normal_suffix@>[return]</A></H3>\n";
+	print "@body_end@\n";
+	print "@html_end@\n";
+	exit 0;
+}
+$| = 1;	# flush buffer
+while (<PIPE>) {
+	$cnt++;
+	($tag, $lno, $filename) = split;
+	s/([&<>])/$ctab{$1}/ge;
+	# " ./$filename " is replaced with file number by gtags --convert.
+	s!(^[^ \t]+)!<A HREF=$htmlbase/S/ ./$filename .@HTML@#$lno>$1<\/A>!;
+	print PIPEOUT;
+}
+$| = 1;	# flush buffer
+close(PIPE);
+close(PIPEOUT);
+print "</PRE>\n";
+if ($cnt == 0) {
+	print "<H3>Pattern not found. <A HREF=$htmlbase/mains.@normal_suffix@>[return]</A></H3>\n";
+}
+print "@body_end@\n";
+print "@html_end@\n";
+exit 0;
+#------------------------------------------------------------------
+# SORRY TO HAVE SURPRISED YOU!
+# IF YOU SEE THIS UNREASONABLE FILE WHILE BROUSING, FORGET PLEASE.
+# IF YOU ARE A ADMINISTRATOR OF THIS SITE, PLEASE SETUP HTTP SERVER
+# SO THAT THIS SCRIPT CAN BE EXECUTED AS A CGI COMMAND. THANK YOU.
+#------------------------------------------------------------------
