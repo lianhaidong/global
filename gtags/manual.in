@@ -111,6 +111,9 @@
 	@item{@var{GTAGSLABEL}}
 		If this variable is set, its value is used as the label
 		of configuration file. The default is @code{default}.
+	@item{@var{GTAGSCACHE}}
+		If this variable is set, its value is used as the size of
+		btree cache. The default is 500000 (bytes).
 	@end_itemize
 @CONFIGURATION
 	The following configuration variables affect the execution of @name{gtags}:

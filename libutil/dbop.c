@@ -131,7 +131,13 @@ int	flags;
 	memset(&info, 0, sizeof(info));
 	if (flags & DBOP_DUP)
 		info.flags |= R_DUP;
-	info.cachesize = 500000;
+	/*
+	 * accept user's request but needs 0.5MB at least.
+	 */
+	if (getenv("GTAGSCACHE") != NULL)
+		info.cachesize = atoi(getenv("GTAGSCACHE"));
+	if (info.cachesize < 500000)
+		info.cachesize = 500000;
 
 	/*
 	 * if unlink do job normally, those who already open tag file can use
