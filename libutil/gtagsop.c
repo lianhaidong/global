@@ -96,8 +96,8 @@ static regex_t reg;
  * Since if version number is not found then it assumes version 1, we
  * don't bury format version in tag files currently.
  *
- * We know the format version 3 is better than 1 in all aspect,
- * the default format version will be change into 3 in the future.
+ * Since we know the format version 3 is better than 1 in all aspect,
+ * the default format version will be changed into 3 in the future.
  */
 static int support_version = 3;	/* acceptable format version   */
 static const char *tagslist[] = {"GPATH", "GTAGS", "GRTAGS", "GSYMS"};
