@@ -73,7 +73,7 @@ char	*command;
 		return NULL;
 	}
 	/*
-	 * Locate the command for each path in GTAGSLIBPATH.
+	 * Locate the command for each path in PATH.
 	 */
 	*path = 0;
 	/* Don't use fixed length buffer for environment variable
@@ -101,5 +101,11 @@ char	*command;
 	}
 finish:
 	strbuf_close(sb);
+	if (*path == NULL) {
+		if (test("fx", makepath(BINDIR, command, NULL))) {
+			strncpy(path, makepath(BINDIR, command, NULL), sizeof(path));
+			path[sizeof(path) - 1] = '\0';
+		}
+	}
 	return *path ? path : NULL;
 }
