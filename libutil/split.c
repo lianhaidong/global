@@ -21,7 +21,6 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-#include <ctype.h>
 
 #include "split.h"
 /*
@@ -62,6 +61,8 @@
  * Recover() recover initial status of line with saved char in savec.
  */
 
+#define isblank(c)	((c) == ' ' || (c) == '\t')
+
 /*
  * split: split a string into pieces
  *
@@ -84,13 +85,13 @@ SPLIT *list;
 		npart = NPART;
 	npart--;
 	for (count = 0; count < npart; count++) {
-		while (*s && isspace(*s))
+		while (*s && isblank(*s))
 			s++;
 		if (*s == '\0')
 			break;
 		part = &list->part[count];
 		part->start = s;
-		while (*s && !isspace(*s))
+		while (*s && !isblank(*s))
 			s++;
 		part->end = s;
 		part->savec = *s;
@@ -99,7 +100,7 @@ SPLIT *list;
 		*s++ = '\0';
 	}
 	if (*s) {
-		while (*s && isspace(*s))
+		while (*s && isblank(*s))
 			s++;
 		part = &list->part[count];
 		part->start = s;
