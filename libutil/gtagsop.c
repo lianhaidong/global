@@ -144,10 +144,6 @@ char	*s;
  *
  *	i)	line	input
  *	i)	format	format
- *	r)	0:	normal
- *		-1:	tag name
- *		-2:	line number
- *		-3:	path
  *
  * [STANDARD FORMAT]
  * 0                 1  2              3
@@ -515,7 +511,10 @@ int	flags;
 		char	*tag, *p;
 
 		strbuf_trim(ib);
-		formatcheck(ctags_x, gtop->format);
+#ifdef DEBUG
+		if (flags & GTAGS_DEBUG)
+			formatcheck(ctags_x, gtop->format);
+#endif
 		tag = strmake(ctags_x, " \t");		 /* tag = $1 */
 		/*
 		 * extract method when class method definition.
