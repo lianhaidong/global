@@ -25,6 +25,7 @@ ChangeLog about GNU GLOBAL
 	* split.c: use SPLIT structure which manage substring.
 	* gtagsop.c: now format version is 3 (pathindex format).
 	* configure.ac: fixed for autoconf-2.53 and renamed.
+	* acconfig.h: removed because it is considered to be obsoleted.
 	* gctags: inittable() added for each parser, which set up reserved
 	  word table.
 

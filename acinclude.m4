@@ -24,7 +24,7 @@ AC_DEFUN(AG_STRUCT_DP_D_NAMLEN,
 #include <dirent.h>], [struct dirent s; s.d_namlen;],
 ac_cv_struct_dp_d_namlen=yes, ac_cv_struct_dp_d_namlen=no)])
 if test $ac_cv_struct_dp_d_namlen = yes; then
-  AC_DEFINE(HAVE_DP_D_NAMLEN)
+  AC_DEFINE(HAVE_DP_D_NAMLEN,1,[Define if your struct dirent has dp_d_namlen.])
 fi
 ])
 
@@ -34,7 +34,7 @@ AC_DEFUN(AG_STRUCT_DP_D_TYPE,
 #include <dirent.h>], [struct dirent s; s.d_type;],
 ac_cv_struct_dp_d_type=yes, ac_cv_struct_dp_d_type=no)])
 if test $ac_cv_struct_dp_d_type = yes; then
-  AC_DEFINE(HAVE_DP_D_TYPE)
+  AC_DEFINE(HAVE_DP_D_TYPE,1,[Define if your struct dirent has dp_d_type.])
 fi
 ])
 
@@ -66,7 +66,7 @@ AC_TRY_RUN([main () {
 }], ac_cv_c_bigendian=no, ac_cv_c_bigendian=yes, :)
 fi])
 if test $ac_cv_c_bigendian = yes; then
-  AC_DEFINE(WORDS_BIGENDIAN)
+  AC_DEFINE(WORDS_BIGENDIAN,1,[Define for current machine architecture.])
 fi
 ])
 

@@ -44,17 +44,17 @@ if test ${ac_cv_path_SED} = no; then
 fi
 AC_PATH_PROG(FIND, find, no)
 if test ${ac_cv_path_FIND} != no; then
-	AC_DEFINE(HAVE_FIND)
+	AC_DEFINE(HAVE_FIND,1,[Define if your system have find(1).])
 else
 	AC_MSG_ERROR([FIND is required but not found.])
 fi
 AC_PATH_PROG(XARGS, xargs, no)
 if test ${ac_cv_path_XARGS} != no; then
-	AC_DEFINE(HAVE_XARGS)
+	AC_DEFINE(HAVE_XARGS,1,[Define if your system have xargs(1).])
 fi
 AC_PATH_PROG(GREP, grep, no)
 if test ${ac_cv_path_GREP} != no; then
-	AC_DEFINE(HAVE_GREP)
+	AC_DEFINE(HAVE_GREP,1,[Define if your system have grep(1).])
 fi
 
 dnl Checks for libraries.
