@@ -63,6 +63,8 @@ java()
 	} stack[MAXCLASSSTACK];
 	const char *interested = "{}=;";
 
+	*classname = *completename = 0;
+	stack[0].classname = completename;
 	stack[0].terminate = completename;
 	stack[0].level = 0;
 	level = classlevel = 0;
