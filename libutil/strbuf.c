@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999
  *             Shigio Yamaguchi. All rights reserved.
- * Copyright (c) 1999, 2000
+ * Copyright (c) 1999, 2000, 2002
  *             Tama Communications Corporation. All rights reserved.
  *
  * This file is part of GNU GLOBAL.
@@ -184,6 +184,23 @@ int	init;
 	}
 #endif
 	return sb;
+}
+/*
+ * strbuf_putn: put digit string at the last of buffer.
+ *
+ *	i)	sb	STRBUF structure
+ *	i)	n	number
+ */
+void
+strbuf_putn(sb, n)
+STRBUF	*sb;
+int	n;
+{
+	char num[128];
+
+	snprintf(num, sizeof(num), "%d", n);
+	num[sizeof(num) - 1] = '\0';
+	strbuf_puts(sb, num);
 }
 /*
  * strbuf_unputc: remove specified char from the last of buffer

@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999
  *             Shigio Yamaguchi. All rights reserved.
- * Copyright (c) 1999, 2000
+ * Copyright (c) 1999, 2000, 2002
  *             Tama Communications Corporation. All rights reserved.
  *
  * This file is part of GNU GLOBAL.
@@ -94,9 +94,10 @@ void	strbuf_dump(char *);
 #endif
 void	__strbuf_expandbuf(STRBUF *, int);
 STRBUF	*strbuf_open(int);
+void	strbuf_putn(STRBUF *, int);
+int	strbuf_unputc(STRBUF *, int);
 char	*strbuf_value(STRBUF *);
 void	strbuf_trim(STRBUF *);
-int	strbuf_unputc(STRBUF *, int);
 void	strbuf_close(STRBUF *);
 char    *strbuf_fgets(STRBUF *, FILE *, int);
 #ifdef STRBUF_LINK

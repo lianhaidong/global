@@ -38,7 +38,6 @@ static void     usage(void);
 static void     help(void);
 
 const char *gozillarc = ".gozillarc";
-const char *MAPFILE = "MAP";
 
 static char *alias(char *);
 int	main(int, char **);
@@ -266,7 +265,8 @@ STRBUF *URL;
 	char	htmldir[MAXPATHLEN+1];
 	char	*path, *p;
 	DBOP	*dbop;
-	int	status = 0;
+	char	*args[2];
+	int	status = -1;
 
 	/*
 	 * get current, root and dbpath directory.
@@ -279,41 +279,32 @@ STRBUF *URL;
 		strcpy(htmldir, makepath(root, "HTML", NULL));
 	else
 		die("hypertext not found. See htags(1).");
-	path = makepath(htmldir, MAPFILE, NULL);
-	if (!test("f", path))
-		die("'%s' not found. Please reconstruct hypertext using the latest htags(1).", path);
-	dbop = dbop_open(path, 0, 0, 0);
+	path = makepath(htmldir, "MAP.db", NULL);
+	if (test("f", path))
+		dbop = dbop_open(path, 0, 0, 0);
+	if (!dbop) {
+		path = makepath(htmldir, "MAP", NULL);
+		if (!test("f", path))
+			die("'%s' not found. Please reconstruct hypertext using the latest htags(1).", path);
+		dbop = dbop_open(path, 0, 0, 0);
+	}
 	if (dbop) {
-		status = 0;
-		if ((p = dbop_get(dbop, arg)) != NULL)
-			strbuf_puts(URL, p);
-		else
-			status = -1;
+		if ((p = dbop_get(dbop, arg)) != NULL) {
+			if (split(p, '\t', 2, args) != 2)
+				die("illegal format.");
+			status = 0;
+		}
 		dbop_close(dbop);
 	} else {
 		STRBUF *sb = strbuf_open(0);
 		FILE *fp;
 
-		status = -1;
 		fp = fopen(path, "r");
 		if (fp) {
 			while (p = strbuf_fgets(sb, fp, STRBUF_NOCRLF)) {
-				char *q;
-
-				for (q = p; *q && !isspace(*q); q++)
-					;
-				if (*q == NULL)
-					break;
-				*q = 0;
-				if (!strcmp(arg, p)) {
-					for (p = ++q; *p && isspace(*p); p++)
-						;
-					if (*p == NULL)
-						break;
-					strbuf_puts(URL, "file:");
-					strbuf_puts(URL, htmldir);
-					strbuf_putc(URL, '/');
-					strbuf_puts(URL, p);
+				if (split(p, '\t', 2, args) != 2)
+					die("illegal format.");
+				if (!strcmp(arg, args[0])) {
 					status = 0;
 					break;
 				}
@@ -324,6 +315,11 @@ STRBUF *URL;
 	}
 	if (status == -1)
 		die("function %s not found.", arg);
+	strbuf_reset(URL);
+	strbuf_puts(URL, "file:");
+	strbuf_puts(URL, htmldir);
+	strbuf_putc(URL, '/');
+	strbuf_puts(URL, args[1]);
 }
 void
 getURL(arg, URL)
@@ -363,12 +359,10 @@ STRBUF *URL;
 		if (convertpath(dbpath, htmldir, p, sb) == -1)
 			die("cannot find the hypertext.");
 		if (linenumber) {
-			char num[20];
 			strbuf_puts(URL, "file:");
 			strbuf_puts(URL, strbuf_value(sb));
 			strbuf_putc(URL, '#');
-			snprintf(num, sizeof(num), "%d", linenumber);
-			strbuf_puts(URL, num);
+			strbuf_putn(URL, linenumber);
 		} else {
 			strbuf_puts(URL, "file:");
 			strbuf_puts(URL, strbuf_value(sb));
