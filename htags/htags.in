@@ -1640,7 +1640,10 @@ sub makehtml {
 		if (/^ /) {
 			next if (!$'other_files);
 			s/^ //;
-			next if (-B $_);
+			if (-B $_) {
+				print STDERR "Warning: '$_' is binary file. (skipped)\n";
+				next;
+			}
 			$notsource = 1;
 		}
 		$count++;
