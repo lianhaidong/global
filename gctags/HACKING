@@ -43,7 +43,7 @@ You need to have the following package installed:
 		v
 	<prefix>_res.h		include file
 
-(3) Include above file from lex source and you can use reserved() function.
+(3) Include above file from lex source and you can use reserved_word() function.
 
 	Lex source file
 	+-------------------------------------
@@ -51,15 +51,15 @@ You need to have the following package installed:
 	|#include "<prefix>_res.h"
 	|...
 	|WORD	{
-	|		if (reserved(yytext, yyleng)) {
-	|		    ~~~~~~~~~~~~~~~~~~~~~~~~
+	|		if (reserved_word(yytext, yyleng)) {
+	|		    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	|			...
 	+-------------------------------------
 
 
 2. The format of resreved word file.
 
-	o One word a line.
+	o One word and 'word' which means 'reserved word' a line.
 	o Null line and the line start with '#' is skipped.
 	o You need not sort words by alphabetical order.
 
@@ -67,8 +67,8 @@ You need to have the following package installed:
 	+---------------------
 	|# This is comment.
 	|
-	|int
-	|auto
+	|int		word
+	|auto		word
 	|...
-	|foreach
+	|foreach	word
 	+---------------------

@@ -13,64 +13,84 @@
 #
 # PHP reserved word list.
 #
-__FILE__
-__LINE__
-__FUNCTION__
-__CLASS__
-and
-array
-as
-break
-case
-cfunction
-class
-const
-continue
-declare
-default
-define
-do
-die
-each
-echo
-else
-elseif
-empty
-enddeclare
-endfor
-endforeach
-endif
-endwhile
-endswitch
-eval
-exit
-failure
-false
-for
-foreach
-function
-global
-header
-list
-if
-include
-include_once
-is_array
-is_set
-new
-old_function
-or
-print
-printf
-return
-require
-require_once
-setcookie
-success
-static
-switch
-true
-var
-while
-unset
-xor
+__FILE__		word
+__LINE__		word
+__FUNCTION__		word
+__CLASS__		word
+and			word
+array			word
+as			word
+break			word
+case			word
+cfunction		word
+class			word
+const			word
+continue		word
+declare			word
+default			word
+define			word
+do			word
+die			word
+each			word
+echo			word
+else			word
+elseif			word
+empty			word
+enddeclare		word
+endfor			word
+endforeach		word
+endif			word
+endwhile		word
+endswitch		word
+eval			word
+exit			word
+failure			word
+false			word
+for			word
+foreach			word
+function		word
+global			word
+header			word
+list			word
+if			word
+include			word
+include_once		word
+is_array		word
+is_set			word
+new			word
+old_function		word
+or			word
+print			word
+printf			word
+return			word
+require			word
+require_once		word
+setcookie		word
+success			word
+static			word
+switch			word
+true			word
+var			word
+while			word
+unset			word
+xor			word
+
+#
+# PHP reserved variable list.
+#
+GLOBALS			variable
+HTTP_COOKIE_VARS	variable
+HTTP_ENV_VARS		variable
+HTTP_GET_VARS		variable
+HTTP_POST_FILES		variable
+HTTP_POST_VARS		variable
+HTTP_SERVER_VARS	variable
+HTTP_SESSION_VARS	variable
+_COOKIE			variable
+_ENV			variable
+_FILES			variable
+_GET			variable
+_POST			variable
+_REQUEST		variable
+_SERVER			variable
+_SESSION		variable

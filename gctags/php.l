@@ -65,39 +65,6 @@ extern int wflag;
 extern int debug;
 
 /*
- * Lookup reserved array.
- */
-static struct words words[] = {
-	{"GLOBALS", 0},
-	{"HTTP_COOKIE_VARS", 0},
-	{"HTTP_ENV_VARS", 0},
-	{"HTTP_GET_VARS", 0},
-	{"HTTP_POST_FILES", 0},
-	{"HTTP_POST_VARS", 0},
-	{"HTTP_SERVER_VARS", 0},
-	{"HTTP_SESSION_VARS", 0},
-	{"_COOKIE", 0},
-	{"_ENV", 0},
-	{"_FILES", 0},
-	{"_GET", 0},
-	{"_POST", 0},
-	{"_REQUEST", 0},
-	{"_SERVER", 0},
-	{"_SESSION", 0},
-};
-
-static int
-reserved_array_variable(word)
-        char *word;
-{
-	struct words tmp;
-	struct words *result;
-
-	tmp.name = word;
-	result = (struct words *)bsearch(&tmp, words, sizeof(words)/sizeof(struct words), sizeof(struct words), cmp);
-	return (result != NULL) ? 1 : 0;
-}
-/*
  * For debug.
  */
 static void
@@ -243,7 +210,7 @@ WORD		{ALPHA}{ALPHANUM}*
 			}
 <PHP>{NUMBER}		debug_print("<N:%s>", phptext);
 <PHP>{WORD}		{
-				int id = reserved(phptext, phpleng);
+				int id = reserved_word(phptext, phpleng);
 				if (id) {
 					debug_print("<Reserved:%s>", phptext);
 					return id;
@@ -314,7 +281,7 @@ const char *file;
 				PUT(phptext, phplineno, file);
 			break;
 		case PHP_VARIABLE:
-			if (reserved_array_variable(phptext)) {
+			if (reserved_variable(phptext, phpleng)) {
 				if (target == SYM)
 					PUT(phptext, phplineno, file);
 				if (phplex() == PHP_LBRACK && phplex() == PHP_STRING && phplex() == PHP_RBRACK) {

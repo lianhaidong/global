@@ -27,7 +27,9 @@
 #
 # Both output is stdout.
 #
-$START_RESERVED	= 1001;
+$RANGE		= 1000;
+$START_WORD	= 1001;
+$START_VARIABLE	= $START_WORD + $RANGE;
 $com = $0;
 $com =~ s/.*\///;
 
@@ -63,7 +65,7 @@ if (!$prefix) {
 # [1] Generate option string for gperf(1).
 #
 if ($option) {
-	print "--key-positions=1,3,\$\n";
+	print "--key-positions=1-3,6,\$\n";
 	print "--language=C\n";
 	print "--struct-type\n";
 	print "--slot-name=${slot_name}\n";
@@ -83,21 +85,24 @@ if ($perl) {
 	print "\$'${prefix}_reserved_words = \"(";
 	$first = 1;
 	while(<IP>) {
-		next if (/^$/ || /^#/);
 		chop;
-		if ($first) {
-			$first = 0;
-		} else {
-			print '|';
-		}
-		print;
-		if (!/^_/ && $prefix eq 'php') {
-			$upper = $_;
-			$upper =~ tr/a-z/A-Z/;
-			$cap = substr($_, 0, 1);
-			$cap =~ tr/a-z/A-Z/;
-			$cap .= substr($_, 1);
-			print '|', $upper, '|', $cap;
+		next if (/^$/ || /^#/);
+		($id, $type) = split;
+		if ($type eq 'word') {
+			if ($first) {
+				$first = 0;
+			} else {
+				print '|';
+			}
+			print $id;
+			if ($id !~ /^_/ && $prefix eq 'php') {
+				$upper = $id;
+				$upper =~ tr/a-z/A-Z/;
+				$cap = substr($id, 0, 1);
+				$cap =~ tr/a-z/A-Z/;
+				$cap .= substr($id, 1);
+				print '|', $upper, '|', $cap;
+			}
 		}
 	}
 	print ")\";\n";
@@ -117,14 +122,24 @@ $pre =~ tr/A-Z/a-z/;
 #
 open(IP, $keyword_file) || die("$com: cannot open file '$keyword_file'.\n");
 print "%{\n";
-$id = $START_RESERVED;
+$i_word = $START_WORD;
+$i_variable = $START_VARIABLE;
+print "#define RANGE\t$RANGE\n";
+print "#define START_WORD\t$i_word\n";
+print "#define START_VARIABLE\t$i_variable\n\n";
 while(<IP>) {
-	next if (/^$/ || /^#/);
 	chop;
-	$upper = $_;
-	$upper =~ tr/a-z/A-Z/;
-	print "#define ${PRE}_${upper}\t${id}\n";
-	$id++;
+	next if (/^$/ || /^#/);
+	($id, $type) = split;
+	if ($type eq 'word') {
+		$upper = $id;
+		$upper =~ tr/a-z/A-Z/;
+		print "#define ${PRE}_${upper}\t${i_word}\n";
+		$i_word++;
+	} elsif ($type eq 'variable') {
+		print "#define ${PRE}_${id}\t${i_variable}\n";
+		$i_variable++;
+	}
 }
 close(IP);
 print "%}\n";
@@ -138,27 +153,44 @@ print "%%\n";
 #
 open(IP, $keyword_file) || die("$com: cannot open file '$keyword_file'.\n");
 while(<IP>) {
-	next if (/^$/ || /^#/);
 	chop;
-	$upper = $_;
-	$upper =~ tr/a-z/A-Z/;
-	print "$_, ${PRE}_${upper}\n";
-	if (!/^_/ && $prefix eq 'php') {
-		$cap = substr($_, 0, 1);
-		$cap =~ tr/a-z/A-Z/;
-		$cap .= substr($_, 1);
-		print "${upper}, ${PRE}_${upper}\n";
-		print "${cap}, ${PRE}_${upper}\n";
+	next if (/^$/ || /^#/);
+	($id, $type) = split;
+	if ($type eq 'word') {
+		$upper = $id;
+		$upper =~ tr/a-z/A-Z/;
+		print "$id, ${PRE}_${upper}\n";
+		if ($id !~ /^_/ && $prefix eq 'php') {
+			$cap = substr($id, 0, 1);
+			$cap =~ tr/a-z/A-Z/;
+			$cap .= substr($id, 1);
+			print "${upper}, ${PRE}_${upper}\n";
+			print "${cap}, ${PRE}_${upper}\n";
+		}
+	} elsif ($type eq 'variable') {
+		print "${id}, ${PRE}_${id}\n";
 	}
 }
 close(IP);
 print "%%\n";
 print "static int\n";
-print "reserved(str, len)\n";
+print "reserved_word(str, len)\n";
 print "const char *str;\n";
 print "int len;\n";
 print "{\n";
 print "\tstruct keyword *keyword = ${pre}_lookup(str, len);\n";
-print "\treturn keyword ? keyword->token : 0;\n";
+print "\tint n = keyword ? keyword->token : 0;\n";
+print "\treturn (n >= START_WORD && n < START_WORD + RANGE) ? n : 0;\n";
 print "}\n";
+if ($i_variable > $START_VARIABLE) {
+	print "static int\n";
+	print "reserved_variable(str, len)\n";
+	print "const char *str;\n";
+	print "int len;\n";
+	print "{\n";
+	print "\tstruct keyword *keyword = ${pre}_lookup(str, len);\n";
+	print "\tint n = keyword ? keyword->token : 0;\n";
+	print "\treturn (n >= START_VARIABLE && n < START_VARIABLE + RANGE) ? n : 0;\n";
+	print "}\n";
+}
 exit 0;
