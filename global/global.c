@@ -656,7 +656,7 @@ idutils(pattern, dbpath)
 	STRBUF *ib = strbuf_open(0);
 	char edit[IDENTLEN+1];
 	char *line, *p, *path, *lno;
-	int linenum, count, editlen;
+	int linenum, count;
 	char *lid;
 
 	lid = usable("lid");
@@ -666,7 +666,6 @@ idutils(pattern, dbpath)
 	 * convert spaces into %FF format.
 	 */
 	ffformat(edit, sizeof(edit), pattern);
-	editlen = strlen(edit);
 	/*
 	 * make lid command line.
 	 */
@@ -762,7 +761,7 @@ grep(pattern)
 	char *path, *p;
 	char edit[IDENTLEN+1];
 	char *buffer;
-	int linenum, count, editlen;
+	int linenum, count;
 	int flags = 0;
 	regex_t	preg;
 
@@ -770,7 +769,6 @@ grep(pattern)
 	 * convert spaces into %FF format.
 	 */
 	ffformat(edit, sizeof(edit), pattern);
-	editlen = strlen(edit);
 
 	if (!Gflag)
 		flags |= REG_EXTENDED;
