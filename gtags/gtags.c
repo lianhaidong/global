@@ -24,6 +24,7 @@
 #endif
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <errno.h>
 
 #include <ctype.h>
 #include <utime.h>
@@ -89,6 +90,7 @@ int	gtagslabel;
 int	other_files;
 int	info;
 int	debug;
+int	secure_mode;
 char	*extra_options;
 char	*info_string;
 char	*btree_dbname;
@@ -139,6 +141,7 @@ static struct option const long_options[] = {
 	{"readdb", required_argument, &do_readdb, 1},
 	{"relative", no_argument, &do_relative, 1},
 	{"scandb", required_argument, &do_scandb, 1},
+	{"secure", no_argument, &secure_mode, 1},
 	{"sort", no_argument, &do_sort, 1},
 	{"write", no_argument, &do_write, 1},
 	{"version", no_argument, &show_version, 1},
@@ -192,6 +195,7 @@ main(argc, argv)
 int	argc;
 char	*argv[];
 {
+	char	root[MAXPATHLEN+1];
 	char	dbpath[MAXPATHLEN+1];
 	char	cwd[MAXPATHLEN+1];
 	STRBUF	*sb = strbuf_open(0);
@@ -409,9 +413,23 @@ char	*argv[];
 		FILE *ip;
 		STRBUF *ib = strbuf_open(MAXBUFLEN);
 
-		ip = (argc) ? fopen(argv[0], "r") : stdin;
-		if (ip == NULL)
-			exit(1);
+		if (argc) {
+			if (secure_mode) {
+				char	buf[MAXPATHLEN+1], *path;
+				getdbpath(cwd, root, dbpath, 0);
+				path = realpath(argv[0], buf);
+				if (path == NULL)
+					die("realpath(%s, buf) failed. (errno=%d).", argv[0], errno);
+				if (!isabspath(path))
+					die("realpath(3) is not compatible with BSD version.");
+				if (strncmp(path, root, strlen(root)))
+					die("'%s' is out of source tree.\n", path);
+			}
+			ip = fopen(argv[0], "r");
+			if (ip == NULL)
+				exit(1);
+		} else
+			ip = stdin;
 		while (strbuf_fgets(ib, ip, STRBUF_NOCRLF) != NULL)
 			detab(stdout, strbuf_value(ib));
 		strbuf_close(ib);

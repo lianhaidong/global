@@ -1121,8 +1121,10 @@ if ($form{'id'}) {
 		exit 0;
 	}
 }
-if ($flag eq 'g' || $flag eq 'I') {
-	if ($flag eq 'g' && ! -f "../../GTAGS" || $flag eq 'I' && ! -f "../../ID") {
+if ($flag eq 'g' || $flag eq 'I' || $form{'type'} eq 'source') {
+	if (($flag eq 'g' && ! -f "../../GTAGS")
+	 || ($flag eq 'I' && ! -f "../../ID")
+	 || ($form{'type'} eq 'source' && ! -f "../../GTAGS")) {
 		print "<H1><FONT COLOR=#cc0000>Error</FONT></H1>\n";
 		print "<H3>Couldn't execute command. <A HREF=$htmlbase/mains.@normal_suffix@>[return]</A></H3>\n";
 		print "@body_end@\n";
@@ -1142,6 +1144,28 @@ if ($flag eq 'g' || $flag eq 'I') {
 	(($flag eq '') || ($flag eq 'r' && -f "../../GRTAGS") || $flag eq 's' && -f "../../GSYMS")) {
 		chdir("../..");
 	}
+}
+if ($form{'type'} eq 'source') {
+	local(%ctab) = ('&', '&amp;', '<', '&lt;', '>', '&gt;');
+	open(PIPE, "-|") || exec '@gtagspath@', '--secure', '--expand', '-@tabs@', './'.$pattern;
+	if ($?) {	
+		print "<H1><FONT COLOR=#cc0000>Error</FONT></H1>\n";
+		print "<H3>Cannot execute gtags. <A HREF=$htmlbase/mains.@normal_suffix@>[return]</A></H3>\n";
+		print "@body_end@\n";
+		print "@html_end@\n";
+		exit 0;
+	}
+	print "<PRE>\n";
+	while (<PIPE>) {
+		s/([&<>])/$ctab{$1}/ge;
+		print "<A NAME=$.>";
+		print;
+	}
+	close(PIPE);
+	print "</PRE>\n";
+	print "@body_end@\n";
+	print "@html_end@\n";
+	exit 0;
 }
 #
 # fork and exec global(1) to avoid command substitutions in $pattern.
@@ -1207,6 +1231,7 @@ END_OF_SCRIPT
 	$script =~ s/\@normal_suffix\@/$'normal_suffix/g;
 	$script =~ s/\@SRCS\@/$'SRCS/g;
 	$script =~ s/\@HTML\@/$'HTML/g;
+	$script =~ s/\@tabs\@/$'tabs/g;
 	$script =~ s/\@globalpath\@/$globalpath/g;
 	$script =~ s/\@gtagspath\@/$gtagspath/g;
 	print PROGRAM $script;
@@ -1731,13 +1756,19 @@ sub makefileindex {
 				$includes{$file} = "$includes{$file}\n$_";
 			}
 		}
-		local($url) = &'path2url($_);
+		local($url);
+		if ($notsource && $'dynamic) {
+			local($cgi) = ($'action =~ /^\// || @dirstack == 0) ? $'action : "../$'action";
+			$url = "${cgi}?pattern=$_&type=source";
+		} else {
+			$url = (@dirstack == 0 ? '' : '../') . "$'SRCS/" . &'path2url($_);
+		}
 		local($last) = $_;
 		if (!$'full_path) {
 			$last =~ s!.*/!!;
 		}
 		local($li) = "<LI>" .
-			"<A HREF=" . (@dirstack == 0 ? '' : '../') . "S/$url TARGET=$target>" .
+			"<A HREF=$url TARGET=$target>" .
 			($'icon_list ? "<IMG SRC=" . (@dirstack == 0 ? '' : '../') . "icons/$'file_icon ALT=[$_] HSPACE=3 $'icon_spec>" : '') .
 			"$last</A>\n";
 		if (@dirstack == 0) {
@@ -2050,7 +2081,7 @@ sub makesearchindex {
 sub makehtml {
 	local($dist, $total) = @_;
 	local($count) = 0;
-	local($findcom) = ($'other_files) ? "$'findcom --other | sort -t / +1" : $'findcom;
+	local($findcom) = ($'other_files && !$'dynamic) ? "$'findcom --other | sort -t / +1" : $'findcom;
 
 	open(FIND, "$findcom |") || &'error("cannot fork.");
 	while (<FIND>) {
