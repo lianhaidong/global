@@ -51,8 +51,8 @@ if ($menu) {
 	} elsif ($info) {
 		&info'gen();
 	}
+	close(INFILE);
 }
-close(INFILE);
 exit 0;
 #------------------------------------------------------------------
 #
