@@ -19,14 +19,6 @@ ___________________________________
 
 Installation of GNU GLOBAL under Windows 32.
 
-			***CAUTION***
-
-Now, GLOBAL doesn't support Borland C++ compiler because DJGPP is already
-available in Windows 32 environment.
-In the near future, these files will be removed.
-
-			***CAUTION***
-
 1. Required programs.
 
 You need following programs to install and execute GLOBAL for Windows 32.

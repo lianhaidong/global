@@ -22,7 +22,9 @@ environments. It supports C, C++, Yacc and Java source code.
 
 * Installation
 
-	Please see 'INSTALL',
+	If you use a UNIX or DJGPP on Windows9X then please see 'INSTALL'.
+	If you want to use Borland C++ compiler on Windows32 environment
+	then please see 'w32/INSTALL'.
 
 * Documentation
 
