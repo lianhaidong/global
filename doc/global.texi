@@ -85,13 +85,28 @@ This manual documents version @value{VERSION} of the GLOBAL source code tag syst
 @node Introduction
 @chapter Overview of the tools
 
+@section What is this?
+
 GNU GLOBAL is a source code tag system that works the same way
 across diverse environments.
 You can locate a specified function in the source files and move there easily.
 It is useful for hacking a large project containing many subdirectories,
 many @code{#ifdef} and many @code{main()} functions.
 
-@sp 1
+It is similar to ctags or etags but is different from them at the point of
+independence of any editor.
+
+@section Concept of project.
+
+GNU GLOBAL can treat a source tree containing subdirectories as a project.
+It is similar to CVS.
+You can get the relative path of your object from anywhere in the source tree.
+
+You need not specify where the tag file is.
+GLOBAL will locate the tag file by itself.
+User's position (current directory) is the first argument for GLOBAL's command.
+
+@section Features.
 
 GNU GLOBAL has following features:
 
@@ -110,9 +125,6 @@ GNU GLOBAL has following features:
 @item locate not only object definitions but also object references.
 @item allows duplicate objects.
 @item locate also path which includes specified pattern.
-@item can treat a source tree containing subdirectories as a logical
-     scope.  You can get the relative path of objects from anywhere within
-     that scope.
 @item search not only in a source tree but also in library paths.
 @item understand POSIX 1003.2 regular expressions.
 @item support external search engine (grep and idutils).
@@ -123,6 +135,7 @@ GNU GLOBAL has following features:
 @item support incremental updating of tag files.
 @item support customizing with gtags.conf.
 @item generate completion list for completing input method.
+@item Postgres database system is available as a tag store.
 @end itemize
 
 @c ***************************************************************************
@@ -531,9 +544,9 @@ Special support for bash is available.
 @item
 Vi-like tag stack is available.
 @item
-Editor or viewer is automatically invoked.
+Emacs-like tag name completion is available.
 @item
-Tag name completion is available.
+Editor or viewer is automatically invoked.
 @item
 Tag mark facility is available.
 @item
@@ -638,7 +651,7 @@ environment variable or temporarily by option.
 @end example
 
 @item You can use vi-like tag stack. You can return previous tag list by
-pop command.
+pop or @kbd{CTL-T} command.
 @example
 
     [/usr/src/sys] x main
@@ -1570,7 +1583,7 @@ source code.
 * Plugin::                              How to plug in a parser.
 * Compact format::                      Compact format.
 * Incremental updating::                Incremental updating.
-* Postgres::                            Using postgres.
+* Postgres::                            Using Postgres.
 @end menu
 
 @c ***************************************************************************
@@ -1724,7 +1737,7 @@ Instead, you can use incremental updating facility (@samp{-u} option).
 
 @c ***************************************************************************
 @node   Postgres
-@section Using postgres.
+@section Using Postgres.
 
 You can make tag files in postgres database instead of normal files.
 To do this, you must setup postgres database system and make a database
@@ -1740,11 +1753,12 @@ At the first time of creating tag files, you need specify info string with
     % gtags -P --info="dbname=$DBNAME user=`whoami`"
 
 @end example
+
 Once tag files are created, you need not use @option{--info}.
 If info string is not specified then gtags load it from tag files.
 
-Please be careful of info string using @option{--info}.
-Info string is passed to external system as is.
+Please be careful of the value of info string.
+It is passed to Postgres system as is.
 If you mistake the value then program may abort with core dump.
 
 @c ***************************************************************************
