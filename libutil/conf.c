@@ -80,11 +80,13 @@ const char *label;
 {
 	char	*p, *q;
 	int	flag = STRBUF_NOCRLF;
+	int	line = 0;
 
 	rewind(fp);
 	while ((p = strbuf_fgets(ib, fp, flag)) != NULL) {
+		line++;
 		flag &= ~STRBUF_APPEND;
-		if (*p == '#')
+		if (*p == '#' || *p == '\0')
 			continue;
 		if (strbuf_unputc(ib, '\\')) {
 			flag |= STRBUF_APPEND;
@@ -93,10 +95,10 @@ const char *label;
 		trim(p);
 		for (;;) {
 			if ((q = strmake(p, "|:")) == NULL)
-				die("illegal configuration file format (%s).", p);
+				die("illegal config file format (line %d).", line);
 			if (!strcmp(label, q)) {
 				if (!(p = locatestring(p, ":", MATCH_FIRST)))
-					die("illegal configuration file format.");
+					die("illegal config file format (line %d).", line);
 				p = strdup(p);
 				if (!p)
 					die("short of memory.");
@@ -108,7 +110,7 @@ const char *label;
 			else if (*p == '|')
 				p++;
 			else
-				assert(0);
+				die("illegal config file format (line %d).", line);
 		}
 	}
 	return NULL;
@@ -148,10 +150,13 @@ configpath() {
 	char *p;
 
 	if ((p = getenv("GTAGSCONF")) != NULL) {
+		if (test("d", p))
+			die("config file '%s' is a directory.", p);
+		if (!test("f", p))
+			die("config file '%s' not found.", p);
 		if (!test("r", p))
-			config[0] = 0;
-		else
-			strcpy(config, p);
+			die("config file '%s' is not readable.", p);
+		strcpy(config, p);
 	} else if ((p = getenv("HOME")) && test("r", makepath(p, GTAGSRC, NULL)))
 		strcpy(config, makepath(p, GTAGSRC, NULL));
 	else if (test("r", GTAGSCONF))
@@ -172,6 +177,7 @@ openconf()
 {
 	const char *label, *config;
 	STRBUF	*sb;
+	extern int vflag;
 
 	assert(opened == 0);
 
@@ -181,6 +187,8 @@ openconf()
 	 * for upper compatibility.
 	 */
 	if (*config == 0) {
+		if (vflag)
+			fprintf(stderr, " Using default configuration.\n");
 		sb = strbuf_open(0);
 		strbuf_putc(sb, ':');
 		strbuf_puts(sb, "suffixes=");
@@ -207,6 +215,8 @@ openconf()
 		label = "default";
 	if (!(fp = fopen(config, "r")))
 		die("cannot open '%s'.", config);
+	if (vflag)
+		fprintf(stderr, " Using config file '%s'.\n", config);
 	ib = strbuf_open(MAXBUFLEN);
 	sb = strbuf_open(0);
 	includelabel(sb, label, 0);
