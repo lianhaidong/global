@@ -68,6 +68,7 @@ $'ncol = 4;					# columns of line number
 $'tabs = 8;					# tab skip
 $'full_path = 0;				# file index format
 $'icon_list = '';				# use icon for file index
+$'icon_spec = 'BORDER=0 ALIGN=middle';		# parameter in IMG tag
 $'prolog_script = '';				# include script at first
 $'epilog_script = '';				# include script at last
 $'show_position = 0;				# show current position
@@ -192,6 +193,9 @@ if ($var1 = &'getconf('table_list')) {
 }
 if ($var1 = &'getconf('icon_list')) {
 	$'icon_list = $var1;
+}
+if ($var1 = &'getconf('icon_spec')) {
+	$'icon_spec = $var1;
 }
 if ($var1 = &'getconf('prolog_script')) {
 	$'prolog_script = $var1;
@@ -1163,7 +1167,7 @@ sub makehelp {
 	print HELP "<PRE>/* ";
 	foreach $n (0 .. $#label) {
 		if ($'icon_list) {
-			print HELP "<IMG SRC=icons/$icons[$n] ALT=\[$label[$n]\] HSPACE=3 BORDER=0>";
+			print HELP "<IMG SRC=icons/$icons[$n] ALT=\[$label[$n]\] $'icon_spec>";
 			if ($n < $#label) {
 				print HELP " ";
 			}
@@ -1179,7 +1183,7 @@ sub makehelp {
 	foreach $n (0 .. $#label) {
 		print HELP "<DT>";
 		if ($'icon_list) {
-			print HELP "<IMG SRC=icons/$icons[$n] ALT=\[$label[$n]\] HSPACE=3 BORDER=0>";
+			print HELP "<IMG SRC=icons/$icons[$n] ALT=\[$label[$n]\] $'icon_spec>";
 		} else {
 			print HELP "[$label[$n]]";
 		}
@@ -1319,7 +1323,7 @@ sub makedefineindex {
 			if ($alpha) {
 				print ALPHA "</OL>\n";
 				print ALPHA "<A HREF=$indexlink>";
-				print ALPHA $'icon_list ? "<IMG SRC=../icons/$'back_icon ALT='[..]' HSPACE=3 BORDER=0>" : "[..]";
+				print ALPHA $'icon_list ? "<IMG SRC=../icons/$'back_icon ALT='[..]' $'icon_spec>" : "[..]";
 				print ALPHA "</A>\n";
 				print ALPHA $'body_end, "\n";
 				print ALPHA $'html_end, "\n";
@@ -1352,7 +1356,7 @@ sub makedefineindex {
 			print ALPHA $'body_begin, "\n";
 			print ALPHA "<H2>[$alpha]</H2>\n";
 			print ALPHA "<A HREF=$indexlink>";
-			print ALPHA $'icon_list ? "<IMG SRC=../icons/$'back_icon ALT='[..]' HSPACE=3 BORDER=0>" : "[..]";
+			print ALPHA $'icon_list ? "<IMG SRC=../icons/$'back_icon ALT='[..]' $'icon_spec>" : "[..]";
 			print ALPHA "</A>\n";
 			print ALPHA "<OL>\n";
 			select(ALPHA);
@@ -1380,7 +1384,7 @@ sub makedefineindex {
 	if ($'aflag) {
 		print ALPHA "</OL>\n";
 		print ALPHA "<A HREF=$indexlink>";
-		print ALPHA $'icon_list ? "<IMG SRC=../icons/$'back_icon ALT='[..]' HSPACE=3 BORDER=0>" : "[..]";
+		print ALPHA $'icon_list ? "<IMG SRC=../icons/$'back_icon ALT='[..]' $'icon_spec>" : "[..]";
 		print ALPHA "</A>\n";
 		print ALPHA $'body_end, "\n";
 		print ALPHA $'html_end, "\n";
@@ -1455,7 +1459,7 @@ sub makefileindex {
 				local($parent) = (@dirstack) ? &'path2url(join('/', @dirstack)) : $indexlink;
 				print "</OL>\n";
 				print "<A HREF=$parent>" .
-					($'icon_list ? "<IMG SRC=../icons/$'back_icon ALT='[..]' HSPACE=3 BORDER=0>" : "[..]") .
+					($'icon_list ? "<IMG SRC=../icons/$'back_icon ALT='[..]' $'icon_spec>" : "[..]") .
 					"</A>\n";
 				print $'body_end, "\n";
 				print $'html_end, "\n";
@@ -1476,7 +1480,7 @@ sub makefileindex {
 				}
 				local($li) = "<LI>" .
 					"<A HREF=" . (@dirstack == 1 ? 'files/' : '') . &path2url($path) . ">" .
-					($'icon_list ? "<IMG SRC=" . (@dirstack == 1 ? '' : '../') . "icons/$'dir_icon ALT=[$path/] HSPACE=3 BORDER=0>" : '') .
+					($'icon_list ? "<IMG SRC=" . (@dirstack == 1 ? '' : '../') . "icons/$'dir_icon ALT=[$path/] HSPACE=3 $'icon_spec>" : '') .
 					"$last/</A>\n";
 				if (@dirstack == 1) {
 					push(@files, $li);
@@ -1505,7 +1509,7 @@ sub makefileindex {
 				}
 				print "</H2>\n";
 				print "<A HREF=$parent>" .
-					($'icon_list ? "<IMG SRC=../icons/$'back_icon ALT='[..]' HSPACE=3 BORDER=0>" : "[..]") .
+					($'icon_list ? "<IMG SRC=../icons/$'back_icon ALT='[..]' $'icon_spec>" : "[..]") .
 					"</A>\n";
 				print "<OL>\n";
 			}
@@ -1527,7 +1531,7 @@ sub makefileindex {
 		}
 		local($li) = "<LI>" .
 			"<A HREF=" . (@dirstack == 0 ? '' : '../') . "S/$url TARGET=$target>" .
-			($'icon_list ? "<IMG SRC=" . (@dirstack == 0 ? '' : '../') . "icons/$'file_icon ALT=[$_] HSPACE=3 BORDER=0>" : '') .
+			($'icon_list ? "<IMG SRC=" . (@dirstack == 0 ? '' : '../') . "icons/$'file_icon ALT=[$_] HSPACE=3 $'icon_spec>" : '') .
 			"$last</A>\n";
 		if (@dirstack == 0) {
 			push(@files, $li);
@@ -1542,7 +1546,7 @@ sub makefileindex {
 		local($parent) = (@dirstack) ? &'path2url(join('/', @dirstack)) : $indexlink;
 		print "</OL>\n";
 		print "<A HREF=$parent>" .
-			($'icon_list ? "<IMG SRC=../icons/$'back_icon ALT='[..]' HSPACE=3 BORDER=0>" : "[..]") .
+			($'icon_list ? "<IMG SRC=../icons/$'back_icon ALT='[..]' $'icon_spec>" : "[..]") .
 			"</A>\n";
 		print $'body_end, "\n";
 		print $'html_end, "\n";
@@ -2169,7 +2173,7 @@ sub link_format {
 		}
 		if ($'icon_list) {
 			$icon = ($tag[$n] || $n > 5) ? "$icons[$n]" : "n_$icons[$n]";
-			$line .= "<IMG SRC=../icons/$icon ALT=\[$label[$n]\] BORDER=0 ALIGN=MIDDLE>";
+			$line .= "<IMG SRC=../icons/$icon ALT=\[$label[$n]\] $'icon_spec>";
 		} else {
 			$line .=  "\[$label[$n]\]";
 		}
