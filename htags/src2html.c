@@ -36,6 +36,82 @@
 #include "path2url.h"
 #include "htags.h"
 
+/*----------------------------------------------------------------------*/
+/* Parser switch							*/
+/*----------------------------------------------------------------------*/
+/*
+ * This is the linkage section of each parsers.
+ * If you want to support new language, you must define two procedures:
+ *	1. Initializing procedure.
+ *		Called once first with an input file descripter.
+ *	2. Executing procedure.
+ *		Called repeatedly until returning EOF.
+ *		It should read from above descripter and write HTML
+ *		using output procedures in this module.
+ */
+struct lang_entry {
+	char *lang_name;
+	void (*init_proc)(FILE *);		/* initializing procedure */
+	int (*exec_proc)(void);			/* executing procedure */
+};
+
+/* initializing procedures */
+void c_parser_init(FILE *);
+void yacc_parser_init(FILE *);
+void cpp_parser_init(FILE *);
+void java_parser_init(FILE *);
+void php_parser_init(FILE *);
+void asm_parser_init(FILE *);
+
+/* executing procedures */
+int clex(void);
+int cpplex(void);
+int javalex(void);
+int phplex(void);
+int asmlex(void);
+
+/*
+ * The first entry is default language.
+ */
+struct lang_entry lang_switch[] = {
+	/* lang_name	init_proc 		exec_proc */
+	{"c",		c_parser_init,		clex},		/* DEFAULT */
+	{"yacc",	yacc_parser_init,	clex},
+	{"cpp",		cpp_parser_init,	cpplex},
+	{"java",	java_parser_init,	javalex},
+	{"php",		php_parser_init,	phplex},
+	{"asm",		asm_parser_init,	asmlex}
+};
+#define DEFAULT_ENTRY &lang_switch[0]
+
+/*
+ * get language entry.
+ *
+ *	i)	lang	language name (NULL means 'not specified'.)
+ *	r)		language entry
+ */
+static struct lang_entry *
+get_lang_entry(lang)
+	char *lang;
+{
+	int i, size = sizeof(lang_switch) / sizeof(struct lang_entry);
+
+	/*
+	 * if language not specified, it assumes default language.
+	 */
+	if (lang == NULL)
+		return DEFAULT_ENTRY;
+	for (i = 0; i < size; i++)
+		if (!strcmp(lang, lang_switch[i].lang_name))
+			return &lang_switch[i];
+	/*
+	 * if specified language not found, it assumes default language.
+	 */
+	return DEFAULT_ENTRY;
+}
+/*----------------------------------------------------------------------*/
+/* Input/Output								*/
+/*----------------------------------------------------------------------*/
 /*
  * Input/Output descriptor.
  */
@@ -116,6 +192,9 @@ echos(s)
         strbuf_puts(outbuf, s);
 }
 
+/*----------------------------------------------------------------------*/
+/* HTML output								*/
+/*----------------------------------------------------------------------*/
 /*
  * fill_anchor: fill anchor into file name
  *
@@ -533,19 +612,6 @@ put_end_of_line(lineno)
  *       i)      html  HTML file       - Write to
  *       i)      notsource 1: isn't source, 0: source.
  */
-void c_parser_init(FILE *);
-void cpp_parser_init(FILE *);
-void java_parser_init(FILE *);
-void php_parser_init(FILE *);
-void asm_parser_init(FILE *);
-void yacc_parser_init(FILE *);
-
-int clex(void);
-int cpplex(void);
-int javalex(void);
-int phplex(void);
-int asmlex(void);
-
 void
 src2html(src, html, notsource)
 	char *src;
@@ -646,7 +712,6 @@ src2html(src, html, notsource)
 		struct data *incref;
 		struct anchor *ancref;
 		static STRBUF *define_index = NULL;
-		const char *lang, *suffix;
 
                 /*
                  * INCLUDED FROM index.
@@ -711,31 +776,30 @@ src2html(src, html, notsource)
 		 * print source code
 		 */
 		fprintf(out, "%s\n", verbatim_begin);
-		if ((suffix = locatestring(src, ".", MATCH_LAST)) == NULL
-		    || (lang = decide_lang(suffix)) == NULL)
-			lang = "c";
-		if (!strcmp(lang, "java")) {
-			java_parser_init(in);
-			while (javalex())
-				;
-		} else if (!strcmp(lang, "php")) {
-			php_parser_init(in);
-			while (phplex())
-				;
-		} else if (!strcmp(lang, "cpp")) {
-			cpp_parser_init(in);
-			while (cpplex())
-				;
-		} else if (!strcmp(lang, "asm")) {
-			asm_parser_init(in);
-			while (asmlex())
-				;
-		} else {
-			if (!strcmp(lang, "yacc"))
-				yacc_parser_init(in);
-			else
-				c_parser_init(in);
-			while (clex())
+		{
+			const char *suffix = locatestring(src, ".", MATCH_LAST);
+			const char *lang = NULL;
+			struct lang_entry *ent;
+
+			/*
+			 * Decide language.
+			 */
+			if (suffix)
+				lang = decide_lang(suffix);
+			/*
+			 * Select parser.
+			 * If lang == NULL then default parser is selected.
+			 */
+			ent = get_lang_entry(lang);
+			/*
+			 * Initialize parser.
+			 */
+			ent->init_proc(in);
+			/*
+			 * Execute parser.
+			 * Exec_proc() is called repeatedly until returning EOF.
+			 */
+			while (ent->exec_proc())
 				;
 		}
         	fprintf(out, "%s\n", verbatim_end);
