@@ -445,6 +445,6 @@ closeconf()
 	if (!opened)
 		return;
 	free(confline);
-	line = NULL;
+	confline = NULL;
 	opened = 0;
 }
