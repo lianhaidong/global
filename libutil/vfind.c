@@ -45,8 +45,8 @@ static int opened = 0;
  */
 void
 vfind_open(local, other)
-char *local;
-int other;
+	char *local;
+	int other;
 {
 	char root[MAXPATHLEN+1];
 	char dbpath[MAXPATHLEN+1];

@@ -64,7 +64,7 @@ int
 isregex(s)
 char *s;
 {
-	int	c;
+	int c;
 
 	if (!init)
 		initialize();

@@ -48,7 +48,7 @@
  */
 int
 isabspath(p)
-char *p;
+	char *p;
 {
 	if (p[0] == '/')
 		return 1;
@@ -69,9 +69,9 @@ char *p;
  *
  * Note: canonpath rewrite argument buffer.
  */
-char   *
+char *
 canonpath(path)
-char *path;
+	char *path;
 {
 #ifdef __DJGPP__
 	char *p;
@@ -141,10 +141,10 @@ char *path;
 /*
  * realpath: get the complete path
  */
-char   *
+char *
 realpath(in_path, out_path)
-char *in_path;
-char *out_path;
+	char *in_path;
+	char *out_path;
 {
 	/*
 	 * I don't use _fixpath or _truename in LFN because neither guarantee

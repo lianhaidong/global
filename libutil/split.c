@@ -74,9 +74,9 @@
  */
 int
 split(line, npart, list)
-char *line;
-int npart;
-SPLIT *list;
+	char *line;
+	int npart;
+	SPLIT *list;
 {
 	char *s = line;
 	struct part *part = &list->part[0];

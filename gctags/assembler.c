@@ -34,7 +34,7 @@
 #include "defined.h"
 #include "token.h"
 
-static int      reserved_word(const char *, int);
+static int reserved_word(const char *, int);
 
 #define A_CALL		1001
 #define A_DEFINE	1002
@@ -50,11 +50,11 @@ static int      reserved_word(const char *, int);
 void
 assembler()
 {
-	int	c;
-	int	target;
-	const   char *interested = NULL;	/* get all token */
-	int	startline = 1;
-	int	level;				/* not used */
+	int c;
+	int target;
+	const char *interested = NULL;	/* get all token */
+	int startline = 1;
+	int level;				/* not used */
 
 	level = 0;				/* to satisfy compiler */
 	/* symbol search doesn't supported. */

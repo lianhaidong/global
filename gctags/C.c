@@ -44,10 +44,10 @@
 #include "token.h"
 #include "c_res.h"
 
-static	void	process_attribute(int);
-static	int	function_definition(int, char *);
-static	void	condition_macro(int, int);
-static	int	seems_datatype(const char *);
+static void process_attribute(int);
+static int function_definition(int, char *);
+static void condition_macro(int, int);
+static int seems_datatype(const char *);
 
 #define IS_TYPE_QUALIFIER(c)	((c) == C_CONST || (c) == C_RESTRICT || (c) == C_VOLATILE)
 
@@ -73,14 +73,14 @@ static int level;		/* brace level */
  */
 void
 C(yacc)
-	int	yacc;
+	int yacc;
 {
-	int	c, cc;
-	int	savelevel;
-	int	target;
-	int	startmacro, startsharp;
-	const	char *interested = "{}=;";
-	STRBUF	*sb = strbuf_open(0);
+	int c, cc;
+	int savelevel;
+	int target;
+	int startmacro, startsharp;
+	const char *interested = "{}=;";
+	STRBUF *sb = strbuf_open(0);
 	/*
 	 * yacc file format is like the following.
 	 *
@@ -91,8 +91,8 @@ C(yacc)
 	 * programs
 	 *
 	 */
-	int	yaccstatus = (yacc) ? DECLARATIONS : PROGRAMS;
-	int	inC = (yacc) ? 0 : 1;		/* 1 while C source */
+	int yaccstatus = (yacc) ? DECLARATIONS : PROGRAMS;
+	int inC = (yacc) ? 0 : 1;		/* 1 while C source */
 
 	level = piflevel = 0;
 	savelevel = -1;
@@ -114,8 +114,8 @@ C(yacc)
 					if (target == REF && defined(token))
 						PUT(token, lineno, sp);
 				} else if (level == 0 && !startmacro && !startsharp) {
-					char	arg1[MAXTOKEN], savetok[MAXTOKEN], *saveline;
-					int	savelineno = lineno;
+					char arg1[MAXTOKEN], savetok[MAXTOKEN], *saveline;
+					int savelineno = lineno;
 
 					strlimcpy(savetok, token, sizeof(savetok));
 					strbuf_reset(sb);
@@ -308,9 +308,9 @@ C(yacc)
 			break;
 		case C_TYPEDEF:
 			if (tflag) {
-				char	savetok[MAXTOKEN];
-				int	savelineno = 0;
-				int	typedef_savelevel = level;
+				char savetok[MAXTOKEN];
+				int savelineno = 0;
+				int typedef_savelevel = level;
 
 				savetok[0] = 0;
 
@@ -460,7 +460,7 @@ C(yacc)
  */
 static void
 process_attribute(target)
-int target;
+	int target;
 {
 	int brace = 0;
 	int c;
@@ -495,12 +495,12 @@ int target;
  */
 static int
 function_definition(target, arg1)
-int	target;
-char	arg1[MAXTOKEN];
+	int target;
+	char arg1[MAXTOKEN];
 {
-	int	c;
-	int     brace_level, isdefine;
-	int	accept_arg1 = 0;
+	int c;
+	int brace_level, isdefine;
+	int accept_arg1 = 0;
 
 	brace_level = isdefine = 0;
 	while ((c = nexttoken("()", reserved_word)) != EOF) {
@@ -595,8 +595,8 @@ char	arg1[MAXTOKEN];
  */
 static void
 condition_macro(cc, target)
-	int	cc;
-	int	target;
+	int cc;
+	int target;
 {
 	cur = &stack[piflevel];
 	if (cc == SHARP_IFDEF || cc == SHARP_IFNDEF || cc == SHARP_IF) {
@@ -622,7 +622,7 @@ condition_macro(cc, target)
 		level = cur->start;
 		cur->if0only = 0;
 	} else if (cc == SHARP_ENDIF) {
-		int	minus = 0;
+		int minus = 0;
 
 		--piflevel;
 		if (piflevel < 0) {
@@ -662,7 +662,7 @@ condition_macro(cc, target)
  */
 static int
 seems_datatype(token)
-const char *token;
+	const char *token;
 {
 	int length = strlen(token);
 	const char *p = token + length;

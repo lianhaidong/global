@@ -39,11 +39,11 @@
 #define DEFAULTSUFFIXES "c,h,y,c++,cc,cpp,cxx,hxx,C,H,s,S,java,php,php3,phtml"
 #define DEFAULTSKIP     "GPATH,GTAGS,GRTAGS,GSYMS,HTML/,tags,TAGS,ID,y.tab.c,y.tab.h,.notfunction,cscope.out,SCCS/,RCS/,CVS/,CVSROOT/,.deps/,{arch}/,.cvsrc,.cvsignore,.cvspass,.cvswrappers"
 
-void	openconf(void);
-int	getconfn(const char *, int *);
-int	getconfs(const char *, STRBUF *);
-int	getconfb(const char *);
-char	*getconfline(void);
-void	closeconf(void);
+void openconf(void);
+int getconfn(const char *, int *);
+int getconfs(const char *, STRBUF *);
+int getconfb(const char *);
+char *getconfline(void);
+void closeconf(void);
 
 #endif /* ! _CONF_H_ */

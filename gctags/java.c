@@ -49,17 +49,17 @@
 void
 java()
 {
-	int	c;
-	int	level;					/* brace level */
-	int	target;
-	int	startclass, startthrows, startequal;
-	char	classname[MAXTOKEN];
-	char	completename[MAXCOMPLETENAME];
-	int	classlevel;
+	int c;
+	int level;					/* brace level */
+	int target;
+	int startclass, startthrows, startequal;
+	char classname[MAXTOKEN];
+	char completename[MAXCOMPLETENAME];
+	int classlevel;
 	struct {
 		char *classname;
 		char *terminate;
-		int   level;
+		int level;
 	} stack[MAXCLASSSTACK];
 	const char *interested = "{}=;";
 

@@ -43,12 +43,12 @@
 #include "gctags.h"
 #include "const.h"
 
-char	*notfunction;
+char *notfunction;
 
-int	main(int, char **);
-static	void usage(void);
-static	void help(void);
-static	int match_suffix_list(const char *, const char *);
+int main(int, char **);
+static void usage(void);
+static void help(void);
+static int match_suffix_list(const char *, const char *);
 
 struct words {
         const char *name;
@@ -66,21 +66,21 @@ static const char *default_map = "c:.c.h,yacc:.y,asm:.s.S,java:.java,cpp:.c++.cc
 static char *langmap;
 static STRBUF *active_map;
 
-int	bflag;			/* -b: force level 1 block start */
-int	dflag;			/* -d: treat #define with no argument */
-int	eflag;			/* -e: force level 1 block end */
-int	nflag;			/* -n: doen't print tag */
-int	rflag;			/* -r: function reference */
-int	sflag;			/* -s: collect symbols */
-int	tflag;			/* -t: treat typedefs, structs, unions, and enums. */
-int	wflag;			/* -w: warning message */
-int	vflag;			/* -v: verbose mode */
-int	do_check;
-int	show_version;
-int	show_help;
-int	debug;
+int bflag;			/* -b: force level 1 block start */
+int dflag;			/* -d: treat #define with no argument */
+int eflag;			/* -e: force level 1 block end */
+int nflag;			/* -n: doen't print tag */
+int rflag;			/* -r: function reference */
+int sflag;			/* -s: collect symbols */
+int tflag;			/* -t: treat typedefs, structs, unions, and enums. */
+int wflag;			/* -w: warning message */
+int vflag;			/* -v: verbose mode */
+int do_check;
+int show_version;
+int show_help;
+int debug;
 
-int	yaccfile;		/* yacc file */
+int yaccfile;		/* yacc file */
 
 static void
 usage()
@@ -117,13 +117,13 @@ static struct option const long_options[] = {
 
 int
 main(argc, argv)
-	int	argc;
-	char	**argv;
+	int argc;
+	char **argv;
 {
-	char	*p;
-	int	flag;
-	int	optchar;
-	int     option_index = 0;
+	char *p;
+	int flag;
+	int optchar;
+	int option_index = 0;
 
 	while ((optchar = getopt_long(argc, argv, "bdenrstvw", long_options, &option_index)) != EOF) {
 		switch(optchar) {
@@ -211,11 +211,11 @@ main(argc, argv)
 	if (test("r", NOTFUNCTION))
 #endif
 	{
-		FILE	*ip;
-		STRBUF	*sb = strbuf_open(0);
-		STRBUF	*ib = strbuf_open(0);
-		char	*p;
-		int	i;
+		FILE *ip;
+		STRBUF *sb = strbuf_open(0);
+		STRBUF *ib = strbuf_open(0);
+		char *p;
+		int i;
 
 		if ((ip = fopen(NOTFUNCTION, "r")) == 0)
 #ifdef __DJGPP__
@@ -332,7 +332,7 @@ cmp(s1, s2)
 
 int
 isnotfunction(name)
-	char	*name;
+	char *name;
 {
 	struct words tmp;
 	struct words *result;

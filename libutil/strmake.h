@@ -22,6 +22,6 @@
 #ifndef _STRMAKE_H_
 #define _STRMAKE_H_
 
-char	*strmake(const char *, const char *);
+char *strmake(const char *, const char *);
 
 #endif /* ! _STRMAKE_H_ */

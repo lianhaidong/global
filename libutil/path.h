@@ -37,10 +37,10 @@
 
 #define isdrivechar(x) (((x) >= 'A' && (x) <= 'Z') || ((x) >= 'a' && (x) <= 'z'))
 
-int	isabspath(char *);
-char	*canonpath(char *);
+int isabspath(char *);
+char *canonpath(char *);
 #ifdef __DJGPP__
-char    *realpath(char *, char *);
+char *realpath(char *, char *);
 #endif
 
 #endif /* ! _PATH_H_ */

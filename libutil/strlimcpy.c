@@ -36,9 +36,9 @@
  */
 void
 strlimcpy(dest, source, limit)
-char *dest;
-const char *const source;
-const int limit;
+	char *dest;
+	const char *const source;
+	const int limit;
 {
 	int n = (int)limit;
 	const char *s = source;

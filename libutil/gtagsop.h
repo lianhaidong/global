@@ -60,43 +60,43 @@
 #define GTOP_BASICREGEX		32	/* use basic regular expression */
 
 typedef struct {
-	DBOP	*dbop;			/* descripter of DBOP */
-	int	format_version;		/* format version */
-	int	format;			/* GTAGS_STANDARD, GTAGS_COMPACT */
-	int	mode;			/* mode */
-	int	db;			/* 0:GTAGS, 1:GRTAGS, 2:GSYMS */
-	int	openflags;		/* flags value of gtags_open() */
-	int	flags;			/* flags */
-	char	root[MAXPATHLEN+1];	/* root directory of source tree */
+	DBOP *dbop;			/* descripter of DBOP */
+	int format_version;		/* format version */
+	int format;			/* GTAGS_STANDARD, GTAGS_COMPACT */
+	int mode;			/* mode */
+	int db;				/* 0:GTAGS, 1:GRTAGS, 2:GSYMS */
+	int openflags;			/* flags value of gtags_open() */
+	int flags;			/* flags */
+	char root[MAXPATHLEN+1];	/* root directory of source tree */
 	/*
 	 * Stuff for compact format
 	 */
-	int	opened;			/* whether or not file opened */
-	char	*line;			/* current record */
-	char	tag[IDENTLEN+1];	/* current tag */
-	char	prev_tag[IDENTLEN+1];	/* previous tag */
-	char	path[MAXPATHLEN+1];	/* current path */
-	char	prev_path[MAXPATHLEN+1];/* previous path */
-	char	prev_fid[32];		/* previous fid (postgres) */
-	STRBUF	*sb;			/* string buffer */
-	STRBUF	*ib;			/* input buffer */
-	FILE	*fp;			/* descriptor of 'path' */
-	char	*lnop;			/* current line number */
-	int	lno;			/* integer value of 'lnop' */
+	int opened;			/* whether or not file opened */
+	char *line;			/* current record */
+	char tag[IDENTLEN+1];		/* current tag */
+	char prev_tag[IDENTLEN+1];	/* previous tag */
+	char path[MAXPATHLEN+1];	/* current path */
+	char prev_path[MAXPATHLEN+1];	/* previous path */
+	char prev_fid[32];		/* previous fid (postgres) */
+	STRBUF *sb;			/* string buffer */
+	STRBUF *ib;			/* input buffer */
+	FILE *fp;			/* descriptor of 'path' */
+	char *lnop;			/* current line number */
+	int lno;			/* integer value of 'lnop' */
 } GTOP;
 
 const char *dbname(int);
-void	makecommand(char *, char *, STRBUF *);
-void	formatcheck(char *, int);
-int	notnamechar(char *);
-void	gtags_setinfo(char *);
-GTOP	*gtags_open(char *, char *, int, int, int);
-void	gtags_put(GTOP *, char *, char *, char *);
-char	*gtags_get(GTOP *, char *);
-void    gtags_add(GTOP *, char *, char *, int);
-void	gtags_delete(GTOP *, char *);
-char	*gtags_first(GTOP *, char *, int);
-char	*gtags_next(GTOP *);
-void	gtags_close(GTOP *);
+void makecommand(char *, char *, STRBUF *);
+void formatcheck(char *, int);
+int notnamechar(char *);
+void gtags_setinfo(char *);
+GTOP *gtags_open(char *, char *, int, int, int);
+void gtags_put(GTOP *, char *, char *, char *);
+char *gtags_get(GTOP *, char *);
+void gtags_add(GTOP *, char *, char *, int);
+void gtags_delete(GTOP *, char *);
+char *gtags_first(GTOP *, char *, int);
+char *gtags_next(GTOP *);
+void gtags_close(GTOP *);
 
 #endif /* ! _GTOP_H_ */

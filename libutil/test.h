@@ -22,6 +22,6 @@
 #ifndef _TEST_H_
 #define _TEST_H_
 
-int	test(const char *, const char *);
+int test(const char *, const char *);
 
 #endif /* ! _TEST_H_ */

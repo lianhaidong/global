@@ -44,12 +44,12 @@ static STRBUF	*sb;
  */
 char	*
 makepath(dir, file, suffix)
-const char *dir;
-const char *file;
-const char *suffix;
+	const char *dir;
+	const char *file;
+	const char *suffix;
 {
-	int	length;
-	char	sep = '/';
+	int length;
+	char sep = '/';
 
 	if (sb == NULL)
 		sb = strbuf_open(0);

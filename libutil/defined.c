@@ -36,7 +36,7 @@
 #include "defined.h"
 #include "makepath.h"
 
-static DBOP	*dbop = NULL;
+static DBOP *dbop = NULL;
 
 /*
  * Tag command that supports referenced tag must call this function
@@ -44,7 +44,7 @@ static DBOP	*dbop = NULL;
  */
 int
 defined(name)
-const char *name;
+	const char *name;
 {
 	char *path;
 

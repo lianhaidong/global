@@ -22,6 +22,6 @@
 #ifndef _MAKEPATH_H_
 #define _MAKEPATH_H_
 
-char	*makepath(const char *, const char *, const char *);
+char *makepath(const char *, const char *, const char *);
 
 #endif /* ! _MAKEPATH_H_ */

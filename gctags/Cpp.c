@@ -45,10 +45,10 @@
 #include "token.h"
 #include "cpp_res.h"
 
-static  void    process_attribute(int);
-static	int	function_definition(int);
-static  int     seems_datatype(const char *);
-static	void	condition_macro(int, int);
+static void process_attribute(int);
+static int function_definition(int);
+static int seems_datatype(const char *);
+static void condition_macro(int, int);
 
 #define MAXCOMPLETENAME 1024            /* max size of complete name of class */
 #define MAXCLASSSTACK   100             /* max size of class stack */
@@ -73,20 +73,20 @@ static int level;		/* brace level */
 void
 Cpp()
 {
-	int	c, cc;
-	int	savelevel;
-	int	target;
-	int	startclass, startthrow, startmacro, startsharp, startequal;
-	char    classname[MAXTOKEN];
-	char    completename[MAXCOMPLETENAME];
-	int     classlevel;
+	int c, cc;
+	int savelevel;
+	int target;
+	int startclass, startthrow, startmacro, startsharp, startequal;
+	char classname[MAXTOKEN];
+	char completename[MAXCOMPLETENAME];
+	int classlevel;
 	struct {
 		char *classname;
 		char *terminate;
-		int   level;
+		int level;
 	} stack[MAXCLASSSTACK];
-	const	char *interested = "{}=;~";
-	STRBUF	*sb = strbuf_open(0);
+	const char *interested = "{}=;~";
+	STRBUF *sb = strbuf_open(0);
 
 	*classname = *completename = 0;
 	stack[0].classname = completename;
@@ -116,8 +116,8 @@ Cpp()
 					if (target == REF && defined(token))
 						PUT(token, lineno, sp);
 				} else if (level == stack[classlevel].level && !startmacro && !startsharp && !startequal) {
-					char	savetok[MAXTOKEN], *saveline;
-					int	savelineno = lineno;
+					char savetok[MAXTOKEN], *saveline;
+					int savelineno = lineno;
 
 					strlimcpy(savetok, token, sizeof(savetok));
 					strbuf_reset(sb);
@@ -334,9 +334,9 @@ Cpp()
 			break;
 		case CPP_TYPEDEF:
 			if (tflag) {
-				char	savetok[MAXTOKEN];
-				int	savelineno = 0;
-				int	typedef_savelevel = level;
+				char savetok[MAXTOKEN];
+				int savelineno = 0;
+				int typedef_savelevel = level;
 
 				savetok[0] = 0;
 
@@ -486,7 +486,7 @@ Cpp()
  */
 static void
 process_attribute(target)
-int target;
+	int target;
 {
 	int brace = 0;
 	int c;
@@ -519,10 +519,10 @@ int target;
  */
 static int
 function_definition(target)
-int	target;
+	int target;
 {
-	int	c;
-	int     brace_level, isdefine;
+	int c;
+	int brace_level, isdefine;
 
 	brace_level = isdefine = 0;
 	while ((c = nexttoken("()", reserved_word)) != EOF) {
@@ -616,8 +616,8 @@ int	target;
  */
 static void
 condition_macro(cc, target)
-	int	cc;
-	int	target;
+	int cc;
+	int target;
 {
 	cur = &pifstack[piflevel];
 	if (cc == SHARP_IFDEF || cc == SHARP_IFNDEF || cc == SHARP_IF) {
@@ -643,7 +643,7 @@ condition_macro(cc, target)
 		level = cur->start;
 		cur->if0only = 0;
 	} else if (cc == SHARP_ENDIF) {
-		int	minus = 0;
+		int minus = 0;
 
 		--piflevel;
 		if (piflevel < 0) {
@@ -683,7 +683,7 @@ condition_macro(cc, target)
  */
 static int
 seems_datatype(token)
-const char *token;
+	const char *token;
 {
 	int length = strlen(token);
 	const char *p = token + length;

@@ -39,11 +39,11 @@
 #include "gpathop.h"
 #include "strlimcpy.h"
 
-static DBOP	*dbop;
-static int	_nextkey;
-static int	_mode;
-static int	opened;
-static int	created;
+static DBOP *dbop;
+static int _nextkey;
+static int _mode;
+static int opened;
+static int created;
 
 /*
  * gpath_open: open gpath tag file
@@ -58,11 +58,11 @@ static int	created;
  */
 int
 gpath_open(dbpath, mode, flags)
-const char *dbpath;
-int	mode;
-int	flags;
+	const char *dbpath;
+	int mode;
+	int flags;
 {
-	char	*p;
+	char *p;
 
 	assert(opened == 0);
 	/*
@@ -95,9 +95,9 @@ int	flags;
  */
 void
 gpath_put(path)
-const char *path;
+	const char *path;
 {
-	char	fid[32];
+	char fid[32];
 
 	assert(opened == 1);
 	if (_mode == 1 && created)
@@ -124,7 +124,7 @@ const char *path;
  */
 char *
 gpath_path2fid(path)
-const char *path;
+	const char *path;
 {
 	assert(opened == 1);
 	return dbop_get(dbop, path);
@@ -137,7 +137,7 @@ const char *path;
  */
 char *
 gpath_fid2path(fid)
-const char *fid;
+	const char *fid;
 {
 #ifdef USE_POSTGRES
 	if (dbop->openflags & DBOP_POSTGRES)
@@ -152,9 +152,9 @@ const char *fid;
  */
 void
 gpath_delete(path)
-const char *path;
+	const char *path;
 {
-	char	*fid;
+	char *fid;
 
 	assert(opened == 1);
 	assert(_mode == 2);
@@ -190,7 +190,7 @@ gpath_nextkey(void)
 void
 gpath_close(void)
 {
-	char	fid[32];
+	char fid[32];
 
 	assert(opened == 1);
 	opened = 0;
@@ -213,18 +213,18 @@ gpath_close(void)
  * because gfind_xxx() use GPATH (file index).
  * If GPATH exist then you should use this.
  */
-static DBOP	*gfind_dbop;
-static int      gfind_opened;
-static int      gfind_first;
-static char	gfind_prefix[MAXPATHLEN+1];
+static DBOP *gfind_dbop;
+static int gfind_opened;
+static int gfind_first;
+static char gfind_prefix[MAXPATHLEN+1];
 
 /*
  * gfind_open: start iterator using GPATH.
  */
 void
 gfind_open(dbpath, local)
-char	*dbpath;
-char	*local;
+	char *dbpath;
+	char *local;
 {
 	char *path;
 

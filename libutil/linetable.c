@@ -60,7 +60,7 @@ static void linetable_put(int, int);
  */
 int
 linetable_open(path)
-const char *path;
+	const char *path;
 {
 	FILE *ip;
 	struct stat sb;
@@ -96,8 +96,8 @@ const char *path;
  */
 int
 linetable_read(buf, size)
-char *buf;
-int size;
+	char *buf;
+	int size;
 {
 	int leaved = endp - curp;
 
@@ -118,8 +118,8 @@ int size;
  */
 static void
 linetable_put(offset, lineno)
-int offset;
-int lineno;
+	int offset;
+	int lineno;
 {
 	if (!total_lines) {
 		total_lines = EXPAND;
@@ -145,7 +145,7 @@ int lineno;
  */
 char *
 linetable_get(lineno)
-int lineno;
+	int lineno;
 {
 	if (lineno-- <= 0)
 		return NULL;
@@ -173,8 +173,8 @@ linetable_close()
  */
 void
 linetable_print(op, lineno)
-FILE *op;
-int lineno;
+	FILE *op;
+	int lineno;
 {
 	char *s = linetable_get(lineno);
 	if (s == NULL)

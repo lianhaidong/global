@@ -23,6 +23,6 @@
 #ifndef _IS_UNIXY_H_
 #define _IS_UNIXY_H_
 
-int	is_unixy(void);
+int is_unixy(void);
 
 #endif /* ! _IS_UNIXY_H_ */

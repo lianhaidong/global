@@ -99,7 +99,7 @@ static regex_t reg;
  * We know the format version 3 is better than 1 in all aspect,
  * the default format version will be change into 3 in the future.
  */
-static int	support_version = 3;	/* acceptable format version   */
+static int support_version = 3;	/* acceptable format version   */
 static const char *tagslist[] = {"GPATH", "GTAGS", "GRTAGS", "GSYMS"};
 static STRBUF *output;
 /*
@@ -110,7 +110,7 @@ static STRBUF *output;
  */
 const char *
 dbname(db)
-int	db;
+	int db;
 {
 	assert(db >= 0 && db < GTAGLIM);
 	return tagslist[db];
@@ -129,11 +129,11 @@ int	db;
  */
 void
 makecommand(comline, path, sb)
-char	*comline;
-char	*path;
-STRBUF	*sb;
+	char *comline;
+	char *path;
+	STRBUF *sb;
 {
-	char	*p = locatestring(comline, "%s", MATCH_FIRST);
+	char *p = locatestring(comline, "%s", MATCH_FIRST);
 
 	if (p) {
 		strbuf_nputs(sb, comline, p - comline);
@@ -168,8 +168,8 @@ STRBUF	*sb;
  */
 void
 formatcheck(line, format)
-char	*line;
-int	format;
+	char *line;
+	int format;
 {
 	int n;
 	char *p;
@@ -221,7 +221,7 @@ int	format;
  */
 void
 gtags_setinfo(info)
-char *info;
+	char *info;
 {
 	dbop_setinfo(info);
 }
@@ -242,18 +242,18 @@ char *info;
  * when error occurred, gtagopen doesn't return.
  * GTAGS_PATHINDEX needs GTAGS_COMPACT.
  */
-GTOP	*
+GTOP *
 gtags_open(dbpath, root, db, mode, flags)
-char	*dbpath;
-char	*root;
-int	db;
-int	mode;
-int	flags;
+	char *dbpath;
+	char *root;
+	int db;
+	int mode;
+	int flags;
 {
-	GTOP	*gtop;
-	char	*path;
-	int	dbmode = 0;
-	int	dbopflags = 0;
+	GTOP *gtop;
+	char *path;
+	int dbmode = 0;
+	int dbopflags = 0;
 
 	if ((gtop = (GTOP *)calloc(sizeof(GTOP), 1)) == NULL)
 		die("short of memory.");
@@ -313,7 +313,7 @@ int	flags;
 			dbop_put(gtop->dbop, PATHINDEXKEY, PATHINDEXKEY, "0");
 		}
 		if (gtop->format & (GTAGS_COMPACT|GTAGS_PATHINDEX)) {
-			char	buf[80];
+			char buf[80];
 
 			if (gtop->format == GTAGS_PATHINDEX)
 				gtop->format_version = 3;
@@ -330,7 +330,7 @@ int	flags;
 		 * if 'format version record' is not found, it's assumed
 		 * version 1.
 		 */
-		char	*p;
+		char *p;
 
 		if ((p = dbop_get(gtop->dbop, VERSIONKEY)) != NULL) {
 			for (p += strlen(VERSIONKEY); *p && isspace(*p); p++)
@@ -379,10 +379,10 @@ int	flags;
  */
 void
 gtags_put(gtop, tag, record, fid)
-GTOP	*gtop;
-char	*tag;
-char	*record;
-char	*fid;
+	GTOP *gtop;
+	char *tag;
+	char *record;
+	char *fid;
 {
 	char *line, *path;
 	SPLIT ptable;
@@ -436,18 +436,18 @@ char	*fid;
  */
 void
 gtags_add(gtop, comline, path, flags)
-GTOP	*gtop;
-char	*comline;
-char	*path;
-int	flags;
+	GTOP *gtop;
+	char *comline;
+	char *path;
+	int flags;
 {
-	char	*ctags_x;
-	FILE	*ip;
-	STRBUF	*sb = strbuf_open(0);
-	STRBUF	*ib = strbuf_open(MAXBUFLEN);
-	STRBUF	*sort_command = strbuf_open(0);
-	STRBUF	*sed_command = strbuf_open(0);
-	char	*fid;
+	char *ctags_x;
+	FILE *ip;
+	STRBUF *sb = strbuf_open(0);
+	STRBUF *ib = strbuf_open(MAXBUFLEN);
+	STRBUF *sort_command = strbuf_open(0);
+	STRBUF *sed_command = strbuf_open(0);
+	char *fid;
 
 	/*
 	 * get command name of sort and sed.
@@ -550,9 +550,9 @@ int	flags;
  */
 static int
 belongto(gtop, path, line)
-GTOP	*gtop;
-char	*path;
-char	*line;
+	GTOP *gtop;
+	char *path;
+	char *line;
 {
 	char *p = NULL;
 	int status, n;
@@ -585,8 +585,8 @@ char	*line;
  */
 void
 gtags_delete(gtop, path)
-GTOP	*gtop;
-char	*path;
+	GTOP *gtop;
+	char *path;
 {
 	char *p;
 	/*
@@ -632,16 +632,16 @@ char	*path;
  */
 char *
 gtags_first(gtop, pattern, flags)
-GTOP	*gtop;
-char	*pattern;
-int	flags;
+	GTOP *gtop;
+	char *pattern;
+	int flags;
 {
-	int	dbflags = 0;
-	char	*line;
-	char    prefix[IDENTLEN+1], *p;
+	int dbflags = 0;
+	char *line;
+	char prefix[IDENTLEN+1], *p;
 	regex_t *preg = &reg;
-	char	*key;
-	int	regflags = 0;
+	char *key;
+	int regflags = 0;
 
 	gtop->flags = flags;
 	if (flags & GTOP_PREFIX && pattern != NULL)
@@ -698,10 +698,9 @@ int	flags;
  */
 char *
 gtags_next(gtop)
-GTOP	*gtop;
+	GTOP *gtop;
 {
-	char	*line;
-
+	char *line;
 	/*
 	 * If it is standard format or only key.
 	 * Just return it.
@@ -738,7 +737,7 @@ GTOP	*gtop;
  */
 void
 gtags_close(gtop)
-GTOP	*gtop;
+	GTOP *gtop;
 {
 	if (gtop->format & GTAGS_PATHINDEX || gtop->mode != GTAGS_READ)
 		gpath_close();
@@ -758,7 +757,7 @@ GTOP	*gtop;
  */
 static char *
 unpack_pathindex(line)
-char *line;
+	char *line;
 {
 	SPLIT ptable;
 	int n;
@@ -797,15 +796,15 @@ char *line;
  */
 static char *
 genrecord(gtop)
-GTOP	*gtop;
+	GTOP *gtop;
 {
 	SPLIT ptable;
-	static char	output[MAXBUFLEN+1];
-	char    path[MAXPATHLEN+1];
-	static char	buf[1];
-	char	*buffer = buf;
-	char	*lnop;
-	int	tagline;
+	static char output[MAXBUFLEN+1];
+	char path[MAXPATHLEN+1];
+	static char buf[1];
+	char *buffer = buf;
+	char *lnop;
+	int tagline;
 
 	if (!gtop->opened) {
 		int n;

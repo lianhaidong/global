@@ -54,14 +54,14 @@ static const char *suffix[] = {".exe", ".com", ".bat",};
  */
 char *
 usable(command)
-char	*command;
+char *command;
 {
-	STRBUF	*sb;
+	STRBUF *sb;
 	char *p, *dir;
 	static char path[MAXPATHLEN+1];
 
 #if defined(_WIN32) || defined(__DJGPP__)
-	int	i, lim = sizeof(suffix)/sizeof(char *);
+	int i, lim = sizeof(suffix)/sizeof(char *);
 #endif
 
 	if (isabspath(command) || locatestring(command, "./", MATCH_AT_FIRST)

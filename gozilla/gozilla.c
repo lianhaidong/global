@@ -32,8 +32,8 @@
 #include "regex.h"
 #include "const.h"
 
-static void     usage(void);
-static void     help(void);
+static void usage(void);
+static void help(void);
 
 const char *gozillarc = ".gozillarc";
 #ifdef __DJGPP__
@@ -41,30 +41,30 @@ const char *dos_gozillarc = "_gozillarc";
 #endif
 
 static char *alias(char *);
-int	main(int, char **);
-void	getdefinitionURL(char *, STRBUF *);
-void	getURL(char *, STRBUF *);
-int	isprotocol(char *);
-int	issource(char *);
-int	convertpath(char *, char *, char *, STRBUF *);
+int main(int, char **);
+void getdefinitionURL(char *, STRBUF *);
+void getURL(char *, STRBUF *);
+int isprotocol(char *);
+int issource(char *);
+int convertpath(char *, char *, char *, STRBUF *);
 #ifndef __DJGPP__
-void	sendbrowser(char *, char *);
+void sendbrowser(char *, char *);
 #endif
 #ifndef _WIN32
-int	sendcommand(char *);
+int sendcommand(char *);
 #endif
 
 #ifndef isblank
 #define isblank(c)	((c) == ' ' || (c) == '\t')
 #endif
-int	bflag;
-int	pflag;
-int	qflag;
-int	Cflag;
-int	vflag;
-int	show_version;
-int	linenumber = 0;
-int	debug;
+int bflag;
+int pflag;
+int qflag;
+int Cflag;
+int vflag;
+int show_version;
+int linenumber = 0;
+int debug;
 
 static void
 usage()
@@ -95,7 +95,7 @@ help()
  */
 static char *
 alias(alias_name)
-char	*alias_name;
+	char *alias_name;
 {
 	FILE *ip;
 	STRBUF *sb = strbuf_open(0);
@@ -154,14 +154,14 @@ end:
 
 int
 main(argc, argv)
-int	argc;
-char	*argv[];
+	int argc;
+	char *argv[];
 {
-	char	c, *p;
-	char	*browser = NULL;
-	char	*definition = NULL;
-	STRBUF	*arg = strbuf_open(0);
-	STRBUF	*URL = strbuf_open(0);
+	char c, *p;
+	char *browser = NULL;
+	char *definition = NULL;
+	STRBUF *arg = strbuf_open(0);
+	STRBUF *URL = strbuf_open(0);
 
 	while (--argc > 0 && ((c = (++argv)[0][0]) == '-' || c == '+')) {
 		if (argv[0][1] == '-') {
@@ -256,10 +256,10 @@ char	*argv[];
 	else
 #endif /* !__DJGPP__ */
 	{
-		char	com[MAXFILLEN+1];
+		char com[MAXFILLEN+1];
 
 #ifdef __DJGPP__
-		char	*path;
+		char *path;
 		/*
 		 * assume a Windows browser if it's not on the path.
 		 */
@@ -283,18 +283,18 @@ char	*argv[];
  */
 void
 getdefinitionURL(arg, URL)
-char *arg;
-STRBUF *URL;
+	char *arg;
+	STRBUF *URL;
 {
-	char	cwd[MAXPATHLEN+1];
-	char	root[MAXPATHLEN+1];
-	char	dbpath[MAXPATHLEN+1];
-	char	htmldir[MAXPATHLEN+1];
-	char	*path, *p;
-	STRBUF	*sb = NULL;
-	DBOP	*dbop = NULL;
-	SPLIT	ptable;
-	int	status = -1;
+	char cwd[MAXPATHLEN+1];
+	char root[MAXPATHLEN+1];
+	char dbpath[MAXPATHLEN+1];
+	char htmldir[MAXPATHLEN+1];
+	char *path, *p;
+	STRBUF *sb = NULL;
+	DBOP *dbop = NULL;
+	SPLIT ptable;
+	int status = -1;
 
 	/*
 	 * get current, root and dbpath directory.
@@ -365,15 +365,15 @@ STRBUF *URL;
  */
 void
 getURL(arg, URL)
-char *arg;
-STRBUF *URL;
+	char *arg;
+	STRBUF *URL;
 {
-	char	cwd[MAXPATHLEN+1];
-	char	root[MAXPATHLEN+1];
-	char	dbpath[MAXPATHLEN+1];
-	char	htmldir[MAXPATHLEN+1];
-	char	*abspath, *p;
-	char	buf[MAXPATHLEN+1];
+	char cwd[MAXPATHLEN+1];
+	char root[MAXPATHLEN+1];
+	char dbpath[MAXPATHLEN+1];
+	char htmldir[MAXPATHLEN+1];
+	char *abspath, *p;
+	char buf[MAXPATHLEN+1];
 
 	if (!test("f", arg) && !test("d", NULL))
 		die("path '%s' not found.", arg);
@@ -435,9 +435,9 @@ STRBUF *URL;
  */
 int
 isprotocol(url)
-char	*url;
+	char *url;
 {
-	char	*p;
+	char *p;
 
 	if (!strncmp(url, "file:", 5))
 		return 1;
@@ -461,12 +461,12 @@ char	*url;
  */
 int
 issource(path)
-char	*path;
+	char *path;
 {
-	STRBUF	*sb = strbuf_open(0);
-	char	*p;
-	char	suff[MAXPATHLEN+1];
-	int	retval = 0;
+	STRBUF *sb = strbuf_open(0);
+	char *p;
+	char suff[MAXPATHLEN+1];
+	int retval = 0;
 
 	if (!getconfs("suffixes", sb)) {
 		strbuf_close(sb);
@@ -474,7 +474,7 @@ char	*path;
 	}
 	suff[0] = '.';
 	for (p = strbuf_value(sb); p; ) {
-		char    *unit = p;
+		char *unit = p;
 		if ((p = locatestring(p, ",", MATCH_FIRST)) != NULL)
 			*p++ = 0;
 		strlimcpy(&suff[1], unit, sizeof(suff) - 1);
@@ -498,10 +498,10 @@ char	*path;
  */
 int
 convertpath(dbpath, htmldir, path, sb)
-char	*dbpath;
-char	*htmldir;
-char	*path;
-STRBUF	*sb;
+	char *dbpath;
+	char *htmldir;
+	char *path;
+	STRBUF *sb;
 {
 	static const char *suffix[] = {".html", ".htm"};
 	static const char *gz = ".gz";
@@ -568,10 +568,10 @@ STRBUF	*sb;
 #ifdef _WIN32
 void
 sendbrowser(browser, url)
-char	*browser;
-char	*url;
+	char *browser;
+	char *url;
 {
-	char	com[1024], *path;
+	char com[1024], *path;
 	STARTUPINFO si;
 	PROCESS_INFORMATION pi;
 
@@ -589,11 +589,11 @@ char	*url;
 #else
 void
 sendbrowser(browser, url)
-char	*browser;
-char	*url;
+	char *browser;
+	char *url;
 {
-	int	pid;
-	char	com[1024], *path;
+	int pid;
+	char com[1024], *path;
 
 	if (!(path = usable(browser)))
 		die("%s not found in your path.", browser);

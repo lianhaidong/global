@@ -33,15 +33,15 @@
 #endif
 #define YACC	1
 
-extern int	bflag;
-extern int	dflag;
-extern int	eflag;
-extern int	nflag;
-extern int	rflag;
-extern int	sflag;
-extern int	tflag;
-extern int	wflag;
-extern int      yaccfile;
+extern int bflag;
+extern int dflag;
+extern int eflag;
+extern int nflag;
+extern int rflag;
+extern int sflag;
+extern int tflag;
+extern int wflag;
+extern int yaccfile;
 
 #define PUT(tag, lno, line) do {					\
 	DBG_PRINT(level, line);						\
@@ -51,12 +51,12 @@ extern int      yaccfile;
 
 #define DBG_PRINT(level, a) dbg_print(level, a)
 
-void    dbg_print(int, const char *);
-int	isnotfunction(char *);
-int	cmp(const void *, const void *);
-void	C(int);
-void	Cpp(void);
-int	isCpp(void);
-void	assembler(void);
-void	java(void);
-void	php(const char *);
+void dbg_print(int, const char *);
+int isnotfunction(char *);
+int cmp(const void *, const void *);
+void C(int);
+void Cpp(void);
+int isCpp(void);
+void assembler(void);
+void java(void);
+void php(const char *);

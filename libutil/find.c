@@ -71,28 +71,28 @@
  *	find_close();
  *
  */
-static regex_t	skip_area;
-static regex_t	*skip;			/* regex for skipping units */
-static regex_t	suff_area;
-static regex_t	*suff = &suff_area;	/* regex for suffixes */
+static regex_t skip_area;
+static regex_t *skip;			/* regex for skipping units */
+static regex_t suff_area;
+static regex_t *suff = &suff_area;	/* regex for suffixes */
 static STRBUF *list;
 static int list_count;
 static char **listarray;		/* list for skipping full path */
-static int	opened;
-static int	retval;
+static int opened;
+static int retval;
 
-static void	trim(char *);
+static void trim(char *);
 #ifdef DEBUG
-extern int	debug;
+extern int debug;
 #endif
 /*
  * trim: remove blanks and '\'.
  */
 static void
 trim(s)
-char	*s;
+	char *s;
 {
-	char	*p;
+	char *p;
 
 	for (p = s; *s; s++) {
 		if (isspace(*s))
@@ -112,9 +112,9 @@ char	*s;
 static void
 prepare_source()
 {
-	STRBUF	*sb = strbuf_open(0);
-	char	*sufflist = NULL;
-	int	flags = REG_EXTENDED;
+	STRBUF *sb = strbuf_open(0);
+	char *sufflist = NULL;
+	int flags = REG_EXTENDED;
 
 	/*
 	 * load icase_path option.
@@ -132,12 +132,12 @@ prepare_source()
 		die("short of memory.");
 	trim(sufflist);
 	{
-		char    *suffp;
+		char *suffp;
 
 		strbuf_reset(sb);
 		strbuf_puts(sb, "\\.(");       /* ) */
 		for (suffp = sufflist; suffp; ) {
-			char    *p;
+			char *p;
 
 			for (p = suffp; *p && *p != ','; p++) {
 				if (!isalnum(*p))
@@ -180,7 +180,7 @@ prepare_skip()
 	STRBUF *reg = strbuf_open(0);
 	int reg_count = 0;
 	char *p, *q;
-	int     flags = REG_EXTENDED|REG_NEWLINE;
+	int flags = REG_EXTENDED|REG_NEWLINE;
 
 	/*
 	 * load icase_path option.
@@ -216,7 +216,7 @@ prepare_skip()
 	 */
 	strbuf_putc(reg, '(');	/* ) */
 	for (p = skiplist; p; ) {
-		char    *skipf = p;
+		char *skipf = p;
 		if ((p = locatestring(p, ",", MATCH_FIRST)) != NULL)
 			*p++ = 0;
 		if (*skipf == '/') {
@@ -290,7 +290,7 @@ prepare_skip()
  */
 int
 skipthisfile(path)
-char *path;
+	char *path;
 {
 	char *first, *last;
 	int i;
@@ -326,10 +326,10 @@ char *path;
 /* dirent version find_xxx()						*/
 /*----------------------------------------------------------------------*/
 #define STACKSIZE 50
-static  char    dir[MAXPATHLEN+1];		/* directory path */
+static  char dir[MAXPATHLEN+1];			/* directory path */
 static  struct {
-	STRBUF  *sb;
-	char    *dirp, *start, *end, *p;
+	STRBUF *sb;
+	char *dirp, *start, *end, *p;
 } stack[STACKSIZE], *topp, *curp;		/* stack */
 
 static int getdirs(char *, STRBUF *);
@@ -347,10 +347,10 @@ static int getdirs(char *, STRBUF *);
  */
 static int
 getdirs(dir, sb)
-char    *dir;
-STRBUF  *sb;
+	char *dir;
+	STRBUF *sb;
 {
-	DIR     *dirp;
+	DIR *dirp;
 	struct dirent *dp;
 #ifndef HAVE_DP_D_TYPE
 	struct stat st;
@@ -418,7 +418,7 @@ STRBUF  *sb;
  */
 void
 find_open(start)
-char *start;
+	char *start;
 {
 	assert(opened == 0);
 	opened = 1;
@@ -452,12 +452,12 @@ char *start;
 char    *
 find_read(void)
 {
-	static	char val[MAXPATHLEN+1];
+	static char val[MAXPATHLEN+1];
 
 	for (;;) {
 		while (curp->p < curp->end) {
-			char	type = *(curp->p);
-			char    *unit = curp->p + 1;
+			char type = *(curp->p);
+			char *unit = curp->p + 1;
 
 			curp->p += strlen(curp->p) + 1;
 			if (type == 'f' || type == 'l') {
@@ -476,8 +476,8 @@ find_read(void)
 				return val;
 			}
 			if (type == 'd') {
-				STRBUF  *sb = strbuf_open(0);
-				char    *dirp = curp->dirp;
+				STRBUF *sb = strbuf_open(0);
+				char *dirp = curp->dirp;
 
 				strcat(dirp, "/");
 				strcat(dirp, unit);
@@ -529,7 +529,7 @@ find_close(void)
 /*----------------------------------------------------------------------*/
 /* find command version							*/
 /*----------------------------------------------------------------------*/
-static FILE	*ip;
+static FILE *ip;
 
 /*
  * find_open: start iterator without GPATH.
@@ -539,7 +539,7 @@ static FILE	*ip;
  */
 void
 find_open(start)
-char *start;
+	char *start;
 {
 	char findcom[MAXFILLEN+1];
 	assert(opened == 0);
@@ -569,9 +569,9 @@ char *start;
 char	*
 find_read(void)
 {
-	static char	val[MAXPATHLEN+2];
-	char	*path = &val[1];
-	char	*p;
+	static char val[MAXPATHLEN+2];
+	char *path = &val[1];
+	char *p;
 
 	assert(opened == 1);
 	while (fgets(path, MAXPATHLEN, ip)) {

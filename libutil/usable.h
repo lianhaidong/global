@@ -22,6 +22,6 @@
 #ifndef _USABLE_H_
 #define _USABLE_H_
 
-char	*usable(char *);
+char *usable(char *);
 
 #endif /* ! _USABLE_H_ */

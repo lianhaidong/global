@@ -53,7 +53,7 @@ static const char *makeobjdir;		/* obj directory		*/
  */
 static void
 setupvariables(verbose)
-int verbose;
+	int verbose;
 {
 	char *p;
 
@@ -87,12 +87,12 @@ int verbose;
  */
 int
 gtagsexist(candidate, dbpath, size, verbose)
-char	*candidate;
-char	*dbpath;
-int	size;
-int	verbose;
+	char *candidate;
+	char *dbpath;
+	int size;
+	int verbose;
 {
-	char	path[MAXPATHLEN+1];
+	char path[MAXPATHLEN+1];
 
 	/*
 	 * setup makeobjdir and makeobjdirprefix (only first time).
@@ -154,13 +154,13 @@ int	verbose;
  */
 void
 getdbpath(cwd, root, dbpath, verbose)
-char	*cwd;
-char	*root;
-char	*dbpath;
-int	verbose;
+	char *cwd;
+	char *root;
+	char *dbpath;
+	int verbose;
 {
 	struct stat sb;
-	char	*p;
+	char *p;
 
 	if (!getcwd(cwd, MAXPATHLEN))
 		die("cannot get current directory.");

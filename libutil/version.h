@@ -23,6 +23,6 @@
 
 extern const char *progname;
 
-void	version(const char *, const int);
+void version(const char *, const int);
 
 #endif /* ! _VERSION_H_ */

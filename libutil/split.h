@@ -32,8 +32,8 @@ typedef struct {
 	} part[NPART];
 } SPLIT;
 
-int	split(char *, int, SPLIT *);
-void	recover(SPLIT *);
-void	split_dump(SPLIT *);
+int split(char *, int, SPLIT *);
+void recover(SPLIT *);
+void split_dump(SPLIT *);
 
 #endif /* ! _SPLIT_H_ */

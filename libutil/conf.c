@@ -45,18 +45,18 @@
 #include "test.h"
 #include "usable.h"
 
-static FILE	*fp;
-static STRBUF	*ib;
-static char	*confline;
+static FILE *fp;
+static STRBUF *ib;
+static char *confline;
 /*
  * 8 level nested tc= or include= is allowed.
  */
-static int	allowed_nest_level = 8;
-static int	opened;
+static int allowed_nest_level = 8;
+static int opened;
 
-static void	trim(char *);
-static char	*readrecord(const char *);
-static void	includelabel(STRBUF *, const char *, int);
+static void trim(char *);
+static char *readrecord(const char *);
+static void includelabel(STRBUF *, const char *, int);
 
 #ifndef isblank
 #define isblank(c)	((c) == ' ' || (c) == '\t')
@@ -72,10 +72,10 @@ static void	includelabel(STRBUF *, const char *, int);
  */
 static void
 trim(l)
-char	*l;
+	char *l;
 {
-	char	*f, *b;
-	int	colon = 0;
+	char *f, *b;
+	int colon = 0;
 
 	/*
 	 * delete blanks.
@@ -110,13 +110,13 @@ char	*l;
  * o append following line.
  * o format check.
  */
-static char	*
+static char *
 readrecord(label)
-const char *label;
+	const char *label;
 {
-	char	*p;
-	int	flag = STRBUF_NOCRLF;
-	int	count = 0;
+	char *p;
+	int flag = STRBUF_NOCRLF;
+	int count = 0;
 
 	rewind(fp);
 	while ((p = strbuf_fgets(ib, fp, flag)) != NULL) {
@@ -173,11 +173,11 @@ const char *label;
  */
 static	void
 includelabel(sb, label, level)
-STRBUF	*sb;
-const char *label;
-int	level;
+	STRBUF	*sb;
+	const char *label;
+	int	level;
 {
-	char	*savep, *p, *q;
+	char *savep, *p, *q;
 
 	if (++level > allowed_nest_level)
 		die("nested include= (or tc=) over flow.");
@@ -361,11 +361,11 @@ openconf()
  */
 int
 getconfn(name, num)
-const char *name;
-int	*num;
+	const char *name;
+	int *num;
 {
-	char	*p;
-	char	buf[MAXPROPLEN+1];
+	char *p;
+	char buf[MAXPROPLEN+1];
 
 	if (!opened)
 		openconf();
@@ -387,13 +387,13 @@ int	*num;
  */
 int
 getconfs(name, sb)
-const char *name;
-STRBUF	*sb;
+	const char *name;
+	STRBUF *sb;
 {
-	char	*p;
-	char	buf[MAXPROPLEN+1];
-	int	all = 0;
-	int	exist = 0;
+	char *p;
+	char buf[MAXPROPLEN+1];
+	int all = 0;
+	int exist = 0;
 
 	if (!opened)
 		openconf();
@@ -424,9 +424,9 @@ STRBUF	*sb;
  */
 int
 getconfb(name)
-const char *name;
+	const char *name;
 {
-	char	buf[MAXPROPLEN+1];
+	char buf[MAXPROPLEN+1];
 
 	if (!opened)
 		openconf();

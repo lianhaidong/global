@@ -29,12 +29,12 @@
 #include "strbuf.h"
 #include "strmake.h"
 
-static STRBUF	*sb;
+static STRBUF *sb;
 
 char *
 strmake(p, lim)
-const char *p;
-const char *lim;
+	const char *p;
+	const char *lim;
 {
 	const char *c;
 

@@ -41,8 +41,8 @@
  */
 void
 set_env(var, val)
-const char *var;
-const char *val;
+	const char *var;
+	const char *val;
 {
 #ifdef HAVE_PUTENV
 	char *env;

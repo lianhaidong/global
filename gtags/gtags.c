@@ -56,54 +56,54 @@
 #include "global.h"
 #include "const.h"
 
-static void	usage(void);
-static void	help(void);
-void	signal_setup(void);
-void	onintr(int);
-int	match(char *, char *);
-int	main(int, char **);
-int	incremental(char *, char *);
-void	updatetags(char *, char *, char *, int);
-void	createtags(char *, char *, int);
-char	*now(void);
-int	printconf(char *);
-void	set_base_directory(char *, char *);
-void	put_converting(char *, int, int);
+static void usage(void);
+static void help(void);
+void signal_setup(void);
+void onintr(int);
+int match(char *, char *);
+int main(int, char **);
+int incremental(char *, char *);
+void updatetags(char *, char *, char *, int);
+void createtags(char *, char *, int);
+char *now(void);
+int printconf(char *);
+void set_base_directory(char *, char *);
+void put_converting(char *, int, int);
 
-int	cflag;					/* compact format */
-int	iflag;					/* incremental update */
-int	Iflag;					/* make  id-utils index */
-int	oflag;					/* suppress making GSYMS */
-int	Pflag;					/* use postgres */
-int	qflag;					/* quiet mode */
-int	wflag;					/* warning message */
-int	vflag;					/* verbose mode */
-int     show_version;
-int     show_help;
-int	show_config;
-int	do_convert;
-int	do_scandb;
-int	do_find;
-int	do_sort;
-int	do_write;
-int	do_relative;
-int	do_absolute;
-int	cxref;
-int	do_expand;
-int	do_date;
-int	do_pwd;
-int	gtagsconf;
-int	gtagslabel;
-int	other_files;
-int	info;
-int	debug;
-int	secure_mode;
-char	*extra_options;
-char	*info_string;
-char	*btree_dbname;
+int cflag;					/* compact format */
+int iflag;					/* incremental update */
+int Iflag;					/* make  id-utils index */
+int oflag;					/* suppress making GSYMS */
+int Pflag;					/* use postgres */
+int qflag;					/* quiet mode */
+int wflag;					/* warning message */
+int vflag;					/* verbose mode */
+int show_version;
+int show_help;
+int show_config;
+int do_convert;
+int do_scandb;
+int do_find;
+int do_sort;
+int do_write;
+int do_relative;
+int do_absolute;
+int cxref;
+int do_expand;
+int do_date;
+int do_pwd;
+int gtagsconf;
+int gtagslabel;
+int other_files;
+int info;
+int debug;
+int secure_mode;
+char *extra_options;
+char *info_string;
+char *btree_dbname;
 
-int	extractmethod;
-int	total;
+int extractmethod;
+int total;
 
 static void
 usage()
@@ -157,11 +157,11 @@ static struct option const long_options[] = {
 /*
  * Gtags catch signal even if the parent ignore it.
  */
-int	exitflag = 0;
+int exitflag = 0;
 
 void
 onintr(signo)
-int     signo;
+	int signo;
 {
 	signo = 0;      /* to satisfy compiler */
 	exitflag = 1;
@@ -182,8 +182,8 @@ signal_setup()
 
 int
 match(curtag, line)
-char *curtag;
-char *line;
+	char *curtag;
+	char *line;
 {
 	char *p, *q = line;
 
@@ -197,17 +197,17 @@ char *line;
 
 int
 main(argc, argv)
-int	argc;
-char	*argv[];
+	int argc;
+	char *argv[];
 {
-	char	root[MAXPATHLEN+1];
-	char	dbpath[MAXPATHLEN+1];
-	char	cwd[MAXPATHLEN+1];
-	STRBUF	*sb = strbuf_open(0);
+	char root[MAXPATHLEN+1];
+	char dbpath[MAXPATHLEN+1];
+	char cwd[MAXPATHLEN+1];
+	STRBUF *sb = strbuf_open(0);
 	const char *p;
-	int	db;
-	int	optchar;
-	int	option_index = 0;
+	int db;
+	int optchar;
+	int option_index = 0;
 
 	while ((optchar = getopt_long(argc, argv, "cGiIoPqvw", long_options, &option_index)) != EOF) {
 		switch (optchar) {
@@ -224,8 +224,8 @@ char	*argv[];
 				if (optarg)
 					btree_dbname = optarg;
 			} else if (gtagsconf || gtagslabel) {
-				char    value[MAXPATHLEN+1];
-				char	*name = (gtagsconf) ? "GTAGSCONF" : "GTAGSLABEL";
+				char value[MAXPATHLEN+1];
+				char *name = (gtagsconf) ? "GTAGSCONF" : "GTAGSLABEL";
 
 				if (gtagsconf) {
 					if (realpath(optarg, value) == NULL)
@@ -445,7 +445,7 @@ char	*argv[];
 		 * files but also other files in GPATH in the future.
 		 * But it needs adding a new format version.
 		 */
-		char	*path;
+		char *path;
 		char *local = (argc) ? argv[0] : NULL;
 
 		for (vfind_open(local, other_files); (path = vfind_read()) != NULL; ) {
@@ -585,8 +585,8 @@ char	*argv[];
 		 * main      22 /prj/xxx/libc/func.c   main(argc, argv)\n
 		 */
 		STRBUF *ib = strbuf_open(MAXBUFLEN);
-		char	*root = argv[0];
-		char	*cwd = argv[1];
+		char *root = argv[0];
+		char *cwd = argv[1];
 
 		if (argc < 2)
 			die("do_relative: 2 arguments needed.");
@@ -776,16 +776,16 @@ char	*argv[];
  */
 int
 incremental(dbpath, root)
-char	*dbpath;
-char	*root;
+	char *dbpath;
+	char *root;
 {
 	struct stat statp;
-	time_t	gtags_mtime;
-	STRBUF	*addlist = strbuf_open(0);
-	STRBUF	*updatelist = strbuf_open(0);
-	STRBUF	*deletelist = strbuf_open(0);
-	int	updated = 0;
-	char	*path;
+	time_t gtags_mtime;
+	STRBUF *addlist = strbuf_open(0);
+	STRBUF *updatelist = strbuf_open(0);
+	STRBUF *deletelist = strbuf_open(0);
+	int updated = 0;
+	char *path;
 
 	if (vflag) {
 		fprintf(stderr, " Tag found in '%s'.\n", dbpath);
@@ -825,7 +825,7 @@ char	*root;
 	 * make delete list.
 	 */
 	{
-		char    fid[32];
+		char fid[32];
 		int i, limit = gpath_nextkey();
 
 		for (i = 1; i < limit; i++) {
@@ -844,9 +844,9 @@ char	*root;
 	 */
 	signal_setup();
 	if (strbuf_getlen(updatelist) > 0) {
-		char	*start = strbuf_value(updatelist);
-		char	*end = start + strbuf_getlen(updatelist);
-		char	*p;
+		char *start = strbuf_value(updatelist);
+		char *end = start + strbuf_getlen(updatelist);
+		char *p;
 
 		for (p = start; p < end; p += strlen(p) + 1) {
 			updatetags(dbpath, root, p, 0);
@@ -856,9 +856,9 @@ char	*root;
 		updated = 1;
 	}
 	if (strbuf_getlen(addlist) > 0) {
-		char	*start = strbuf_value(addlist);
-		char	*end = start + strbuf_getlen(addlist);
-		char	*p;
+		char *start = strbuf_value(addlist);
+		char *end = start + strbuf_getlen(addlist);
+		char *p;
 
 		for (p = start; p < end; p += strlen(p) + 1) {
 			updatetags(dbpath, root, p, 1);
@@ -868,9 +868,9 @@ char	*root;
 		updated = 1;
 	}
 	if (strbuf_getlen(deletelist) > 0) {
-		char	*start = strbuf_value(deletelist);
-		char	*end = start + strbuf_getlen(deletelist);
-		char	*p;
+		char *start = strbuf_value(deletelist);
+		char *end = start + strbuf_getlen(deletelist);
+		char *p;
 
 		for (p = start; p < end; p += strlen(p) + 1) {
 			updatetags(dbpath, root, p, 2);
@@ -890,7 +890,7 @@ char	*root;
 	if (exitflag)
 		exit(1);
 	if (updated) {
-		int	db;
+		int db;
 		/*
 		 * Update modification time of tag files
 		 * because they may have no definitions.
@@ -924,14 +924,14 @@ char	*root;
  */
 void
 updatetags(dbpath, root, path, type)
-char	*dbpath;
-char	*root;
-char	*path;
-int	type;
+	char *dbpath;
+	char *root;
+	char *path;
+	int type;
 {
-	GTOP	*gtop;
-	STRBUF	*sb = strbuf_open(0);
-	int	db;
+	GTOP *gtop;
+	STRBUF *sb = strbuf_open(0);
+	int db;
 	const char *msg = NULL;
 
 	switch (type) {
@@ -942,7 +942,7 @@ int	type;
 	if (vflag)
 		fprintf(stderr, " %s tags of '%s' ...", msg, path + 2);
 	for (db = GTAGS; db < GTAGLIM; db++) {
-		int	gflags = 0;
+		int gflags = 0;
 
 		if (exitflag)
 			break;
@@ -995,16 +995,16 @@ int	type;
  */
 void
 createtags(dbpath, root, db)
-char	*dbpath;
-char	*root;
-int	db;
+	char *dbpath;
+	char *root;
+	int db;
 {
-	char	*path;
-	GTOP	*gtop;
-	int	flags;
-	char	*comline;
-	STRBUF	*sb = strbuf_open(0);
-	int	count = 0;
+	char *path;
+	GTOP *gtop;
+	int flags;
+	char *comline;
+	STRBUF *sb = strbuf_open(0);
+	int count = 0;
 
 	/*
 	 * get tag command.
@@ -1097,16 +1097,16 @@ int	db;
 char *
 now(void)
 {
-	static	char	buf[128];
+	static char buf[128];
 
 #ifdef HAVE_STRFTIME
-	time_t	tval;
+	time_t tval;
 
 	if (time(&tval) == -1)
 		die("cannot get current time.");
 	(void)strftime(buf, sizeof(buf), "%a %b %d %H:%M:%S %Z %Y", localtime(&tval));
 #else
-	FILE	*ip;
+	FILE *ip;
 
 	strlimcpy(buf, "unkown time", sizeof(buf));
 	if (ip = popen("date", "r")) {
@@ -1125,17 +1125,17 @@ now(void)
  */
 int
 printconf(name)
-char	*name;
+	char *name;
 {
-	int	num;
-	int	exist = 1;
+	int num;
+	int exist = 1;
 
 	if (getconfn(name, &num))
 		fprintf(stdout, "%d\n", num);
 	else if (getconfb(name))
 		fprintf(stdout, "1\n");
 	else {
-		STRBUF  *sb = strbuf_open(0);
+		STRBUF *sb = strbuf_open(0);
 		if (getconfs(name, sb))
 			fprintf(stdout, "%s\n", strbuf_value(sb));
 		else
@@ -1156,8 +1156,8 @@ static char basedir[MAXPATHLEN+1];
 static int start_point;
 void
 set_base_directory(root, cwd)
-char	*root;
-char	*cwd;
+	char *root;
+	char *cwd;
 {
 	abspath = strbuf_open(MAXPATHLEN);
 	strbuf_puts(abspath, root);
@@ -1171,9 +1171,9 @@ char	*cwd;
 }
 void
 put_converting(line, absolute, cxref)
-char	*line;
-int	absolute;
-int	cxref;
+	char *line;
+	int absolute;
+	int cxref;
 {
 	char buf[MAXPATHLEN+1];
 	char *p = line;

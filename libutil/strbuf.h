@@ -48,12 +48,12 @@ typedef struct _strbuf {
 	struct _strbuf *next;
 	struct _strbuf *prev;
 #endif
-	char	*name;
-	char	*sbuf;
-	char	*endp;
-	char	*curp;
-	int	sbufsize;
-	int	alloc_failed;
+	char *name;
+	char *sbuf;
+	char *endp;
+	char *curp;
+	int sbufsize;
+	int alloc_failed;
 } STRBUF;
 
 #define strbuf_putc(sb, c)	do {\
@@ -93,25 +93,25 @@ typedef struct _strbuf {
 #define strbuf_lastchar(sb) (*(sb->curp - 1))
 
 #ifdef DEBUG
-void	strbuf_dump(char *);
+void strbuf_dump(char *);
 #endif
-void	__strbuf_expandbuf(STRBUF *, int);
-STRBUF	*strbuf_open(int);
-void	strbuf_putn(STRBUF *, int);
-int	strbuf_unputc(STRBUF *, int);
-char	*strbuf_value(STRBUF *);
-void	strbuf_trim(STRBUF *);
-void	strbuf_close(STRBUF *);
-char    *strbuf_fgets(STRBUF *, FILE *, int);
+void __strbuf_expandbuf(STRBUF *, int);
+STRBUF *strbuf_open(int);
+void strbuf_putn(STRBUF *, int);
+int strbuf_unputc(STRBUF *, int);
+char *strbuf_value(STRBUF *);
+void strbuf_trim(STRBUF *);
+void strbuf_close(STRBUF *);
+char *strbuf_fgets(STRBUF *, FILE *, int);
 #ifdef HAVE_STDARG_H
-void	strbuf_sprintf(STRBUF *sb, const char *s, ...);
+void strbuf_sprintf(STRBUF *sb, const char *s, ...);
 #else
-void	strbuf_sprintf();
+void strbuf_sprintf();
 #endif
 #ifdef STRBUF_LINK
-void	strbuf_setname(STRBUF *, char *);
-STRBUF	*strbuf_getbuf(char *);
-void	strbuf_closeall();
+void strbuf_setname(STRBUF *, char *);
+STRBUF *strbuf_getbuf(char *);
+void strbuf_closeall();
 #endif
 
 #endif /* ! _STRBUF_H */

@@ -93,15 +93,15 @@ STRBUF	top;
  */
 void
 strbuf_dump(msg)
-char	*msg;
+	char *msg;
 {
-	STRBUF	*sb;
+	STRBUF *sb;
 	int i = 0;
 
 	fprintf(stderr, "[%s/%s]\n", progname, msg);
 	for (sb = top.next; sb && sb != &top; sb = sb->next) {
-		char	*p = strbuf_value(sb);
-		char	*end = p + strbuf_getlen(sb);
+		char *p = strbuf_value(sb);
+		char *end = p + strbuf_getlen(sb);
 
 		*sb->curp = 0;
 		fprintf(stderr, "%d\tsize=%d", strbuf_getlen(sb));
@@ -123,8 +123,8 @@ char	*msg;
  */
 void
 __strbuf_expandbuf(sb, length)
-STRBUF	*sb;
-int	length;
+	STRBUF *sb;
+	int length;
 {
 	int count = sb->curp - sb->sbuf;
 	int newsize = sb->sbufsize + (length > EXPANDSIZE ? length : EXPANDSIZE);
@@ -153,9 +153,9 @@ int	length;
  */
 STRBUF *
 strbuf_open(init)
-int	init;
+	int init;
 {
-	STRBUF	*sb = (STRBUF *)calloc(sizeof(STRBUF), 1);
+	STRBUF *sb = (STRBUF *)calloc(sizeof(STRBUF), 1);
 
 	if (sb == NULL) {
 		(*strbuf_alloc_failed_handler)();
@@ -191,8 +191,8 @@ int	init;
  */
 void
 strbuf_putn(sb, n)
-STRBUF	*sb;
-int	n;
+	STRBUF *sb;
+	int n;
 {
 	char num[128];
 
@@ -209,8 +209,8 @@ int	n;
  */
 int
 strbuf_unputc(sb, c)
-STRBUF	*sb;
-int	c;
+	STRBUF *sb;
+	int c;
 {
 	if (sb->curp > sb->sbuf && *(sb->curp - 1) == c) {
 		sb->curp--;
@@ -224,9 +224,9 @@ int	c;
  *	i)	sb	STRBUF structure
  *	r)		string
  */
-char	*
+char *
 strbuf_value(sb)
-STRBUF	*sb;
+	STRBUF *sb;
 {
 	*sb->curp = 0;
 	return sb->sbuf;
@@ -238,7 +238,7 @@ STRBUF	*sb;
  */
 void
 strbuf_trim(sb)
-STRBUF	*sb;
+	STRBUF *sb;
 {
 	char *p = sb->curp;
 
@@ -260,11 +260,11 @@ STRBUF	*sb;
  * The buffer end with '\0'.If STRBUF_NOCRLF is set then buffer doesn't
  * include '\r' and '\n'.
  */
-char	*
+char *
 strbuf_fgets(sb, ip, flags)
-STRBUF	*sb;
-FILE	*ip;
-int	flags;
+	STRBUF *sb;
+	FILE *ip;
+	int flags;
 {
 	if (!(flags & STRBUF_APPEND))
 		strbuf_reset(sb);
@@ -342,7 +342,7 @@ strbuf_sprintf(sb, s, va_alist)
  */
 void
 strbuf_close(sb)
-STRBUF	*sb;
+	STRBUF	*sb;
 {
 #ifdef STRBUF_LINK
 	sb->prev->next = sb->next;
@@ -362,8 +362,8 @@ STRBUF	*sb;
  */
 void
 strbuf_setname(sb, name)
-STRBUF  *sb;
-char	*name;
+	STRBUF  *sb;
+	char	*name;
 {
 	char *p = strdup(name);
 	if (p == NULL) {
@@ -383,7 +383,7 @@ char	*name;
  */
 STRBUF *
 strbuf_getbuf(name)
-char	*name;
+	char	*name;
 {
 	STRBUF *sb;
 

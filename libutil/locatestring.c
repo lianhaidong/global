@@ -42,9 +42,9 @@ extern int debug;
  */
 static int
 strincmp(string, pattern, len)
-const char *string;
-const char *pattern;
-size_t len;
+	const char *string;
+	const char *pattern;
+	size_t len;
 {
 	unsigned char s, p;
 
@@ -76,17 +76,17 @@ size_t len;
  */
 int	(*cmpfunc)(char *, char*, int);
 
-char	*
+char *
 locatestring(string, pattern, flag)
 const char *string;
 const char *pattern;
-int	flag;
+int flag;
 {
-	int	c = *pattern;
-	int	plen = strlen(pattern);
+	int c = *pattern;
+	int plen = strlen(pattern);
 	const char *p = NULL;
-	int	slen;
-	int	(*cmpfunc) ();
+	int slen;
+	int (*cmpfunc) ();
 #ifdef DEBUG
 	FILE *dbg = stderr;
 	const char *pre = string;

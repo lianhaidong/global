@@ -37,29 +37,29 @@
 /*
  * File input method.
  */
-int	lineno;
-unsigned char	*sp, *cp, *lp;
-int	crflag;			/* 1: return '\n', 0: doesn't return */
-int	cmode;			/* allow token which start with '#' */
-int	cppmode;		/* allow '::' as a token */
-int	ymode;			/* allow token which start with '%' */
-unsigned char	token[MAXTOKEN];
-unsigned char	curfile[MAXPATHLEN];
+int lineno;
+unsigned char *sp, *cp, *lp;
+int crflag;			/* 1: return '\n', 0: doesn't return */
+int cmode;			/* allow token which start with '#' */
+int cppmode;		/* allow '::' as a token */
+int ymode;			/* allow token which start with '%' */
+unsigned char token[MAXTOKEN];
+unsigned char curfile[MAXPATHLEN];
 
-static	unsigned char ptok[MAXTOKEN];
-static	int lasttok;
-static	FILE *ip;
-static	STRBUF *ib;
+static unsigned char ptok[MAXTOKEN];
+static int lasttok;
+static FILE *ip;
+static STRBUF *ib;
 
 #define tlen	(p - &token[0])
-static	void pushbackchar(void);
+static void pushbackchar(void);
 
 /*
  * opentoken:
  */
 int
 opentoken(file)
-	char	*file;
+	char *file;
 {
 	/*
 	 * b flag is needed for WIN32 environment. Almost unix ignore it.
@@ -115,10 +115,10 @@ nexttoken(interested, reserved)
 	const char *interested;
 	int (*reserved)(const char *, int);
 {
-	int	c;
+	int c;
 	unsigned char *p;
-	int	sharp = 0;
-	int	percent = 0;
+	int sharp = 0;
+	int percent = 0;
 
 	/* check push back buffer */
 	if (ptok[0]) {
@@ -261,10 +261,10 @@ pushbacktoken()
  */
 int
 peekc(immediate)
-	int	immediate;
+	int immediate;
 {
-	int	c;
-	long	pos;
+	int c;
+	long pos;
 
 	if (cp != NULL) {
 		if (immediate)
@@ -297,8 +297,8 @@ peekc(immediate)
 int
 atfirst_exceptspace()
 {
-	char	*start = sp;
-	char	*end = cp ? cp - 1 : lp;
+	char *start = sp;
+	char *end = cp ? cp - 1 : lp;
 
 	while (start < end && *start && isspace(*start))
 		start++;

@@ -28,13 +28,13 @@
 #define SYMBOL		0
 
 extern unsigned char     *sp, *cp, *lp;
-extern int      lineno;
-extern int	crflag;
-extern int	cmode;
-extern int	cppmode;
-extern int	ymode;
-extern unsigned char	token[MAXTOKEN];
-extern unsigned char	curfile[MAXPATHLEN];
+extern int lineno;
+extern int crflag;
+extern int cmode;
+extern int cppmode;
+extern int ymode;
+extern unsigned char token[MAXTOKEN];
+extern unsigned char curfile[MAXPATHLEN];
 
 #define nextchar() \
 	(cp == NULL ? \
@@ -46,12 +46,12 @@ extern unsigned char	curfile[MAXPATHLEN];
 		(*cp == 0 ? (lp = cp, cp = NULL, '\n') : *cp++))
 #define atfirst (sp && sp == (cp ? cp - 1 : lp))
 
-int	opentoken(char *);
-void	rewindtoken(void);
-void	closetoken(void);
-int	nexttoken(const char *, int (*)(const char *, int));
-void	pushbacktoken(void);
-int	peekc(int);
-int     atfirst_exceptspace(void);
+int opentoken(char *);
+void rewindtoken(void);
+void closetoken(void);
+int nexttoken(const char *, int (*)(const char *, int));
+void pushbacktoken(void);
+int peekc(int);
+int atfirst_exceptspace(void);
 
 #endif /* ! _TOKEN_H_ */

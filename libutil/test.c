@@ -56,11 +56,11 @@
  */
 int
 test(flags, path)
-const char *flags;
-const char *path;
+	const char *flags;
+	const char *path;
 {
 	static struct stat sb;
-	int	c;
+	int c;
 
 	if (path != NULL)
 		if (stat(path, &sb) < 0)

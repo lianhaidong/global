@@ -22,6 +22,6 @@
 #ifndef _DEFINED_H_
 #define _DEFINED_H_
 
-int	defined(const char *);
+int defined(const char *);
 
 #endif /* ! _DEFINED_H_ */

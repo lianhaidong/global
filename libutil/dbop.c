@@ -53,17 +53,17 @@ PGconn *conn = NULL;
 
 static int pgop_load_tagfile(const char *, STRBUF *);
 static int pgop_extract_from_tagfile(const char *, const char *, char *, int);
-DBOP	*pgop_open(const char *, int, int, int);
-char	*pgop_get(DBOP *, const char *);
-void	pgop_put(DBOP *, const char *, const char *, const char *);
-void	pgop_delete(DBOP *, const char *);
-char	*pgop_getkey_by_fid(DBOP *, const char *);
-void	pgop_delete_by_fid(DBOP *, const char *);
-void	pgop_update(DBOP *, const char *, const char *, const char *);
-char	*pgop_first(DBOP *, const char *, regex_t *, int);
-char	*pgop_next(DBOP *);
-char	*pgop_lastdat(DBOP *);
-void	pgop_close(DBOP *);
+DBOP *pgop_open(const char *, int, int, int);
+char *pgop_get(DBOP *, const char *);
+void pgop_put(DBOP *, const char *, const char *, const char *);
+void pgop_delete(DBOP *, const char *);
+char *pgop_getkey_by_fid(DBOP *, const char *);
+void pgop_delete_by_fid(DBOP *, const char *);
+void pgop_update(DBOP *, const char *, const char *, const char *);
+char *pgop_first(DBOP *, const char *, regex_t *, int);
+char *pgop_next(DBOP *);
+char *pgop_lastdat(DBOP *);
+void pgop_close(DBOP *);
 #endif /* USE_POSTGRES */
 
 int print_statistics = 0;
@@ -78,7 +78,7 @@ char *postgres_info;
  */
 void
 dbop_setinfo(info)
-char *info;
+	char *info;
 {
 	postgres_info = info;
 }
@@ -94,16 +94,16 @@ char *info;
  *			DBOP_POSTGRES: use postgres database
  *	r)		descripter for dbop_xxx()
  */
-DBOP	*
+DBOP *
 dbop_open(path, mode, perm, flags)
-const char *path;
-int	mode;
-int	perm;
-int	flags;
+	const char *path;
+	int mode;
+	int perm;
+	int flags;
 {
-	DB	*db;
-	int     rw = 0;
-	DBOP	*dbop;
+	DB *db;
+	int rw = 0;
+	DBOP *dbop;
 	BTREEINFO info;
 
 #ifdef USE_POSTGRES
@@ -166,14 +166,14 @@ int	flags;
  *	i)	name	name
  *	r)		pointer to data
  */
-char	*
+char *
 dbop_get(dbop, name)
-DBOP	*dbop;
-const char *name;
+	DBOP *dbop;
+	const char *name;
 {
-	DB	*db = dbop->db;
-	DBT	key, dat;
-	int	status;
+	DB *db = dbop->db;
+	DBT key, dat;
+	int status;
 
 #ifdef USE_POSTGRES
 	if (dbop->openflags & DBOP_POSTGRES)
@@ -204,15 +204,15 @@ const char *name;
  */
 void
 dbop_put(dbop, name, data, fid)
-DBOP	*dbop;
-const char *name;
-const char *data;
-const char *fid;
+	DBOP *dbop;
+	const char *name;
+	const char *data;
+	const char *fid;
 {
-	DB	*db = dbop->db;
-	DBT	key, dat;
-	int	status;
-	int	len;
+	DB *db = dbop->db;
+	DBT key, dat;
+	int status;
+	int len;
 
 	if (!(len = strlen(name)))
 		die("primary key size == 0.");
@@ -244,12 +244,12 @@ const char *fid;
  */
 void
 dbop_delete(dbop, path)
-DBOP	*dbop;
-const char *path;
+	DBOP *dbop;
+	const char *path;
 {
-	DB	*db = dbop->db;
-	DBT	key;
-	int	status;
+	DB *db = dbop->db;
+	DBT key;
+	int status;
 
 #ifdef USE_POSTGRES
 	if (dbop->openflags & DBOP_POSTGRES)
@@ -274,10 +274,10 @@ const char *path;
  */
 void
 dbop_update(dbop, key, dat, fid)
-DBOP	*dbop;
-const char *key;
-const char *dat;
-const char *fid;
+	DBOP *dbop;
+	const char *key;
+	const char *dat;
+	const char *fid;
 {
 #ifdef USE_POSTGRES
 	if (dbop->openflags & DBOP_POSTGRES)
@@ -296,8 +296,8 @@ const char *fid;
  */
 char	*
 dbop_getkey_by_fid(dbop, fid)
-DBOP	*dbop;
-const char *fid;
+	DBOP *dbop;
+	const char *fid;
 {
 	assert(dbop->openflags & DBOP_POSTGRES);
 	return pgop_getkey_by_fid(dbop, fid);
@@ -310,8 +310,8 @@ const char *fid;
  */
 void
 dbop_delete_by_fid(dbop, fid)
-DBOP	*dbop;
-const char *fid;
+	DBOP *dbop;
+	const char *fid;
 {
 	assert(dbop->openflags & DBOP_POSTGRES);
 	return pgop_delete_by_fid(dbop, fid);
@@ -333,14 +333,14 @@ const char *fid;
  */
 char	*
 dbop_first(dbop, name, preg, flags)
-DBOP	*dbop;
+DBOP *dbop;
 const char *name;
 regex_t *preg;
 int	flags;
 {
-	DB	*db = dbop->db;
-	DBT	key, dat;
-	int	status;
+	DB *db = dbop->db;
+	DBT key, dat;
+	int status;
 
 #ifdef USE_POSTGRES
 	if (dbop->openflags & DBOP_POSTGRES)
@@ -412,14 +412,14 @@ int	flags;
  *
  * Db_next always skip meta records.
  */
-char	*
+char *
 dbop_next(dbop)
-DBOP	*dbop;
+	DBOP *dbop;
 {
-	DB	*db = dbop->db;
-	int	flags = dbop->ioflags;
-	DBT	key, dat;
-	int	status;
+	DB *db = dbop->db;
+	int flags = dbop->ioflags;
+	DBT key, dat;
+	int status;
 
 #ifdef USE_POSTGRES
 	if (dbop->openflags & DBOP_POSTGRES)
@@ -463,7 +463,7 @@ DBOP	*dbop;
  */
 char *
 dbop_lastdat(dbop)
-DBOP	*dbop;
+	DBOP *dbop;
 {
 	return dbop->lastdat;
 }
@@ -474,9 +474,9 @@ DBOP	*dbop;
  */
 void
 dbop_close(dbop)
-DBOP	*dbop;
+	DBOP *dbop;
 {
-	DB	*db = dbop->db;
+	DB *db = dbop->db;
 
 #ifdef USE_POSTGRES
 	if (dbop->openflags & DBOP_POSTGRES)
@@ -500,9 +500,9 @@ DBOP	*dbop;
  */
 static void
 pgop_execute(dbop, sql, line)
-DBOP *dbop;
-char *sql;
-int line;
+	DBOP *dbop;
+	char *sql;
+	int line;
 {
 	int ignore = 0;
 	extern int debug;
@@ -534,7 +534,7 @@ int line;
  */
 static void
 pgop_connect(info)
-const char *info;
+	const char *info;
 {
 	if (conn)
 		return;
@@ -557,8 +557,8 @@ const char *info;
  */
 static int
 pgop_load_tagfile(path, sb)
-const char *path;
-STRBUF *sb;
+	const char *path;
+	STRBUF *sb;
 {
 	char *p;
 	int alloc = 0;
@@ -592,10 +592,10 @@ STRBUF *sb;
  */
 static int
 pgop_extract_from_tagfile(contents, key, buf, size)
-const char *contents;
-const char *key;
-char *buf;
-int size;
+	const char *contents;
+	const char *key;
+	char *buf;
+	int size;
 {
 	STRBUF *sb = strbuf_open(0);
 	char *p, *limit = buf + size;
@@ -626,10 +626,10 @@ int size;
  */
 DBOP *
 pgop_open(path, mode, perm, flags)
-const char *path;
-int mode;
-int perm;
-int flags;
+	const char *path;
+	int mode;
+	int perm;
+	int flags;
 {
 	DBOP *dbop;
 	STRBUF *sb;
@@ -778,8 +778,8 @@ int flags;
  */
 char	*
 pgop_get(dbop, name)
-DBOP	*dbop;
-const char *name;
+	DBOP *dbop;
+	const char *name;
 {
 	STRBUF *sb = dbop->get_stmt;
 
@@ -804,10 +804,10 @@ const char *name;
  */
 void
 pgop_put(dbop, key, dat, fid)
-DBOP	*dbop;
-const char *key;
-const char *dat;
-const char *fid;
+	DBOP *dbop;
+	const char *key;
+	const char *dat;
+	const char *fid;
 {
 	STRBUF *sb = dbop->put_stmt;
 	const char *p;
@@ -838,8 +838,8 @@ const char *fid;
  */
 void
 pgop_delete(dbop, path)
-DBOP	*dbop;
-const char *path;
+	DBOP *dbop;
+	const char *path;
 {
 	STRBUF *sb = dbop->delete_stmt;
 
@@ -856,8 +856,8 @@ const char *path;
  */
 char	*
 pgop_getkey_by_fid(dbop, fid)
-DBOP	*dbop;
-const char *fid;
+	DBOP *dbop;
+	const char *fid;
 {
 	STRBUF *sb = dbop->get_stmt;
 
@@ -878,8 +878,8 @@ const char *fid;
  */
 void
 pgop_delete_by_fid(dbop, fid)
-DBOP	*dbop;
-const char *fid;
+	DBOP *dbop;
+	const char *fid;
 {
 	STRBUF *sb = dbop->delete_stmt;
 
@@ -897,10 +897,10 @@ const char *fid;
  */
 void
 pgop_update(dbop, key, dat, fid)
-DBOP	*dbop;
-const char *key;
-const char *dat;
-const char *fid;
+	DBOP *dbop;
+	const char *key;
+	const char *dat;
+	const char *fid;
 {
 	char *p;
 	STRBUF *sb = strbuf_open(0);
@@ -934,10 +934,10 @@ const char *fid;
  */
 char	*
 pgop_first(dbop, name, preg, flags)
-DBOP	*dbop;
-const char *name;
-regex_t *preg;
-int	flags;
+	DBOP *dbop;
+	const char *name;
+	regex_t *preg;
+	int	flags;
 {
 	STRBUF *sb = strbuf_open(0);
 	char *key;
@@ -1000,7 +1000,7 @@ int	flags;
  */
 char	*
 pgop_next(dbop)
-DBOP	*dbop;
+	DBOP *dbop;
 {
 	char *fetch = strbuf_value(dbop->fetch_stmt);
 	for (;;) {
@@ -1031,7 +1031,7 @@ DBOP	*dbop;
  */
 char *
 pgop_lastdat(dbop)
-DBOP	*dbop;
+	DBOP *dbop;
 {
 	return dbop->lastdat;
 }
@@ -1042,7 +1042,7 @@ DBOP	*dbop;
  */
 void
 pgop_close(dbop)
-DBOP	*dbop;
+	DBOP *dbop;
 {
 	if (dbop->mode == 1 && strncmp(dbop->tblname, "GPATH", strlen("GPATH"))) {
 		char sql[1024];

@@ -22,8 +22,8 @@
 #ifndef _FIND_H_
 #define _FIND_H_
 
-void	find_open(char *);
-char	*find_read(void);
-void	find_close(void);
+void find_open(char *);
+char *find_read(void);
+void find_close(void);
 
 #endif /* ! _FIND_H_ */

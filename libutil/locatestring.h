@@ -29,6 +29,6 @@
 #define MATCH_COMPLETE	4
 #define IGNORE_CASE	8
 
-char	*locatestring(const char *, const char *, int);
+char *locatestring(const char *, const char *, int);
 
 #endif /* ! _LOCATESTRING_H_ */
