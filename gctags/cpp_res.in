@@ -96,6 +96,7 @@ while			word
 #ifdef			sharp
 #ifndef			sharp
 #include		sharp
+#include_next		sharp
 #line			sharp
 #pragma			sharp
 #undef			sharp
