@@ -49,6 +49,7 @@ extern	const char *progname;
 
 void setquiet();
 void setverbose();
+void setdebug();
 #ifdef HAVE_STDARG_H
 void die(const char *s, ...)
 	__attribute__ ((__format__ (__printf__, 1, 2)));

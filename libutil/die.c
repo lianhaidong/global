@@ -31,6 +31,7 @@
 
 static int quiet;
 static int verbose;
+static int debug;
 
 void
 setquiet()
@@ -41,6 +42,11 @@ void
 setverbose()
 {
 	verbose = 1;
+}
+void
+setdebug()
+{
+	debug = 1;
 }
 
 void
@@ -65,6 +71,8 @@ die(s, va_alist)
 		va_end(ap);
 		fputs("\n", stderr);
 	}
+	if (debug)
+		abort();
 	exit(1);
 }
 
@@ -91,6 +99,8 @@ die_with_code(int n, s, va_alist)
 		va_end(ap);
 		fputs("\n", stderr);
 	}
+	if (debug)
+		abort();
 	exit(n);
 }
 void
