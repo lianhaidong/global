@@ -198,9 +198,11 @@ char *
 upperdir(dir)
 	const char *dir;
 {
-	static char path[MAXPATHLEN];
-	snprintf(path, sizeof(path), "../%s", dir);
-	return path;
+	STATIC_STRBUF(sb);
+
+	strbuf_clear(sb);
+	strbuf_sprintf(sb, "../%s", dir);
+	return strbuf_value(sb);
 }
 /*
  * Generate beginning of page
