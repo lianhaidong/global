@@ -283,6 +283,7 @@ Cpp()
 				}
 			}
 			break;
+		case SHARP_IMPORT:
 		case SHARP_INCLUDE:
 		case SHARP_INCLUDE_NEXT:
 		case SHARP_ERROR:
@@ -290,6 +291,7 @@ Cpp()
 		case SHARP_PRAGMA:
 		case SHARP_WARNING:
 		case SHARP_IDENT:
+		case SHARP_SCCS:
 			while ((c = nexttoken(interested, reserved_word)) != EOF && c != '\n')
 				;
 			break;

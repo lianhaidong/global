@@ -521,11 +521,24 @@ extract_lastname(image, is_php)
 		if (!*p)
 			return NULL;
 	}
-	if (strncmp(p, KEYWORD, KEYWORD_LENGTH))
+	switch (is_php) {
+	case 0:
+		if (strncmp(p, "include_next", sizeof "include_next" - 1) == 0) {
+			p += sizeof "include_next" - 1;
+			break;
+		}
+		if (strncmp(p, "import", sizeof "import" - 1) == 0) {
+			p += sizeof "import" - 1;
+			break;
+		}
+		/* FALLTHROUGH */
+	default:
+		if (strncmp(p, KEYWORD, KEYWORD_LENGTH) == 0) {
+			p += KEYWORD_LENGTH;
+			break;
+		}
 		return NULL;
-	p += KEYWORD_LENGTH;
-	if (!is_php && strncmp(p, "_next", 5) == 0)
-		p += 5;
+	}
 	while (*p && isspace((unsigned char)*p))		/* skip space */
 		p++;
 	if (is_php && *p == '(') {
@@ -879,7 +892,7 @@ makeincludeindex()
 	 * C: #include "xxx.h"
 	 * PHP: include("xxx.inc.php");
 	 */
-	command = "global -gnx \"^[ \\t]*(#[ \\t]*include|include[ \\t]*\\()\"";
+	command = "global -gnx \"^[ \\t]*(#[ \\t]*(import|include)|include[ \\t]*\\()\"";
 	if ((PIPE = popen(command, "r")) == NULL)
 		die("cannot fork.");
 	strbuf_reset(input);

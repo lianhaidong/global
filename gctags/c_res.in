@@ -69,10 +69,13 @@ while			word
 #if			sharp
 #ifdef			sharp
 #ifndef			sharp
+#import			sharp
 #include		sharp
 #include_next		sharp
 #line			sharp
 #pragma			sharp
+#sccs			sharp
+#unassert		sharp
 #undef			sharp
 #warning		sharp
 ;

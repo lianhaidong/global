@@ -102,7 +102,7 @@ YACC_IDENTIFIER	({ALPHA}|\.)({ALPHANUM}|\.)*
 
  /* Preprocessing directive */
 <C,YACC_PROLOGUE,BRACED_CODE>{
-	^[ \t]*\#[ \t]*(include|include_next) {
+	^[ \t]*\#[ \t]*(import|include|include_next) {
 		int c;
 
 		put_macro(LEXTEXT);

@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 1999 Shigio Yamaguchi
- * Copyright (c) 1999, 2000, 2001, 2002, 2003 Tama Communications Corporation
+ * Copyright (c) 1999, 2000, 2001, 2002, 2003, 2004 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -269,6 +269,7 @@ C(yacc)
 				}
 			}
 			break;
+		case SHARP_IMPORT:
 		case SHARP_INCLUDE:
 		case SHARP_INCLUDE_NEXT:
 		case SHARP_ERROR:
@@ -276,6 +277,7 @@ C(yacc)
 		case SHARP_PRAGMA:
 		case SHARP_WARNING:
 		case SHARP_IDENT:
+		case SHARP_SCCS:
 			while ((c = nexttoken(interested, reserved_word)) != EOF && c != '\n')
 				;
 			break;

@@ -89,7 +89,7 @@ WORD		{ALPHA}{ALPHANUM}*
 <LITERAL>\\.	{ put_char(LEXTEXT[0]); put_char(LEXTEXT[1]); }
 
  /* Preprocessing directive */
-<ASM>^[ \t]*\#[ \t]*(include|include_next) {
+<ASM>^[ \t]*\#[ \t]*(import|include|include_next) {
 		int c;
 
 		put_macro(LEXTEXT);
