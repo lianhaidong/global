@@ -32,7 +32,7 @@ Free Documentation License".
 @end ifinfo
 
 @titlepage
-@title GNU GLOBAL source code tag system
+@title GNU GLOBAL Source Code Tag System
 @subtitle Edition @value{EDITION}, for GNU GLOBAL version @value{VERSION}
 @subtitle @value{UPDATED}
 @author by Shigio Yamaguchi
