@@ -2062,6 +2062,7 @@ sub src2html {
 		#
 		print "<PRE>\n";
 		$INCOMMENT = 0;			# initial status is out of comment
+		$quote = '';
 		local($LNO, $TAG, $TYPE) = &anchor'first();
 		while (<SRC>) {
 			local($converted);
@@ -2284,54 +2285,61 @@ sub fill_anchor {
 #
 #	io)	$_	source line
 #
-#	\001	quoted(\) char
-#	\002	quoted('') char
 #	\003	quoted string
 #	\004	comment
-#	\005	line comment
-#	\032	temporary mark
 #
 sub protect_line {
-	@quoted_char1 = ();
-	while (s/(\\.)/\001/) {
-		push(@quoted_char1, $1);
-	}
-	@quoted_char2 = ();
-	while (s/('[^']*')/\002/) {
-		push(@quoted_char2, $1);
-	}
 	@quoted_strings = ();
-	while (s/("[^"]*")/\003/) {
-		push(@quoted_strings, $1);
-	}
 	@comments = ();
-	s/^/\032/ if ($INCOMMENT);
-	while (1) {
-		if ($INCOMMENT == 0) {
-			if (s/\/\*/\032\/\*/) {		# start comment
-				$INCOMMENT = 1;
-			} else {
-				last;
-			}
-		} else {
-			# This regular expression was drived from
-			# perl FAQ 4.27 (ftp://ftp.cis.ufl.edu/pub/perl/faq/FAQ)
-			if (s!\032((/\*)?[^*]*\*+([^/*][^*]*\*+)*/)!\004!) {
-				push(@comments, $1);
-				$INCOMMENT = 0;
-			} else {
-				s/\032(.*)$/\004/;	# mark comment
-				push(@comments, $1);
-			}
-			last if ($INCOMMENT);
+	if ($INCOMMENT) {
+		# This regular expression was drived from
+		# perl FAQ 4.27 (ftp://ftp.cis.ufl.edu/pub/perl/faq/FAQ)
+		if (s!^([^*]*\*+([^/*][^*]*\*+)*/)!\004!) {
+			push(@comments, $1);
+			$INCOMMENT = 0;
+		}
+		else {
+			s/^(.*)$/\004/;
+			push(@comments, $1);
+		}
+	} elsif ($quote) {
+		if (s/^(([^$quote\\]|\\.)*$quote)/\003/) {
+			push(@quoted_strings, $1);
+			$quote = '';
+		}
+		else {
+			s/^(.*)$/\003/;
+			push(@quoted_strings, $1);
 		}
 	}
-	$line_comment = '';
-	if (s!(//.*)$!\005! || s!(/\004.*)$!\005!) {
-		$line_comment = $1;
-		# ^     //   /*   $	... '//' invalidate '/*'.
-		# ^     //*       $	... Assumed '//' + '*', not '/' + '/*'.
-		$INCOMMENT = 0;
+	while (/(\/\/|\/\*|'|")/) {
+		if ($1 eq '//') {
+			s/(\/\/.*$)/\004/;
+			push(@comments, $1);
+		}
+		elsif ($1 eq '/*') {
+			# This regular expression was drived from
+			# perl FAQ 4.27 (ftp://ftp.cis.ufl.edu/pub/perl/faq/FAQ)
+			if (s!(/\*[^*]*\*+([^/*][^*]*\*+)*/)!\004!) {
+				push(@comments, $1);
+			}
+			else {
+				s/(\/\*.*)$/\004/;
+				push(@comments, $1);
+				$INCOMMENT = 1;
+			}
+		}
+		else {
+			$quote = $1;
+			if (s/($quote([^$quote\\]|\\.)*$quote)/\003/) {
+				push(@quoted_strings, $1);
+				$quote = '';
+			}
+			else {
+				push(@quoted_strings, $1);
+				s/($quote.*)$/\003/;
+			}
+		}
 	}
 }
 #
@@ -2342,9 +2350,6 @@ sub protect_line {
 sub unprotect_line {
 	local($s);
 
-	if ($line_comment) {
-		s/\005/$'comment_begin$line_comment$'comment_end/;
-	}
 	while (@comments) {
 		$s = shift @comments;
 		# nested tag can be occured but no problem.
@@ -2353,14 +2358,6 @@ sub unprotect_line {
 	while (@quoted_strings) {
 		$s = shift @quoted_strings;
 		s/\003/$s/;
-	}
-	while (@quoted_char2) {
-		$s = shift @quoted_char2;
-		s/\002/$s/;
-	}
-	while (@quoted_char1) {
-		$s = shift @quoted_char1;
-		s/\001/$s/;
 	}
 }
 #
