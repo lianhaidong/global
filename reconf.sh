@@ -26,7 +26,7 @@ case $1 in
 --help)	echo "Usage: sh reconf.sh [--configure|--make|--install]"
 	exit 0;;
 esac
-prog='autoconf automake aclocal autoheader flex gperf'	# required programs
+prog='autoreconf flex gperf'	# required programs
 file='convert.pl configure.ac Makefile.am gctags/reserved.pl'	# required files
 
 echo "- File existent checking..."
@@ -98,9 +98,9 @@ echo "- Clean up config.cache..."
 rm -f config.cache
 
 echo "- Generating configure items..."
-(set -x; aclocal && autoheader && automake --add-missing && autoconf) &&
+(set -x; autoreconf --symlink --force --verbose --install) &&
 case $1 in
-'')	echo "You are ready to execute ./configure."
+'')	echo "You are ready to execute ./configure"
 	;;
 -c|--configure|--make|--install)
 	./configure
