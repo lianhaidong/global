@@ -691,7 +691,9 @@ char	*argv[];
 	 * create id-utils index.
 	 */
 	if (Iflag) {
+#if 0
 		char *path;
+#endif
 
 		if (vflag)
 			fprintf(stderr, "[%s] Creating indexes for id-utils.\n", now());
