@@ -22,6 +22,7 @@ At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
 Version 4.1.1 - *******, 2001, by Shigio Yamaguchi
 
+* configure: bug fixed. now you can build project other than source directory.
 * globash.rc: when GTAGSROOT specified, prompt is changed to "$root!$cwd"
   instead of "[$root]/...".
 * globash.rc: bug fixed. number was ignored in 'next <no>' and 'prev <no>'.
