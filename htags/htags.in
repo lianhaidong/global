@@ -2249,7 +2249,7 @@ sub protect_line {
 		push(@quoted_char1, $1);
 	}
 	@quoted_char2 = ();
-	while (s/('[^']')/\002/) {
+	while (s/('[^']*')/\002/) {
 		push(@quoted_char2, $1);
 	}
 	@quoted_strings = ();
