@@ -426,6 +426,7 @@ sub copy {
 	local($from, $to) = @_;
 	local($command) = ($'w32) ? 'copy' : 'cp';
 	$command .= " $from $to";
+	$command =~ s!/!\\!g if ($'w32);
 	system($command);
 	if ($? != 0) {
 		&'error("cannot execute '$command'.");
