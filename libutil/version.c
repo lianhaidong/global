@@ -22,6 +22,9 @@
 #include <config.h>
 #endif
 #include <stdio.h>
+#ifdef STDC_HEADERS
+#include <stdlib.h>
+#endif
 
 #include "version.h"
 

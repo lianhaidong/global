@@ -58,7 +58,7 @@
 #define GTOP_NOREGEX		8	/* don't use regular expression */
 #define GTOP_IGNORECASE		16	/* ignore case distinction */
 
-#define isregexchar(c)	(regexchar[c])
+#define isregexchar(c)	(regexchar[(unsigned char)(c)])
 
 typedef struct {
 	DBOP	*dbop;			/* descripter of DBOP */

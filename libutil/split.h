@@ -33,5 +33,6 @@ typedef struct {
 } SPLIT;
 
 int	split(char *, int, SPLIT *);
+void	recover(SPLIT *);
 
 #endif /* ! _SPLIT_H_ */

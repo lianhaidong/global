@@ -589,7 +589,7 @@ gtags_delete(gtop, path)
 GTOP	*gtop;
 char	*path;
 {
-	char *p, *fid;
+	char *p;
 	/*
 	 * In compact format, a path is saved as a file number.
 	 */
@@ -758,8 +758,8 @@ unpack_pathindex(line)
 char *line;
 {
 	SPLIT ptable;
-	int n, i;
-	char *path, *fid;
+	int n;
+	char *path;
 
 	n = split(line, 4, &ptable);
 	if (n < 4) {
@@ -771,7 +771,7 @@ char *line;
 	 */
 	path = gpath_fid2path(ptable.part[2].start);
 	if (path == NULL)
-		die("GPATH is corrupted.(fid '%s' not found)", fid);
+		die("GPATH is corrupted.(fid '%s' not found)", ptable.part[2].start);
 	recover(&ptable);
 	/*
 	 * copy line with converting.

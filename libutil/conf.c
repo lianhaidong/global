@@ -38,6 +38,7 @@
 #include "die.h"
 #include "locatestring.h"
 #include "makepath.h"
+#include "path.h"
 #include "strbuf.h"
 #include "strlimcpy.h"
 #include "strmake.h"

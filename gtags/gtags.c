@@ -1141,8 +1141,7 @@ char	*line;
 int	absolute;
 {
 	char buf[MAXPATHLEN+1];
-	char *p, *q;
-	int i = 0;
+	char *p;
 
 	/*
 	 * print until path name.

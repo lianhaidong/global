@@ -235,7 +235,6 @@ static struct words words[] = {
 static void
 inittable()
 {
-	int i;
 	qsort(words, sizeof(words)/sizeof(struct words), sizeof(struct words), cmp);
 }
 static int
