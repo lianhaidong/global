@@ -18,8 +18,6 @@
 #	% cd /var/obj/HTML
 #	% sh bless.sh		<- OK. It will work well!
 #
-pattern1='input type=hidden name=id value'
-pattern2='form method=get action'
 action=@action@
 case $1 in
 -v)	verbose=1;;
@@ -27,7 +25,8 @@ esac
 id=`pwd`
 for f in mains.html index.html search.html; do
 	if [ -f $f ]; then
-		sed -e "s!<$pattern1=.*>!<$pattern1=$id>!" -e "s!<$pattern2=[^ >]*!<$pattern2=$action!" $f > $f.new;
+		sed -e "s!<\(input type='hidden' name='id' value\)='[^']*'\(.*\)>!<\1='$id'\2>!" \
+		   -e "s!<\(form method='get' action\)='[^']*'\(.*\)>!<\1='$action'\2>!" $f > $f.new;
 		if cmp $f $f.new >@null_device@; then
 			rm -f $f.new
 		else
