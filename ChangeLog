@@ -18,6 +18,15 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+June 1 2004, Shigio Yamaguchi  <shigio@gnu.org>
+
+	* htags: Function usable() was changed to the same specification
+	  as usable() in libutil/usable().
+	* htags: Execution path of global(1) was changed to the absolute path.
+	* htags: Write FILEMAP file for reference from external system.
+	* conf.c: New config variable 'bindir' and 'datadir' added.
+	* w32/ directory removed.
+
 Feb 1 2004, Shigio Yamaguchi  <shigio@gnu.org>
 
 	* Rewrite strbuf_putn() without snprintf().
