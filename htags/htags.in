@@ -1575,7 +1575,7 @@ sub makedefineindex {
 	local($target) = ($'Fflag) ? 'mains' : '_top';
 
 	if ($'map_file) {
-		open(MAP, ">$'dist/MAP") || &'error("cannot open.");
+		open(MAP, ">$'dist/MAP") || &'error("cannot make $'dist/MAP.");
 	}
 	open(DEFINES, ">$file") || &'error("cannot make function index '$file'.");
 	print DEFINES $'html_begin, "\n";
@@ -1769,6 +1769,9 @@ sub makefileindex {
 	local($org) = select(FILES);
 	local(@push, @pop, $file);
 
+	if ($'map_file) {
+		open(FILEMAP, ">$'dist/FILEMAP") || &'error("cannot make $'dist/FILEMAP.");
+	}
 	while (<FIND>) {
 		local($notsource) = 0;
 		chop;
@@ -1901,11 +1904,17 @@ sub makefileindex {
 		if ($'no_order_list) {
 			$li .= "<BR>\n";
 		}
+		if ($'map_file) {
+			print FILEMAP "$_\t", "$'SRCS/" . &'path2url($_), "\n";
+		}
 		if (@dirstack == 0) {
 			push(@files, $li);
 		} else {
 			print $li;
 		}
+	}
+	if ($'map_file) {
+		close(FILEMAP);
 	}
 	close(FIND);
 	if ($?) { &'error("cannot traverse directory.($findcom)"); }
