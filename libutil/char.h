@@ -23,5 +23,6 @@
 
 int isregexchar(int);
 int isregex(char *);
+char *quote_string(char *);
 
 #endif /* ! _CHAR_H_ */

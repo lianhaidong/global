@@ -23,6 +23,7 @@
 #endif
 
 #include "char.h"
+#include "strbuf.h"
 
 static char regexchar[256];
 static int init;
@@ -71,4 +72,25 @@ char *s;
 		if (ISREGEXCHAR(c))
 			return 1;
 	return 0;
+}
+/*
+ * quote string.
+ *
+ *	'aaa' => \'\a\a\a\'
+ */
+char *
+quote_string(s)
+char *s;
+{
+	static STRBUF *sb = NULL;
+
+	if (sb == NULL)
+		sb = strbuf_open(0);
+	else
+		strbuf_reset(sb);
+	for (; *s; s++) {
+		strbuf_putc(sb, '\\');
+		strbuf_putc(sb, *s);
+	}
+	return strbuf_value(sb);
 }
