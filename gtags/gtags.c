@@ -65,7 +65,6 @@ int main(int, char **);
 int incremental(char *, char *);
 void updatetags(char *, char *, char *, int);
 void createtags(char *, char *, int);
-char *now(void);
 int printconf(char *);
 void set_base_directory(char *, char *);
 void put_converting(char *, int, int);
@@ -1095,34 +1094,6 @@ createtags(dbpath, root, db)
 	gtags_close(gtop);
 	free(comline);
 	strbuf_close(sb);
-}
-/*
- * now: current date and time
- *
- *	r)		date and time
- */
-char *
-now(void)
-{
-	static char buf[128];
-
-#ifdef HAVE_STRFTIME
-	time_t tval;
-
-	if (time(&tval) == -1)
-		die("cannot get current time.");
-	(void)strftime(buf, sizeof(buf), "%a %b %d %H:%M:%S %Z %Y", localtime(&tval));
-#else
-	FILE *ip;
-
-	strlimcpy(buf, "unkown time", sizeof(buf));
-	if (ip = popen("date", "r")) {
-		if (fgets(buf, sizeof(buf), ip))
-			buf[strlen(buf) - 1] = 0;
-		fclose(ip);
-	}
-#endif
-	return buf;
 }
 /*
  * printconf: print configuration data.

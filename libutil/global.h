@@ -26,6 +26,7 @@
 #include "abs2rel.h"
 #include "char.h"
 #include "conf.h"
+#include "date.h"
 #include "dbop.h"
 #include "defined.h"
 #include "die.h"
