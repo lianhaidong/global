@@ -146,6 +146,10 @@
 		Begin tag for body. The default is '<BODY>'.
 	@item{@code{body_end}(string)}
 		End tag for body. The default is '</BODY>'.
+	@item{@code{table_begin}(string)}
+		Begin tag for table. The default is '<TABLE>'.
+	@item{@code{table_end}(string)}
+		End tag for table. The default is '</TABLE>'.
 	@item{@code{title_begin}(string)}
 		Begin tag for Title. The default is '<FONT COLOR=#cc0000>'.
 	@item{@code{title_end}(string)}
