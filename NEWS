@@ -20,7 +20,7 @@ ___________________________________
 GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
-Version *.* - ,**********, by Shigio Yamaguchi
+Version 4.3 - ,**********, by Shigio Yamaguchi
 
 * DJGPP support added.
 * global,gtags: the -q option added.
