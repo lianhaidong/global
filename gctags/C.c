@@ -261,7 +261,11 @@ C(yacc)
 			while ((c = nexttoken(interested, reserved)) != EOF && c != '\n') {
 				if (!strcmp(token, "defined"))
 					continue;
-				if (c == SYMBOL && target == SYM)
+				if (c == SYMBOL
+				    && (dflag
+					? ((target == REF && defined(token))
+					   || (target == SYM && !defined(token)))
+					: target == SYM))
 					PUT(token, lineno, sp);
 			}
 			break;
