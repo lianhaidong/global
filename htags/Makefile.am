@@ -44,7 +44,7 @@ man_MANS = htags.1
 
 EXTRA_DIST = $(man_MANS) htags.in manual.in const.pl htags.bat \
 		const.h global.cgi.tmpl.in bless.sh.tmpl \
-		c.l java.l php.l 
+		c.l cpp.l java.l php.l 
 const.h: manual.in
 	perl $(top_srcdir)/convert.pl --c $(srcdir)/manual.in >const.h
 
