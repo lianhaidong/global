@@ -21,6 +21,14 @@ GLOBAL NEWS - User visible changes.
 
 Version 4.1.0a
 
+incompatible changes
+
+* global: rename the -i(incremental) option to -u(update) and the new
+  -i(--ignore-case) option added. Sorry for my incompatible change from
+  the older version. But I believe it should be so.
+
+other changes
+
 * htags: create bless.sh when the -S option specified.
 * htags: config variables show_position, position_begin, position_end and
   icase_path added.
@@ -30,9 +38,6 @@ Version 4.1.0a
 * gtags: the -i option also locate tag files among cadedite directories.
 * global, gtags: make icase_path allways enable in Windows32 environment.
 * global: the -T(--through) option added.
-* global: rename the -i(incremental) option to -u(update) and the new
-  -i(--ignore-case) option added. Sorry for my incompatible change from
-  the older version. But I believe it should be so.
 
 Version 4.0.1 - September 26, 2000, by Shigio Yamaguchi
 
