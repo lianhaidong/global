@@ -154,6 +154,7 @@ main(argc, argv)
 int	argc;
 char	*argv[];
 {
+	char    root[MAXPATHLEN+1];
 	char	dbpath[MAXPATHLEN+1];
 	char	cwd[MAXPATHLEN+1];
 	char	env[MAXENVLEN+1];
@@ -227,9 +228,6 @@ char	*argv[];
 				exit(1);
 		exit(0);
 	} else if (do_find) {
-		char    cwd[MAXPATHLEN+1];
-		char    root[MAXPATHLEN+1];
-		char    dbpath[MAXPATHLEN+1];
 		char	*local;
 		char	*p;
 
@@ -247,8 +245,28 @@ char	*argv[];
 	if (!getcwd(cwd, MAXPATHLEN))
 		die("cannot get current directory.");
 	canonpath(cwd);
-	if (argc > 0) {
-		realpath(*argv, dbpath) ;
+	/*
+	 * Decide directory (dbpath) in which gtags make tag files.
+	 *
+	 * Gtags create tag files at current directory by default.
+	 * If dbpath is specified as an argment then use it.
+	 * If the -i option specified and both GTAGS and GRTAGS exists
+	 * at one of the candedite directories then gtags use existing
+	 * tag files.
+	 */
+	if (argc > 0)
+		realpath(*argv, dbpath);
+	else if (iflag) {
+		if (gtagsexist(cwd, dbpath, MAXPATHLEN, vflag)
+			&& test("f", makepath(dbpath, dbname(GTAGS), NULL))
+			&& test("f", makepath(dbpath, dbname(GRTAGS), NULL))) {
+			;
+		} else {
+			if (vflag)
+				fprintf(stderr, " GTAGS or GRTAGS not found. -i option ignored.\n");
+			iflag = 0;
+			strcpy(dbpath, cwd);
+		}
 	} else {
 		strcpy(dbpath, cwd);
 	}
@@ -266,7 +284,7 @@ char	*argv[];
 	if (getconfs("format", sb) && !strcmp(strbuf_value(sb), "compact"))
 		cflag++;
 	/*
-	 * teach gctags(1) where is dbpath.
+	 * teach gctags(1) where is dbpath by environment variable.
 	 */
 #ifdef HAVE_PUTENV
 #ifdef HAVE_SNPRINTF
@@ -293,19 +311,23 @@ char	*argv[];
 	/*
 	 * incremental update.
 	 */
-	if (iflag && test("f", makepath(dbpath, dbname(GTAGS), NULL)) &&
-		test("f", makepath(dbpath, dbname(GRTAGS), NULL)))
-	{
-		/* open for version check */
+	if (iflag) {
+		/*
+		 * Version check. If existing tag files are old enough
+		 * gtagsopen() abort with error message.
+		 */
 		GTOP *gtop = gtagsopen(dbpath, cwd, GTAGS, GTAGS_MODIFY, 0);
 		gtagsclose(gtop);
+		/*
+		 * GPATH is needed for incremental updating.
+		 * Gtags check whether or not GPATH exist, since it may be
+		 * removed by mistake.
+		 */
 		if (!test("f", makepath(dbpath, dbname(GPATH), NULL)))
 			die("Old version tag file found. Please remake it.");
 		(void)incremental(dbpath, cwd);
 		exit(0);
 	}
-	if (iflag && vflag)
-		fprintf(stderr, " GTAGS and GRTAGS not found. -i option ignored.\n");
 	/*
  	 * create GTAGS, GRTAGS and GSYMS
 	 */
