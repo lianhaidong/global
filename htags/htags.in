@@ -2424,7 +2424,7 @@ sub src2html {
 					$db = 'GTAGS';
 				} elsif ($TYPE eq 'Y') {
 					$db = 'GSYMS';
-				} else {	# 'D' or 'M'
+				} else {	# 'D', 'M' or 'T'
 					$db = 'GRTAGS';
 				}
 				local($line) = &cache'get($db, $TAG);
@@ -2449,7 +2449,7 @@ sub src2html {
 								$dir = $'DEFS;
 							} elsif ($TYPE eq 'Y') {
 								$dir = $'SYMS;
-							} else {	# 'D' or 'M'
+							} else {	# 'D', 'M' or 'T'
 								$dir = $'REFS;
 							}
 							$url = "../$dir/$1.$'HTML";
@@ -2753,7 +2753,13 @@ sub load {
 			local($tag, $lno, $filename, $image) = split(/\s+/, $_, 4);
 			local($type);
 			if ($db eq 'GTAGS') {
-				$type = ($image =~ /^#[ \t]*(define|undef)/) ? 'M' : 'D';
+				if ($image =~ /^#[ \t]*(define|undef)/) {
+					$type = 'M';
+				} elsif ($image =~ /^[ \t]*typedef/) {
+					$type = 'T';
+				} else {
+					$type = 'D';
+				}
 			} elsif ($db eq 'GRTAGS') {
 				$type = 'R';
 			} else {
