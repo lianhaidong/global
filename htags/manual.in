@@ -25,10 +25,10 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	HTAGS,14,Jun 2002,GNU Project
+@HEADER	HTAGS,4,Jul 2002,GNU Project
 @NAME	htags - generate hypertext from source code.
 @SYNOPSIS
-	@name{htags} [-a][-c][-f][-F][-m][-n][-o][-s][-v][-w][-d @arg{dir}][-S @arg{dir}][-t @arg{title}][@arg{dir}]
+	@name{htags} [-a][-c][-f][-F][-g][-m][-n][-o][-s][-v][-w][-d @arg{dir}][-S @arg{dir}][-t @arg{title}][@arg{dir}]
 @DESCRIPTION
 	@name{Htags} makes hypertext from C, C++, Yacc and Java source code.
 
