@@ -235,8 +235,8 @@
 	@item{@code{symbol}(boolean)}
 		Make anchors not only for functions but also other symbols.
 		@file{GSYMS} tag file needed.
-	@item{@code{definition_header}(no|before|after)}
-		Position of link header. The default is after.
+	@item{@code{definition_header}(no|before|right|after)}
+		Position of link header. The default is 'no'.
 	@item{@code{other_files}(boolean)}
 		File index includes not only source files but also other files. The default is false.
 	@item{@code{enable_grep}(boolean)}

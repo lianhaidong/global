@@ -78,7 +78,7 @@ $'normal_suffix = 'html';			# suffix of normal html file
 $'action = 'cgi-bin/global.cgi';		# default action
 $'id = '';					# id (default non)
 $'cgi = 1;					# 1: make cgi-bin/
-$'definition_header='after';			# {no|after|before}
+$'definition_header='no';			# {no|after|before}
 $'other_files = 0;				# 1: list other files
 $'map_file = 1;					# generate HTML/MAP
 $'use_cache_file = 1;				# make temporary db
@@ -2440,9 +2440,13 @@ sub src2html {
 				s/$/$'warned_line_end/;
 			}
 			# make guide
-			if ($define_line) {
+			if ($define_line && $'definition_header ne 'no') {
 				$guide = '';
-				$guide .= ' ' x ($ncol + 1) if ($'nflag);
+				if ($'definition_header eq 'right') {
+					$guide .= ' ' x 4;
+				} elsif ($'nflag) {
+					$guide .= ' ' x ($ncol + 1);
+				}
 				$guide .= "$'comment_begin/* ";
 				$guide .= &link_format(&anchor'getlinks($define_line));
 				if ($'show_position) {
@@ -2450,16 +2454,23 @@ sub src2html {
 					$guide .= "[+$define_line $file]";
 					$guide .= $'position_end;
 				}
-				$guide .= " */$'comment_end\n";
+				$guide .= " */$'comment_end";
 			}
 			# print a line
 			if ($define_line && $'definition_header eq 'before') {
 				print $guide;
+				print "\n";
 			}
 			printf "%${ncol}d ", $. if ($'nflag);
+			chop;
 			print;
+			if ($define_line && $'definition_header eq 'right') {
+				print $guide;
+			}
+			print "\n";
 			if ($define_line && $'definition_header eq 'after') {
 				print $guide;
+				print "\n";
 			}
 		}
 		print "</PRE>\n";
