@@ -80,7 +80,9 @@ static int	opened;
 static int	retval;
 
 static void	trim(char *);
+#ifdef DEBUG
 extern int	debug;
+#endif
 /*
  * trim: remove blanks and '\'.
  */
@@ -151,8 +153,10 @@ prepare_source()
 		 * compile regular expression.
 		 */
 		retval = regcomp(suff, strbuf_value(sb), flags);
+#ifdef DEBUG
 		if (debug)
 			fprintf(stderr, "find regex: %s\n", strbuf_value(sb));
+#endif
 		if (retval != 0)
 			die("cannot compile regular expression.");
 	}
@@ -238,8 +242,10 @@ prepare_skip()
 		 */
 		skip = &skip_area;
 		retval = regcomp(skip, strbuf_value(reg), flags);
+#ifdef DEBUG
 		if (debug)
 			fprintf(stderr, "skip regex: %s\n", strbuf_value(reg));
+#endif
 		if (retval != 0)
 			die("cannot compile regular expression.");
 	} else {
@@ -251,19 +257,25 @@ prepare_skip()
 		if (listarray == NULL)
 			die("short of memory.");
 		p = strbuf_value(list);
+#ifdef DEBUG
 		if (debug)
 			fprintf(stderr, "skip list: ");
+#endif
 		for (i = 0; i < list_count; i++) {
+#ifdef DEBUG
 			if (debug) {
 				fprintf(stderr, "%s", p);
 				if (i + 1 < list_count)
 					fputc(',', stderr);
 			}
+#endif
 			listarray[i] = p;
 			p += strlen(p) + 1;
 		}
+#ifdef DEBUG
 		if (debug)
 			fputc('\n', stderr);
+#endif
 	}
 	strbuf_close(reg);
 	free(skiplist);
@@ -523,8 +535,10 @@ find_open()
 	assert(opened == 0);
 	opened = 1;
 
+#ifdef DEBUG
 	if (debug)
 		fprintf(stderr, "find com: %s\n", findcom);
+#endif
 	/*
 	 * prepare regular expressions.
 	 */
