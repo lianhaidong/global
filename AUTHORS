@@ -1,0 +1,20 @@
+___________________________________
+|      |  |  |     |  _  |     |  |
+|  |___|  |  |  |  |    _|  |  |  |    GNU GLOBAL source code tag system
+|  |   |  |  |  |  |     |     |  |
+|  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The GLOBAL was written by Shigio Yamaguchi.
+
+The DB library was written by Mike Olson.
+
+Port to Windows 32 (for Borland C++ Compiler) by Dan Fandrich.
+(w32/INSTALL, w32/machine/unistd.h and most of #ifdef _WIN32.)
+
+There are also many others who have contributed patches and fixes.
+Please see files ChangeLog and THANKS.
+
+Note: GLOBAL is distributed with the files:
+	regex.c, regex.h, getopt.c, getopt1.c and getopt.h
+they are considered a separate package, not part of GLOBAL proper.
