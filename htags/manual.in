@@ -122,6 +122,11 @@
 		Tag file for path of source files.
 	@item{@file{/etc/gtags.conf}, @file{$HOME/.globalrc}}
 		Configuration file.
+	@item{@file{HTML/index.html}}
+		Index file for hypertext.
+	@item{@file{HTML/MAP}}
+		Mapping file for converting tag into path of hypertext.
+		External system utilize this file. See EXAMPLES.
 	@end_itemize
 @ENVIRONMENT
 	The following environment variables affect the execution of @name{htags}:
