@@ -228,6 +228,7 @@ nexttoken(interested, reserved)
 			if (c != EOF)
 				pushbackchar();
 			/* convert token string into token number */
+			c = SYMBOL;
 			if (reserved)
 				c = (*reserved)(token);
 			break;
