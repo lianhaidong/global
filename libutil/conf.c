@@ -141,7 +141,7 @@ const char *label;
 				die("invalid config file format (line %d).", count);
 			if (!strcmp(label, candidate)) {
 				if (!(p = locatestring(p, ":", MATCH_FIRST)))
-					die("invalid config file format (line %d).", strbuf_value(ib));
+					die("invalid config file format (line %d).", count);
 				p = strdup(p);
 				if (!p)
 					die("short of memory.");
