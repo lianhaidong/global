@@ -2068,7 +2068,7 @@ sub src2html {
 			local($converted);
 			s/\r$//;
 			# make link for include file
-			if (!$INCOMMENT && /^[ \t]*#[ \t]*include/) {
+			if (!$INCOMMENT && !$quote && /^[ \t]*#[ \t]*include/) {
 				local($last, $sep) = m![</"]([^</"]+)([">])!;
 				if (defined $'includes{$last}) {
 					local($link);
