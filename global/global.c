@@ -406,11 +406,11 @@ main(argc, argv)
 			unique = 1;
 		}
 		if (tflag) 			/* ctags format */
-			strbuf_puts(sortfilter, " +0 -1 +1 -2 +2n -3");
+			strbuf_puts(sortfilter, " -k 1,1 -k 2,2 -k 3,3n");
 		else if (fflag)
 			strbuf_setlen(sortfilter, 0);
 		else if (xflag)			/* print details */
-			strbuf_puts(sortfilter, " +0 -1 +2 -3 +1n -2");
+			strbuf_puts(sortfilter, " -k 1,1 -k 3,3 -k 2,2n");
 		else if (!unique)		/* print just a file name */
 			strbuf_puts(sortfilter, " -u");
 	}

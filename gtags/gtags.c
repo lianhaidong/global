@@ -458,7 +458,7 @@ main(argc, argv)
 		/*
 		 * This code and the makedupindex() in htags(1) compose
 		 * a pipeline 'global -x ".*" | gtags --sort'.
-		 * The 'gtags --sort' is equivalent with 'sort +0 -1 +2 -3 +1n -2 -u'
+		 * The 'gtags --sort' is equivalent with 'sort -k 1,1 -k 3,3 -k 2,2n -u'
 		 * but the latter is ineffective and needs a lot of temporary
 		 * files when applied to a huge file. (According to circumstances,
 		 * hundreds of files are generated.)
@@ -476,7 +476,7 @@ main(argc, argv)
 
 		while (line != NULL) {
 			int count = 0;
-			FILE *op = popen("sort +0 -1 +2 -3 +1n -2 -u", "w");
+			FILE *op = popen("sort -k 1,1 -k 3,3 -k 2,2n -u", "w");
 			do {
 				fputs(line, op);
 			} while ((line = strbuf_fgets(ib, stdin, 0)) != NULL && ++count < unit);

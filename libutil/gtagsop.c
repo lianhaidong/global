@@ -497,7 +497,7 @@ gtags_add(gtop, comline, path, flags)
 		strbuf_puts(sb, "| ");
 		strbuf_puts(sb, strbuf_value(sort_command));
 		strbuf_putc(sb, ' ');
-		strbuf_puts(sb, "+0 -1 +1n -2");
+		strbuf_puts(sb, "-k 1,1 -k 2,2n");
 	}
 	if (flags & GTAGS_UNIQUE)
 		strbuf_puts(sb, " -u");

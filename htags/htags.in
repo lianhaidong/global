@@ -2111,7 +2111,7 @@ sub makecommonpart {
 		$index .= "$'hr\n";
 	}
 	$index .= "<H2>MAINS</H2>\n";
-	local($command) = "$'global -nx $'main_func | sort +0 -1 +2 -3 +1n -2";
+	local($command) = "$'global -nx $'main_func | sort -k 1,1 -k 3,3 -k 2,2n";
 	open(PIPE, "$command |") || &'error("cannot fork.");
 	$index .= &'list_begin();
 	while (<PIPE>) {
