@@ -495,15 +495,14 @@ if ($ARGV[0]) {
 	$dist = &'getcwd() . '/HTML';
 	chdir($cwd) || &'error("cannot return to original directory.");
 }
-if ($'fflag) {
+if ($'fflag || $'cflag) {
 	if ($'cgidir && ! -d $'cgidir) {
 		&'error("'$'cgidir' not found.");
 	}
 	if (!$'Sflag) {
 		$'cgidir = "$dist/cgi-bin";
 	}
-}
-if (!$'fflag) {
+} else {
 	$'Sflag = $'cgidir = '';
 }
 #
@@ -756,7 +755,7 @@ if ($form{'id'}) {
 		exit 0;
 	}
 }
-$pattern =~ s/'//g;			# to shut security hole
+$pattern =~ s/"//g;			# to shut security hole
 unless (open(PIPE, "@globalpath@ -x$flag \"$pattern\" |")) {
 	print "<H1><FONT COLOR=#cc0000>Error</FONT></H1>\n";
 	print "<H3>Cannot execute global. <A HREF=$htmlbase/mains.@normal_suffix@>[return]</A></H3>\n";
