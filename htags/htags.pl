@@ -564,6 +564,11 @@ if ($'cgi && $'fflag) {
 		&makeprogram("$cgidir/global.cgi") || &'error("cannot make CGI program.");
 		chmod(0755, "$cgidir/global.cgi") || &'error("cannot chmod CGI program.");
 	}
+	if ($'Sflag) {
+		# Don't grant execute permission to bless script.
+		&makebless("$dist/bless.sh") || &'error("cannot make bless script.");
+		chmod(0644, "$dist/bless.sh") || &'error("cannot chmod bless script.");
+	}
 	foreach $f ('GTAGS', 'GRTAGS', 'GSYMS', 'GPATH') {
 		unlink("$dist/cgi-bin/$f");
 		&duplicatefile($f, $dbpath, "$dist/cgi-bin");
@@ -806,6 +811,49 @@ END_OF_SCRIPT
 	$program =~ s/\@btreeoppath\@/$btreeoppath/g;
 	print PROGRAM $program;
 	close(PROGRAM);
+}
+#
+# makebless: make bless script
+#
+sub makebless {
+	local($file) = @_;
+
+	open(SCRIPT, ">$file") || &'error("cannot make bless script.");
+	$script = <<'END_OF_SCRIPT';
+#!/bin/sh
+#
+# Bless.sh: rewrite id's value of html for centralised cgi script.
+#
+# Usage:
+#	% htags -S		<- works well at generated place.
+#	% mv HTML /var/obj	<- move to another place. It doesn't work.
+#	% cd /var/obj/HTML
+#	% sh bless.sh		<- OK. It will work well!
+#
+pattern='INPUT TYPE=hidden NAME=id VALUE='
+[ $1 ] && verbose=1
+id=`pwd`
+if grep -v <<! '/HTML$'; then
+$id
+!
+	echo 'You must execute update.sh in HTML directory.'
+	exit 1
+fi
+id=`echo $id | sed 's!/HTML!!'`
+for f in index.html search.html; do
+	if [ -f $f ]; then
+		sed "s!<$pattern.*>!<$pattern$id>!" $f > $f.new;
+		if ! cmp $f $f.new >/dev/null; then
+			mv $f.new $f
+			[ $verbose ] && echo "$f was blessed."
+		else
+			rm -f $f.new
+		fi
+	fi
+done
+END_OF_SCRIPT
+	print SCRIPT $script;
+	close(SCRIPT);
 }
 #
 # makeghtml: make unzip script
@@ -1276,7 +1324,7 @@ sub makesearchpart {
 	$index .= " TARGET=$target" if ($target);
 	$index .= ">\n";
 	$index .= "<INPUT NAME=pattern>\n";
-	$index .= "<INPUT TYPE=hidden NAME=id VALUE=$id>\n" if ($id);
+	$index .= "<INPUT TYPE=hidden NAME=id VALUE=$id>\n";
 	$index .= "<INPUT TYPE=submit VALUE=Search>\n";
 	$index .= "<INPUT TYPE=reset VALUE=Reset><BR>\n";
 	$index .= "<INPUT TYPE=radio NAME=type VALUE=definition CHECKED>";
