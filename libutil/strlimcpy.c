@@ -27,24 +27,24 @@
 /*
  * strlimcpy: copy string with limit.
  *
- *	o)	dist	distination string
+ *	o)	dest	destination string
  *	i)	source	source string
- *	i)	limit	size of dist
+ *	i)	limit	size of dest
  *
  * NOTE: This function is similar to strlcpy of OpenBSD but is different
  * because strlimcpy abort when it beyond the limit.
  */
 void
-strlimcpy(dist, source, limit)
-char *dist;
-const char *source;
+strlimcpy(dest, source, limit)
+char *dest;
+const char *const source;
 const int limit;
 {
 	int n = (int)limit;
-	char *d = dist;
+	char *s = source;
 
 	while (n--)
-		if (!(*d++ = *source++))
+		if (!(*dest++ = *s++))
 			return;
-	die("buffer overflow. strlimcpy(dist, '%s', %d).", source, limit);
+	die("buffer overflow. strlimcpy(dest, '%s', %d).", source, limit);
 }
