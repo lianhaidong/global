@@ -638,16 +638,16 @@ if ($'fflag || $'cflag) {
 #	HTML/help.html		... help file (2)
 #	HTML/$REFS/*		... references (3)
 #	HTML/$DEFS/*		... definitions (3)
-#	HTML/defines.html	... definitions index (4)
-#	HTML/defines/*		... definitions index (4)
-#	HTML/files.html		... file index (5)
-#	HTML/files/*		... file index (5)
-#	HTML/index.html		... index file (6)
-#	HTML/mains.html		... main index (7)
-#	HTML/null.html		... main null html (7)
-#	HTML/$SRCS/		... source files (8)
-#	HTML/$INCS/		... include file index (8)
-#	HTML/search.html	... search index (9)
+#	HTML/search.html	... search index (4)
+#	HTML/defines.html	... definitions index (5)
+#	HTML/defines/*		... definitions index (5)
+#	HTML/files.html		... file index (6)
+#	HTML/files/*		... file index (6)
+#	HTML/index.html		... index file (7)
+#	HTML/mains.html		... main index (8)
+#	HTML/null.html		... main null html (8)
+#	HTML/$SRCS/		... source files (9)
+#	HTML/$INCS/		... include file index (9)
 #	HTML/rebuild.sh		... rebuild script (10)
 #-------------------------------------------------------------------------
 $'HTML = ($'cflag) ? $'gzipped_suffix : $'normal_suffix;
@@ -740,17 +740,24 @@ $SIG{'TERM'} = 'suddenly';
 $func_total = &makedupindex($dist);
 print STDERR "Total $func_total functions.\n" if ($'vflag);
 #
-# (4) make function index (defines.html and defines/*)
+# (4) search index. (search.html)
+#
+if ($'Fflag && $'fflag) {
+	print STDERR "[", &'date, "] ", "(4) making search index ...\n" if ($'vflag);
+	&makesearchindex("$dist/search.$'normal_suffix");
+}
+#
+# (5) make function index (defines.html and defines/*)
 #     PRODUCE @defines
 #
-print STDERR "[", &'date, "] ", "(4) making function index ...\n" if ($'vflag);
+print STDERR "[", &'date, "] ", "(5) making function index ...\n" if ($'vflag);
 $func_total = &makedefineindex($dist, "$dist/defines.$'normal_suffix", $func_total);
 print STDERR "Total $func_total functions.\n" if ($'vflag);
 #
-# (5) make file index (files.html and files/*)
+# (6) make file index (files.html and files/*)
 #     PRODUCE @files %includes
 #
-print STDERR "[", &'date, "] ", "(5) making file index ...\n" if ($'vflag);
+print STDERR "[", &'date, "] ", "(6) making file index ...\n" if ($'vflag);
 $file_total = &makefileindex($dist, "$dist/files.$'normal_suffix", "$dist/$INCS");
 print STDERR "Total $file_total files.\n" if ($'vflag);
 #
@@ -760,14 +767,14 @@ print STDERR "Total $file_total files.\n" if ($'vflag);
 print STDERR "[", &'date, "] ", "(#) making a common part ...\n" if ($'vflag);
 $index = &makecommonpart($title);
 #
-# (6)make index file (index.html)
+# (7)make index file (index.html)
 #
-print STDERR "[", &'date, "] ", "(6) making index file ...\n" if ($'vflag);
+print STDERR "[", &'date, "] ", "(7) making index file ...\n" if ($'vflag);
 &makeindex("$dist/index.$'normal_suffix", $title, $index);
 #
-# (7) make main index (mains.html)
+# (8) make main index (mains.html)
 #
-print STDERR "[", &'date, "] ", "(7) making main index ...\n" if ($'vflag);
+print STDERR "[", &'date, "] ", "(8) making main index ...\n" if ($'vflag);
 &makemainindex("$dist/mains.$'normal_suffix", $index);
 #
 # (#) make anchor database
@@ -775,18 +782,11 @@ print STDERR "[", &'date, "] ", "(7) making main index ...\n" if ($'vflag);
 print STDERR "[", &'date, "] ", "(#) making temporary database ...\n" if ($'vflag);
 &anchor'create();
 #
-# (8) make HTML files ($SRCS/*)
+# (9) make HTML files ($SRCS/*)
 #     USING TAG CACHE, %includes and anchor database.
 #
-print STDERR "[", &'date, "] ", "(8) making hypertext from source code ...\n" if ($'vflag);
+print STDERR "[", &'date, "] ", "(9) making hypertext from source code ...\n" if ($'vflag);
 &makehtml($dist, $file_total);
-#
-# (9) search index. (search.html)
-#
-if ($'Fflag && $'fflag) {
-	print STDERR "[", &'date, "] ", "(9) making search index ...\n" if ($'vflag);
-	&makesearchindex("$dist/search.$'normal_suffix");
-}
 #
 # (10) rebuild script. (rebuild.sh)
 #
