@@ -40,6 +40,7 @@
 #include "path.h"
 #include "test.h"
 #include "strbuf.h"
+#include "strlimcpy.h"
 #include "usable.h"
 
 #if defined(_WIN32) || defined(__DJGPP__)
@@ -68,7 +69,7 @@ char	*command;
 	if (isabspath(command) || locatestring(command, "./", MATCH_AT_FIRST)
 		|| locatestring(command, "../", MATCH_AT_FIRST)) {
 		if (test("fx", command)) {
-			strcpy(path, command);
+			strlimcpy(path, command, sizeof(path));
 			return path;
 		}
 		return NULL;
@@ -77,8 +78,7 @@ char	*command;
 	 * If found in BINDIR then use it.
 	 */
 	if (test("fx", makepath(BINDIR, command, NULL))) {
-		strncpy(path, makepath(BINDIR, command, NULL), sizeof(path));
-		path[sizeof(path) - 1] = '\0';
+		strlimcpy(path, makepath(BINDIR, command, NULL), sizeof(path));
 		return path;
 	}
 	/*
@@ -95,15 +95,13 @@ char	*command;
 		if ((p = locatestring(p, PATHSEP, MATCH_FIRST)) != NULL)
 			*p++ = 0;
 		if (test("fx", makepath(dir, command, NULL))) {
-			strncpy(path, makepath(dir, command, NULL), sizeof(path));
-			path[sizeof(path) - 1] = '\0';
+			strlimcpy(path, makepath(dir, command, NULL), sizeof(path));
 			goto finish;
 		}
 #if defined(_WIN32) || defined(__DJGPP__)
 		for (i = 0; i < lim; i++)
 			if (test("f", makepath(dir, command, suffix[i]))) {
-				strncpy(path, makepath(dir, command, suffix[i]), sizeof(path));
-				path[sizeof(path) - 1] = '\0';
+				strlimcpy(path, makepath(dir, command, suffix[i]), sizeof(path));
 				goto finish;
 			}
 #endif

@@ -45,6 +45,7 @@
 
 #include "global.h"
 #include "regex.h"
+#include "strlimcpy.h"
 #include "usable.h"
 #include "const.h"
 
@@ -358,7 +359,7 @@ char	*argv[];
 		if (!locatestring(strbuf_value(sb), ".exe", MATCH_LAST))
 			strbuf_puts(sb, ".exe");
 #endif
-		strcpy(sort_command, strbuf_value(sb));
+		strlimcpy(sort_command, strbuf_value(sb), sizeof(sort_command));
 		strbuf_close(sb);
 	}
 	/*
@@ -485,7 +486,7 @@ char	*argv[];
 			strbuf_puts(pathfilter, cwd);
 			count = search(av, lib, libdbpath, db);
 			if (count > 0 && !Tflag) {
-				strcpy(dbpath, libdbpath);
+				strlimcpy(dbpath, libdbpath, sizeof(dbpath));
 				break;
 			}
 		}

@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999
  *             Shigio Yamaguchi. All rights reserved.
- * Copyright (c) 1999, 2000
+ * Copyright (c) 1999, 2000, 2002
  *             Tama Communications Corporation. All rights reserved.
  *
  * This file is part of GNU GLOBAL.
@@ -33,6 +33,7 @@
 #endif
 
 #include "gparam.h"
+#include "strlimcpy.h"
 #include "token.h"
 
 /*
@@ -67,7 +68,7 @@ opentoken(file)
 	if ((ip = fopen(file, "rb")) == NULL)
 		return 0;
 	ib = strbuf_open(MAXBUFLEN);
-	strcpy(curfile, file);
+	strlimcpy(curfile, file, sizeof(curfile));
 	sp = cp = lp = NULL; ptok[0] = 0; lineno = 0;
 	return 1;
 }
@@ -122,7 +123,7 @@ nexttoken(interested, reserved)
 
 	/* check push back buffer */
 	if (ptok[0]) {
-		strcpy(token, ptok);
+		strlimcpy(token, ptok, sizeof(token));
 		ptok[0] = 0;
 		return lasttok;
 	}
@@ -245,7 +246,7 @@ nexttoken(interested, reserved)
 void
 pushbacktoken()
 {
-	strcpy(ptok, token);
+	strlimcpy(ptok, token, sizeof(ptok));
 }
 /*
  * peekc: peek next char

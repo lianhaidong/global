@@ -280,9 +280,9 @@ STRBUF *URL;
 	 */
 	getdbpath(cwd, root, dbpath, 0);
 	if (test("d", makepath(dbpath, "HTML", NULL)))
-		strcpy(htmldir, makepath(dbpath, "HTML", NULL));
+		strlimcpy(htmldir, makepath(dbpath, "HTML", NULL), sizeof(htmldir));
 	else if (test("d", makepath(root, "HTML", NULL)))
-		strcpy(htmldir, makepath(root, "HTML", NULL));
+		strlimcpy(htmldir, makepath(root, "HTML", NULL), sizeof(htmldir));
 	else
 		die("hypertext not found. See htags(1).");
 	path = makepath(htmldir, "MAP.db", NULL);
@@ -359,9 +359,9 @@ STRBUF *URL;
 		 */
 		getdbpath(cwd, root, dbpath, 0);
 		if (test("d", makepath(dbpath, "HTML", NULL)))
-			strcpy(htmldir, makepath(dbpath, "HTML", NULL));
+			strlimcpy(htmldir, makepath(dbpath, "HTML", NULL), sizeof(htmldir));
 		else if (test("d", makepath(root, "HTML", NULL)))
-			strcpy(htmldir, makepath(root, "HTML", NULL));
+			strlimcpy(htmldir, makepath(root, "HTML", NULL), sizeof(htmldir));
 		else
 			die("hypertext not found. See htags(1).");
 		/*
@@ -434,7 +434,7 @@ char	*path;
 		char    *unit = p;
 		if ((p = locatestring(p, ",", MATCH_FIRST)) != NULL)
 			*p++ = 0;
-		strcpy(&suff[1], unit);
+		strlimcpy(&suff[1], unit, sizeof(suff) - 1);
 		if (locatestring(path, suff, MATCH_AT_LAST)) {
 			retval = 1;
 			break;
@@ -475,14 +475,14 @@ STRBUF	*sb;
 		char key[MAXPATHLEN+1];
 		int tag1 = strbuf_getlen(sb);
 
-		strcpy(key, "./");
+		strlimcpy(key, "./", sizeof(key));
 		strcat(key, path + 1);
 		p = gpath_path2fid(key);
 		if (p == NULL) {
 			gpath_close();
 			return -1;
 		}
-		strcpy(key, p);
+		strlimcpy(key, p, sizeof(key));
 		gpath_close();
 		strbuf_puts(sb, key);
 		for (i = 0; i < lim; i++) {

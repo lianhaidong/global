@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999
  *             Shigio Yamaguchi. All rights reserved.
- * Copyright (c) 1999, 2000, 2001
+ * Copyright (c) 1999, 2000, 2001, 2002
  *             Tama Communications Corporation. All rights reserved.
  *
  * This file is part of GNU GLOBAL.
@@ -45,6 +45,7 @@
 #include "die.h"
 #include "locatestring.h"
 #include "strbuf.h"
+#include "strlimcpy.h"
 #include "strmake.h"
 #include "test.h"
 
@@ -145,7 +146,7 @@ int	flags;
 		return NULL;
 	if (!(dbop = (DBOP *)malloc(sizeof(DBOP))))
 		die("short of memory.");
-	strcpy(dbop->dbname, path);
+	strlimcpy(dbop->dbname, path, sizeof(dbop->dbname));
 	dbop->db	= db;
 	dbop->openflags	= flags;
 	dbop->perm	= (mode == 1) ? perm : 0;
@@ -347,7 +348,7 @@ int	flags;
 	if (name) {
 		if (strlen(name) > MAXKEYLEN)
 			die("primary key too long.");
-		strcpy(dbop->key, name);
+		strlimcpy(dbop->key, name, sizeof(dbop->key));
 		key.data = (char *)name;
 		key.size = strlen(name);
 		/*
@@ -393,7 +394,7 @@ int	flags;
 	}
 	dbop->ioflags = flags;
 	if (flags & DBOP_KEY) {
-		strcpy(dbop->prev, (char *)key.data);
+		strlimcpy(dbop->prev, (char *)key.data, sizeof(dbop->prev));
 		return (char *)key.data;
 	}
 	return ((char *)dat.data);
@@ -431,7 +432,7 @@ DBOP	*dbop;
 				continue;
 			if (strlen((char *)key.data) > MAXKEYLEN)
 				die("primary key too long.");
-			strcpy(dbop->prev, (char *)key.data);
+			strlimcpy(dbop->prev, (char *)key.data, sizeof(dbop->prev));
 		}
 		dbop->lastdat	= (char *)dat.data;
 		if (flags & DBOP_PREFIX) {
@@ -645,7 +646,7 @@ int flags;
 		dir[0] = 0;
 	} else
 		*name++ = 0;
-	strcpy(dbop->tblname, name);
+	strlimcpy(dbop->tblname, name, sizeof(dbop->tblname));
 	dbop->res = NULL;
 	dbop->mode = mode;
 	dbop->openflags = flags;

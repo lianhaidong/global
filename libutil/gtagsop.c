@@ -49,6 +49,7 @@
 #include "path.h"
 #include "gpathop.h"
 #include "strbuf.h"
+#include "strlimcpy.h"
 #include "strmake.h"
 #include "tab.h"
 
@@ -346,7 +347,7 @@ int	flags;
 	 */
 	if (gtop->format & GTAGS_COMPACT) {
 		assert(root != NULL);
-		strcpy(gtop->root, root);
+		strlimcpy(gtop->root, root, sizeof(gtop->root));
 		if (gtop->mode == GTAGS_READ)
 			gtop->ib = strbuf_open(MAXBUFLEN);
 		else
@@ -394,9 +395,9 @@ char	*fid;
 		if (gtop->prev_tag[0]) {
 			dbop_put(gtop->dbop, gtop->prev_tag, strbuf_value(gtop->sb), gtop->prev_fid);
 		}
-		strcpy(gtop->prev_tag, tag);
-		strcpy(gtop->prev_path, path);
-		strcpy(gtop->prev_fid, fid);
+		strlimcpy(gtop->prev_tag, tag, sizeof(gtop->prev_tag));
+		strlimcpy(gtop->prev_path, path, sizeof(gtop->prev_path));
+		strlimcpy(gtop->prev_fid, fid, sizeof(gtop->prev_fid));
 		/*
 		 * Start creating new record.
 		 */
@@ -745,7 +746,7 @@ GTOP	*gtop;
 			*q = 0;
 			if ((name = gpath_fid2path(path)) == NULL)
 				die("GPATH is corrupted.('%s' not found)", path);
-			strcpy(gtop->path, name);
+			strlimcpy(gtop->path, name, sizeof(gtop->path));
 		} else {
 			q = gtop->path;
 			while (!isspace(*p))

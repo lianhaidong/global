@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999
  *             Shigio Yamaguchi. All rights reserved.
- * Copyright (c) 1999, 2000, 2001
+ * Copyright (c) 1999, 2000, 2001, 2002
  *             Tama Communications Corporation. All rights reserved.
  *
  * This file is part of GNU GLOBAL.
@@ -44,6 +44,7 @@
 #include "die.h"
 #include "locatestring.h"
 #include "strbuf.h"
+#include "strlimcpy.h"
 #include "token.h"
 
 static	int	function_definition(int);
@@ -115,7 +116,7 @@ Cpp()
 					char	savetok[MAXTOKEN], *saveline;
 					int	savelineno = lineno;
 
-					strcpy(savetok, token);
+					strlimcpy(savetok, token, sizeof(savetok));
 					strbuf_reset(sb);
 					strbuf_puts(sb, sp);
 					saveline = strbuf_value(sb);
@@ -143,7 +144,7 @@ Cpp()
 		case CPP_CLASS:
 			DBG_PRINT(level, "class");
 			if ((c = nexttoken(interested, reserved)) == SYMBOL) {
-				strcpy(classname, token);
+				strlimcpy(classname, token, sizeof(classname));
 				if (target == DEF)
 					PUT(token, lineno, sp);
 				if (peekc(0) != ';')
@@ -352,14 +353,14 @@ Cpp()
 					if (c == '(' || c == ')') {
 						if (c == '(') {
 							if (funclevel++ == 0) {
-								strcpy(savefunc, savetok);
+								strlimcpy(savefunc, savetok, sizeof(savefunc));
 								savefunclineno = savelineno;
 								savetok[0] = 0;
 							}
 						}
 						if (c == ')') {
 							if (--funclevel == 0) {
-								strcpy(savetok, savefunc);
+								strlimcpy(savetok, savefunc, sizeof(savetok));
 								savelineno = savefunclineno;
 								savefunc[0] = 0;
 							}
@@ -381,7 +382,7 @@ Cpp()
 					}
 					if (c == SYMBOL) {
 						/* save lastest token */
-						strcpy(savetok, token);
+						strlimcpy(savetok, token, sizeof(savetok));
 						savelineno = lineno;
 					}
 				}

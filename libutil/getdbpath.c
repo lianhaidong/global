@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999
  *             Shigio Yamaguchi. All rights reserved.
- * Copyright (c) 1999, 2000
+ * Copyright (c) 1999, 2000, 2002
  *             Tama Communications Corporation. All rights reserved.
  *
  * This file is part of GNU GLOBAL.
@@ -44,6 +44,7 @@
 #include "gtagsop.h"
 #include "makepath.h"
 #include "path.h"
+#include "strlimcpy.h"
 #include "test.h"
 
 static const char *makeobjdirprefix;	/* obj partition		*/
@@ -186,7 +187,7 @@ int	verbose;
 				die("GTAGSDBPATH must be an absolute path.");
 			if (stat(p, &sb) || !S_ISDIR(sb.st_mode))
 				die("directory '%s' not found.", p);
-			strcpy(dbpath, getenv("GTAGSDBPATH"));
+			strlimcpy(dbpath, getenv("GTAGSDBPATH"), sizeof(dbpath));
 		} else {
 			if (!gtagsexist(root, dbpath, MAXPATHLEN, verbose))
 				die_with_code(3, "GTAGS not found.");
@@ -197,7 +198,7 @@ int	verbose;
 		/*
 		 * start from current directory to '/' directory.
 		 */
-		strcpy(root, cwd);
+		strlimcpy(root, cwd, sizeof(root));
 		p = root + strlen(root);
 		while (!gtagsexist(root, dbpath, MAXPATHLEN, verbose)) {
 			while (*--p != '/' && p > root)
@@ -239,7 +240,7 @@ int	verbose;
 					char buf[MAXPATHLEN+1];
 					s = realpath(makepath(root, s, NULL), buf);
 				}
-				strcpy(root, s);
+				strlimcpy(root, s, sizeof(root));
 			}
 			fclose(fp);
 			strbuf_close(sb);

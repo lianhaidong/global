@@ -23,6 +23,7 @@
 #include <config.h>
 #endif
 #include "die.h"
+#include "strlimcpy.h"
 
 /*
  * strlimcpy: copy string by size.

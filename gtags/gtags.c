@@ -332,12 +332,12 @@ char	*argv[];
 		if (argc > 0)
 			realpath(*argv, dbpath);
 		else if (!gtagsexist(cwd, dbpath, MAXPATHLEN, vflag))
-			strcpy(dbpath, cwd);
+			strlimcpy(dbpath, cwd, sizeof(dbpath));
 	} else {
 		if (argc > 0)
 			realpath(*argv, dbpath);
 		else
-			strcpy(dbpath, cwd);
+			strlimcpy(dbpath, cwd, sizeof(dbpath));
 	}
 	if (iflag && (!test("f", makepath(dbpath, dbname(GTAGS), NULL)) ||
 		!test("f", makepath(dbpath, dbname(GPATH), NULL)))) {
@@ -830,7 +830,7 @@ now(void)
 #else
 	FILE	*ip;
 
-	strcpy(buf, "unkown time");
+	strlimcpy(buf, "unkown time", sizeof(buf));
 	if (ip = popen("date", "r")) {
 		if (fgets(buf, sizeof(buf), ip))
 			buf[strlen(buf) - 1] = 0;
@@ -887,7 +887,7 @@ char	*cwd;
 
 	if (strlen(cwd) > MAXPATHLEN)
 		die("current directory name too long.");
-	strcpy(basedir, cwd);
+	strlimcpy(basedir, cwd, sizeof(basedir));
 	/* leave abspath unclosed. */
 }
 void

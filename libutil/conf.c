@@ -41,6 +41,7 @@
 #include "locatestring.h"
 #include "makepath.h"
 #include "strbuf.h"
+#include "strlimcpy.h"
 #include "strmake.h"
 #include "test.h"
 #include "usable.h"
@@ -209,23 +210,22 @@ configpath() {
 	 * at first, check environment variable GTAGSCONF.
 	 */
 	if (getenv("GTAGSCONF") != NULL)
-		strncpy(config, getenv("GTAGSCONF"), sizeof(config));
+		strlimcpy(config, getenv("GTAGSCONF"), sizeof(config));
 	/*
 	 * if GTAGSCONF not set then check standard config files.
 	 */
 	else if ((p = getenv("HOME")) && test("r", makepath(p, GTAGSRC, NULL)))
-		strncpy(config, makepath(p, GTAGSRC, NULL), sizeof(config));
+		strlimcpy(config, makepath(p, GTAGSRC, NULL), sizeof(config));
 	else if (test("r", GTAGSCONF))
-		strncpy(config, GTAGSCONF, sizeof(config));
+		strlimcpy(config, GTAGSCONF, sizeof(config));
 	else if (test("r", OLD_GTAGSCONF))
-		strncpy(config, OLD_GTAGSCONF, sizeof(config));
+		strlimcpy(config, OLD_GTAGSCONF, sizeof(config));
 	else if (test("r", DEBIANCONF))
-		strncpy(config, DEBIANCONF, sizeof(config));
+		strlimcpy(config, DEBIANCONF, sizeof(config));
 	else if (test("r", OLD_DEBIANCONF))
-		strncpy(config, OLD_DEBIANCONF, sizeof(config));
+		strlimcpy(config, OLD_DEBIANCONF, sizeof(config));
 	else
 		return NULL;
-	config[sizeof(config) - 1] = '\0';
 	return config;
 }
 /*

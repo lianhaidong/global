@@ -59,6 +59,7 @@
 #include "locatestring.h"
 #include "makepath.h"
 #include "strbuf.h"
+#include "strlimcpy.h"
 
 /*
  * usage of ?findxxx()
@@ -408,7 +409,7 @@ find_open()
 	 */
 	curp = &stack[0];
 	topp = curp + STACKSIZE; 
-	strcpy(dir, ".");
+	strlimcpy(dir, ".", sizeof(dir));
 
 	curp->dirp = dir + strlen(dir);
 	curp->sb = strbuf_open(0);
@@ -445,11 +446,11 @@ find_read(void)
 					continue;
 				if (regexec(suff, path, 0, 0, 0) == 0) {
 					/* source file */
-					strncpy(val, path, sizeof(val));
+					strlimcpy(val, path, sizeof(val));
 				} else {
 					/* other file like 'Makefile' */
 					val[0] = ' ';
-					strncpy(&val[1], path, sizeof(val) - 1);
+					strlimcpy(&val[1], path, sizeof(val) - 1);
 				}
 				val[sizeof(val) - 1] = '\0';
 				return val;

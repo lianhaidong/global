@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999
  *             Shigio Yamaguchi. All rights reserved.
- * Copyright (c) 1999, 2000
+ * Copyright (c) 1999, 2000, 2002
  *             Tama Communications Corporation. All rights reserved.
  *
  * This file is part of GNU GLOBAL.
@@ -44,6 +44,7 @@
 #include "die.h"
 #include "dbop.h"
 #include "strbuf.h"
+#include "strlimcpy.h"
 #include "tab.h"
 #include "version.h"
 #include "const.h"
@@ -253,8 +254,7 @@ DBOP	*dbop;
 			die("data part not found.");
 		if (c - p > MAXKEYLEN)
 			die("primary key too long.");
-		strncpy(keybuf, p, c - p);		/* make key string */
-		keybuf[c - p] = 0;
+		strlimcpy(keybuf, p, c - p);		/* make key string */
 		for (; *c && isspace(*c); c++)		/* skip blanks */
 			;
 		if (*c == 0)

@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999
  *             Shigio Yamaguchi. All rights reserved.
- * Copyright (c) 1999, 2000, 2001
+ * Copyright (c) 1999, 2000, 2001, 2002
  *             Tama Communications Corporation. All rights reserved.
  *
  * This file is part of GNU GLOBAL.
@@ -39,6 +39,7 @@
 #include "gtagsop.h"
 #include "makepath.h"
 #include "gpathop.h"
+#include "strlimcpy.h"
 
 static DBOP	*dbop;
 static int	_nextkey;
@@ -238,7 +239,7 @@ char	*local;
 	free(path);
 	if (gfind_dbop == NULL)
 		die("GPATH not found.");
-	strcpy(gfind_prefix, (local) ? local : "./");
+	strlimcpy(gfind_prefix, (local) ? local : "./", sizeof(gfind_prefix));
 	gfind_opened = 1;
 	gfind_first = 1;
 }

@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999
  *             Shigio Yamaguchi. All rights reserved.
- * Copyright (c) 1999, 2000
+ * Copyright (c) 1999, 2000, 2002
  *             Tama Communications Corporation. All rights reserved.
  *
  * This file is part of GNU GLOBAL.
@@ -39,6 +39,7 @@
 #include "defined.h"
 #include "die.h"
 #include "java.h"
+#include "strlimcpy.h"
 #include "token.h"
 
 static int	reserved(char *);
@@ -135,7 +136,7 @@ java()
 		case J_CLASS:
 		case J_INTERFACE:
 			if ((c = nexttoken(interested, reserved)) == SYMBOL) {
-				strcpy(classname, token);
+				strlimcpy(classname, token, sizeof(classname));
 				startclass = 1;
 				if (target == DEF)
 					PUT(token, lineno, sp);
