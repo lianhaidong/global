@@ -374,8 +374,17 @@ generate_file(dist, file)
 			if (i >= tabsize)
 				die("something wrong.");
 			/* print macro value */
-			if (i < tabsize)
-				fputs(tab[i].value, op);
+			if (i < tabsize) {
+				char *q;
+				/*
+				 * Double quote should be quoted using '\\'.
+				 */
+				for (q = tab[i].value; *q; q++) {
+					if (*q == '"')
+						fputc('\\', op);
+					fputc(*q, op);
+				}
+			}
 		}
 		fputs(p, op);
 		fputc('\n', op);
