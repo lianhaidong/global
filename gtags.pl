@@ -78,6 +78,7 @@ if ($command) {
     chop($_);
     $version = $_;
     close(TAGS);
+    $version =~ s/(\d+\.\d+)(\.\d+)?/\1/;
     if ($? != 0 || $version < $support_version) {
         $notfound = "Your global(1) seems to be older version.";
     }
