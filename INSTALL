@@ -30,7 +30,7 @@ o Groff is needed for formatting online manuals.
    If you replace your system's nroff(1) with GNU's one(nroff.sh) then
    you can use man(1) to see GLOBAL's online manuals.
 
-o Id-utils(1) is needed for -I option of global(1).
+o If you want to use the -I option of global(1) then id-utils(1) is needed.
 
    You can get id-utils at:
 
