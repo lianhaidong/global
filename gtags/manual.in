@@ -116,16 +116,13 @@
 	@begin_itemize
 	@item{@var{GTAGS}(string)}
 		If this variable is set, its value is used as the
-		command line of parser for GTAGS. The default is @file{$BINDIR/gctags %s}.
-		($BINDIR means path for GLOBAL command installation.)
+		command line of parser for GTAGS. The default is @file{gctags %s}.
 	@item{@var{GRTAGS}(string)}
 		If this variable is set, its value is used as the
-		command line of parser for GRTAGS. The default is @file{$BINDIR/gctags -r %s}.
-		($BINDIR means path for GLOBAL command installation.)
+		command line of parser for GRTAGS. The default is @file{gctags -r %s}.
 	@item{@var{GSYMS}(string)}
 		If this variable is set, its value is used as the
-		command line of parser for GSYMS. The default is @file{$BINDIR/gctags -s %s}.
-		($BINDIR means path for GLOBAL command installation.)
+		command line of parser for GSYMS. The default is @file{gctags -s %s}.
 	@item{@var{skip}(comma separated list)}
 		@name{Gtags} skips files which listed in this list.
 		As a special exception, @name{gtags} collect values from multiple @var{skip} variables.
