@@ -585,7 +585,6 @@ makefileindex(file, files)
 	char *_;
 	int count = 0;
 	char indexlink[80];
-	char edit[MAXURLLEN];
 	STRBUF *sb = strbuf_open(0);
 	STRBUF *input = strbuf_open(0);
 	char *target = (Fflag) ? "mains" : "_top";
