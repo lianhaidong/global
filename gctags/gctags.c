@@ -165,7 +165,7 @@ main(argc, argv)
 		}
 	}
 	if (show_version)
-		version(NULL, 0);
+		version(NULL, vflag);
 	else if (show_help)
 		help();
 	else if (do_check) {

@@ -52,6 +52,9 @@ const char *dbdefault = "btree";   	/* default database name */
 
 int vflag;
 int debug;
+int	show_version;
+int	show_help;
+
 static void	usage(void);
 void	signal_setup(void);
 void	onintr(int);
@@ -122,9 +125,10 @@ char	*argv[];
 
 	for (i = 1; i < argc && argv[i][0] == '-'; ++i) {
 		if (!strcmp(argv[i], "--version"))
-			version(NULL, 0);
+			show_version = 1;
 		else if (!strcmp(argv[i], "--help"))
-			help();
+			show_help = 1;
+		else
 		switch (c = argv[i][1]) {
 		case 'D':
 		case 'K':
@@ -153,11 +157,18 @@ char	*argv[];
 			else
 				usage();
 			break;
+		case 'v':
+			vflag++;
+			break;
 		default:
 			usage();
 			break;
 		}
 	}
+	if (show_version)
+		version(NULL, vflag);
+	if (show_help)
+		help();
 	db_name = (i < argc) ? argv[i] : dbdefault;
 	switch (command) {
 	case 'A':
