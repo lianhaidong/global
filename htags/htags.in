@@ -1635,7 +1635,7 @@ sub makedefineindex {
 					$url = "../" . $url;
 				}
 			}
-			$guide = "Multiple defined at $2 places.";
+			$guide = "Multiple defined in $2 places.";
 		} else {
 			local($lno, $path) = split(/[ \t]+/, $line);
 			local($filename) = &'path2url($path);
