@@ -2,7 +2,7 @@
 cd libdb
 make %1
 cd ..
-cd libregex
+cd libglibc
 make %1
 cd ..
 cd libutil
@@ -21,5 +21,8 @@ cd gctags
 make %1
 cd ..
 cd htags
+make %1
+cd ..
+cd gozilla
 make %1
 cd ..
