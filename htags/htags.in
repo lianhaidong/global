@@ -946,7 +946,7 @@ sub makebless {
 # Bless.sh: rewrite id's value of html for centralised cgi script.
 #
 # Usage:
-#	% htags -S		<- works well at generated place.
+#	% htags -fS		<- works well at generated place.
 #	% mv HTML /var/obj	<- move to another place. It doesn't work.
 #	% cd /var/obj/HTML
 #	% sh bless.sh		<- OK. It will work well!
