@@ -29,6 +29,7 @@ ChangeLog about GNU GLOBAL
 	* gctags: inittable() added for each parser, which set up reserved
 	  word table.
 	* doc/*.texi: renamed from *.texi to *.txi for djgpp.
+	* libutil: linetable.[ch] added.
 
 July 4 2002, Shigio Yamaguchi  <shigio@gnu.org>
 
