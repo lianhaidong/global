@@ -176,6 +176,13 @@
 		Begin tag for posiotion mark. The default is '<FONT COLOR=gray>'.
 	@item{@code{position_end}(string)}
 		End tag for posiotion mark. The default is '</FONT>'.
+	@item{@code{colorize_warned_line}(boolean)}
+		Colorize warned line using @code{warned_line_begin} and @code{warned_line_end}.
+		The default is false.
+	@item{@code{warned_line_begin}(string)}
+		Begin tag for line which htags warned. The default is '<SPAN STYLE="background-color:yellow">'.
+	@item{@code{warned_line_end}(string)}
+		End tag for line which htags warned. The default is '</SPAN>'.
 	@item{@code{ncol}(number)}
 		Columns of line number. The default is 4.
 	@item{@code{tabs}(number)}
