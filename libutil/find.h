@@ -28,8 +28,5 @@ int	issource(char *);
 void	find_open(void);
 char	*find_read(int *);
 void	find_close(void);
-void	gfind_open(char *, char *);
-char	*gfind_read(void);
-void	gfind_close(void);
 
 #endif /* ! _FIND_H_ */

@@ -29,6 +29,7 @@ ChangeLog about GNU GLOBAL
 	* rename functions: pathxxx -> gpath_xxx, gtagsxxx -> gtags_xxx.
 	* rename functions: ffindxxx -> find_xxx, gfindxxx -> gfind_xxx.
 	* libglibc/snprintf.c added.
+	* move gfind_xxx from libutil/find.c to libutil/gpathop.c.
 
 July 31 2001, Shigio Yamaguchi  <shigio@tamacom.com>
 

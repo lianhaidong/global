@@ -208,3 +208,63 @@ gpath_close(void)
 	if (_mode == 1)
 		created = 1;
 }
+
+/*
+ * gfind iterator using GPATH.
+ *
+ * gfind_xxx() does almost same with find_xxx() but much faster,
+ * because gfind_xxx() use GPATH (file index).
+ * If GPATH exist then you should use this.
+ */
+static DBOP	*gfind_dbop;
+static int      gfind_opened;
+static int      gfind_first;
+static char	gfind_prefix[MAXPATHLEN+1];
+
+/*
+ * gfind_open: start iterator using GPATH.
+ */
+void
+gfind_open(dbpath, local)
+char	*dbpath;
+char	*local;
+{
+	char *path;
+
+	assert(gfind_opened == 0);
+	assert(gfind_first == 0);
+	path = strdup(makepath(dbpath, dbname(GPATH), NULL));
+	if (path == NULL)
+		die("short of memory.");
+	gfind_dbop = dbop_open(path, 0, 0, 0);
+	free(path);
+	if (gfind_dbop == NULL)
+		die("GPATH not found.");
+	strcpy(gfind_prefix, (local) ? local : "./");
+	gfind_opened = 1;
+	gfind_first = 1;
+}
+/*
+ * gfind_read: read path without GPATH.
+ *
+ *	r)		path
+ */
+char	*
+gfind_read()
+{
+	assert(gfind_opened == 1);
+	if (gfind_first) {
+		gfind_first = 0;
+		return dbop_first(gfind_dbop, gfind_prefix, NULL, DBOP_KEY | DBOP_PREFIX);
+	}
+	return dbop_next(gfind_dbop);
+}
+/*
+ * gfind_close: close iterator.
+ */
+void
+gfind_close(void)
+{
+	dbop_close(gfind_dbop);
+	gfind_opened = gfind_first = 0;
+}
