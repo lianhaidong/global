@@ -425,6 +425,14 @@ unknown_preprocessing_directive(word, lineno)
 		warned = 1;
 }
 void
+unexpected_eof(lineno)
+	int lineno;
+{
+	warning("unexpected eof. [+%d %s]", lineno, curpfile);
+	if (colorize_warned_line)
+		warned = 1;
+}
+void
 put_char(c)
         int c;
 {

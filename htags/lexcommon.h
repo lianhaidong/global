@@ -103,6 +103,7 @@ extern void put_include_anchor(struct data *, char *);
 extern void put_reserved_word(char *);
 extern void put_macro(char *);
 extern void unknown_preprocessing_directive(char *, int);
+extern void unexpected_eof(int);
 extern void put_char(int);
 extern void put_string(char *);
 extern void put_brace(char *);
