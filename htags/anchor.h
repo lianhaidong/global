@@ -58,6 +58,7 @@ struct anchor {
 #define A_LIMIT		8
 
 void anchor_load(char *);
+void anchor_unload(void);
 struct anchor *anchor_first();
 struct anchor *anchor_next();
 struct anchor *anchor_get(char *, int, int, int);
