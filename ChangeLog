@@ -4,7 +4,7 @@ ___________________________________
 |  |   |  |  |  |  |     |     |  |
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Copyright (c) 2000, 2001
+ Copyright (c) 2000, 2001, 2002
         Tama Communications Corporation. All rights reserved.
 
  This file is free software; as a special exception the author gives
@@ -19,7 +19,7 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
-***********, Shigio Yamaguchi  <shigio@gnu.org>
+Jan 10 2002, Shigio Yamaguchi  <shigio@gnu.org>
 
 	* DJGPP support code added.
 	  Jason Hood ported Global-4.0.1 into DJGPP environment.

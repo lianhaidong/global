@@ -4,7 +4,7 @@ ___________________________________
 |  |   |  |  |  |  |     |     |  |
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Copyright (c) 2000, 2001
+ Copyright (c) 2000, 2001, 2002
         Tama Communications Corporation. All rights reserved.
 
  This file is free software; as a special exception the author gives
@@ -20,13 +20,13 @@ ___________________________________
 GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
-Version 4.3 - ,**********, by Shigio Yamaguchi
+Version 4.3 - Jan 10 2002, by Shigio Yamaguchi
 
 * Support DJGPP.
 * Support nvi-1.81.5.
+* global.texi: chapter of less viewer, nvi-1.81.5 and reference manuals added.
 * global,gtags: the -q option added.
 * htags: fill anchors into path name.
-* global.texi: chapter of less viewer, nvi-1.81.5 and reference manuals added.
 * global: GTAGSROOT file supported.
 
 Version 4.2 - Nov 24 2001, by Shigio Yamaguchi
