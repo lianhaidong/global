@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999
  *             Shigio Yamaguchi. All rights reserved.
- * Copyright (c) 1999, 2000, 2001
+ * Copyright (c) 1999, 2000, 2001, 2002
  *             Tama Communications Corporation. All rights reserved.
  *
  * This file is part of GNU GLOBAL.
@@ -294,7 +294,7 @@ openconf()
 		/*
 		 * Some GNU/Linux has gctags as '/usr/bin/gctags', that is
 		 * different from GLOBAL's one.
-		 * BINDIR is defined in Makefile.
+		 * usable search in BINDIR at first.
 		 */
 #if defined(_WIN32) || defined(__DJGPP__)
 		path = "gctags.exe";
