@@ -31,6 +31,7 @@ ChangeLog about GNU GLOBAL
 	* reconf.sh: command for generating configure added.
 	* Copyright notice added for short files that are not important
 	  enough to worry about copylefting.
+	* libdb/db.h: typdefs pgno_t, indx_t and recno_t changed into macros.
 
 September 26 2000, Shigio Yamaguchi  <shigio@tamacom.com>
 

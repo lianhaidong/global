@@ -52,11 +52,11 @@
 #define	RET_SPECIAL	 1
 
 #define	MAX_PAGE_NUMBER	0xffffffff	/* >= # of pages in a file */
-typedef u_int32_t	pgno_t;
+#define pgno_t		u_int32_t
 #define	MAX_PAGE_OFFSET	65535		/* >= # of bytes in a page */
-typedef u_int16_t	indx_t;
+#define indx_t		u_int16_t
 #define	MAX_REC_NUMBER	0xffffffff	/* >= # of records in a tree */
-typedef u_int32_t	recno_t;
+#define recno_t		u_int32_t
 
 /* Key/data structure -- a Data-Base Thang. */
 typedef struct {
