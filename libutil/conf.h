@@ -37,7 +37,7 @@
 #endif
 #define DEFAULTLABEL    "default"
 #define DEFAULTSUFFIXES "c,h,y,c++,cc,cpp,cxx,hxx,C,H,s,S,java,php,php3,phtml"
-#define DEFAULTSKIP     "GPATH,GTAGS,GRTAGS,GSYMS,HTML/,tags,TAGS,ID,y.tab.c,y.tab.h,.notfunction,cscope.out,SCCS/,RCS/,CVS/,CVSROOT/,.deps/,{arch}/,.cvsrc,.cvsignore,.cvspass,.cvswrappers"
+#define DEFAULTSKIP     "GPATH,GTAGS,GRTAGS,GSYMS,HTML/,tags,TAGS,ID,y.tab.c,y.tab.h,.notfunction,cscope.out,SCCS/,RCS/,CVS/,CVSROOT/,{arch}/,.cvsrc,.cvsignore,.cvspass,.cvswrappers,.deps/,autom4te.cache/"
 
 void openconf(void);
 int getconfn(const char *, int *);
