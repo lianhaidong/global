@@ -116,7 +116,7 @@ if !exists("Gtags_OpenQuickfixWindow")
     let Gtags_OpenQuickfixWindow = 1
 endif
 
-" Character to use to quote patterns and filenames before passing to grep.
+" Character to use to quote patterns and filenames before passing to global.
 " (This code was drived from 'grep.vim'.)
 if !exists("Gtags_Shell_Quote_Char")
     if has("win32") || has("win16") || has("win95")
@@ -313,7 +313,7 @@ function Candidate(ArgLead, CmdLine, CursorPos)
     endif
 endfunction
 
-" Define the set of grep commands
+" Define the set of Gtags commands
 command! -nargs=* -complete=custom,Candidate Gtags call s:RunGlobal(<f-args>)
 command! -nargs=0 GtagsCursor call s:GtagsCursor()
 command! -nargs=0 Gozilla call s:Gozilla()
