@@ -23,9 +23,11 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-#ifdef __DJGPP__
+#if (defined(_WIN32) && !defined(__CYGWIN__)) || defined(__DJGPP__)
 #include <stdlib.h>
+#ifdef __DJGPP__
 #include <sys/system.h>
+#endif
 #endif
 
 #include "is_unixy.h"
@@ -38,13 +40,17 @@
 int
 is_unixy(void)
 {
-#ifdef __DJGPP__
+#if (defined(_WIN32) && !defined(__CYGWIN__)) || defined(__DJGPP__)
 	static int unix_shell = -1;
 
 	if (unix_shell == -1) {
 		char *s = getenv("SHELL");
+#ifdef __DJGPP__
 		/* Assume if SHELL isn't defined, COMSPEC is DOS. */
 		unix_shell = (s == NULL) ? 0 : _is_unixy_shell(s);
+#else
+		unix_shell = (s != 0);
+#endif
 	}
 	return unix_shell;
 #else

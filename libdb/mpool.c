@@ -54,6 +54,10 @@ static char sccsid[] = "@(#)mpool.c	8.5 (Berkeley) 7/26/94";
 #include <unistd.h>
 #endif
 
+#if (defined(_WIN32) && !defined(__CYGWIN__))
+#define fsync _commit
+#endif
+
 #include "queue.h"
 #include "db.h"
 

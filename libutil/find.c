@@ -548,6 +548,9 @@ find_open(start)
 char	*
 find_read(void)
 {
+#if defined(_WIN32) && !defined(__CYGWIN__)
+	static int back = 1;
+#endif
 	static char val[MAXPATHLEN+2];
 	char *path = &val[1];
 	char *p;
@@ -561,6 +564,20 @@ find_read(void)
 		if (*p != '\n')
 			die("output of find(1) is wrong (find_read).");
 		*p = 0;
+#if defined(_WIN32) && !defined(__CYGWIN__)
+		/*
+		 * depending on the port of find used, backslashes may
+		 * be used - translate to slashes.
+		 */
+		if (back)
+		{
+			for (p = path; *p; ++p)
+				if (*p == '\\')
+					*p = '/', back = 2;
+			if (back == 1)
+				back = 0;
+		}
+#endif
 		if (skipthisfile(path))
 			continue;
 		if (regexec(suff, path, 0, 0, 0) != 0) {

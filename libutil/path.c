@@ -32,7 +32,6 @@
 #endif
 
 #ifdef __DJGPP__
-#include <dos.h>			/* for intdos() */
 #include <fcntl.h>			/* for _USE_LFN */
 #endif
 
@@ -77,34 +76,47 @@ canonpath(path)
 	char *p;
 
 	if (_USE_LFN) {
-		/* Ensure we're using a complete long name, not a mixture
+		char name[260], sfn[13];
+		char *base;
+
+		/*
+		 * Ensure we're using a complete long name, not a mixture
 		 * of long and short.
 		 */
-		union REGS regs;
-		regs.x.ax = 0x7160;
-		regs.x.cx = 0x8002;
-		regs.x.si = (unsigned)path;
-		regs.x.di = (unsigned)path;
-		intdos( &regs, &regs );
+		_truename(path, path);
 		/*
-		 * A non-existant file returns error code 3; get the path,
-		 * strip the filename, LFN the path and put the filename back.
+		 * _truename will successfully convert the path of a non-
+		 * existant file, but it's probably still a mixture of long and
+		 * short components - convert the path separately.
 		 */
-		if (regs.x.cflag && regs.h.al == 3) {
-			char filename[261];
-			regs.x.ax = 0x7160;
-			regs.h.cl = 0;
-			intdos(&regs, &regs);
-			p = basename(path);
-			strlimcpy(filename, p, sizeof(filename));
-			*p = 0;
-			regs.x.ax = 0x7160;
-			regs.h.cl = 2;
-			intdos( &regs, &regs );
-			strcat(path, filename);
+		if (access(path, F_OK) != 0) {
+			base = basename(path);
+			strcpy(name, base);
+			*base = '\0';
+			_truename(path, path);
+			strcat(path, name);
+		}
+		/*
+		 * Convert the case of 8.3 names, as other djgpp functions do.
+		 */
+		if (!_preserve_fncase()) {
+			for (p = path+3, base = p-1; *base; p++) {
+				if (*p == '\\' || *p == '\0') {
+					memcpy(name, base+1, p-base-1);
+					name[p-base-1] = '\0';
+					if (!strcmp(_lfn_gen_short_fname(name, sfn), name)) {
+						while (++base < p)
+							if (*base >= 'A' && *base <= 'Z')
+								*base += 'a' - 'A';
+					} else
+					   base = p;
+				}
+			}
 		}
 	}
-	/* Lowercase the drive letter and convert to slashes. */
+	/*
+	 * Lowercase the drive letter and convert to slashes.
+	 */
 	path[0] = tolower(path[0]);
 	for (p = path+2; *p; ++p)
 		if (*p == '\\')
@@ -137,7 +149,7 @@ canonpath(path)
 	return path;
 }
 
-#ifdef __DJGPP__
+#if (defined(_WIN32) && !defined(__CYGWIN__)) || defined(__DJGPP__)
 /*
  * realpath: get the complete path
  */
@@ -146,6 +158,7 @@ realpath(in_path, out_path)
 	char *in_path;
 	char *out_path;
 {
+#ifdef __DJGPP__
 	/*
 	 * I don't use _fixpath or _truename in LFN because neither guarantee
 	 * a complete long name. This is mainly DOS's fault, since the cwd can
@@ -156,6 +169,10 @@ realpath(in_path, out_path)
 		canonpath(out_path);
 	} else
 		_fixpath(in_path, out_path);
+#else
+	_fullpath(out_path, in_path, MAXPATHLEN);
+	canonpath(out_path);
+#endif
 	return out_path;
 }
 #endif

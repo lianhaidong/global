@@ -103,18 +103,6 @@ close_output_file()
 	} else
 		fclose(out);
 }
-/*
- * reverse of atoi
- */
-static char *
-itoa(n)
-	int n;
-{
-	static char buf[32];
-
-	snprintf(buf, sizeof(buf), "%d", n);
-	return buf;
-}
 void
 echoc(c)
 	int c;
@@ -639,8 +627,11 @@ src2html(src, html, notsource)
 		if (incref) {
 			fputs("<H2><A HREF=", out);
 			if (incref->count > 1) {
+				char s_count[32];
+
+				snprintf(s_count, sizeof(s_count), "%d", incref->count);
 				fprintf(out, "../%s/%d.%s", INCREFS, incref->id, HTML);
-				fprintf(out, " TITLE='%s'>", tooltip('I', -1, itoa(incref->count)));
+				fprintf(out, " TITLE='%s'>", tooltip('I', -1, s_count));
 			} else {
 				char *lno, *filename, *save;
 				char *p = strbuf_value(incref->contents);

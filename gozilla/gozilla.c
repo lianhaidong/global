@@ -25,7 +25,9 @@
 #include <string.h>
 #include <ctype.h>
 #ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <shellapi.h>
 #endif
 
 #include "global.h"
@@ -47,11 +49,8 @@ void getURL(char *, STRBUF *);
 int isprotocol(char *);
 int issource(char *);
 int convertpath(char *, char *, char *, STRBUF *);
-#ifndef __DJGPP__
+#if !defined(_WIN32) && !defined(__DJGPP__)
 void sendbrowser(char *, char *);
-#endif
-#ifndef _WIN32
-int sendcommand(char *);
 #endif
 
 #ifndef isblank
@@ -240,6 +239,10 @@ main(argc, argv)
 			fprintf(stdout, "using browser '%s'.\n", browser);
 		exit(0);
 	}
+#ifdef _WIN32
+	if (ShellExecute(NULL, NULL, browser, strbuf_value(URL), NULL, SW_SHOWNORMAL) <= (HINSTANCE)32)
+		die("Cannot load %s (error = 0x%04x).", browser, GetLastError());
+#else
 #ifndef __DJGPP__
 	/*
 	 * send a command to browser.
@@ -264,7 +267,14 @@ main(argc, argv)
 		 * assume a Windows browser if it's not on the path.
 		 */
 		if (!(path = usable(browser)))
-			snprintf(com, sizeof(com), "start %s \"%s\"", browser, strbuf_value(URL));
+		{
+			/*
+			 * START is an internal command in XP, external in 9X.
+			 */
+			if (!(path = usable("start")))
+				path = "cmd /c start";
+			snprintf(com, sizeof(com), "%s %s \"%s\"", path, browser, strbuf_value(URL));
+		}
 		else
 			snprintf(com, sizeof(com), "%s \"%s\"", path, strbuf_value(URL));
 #else
@@ -272,6 +282,7 @@ main(argc, argv)
 #endif /* !__DJGPP__ */
 		system(com);
 	}
+#endif /* _WIN32 */
 	exit(0);
 }
 
@@ -557,7 +568,7 @@ convertpath(dbpath, htmldir, path, sb)
 	}
 	return -1;
 }
-#ifndef __DJGPP__
+#if !defined(_WIN32) && !defined(__DJGPP__)
 /*
  * sendbrowser: send message to mozilla.
  *
@@ -565,28 +576,6 @@ convertpath(dbpath, htmldir, path, sb)
  *	i)	url	URL
  *
  */
-#ifdef _WIN32
-void
-sendbrowser(browser, url)
-	char *browser;
-	char *url;
-{
-	char com[1024], *path;
-	STARTUPINFO si;
-	PROCESS_INFORMATION pi;
-
-	if (!(path = usable(browser)))
-		die("%s not found in your path.", browser);
-	ZeroMemory(&si, sizeof(STARTUPINFO));
-	ZeroMemory(&pi, sizeof(PROCESS_INFORMATION));
-	si.cb = sizeof(STARTUPINFO);
-	si.dwFlags = STARTF_USESHOWWINDOW;
-	si.wShowWindow = SW_SHOWNORMAL;
-	snprintf(com, sizeof(com), "%s -remote \"openURL(%s)\"", browser, url);
-	if (!CreateProcess(path, com, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi))
-		die("Cannot load %s.(error = 0x%04x)\n", browser, GetLastError());
-}
-#else
 void
 sendbrowser(browser, url)
 	char *browser;
@@ -606,5 +595,4 @@ sendbrowser(browser, url)
 		die("cannot load %s (execlp).", browser);
 	}
 }
-#endif /* !_WIN32 */
-#endif /* !__DJGPP__ */
+#endif /* !_WIN32 and !__DJGPP__ */

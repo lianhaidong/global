@@ -51,6 +51,11 @@ int makedefineindex(char *, int, STRBUF *);
 int makefileindex(char *, STRBUF *);
 void makeincludeindex();
 
+#if defined(_WIN32) && !defined(__CYGWIN__)
+#define mkdir(path,mode) mkdir(path)
+#define link(one,two) (-1)
+#endif
+
 /*
  * Global data.
  */
@@ -862,7 +867,9 @@ basic_check()
 	/*
 	 * Temporary directory.
 	 */
-	if ((p = getenv("TMPDIR")) != NULL && test("d", p))
+	if ((p = getenv("TMPDIR")) == NULL)
+		p = getenv("TMP");
+	if (p != NULL && test("d", p))
 		tmpdir = p;
 }
 /*

@@ -39,7 +39,7 @@
 
 int isabspath(char *);
 char *canonpath(char *);
-#ifdef __DJGPP__
+#if (defined(_WIN32) && !defined(__CYGWIN__)) || defined(__DJGPP__)
 char *realpath(char *, char *);
 #endif
 

@@ -36,12 +36,12 @@
 
 #include <sys/types.h>
 
-#ifdef __DJGPP__
+#if (defined(_WIN32) && !defined(__CYGWIN__)) || defined(__DJGPP__)
 typedef unsigned char	u_char;
 typedef unsigned int	u_int;
 typedef unsigned long	u_long;
 typedef unsigned short	u_short;
-#endif /* __DJGPP__ */
+#endif /* _WIN32 || __DJGPP__ */
 
 #ifdef	NO_POSIX_SIGNALS
 #define	sigemptyset(set)	(*(set) = 0)

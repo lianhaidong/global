@@ -110,7 +110,7 @@ makedupindex()
 			continue;
 		prev[0] = 0;
 		first_line[0] = 0;
-		snprintf(command, sizeof(command), "global -xn%s%s '.*' | gtags --sort", dynamic ? "n" : "", option);
+		snprintf(command, sizeof(command), "global -xn%s%s \".*\" | gtags --sort", dynamic ? "n" : "", option);
 		if ((ip = popen(command, "r")) == NULL)
 			die("cannot execute command '%s'.", command);
 		while ((_ = strbuf_fgets(sb, ip, STRBUF_NOCRLF)) != NULL) {
