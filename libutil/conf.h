@@ -31,7 +31,10 @@
 #define OLD_GTAGSCONF   "/etc/global.conf"	/* for compatibility */
 #define DEBIANCONF      "/etc/gtags/gtags.conf"
 #define OLD_DEBIANCONF  "/etc/gtags/global.conf"/* for compatibility */
-#define GTAGSRC         ".globalrc"
+#define GTAGSRC 	".globalrc"
+#ifdef __DJGPP__
+#define DOS_GTAGSRC	"_globalrc"
+#endif
 #define DEFAULTLABEL    "default"
 #define DEFAULTSUFFIXES "c,h,y,c++,cc,cpp,cxx,hxx,C,H,s,S,java"
 #define DEFAULTSKIP     "GPATH,GTAGS,GRTAGS,GSYMS,HTML/,tags,TAGS,ID,y.tab.c,y.tab.h,SCCS/,RCS/,CVS/,CVSROOT/,.deps/"

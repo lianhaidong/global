@@ -28,6 +28,9 @@
 #define SYM	3
 
 #define NOTFUNCTION	".notfunction"
+#ifdef __DJGPP__
+#define DOS_NOTFUNCTION "_notfunction"
+#endif
 #define YACC	1
 
 extern int	bflag;

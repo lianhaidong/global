@@ -36,6 +36,9 @@ static void     usage(void);
 static void     help(void);
 
 const char *gozillarc = ".gozillarc";
+#ifdef __DJGPP__
+const char *dos_gozillarc = "_gozillarc";
+#endif
 
 static char *alias(char *);
 int	main(int, char **);
@@ -44,7 +47,9 @@ void	getURL(char *, STRBUF *);
 int	isprotocol(char *);
 int	issource(char *);
 int	convertpath(char *, char *, char *, STRBUF *);
+#ifndef __DJGPP__
 void	sendbrowser(char *, char *);
+#endif
 #ifndef _WIN32
 int	sendcommand(char *);
 #endif
@@ -100,9 +105,15 @@ char	*alias_name;
 	if (!(p = getenv("HOME")))
 		goto end;
 	if (!test("r", makepath(p, gozillarc, NULL)))
-		goto end;
+#ifdef __DJGPP__
+		if (!test("r", makepath(p, dos_gozillarc, NULL)))
+#endif
+			goto end;
 	if (!(ip = fopen(makepath(p, gozillarc, NULL), "r")))
-		goto end;
+#ifdef __DJGPP__
+		if (!(ip = fopen(makepath(p, dos_gozillarc, NULL), "r")))
+#endif
+			goto end;
 	while ((p = strbuf_fgets(sb, ip, flag)) != NULL) {
 		char *name, *value;
 
@@ -229,6 +240,7 @@ char	*argv[];
 			fprintf(stdout, "using browser '%s'.\n", browser);
 		exit(0);
 	}
+#ifndef __DJGPP__
 	/*
 	 * send a command to browser.
 	 */
@@ -241,10 +253,23 @@ char	*argv[];
 	/*
 	 * execute generic browser.
 	 */
-	else {
+	else
+#endif /* !__DJGPP__ */
+	{
 		char	com[MAXFILLEN+1];
 
+#ifdef __DJGPP__
+		char	*path;
+		/*
+		 * assume a Windows browser if it's not on the path.
+		 */
+		if (!(path = usable(browser)))
+			snprintf(com, sizeof(com), "start %s \"%s\"", browser, strbuf_value(URL));
+		else
+			snprintf(com, sizeof(com), "%s \"%s\"", path, strbuf_value(URL));
+#else
 		snprintf(com, sizeof(com), "%s \"%s\"", browser, strbuf_value(URL));
+#endif /* !__DJGPP__ */
 		system(com);
 	}
 	exit(0);
@@ -511,6 +536,7 @@ STRBUF	*sb;
 	}
 	return -1;
 }
+#ifndef __DJGPP__
 /*
  * sendbrowser: send message to mozilla.
  *
@@ -560,3 +586,4 @@ char	*url;
 	}
 }
 #endif /* !_WIN32 */
+#endif /* !__DJGPP__ */

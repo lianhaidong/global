@@ -214,6 +214,10 @@ configpath() {
 	 */
 	else if ((p = getenv("HOME")) && test("r", makepath(p, GTAGSRC, NULL)))
 		strlimcpy(config, makepath(p, GTAGSRC, NULL), sizeof(config));
+#ifdef __DJGPP__
+	else if ((p = getenv("HOME")) && test("r", makepath(p, DOS_GTAGSRC, NULL)))
+		strlimcpy(config, makepath(p, DOS_GTAGSRC, NULL), sizeof(config));
+#endif
 	else if (test("r", GTAGSCONF))
 		strlimcpy(config, GTAGSCONF, sizeof(config));
 	else if (test("r", OLD_GTAGSCONF))

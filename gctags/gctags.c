@@ -201,7 +201,12 @@ main(argc, argv)
 	 * This is a hack for FreeBSD.
 	 * In the near future, it will be removed.
 	 */
-	if (test("r", NOTFUNCTION)) {
+#ifdef __DGJPP__
+	if (test("r", NOTFUNCTION) || test("r", DOS_NOTFUNCTION))
+#else
+	if (test("r", NOTFUNCTION))
+#endif
+	{
 		FILE	*ip;
 		STRBUF	*sb = strbuf_open(0);
 		STRBUF	*ib = strbuf_open(0);
@@ -209,6 +214,9 @@ main(argc, argv)
 		int	i;
 
 		if ((ip = fopen(NOTFUNCTION, "r")) == 0)
+#ifdef __DJGPP__
+			if ((ip = fopen(DOS_NOTFUNCTION, "r")) == 0)
+#endif
 			die("'%s' cannot read.", NOTFUNCTION);
 		for (tablesize = 0; (p = strbuf_fgets(ib, ip, STRBUF_NOCRLF)) != NULL; tablesize++)
 			strbuf_puts0(sb, p);
