@@ -191,6 +191,9 @@ ffindopen()
 	 */
 	if (getconfb("icase_path"))
 		flags |= REG_ICASE;
+#ifdef _WIN32
+	flags |= REG_ICASE;
+#endif /* _WIN32 */
 	/*
 	 * setup stack.
 	 */
@@ -379,6 +382,9 @@ ffindopen()
 	 */
 	if (getconfb("icase_path"))
 		flags |= REG_ICASE;
+#ifdef _WIN32
+	flags |= REG_ICASE;
+#endif /* _WIN32 */
 	sb = strbuf_open(0);
 	if (!getconfs("suffixes", sb))
 		die("cannot get suffixes data.");

@@ -1017,6 +1017,9 @@ char	*av;
 
 		if (getconfb("icase_path"))
 			flags |= REG_ICASE;
+#ifdef _WIN32
+		flags |= REG_ICASE;
+#endif /* _WIN32 */
 		if (regcomp(&preg, av, flags) != 0)
 			die("illegal regular expression.");
 	}
