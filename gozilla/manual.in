@@ -101,7 +101,8 @@
 @SEE ALSO
 	@xref{global,1},
 	@xref{gtags,1},
-	@xref{htags,1}.
+	@xref{htags,1},
+	@xref{mozilla,1}.
 
 	GNU GLOBAL source code tag system@br
 	(http://www.gnu.org/software/global/).
