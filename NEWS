@@ -32,6 +32,8 @@ Version 4.1.0a
 
 [OTHER CHANGES]
 
+* Some bugs are fixed.
+* globash.rc: GloBash --- Global facility for Bash added.
 * htags: create bless.sh when the -S option specified.
 * htags: config variables prolog_script, epilog_script, show_position,
   position_begin, position_end and icase_path added.

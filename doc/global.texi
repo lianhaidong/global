@@ -39,7 +39,7 @@ Free Documentation License".
 @c copyright page
 @page
 @vskip 0pt plus 1filll
-Copyright @copyright{} 2000 Tama Communications Corporation.
+Copyright @copyright{} 2000, 2001 Tama Communications Corporation.
 @sp 2
 This is the first edition of the GNU GLOBAL documentation,@*
 and is consistent with @value{VERSION}.@*
@@ -66,6 +66,7 @@ This manual documents version @value{VERSION} of the GLOBAL source code tag syst
 @menu
 * Introduction::                        Overview of the tools.
 * Global::                              Command line GLOBAL.
+* GloBash::                             Global facility for Bash.
 * Nvi editor::                          Extended nvi using GLOBAL.
 * Elvis editor::                        Elvis using GLOBAL.
 * Vim editor::                          Vim using GLOBAL.
@@ -98,7 +99,9 @@ GNU GLOBAL has following features:
 @item work the same way across diverse environments. Currently, support followings:
 	@itemize @minus
 	@item Shell command line
+	@item Bash shell.
 	@item Vi editor clone (nvi, elvis, vim)
+	@item Less viewer
 	@item Emacs editor (emacs, mule, xemacs)
 	@item Web browser
 	@end itemize
@@ -501,6 +504,204 @@ one command, for example:
     % !! | sh            # @r{from now on, go to next tag with 'ZZ'.}
 
 @end example
+
+@end itemize
+
+@c ***************************************************************************
+@c GloBash
+@c ***************************************************************************
+@node GloBash
+@chapter Global facility for Bash
+
+Special support for bash is available.
+
+@menu
+* Features(globash)::			Features.
+* Preparation(globash)::		Preparation.
+* Basic usage(globash)::		Basic usage.
+* Applied usage(globash)::		Applied usage.
+@end menu
+
+@c ***************************************************************************
+@node   Features(globash)
+@section Features.
+
+@itemize @bullet
+@item
+Vi-like tag stack is available.
+@item
+Editor or viewer is automatically invoked.
+@item
+Tag name completion is available.
+@item
+Tag mark facility is available.
+@item
+Yor can manage directory list by cookie facility.
+@end itemize
+
+@c ***************************************************************************
+@node   Preparation(globash)
+@section Preparation.
+
+First, do the preparation of global. (Please see @xref{Preparation}.).
+And you can invoke bash(1) with ---rcfile option.
+@example
+
+    % bash --rcfile globash.rc
+
+@end example
+
+You will see a prompt like this:
+@example
+
+    [/usr/src/sys]/kern _
+
+@end example
+
+This prompt means that the current directory is '/usr/src/sys/kern' and
+the root of the source tree is '/usr/src/sys'.
+Tag and marker are valid only in a project.
+
+When you get out of the project, globash warns like:
+@example
+
+    [/usr/src/sys] cd ..
+    You are going to get out of current project.
+    Tag stack and marker will be removed. Sure? ([y]/n)_
+
+@end example
+
+If you answer 'y' and @kbd{RET}
+or just @kbd{RET} in above example then tag stack and marker will be removed.
+
+If you need help then please type 'ghelp'.
+
+@c ***************************************************************************
+@node   Basic usage(globash)
+@section Basic usage.
+
+@itemize @bullet
+@item Almost global(1)'s command character is available as a command.
+@example
+
+    [/usr/src/sys] x fork
+    >    1  fork              94 kern/kern_fork.c fork(p, uap)
+    [/usr/src/sys] r
+    >    1  fork              85 alpha/linux/linux_machdep.c
+         2  fork             184 i386/linux/linux_machdep.c
+    [/usr/src/sys] s lbolt
+    >    1  lbolt            1210 i386/isa/wd_cd.c     tsleep((cad
+         2  lbolt            1211 i386/isa/wd_cd.c     tsleep((cad
+         3  lbolt            709 i386/isa/wfd.c     tsleep ((caddr
+    ...
+    [/usr/src/sys] g
+    >    1  lbolt            1210 i386/isa/wd_cd.c     tsleep((cad
+    ...
+    [/usr/src/sys] P init
+    >    1  path    1 dev/hea/eni_init.c 
+         2  path    1 dev/hfa/fore_init.c 
+         3  path    1 i386/i386/initcpu.c 
+         4  path    1 kern/init_main.c 
+         5  path    1 kern/init_sysent.c 
+         6  path    1 kern/vfs_init.c 
+         7  path    1 vm/vm_init.c 
+    [/usr/src/sys] _
+
+@end example
+
+If no tag name is specified then it is assumed the latest tag name.
+
+@item You can select a tag by show command.
+@example
+
+    [/usr/src/sys] x main
+    >    1  main              70 alpha/alpha/gensetdefs.c main(in
+         2  main             1500 alpha/alpha/ieee_float.c main(i
+         3  main             227 boot/alpha/boot1/boot1.c main()
+    ....
+    [/usr/src/sys] show 3
+    (Load editor and show boot/alpha/boot1/boot1.c at line 227.)
+
+@end example
+
+The default editor is vi(1) but you can specify it statically by @code{EDITOR}
+environment variable or temporarily by option.
+
+@example
+
+    [/usr/src/sys] show -e 3
+    (Load emacs and show boot/alpha/boot1/boot1.c at line 227.)
+    [/usr/src/sys] show -l 3
+    (Load less and show boot/alpha/boot1/boot1.c at line 227.)
+
+@end example
+
+@item You can use vi-like tag stack. You can return previous tag list by
+pop command.
+@example
+
+    [/usr/src/sys] x main
+    >    1  main              70 alpha/alpha/gensetdefs.c main(in
+         2  main             1500 alpha/alpha/ieee_float.c main(i
+         3  main             227 boot/alpha/boot1/boot1.c main()
+    ....
+    [/usr/src/sys] show 3
+    (Load editor and show boot/alpha/boot1/boot1.c at line 227.)
+    [/usr/src/sys] x fork          <- @r{push new tag on tag stack.}
+    >    1  fork              94 kern/kern_fork.c fork(p, uap)
+    [/usr/src/sys] pop             <- @r{pop the tag stack.}
+    [/usr/src/sys] show
+    (Load editor and show boot/alpha/boot1/boot1.c at line 227.)
+
+@end example
+
+@end itemize
+@c ***************************************************************************
+@node   Applied usage(globash)
+@section Applied usage.
+
+@itemize @bullet
+@item You can memory tags using 'mark' command.
+@example
+
+    [/usr/src/sys] x fork
+    >    1  fork              94 kern/kern_fork.c fork(p, uap)
+    [/usr/src/sys] mark
+    [/usr/src/sys] x main
+    >    1  main              70 alpha/alpha/gensetdefs.c main(in
+         2  main             1500 alpha/alpha/ieee_float.c main(i
+         3  main             227 boot/alpha/boot1/boot1.c main()
+    ....
+    [/usr/src/sys] mark -l
+         1  fork              94 kern/kern_fork.c fork(p, uap)
+    [/usr/src/sys] mark 1
+    (Load editor and show kern/kern_fork.c at line 227.)
+    [/usr/src/sys] list
+    >    1  main              70 alpha/alpha/gensetdefs.c main(in
+         2  main             1500 alpha/alpha/ieee_float.c main(i
+         3  main             227 boot/alpha/boot1/boot1.c main()
+    ....
+@end example
+
+Marked tags are valid until you get out of current project or quit
+current bash session.
+
+@item You can memory directories using 'cookie' command.
+@example
+
+    [/usr/src/sys] cookie
+    [/usr/src/sys] cd kern
+    [/usr/src/sys]/kern cookie
+    [/usr/src/sys]/kern cd ../i386
+    [/usr/src/sys]/i386 cookie -l
+         1  /usr/src/sys/kern
+         2  /usr/src/sys
+    [/usr/src/sys]/i386 cookie 2        <- @r{chdir to selected position.}
+    [/usr/src/sys] _
+
+@end example
+
+Cookie directories are valid until you delete them.
 
 @end itemize
 @c ***************************************************************************
