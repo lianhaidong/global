@@ -793,7 +793,7 @@ src2html(src, html, notsource)
                 /*
                  * INCLUDED FROM index.
                  */
-		basename = locatestring(src, "/", MATCH_LAST);;
+		basename = locatestring(src, "/", MATCH_LAST);
 		if (basename)
 			basename++;
 		else

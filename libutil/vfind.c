@@ -60,7 +60,7 @@ vfind_open(local, other)
 	} else {
 		getdbpath(cwd, root, dbpath, 0);
 		gfind_open(dbpath, local);
-		opened = GFIND_OPEN;;
+		opened = GFIND_OPEN;
 	}
 }
 /*

@@ -75,7 +75,7 @@ gpath_open(dbpath, mode, flags)
 	if (mode == 1)
 		_nextkey = 1;
 	else {
-		char *p = dbop_get(dbop, NEXTKEY);;
+		char *p = dbop_get(dbop, NEXTKEY);
 
 		if (p == NULL)
 			die("nextkey not found in GPATH.");
@@ -222,8 +222,6 @@ gfind_open(dbpath, local)
 	char *dbpath;
 	char *local;
 {
-	char *path;
-
 	assert(gfind_opened == 0);
 	assert(gfind_first == 0);
 	gfind_dbop = dbop_open(makepath(dbpath, dbname(GPATH), NULL), 0, 0, 0);

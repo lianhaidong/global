@@ -113,7 +113,7 @@ setup_html()
 	warned_line_begin = "<SPAN STYLE=\"background-color:yellow\">";
 	warned_line_end   = "</SPAN>";
 	string_begin	= "<U>";
-	string_end	= "</U>";;
+	string_end	= "</U>";
 	quote_great	= "&gt;";
 	quote_little	= "&lt;";
 	quote_amp	= "&amp;";

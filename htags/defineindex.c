@@ -63,7 +63,7 @@ makedefineindex(file, total, defines)
 	if (Fflag)
 		snprintf(indexlink, sizeof(indexlink), "../defines.%s", normal_suffix);
 	else
-		snprintf(indexlink, sizeof(indexlink), "../mains.%s", normal_suffix);;
+		snprintf(indexlink, sizeof(indexlink), "../mains.%s", normal_suffix);
 	if (map_file) {
 		if (!(MAP = fopen(makepath(distpath, "MAP", NULL), "w")))
 			die("cannot open '%s'.", makepath(distpath, "MAP", NULL));

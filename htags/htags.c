@@ -838,14 +838,14 @@ makecommonpart(title, defines, files)
 		die("cannot execute command '%s'.", command);
 	strbuf_sprintf(sb, "%s\n", hr);
 	if (aflag && !Fflag) {
-		strbuf_sprintf(sb, "<H2>%s</H2>\n", title_define_index);;
+		strbuf_sprintf(sb, "<H2>%s</H2>\n", title_define_index);
 		strbuf_puts(sb, defines);
 	} else {
 		strbuf_sprintf(sb, "<H2><A HREF=defines.%s>%s</A></H2>\n", normal_suffix, title_define_index);
 	}
 	strbuf_sprintf(sb, "%s\n", hr);
 	if (Fflag) {
-		strbuf_sprintf(sb, "<H2><A HREF=files.%s>%s</A></H2>\n", normal_suffix, title_file_index);;
+		strbuf_sprintf(sb, "<H2><A HREF=files.%s>%s</A></H2>\n", normal_suffix, title_file_index);
 	} else {
 		strbuf_sprintf(sb, "<H2>%s</H2>\n", title_file_index);
 		if (!no_order_list)
@@ -1775,7 +1775,7 @@ main(argc, argv)
 	}
 	{
 		STRBUF *defines = strbuf_open(0);
-		STRBUF *files = strbuf_open(0);;
+		STRBUF *files = strbuf_open(0);
 
 		/*
 		 * (5) make function index (defines.html and defines/)
