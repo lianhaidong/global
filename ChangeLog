@@ -4,7 +4,7 @@ ___________________________________
 |  |   |  |  |  |  |     |     |  |
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Copyright (c) 2000, 2001, 2002 Tama Communications Corporation
+ Copyright (c) 2000, 2001, 2002, 2003 Tama Communications Corporation
 
  This file is free software; as a special exception the author gives
  unlimited permission to copy and/or distribute it, with or without
@@ -17,6 +17,18 @@ ___________________________________
 		----------------------------------
 
 ChangeLog about GNU GLOBAL
+
+March 29 2003, Shigio Yamaguchi  <shigio@gnu.org>
+
+	* C.c,Cpp.c: move some code into condition_macro.
+	* C.h, Cpp.h, java.h: replace #define macro with enum member
+	  for representing reserved words.
+	* htags.in: add reserved words.
+	* htags/manual.in: add description about configuration variable
+	  'table_begin' and 'tabel_end'.
+	* htags.in, manual.in: add configuration variables
+	  'colorize_warned_line', 'warned_line_begin', 'warned_line_end'.
+	* dbop.c: environment variable GTAGSCACHE added.
 
 November 9 2002, Shigio Yamaguchi  <shigio@gnu.org>
 

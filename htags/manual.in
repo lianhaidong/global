@@ -1,6 +1,6 @@
 #
 # Copyright (c} 1996, 1997, 1998, 1999 Shigio Yamaguchi
-# Copyright (c) 1999, 2000, 2001, 2002 Tama Communications Corporation
+# Copyright (c) 1999, 2000, 2001, 2002, 2003 Tama Communications Corporation
 #
 # This file is part of GNU GLOBAL.
 #
@@ -23,7 +23,7 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	HTAGS,1,Jul 2002,GNU Project
+@HEADER	HTAGS,1,Mar 2003,GNU Project
 @NAME	htags - generate hypertext from source code.
 @SYNOPSIS
 	@name{htags} [-a][-c][-D][-f][-F][-g][-m][-n][-o][-s][-v][-w][-d @arg{dbpath}][-S @arg{cgidir}][-t @arg{title}][@arg{htmldir}]

@@ -1,6 +1,6 @@
 #
 # Copyright (c) 1996, 1997, 1998, 1999 Shigio Yamaguchi
-# Copyright (c) 1999, 2000, 2001, 2002 Tama Communications Corporation
+# Copyright (c) 1999, 2000, 2001, 2002, 2003 Tama Communications Corporation
 #
 # This file is part of GNU GLOBAL.
 #
@@ -23,7 +23,7 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	GCTAGS,1,Jul 2002,GNU Project
+@HEADER	GCTAGS,1,Mar 2003,GNU Project
 @NAME	gctags - print cross reference list for gtags.
 @SYNOPSIS
 	@name{gctags} [-bdenrstvw] @arg{file} ...

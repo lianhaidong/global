@@ -129,5 +129,5 @@
 #define PACKAGE "global"
 
 /* Version number of package */
-#define VERSION "4.5.1"
+#define VERSION "4.5.2"
 

@@ -4,7 +4,7 @@ ___________________________________
 |  |   |  |  |  |  |     |     |  |
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Copyright (c) 2000, 2001, 2002 Tama Communications Corporation
+ Copyright (c) 2000, 2001, 2002, 2003 Tama Communications Corporation
 
  This file is free software; as a special exception the author gives
  unlimited permission to copy and/or distribute it, with or without
@@ -18,6 +18,37 @@ ___________________________________
 
 GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
+
+Version 4.5.2 - March 29 2003, by Shigio Yamaguchi
+
+[INCOMPATIBLE CHANGES]
+
+* htags: move title's '<H1>...</H1>' into configuration variables
+  'title_begin' and 'title_end'. This makes configuration more flexible.
+  If you are still using older version of gtags.conf, please replace it
+  with one in this version.
+
+[OTHER CHANGES]
+
+* htags: add INCLUDED FROM index of htags by Hideki IWAMOTO.
+  This indexes the places  where the header file is included.
+* htags: add support of multi-line string.
+* htags, gtags: pass option '-w' from htags to gtags.
+* htags: allow reference to nonexistent definition without warning.
+* htags: add missing reserved words.
+  - add C99 reserved words _Bool,_Complex,_Imaginary,inline,restrict.
+  - add missing C++ reserved words asm,bool,const_cast,dynamic_cast,
+    explicit,export,false,mutable,namespace,reinterpret_cast,static_cast,
+    true,typeid,typename,using,wchar_t.
+* htags: insert HTML tag in the line which was warned.
+  (see configuration variable 'colorize_warned_line', 'warned_line_begin'
+  and 'warned_line_end'.)
+* gctags: pick up reference to macro in conditional directive.
+* gctags: remove wchar_t from the reservation word list of C.
+* gctags: remove overload from the reserved word list of C++.
+* gctags: remove wchar_t from the reservation word list of C.
+* gtags: environment variable GTAGSCACHE added.
+* and many bug fixes.
 
 Version 4.5.1 - November 9 2002, by Shigio Yamaguchi
 
