@@ -211,6 +211,8 @@
 		Begin tag for line which htags warned. The default is '<SPAN STYLE="background-color:yellow">'.
 	@item{@code{warned_line_end}(string)}
 		End tag for line which htags warned. The default is '</SPAN>'.
+	@item{@code{hr}(string)}
+		Horizontal rules. The default is '<HR>'.
 	@item{@code{ncol}(number)}
 		Columns of line number. The default is 4.
 	@item{@code{tabs}(number)}
