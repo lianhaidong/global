@@ -37,7 +37,7 @@
 	If your source directory is on a read only device like CDROM,
 	specify @arg{dbpath} of the directory on which make tag files.
 
-	C, C++, yacc, java, PHP and assembler source files are supported.
+	C, C++, yacc, java, PHP and Assembly source files are supported.
 	Files whose names end in @file{.c} or @file{.h} are assumed to be
 	C source files and are searched for C style routine and macro
 	definitions.
@@ -173,7 +173,7 @@
 
 	There is no concurrency control about tag files.
 
-	Symbols in assembler source files are not extracted for @file{GSYMS}.
+	Symbols in Assembly source files are not extracted for @file{GSYMS}.
 
 	Please be careful of info string using @option{--info} option.
 	Info string is passed to external system as is.

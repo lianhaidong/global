@@ -29,7 +29,7 @@
 	@name{gctags} [-bdenrstvw] @arg{file} ...
 @DESCRIPTION
 	@name{Gctags} print cross reference list for @xref{gtags,1}
-	from the specified C, C++, yacc, java, PHP and assembler source
+	from the specified C, C++, yacc, java, PHP and Assembly source
 	to standard output.
 	Each line of output contains the object name,
 	the line number which it appears, the file in which it is defined,

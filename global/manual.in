@@ -36,7 +36,7 @@
 	@name{global} -u[qv]
 @DESCRIPTION
 	@name{Global} find the locations of specified object
-	in C, C++, Yacc, Java, PHP and assembler source files.
+	in C, C++, Yacc, Java, PHP and Assembly source files.
 	@name{Global} can treat a source tree, that is, a directory that
 	has subdirectories and source files.
 	You can get the relative path of objects from anywhere within the tree.

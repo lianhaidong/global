@@ -28,7 +28,7 @@
 @SYNOPSIS
 	@name{htags} [-a][-c][-D][-f][-F][-g][-n][-o][-s][-v][-w][-d @arg{dbpath}][-m @arg{name}][-S @arg{cgidir}][-t @arg{title}][@arg{htmldir}]
 @DESCRIPTION
-	@name{Htags} makes hypertext from C, C++, Yacc, Java, PHP and assembler source code.
+	@name{Htags} makes hypertext from C, C++, Yacc, Java, PHP and Assembly source code.
 
 	In advance of using this command, you must execute
 	@xref{gtags,1} from the root directory of the source tree.
