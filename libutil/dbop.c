@@ -39,6 +39,7 @@
 #include <unistd.h>
 #endif
 
+#include "char.h"
 #include "dbop.h"
 #include "die.h"
 #include "locatestring.h"
@@ -504,7 +505,6 @@ pgop_execute(dbop, sql, line)
 	char *sql;
 	int line;
 {
-	int ignore = 0;
 	extern int debug;
 
 	if (debug)
@@ -516,8 +516,8 @@ pgop_execute(dbop, sql, line)
 	} else {
 		dbop->res = PQexec(conn, sql);
 		if (!dbop->res ||
-		PQresultStatus(dbop->res) != PGRES_COMMAND_OK &&
-		PQresultStatus(dbop->res) != PGRES_TUPLES_OK) {
+		(PQresultStatus(dbop->res) != PGRES_COMMAND_OK &&
+		PQresultStatus(dbop->res) != PGRES_TUPLES_OK)) {
 			fprintf(stderr, "%s: SQL statement failed at %d.\n", progname, line);
 			fprintf(stderr, "sql: %s\n", sql);
 			fprintf(stderr, "postgres: %s", PQerrorMessage(conn));
@@ -599,7 +599,6 @@ pgop_extract_from_tagfile(contents, key, buf, size)
 {
 	STRBUF *sb = strbuf_open(0);
 	char *p, *limit = buf + size;
-	int i;
 
 	strbuf_putc(sb, ' ');
 	strbuf_puts(sb, key);
@@ -635,7 +634,6 @@ pgop_open(path, mode, perm, flags)
 	STRBUF *sb;
 	char sql[1024], dir[MAXPATHLEN+1], *name;
 	FILE *fp;
-	int i;
 
 	/*
 	 * make dbop discripter.
@@ -686,7 +684,7 @@ pgop_open(path, mode, perm, flags)
 	 * load postgres tag file and make a connection.
 	 */
 	{
-		char *p, *q;
+		char *p;
 
 		sb = strbuf_open(0);
 		if (!pgop_load_tagfile(path, sb))
@@ -940,7 +938,6 @@ pgop_first(dbop, name, preg, flags)
 	int	flags;
 {
 	STRBUF *sb = strbuf_open(0);
-	char *key;
 
 	dbop->preg = preg;
 	dbop->ioflags = flags;

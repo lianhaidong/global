@@ -22,7 +22,7 @@
 #define _CHAR_H_
 
 int isregexchar(int);
-int isregex(char *);
+int isregex(const char *);
 char *quote_string(char *);
 
 #endif /* ! _CHAR_H_ */

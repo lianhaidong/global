@@ -62,7 +62,7 @@ int c;
  */
 int
 isregex(s)
-char *s;
+const char *s;
 {
 	int c;
 
