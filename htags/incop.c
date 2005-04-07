@@ -63,8 +63,8 @@ open_pool(void)
 static void
 put_pool(head, name, contents, id)
 	struct pool *head;
-	char *name;
-	char *contents;
+	const char *name;
+	const char *contents;
 	int id;
 {
 	struct data *data;
@@ -97,7 +97,7 @@ put_pool(head, name, contents, id)
 static struct data *
 get_pool(head, name)
 	struct pool *head;
-	char *name;
+	const char *name;
 {
 	struct data *data;
 
@@ -159,8 +159,8 @@ init_inc(void)
  */
 void
 put_inc(file, path, id)
-	char *file;
-	char *path;
+	const char *file;
+	const char *path;
 	int id;
 {
 	put_pool(head_inc, file, path, id);
@@ -173,7 +173,7 @@ put_inc(file, path, id)
  */
 struct data *
 get_inc(name)
-	char *name;
+	const char *name;
 {
 	return get_pool(head_inc, name);
 }
@@ -208,8 +208,8 @@ next_inc(void)
  */
 void
 put_included(file, path)
-	char *file;
-	char *path;
+	const char *file;
+	const char *path;
 {
 	put_pool(head_included, file, path, 0);
 }
@@ -221,7 +221,7 @@ put_included(file, path)
  */
 struct data *
 get_included(name)
-	char *name;
+	const char *name;
 {
 	return get_pool(head_included, name);
 }

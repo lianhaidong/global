@@ -119,7 +119,7 @@ static FILE *out;
 static FILE *in;
 
 STATIC_STRBUF(outbuf);
-static char *curpfile;
+static const char *curpfile;
 static int warned;
 static int last_lineno;
 
@@ -131,7 +131,7 @@ static int last_lineno;
  */
 static FILE *
 open_input_file(file)
-	char *file;
+	const char *file;
 {
 	char command[MAXFILLEN];
 	FILE *ip;
@@ -162,7 +162,7 @@ close_input_file(ip)
  */
 static FILE *
 open_output_file(file)
-	char *file;
+	const char *file;
 {
 	char command[MAXFILLEN];
 	FILE *op;
@@ -228,8 +228,8 @@ echos(s)
  */
 char *
 fill_anchor(root, path)
-	char *root;
-	char *path;
+	const char *root;
+	const char *path;
 {
 	STATIC_STRBUF(sb);
 	char buf[MAXBUFLEN], *limit, *p;
@@ -352,7 +352,7 @@ char *
 tooltip(type, lno, opt)
 	int type;
 	int lno;
-	char *opt;
+	const char *opt;
 {
 	STATIC_STRBUF(sb);
 
@@ -479,7 +479,7 @@ put_anchor(name, type, lineno)
 void
 put_include_anchor(inc, path)
 	struct data *inc;
-	char *path;
+	const char *path;
 {
 	if (inc->count == 1)
 		strbuf_puts(outbuf, gen_href_begin(NULL, path2fid(strbuf_value(inc->contents)), HTML, NULL));
@@ -496,7 +496,7 @@ put_include_anchor(inc, path)
  */
 void
 put_reserved_word(word)
-        char *word;
+	const char *word;
 {
 	strbuf_puts(outbuf, reserved_begin);
 	strbuf_puts(outbuf, word);
@@ -507,7 +507,7 @@ put_reserved_word(word)
  */
 void
 put_macro(word)
-        char *word;
+	const char *word;
 {
 	strbuf_puts(outbuf, sharp_begin);
 	strbuf_puts(outbuf, word);
@@ -542,7 +542,7 @@ unexpected_eof(lineno)
  */
 void
 unknown_yacc_directive(word, lineno)
-	char *word;
+	const char *word;
 	int lineno;
 {
 	warning("unknown yacc directive '%s'. [+%d %s]", word, lineno, curpfile);
@@ -554,7 +554,7 @@ unknown_yacc_directive(word, lineno)
  */
 void
 missing_left(word, lineno)
-	char *word;
+	const char *word;
 	int lineno;
 {
 	warning("missing left '%s'. [+%d %s]", word, lineno, curpfile);
@@ -586,7 +586,7 @@ put_char(c)
  */
 void
 put_string(s)
-        char *s;
+        const char *s;
 {
 	for (; *s; s++)
 		put_char(*s);
@@ -596,7 +596,7 @@ put_string(s)
  */
 void
 put_brace(text)
-        char *text;
+        const char *text;
 {
 	strbuf_puts(outbuf, brace_begin);
 	strbuf_puts(outbuf, text);
@@ -678,8 +678,8 @@ put_end_of_line(lineno)
  */
 void
 src2html(src, html, notsource)
-	char *src;
-	char *html;
+	const char *src;
+	const char *html;
 	int notsource;
 {
 	char indexlink[128];
@@ -712,7 +712,7 @@ src2html(src, html, notsource)
         fputs(fill_anchor(indexlink, src), out);
 	if (cvsweb_url) {
 		STATIC_STRBUF(sb);
-		char *p;
+		const char *p;
 
 		strbuf_clear(sb);
 		strbuf_puts(sb, cvsweb_url);
@@ -776,7 +776,7 @@ src2html(src, html, notsource)
 	 * It's source code.
 	 */
 	else {
-		char *basename;
+		const char *basename;
 		struct data *incref;
 		struct anchor *ancref;
 		STATIC_STRBUF(define_index);

@@ -53,9 +53,9 @@
 #include "strmake.h"
 #include "tab.h"
 
-static char	*unpack_pathindex(char *);
+static char	*unpack_pathindex(const char *);
 static char	*genrecord(GTOP *);
-static int	belongto(GTOP *, char *, char *);
+static int	belongto(GTOP *, const char *, const char *);
 static regex_t reg;
 
 /*
@@ -128,8 +128,8 @@ dbname(db)
  */
 void
 makecommand(comline, path, sb)
-	char *comline;
-	char *path;
+	const char *comline;
+	const char *path;
 	STRBUF *sb;
 {
 	char *p = locatestring(comline, "%s", MATCH_FIRST);
@@ -167,7 +167,7 @@ makecommand(comline, path, sb)
  */
 void
 formatcheck(line, format)
-	char *line;
+	const char *line;		/* virtually const */
 	int format;
 {
 	int n;
@@ -177,7 +177,7 @@ formatcheck(line, format)
 	/*
 	 * Extract parts.
 	 */
-	n = split(line, 4, &ptable);
+	n = split((char *)line, 4, &ptable);
 
 	/*
 	 * line number
@@ -229,8 +229,8 @@ formatcheck(line, format)
  */
 GTOP *
 gtags_open(dbpath, root, db, mode, flags)
-	char *dbpath;
-	char *root;
+	const char *dbpath;
+	const char *root;
 	int db;
 	int mode;
 	int flags;
@@ -355,8 +355,8 @@ gtags_open(dbpath, root, db, mode, flags)
 void
 gtags_put(gtop, tag, record)
 	GTOP *gtop;
-	char *tag;
-	char *record;
+	const char *tag;
+	const char *record;		/* virtually const */
 {
 	char *line, *path;
 	SPLIT ptable;
@@ -369,7 +369,7 @@ gtags_put(gtop, tag, record)
 	/*
 	 * gtop->format & GTAGS_COMPACT
 	 */
-	if (split(record, 4, &ptable) != 4) {
+	if (split((char *)record, 4, &ptable) != 4) {
 		recover(&ptable);
 		die("illegal tag format.\n'%s'", record);
 	}
@@ -412,8 +412,8 @@ gtags_put(gtop, tag, record)
 void
 gtags_add(gtop, comline, path, flags)
 	GTOP *gtop;
-	char *comline;
-	char *path;
+	const char *comline;
+	const char *path;
 	int flags;
 {
 	char *ctags_x;
@@ -503,8 +503,8 @@ gtags_add(gtop, comline, path, flags)
 static int
 belongto(gtop, path, line)
 	GTOP *gtop;
-	char *path;
-	char *line;
+	const char *path;
+	const char *line;		/* virtually const */
 {
 	char *p = NULL;
 	int status, n;
@@ -513,7 +513,7 @@ belongto(gtop, path, line)
 	/*
 	 * Get path.
 	 */
-	n = split(line, 4, &ptable);
+	n = split((char *)line, 4, &ptable);
 	if (gtop->format == GTAGS_STANDARD || gtop->format == GTAGS_PATHINDEX) {
 		if (n < 4) {
 			recover(&ptable);
@@ -538,7 +538,7 @@ belongto(gtop, path, line)
 void
 gtags_delete(gtop, path)
 	GTOP *gtop;
-	char *path;
+	const char *path;
 {
 	char *p;
 	/*
@@ -575,14 +575,14 @@ gtags_delete(gtop, path)
 char *
 gtags_first(gtop, pattern, flags)
 	GTOP *gtop;
-	char *pattern;
+	const char *pattern;
 	int flags;
 {
 	int dbflags = 0;
 	char *line;
-	char prefix[IDENTLEN+1], *p;
+	char prefix[IDENTLEN+1];
 	regex_t *preg = &reg;
-	char *key;
+	const char *key, *p;
 	int regflags = 0;
 
 	gtop->flags = flags;
@@ -699,14 +699,14 @@ gtags_close(gtop)
  */
 static char *
 unpack_pathindex(line)
-	char *line;
+	const char *line;		/* virtually const */
 {
 	STATIC_STRBUF(output);
 	SPLIT ptable;
 	int n;
 	char *path;
 
-	n = split(line, 4, &ptable);
+	n = split((char *)line, 4, &ptable);
 	if (n < 4) {
 		recover(&ptable);
 		die("illegal tag format.'%s'\n", line);

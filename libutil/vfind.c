@@ -45,7 +45,7 @@ static int opened = 0;
  */
 void
 vfind_open(local, other)
-	char *local;
+	const char *local;
 	int other;
 {
 	char root[MAXPATHLEN+1];

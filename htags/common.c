@@ -441,14 +441,14 @@ gen_list_begin(void)
 char *
 gen_list_body(srcdir, string)
 	const char *srcdir;
-	char *string;
+	const char *string;		/* virtually const */
 {
 	STATIC_STRBUF(sb);
-	char *p, *filename, *fid;
+	const char *p, *filename, *fid;
 	SPLIT ptable;
 
 	strbuf_clear(sb);
-	if (split(string, 4, &ptable) < 4) {
+	if (split((char *)string, 4, &ptable) < 4) {
 		recover(&ptable);
 		die("too small number of parts in list_body().\n'%s'", string);
 	}

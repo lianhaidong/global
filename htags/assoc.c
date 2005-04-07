@@ -100,8 +100,8 @@ assoc_close(assoc)
 void
 assoc_put(assoc, name, value)
 	ASSOC *assoc;
-	char *name;
-	char *value;
+	const char *name;
+	const char *value;
 {
 	if (assoc->dbop == NULL)
 		abort();
@@ -117,7 +117,7 @@ assoc_put(assoc, name, value)
 char *
 assoc_get(assoc, name)
 	ASSOC *assoc;
-	char *name;
+	const char *name;
 {
 	char *p;
 

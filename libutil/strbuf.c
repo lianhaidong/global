@@ -93,7 +93,7 @@ STRBUF	top;
  */
 void
 strbuf_dump(msg)
-	char *msg;
+	const char *msg;
 {
 	STRBUF *sb;
 	int i = 0;
@@ -409,7 +409,7 @@ strbuf_sprintf(STRBUF *sb, const char *s, ...)
 #else
 strbuf_sprintf(sb, s, va_alist)
 	STRBUF *sb;
-	char *s;
+	const char *s;
 	va_dcl
 #endif
 {
@@ -536,7 +536,7 @@ strbuf_release_tempbuf(sb)
 void
 strbuf_setname(sb, name)
 	STRBUF  *sb;
-	char	*name;
+	const char *name;
 {
 	char *p = strdup(name);
 	if (p == NULL) {
@@ -556,7 +556,7 @@ strbuf_setname(sb, name)
  */
 STRBUF *
 strbuf_getbuf(name)
-	char	*name;
+	const char *name;
 {
 	STRBUF *sb;
 

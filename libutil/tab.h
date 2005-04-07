@@ -23,7 +23,7 @@
 #define _TAB_H_
 
 void settabs(int);
-void detab(FILE *, char *);
+void detab(FILE *, const char *);
 void entab(char *);
 
 #endif /* ! _TAB_H_ */

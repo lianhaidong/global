@@ -76,7 +76,7 @@ static SLIST_HEAD(, file) file_q;
  */
 static FILE *
 open_file_queue(path)
-	char *path;
+	const char *path;
 {
 	struct file *file = (struct file *)malloc(sizeof(struct file));
 
@@ -111,7 +111,7 @@ open_file_queue(path)
  */
 static FILE *
 select_file_queue(path)
-	char *path;
+	const char *path;
 {
 	struct file *file;
 
@@ -128,7 +128,7 @@ select_file_queue(path)
  */
 static void
 close_file_queue(path)
-	char *path;
+	const char *path;
 {
 	struct file *file;
 
@@ -217,7 +217,7 @@ settrace(void)
 void
 static dump_stack(sp, label)
 	struct dirstack *sp;
-	char *label;
+	const char *label;
 {
 	char *start = sp->start;
 	char *last = sp->last - 1;
@@ -240,7 +240,7 @@ static dump_stack(sp, label)
  */
 static struct dirstack *
 make_stack(name)
-	char *name;
+	const char *name;
 {
 	struct dirstack *sp = (struct dirstack *)malloc(sizeof(struct dirstack));
 	if (!sp)
@@ -271,7 +271,7 @@ make_stack(name)
 static void
 set_stack(sp, path)
 	struct dirstack *sp;
-	char *path;
+	const char *path;
 {
 	int length = strlen(path) + 1;
 	char *p;
@@ -306,7 +306,7 @@ set_stack(sp, path)
 static void
 push_stack(sp, s)
 	struct dirstack *sp;
-	char *s;
+	const char *s;
 {
 	int length = strlen(s) + 1;
 
@@ -491,10 +491,10 @@ delete_stack(sp)
  */
 static char *
 encode(url)
-        char *url;
+        const char *url;
 {
 	STATIC_STRBUF(sb);
-        char *p;
+        const char *p;
 
 	strbuf_clear(sb);
         for (p = url; *p; p++) {
@@ -521,7 +521,8 @@ extract_lastname(image, is_php)
 	int is_php;
 {
 	static char buf[MAXBUFLEN];
-	char *p, *q;
+	char *p;
+	char *q;
 	int sep;
 
 	/*
@@ -604,7 +605,7 @@ extract_lastname(image, is_php)
  */
 int
 makefileindex(file, files)
-	char *file;
+	const char *file;
 	STRBUF *files;
 {
 	FILE *FIND, *FILEMAP, *FILES, *STDOUT, *op = NULL;

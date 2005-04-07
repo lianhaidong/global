@@ -52,15 +52,15 @@ int main(int, char **);
 void makefilter(STRBUF *);
 FILE *openfilter(void);
 void closefilter(FILE *);
-void completion(char *, char *, char *);
-void idutils(char *, char *);
-void grep(char *);
-void pathlist(char *, char *);
-void parsefile(int, char **, char *, char *, char *, int);
-void printtag(FILE *, char *);
-int search(char *, char *, char *, int);
-int includepath(char *, char *);
-void ffformat(char *, int, char *);
+void completion(const char *, const char *, const char *);
+void idutils(const char *, const char *);
+void grep(const char *);
+void pathlist(const char *, const char *);
+void parsefile(int, char **, const char *, const char *, const char *, int);
+void printtag(FILE *, const char *);
+int search(const char *, const char *, const char *, int);
+int includepath(const char *, const char *);
+void ffformat(char *, int, const char *);
 
 STRBUF *sortfilter;			/* sort filter		*/
 STRBUF *pathfilter;			/* path convert filter	*/
@@ -584,9 +584,9 @@ closefilter(op)
  */
 void
 completion(dbpath, root, prefix)
-	char *dbpath;
-	char *root;
-	char *prefix;
+	const char *dbpath;
+	const char *root;
+	const char *prefix;
 {
 	char *p;
 	int flags = GTOP_KEY;
@@ -615,7 +615,7 @@ completion(dbpath, root, prefix)
 void
 printtag(op, line)
 	FILE *op;
-	char *line;
+	const char *line;		/* virtually const */
 {
 	if (xflag) {
 		fputs(line, op);
@@ -626,7 +626,7 @@ printtag(op, line)
 		/*
 		 * Split tag line.
 		 */
-		n = split(line, 4, &ptable);
+		n = split((char *)line, 4, &ptable);
 
 		if (tflag) {
 			fputs(ptable.part[0].start, op);	/* tag */
@@ -649,8 +649,8 @@ printtag(op, line)
  */
 void
 idutils(pattern, dbpath)
-	char *pattern;
-	char *dbpath;
+	const char *pattern;
+	const char *dbpath;
 {
 	FILE *ip, *op;
 	STRBUF *ib = strbuf_open(0);
@@ -754,7 +754,7 @@ idutils(pattern, dbpath)
  */
 void
 grep(pattern)
-	char *pattern;
+	const char *pattern;
 {
 	FILE *op, *fp;
 	STRBUF *ib = strbuf_open(MAXBUFLEN);
@@ -824,8 +824,8 @@ grep(pattern)
  */
 void
 pathlist(dbpath, av)
-	char *dbpath;
-	char *av;
+	const char *dbpath;
+	const char *av;
 {
 	FILE *op;
 	char *path, *p;
@@ -896,9 +896,9 @@ void
 parsefile(argc, argv, cwd, root, dbpath, db)
 	int argc;
 	char **argv;
-	char *cwd;
-	char *root;
-	char *dbpath;
+	const char *cwd;
+	const char *root;
+	const char *dbpath;
 	int db;
 {
 	char buf[MAXPATHLEN+1], *path;
@@ -1005,9 +1005,9 @@ parsefile(argc, argv, cwd, root, dbpath, db)
  */
 int
 search(pattern, root, dbpath, db)
-	char *pattern;
-	char *root;
-	char *dbpath;
+	const char *pattern;
+	const char *root;
+	const char *dbpath;
 	int db;
 {
 	char *p;
@@ -1066,8 +1066,8 @@ search(pattern, root, dbpath, db)
  */
 int
 includepath(line, path)
-	char *line;
-	char *path;
+	const char *line;
+	const char *path;
 {
 	char *p;
 	int length;
@@ -1093,9 +1093,10 @@ void
 ffformat(to, size, from)
 	char *to;
 	int size;
-	char *from;
+	const char *from;
 {
-	char *p, *e = to;
+	const char *p;
+	char *e = to;
 
 	for (p = from; *p; p++) {
 		if (*p == '%' || *p == ' ' || *p == '\t') {

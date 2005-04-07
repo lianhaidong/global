@@ -22,7 +22,7 @@
 #ifndef _FIND_H_
 #define _FIND_H_
 
-void find_open(char *);
+void find_open(const char *);
 char *find_read(void);
 void find_close(void);
 

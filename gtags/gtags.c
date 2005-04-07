@@ -60,14 +60,14 @@ static void usage(void);
 static void help(void);
 void signal_setup(void);
 void onintr(int);
-int match(char *, char *);
+int match(const char *, const char *);
 int main(int, char **);
-int incremental(char *, char *);
-void updatetags(char *, char *, char *, int);
-void createtags(char *, char *, int);
-int printconf(char *);
-void set_base_directory(char *, char *);
-void put_converting(char *, int, int);
+int incremental(const char *, const char *);
+void updatetags(const char *, const char *, const char *, int);
+void createtags(const char *, const char *, int);
+int printconf(const char *);
+void set_base_directory(const char *, const char *);
+void put_converting(const char *, int, int);
 
 int cflag;					/* compact format */
 int iflag;					/* incremental update */
@@ -173,10 +173,10 @@ signal_setup(void)
 
 int
 match(curtag, line)
-	char *curtag;
-	char *line;
+	const char *curtag;
+	const char *line;
 {
-	char *p, *q = line;
+	const char *p, *q = line;
 
 	for (p = curtag; *p; p++)
 		if (*p != *q++)
@@ -669,8 +669,8 @@ main(argc, argv)
  */
 int
 incremental(dbpath, root)
-	char *dbpath;
-	char *root;
+	const char *dbpath;
+	const char *root;
 {
 	struct stat statp;
 	time_t gtags_mtime;
@@ -812,9 +812,9 @@ incremental(dbpath, root)
  */
 void
 updatetags(dbpath, root, path, type)
-	char *dbpath;
-	char *root;
-	char *path;
+	const char *dbpath;
+	const char *root;
+	const char *path;
 	int type;
 {
 	GTOP *gtop;
@@ -881,8 +881,8 @@ updatetags(dbpath, root, path, type)
  */
 void
 createtags(dbpath, root, db)
-	char *dbpath;
-	char *root;
+	const char *dbpath;
+	const char *root;
 	int db;
 {
 	char *path;
@@ -973,7 +973,7 @@ createtags(dbpath, root, db)
  */
 int
 printconf(name)
-	char *name;
+	const char *name;
 {
 	int num;
 	int exist = 1;
@@ -1004,8 +1004,8 @@ static char basedir[MAXPATHLEN+1];
 static int start_point;
 void
 set_base_directory(root, cwd)
-	char *root;
-	char *cwd;
+	const char *root;
+	const char *cwd;
 {
 	abspath = strbuf_open(MAXPATHLEN);
 	strbuf_puts(abspath, root);
@@ -1019,12 +1019,12 @@ set_base_directory(root, cwd)
 }
 void
 put_converting(line, absolute, cxref)
-	char *line;
+	const char *line;
 	int absolute;
 	int cxref;
 {
 	char buf[MAXPATHLEN+1];
-	char *p = line;
+	const char *p = line;
 
 	/*
 	 * print until path name.

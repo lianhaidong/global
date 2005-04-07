@@ -50,7 +50,7 @@
  */
 static int
 is_binary(path)
-	char *path;
+	const char *path;
 {
 	int ip;
 	char buf[32];

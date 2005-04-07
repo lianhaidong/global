@@ -37,10 +37,10 @@
 
 #define isdrivechar(x) (((x) >= 'A' && (x) <= 'Z') || ((x) >= 'a' && (x) <= 'z'))
 
-int isabspath(char *);
+int isabspath(const char *);
 char *canonpath(char *);
 #if (defined(_WIN32) && !defined(__CYGWIN__)) || defined(__DJGPP__)
-char *realpath(char *, char *);
+char *realpath(const char *, char *);
 #endif
 
 #endif /* ! _PATH_H_ */

@@ -54,7 +54,7 @@ static const char *suffix[] = {".exe", ".com", ".bat",};
  */
 char *
 usable(command)
-char *command;
+	const char *command;
 {
 	STRBUF *sb;
 	char *p, *dir;

@@ -21,7 +21,7 @@
 #ifndef _VFIND_H_
 #define _VFIND_H_
 
-void vfind_open(char *, int);
+void vfind_open(const char *, int);
 char *vfind_read(void);
 void vfind_close(void);
 

@@ -87,7 +87,7 @@ setupvariables(verbose)
  */
 int
 gtagsexist(candidate, dbpath, size, verbose)
-	char *candidate;
+	const char *candidate;
 	char *dbpath;
 	int size;
 	int verbose;

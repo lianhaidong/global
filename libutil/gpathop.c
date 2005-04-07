@@ -199,8 +199,8 @@ static char gfind_prefix[MAXPATHLEN+1];
  */
 void
 gfind_open(dbpath, local)
-	char *dbpath;
-	char *local;
+	const char *dbpath;
+	const char *local;
 {
 	assert(gfind_opened == 0);
 	assert(gfind_first == 0);

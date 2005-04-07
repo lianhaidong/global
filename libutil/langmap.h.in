@@ -28,7 +28,6 @@
 
 void setup_langmap(const char *);
 const char *decide_lang(const char *);
-void make_suffixes(char *, STRBUF *);
-
+void make_suffixes(const char *, STRBUF *);
 
 #endif

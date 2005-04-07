@@ -306,8 +306,8 @@ signal_setup(void)
  */
 static void
 generate_file(dist, file)
-	char *dist;
-	char *file;
+	const char *dist;
+	const char *file;
 {
 	regex_t preg;
 	regmatch_t pmatch[2];
@@ -419,8 +419,8 @@ generate_file(dist, file)
  */
 static void
 makeprogram(cgidir, file)
-	char *cgidir;
-	char *file;
+	const char *cgidir;
+	const char *file;
 {
 	generate_file(cgidir, file);
 }
@@ -429,7 +429,7 @@ makeprogram(cgidir, file)
  */
 static void
 makebless(file)
-	char *file;
+	const char *file;
 {
 	char *save = action;
 	action = saction;
@@ -444,8 +444,8 @@ makebless(file)
  */
 static void
 makeghtml(cgidir, file)
-	char *cgidir;
-	char *file;
+	const char *cgidir;
+	const char *file;
 {
 	FILE *op;
 
@@ -463,7 +463,7 @@ makeghtml(cgidir, file)
  */
 static void
 makerebuild(file)
-	char *file;
+	const char *file;
 {
 	FILE *op;
 
@@ -485,7 +485,7 @@ makerebuild(file)
  */
 static void
 makehelp(file)
-	char *file;
+	const char *file;
 {
 	char **label = icon_list ? anchor_comment : anchor_label;
 	char **icons = anchor_icons;
@@ -553,9 +553,9 @@ makehelp(file)
  */
 static char *
 makesearchpart(action, id, target)
-	char *action;
-	char *id;
-	char *target;
+	const char *action;
+	const char *id;
+	const char *target;
 {
 	STATIC_STRBUF(sb);
 
@@ -616,9 +616,9 @@ makesearchpart(action, id, target)
  */
 static void
 makeindex(file, title, index)
-	char *file;
-	char *title;
-	char *index;
+	const char *file;
+	const char *title;
+	const char *index;
 {
 	FILE *op;
 
@@ -665,8 +665,8 @@ makeindex(file, title, index)
  */
 static void
 makemainindex(file, index)
-	char *file;
-	char *index;
+	const char *file;
+	const char *index;
 {
 	FILE *op;
 
@@ -688,7 +688,7 @@ makemainindex(file, index)
  */
 static void
 makesearchindex(file)
-	char *file;
+	const char *file;
 {
 	FILE *op;
 
@@ -708,7 +708,7 @@ makesearchindex(file)
  */
 static void
 makehtaccess(file)
-	char *file;
+	const char *file;
 {
 	FILE *op;
 
@@ -784,8 +784,8 @@ makehtml(total)
  */
 static void
 copyfile(from, to)
-	char *from;
-	char *to;
+	const char *from;
+	const char *to;
 {
 	int ip, op, size;
 	char buf[8192];
@@ -812,8 +812,8 @@ copyfile(from, to)
 static void
 duplicatefile(file, from, to)
 	const char *file;
-	char *from;
-	char *to;
+	const char *from;
+	const char *to;
 {
 	char from_path[MAXPATHLEN];
 	char to_path[MAXPATHLEN];
@@ -837,9 +837,9 @@ duplicatefile(file, from, to)
  */
 static char *
 makecommonpart(title, defines, files)
-	char *title;
-	char *defines;
-	char *files;
+	const char *title;
+	const char *defines;
+	const char *files;
 {
 	FILE *ip;
 	STRBUF *sb = strbuf_open(0);

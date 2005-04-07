@@ -77,8 +77,8 @@ cache_open(void)
 void
 cache_put(db, tag, line)
 	int db;
-	char *tag;
-	char *line;
+	const char *tag;
+	const char *line;
 {
 	if (db >= GTAGLIM)
 		die("I don't know such tag file.");
@@ -94,7 +94,7 @@ cache_put(db, tag, line)
 char *
 cache_get(db, tag)
 	int db;
-	char *tag;
+	const char *tag;
 {
 	if (db >= GTAGLIM)
 		die("I don't know such tag file.");

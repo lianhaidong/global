@@ -60,7 +60,7 @@ void
 die(const char *s, ...)
 #else
 die(s, va_alist)
-	char *s;
+	const char *s;
 	va_dcl
 #endif
 {
@@ -90,7 +90,7 @@ die_with_code(int n, const char *s, ...)
 #else
 die_with_code(n, s, va_alist)
 	int n;
-	char *s;
+	const char *s;
 	va_dcl
 #endif
 {
@@ -118,7 +118,7 @@ void
 message(const char *s, ...)
 #else
 message(s, va_alist)
-	char *s;
+	const char *s;
 	va_dcl
 #endif
 {
@@ -140,7 +140,7 @@ void
 warning(const char *s, ...)
 #else
 warning(s, va_alist)
-	char *s;
+	const char *s;
 	va_dcl
 #endif
 {

@@ -45,7 +45,7 @@
  */
 int
 makedefineindex(file, total, defines)
-	char *file;
+	const char *file;
 	int total;
 	STRBUF *defines;
 {

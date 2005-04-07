@@ -63,7 +63,7 @@ static struct anchor *CURRENTDEF;
  */
 void
 anchor_load(file)
-	char *file;
+	const char *file;
 {
 	char command[MAXFILLEN];
 	char *options[] = {NULL, "", "r", "s"};
@@ -224,7 +224,7 @@ anchor_next(void)
  */
 struct anchor *
 anchor_get(name, length, type, lineno)
-	char *name;
+	const char *name;
 	int length;
 	int type;
 	int lineno;

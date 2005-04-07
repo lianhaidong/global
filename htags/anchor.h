@@ -65,11 +65,11 @@ struct anchor {
 #define A_HELP		7
 #define A_LIMIT		8
 
-void anchor_load(char *);
+void anchor_load(const char *);
 void anchor_unload(void);
 struct anchor *anchor_first();
 struct anchor *anchor_next();
-struct anchor *anchor_get(char *, int, int, int);
+struct anchor *anchor_get(const char *, int, int, int);
 int define_line(int);
 int *anchor_getlinks(int);
 void anchor_dump(FILE *, int);

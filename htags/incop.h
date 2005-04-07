@@ -32,12 +32,12 @@ struct data {
 };
 
 void init_inc();
-void put_inc(char *, char *, int);
-struct data *get_inc(char *);
+void put_inc(const char *, const char *, int);
+struct data *get_inc(const char *);
 struct data *first_inc();
 struct data *next_inc();
-void put_included(char *, char *);
-struct data *get_included(char *);
+void put_included(const char *, const char *);
+struct data *get_included(const char *);
 struct data *first_included();
 struct data *next_included();
 

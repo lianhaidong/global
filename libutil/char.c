@@ -80,7 +80,7 @@ isregex(s)
  */
 char *
 quote_string(s)
-	char *s;
+	const char *s;
 {
 	STATIC_STRBUF(sb);
 

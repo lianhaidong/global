@@ -133,8 +133,8 @@ void strbuf_sprintf();
 STRBUF *strbuf_open_tempbuf();
 void strbuf_release_tempbuf(STRBUF *);
 #ifdef STRBUF_LINK
-void strbuf_setname(STRBUF *, char *);
-STRBUF *strbuf_getbuf(char *);
+void strbuf_setname(STRBUF *, const char *);
+STRBUF *strbuf_getbuf(const char *);
 void strbuf_closeall();
 #endif
 

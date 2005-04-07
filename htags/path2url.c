@@ -44,7 +44,7 @@ static int nextkey;
  */
 void
 load_gpath(dbpath)
-	char *dbpath;
+	const char *dbpath;
 {
 	DBOP *dbop;
 	char *path;
@@ -84,7 +84,7 @@ unload_gpath(void)
  */
 char *
 path2fid(path)
-	char *path;
+	const char *path;
 {
 	static char number[32], *p;
 

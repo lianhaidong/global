@@ -84,15 +84,15 @@ typedef struct {
 } GTOP;
 
 const char *dbname(int);
-void makecommand(char *, char *, STRBUF *);
-void formatcheck(char *, int);
-int notnamechar(char *);
-GTOP *gtags_open(char *, char *, int, int, int);
-void gtags_put(GTOP *, char *, char *);
-char *gtags_get(GTOP *, char *);
-void gtags_add(GTOP *, char *, char *, int);
-void gtags_delete(GTOP *, char *);
-char *gtags_first(GTOP *, char *, int);
+void makecommand(const char *, const char *, STRBUF *);
+void formatcheck(const char *, int);
+int notnamechar(const char *);
+GTOP *gtags_open(const char *, const char *, int, int, int);
+void gtags_put(GTOP *, const char *, const char *);
+char *gtags_get(GTOP *, const char *);
+void gtags_add(GTOP *, const char *, const char *, int);
+void gtags_delete(GTOP *, const char *);
+char *gtags_first(GTOP *, const char *, int);
 char *gtags_next(GTOP *);
 void gtags_close(GTOP *);
 

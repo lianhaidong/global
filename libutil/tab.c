@@ -51,7 +51,7 @@ settabs(n)
 void
 detab(op, buf)
 	FILE *op;
-	char *buf;
+	const char *buf;
 {
 	int src, dst;
 	char c;

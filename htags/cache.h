@@ -21,8 +21,8 @@
 #define _CACHE_H_
 
 void cache_open();
-void cache_put(int, char *, char *);
-char *cache_get(int, char *);
+void cache_put(int, const char *, const char *);
+char *cache_get(int, const char *);
 void cache_close();
 
 #endif /* ! _CACHE_H_ */

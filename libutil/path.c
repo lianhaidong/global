@@ -47,7 +47,7 @@
  */
 int
 isabspath(p)
-	char *p;
+	const char *p;
 {
 	if (p[0] == '/')
 		return 1;
@@ -155,7 +155,7 @@ canonpath(path)
  */
 char *
 realpath(in_path, out_path)
-	char *in_path;
+	const char *in_path;
 	char *out_path;
 {
 #ifdef __DJGPP__

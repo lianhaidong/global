@@ -284,7 +284,7 @@ prepare_skip(void)
  */
 int
 skipthisfile(path)
-	char *path;
+	const char *path;
 {
 	char *first, *last;
 	int i;
@@ -323,8 +323,6 @@ static  struct {
 	char *dirp, *start, *end, *p;
 } stack[STACKSIZE], *topp, *curp;		/* stack */
 
-static int getdirs(char *, STRBUF *);
-
 /*
  * getdirs: get directory list
  *
@@ -338,7 +336,7 @@ static int getdirs(char *, STRBUF *);
  */
 static int
 getdirs(dir, sb)
-	char *dir;
+	const char *dir;
 	STRBUF *sb;
 {
 	DIR *dirp;
@@ -387,7 +385,7 @@ getdirs(dir, sb)
  */
 void
 find_open(start)
-	char *start;
+	const char *start;
 {
 	assert(opened == 0);
 	opened = 1;

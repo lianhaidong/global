@@ -122,10 +122,10 @@ match_suffix_list(suffix, list)
  */
 void
 make_suffixes(langmap, sb)
-	char *langmap;
+	const char *langmap;
 	STRBUF *sb;
 {
-	char *p;
+	const char *p;
 	int onsuffix = 0;		/* not on suffix string */
 	int first_dot = 1;
 

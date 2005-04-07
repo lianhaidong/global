@@ -42,15 +42,15 @@ const char *gozillarc = ".gozillarc";
 const char *dos_gozillarc = "_gozillarc";
 #endif
 
-static char *alias(char *);
+static char *alias(const char *);
 int main(int, char **);
-void getdefinitionURL(char *, STRBUF *);
-void getURL(char *, STRBUF *);
-int isprotocol(char *);
-int issource(char *);
-int convertpath(char *, char *, char *, STRBUF *);
+void getdefinitionURL(const char *, STRBUF *);
+void getURL(const char *, STRBUF *);
+int isprotocol(const char *);
+int issource(const char *);
+int convertpath(const char *, const char *, const char *, STRBUF *);
 #if !defined(_WIN32) && !defined(__DJGPP__)
-void sendbrowser(char *, char *);
+void sendbrowser(const char *, const char *);
 #endif
 
 #ifndef isblank
@@ -94,7 +94,7 @@ help(void)
  */
 static char *
 alias(alias_name)
-	char *alias_name;
+	const char *alias_name;
 {
 	FILE *ip;
 	STRBUF *sb = strbuf_open(0);
@@ -294,7 +294,7 @@ main(argc, argv)
  */
 void
 getdefinitionURL(arg, URL)
-	char *arg;
+	const char *arg;
 	STRBUF *URL;
 {
 	char cwd[MAXPATHLEN+1];
@@ -376,7 +376,7 @@ getdefinitionURL(arg, URL)
  */
 void
 getURL(arg, URL)
-	char *arg;
+	const char *arg;
 	STRBUF *URL;
 {
 	char cwd[MAXPATHLEN+1];
@@ -446,9 +446,9 @@ getURL(arg, URL)
  */
 int
 isprotocol(url)
-	char *url;
+	const char *url;
 {
-	char *p;
+	const char *p;
 
 	if (!strncmp(url, "file:", 5))
 		return 1;
@@ -472,7 +472,7 @@ isprotocol(url)
  */
 int
 issource(path)
-	char *path;
+	const char *path;
 {
 	STRBUF *sb = strbuf_open(0);
 	char *p;
@@ -509,15 +509,15 @@ issource(path)
  */
 int
 convertpath(dbpath, htmldir, path, sb)
-	char *dbpath;
-	char *htmldir;
-	char *path;
+	const char *dbpath;
+	const char *htmldir;
+	const char *path;
 	STRBUF *sb;
 {
 	static const char *suffix[] = {".html", ".htm"};
 	static const char *gz = ".gz";
 	int i, lim = sizeof(suffix)/sizeof(char *);
-	char *p;
+	const char *p;
 
 	strbuf_reset(sb);
 	strbuf_puts(sb, htmldir);
@@ -578,8 +578,8 @@ convertpath(dbpath, htmldir, path, sb)
  */
 void
 sendbrowser(browser, url)
-	char *browser;
-	char *url;
+	const char *browser;
+	const char *url;
 {
 	int pid;
 	char com[1024], *path;

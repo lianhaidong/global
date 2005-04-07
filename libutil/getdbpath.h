@@ -22,7 +22,7 @@
 #ifndef _GETDBPATH_H_
 #define _GETDBPATH_H_
 
-int gtagsexist(char *, char *, int, int);
+int gtagsexist(const char *, char *, int, int);
 void getdbpath(char *, char *, char *, int);
 
 #endif /* ! _GETDBPATH_H_ */
