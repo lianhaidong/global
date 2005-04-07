@@ -104,7 +104,7 @@ char *gen_href_begin(const char *, const char *, const char *, const char *);
 char *gen_href_begin_simple(const char *);
 char *gen_href_end();
 char *gen_list_begin();
-char *gen_list_body(const char *, const char *);
+char *gen_list_body(const char *, char *);
 char *gen_list_end();
 char *gen_div_begin(const char *);
 char *gen_div_end();

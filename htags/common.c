@@ -441,7 +441,7 @@ gen_list_begin()
 char *
 gen_list_body(srcdir, string)
 	const char *srcdir;
-	const char *string;
+	char *string;
 {
 	STATIC_STRBUF(sb);
 	char *p, *filename, *fid;
