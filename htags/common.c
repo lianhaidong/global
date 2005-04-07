@@ -212,7 +212,7 @@ upperdir(dir)
  */
 char *
 gen_page_begin(title, subdir)
-	char *title;
+	const char *title;
 	int subdir;
 {
 	STATIC_STRBUF(sb);
@@ -440,8 +440,8 @@ gen_list_begin()
  */
 char *
 gen_list_body(srcdir, string)
-	char *srcdir;
-	char *string;
+	const char *srcdir;
+	const char *string;
 {
 	STATIC_STRBUF(sb);
 	char *p, *filename, *fid;
