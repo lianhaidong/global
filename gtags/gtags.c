@@ -473,7 +473,7 @@ main(argc, argv)
 		exit(0);
 	} else if (do_relative || do_absolute) {
 		/*
-		 * This is a main body of the path filter.
+		 * This is the main body of path filter.
 		 * This code extract path name from tag line and
 		 * replace it with the relative or the absolute path name.
 		 *
