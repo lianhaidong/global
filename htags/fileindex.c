@@ -517,11 +517,11 @@ encode(url)
  */
 static char *
 extract_lastname(image, is_php)
-	char *image;
+	const char *image;
 	int is_php;
 {
 	static char buf[MAXBUFLEN];
-	char *p;
+	const char *p;
 	char *q;
 	int sep;
 
@@ -588,12 +588,12 @@ extract_lastname(image, is_php)
 		*q++ = *p++;
 	*q = '\0';
 	if (*p == sep) {
-		p = locatestring(buf, "/", MATCH_LAST);
-		if (p)
-			p++;
+		q = locatestring(buf, "/", MATCH_LAST);
+		if (q)
+			q++;
 		else
-			p = buf;
-		return p;
+			q = buf;
+		return q;
 	}
 	return NULL;
 }
