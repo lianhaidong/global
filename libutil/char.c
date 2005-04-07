@@ -32,7 +32,7 @@ static int init;
 
 /* initialize for isregex() */
 static void
-initialize()
+initialize(void)
 {
 	regexchar['^'] = regexchar['$'] = regexchar['{'] =
 	regexchar['}'] = regexchar['('] = regexchar[')'] =
@@ -48,7 +48,7 @@ initialize()
  */
 int
 isregexchar(c)
-int c;
+	int c;
 {
 	if (!init)
 		initialize();
@@ -62,7 +62,7 @@ int c;
  */
 int
 isregex(s)
-const char *s;
+	const char *s;
 {
 	int c;
 
@@ -80,7 +80,7 @@ const char *s;
  */
 char *
 quote_string(s)
-char *s;
+	char *s;
 {
 	STATIC_STRBUF(sb);
 

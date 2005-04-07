@@ -100,14 +100,14 @@ int extractmethod;
 int total;
 
 static void
-usage()
+usage(void)
 {
 	if (!qflag)
 		fputs(usage_const, stderr);
 	exit(2);
 }
 static void
-help()
+help(void)
 {
 	fputs(usage_const, stdout);
 	fputs(help_const, stdout);
@@ -159,7 +159,7 @@ onintr(signo)
 }
 
 void
-signal_setup()
+signal_setup(void)
 {
 	signal(SIGINT, onintr);
 	signal(SIGTERM, onintr);

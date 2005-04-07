@@ -217,7 +217,7 @@ gfind_open(dbpath, local)
  *	r)		path
  */
 char	*
-gfind_read()
+gfind_read(void)
 {
 	assert(gfind_opened == 1);
 	if (gfind_first) {

@@ -41,7 +41,7 @@ see the files named COPYING.\n\
  * get_version: get version string.
  */
 char *
-get_version()
+get_version(void)
 {
 	return VERSION;
 }

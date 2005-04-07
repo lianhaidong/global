@@ -72,7 +72,7 @@ load_gpath(dbpath)
  * load the contents of GPATH file into the memory.
  */
 void
-unload_gpath()
+unload_gpath(void)
 {
 	assoc_close(assoc);
 }

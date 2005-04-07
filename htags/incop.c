@@ -42,7 +42,7 @@ SLIST_HEAD(pool, data);
  * open_pool: open new string pool.
  */
 static struct pool *
-open_pool()
+open_pool(void)
 {
 	struct pool *head = (struct pool *)malloc(sizeof(struct pool));
 
@@ -145,7 +145,7 @@ static struct data *cur_included;
  * init_inc: initialize include file list.
  */
 void
-init_inc()
+init_inc(void)
 {
 	head_inc = open_pool();
 	head_included = open_pool();
@@ -183,7 +183,7 @@ get_inc(name)
  *	r)		descriptor
  */
 struct data *
-first_inc()
+first_inc(void)
 {
 	return cur_inc = first_data(head_inc);
 }
@@ -193,7 +193,7 @@ first_inc()
  *	r)		descriptor
  */
 struct data *
-next_inc()
+next_inc(void)
 {
 	return cur_inc = next_data(cur_inc);
 }
@@ -231,7 +231,7 @@ get_included(name)
  *	r)		descriptor
  */
 struct data *
-first_included()
+first_included(void)
 {
 	return cur_included = first_data(head_included);
 }
@@ -241,7 +241,7 @@ first_included()
  *	r)		descriptor
  */
 struct data *
-next_included()
+next_included(void)
 {
 	return cur_included = next_data(cur_included);
 }

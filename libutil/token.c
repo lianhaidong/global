@@ -78,7 +78,7 @@ opentoken(file)
  * closetoken:
  */
 void
-closetoken()
+closetoken(void)
 {
 	strbuf_close(ib);
 	fclose(ip);
@@ -245,7 +245,7 @@ nexttoken(interested, reserved)
  *	following nexttoken() return same token again.
  */
 void
-pushbacktoken()
+pushbacktoken(void)
 {
 	strlimcpy(ptok, token, sizeof(ptok));
 }
@@ -292,7 +292,7 @@ peekc(immediate)
  *	|      # define
  */
 int
-atfirst_exceptspace()
+atfirst_exceptspace(void)
 {
 	char *start = sp;
 	char *end = cp ? cp - 1 : lp;
@@ -308,7 +308,7 @@ atfirst_exceptspace()
  * 
  */
 static void
-pushbackchar()
+pushbackchar(void)
 {
         if (sp == NULL)
                 return;         /* nothing to do */

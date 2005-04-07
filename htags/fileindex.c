@@ -205,7 +205,7 @@ struct dirstack {
 #define bottom_stack(sp) ((sp)->start)
 
 void
-settrace()
+settrace(void)
 {
 	trace = 1;
 }
@@ -915,7 +915,7 @@ makefileindex(file, files)
 	return count;
 }
 void
-makeincludeindex()
+makeincludeindex(void)
 {
 	FILE *PIPE;
 	STRBUF *input = strbuf_open(0);

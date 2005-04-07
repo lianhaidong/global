@@ -156,7 +156,7 @@ WORD		{ALPHA}{ALPHANUM}*
 %%
 
 void
-asm_initscan()
+asm_initscan(void)
 {
 	yyrestart(NULL);
 }

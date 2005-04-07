@@ -119,7 +119,7 @@ split(line, npart, list)
  */
 void
 recover(list)
-SPLIT *list;
+	SPLIT *list;
 {
 	int i, c;
 	for (i = 0; i < list->npart; i++) {
@@ -132,7 +132,7 @@ SPLIT *list;
  */
 void
 split_dump(list)
-SPLIT *list;
+	SPLIT *list;
 {
 	int i;
 	struct part *part;

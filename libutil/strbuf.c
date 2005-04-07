@@ -81,7 +81,7 @@ static void print_and_abort (void);
 void (*strbuf_alloc_failed_handler) (void) = print_and_abort;
 
 static void
-print_and_abort()
+print_and_abort(void)
 {
 	die("short of memory.");
 }
@@ -511,7 +511,7 @@ strbuf_close(sb)
 int used = 0;
 
 STRBUF *
-strbuf_open_tempbuf()
+strbuf_open_tempbuf(void)
 {
 	STATIC_STRBUF(sb);
 	if (used)
@@ -569,7 +569,7 @@ strbuf_getbuf(name)
  * strbuf_closeall: close all string buffer.
  */
 void
-strbuf_closeall()
+strbuf_closeall(void)
 {
 	while (top.next != &top)
 		strbuf_close(top.next);

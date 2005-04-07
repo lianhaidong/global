@@ -104,7 +104,7 @@ trim(s)
  *	go)	suff	regular expression for source files.
  */
 static void
-prepare_source()
+prepare_source(void)
 {
 	STRBUF *sb = strbuf_open(0);
 	char *sufflist = NULL;
@@ -168,7 +168,7 @@ prepare_source()
  *	go)	list_count count of skip list.
  */
 static void
-prepare_skip()
+prepare_skip(void)
 {
 	char *skiplist;
 	STRBUF *reg = strbuf_open(0);

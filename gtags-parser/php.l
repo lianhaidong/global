@@ -77,8 +77,8 @@ static void
 debug_print(const char *s, ...)
 #else
 debug_print(s, va_alist)
-const char *s;
-va_dcl
+	const char *s;
+	va_dcl
 #endif
 {
 	va_list ap;
@@ -261,7 +261,7 @@ WORD		{ALPHA}{ALPHANUM}*
  */
 void
 php(file)
-const char *file;
+	const char *file;
 {
 	int token;
 	int target = (sflag) ? SYM : (rflag) ? REF : DEF;

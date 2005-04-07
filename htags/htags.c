@@ -245,14 +245,14 @@ static struct option const long_options[] = {
 };
 
 static void
-usage()
+usage(void)
 {
         if (!qflag)
                 fputs(usage_const, stderr);
         exit(2);
 }
 static void
-help()
+help(void)
 {
         fputs(usage_const, stdout);
         fputs(help_const, stdout);
@@ -262,7 +262,7 @@ help()
  * Htags catch signal even if the parent ignore it.
  */
 void
-clean()
+clean(void)
 {
 	unload_gpath();
 	cache_close();
@@ -286,7 +286,7 @@ suddenly(signo)
  * Setup signal hander.
  */
 static void
-signal_setup()
+signal_setup(void)
 {
         signal(SIGINT, suddenly);
         signal(SIGTERM, suddenly);
@@ -937,7 +937,7 @@ makecommonpart(title, defines, files)
  * basic check.
  */
 static void
-basic_check()
+basic_check(void)
 {
 	char *p;
 

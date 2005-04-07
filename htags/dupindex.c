@@ -95,7 +95,7 @@ close_dup_file(op)
  * is generated.
  */
 int
-makedupindex()
+makedupindex(void)
 {
 	STRBUF *sb = strbuf_open(0);
 	int definition_count = 0;

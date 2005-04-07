@@ -66,14 +66,14 @@ int linenumber = 0;
 int debug;
 
 static void
-usage()
+usage(void)
 {
 	if (!qflag)
 		fputs(usage_const, stderr);
 	exit(2);
 }
 static void
-help()
+help(void)
 {
 	fputs(usage_const, stdout);
 	fputs(help_const, stdout);

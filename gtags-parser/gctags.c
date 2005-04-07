@@ -123,13 +123,13 @@ get_lang_entry(lang)
 }
 
 static void
-usage()
+usage(void)
 {
 	fputs(usage_const, stderr);
 	exit(2);
 }
 static void
-help()
+help(void)
 {
 	fputs(usage_const, stdout);
 	fputs(help_const, stdout);

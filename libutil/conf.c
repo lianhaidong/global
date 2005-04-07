@@ -203,7 +203,7 @@ includelabel(sb, label, level)
  * configpath: get path of configuration file.
  */
 static char *
-configpath()
+configpath(void)
 {
 	STATIC_STRBUF(sb);
 	char *p;
@@ -241,7 +241,7 @@ configpath()
  *	go)	line	specified entry
  */
 void
-openconf()
+openconf(void)
 {
 	STRBUF *sb;
 	char *config;
@@ -465,14 +465,14 @@ getconfb(name)
  * getconfline: print loaded config entry.
  */
 char *
-getconfline()
+getconfline(void)
 {
 	if (!opened)
 		openconf();
 	return confline;
 }
 void
-closeconf()
+closeconf(void)
 {
 	if (!opened)
 		return;

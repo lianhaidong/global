@@ -35,17 +35,17 @@ static int debug;
 static void (*exit_proc)();
 
 void
-setquiet()
+setquiet(void)
 {
 	quiet = 1;
 }
 void
-setverbose()
+setverbose(void)
 {
 	verbose = 1;
 }
 void
-setdebug()
+setdebug(void)
 {
 	debug = 1;
 }

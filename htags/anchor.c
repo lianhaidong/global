@@ -172,7 +172,7 @@ anchor_load(file)
  * anchor_unload: unload anchor table
  */
 void
-anchor_unload()
+anchor_unload(void)
 {
 	struct anchor *a;
 
@@ -191,7 +191,7 @@ anchor_unload()
  * anchor_first: return the first anchor
  */
 struct anchor *
-anchor_first()
+anchor_first(void)
 {
 	if (!start || start == end)
 		return NULL;
@@ -204,7 +204,7 @@ anchor_first()
  * anchor_next: return the next anchor
  */
 struct anchor *
-anchor_next()
+anchor_next(void)
 {
 	if (!start)
 		return NULL;

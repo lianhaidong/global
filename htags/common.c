@@ -131,7 +131,7 @@ fputs_nl(s, op)
  * We define each style for the tags in 'style.css' in this directory.
  */
 void
-setup_xhtml()
+setup_xhtml(void)
 {
 	html_begin	= "<html xmlns='http://www.w3.org/1999/xhtml'>";
 	html_end	= "</html>";
@@ -247,7 +247,7 @@ gen_page_begin(title, subdir)
  * Generate end of page
  */
 char *
-gen_page_end()
+gen_page_end(void)
 {
 	return html_end;
 }
@@ -397,7 +397,7 @@ gen_href_begin_with_title(dir, file, suffix, key, title)
  * Generate anchor end tag.
  */
 char *
-gen_href_end()
+gen_href_end(void)
 {
 	return "</a>";
 }
@@ -405,7 +405,7 @@ gen_href_end()
  * Generate list begin tag.
  */
 char *
-gen_list_begin()
+gen_list_begin(void)
 {
 	STATIC_STRBUF(sb);
 
@@ -522,7 +522,7 @@ gen_list_body(srcdir, string)
  * Generate list end tag.
  */
 char *
-gen_list_end()
+gen_list_end(void)
 {
 	return table_list ? table_end : verbatim_end;
 }
@@ -557,7 +557,7 @@ gen_div_begin(align)
  * Generate div end tag.
  */
 char *
-gen_div_end()
+gen_div_end(void)
 {
 	return "</div>";
 }
@@ -583,7 +583,7 @@ gen_form_begin(target)
  * Generate end of form
  */
 char *
-gen_form_end()
+gen_form_end(void)
 {
 	return "</form>";
 }
@@ -668,7 +668,7 @@ gen_frameset_begin(contents)
  * Generate end of frameset
  */
 char *
-gen_frameset_end()
+gen_frameset_end(void)
 {
 	return "</frameset>";
 }

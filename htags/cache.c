@@ -60,7 +60,7 @@ static ASSOC *assoc[GTAGLIM];
  * cache_open: open cache file.
  */
 void
-cache_open()
+cache_open(void)
 {
 	assoc[GTAGS]  = assoc_open('d');
 	assoc[GRTAGS] = assoc_open('r');
@@ -104,7 +104,7 @@ cache_get(db, tag)
  * cache_close: close cache file.
  */
 void
-cache_close()
+cache_close(void)
 {
 	int i;
 

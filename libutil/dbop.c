@@ -240,10 +240,10 @@ dbop_update(dbop, key, dat)
  */
 char	*
 dbop_first(dbop, name, preg, flags)
-DBOP *dbop;
-const char *name;
-regex_t *preg;
-int	flags;
+	DBOP *dbop;
+	const char *name;
+	regex_t *preg;
+	int	flags;
 {
 	DB *db = dbop->db;
 	DBT key, dat;

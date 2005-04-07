@@ -155,7 +155,7 @@ linetable_get(lineno, offset)
  * linetable_close: close line table.
  */
 void
-linetable_close()
+linetable_close(void)
 {
 	varray_close(vb);
 	strbuf_close(ib);

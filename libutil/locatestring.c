@@ -81,9 +81,9 @@ int	(*cmpfunc)(char *, char*, int);
 
 char *
 locatestring(string, pattern, flag)
-const char *string;
-const char *pattern;
-int flag;
+	const char *string;
+	const char *pattern;
+	int flag;
 {
 	int c = *pattern;
 	int plen = strlen(pattern);

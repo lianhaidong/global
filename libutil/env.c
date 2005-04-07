@@ -64,7 +64,7 @@ set_env(var, val)
  *	r)	home directory
  */
 char *
-get_home_directory()
+get_home_directory(void)
 {
 #ifdef HAVE_HOME_ETC_H
 	return _HEdir;

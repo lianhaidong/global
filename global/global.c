@@ -93,14 +93,14 @@ int debug;
 char *extra_options;
 
 static void
-usage()
+usage(void)
 {
 	if (!qflag)
 		fputs(usage_const, stderr);
 	exit(2);
 }
 static void
-help()
+help(void)
 {
 	fputs(usage_const, stdout);
 	fputs(help_const, stdout);
@@ -569,7 +569,7 @@ openfilter(void)
 }
 void
 closefilter(op)
-FILE *op;
+	FILE *op;
 {
 	if (op != stdout)
 		if (pclose(op) != 0)
