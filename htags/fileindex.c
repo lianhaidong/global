@@ -921,7 +921,7 @@ makeincludeindex(void)
 {
 	FILE *PIPE;
 	STRBUF *input = strbuf_open(0);
-	char *_;
+	char *ctags_x;
 	struct data *inc;
 	char *target = (Fflag) ? "mains" : "_top";
 	const char *command = "global -gnx \"^[ \\t]*(#[ \\t]*(import|include)|include[ \\t]*\\()\"";
@@ -935,13 +935,13 @@ makeincludeindex(void)
 	if ((PIPE = popen(command, "r")) == NULL)
 		die("cannot fork.");
 	strbuf_reset(input);
-	while ((_ = strbuf_fgets(input, PIPE, STRBUF_NOCRLF)) != NULL) {
+	while ((ctags_x = strbuf_fgets(input, PIPE, STRBUF_NOCRLF)) != NULL) {
 		SPLIT ptable;
 		char buf[MAXBUFLEN];
 		int is_php = 0;
 		const char *last, *lang, *suffix;
 
-		if (split(_, 4, &ptable) < 4) {
+		if (split(ctags_x, 4, &ptable) < 4) {
 			recover(&ptable);
 			die("too small number of parts in makefileindex().");
 		}
@@ -962,7 +962,7 @@ makeincludeindex(void)
 
 			for (p = last; *p; p++)
 				*q++ = *p;
-			for (p = _; *p && *p != ' ' && *p != '\t'; p++)
+			for (p = ctags_x; *p && *p != ' ' && *p != '\t'; p++)
 				;
 			for (; *p; p++)
 				*q++ = *p;

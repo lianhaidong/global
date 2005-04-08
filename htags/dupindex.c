@@ -112,7 +112,7 @@ makedupindex(void)
 		int writing = 0;
 		int count = 0;
 		int entry_count = 0;
-		char *_, tag[IDENTLEN], prev[IDENTLEN], first_line[MAXBUFLEN], command[MAXFILLEN];
+		char *ctags_x, tag[IDENTLEN], prev[IDENTLEN], first_line[MAXBUFLEN], command[MAXFILLEN];
 
 		if (!symbol && db == GSYMS)
 			continue;
@@ -121,14 +121,14 @@ makedupindex(void)
 		snprintf(command, sizeof(command), "global -xn%s%s \".*\" | gtags --sort", dynamic ? "n" : "", option);
 		if ((ip = popen(command, "r")) == NULL)
 			die("cannot execute command '%s'.", command);
-		while ((_ = strbuf_fgets(sb, ip, STRBUF_NOCRLF)) != NULL) {
+		while ((ctags_x = strbuf_fgets(sb, ip, STRBUF_NOCRLF)) != NULL) {
 			SPLIT ptable;
 
-			if (split(_, 2, &ptable) < 2) {
+			if (split(ctags_x, 2, &ptable) < 2) {
 				recover(&ptable);
-				die("too small number of parts.(1)\n'%s'", _);
+				die("too small number of parts.(1)\n'%s'", ctags_x);
 			}
-			strlimcpy(tag, ptable.part[0].start, sizeof(tag));
+			strlimcpy(tag, ptable.part[PART_TAG].start, sizeof(tag));
 			recover(&ptable);
 
 			if (strcmp(prev, tag)) {
@@ -154,7 +154,7 @@ makedupindex(void)
 				if (first_line[0]) {
 					if (split(first_line, 3, &ptable) < 3) {
 						recover(&ptable);
-						die("too small number of parts.(2)\n'%s'", _);
+						die("too small number of parts.(2)\n'%s'", ctags_x);
 					}
 					snprintf(buf, sizeof(buf), "%s %s", ptable.part[PART_LNO].start, ptable.part[PART_PATH].start);
 					cache_put(db, prev, buf);
@@ -162,9 +162,9 @@ makedupindex(void)
 				}
 				/*
 				 * Chop the tail of the line. It is not important.
-				 * strlimcpy(first_line, _, sizeof(first_line));
+				 * strlimcpy(first_line, ctags_x, sizeof(first_line));
 				 */
-				strncpy(first_line, _, sizeof(first_line));
+				strncpy(first_line, ctags_x, sizeof(first_line));
 				first_line[sizeof(first_line) - 1] = '\0';
 				strlimcpy(prev, tag, sizeof(prev));
 				entry_count = 0;
@@ -183,7 +183,7 @@ makedupindex(void)
 					first_line[0] = 0;
 				}
 				if (!dynamic) {
-					fputs_nl(gen_list_body(srcdir, _), op);
+					fputs_nl(gen_list_body(srcdir, ctags_x), op);
 				}
 				entry_count++;
 			}
@@ -211,7 +211,7 @@ makedupindex(void)
 
 			if (split(first_line, 3, &ptable) < 3) {
 				recover(&ptable);
-				die("too small number of parts.(3)\n'%s'", _);
+				die("too small number of parts.(3)\n'%s'", ctags_x);
 			}
 			snprintf(buf, sizeof(buf), "%s %s", ptable.part[PART_LNO].start, ptable.part[PART_PATH].start);
 			cache_put(db, prev, buf);

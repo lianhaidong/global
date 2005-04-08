@@ -80,7 +80,7 @@ anchor_load(file)
 		varray_reset(vb);
 
 	for (db = GTAGS; db < GTAGLIM; db++) {
-		char *_;
+		char *ctags_x;
 
 		if (!symbol && db == GSYMS)
 			continue;
@@ -91,14 +91,14 @@ anchor_load(file)
 		ip = popen(command, "r");
 		if (ip == NULL)
 			die("cannot execute command '%s'.", command);
-		while ((_ = strbuf_fgets(sb, ip, STRBUF_NOCRLF)) != NULL) {
+		while ((ctags_x = strbuf_fgets(sb, ip, STRBUF_NOCRLF)) != NULL) {
 			SPLIT ptable;
 			struct anchor *a;
 			int type;
 
-			if (split(_, 4, &ptable) < 4) {
+			if (split(ctags_x, 4, &ptable) < 4) {
 				recover(&ptable);
-				die("too small number of parts in anchor_load().\n'%s'", _);
+				die("too small number of parts in anchor_load().\n'%s'", ctags_x);
 			}
 			if (db == GTAGS) {
 				const char *p;

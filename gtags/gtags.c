@@ -448,25 +448,25 @@ main(argc, argv)
 		 */
 		int unit = 1500;
 		STRBUF *ib = strbuf_open(MAXBUFLEN);
-		const char *line = strbuf_fgets(ib, stdin, 0);
+		const char *ctags_x = strbuf_fgets(ib, stdin, 0);
 
-		while (line != NULL) {
+		while (ctags_x != NULL) {
 			int count = 0;
 			FILE *op = popen("gnusort -k 1,1 -k 3,3 -k 2,2n -u", "w");
 			do {
-				fputs(line, op);
-			} while ((line = strbuf_fgets(ib, stdin, 0)) != NULL && ++count < unit);
-			if (line) {
+				fputs(ctags_x, op);
+			} while ((ctags_x = strbuf_fgets(ib, stdin, 0)) != NULL && ++count < unit);
+			if (ctags_x) {
 				/* curtag = current tag name */
 				STRBUF *curtag = strbuf_open(0);
-				const char *p = line;
+				const char *p = ctags_x;
 				while (!isspace(*p))
 					strbuf_putc(curtag, *p++);
 				/* read until next tag name */
 				do {
-					fputs(line, op);
-				} while ((line = strbuf_fgets(ib, stdin, 0)) != NULL
-					&& match(strbuf_value(curtag), line));
+					fputs(ctags_x, op);
+				} while ((ctags_x = strbuf_fgets(ib, stdin, 0)) != NULL
+					&& match(strbuf_value(curtag), ctags_x));
 			}
 			if (pclose(op) != 0)
 				die("terminated abnormally.");
@@ -495,12 +495,13 @@ main(argc, argv)
 		STRBUF *ib = strbuf_open(MAXBUFLEN);
 		const char *root = argv[0];
 		const char *cwd = argv[1];
+		const char *ctags_x;
 
 		if (argc < 2)
 			die("do_relative: 2 arguments needed.");
 		set_base_directory(root, cwd);
-		while (strbuf_fgets(ib, stdin, 0) != NULL)
-			put_converting(strbuf_value(ib), do_absolute ? 1 : 0, cxref);
+		while ((ctags_x = strbuf_fgets(ib, stdin, 0)) != NULL)
+			put_converting(ctags_x, do_absolute ? 1 : 0, cxref);
 		strbuf_close(ib);
 		exit(0);
 	} else if (Iflag) {
