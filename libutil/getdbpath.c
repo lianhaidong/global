@@ -55,7 +55,7 @@ static void
 setupvariables(verbose)
 	int verbose;
 {
-	char *p;
+	const char *p;
 
 	if ((p = getenv("MAKEOBJDIRPREFIX")) != NULL) {
 		makeobjdirprefix = p;
@@ -214,7 +214,7 @@ getdbpath(cwd, root, dbpath, verbose)
 		do {
 			FILE *fp;
 			STRBUF *sb;
-			char *s, *path;
+			const char *s, *path;
 
 			path = makepath(root, "GTAGSROOT", NULL);
 			if (!test("fr", path)) {

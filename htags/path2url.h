@@ -21,7 +21,7 @@
 #define _GPATH_H_
 
 void load_gpath(const char *);
-char *path2fid(const char *);
+const char *path2fid(const char *);
 void unload_gpath(void);
 
 #endif /* ! _GPATH_H_ */

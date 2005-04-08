@@ -221,7 +221,7 @@ static dump_stack(sp, label)
 {
 	char *start = sp->start;
 	char *last = sp->last - 1;
-	char *p;
+	const char *p;
 
 	fprintf(stderr, "%s(%s): ", label, sp->name);
 	for (p = sp->buf; p < last; p++) {
@@ -331,7 +331,7 @@ push_stack(sp, s)
  *	i)	sp	stack descriptor
  *	r)		string
  */
-static char *
+static const char *
 top_stack(sp)
 	struct dirstack *sp;
 {
@@ -360,10 +360,10 @@ top_stack(sp)
  *	i)	cur	current value
  *	r)		string
  */
-static char *
+static const char *
 next_stack(sp, cur)
 	struct dirstack *sp;
-	char *cur;
+	const char *cur;
 {
 	char *last = sp->last;
 
@@ -382,11 +382,11 @@ next_stack(sp, cur)
  *	i)	sp	stack descriptor
  *	r)		string
  */
-static char *
+static const char *
 pop_stack(sp)
 	struct dirstack *sp;
 {
-	char *last = top_stack(sp);
+	char *last = (char *)top_stack(sp);
 	int length = strlen(last) + 1;
 
 	if (!last)
@@ -404,7 +404,7 @@ pop_stack(sp)
  *	i)	sp	stack descriptor
  *	r)		string
  */
-static char *
+static const char *
 shift_stack(sp)
 	struct dirstack *sp;
 {
@@ -454,7 +454,7 @@ copy_stack(to, from)
  *	i)	sp	stack descriptor
  *	r)		path name
  */
-static char *
+static const char *
 join_stack(sp)
 	struct dirstack *sp;
 {
@@ -489,7 +489,7 @@ delete_stack(sp)
  *	i)	url	URL
  *	r)		encoded URL
  */
-static char *
+static const char *
 encode(url)
         const char *url;
 {
@@ -515,7 +515,7 @@ encode(url)
  *	i)	is_php	1: is PHP source
  *	r)		last name
  */
-static char *
+static const char *
 extract_lastname(image, is_php)
 	const char *image;
 	int is_php;
@@ -611,13 +611,13 @@ makefileindex(file, files)
 	FILE *FIND, *FILEMAP, *FILES, *STDOUT, *op = NULL;
 	char *_;
 	int count = 0;
-	char *indexlink = (Fflag) ? "../files" : "../mains";
+	const char *indexlink = (Fflag) ? "../files" : "../mains";
 	STRBUF *sb = strbuf_open(0);
 	STRBUF *input = strbuf_open(0);
-	char *target = (Fflag) ? "mains" : "_top";
+	const char *target = (Fflag) ? "mains" : "_top";
 	struct dirstack *dirstack = make_stack("dirstack");
 	struct dirstack *fdstack = make_stack("fdstack");
-	char *command = (other_files) ? "gtags --find --other | gnusort -t / -k 2"
+	const char *command = (other_files) ? "gtags --find --other | gnusort -t / -k 2"
 					: "gtags --find";
 	struct dirstack *push = make_stack("push");
 	struct dirstack *pop = make_stack("pop");
@@ -632,7 +632,7 @@ makefileindex(file, files)
 	strbuf_reset(sb);
 	strbuf_puts(sb, "\\.(");
 	{
-		char *p = include_file_suffixes;
+		const char *p = include_file_suffixes;
 		int c;
 
 		while ((c = (unsigned char)*p++) != '\0') {
@@ -695,7 +695,7 @@ makefileindex(file, files)
 			(void)shift_stack(pop);
 		}
 		if (count_stack(push) || count_stack(pop)) {
-			char *parent, *path, *suffix;
+			const char *parent, *path, *suffix;
 
 			while (count_stack(pop)) {
 				(void)pop_stack(dirstack);
@@ -727,7 +727,7 @@ makefileindex(file, files)
 			}
 			while (count_stack(push)) {
 				char cur[MAXPATHLEN], tmp[MAXPATHLEN];
-				char *last;
+				const char *last;
 				if (count_stack(dirstack)) {
 					parent = path2fid(join_stack(dirstack));
 					suffix = HTML;
@@ -770,7 +770,7 @@ makefileindex(file, files)
 				fprintf(STDOUT, "%s%sroot%s/", header_begin, gen_href_begin(NULL, indexlink, normal_suffix, NULL), gen_href_end());
 				{
 					struct dirstack *p = make_stack("tmp");
-					char *s;
+					const char *s;
 					int anchor;
 
 					for (s = bottom_stack(dirstack); s; s = next_stack(dirstack, s)) {
@@ -813,7 +813,8 @@ makefileindex(file, files)
 			strbuf_puts(sb, item_begin);
 
 		{
-			char tmp[1024], *file, *suffix = NULL, *dir = NULL;
+			char tmp[1024];
+			const char *file, *suffix = NULL, *dir = NULL;
 
 			if (notsource && dynamic) {
 				if (!(*action == '/' || count_stack(dirstack) == 0))
@@ -844,7 +845,7 @@ makefileindex(file, files)
 		if (full_path) {
 			strbuf_puts(sb, _);
 		} else {
-			char *last = locatestring(_, "/", MATCH_LAST);
+			const char *last = locatestring(_, "/", MATCH_LAST);
 			if (last)
 				last++;
 			else
@@ -869,7 +870,7 @@ makefileindex(file, files)
 	if (pclose(FIND) != 0)
 		die("cannot traverse directory.(%s)", command);
 	while (count_stack(dirstack) > 0) {
-		char *parent, *suffix;
+		const char *parent, *suffix;
 
 		pop_stack(dirstack);
 		if (count_stack(dirstack) > 0) {
@@ -920,10 +921,10 @@ makeincludeindex(void)
 {
 	FILE *PIPE;
 	STRBUF *input = strbuf_open(0);
-	char *command;
 	char *_;
 	struct data *inc;
 	char *target = (Fflag) ? "mains" : "_top";
+	const char *command = "global -gnx \"^[ \\t]*(#[ \\t]*(import|include)|include[ \\t]*\\()\"";
 
 	/*
 	 * Pick up include pattern.
@@ -931,15 +932,14 @@ makeincludeindex(void)
 	 * C: #include "xxx.h"
 	 * PHP: include("xxx.inc.php");
 	 */
-	command = "global -gnx \"^[ \\t]*(#[ \\t]*(import|include)|include[ \\t]*\\()\"";
 	if ((PIPE = popen(command, "r")) == NULL)
 		die("cannot fork.");
 	strbuf_reset(input);
 	while ((_ = strbuf_fgets(input, PIPE, STRBUF_NOCRLF)) != NULL) {
 		SPLIT ptable;
-		char *last, buf[MAXBUFLEN];
+		char buf[MAXBUFLEN];
 		int is_php = 0;
-		const char *lang, *suffix;
+		const char *last, *lang, *suffix;
 
 		if (split(_, 4, &ptable) < 4) {
 			recover(&ptable);
@@ -957,7 +957,8 @@ makeincludeindex(void)
 		 * s/^[^ \t]+/$last/;
 		 */
 		{
-			char *p, *q = buf;
+			const char *p;
+			char *q = buf;
 
 			for (p = last; *p; p++)
 				*q++ = *p;
@@ -973,7 +974,7 @@ makeincludeindex(void)
 		die("terminated abnormally.");
 
 	for (inc = first_inc(); inc; inc = next_inc()) {
-		char *last = inc->name;
+		const char *last = inc->name;
 		int no = inc->id;
 		struct data *data;
 		FILE *INCLUDE;
@@ -987,7 +988,7 @@ makeincludeindex(void)
 			fputs_nl(body_begin, INCLUDE);
 			fputs_nl(verbatim_begin, INCLUDE);
 			{
-				char *filename = strbuf_value(inc->contents);
+				const char *filename = strbuf_value(inc->contents);
 				int count = inc->count;
 
 				for (; count; filename += strlen(filename) + 1, count--) {
@@ -1031,7 +1032,7 @@ makeincludeindex(void)
 			fputs_nl(body_begin, INCLUDE);
 			fputs_nl(gen_list_begin(), INCLUDE);
 			{
-				char *line = strbuf_value(data->contents);
+				const char *line = strbuf_value(data->contents);
 				int count = data->count;
 
 				for (; count; line += strlen(line) + 1, count--)

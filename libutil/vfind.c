@@ -68,7 +68,7 @@ vfind_open(local, other)
  *
  *	r)		path
  */
-char *
+const char *
 vfind_read(void)
 {
 	assert(opened != 0);

@@ -38,7 +38,7 @@
  * File input method.
  */
 int lineno;
-unsigned char *sp, *cp, *lp;
+const unsigned char *sp, *cp, *lp;
 int crflag;			/* 1: return '\n', 0: doesn't return */
 int cmode;			/* allow token which start with '#' */
 int cppmode;			/* allow '::' as a token */
@@ -294,8 +294,8 @@ peekc(immediate)
 int
 atfirst_exceptspace(void)
 {
-	char *start = sp;
-	char *end = cp ? cp - 1 : lp;
+	const char *start = sp;
+	const char *end = cp ? cp - 1 : lp;
 
 	while (start < end && *start && isspace(*start))
 		start++;

@@ -50,13 +50,13 @@
 #define SYMS	"Y"
 
 extern int w32;
-extern char *www;
-extern char *include_header;
+extern const char *www;
+extern const char *include_header;
 extern int file_count;
 extern int sep;
 extern int exitflag;
-extern char *save_config;
-extern char *save_argv;
+extern const char *save_config;
+extern const char *save_argv;
 
 extern char cwdpath[MAXPATHLEN];
 extern char dbpath[MAXPATHLEN];
@@ -67,8 +67,8 @@ extern char sort_path[MAXFILLEN];
 extern char gtags_path[MAXFILLEN];
 extern char global_path[MAXFILLEN];
 extern char findcom[MAXFILLEN];
-extern char *null_device;
-extern char *tmpdir;
+extern const char *null_device;
+extern const char *tmpdir;
 
 extern int aflag;
 extern int cflag;
@@ -96,52 +96,52 @@ extern int enable_grep;
 extern int enable_idutils;
 extern int enable_xhtml;
 
-extern char *action_value;
-extern char *id_value;
-extern char *cgidir;
-extern char *main_func;
-extern char *style_sheet;
-extern char *cvsweb_url;
-extern char *cvsweb_cvsroot;
-extern char *gtagslabel;
-extern char *title;
+extern const char *action_value;
+extern const char *id_value;
+extern const char *cgidir;
+extern const char *main_func;
+extern const char *style_sheet;
+extern const char *cvsweb_url;
+extern const char *cvsweb_cvsroot;
+extern const char *gtagslabel;
+extern const char *title;
 
-extern char *title_define_index;
-extern char *title_file_index;
-extern char *title_included_from;
+extern const char *title_define_index;
+extern const char *title_file_index;
+extern const char *title_included_from;
 
-extern char *anchor_label[];
-extern char *anchor_icons[];
-extern char *anchor_comment[];
-extern char *anchor_msg[];
-extern char *back_icon;
-extern char *dir_icon;
-extern char *c_icon;
-extern char *file_icon;
+extern const char *anchor_label[];
+extern const char *anchor_icons[];
+extern const char *anchor_comment[];
+extern const char *anchor_msg[];
+extern const char *back_icon;
+extern const char *dir_icon;
+extern const char *c_icon;
+extern const char *file_icon;
 
 extern int ncol;
 extern int tabs;
 extern char stabs[];
 extern int full_path;
 extern int map_file;
-extern char *icon_list;
-extern char *icon_suffix;
-extern char *icon_spec;
-extern char *prolog_script;
-extern char *epilog_script;
+extern const char *icon_list;
+extern const char *icon_suffix;
+extern const char *icon_spec;
+extern const char *prolog_script;
+extern const char *epilog_script;
 extern int show_position;
 extern int table_list;
 extern int colorize_warned_line;
-extern char *script_alias;
-extern char *gzipped_suffix;
-extern char *normal_suffix;
-extern char *HTML;
-extern char *action;
-extern char *saction;
-extern char *id;
+extern const char *script_alias;
+extern const char *gzipped_suffix;
+extern const char *normal_suffix;
+extern const char *HTML;
+extern const char *action;
+extern const char *saction;
+extern const char *id;
 extern int cgi;
 extern int definition_header;
-extern char *htags_options;
-extern char *include_file_suffixes;
+extern const char *htags_options;
+extern const char *include_file_suffixes;
 
 #endif /* _HTAGS_H_ */

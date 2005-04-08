@@ -50,63 +50,63 @@
  *
  * Htags generates HTML tag by default.
  */
-char *html_begin	= "<html>";
-char *html_end		= "</html>";
-char *html_head_begin	= "<head>";
-char *html_head_end	= "</head>";
-char *html_title_begin	= "<title>";
-char *html_title_end	= "</title>";
-char *body_begin	= "<body>";
-char *body_end		= "</body>";
-char *title_begin	= "<h1><font color='#cc0000'>";
-char *title_end		= "</font></h1>";
-char *header_begin	= "<h2>";
-char *header_end	= "</h2>";
-char *cvslink_begin	= "<font size='-1'>";
-char *cvslink_end	= "</font>";
-char *caution_begin	= "<center>\n<blockquote>";
-char *caution_end	= "</blockquote>\n</center>";
-char *list_begin	= "<ol>";
-char *list_end		= "</ol>";
-char *item_begin	= "<li>";
-char *item_end		= "";
-char *define_list_begin = "<dl>";
-char *define_list_end   = "</dl>";
-char *define_term_begin = "<dt>";
-char *define_term_end   = "";
-char *define_desc_begin	= "<dd>";
-char *define_desc_end	= "";
-char *table_begin	= "<table>";
-char *table_end		= "</table>";
-char *comment_begin	= "<i><font color='green'>";
-char *comment_end	= "</font></i>";
-char *sharp_begin	= "<font color='darkred'>";
-char *sharp_end		= "</font>";
-char *brace_begin	= "<font color='blue'>";
-char *brace_end		= "</font>";
-char *verbatim_begin	= "<pre>";
-char *verbatim_end	= "</pre>";
-char *reserved_begin	= "<b>";
-char *reserved_end	= "</b>";
-char *position_begin	= "<font color='gray'>";
-char *position_end	= "</font>";
-char *warned_line_begin = "<span style='background-color:yellow'>";
-char *warned_line_end   = "</span>";
-char *error_begin	= "<h1><font color='#cc0000'>";
-char *error_end		= "</font></h1>";
-char *message_begin	= "<h3>";
-char *message_end	= "</h3>";
-char *string_begin	= "<u>";
-char *string_end	= "</u>";
-char *quote_great	= "&gt;";
-char *quote_little	= "&lt;";
-char *quote_amp		= "&amp;";
-char *quote_space	= "&nbsp;";
-char *hr		= "<hr>";
-char *br		= "<br>";
-char *empty_element	= "";
-char *noframes_begin	= "<noframes>";
-char *noframes_end	= "</noframes>";
+const char *html_begin	= "<html>";
+const char *html_end		= "</html>";
+const char *html_head_begin	= "<head>";
+const char *html_head_end	= "</head>";
+const char *html_title_begin	= "<title>";
+const char *html_title_end	= "</title>";
+const char *body_begin	= "<body>";
+const char *body_end		= "</body>";
+const char *title_begin	= "<h1><font color='#cc0000'>";
+const char *title_end		= "</font></h1>";
+const char *header_begin	= "<h2>";
+const char *header_end	= "</h2>";
+const char *cvslink_begin	= "<font size='-1'>";
+const char *cvslink_end	= "</font>";
+const char *caution_begin	= "<center>\n<blockquote>";
+const char *caution_end	= "</blockquote>\n</center>";
+const char *list_begin	= "<ol>";
+const char *list_end		= "</ol>";
+const char *item_begin	= "<li>";
+const char *item_end		= "";
+const char *define_list_begin = "<dl>";
+const char *define_list_end   = "</dl>";
+const char *define_term_begin = "<dt>";
+const char *define_term_end   = "";
+const char *define_desc_begin	= "<dd>";
+const char *define_desc_end	= "";
+const char *table_begin	= "<table>";
+const char *table_end		= "</table>";
+const char *comment_begin	= "<i><font color='green'>";
+const char *comment_end	= "</font></i>";
+const char *sharp_begin	= "<font color='darkred'>";
+const char *sharp_end		= "</font>";
+const char *brace_begin	= "<font color='blue'>";
+const char *brace_end		= "</font>";
+const char *verbatim_begin	= "<pre>";
+const char *verbatim_end	= "</pre>";
+const char *reserved_begin	= "<b>";
+const char *reserved_end	= "</b>";
+const char *position_begin	= "<font color='gray'>";
+const char *position_end	= "</font>";
+const char *warned_line_begin = "<span style='background-color:yellow'>";
+const char *warned_line_end   = "</span>";
+const char *error_begin	= "<h1><font color='#cc0000'>";
+const char *error_end		= "</font></h1>";
+const char *message_begin	= "<h3>";
+const char *message_end	= "</h3>";
+const char *string_begin	= "<u>";
+const char *string_end	= "</u>";
+const char *quote_great	= "&gt;";
+const char *quote_little	= "&lt;";
+const char *quote_amp		= "&amp;";
+const char *quote_space	= "&nbsp;";
+const char *hr		= "<hr>";
+const char *br		= "<br>";
+const char *empty_element	= "";
+const char *noframes_begin	= "<noframes>";
+const char *noframes_end	= "</noframes>";
 
 /*
  * print string and new line.
@@ -194,7 +194,7 @@ setup_xhtml(void)
 /*
  * Generate upper directory.
  */
-char *
+const char *
 upperdir(dir)
 	const char *dir;
 {
@@ -210,13 +210,13 @@ upperdir(dir)
  *	i)	title	title of this page
  *	i)	subdir	1: this page is in subdirectory
  */
-char *
+const char *
 gen_page_begin(title, subdir)
 	const char *title;
 	int subdir;
 {
 	STATIC_STRBUF(sb);
-	char *dir = subdir ? "../" : "";
+	const char *dir = subdir ? "../" : "";
 
 	strbuf_clear(sb);
 	if (enable_xhtml) {
@@ -246,7 +246,7 @@ gen_page_begin(title, subdir)
 /*
  * Generate end of page
  */
-char *
+const char *
 gen_page_end(void)
 {
 	return html_end;
@@ -261,14 +261,14 @@ gen_page_end(void)
  *	i)	file	icon file without suffix.
  *	i)	alt	alt string
  */
-char *
+const char *
 gen_image(where, file, alt)
 	int where;
 	const char *file;
 	const char *alt;
 {
 	STATIC_STRBUF(sb);
-	char *dir = (where == PARENT) ? "../icons" : "icons";
+	const char *dir = (where == PARENT) ? "../icons" : "icons";
 
 	strbuf_clear(sb);
 	if (enable_xhtml)
@@ -282,12 +282,12 @@ gen_image(where, file, alt)
 /*
  * Generate name tag.
  */
-char *
+const char *
 gen_name_number(number)
 	int number;
 {
 	STATIC_STRBUF(sb);
-	char *id = enable_xhtml ? "id" : "name";
+	const char *id = enable_xhtml ? "id" : "name";
 
 	strbuf_clear(sb);
 	strbuf_sprintf(sb, "<a %s='%d'%s>", id, number, empty_element);
@@ -296,12 +296,12 @@ gen_name_number(number)
 /*
  * Generate name tag.
  */
-char *
+const char *
 gen_name_string(name)
 	const char *name;
 {
 	STATIC_STRBUF(sb);
-	char *id = enable_xhtml ? "id" : "name";
+	const char *id = enable_xhtml ? "id" : "name";
 
 	strbuf_clear(sb);
 	strbuf_sprintf(sb, "<a %s='%s'%s>", id, name, empty_element);
@@ -319,7 +319,7 @@ gen_name_string(name)
  *	i)	target	target='xxx'
  *	r)		generated anchor tag
  */
-char *
+const char *
 gen_href_begin_with_title_target(dir, file, suffix, key, title, target)
 	const char *dir;
 	const char *file;
@@ -362,7 +362,7 @@ gen_href_begin_with_title_target(dir, file, suffix, key, title, target)
 /*
  * Generate simple anchor begin tag.
  */
-char *
+const char *
 gen_href_begin_simple(file)
 	const char *file;
 {
@@ -371,7 +371,7 @@ gen_href_begin_simple(file)
 /*
  * Generate anchor begin tag without title and target.
  */
-char *
+const char *
 gen_href_begin(dir, file, suffix, key)
 	const char *dir;
 	const char *file;
@@ -383,7 +383,7 @@ gen_href_begin(dir, file, suffix, key)
 /*
  * Generate anchor begin tag without target.
  */
-char *
+const char *
 gen_href_begin_with_title(dir, file, suffix, key, title)
 	const char *dir;
 	const char *file;
@@ -396,7 +396,7 @@ gen_href_begin_with_title(dir, file, suffix, key, title)
 /*
  * Generate anchor end tag.
  */
-char *
+const char *
 gen_href_end(void)
 {
 	return "</a>";
@@ -404,7 +404,7 @@ gen_href_end(void)
 /*
  * Generate list begin tag.
  */
-char *
+const char *
 gen_list_begin(void)
 {
 	STATIC_STRBUF(sb);
@@ -438,7 +438,7 @@ gen_list_begin(void)
  *
  * s must be choped.
  */
-char *
+const char *
 gen_list_body(srcdir, string)
 	const char *srcdir;
 	const char *string;		/* virtually const */
@@ -521,7 +521,7 @@ gen_list_body(srcdir, string)
 /*
  * Generate list end tag.
  */
-char *
+const char *
 gen_list_end(void)
 {
 	return table_list ? table_end : verbatim_end;
@@ -531,7 +531,7 @@ gen_list_end(void)
  *
  *	i)	align	right,left,center
  */
-char *
+const char *
 gen_div_begin(align)
 	const char *align;
 {
@@ -556,7 +556,7 @@ gen_div_begin(align)
 /*
  * Generate div end tag.
  */
-char *
+const char *
 gen_div_end(void)
 {
 	return "</div>";
@@ -566,7 +566,7 @@ gen_div_end(void)
  *
  *	i)	target	target
  */
-char *
+const char *
 gen_form_begin(target)
 	const char *target;
 {
@@ -582,7 +582,7 @@ gen_form_begin(target)
 /*
  * Generate end of form
  */
-char *
+const char *
 gen_form_end(void)
 {
 	return "</form>";
@@ -590,7 +590,7 @@ gen_form_end(void)
 /*
  * Generate input tag
  */
-char *
+const char *
 gen_input(name, value, type)
 	const char *name;
 	const char *value;
@@ -601,7 +601,7 @@ gen_input(name, value, type)
 /*
  * Generate input radiobox tag
  */
-char *
+const char *
 gen_input_radio(name, value, checked, title)
 	const char *name;
 	const char *value;
@@ -613,7 +613,7 @@ gen_input_radio(name, value, checked, title)
 /*
  * Generate input checkbox tag
  */
-char *
+const char *
 gen_input_checkbox(name, value, title)
 	const char *name;
 	const char *value;
@@ -624,7 +624,7 @@ gen_input_checkbox(name, value, title)
 /*
  * Generate input radio tag
  */
-char *
+const char *
 gen_input_with_title_checked(name, value, type, checked, title)
 	const char *name;
 	const char *value;
@@ -654,7 +654,7 @@ gen_input_with_title_checked(name, value, type, checked, title)
  *
  *	i)	target	target
  */
-char *
+const char *
 gen_frameset_begin(contents)
 	const char *contents;
 {
@@ -667,7 +667,7 @@ gen_frameset_begin(contents)
 /*
  * Generate end of frameset
  */
-char *
+const char *
 gen_frameset_end(void)
 {
 	return "</frameset>";
@@ -677,7 +677,7 @@ gen_frameset_end(void)
  *
  *	i)	target	target
  */
-char *
+const char *
 gen_frame(name, src)
 	const char *name;
 	const char *src;

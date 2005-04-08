@@ -50,7 +50,7 @@
  *		using output procedures in this module.
  */
 struct lang_entry {
-	char *lang_name;
+	const char *lang_name;
 	void (*init_proc)(FILE *);		/* initializing procedure */
 	int (*exec_proc)(void);			/* executing procedure */
 };
@@ -226,7 +226,7 @@ echos(s)
  *       i)      $path   path name
  *       r)              hypertext file name string
  */
-char *
+const char *
 fill_anchor(root, path)
 	const char *root;
 	const char *path;
@@ -243,11 +243,11 @@ fill_anchor(root, path)
 
 	strbuf_sprintf(sb, "%sroot%s/", gen_href_begin_simple(root), gen_href_end());
 	{
-		char *next;
+		const char *next;
 
 		for (p = buf; p < limit; p += strlen(p) + 1) {
-			char *path = buf;
-			char *unit = p;
+			const char *path = buf;
+			const char *unit = p;
 
 			next = p + strlen(p) + 1;
 			if (next > limit) {
@@ -272,13 +272,13 @@ fill_anchor(root, path)
  *		-1: top, -2: bottom, other: line number
  *	r)	HTML
  */
-char *
+const char *
 link_format(ref)
         int ref[A_SIZE];
 {
 	STATIC_STRBUF(sb);
-	char **label = icon_list ? anchor_comment : anchor_label;
-	char **icons = anchor_icons;
+	const char **label = icon_list ? anchor_comment : anchor_label;
+	const char **icons = anchor_icons;
 	int i;
 
 	strbuf_clear(sb);
@@ -316,7 +316,7 @@ link_format(ref)
  *	i)	lineno	line number
  *	r)		guide string
  */
-char *
+const char *
 generate_guide(lineno)
 	int lineno;
 {
@@ -348,7 +348,7 @@ generate_guide(lineno)
  *	i)	opt	
  *	r)		tooltip string
  */
-char *
+const char *
 tooltip(type, lno, opt)
 	int type;
 	int lno;
@@ -403,7 +403,7 @@ put_anchor(name, type, lineno)
 	int type;
 	int lineno;
 {
-	char *line;
+	const char *line;
 	int db;
 
 	if (type == 'R')
@@ -427,12 +427,12 @@ put_anchor(name, type, lineno)
 		 */
 		if (*line == ' ') {
 			char tmp[MAXPATHLEN];
-			char *id = strmake(++line, " ");
-			char *count = locatestring(line, " ", MATCH_FIRST) + 1;
-			char *dir, *file, *suffix = NULL;
+			const char *id = strmake(++line, " ");
+			const char *count = locatestring(line, " ", MATCH_FIRST) + 1;
+			const char *dir, *file, *suffix = NULL;
 
 			if (dynamic) {
-				char *s;
+				const char *s;
 
 				dir = (*action == '/') ? NULL : "..";
 				if (db == GTAGS)
@@ -459,7 +459,7 @@ put_anchor(name, type, lineno)
 			strbuf_puts(outbuf, gen_href_end());
 		} else {
 			char lno[32];
-			char *filename;
+			const char *filename;
 
 			strlimcpy(lno, strmake(line, " "), sizeof(lno));
 			filename = strmake(locatestring(line, " ", MATCH_FIRST) + 1, " ")
@@ -518,7 +518,7 @@ put_macro(word)
  */
 void
 unknown_preprocessing_directive(word, lineno)
-	char *word;
+	const char *word;
 	int lineno;
 {
 	word = strtrim(word, TRIM_ALL, NULL);
@@ -607,7 +607,7 @@ put_brace(text)
  * common procedure for line control.
  */
 static char lineno_format[32];
-static char *guide = NULL;
+static const char *guide = NULL;
 
 /*
  * Begin of line processing.
@@ -749,7 +749,7 @@ src2html(src, html, notsource)
          */
         if (notsource) {
 		STRBUF *sb = strbuf_open(0);
-		char *_;
+		const char *_;
 
 		fputs_nl(verbatim_begin, out);
 		last_lineno = 0;
@@ -792,7 +792,7 @@ src2html(src, html, notsource)
 		incref = get_included(basename);
 		if (incref) {
 			char s_id[32];
-			char *dir, *file, *suffix, *key, *title;
+			const char *dir, *file, *suffix, *key, *title;
 
 			fputs(header_begin, out);
 			if (incref->count > 1) {
@@ -806,9 +806,9 @@ src2html(src, html, notsource)
 				key = NULL;
 				title = tooltip('I', -1, s_count);
 			} else {
-				char *p = strbuf_value(incref->contents);
-				char *lno = strmake(p, " ");
-				char *filename;
+				const char *p = strbuf_value(incref->contents);
+				const char *lno = strmake(p, " ");
+				const char *filename;
 
 				p = locatestring(p, " ", MATCH_FIRST);
 				if (p == NULL)

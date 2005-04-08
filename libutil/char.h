@@ -23,6 +23,6 @@
 
 int isregexchar(int);
 int isregex(const char *);
-char *quote_string(const char *);
+const char *quote_string(const char *);
 
 #endif /* ! _CHAR_H_ */

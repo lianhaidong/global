@@ -27,7 +27,7 @@
 
 #define SYMBOL		0
 
-extern unsigned char *sp, *cp, *lp;
+extern const unsigned char *sp, *cp, *lp;
 extern int lineno;
 extern int crflag;
 extern int cmode;

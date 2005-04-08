@@ -29,6 +29,6 @@ typedef struct {
 ASSOC *assoc_open(int);
 void assoc_close(ASSOC *);
 void assoc_put(ASSOC *, const char *, const char *);
-char *assoc_get(ASSOC *, const char *);
+const char *assoc_get(ASSOC *, const char *);
 
 #endif /* ! _ASSOC_H_ */

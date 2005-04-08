@@ -30,7 +30,7 @@
  *
  *	r)		date and time
  */
-char *
+const char *
 now(void)
 {
 	static char buf[128];

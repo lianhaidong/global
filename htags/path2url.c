@@ -47,7 +47,7 @@ load_gpath(dbpath)
 	const char *dbpath;
 {
 	DBOP *dbop;
-	char *path;
+	const char *path;
 	int n;
 
 	assoc = assoc_open('a');
@@ -56,7 +56,7 @@ load_gpath(dbpath)
 	if (dbop == NULL)
 		die("cannot open '%s'.", makepath(dbpath, dbname(GPATH), NULL));
 	for (path = dbop_first(dbop, "./", NULL, DBOP_PREFIX | DBOP_KEY); path; path = dbop_next(dbop)) {
-		char *no = dbop_lastdat(dbop);
+		const char *no = dbop_lastdat(dbop);
 
 		path += 2;			/* remove './' */
 		assoc_put(assoc, path, no);
@@ -82,11 +82,12 @@ unload_gpath(void)
  *	i)	path	path name
  *	r)		id
  */
-char *
+const char *
 path2fid(path)
 	const char *path;
 {
-	static char number[32], *p;
+	static char number[32];
+	const char *p;
 
 	if (strlen(path) > MAXPATHLEN)
 		die("path name too long. '%s'", path);

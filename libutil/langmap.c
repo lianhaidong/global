@@ -79,7 +79,7 @@ const char *
 decide_lang(suffix)
 	const char *suffix;
 {
-	char *lang, *list, *tail;
+	const char *lang, *list, *tail;
 
 	list = strbuf_value(active_map);
 	tail = list + strbuf_getlen(active_map);

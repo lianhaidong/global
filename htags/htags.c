@@ -50,10 +50,10 @@
 #include "path2url.h"
 #include "const.h"
 
-void src2html(char *, char *, int);
+void src2html(const char *, const char *, int);
 int makedupindex(void);
-int makedefineindex(char *, int, STRBUF *);
-int makefileindex(char *, STRBUF *);
+int makedefineindex(const char *, int, STRBUF *);
+int makefileindex(const char *, STRBUF *);
 void makeincludeindex();
 
 #if defined(_WIN32) && !defined(__CYGWIN__)
@@ -65,12 +65,12 @@ void makeincludeindex();
  * Global data.
  */
 int w32 = W32;				/* Windows32 environment	*/
-char *www = "http://www.gnu.org/software/global/";
-char *include_header;
+const char *www = "http://www.gnu.org/software/global/";
+const char *include_header;
 int file_count = 0;
 int sep = '/';
-char *save_config;
-char *save_argv;
+const char *save_config;
+const char *save_argv;
 
 char cwdpath[MAXPATHLEN];
 char dbpath[MAXPATHLEN];
@@ -82,8 +82,8 @@ char sort_path[MAXFILLEN];
 char gtags_path[MAXFILLEN];
 char global_path[MAXFILLEN];
 char findcom[MAXFILLEN];
-char *null_device = NULL_DEVICE;
-char *tmpdir = "/tmp";
+const char *null_device = NULL_DEVICE;
+const char *tmpdir = "/tmp";
 
 /*
  * options
@@ -115,26 +115,26 @@ int enable_grep;			/* 1: enable grep		*/
 int enable_idutils;			/* 1: enable idutils		*/
 int enable_xhtml;			/* 1: enable XHTML		*/
 
-char *action_value;
-char *id_value;
-char *cgidir;
-char *main_func = "main";
-char *style_sheet;
-char *cvsweb_url;
-char *cvsweb_cvsroot;
-char *gtagslabel;
-char *title;
+const char *action_value;
+const char *id_value;
+const char *cgidir;
+const char *main_func = "main";
+const char *style_sheet;
+const char *cvsweb_url;
+const char *cvsweb_cvsroot;
+const char *gtagslabel;
+const char *title;
 
 /*
  * Constant values.
  */
-char *title_define_index = "DEFINITIONS";
-char *title_file_index = "FILES";
-char *title_included_from = "INCLUDED FROM";
+const char *title_define_index = "DEFINITIONS";
+const char *title_file_index = "FILES";
+const char *title_included_from = "INCLUDED FROM";
 /*
  * Function header items.
  */
-char *anchor_label[] = {
+const char *anchor_label[] = {
 	"&lt;",
 	"&gt;",
 	"^",
@@ -144,7 +144,7 @@ char *anchor_label[] = {
 	"index",
 	"help"
 };
-char *anchor_icons[] = {
+const char *anchor_icons[] = {
 	"left",
 	"right",
 	"first",
@@ -154,7 +154,7 @@ char *anchor_icons[] = {
 	"index",
 	"help"
 };
-char *anchor_comment[] = {
+const char *anchor_comment[] = {
 	"previous",
 	"next",
 	"first",
@@ -164,7 +164,7 @@ char *anchor_comment[] = {
 	"index",
 	"help"
 };
-char *anchor_msg[] = {
+const char *anchor_msg[] = {
 	"Previous definition.",
 	"Next definition.",
 	"First definition in this file.",
@@ -174,10 +174,10 @@ char *anchor_msg[] = {
 	"Return to index page.",
 	"You are seeing now."
 };
-char *back_icon = "back";
-char *dir_icon  = "dir";
-char *c_icon = "c";
-char *file_icon = "text";
+const char *back_icon = "back";
+const char *dir_icon  = "dir";
+const char *c_icon = "c";
+const char *file_icon = "text";
 
 /*
  * Configuration parameters.
@@ -187,26 +187,26 @@ int tabs = 8;				/* tab skip			*/
 char stabs[8];				/* tab skip (string)		*/
 int full_path = 0;			/* file index format		*/
 int map_file = 1;			/* 1: create MAP file		*/
-char *icon_list = NULL;			/* use icon list		*/
-char *icon_suffix = "png";		/* icon suffix (jpg, png etc)	*/
-char *icon_spec = "border='0' align='top'";/* parameter in IMG tag	*/
-char *prolog_script = NULL;		/* include script at first	*/
-char *epilog_script = NULL;		/* include script at last	*/
+const char *icon_list = NULL;		/* use icon list		*/
+const char *icon_suffix = "png";	/* icon suffix (jpg, png etc)	*/
+const char *icon_spec = "border='0' align='top'";/* parameter in IMG tag*/
+const char *prolog_script = NULL;	/* include script at first	*/
+const char *epilog_script = NULL;	/* include script at last	*/
 int show_position = 0;			/* show current position	*/
 int table_list = 0;			/* tag list using table tag	*/
 int colorize_warned_line = 0;		/* colorize warned line		*/
-char *script_alias = "/cgi-bin";	/* script alias of WWW server	*/
-char *gzipped_suffix = "ghtml";		/* suffix of gzipped html file	*/
-char *normal_suffix = "html";		/* suffix of normal html file	*/
-char *HTML;
-char *action = "cgi-bin/global.cgi";	/* default action		*/
-char *saction;				/* safe action			*/
-char *id = NULL;			/* id (default non)		*/
+const char *script_alias = "/cgi-bin";	/* script alias of WWW server	*/
+const char *gzipped_suffix = "ghtml";	/* suffix of gzipped html file	*/
+const char *normal_suffix = "html";	/* suffix of normal html file	*/
+const char *HTML;
+const char *action = "cgi-bin/global.cgi";/* default action		*/
+const char *saction;			/* safe action			*/
+const char *id = NULL;			/* id (default non)		*/
 int cgi = 1;				/* 1: make cgi-bin/		*/
 int definition_header=NO_HEADER;	/* (NO|BEFORE|RIGHT|AFTER)_HEADER */
-char *htags_options = NULL;
-char *include_file_suffixes = "h,hxx,hpp,H,inc.php";
-static char *langmap = DEFAULTLANGMAP;
+const char *htags_options = NULL;
+const char *include_file_suffixes = "h,hxx,hpp,H,inc.php";
+static const char *langmap = DEFAULTLANGMAP;
 
 static struct option const long_options[] = {
         {"alphabet", no_argument, NULL, 'a'},
@@ -316,8 +316,8 @@ generate_file(dist, file)
 	char *_;
 	int i;
         struct map {
-                char *name;
-                char *value;
+                const char *name;
+                const char *value;
         } tab[] = {
                 {"@page_begin@", NULL},
                 {"@page_end@", NULL},
@@ -375,11 +375,11 @@ generate_file(dist, file)
 	 * Read templete file and evaluate macros.
 	 */
 	while ((_ = strbuf_fgets(sb, ip, STRBUF_NOCRLF)) != NULL) {
-		char *p;
+		const char *p;
 
 		/* Pick up macro name */
 		for (p = _; !regexec(&preg, p, 2, pmatch, 0); p += pmatch[0].rm_eo) {
-			char *start = p + pmatch[0].rm_so;
+			const char *start = p + pmatch[0].rm_so;
 			int length = pmatch[0].rm_eo - pmatch[0].rm_so;
 
 			/* print before macro */
@@ -392,7 +392,7 @@ generate_file(dist, file)
 				die("something wrong.");
 			/* print macro value */
 			if (i < tabsize) {
-				char *q;
+				const char *q;
 				/*
 				 * Double quote should be quoted using '\\'.
 				 */
@@ -431,7 +431,7 @@ static void
 makebless(file)
 	const char *file;
 {
-	char *save = action;
+	const char *save = action;
 	action = saction;
 	generate_file(distpath, file);
 	action = save;
@@ -487,9 +487,9 @@ static void
 makehelp(file)
 	const char *file;
 {
-	char **label = icon_list ? anchor_comment : anchor_label;
-	char **icons = anchor_icons;
-	char **msg   = anchor_msg;
+	const char **label = icon_list ? anchor_comment : anchor_label;
+	const char **icons = anchor_icons;
+	const char **msg   = anchor_msg;
 	int n, last = 7;
 	FILE *op;
 
@@ -740,10 +740,9 @@ makehtml(total)
 	int total;
 {
 	FILE *ip;
-	char *_, *p;
+	const char *_;
 	int count = 0;
-	char command[MAXFILLEN];
-	char path[MAXPATHLEN];
+	char command[MAXFILLEN], path[MAXPATHLEN];
 	STRBUF *sb = strbuf_open(0);
 
 	if (other_files && !dynamic)
@@ -755,6 +754,7 @@ makehtml(total)
 		die("cannot execute command '%s'.", command);
 	while ((_ = strbuf_fgets(sb, ip, STRBUF_NOCRLF)) != NULL) {
 		int notsource = 0;
+		const char *p;
 
 		if (*_ == ' ') {
 			if (!other_files)
@@ -845,7 +845,7 @@ makecommonpart(title, defines, files)
 	STRBUF *sb = strbuf_open(0);
 	STRBUF *ib = strbuf_open(0);
 	char command[MAXFILLEN];
-	char *_;
+	const char *_;
 
 	if (include_header) {
 		strbuf_puts_nl(sb, include_header);
@@ -939,7 +939,7 @@ makecommonpart(title, defines, files)
 static void
 basic_check(void)
 {
-	char *p;
+	const char *p;
 
 	/*
 	 * COMMAND EXISTENCE CHECK
@@ -1129,11 +1129,11 @@ configuration(argc, argv)
 		p = strdup(strbuf_value(sb));
 		if (p == NULL)
 			die("short of memory.");
-		script_alias = p;
 		/* remove the last '/' */
-		p = script_alias + strlen(script_alias) - 1;
-		if (*p == '/')
-			*p = '\0';
+		q = p + strlen(p) - 1;
+		if (*q == '/')
+			*q = '\0';
+		script_alias = p;
 	}
 	if (getconfb("symbols"))	/* for backward compatibility */
 		symbol = 1;
@@ -1322,7 +1322,7 @@ save_environment(argc, argv)
 	STRBUF *save_c = strbuf_open(0);
 	STRBUF *save_a = strbuf_open(0);
 	int i;
-	char *p;
+	const char *p;
 	FILE *ip;
 
 	/*
@@ -1390,10 +1390,10 @@ append_options(argc, argv)
 {
 
 	STRBUF *sb = strbuf_open(0);
-	char *p, *opt = strdup(htags_options);
+	const char *p, *opt = strdup(htags_options);
 	int count = 1;
 	int quote = 0;
-	char **newargv;
+	const char **newargv;
 	int i = 0, j = 1;
 
 	if (!opt)
@@ -1422,7 +1422,7 @@ append_options(argc, argv)
 			strbuf_putc(sb, *p);
 		}
 	}
-	newargv = (char **)malloc(sizeof(char *) * (*argc + count + 1));
+	newargv = (const char **)malloc(sizeof(char *) * (*argc + count + 1));
 	if (!newargv)
 		die("Short of memory.");
 	newargv[i++] = argv[0];
@@ -1434,7 +1434,7 @@ append_options(argc, argv)
 	while (j < *argc)
 		newargv[i++] = argv[j++];
 	newargv[i] = NULL;
-	argv = newargv;
+	argv = (char **)newargv;
 	*argc = i;
 #ifdef DEBUG
 	for (i = 0; i < *argc; i++)
@@ -1449,10 +1449,10 @@ main(argc, argv)
         int argc;
         char *argv[];
 {
-	char *path, *av = NULL;
+	const char *path, *av = NULL;
 	int func_total, file_total;
         char arg_dbpath[MAXPATHLEN];
-	char *index = NULL;
+	const char *index = NULL;
 	int optchar;
         int option_index = 0;
 	time_t start_time, end_time, start_all_time, end_all_time,
@@ -1946,7 +1946,7 @@ main(argc, argv)
 			message(" gzipped files. (Please see 'HTML/.htaccess')\n");
 		}
 		if (fflag || dynamic) {
-			char *path = (*action == '/') ? makepath("DOCUMENT_ROOT", action, NULL) : makepath("HTML", action, NULL);
+			const char *path = (*action == '/') ? makepath("DOCUMENT_ROOT", action, NULL) : makepath("HTML", action, NULL);
 
 			message(" You need to setup http server so that %s", path);
 			message(" is executed as a CGI script. (DOCUMENT_ROOT means WWW server's data root.)\n");

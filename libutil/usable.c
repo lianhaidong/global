@@ -57,7 +57,8 @@ usable(command)
 	const char *command;
 {
 	STRBUF *sb;
-	char *p, *dir;
+	char *p;
+	const char *dir;
 	static char path[MAXPATHLEN+1];
 
 #if defined(_WIN32) || defined(__DJGPP__)

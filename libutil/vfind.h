@@ -22,7 +22,7 @@
 #define _VFIND_H_
 
 void vfind_open(const char *, int);
-char *vfind_read(void);
+const char *vfind_read(void);
 void vfind_close(void);
 
 #endif /* ! _VFIND_H_ */

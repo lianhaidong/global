@@ -38,7 +38,7 @@
 		p++;							\
 } while (0)
 
-char *strmake(const char *, const char *);
-char *strtrim(const char *, int, int *);
+const char *strmake(const char *, const char *);
+const char *strtrim(const char *, int, int *);
 
 #endif /* ! _STRMAKE_H_ */

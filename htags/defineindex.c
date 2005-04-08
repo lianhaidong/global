@@ -55,12 +55,11 @@ makedefineindex(file, total, defines)
 	FILE *DEFINES, *old, *STDOUT, *TAGS, *ALPHA = NULL;
 	STRBUF *sb = strbuf_open(0);
 	STRBUF *url = strbuf_open(0);
-	char *_;
-	char command[1024], buf[1024], alpha[32], alpha_f[32];
 	/* Index link */
-	char *target = (Fflag) ? "mains" : "_top";
-	char *indexlink;
-	char *index_string = "Index Page";
+	const char *target = (Fflag) ? "mains" : "_top";
+	const char *indexlink;
+	const char *index_string = "Index Page";
+	char command[1024], buf[1024], alpha[32], alpha_f[32], *_;
 
 	if (!aflag && !Fflag)
 		indexlink = "mains";
@@ -106,14 +105,14 @@ makedefineindex(file, total, defines)
 		die("cannot fork.");
 	alpha[0] = '\0';
 	while ((_ = strbuf_fgets(sb, TAGS, STRBUF_NOCRLF)) != NULL) {
-		char *line, *tag;
+		const char *tag, *line;
 		char guide[1024], url_for_map[1024];
 
 		count++;
 		tag = _;
 		message(" [%d/%d] adding %s", count, total, tag);
 		if (aflag && (alpha[0] == '\0' || strncmp(tag, alpha, strlen(alpha)))) {
-			char *msg = (alpha_count == 1) ? "definition is contained." : "definitions are contained.";
+			const char *msg = (alpha_count == 1) ? "definition is contained." : "definitions are contained.";
 			int c;
 
 			if (alpha[0]) {
@@ -212,9 +211,9 @@ makedefineindex(file, total, defines)
 			die("internal error in makedefineindex()."); 
 		if (*line == ' ') {
 			SPLIT ptable;
-			char *fid, *enumber;
+			const char *fid, *enumber;
 
-			if (split(line + 1, 2, &ptable) < 2) {
+			if (split((char *)line + 1, 2, &ptable) < 2) {
 				recover(&ptable);
 				die("too small number of parts in makedefineindex().\n'%s'", line);
 			}
@@ -239,9 +238,9 @@ makedefineindex(file, total, defines)
 			recover(&ptable);
 		} else {
 			SPLIT ptable;
-			char *lno, *fid, *path;
+			const char *lno, *fid, *path;
 
-			if (split(line, 3, &ptable) < 3) {
+			if (split((char *)line, 3, &ptable) < 3) {
 				recover(&ptable);
 				die("too small number of parts in makedefineindex().\n'%s'", line);
 			}
@@ -276,7 +275,7 @@ makedefineindex(file, total, defines)
 	STDOUT = old;
 	if (aflag && alpha[0]) {
 		char tmp[128];
-		char *msg = (alpha_count == 1) ? "definition is contained." : "definitions are contained.";
+		const char *msg = (alpha_count == 1) ? "definition is contained." : "definitions are contained.";
 
 		snprintf(tmp, sizeof(tmp), "%d %s", alpha_count, msg);
 		strbuf_puts(defines, gen_href_begin_with_title("defines", alpha_f, HTML, NULL, tmp));

@@ -36,11 +36,11 @@
 /*
  * Data for each tag file.
  *
- *				GTAGS         GRTAGS       GSYMS
+ *				      GTAGS         GRTAGS       GSYMS
  */
-static char *dirs[]    = {NULL, DEFS,         REFS,        SYMS};
-static char *kinds[]   = {NULL, "definition", "reference", "symbol"};
-static char *options[] = {NULL, "",           "r",         "s"};
+static const char *dirs[]    = {NULL, DEFS,         REFS,        SYMS};
+static const char *kinds[]   = {NULL, "definition", "reference", "symbol"};
+static const char *options[] = {NULL, "",           "r",         "s"};
 
 static char command[MAXFILLEN];
 
@@ -107,15 +107,12 @@ makedupindex(void)
 
 	snprintf(srcdir, sizeof(srcdir), "../%s", SRCS);
 	for (db = GTAGS; db < GTAGLIM; db++) {
-		char *kind = kinds[db];
-		char *option = options[db];
-		char tag[IDENTLEN], prev[IDENTLEN];
-		char first_line[MAXBUFLEN];
+		const char *kind = kinds[db];
+		const char *option = options[db];
 		int writing = 0;
 		int count = 0;
 		int entry_count = 0;
-		char command[MAXFILLEN];
-		char *_;
+		char *_, tag[IDENTLEN], prev[IDENTLEN], first_line[MAXBUFLEN], command[MAXFILLEN];
 
 		if (!symbol && db == GSYMS)
 			continue;

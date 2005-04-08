@@ -41,7 +41,7 @@ void openconf(void);
 int getconfn(const char *, int *);
 int getconfs(const char *, STRBUF *);
 int getconfb(const char *);
-char *getconfline(void);
+const char *getconfline(void);
 void closeconf(void);
 
 #endif /* ! _CONF_H_ */

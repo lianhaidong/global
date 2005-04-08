@@ -66,7 +66,7 @@ anchor_load(file)
 	const char *file;
 {
 	char command[MAXFILLEN];
-	char *options[] = {NULL, "", "r", "s"};
+	const char *options[] = {NULL, "", "r", "s"};
 	STRBUF *sb = strbuf_open(0);
 	FILE *ip;
 	int i, db;
@@ -101,7 +101,7 @@ anchor_load(file)
 				die("too small number of parts in anchor_load().\n'%s'", _);
 			}
 			if (db == GTAGS) {
-				char *p;
+				const char *p;
 
 				for (p = ptable.part[PART_LINE].start; *p && isspace((unsigned char)*p); p++)
 					;

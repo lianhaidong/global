@@ -42,7 +42,7 @@
  * Note: The result string area is function local. So, following call
  *	 to this function may destroy the area.
  */
-char *
+const char *
 strmake(p, lim)
 	const char *p;
 	const char *lim;
@@ -82,7 +82,7 @@ end:
  * Note: The result string area is function local. So, following call
  *	 to this function may destroy the area.
  */
-char *
+const char *
 strtrim(p, flag, len)
 	const char *p;
 	int flag;

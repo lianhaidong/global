@@ -29,14 +29,14 @@
 #define NEXTKEY		" __.NEXTKEY"
 
 int gpath_open(const char *, int, int);
-char *gpath_path2fid(const char *);
-char *gpath_fid2path(const char *);
+const char *gpath_path2fid(const char *);
+const char *gpath_fid2path(const char *);
 void gpath_put(const char *);
 void gpath_delete(const char *);
 void gpath_close(void);
 int gpath_nextkey(void);
 void gfind_open(const char *, const char *);
-char *gfind_read(void);
+const char *gfind_read(void);
 void gfind_close(void);
 
 #endif /* ! _PATHOP_H_ */

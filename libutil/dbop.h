@@ -61,13 +61,13 @@ typedef	struct {
 #define DBOP_PREFIX	2		/* prefixed read		*/
 
 DBOP *dbop_open(const char *, int, int, int);
-char *dbop_get(DBOP *, const char *);
+const char *dbop_get(DBOP *, const char *);
 void dbop_put(DBOP *, const char *, const char *);
 void dbop_delete(DBOP *, const char *);
 void dbop_update(DBOP *, const char *, const char *);
-char *dbop_first(DBOP *, const char *, regex_t *, int);
-char *dbop_next(DBOP *);
-char *dbop_lastdat(DBOP *);
+const char *dbop_first(DBOP *, const char *, regex_t *, int);
+const char *dbop_next(DBOP *);
+const char *dbop_lastdat(DBOP *);
 void dbop_close(DBOP *);
 
 #endif /* _DBOP_H_ */

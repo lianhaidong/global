@@ -125,7 +125,7 @@ dbop_open(path, mode, perm, flags)
  *	i)	name	name
  *	r)		pointer to data
  */
-char *
+const char *
 dbop_get(dbop, name)
 	DBOP *dbop;
 	const char *name;
@@ -147,7 +147,7 @@ dbop_get(dbop, name)
 	case RET_SPECIAL:
 		return (NULL);
 	}
-	return((char *)dat.data);
+	return(dat.data);
 }
 /*
  * dbop_put: put data by a key.
@@ -238,7 +238,7 @@ dbop_update(dbop, key, dat)
  *					only valied when sequential read
  *	r)		data
  */
-char	*
+const char *
 dbop_first(dbop, name, preg, flags)
 	DBOP *dbop;
 	const char *name;
@@ -314,7 +314,7 @@ dbop_first(dbop, name, preg, flags)
  *
  * Db_next always skip meta records.
  */
-char *
+const char *
 dbop_next(dbop)
 	DBOP *dbop;
 {
@@ -358,7 +358,7 @@ dbop_next(dbop)
  *	i)	dbop	dbop descripter
  *	r)		last data
  */
-char *
+const char *
 dbop_lastdat(dbop)
 	DBOP *dbop;
 {

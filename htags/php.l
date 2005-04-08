@@ -123,7 +123,7 @@ WORD		{ALPHA}{ALPHANUM}*
 			*p = '\0';
 			if (c == sep) {
 				struct data *inc;
-				char *basename = locatestring(path, "/", MATCH_LAST);
+				const char *basename = locatestring(path, "/", MATCH_LAST);
 
 				if (basename)
 					basename++;
@@ -146,7 +146,7 @@ WORD		{ALPHA}{ALPHANUM}*
 <PHP,STRING>\${WORD}	 |
 <PHP,STRING>\$\{{WORD}\} {
 		struct anchor *a = NULL;
-		char *p = LEXTEXT + 1;	/* skip '$' */
+		const char *p = LEXTEXT + 1;	/* skip '$' */
 		int brace = 0, i = 0;
 
 		/*

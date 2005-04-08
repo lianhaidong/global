@@ -171,7 +171,7 @@ linetable_print(op, lineno)
 	FILE *op;
 	int lineno;
 {
-	char *s, *p;
+	const char *s, *p;
 
 	if (lineno <= 0)
 		die("linetable_print: line number must >= 1 (lineno = %d)", lineno);

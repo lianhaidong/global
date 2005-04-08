@@ -42,7 +42,7 @@ const char *gozillarc = ".gozillarc";
 const char *dos_gozillarc = "_gozillarc";
 #endif
 
-static char *alias(const char *);
+static const char *alias(const char *);
 int main(int, char **);
 void getdefinitionURL(const char *, STRBUF *);
 void getURL(const char *, STRBUF *);
@@ -92,13 +92,14 @@ help(void)
  * |f = file:/usr/share/xxx.html
  * |www	http://www.xxx.yyy/
  */
-static char *
+static const char *
 alias(alias_name)
 	const char *alias_name;
 {
 	FILE *ip;
 	STRBUF *sb = strbuf_open(0);
-	char *p, *alias = NULL;
+	char *p;
+	const char *alias = NULL;
 	int flag = STRBUF_NOCRLF;
 
 	if (!(p = get_home_directory()))
@@ -156,9 +157,8 @@ main(argc, argv)
 	int argc;
 	char *argv[];
 {
-	char c, *p;
-	char *browser = NULL;
-	char *definition = NULL;
+	char c;
+	const char *p, *browser = NULL, *definition = NULL;
 	STRBUF *arg = strbuf_open(0);
 	STRBUF *URL = strbuf_open(0);
 
@@ -328,7 +328,7 @@ getdefinitionURL(arg, URL)
 		dbop = dbop_open(path, 0, 0, 0);
 	}
 	if (dbop) {
-		if ((p = dbop_get(dbop, arg)) != NULL) {
+		if ((p = (char *)dbop_get(dbop, arg)) != NULL) {
 			if (split(p, 2, &ptable) != 2)
 				die("illegal format.");
 			status = 0;

@@ -92,9 +92,9 @@ int gtagslabel;
 int other_files;
 int debug;
 int secure_mode;
-char *extra_options;
-char *info_string;
-char *sed_string;
+const char *extra_options;
+const char *info_string;
+const char *sed_string;
 
 int extractmethod;
 int total;
@@ -148,7 +148,7 @@ static struct option const long_options[] = {
  */
 int exitflag = 0;
 
-static char *langmap = DEFAULTLANGMAP;
+static const char *langmap = DEFAULTLANGMAP;
 
 void
 onintr(signo)
@@ -214,7 +214,7 @@ main(argc, argv)
 					sed_string = optarg;
 			} else if (gtagsconf || gtagslabel) {
 				char value[MAXPATHLEN+1];
-				char *name = (gtagsconf) ? "GTAGSCONF" : "GTAGSLABEL";
+				const char *name = (gtagsconf) ? "GTAGSCONF" : "GTAGSLABEL";
 
 				if (gtagsconf) {
 					if (realpath(optarg, value) == NULL)
@@ -278,7 +278,8 @@ main(argc, argv)
 		exit(0);
 	} else if (do_convert) {
 		STRBUF *ib = strbuf_open(MAXBUFLEN);
-		char *p, *q, *fid;
+		const char *fid;
+		char *p, *q;
 		int c;
 
 		/*
@@ -399,8 +400,8 @@ main(argc, argv)
 		 * files but also other files in GPATH in the future.
 		 * But it needs adding a new format version.
 		 */
-		char *path;
-		char *local = (argc) ? argv[0] : NULL;
+		const char *path;
+		const char *local = (argc) ? argv[0] : NULL;
 
 		for (vfind_open(local, other_files); (path = vfind_read()) != NULL; ) {
 			fputs(path, stdout);
@@ -415,7 +416,7 @@ main(argc, argv)
 		 * 'sed "s@<path>@fid@"'.
 		 */
 		STRBUF *ib = strbuf_open(MAXBUFLEN);
-		char *ctags_x;
+		const char *ctags_x;
 
 		while ((ctags_x = strbuf_fgets(ib, stdin, 0)) != NULL) {
 			char *p = locatestring(ctags_x, "./", MATCH_FIRST);
@@ -447,7 +448,7 @@ main(argc, argv)
 		 */
 		int unit = 1500;
 		STRBUF *ib = strbuf_open(MAXBUFLEN);
-		char *line = strbuf_fgets(ib, stdin, 0);
+		const char *line = strbuf_fgets(ib, stdin, 0);
 
 		while (line != NULL) {
 			int count = 0;
@@ -458,7 +459,7 @@ main(argc, argv)
 			if (line) {
 				/* curtag = current tag name */
 				STRBUF *curtag = strbuf_open(0);
-				char *p = line;
+				const char *p = line;
 				while (!isspace(*p))
 					strbuf_putc(curtag, *p++);
 				/* read until next tag name */
@@ -492,8 +493,8 @@ main(argc, argv)
 		 * main      22 /prj/xxx/libc/func.c   main(argc, argv)\n
 		 */
 		STRBUF *ib = strbuf_open(MAXBUFLEN);
-		char *root = argv[0];
-		char *cwd = argv[1];
+		const char *root = argv[0];
+		const char *cwd = argv[1];
 
 		if (argc < 2)
 			die("do_relative: 2 arguments needed.");
@@ -558,7 +559,7 @@ main(argc, argv)
 	 */
 	strbuf_reset(sb);
 	if (getconfs("langmap", sb)) {
-		char *p = strdup(strbuf_value(sb));
+		const char *p = strdup(strbuf_value(sb));
 		if (p == NULL)
 			die("short of memory.");
 		langmap = p;
@@ -678,7 +679,7 @@ incremental(dbpath, root)
 	STRBUF *updatelist = strbuf_open(0);
 	STRBUF *deletelist = strbuf_open(0);
 	int updated = 0;
-	char *path;
+	const char *path;
 
 	if (vflag) {
 		fprintf(stderr, " Tag found in '%s'.\n", dbpath);
@@ -732,9 +733,9 @@ incremental(dbpath, root)
 	 */
 	signal_setup();
 	if (strbuf_getlen(updatelist) > 0) {
-		char *start = strbuf_value(updatelist);
-		char *end = start + strbuf_getlen(updatelist);
-		char *p;
+		const char *start = strbuf_value(updatelist);
+		const char *end = start + strbuf_getlen(updatelist);
+		const char *p;
 
 		for (p = start; p < end; p += strlen(p) + 1) {
 			updatetags(dbpath, root, p, 0);
@@ -744,9 +745,9 @@ incremental(dbpath, root)
 		updated = 1;
 	}
 	if (strbuf_getlen(addlist) > 0) {
-		char *start = strbuf_value(addlist);
-		char *end = start + strbuf_getlen(addlist);
-		char *p;
+		const char *start = strbuf_value(addlist);
+		const char *end = start + strbuf_getlen(addlist);
+		const char *p;
 
 		for (p = start; p < end; p += strlen(p) + 1) {
 			updatetags(dbpath, root, p, 1);
@@ -756,9 +757,9 @@ incremental(dbpath, root)
 		updated = 1;
 	}
 	if (strbuf_getlen(deletelist) > 0) {
-		char *start = strbuf_value(deletelist);
-		char *end = start + strbuf_getlen(deletelist);
-		char *p;
+		const char *start = strbuf_value(deletelist);
+		const char *end = start + strbuf_getlen(deletelist);
+		const char *p;
 
 		for (p = start; p < end; p += strlen(p) + 1) {
 			updatetags(dbpath, root, p, 2);
@@ -885,10 +886,10 @@ createtags(dbpath, root, db)
 	const char *root;
 	int db;
 {
-	char *path;
+	const char *path;
 	GTOP *gtop;
 	int flags;
-	char *comline;
+	const char *comline;
 	STRBUF *sb = strbuf_open(0);
 	int count = 0;
 
@@ -962,7 +963,7 @@ createtags(dbpath, root, db)
 	total = count;				/* save total count */
 	find_close();
 	gtags_close(gtop);
-	free(comline);
+	free((void *)comline);
 	strbuf_close(sb);
 }
 /*
@@ -1051,8 +1052,8 @@ put_converting(line, absolute, cxref)
 	if (absolute) {
 		(void)fputs(strbuf_value(abspath), stdout);
 	} else {
-		char *a = strbuf_value(abspath);
-		char *b = basedir;
+		const char *a = strbuf_value(abspath);
+		const char *b = basedir;
 #if defined(_WIN32) || defined(__DJGPP__)
 		/* skip drive char in 'c:/usr/bin' */
 		while (*a != '/')

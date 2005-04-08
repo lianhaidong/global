@@ -42,7 +42,7 @@
  *      i)      uniq    unique character
  *      r)              temporary file name
  */
-static char *
+static const char *
 get_tmpfile(uniq)
         int uniq;
 {
@@ -64,7 +64,7 @@ assoc_open(c)
 	int c;
 {
 	ASSOC *assoc = (ASSOC *)malloc(sizeof(ASSOC));
-	char *tmpfile = get_tmpfile(c);
+	const char *tmpfile = get_tmpfile(c);
 
 	if (!assoc)
 		die("short of memory.");
@@ -114,16 +114,12 @@ assoc_put(assoc, name, value)
  *	i)	name	name
  *	r)		value
  */
-char *
+const char *
 assoc_get(assoc, name)
 	ASSOC *assoc;
 	const char *name;
 {
-	char *p;
-
 	if (assoc->dbop == NULL)
 		abort();
-	p = dbop_get(assoc->dbop, name);
-
-	return p;
+	return dbop_get(assoc->dbop, name);
 }

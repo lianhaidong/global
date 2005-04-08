@@ -53,9 +53,9 @@
 #include "strmake.h"
 #include "tab.h"
 
-static char	*unpack_pathindex(const char *);
-static char	*genrecord(GTOP *);
-static int	belongto(GTOP *, const char *, const char *);
+static const char *unpack_pathindex(const char *);
+static const char *genrecord(GTOP *);
+static int belongto(GTOP *, const char *, const char *);
 static regex_t reg;
 
 /*
@@ -132,7 +132,7 @@ makecommand(comline, path, sb)
 	const char *path;
 	STRBUF *sb;
 {
-	char *p = locatestring(comline, "%s", MATCH_FIRST);
+	const char *p = locatestring(comline, "%s", MATCH_FIRST);
 
 	if (p) {
 		strbuf_nputs(sb, comline, p - comline);
@@ -171,7 +171,7 @@ formatcheck(line, format)
 	int format;
 {
 	int n;
-	char *p;
+	const char *p;
 	SPLIT ptable;
 
 	/*
@@ -306,7 +306,7 @@ gtags_open(dbpath, root, db, mode, flags)
 		 * if 'format version record' is not found, it's assumed
 		 * version 1.
 		 */
-		char *p;
+		const char *p;
 
 		if ((p = dbop_get(gtop->dbop, VERSIONKEY)) != NULL) {
 			for (p += strlen(VERSIONKEY); *p && isspace(*p); p++)
@@ -358,7 +358,7 @@ gtags_put(gtop, tag, record)
 	const char *tag;
 	const char *record;		/* virtually const */
 {
-	char *line, *path;
+	const char *line, *path;
 	SPLIT ptable;
 
 	if (gtop->format == GTAGS_STANDARD || gtop->format == GTAGS_PATHINDEX) {
@@ -416,11 +416,11 @@ gtags_add(gtop, comline, path, flags)
 	const char *path;
 	int flags;
 {
-	char *ctags_x;
+	const char *ctags_x;
 	FILE *ip;
 	STRBUF *sb = strbuf_open(0);
 	STRBUF *ib = strbuf_open(MAXBUFLEN);
-	char *fid;
+	const char *fid;
 
 	/*
 	 * add path index if not yet.
@@ -506,7 +506,7 @@ belongto(gtop, path, line)
 	const char *path;
 	const char *line;		/* virtually const */
 {
-	char *p = NULL;
+	const char *p = NULL;
 	int status, n;
 	SPLIT ptable;
 
@@ -540,7 +540,7 @@ gtags_delete(gtop, path)
 	GTOP *gtop;
 	const char *path;
 {
-	char *p;
+	const char *p;
 	/*
 	 * In compact format, a path is saved as a file number.
 	 */
@@ -572,17 +572,16 @@ gtags_delete(gtop, path)
  *			GTOP_BASICREGEX	use basic regular expression.
  *	r)		record
  */
-char *
+const char *
 gtags_first(gtop, pattern, flags)
 	GTOP *gtop;
 	const char *pattern;
 	int flags;
 {
 	int dbflags = 0;
-	char *line;
 	char prefix[IDENTLEN+1];
 	regex_t *preg = &reg;
-	const char *key, *p;
+	const char *key, *p, *line;
 	int regflags = 0;
 
 	gtop->flags = flags;
@@ -627,7 +626,7 @@ gtags_first(gtop, pattern, flags)
 	/*
 	 * Compact format.
 	 */
-	gtop->line = line;			/* gtop->line = $0 */
+	gtop->line = (char *)line;		/* gtop->line = $0 */
 	gtop->opened = 0;
 	return genrecord(gtop);
 }
@@ -638,11 +637,11 @@ gtags_first(gtop, pattern, flags)
  *	r)		record
  *			NULL end of tag
  */
-char *
+const char *
 gtags_next(gtop)
 	GTOP *gtop;
 {
-	char *line;
+	const char *line;
 	/*
 	 * If it is standard format or only key.
 	 * Just return it.
@@ -668,7 +667,7 @@ gtags_next(gtop)
 	 */
 	if ((line = dbop_next(gtop->dbop)) == NULL)
 		return line;
-	gtop->line = line;			/* gtop->line = $0 */
+	gtop->line = (char *)line;		/* gtop->line = $0 */
 	gtop->opened = 0;
 	return genrecord(gtop);
 }
@@ -697,14 +696,14 @@ gtags_close(gtop)
  *
  *	i)	line	tag line
  */
-static char *
+static const char *
 unpack_pathindex(line)
 	const char *line;		/* virtually const */
 {
 	STATIC_STRBUF(output);
 	SPLIT ptable;
 	int n;
-	char *path;
+	const char *path;
 
 	n = split((char *)line, 4, &ptable);
 	if (n < 4) {
@@ -734,7 +733,7 @@ unpack_pathindex(line)
  *	io)	gtop	GTOP structure
  *	r)		tag line
  */
-static char *
+static const char *
 genrecord(gtop)
 	GTOP *gtop;
 {
@@ -742,13 +741,13 @@ genrecord(gtop)
 	static char output[MAXBUFLEN+1];
 	char path[MAXPATHLEN+1];
 	static char buf[1];
-	char *buffer = buf;
-	char *lnop;
+	const char *buffer = buf;
+	const char *lnop;
 	int tagline;
 
 	if (!gtop->opened) {
 		int n;
-		char *p;
+		const char *p;
 
 		gtop->opened = 1;
 		n = split(gtop->line, 3, &ptable);
@@ -766,7 +765,7 @@ genrecord(gtop)
 		 */
 		p = ptable.part[1].start;
 		if (gtop->format & GTAGS_PATHINDEX) {
-			char *q;
+			const char *q;
 			if ((q = gpath_fid2path(p)) == NULL)
 				die("GPATH is corrupted.('%s' not found)", p);
 			p = q;

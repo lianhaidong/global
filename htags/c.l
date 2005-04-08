@@ -129,7 +129,7 @@ YACC_IDENTIFIER	({ALPHA}|\.)({ALPHANUM}|\.)*
 			*p = '\0';
 			if (c == sep) {
 				struct data *inc;
-				char *basename = locatestring(path, "/", MATCH_LAST);
+				const char *basename = locatestring(path, "/", MATCH_LAST);
 
 				if (basename)
 					basename++;

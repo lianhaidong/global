@@ -126,12 +126,12 @@ prepare_source(void)
 		die("short of memory.");
 	trim(sufflist);
 	{
-		char *suffp;
+		const char *suffp;
 
 		strbuf_reset(sb);
 		strbuf_puts(sb, "\\.(");       /* ) */
 		for (suffp = sufflist; suffp; ) {
-			char *p;
+			const char *p;
 
 			for (p = suffp; *p && *p != ','; p++) {
 				if (!isalnum(*p))
@@ -286,7 +286,7 @@ int
 skipthisfile(path)
 	const char *path;
 {
-	char *first, *last;
+	const char *first, *last;
 	int i;
 
 	/*
@@ -425,7 +425,7 @@ find_read(void)
 	for (;;) {
 		while (curp->p < curp->end) {
 			char type = *(curp->p);
-			char *unit = curp->p + 1;
+			const char *unit = curp->p + 1;
 
 			curp->p += strlen(curp->p) + 1;
 			if (type == 'f' || type == 'l') {

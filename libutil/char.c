@@ -78,7 +78,7 @@ isregex(s)
  *
  *	'aaa' => \'\a\a\a\'
  */
-char *
+const char *
 quote_string(s)
 	const char *s;
 {

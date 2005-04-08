@@ -79,7 +79,7 @@ typedef struct {
 	STRBUF *sb;			/* string buffer */
 	STRBUF *ib;			/* input buffer */
 	FILE *fp;			/* descriptor of 'path' */
-	char *lnop;			/* current line number */
+	const char *lnop;		/* current line number */
 	int lno;			/* integer value of 'lnop' */
 } GTOP;
 
@@ -89,11 +89,11 @@ void formatcheck(const char *, int);
 int notnamechar(const char *);
 GTOP *gtags_open(const char *, const char *, int, int, int);
 void gtags_put(GTOP *, const char *, const char *);
-char *gtags_get(GTOP *, const char *);
+const char *gtags_get(GTOP *, const char *);
 void gtags_add(GTOP *, const char *, const char *, int);
 void gtags_delete(GTOP *, const char *);
-char *gtags_first(GTOP *, const char *, int);
-char *gtags_next(GTOP *);
+const char *gtags_first(GTOP *, const char *, int);
+const char *gtags_next(GTOP *);
 void gtags_close(GTOP *);
 
 #endif /* ! _GTOP_H_ */

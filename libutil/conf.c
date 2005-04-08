@@ -57,7 +57,7 @@ static int allowed_nest_level = 8;
 static int opened;
 
 static void trim(char *);
-static char *readrecord(const char *);
+static const char *readrecord(const char *);
 static void includelabel(STRBUF *, const char *, int);
 
 #ifndef isblank
@@ -112,7 +112,7 @@ trim(l)
  * o append following line.
  * o format check.
  */
-static char *
+static const char *
 readrecord(label)
 	const char *label;
 {
@@ -135,7 +135,7 @@ readrecord(label)
 		}
 		trim(p);
 		for (;;) {
-			char *candidate;
+			const char *candidate;
 			/*
 			 * pick up candidate.
 			 */
@@ -173,13 +173,13 @@ readrecord(label)
  *	i)	label	record label
  *	i)	level	nest level for check
  */
-static	void
+static void
 includelabel(sb, label, level)
 	STRBUF	*sb;
 	const char *label;
 	int	level;
 {
-	char *savep, *p, *q;
+	const char *savep, *p, *q;
 
 	if (++level > allowed_nest_level)
 		die("nested include= (or tc=) over flow.");
@@ -197,7 +197,7 @@ includelabel(sb, label, level)
 		strbuf_close(inc);
 	}
 	strbuf_puts(sb, p);
-	free(savep);
+	free((void *)savep);
 }
 /*
  * configpath: get path of configuration file.
@@ -206,7 +206,7 @@ static char *
 configpath(void)
 {
 	STATIC_STRBUF(sb);
-	char *p;
+	const char *p;
 
 	strbuf_clear(sb);
 	/*
@@ -244,7 +244,7 @@ void
 openconf(void)
 {
 	STRBUF *sb;
-	char *config;
+	const char *config;
 	extern int vflag;
 
 	assert(opened == 0);
@@ -308,7 +308,7 @@ openconf(void)
 
 	if (!getconfs("suffixes", NULL)) {
 		STRBUF *tmp = strbuf_open(0);
-		char *langmap = NULL;
+		const char *langmap = NULL;
 
 		/*
 		 * Variable 'suffixes' is obsoleted. But it is generated
@@ -332,7 +332,7 @@ openconf(void)
 	 * (Otherwise, nothing to do for gtags.)
 	 */
 	if (!getconfs("GTAGS", NULL) && !getconfs("GRTAGS", NULL) && !getconfs("GSYMS", NULL)) {
-		char *path;
+		const char *path;
 
 		/*
 		 * usable search in BINDIR at first.
@@ -377,7 +377,7 @@ getconfn(name, num)
 	const char *name;
 	int *num;
 {
-	char *p;
+	const char *p;
 	char buf[MAXPROPLEN+1];
 
 	if (!opened)
@@ -403,7 +403,7 @@ getconfs(name, sb)
 	const char *name;
 	STRBUF *sb;
 {
-	char *p;
+	const char *p;
 	char buf[MAXPROPLEN+1];
 	int all = 0;
 	int exist = 0;
@@ -464,7 +464,7 @@ getconfb(name)
 /*
  * getconfline: print loaded config entry.
  */
-char *
+const char *
 getconfline(void)
 {
 	if (!opened)

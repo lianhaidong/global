@@ -91,7 +91,7 @@ cache_put(db, tag, line)
  *	i)	tag	tag name
  *	r)		tag line
  */
-char *
+const char *
 cache_get(db, tag)
 	int db;
 	const char *tag;

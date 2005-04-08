@@ -64,7 +64,7 @@ void ffformat(char *, int, const char *);
 
 STRBUF *sortfilter;			/* sort filter		*/
 STRBUF *pathfilter;			/* path convert filter	*/
-char *localprefix;			/* local prefix		*/
+const char *localprefix;		/* local prefix		*/
 int aflag;				/* [option]		*/
 int cflag;				/* command		*/
 int fflag;				/* command		*/
@@ -90,7 +90,7 @@ int show_help;
 int show_filter;			/* undocumented command */
 int use_tagfiles;
 int debug;
-char *extra_options;
+const char *extra_options;
 
 static void
 usage(void)
@@ -154,7 +154,7 @@ main(argc, argv)
 	int argc;
 	char *argv[];
 {
-	char *av = NULL;
+	const char *av = NULL;
 	int count;
 	int db;
 	int optchar;
@@ -162,7 +162,7 @@ main(argc, argv)
 	char cwd[MAXPATHLEN+1];			/* current directory	*/
 	char root[MAXPATHLEN+1];		/* root of source tree	*/
 	char dbpath[MAXPATHLEN+1];		/* dbpath directory	*/
-	char *gtags;
+	const char *gtags;
 
 	while ((optchar = getopt_long(argc, argv, "ace:ifgGIlnopPqrstTuvx", long_options, &option_index)) != EOF) {
 		switch (optchar) {
@@ -322,8 +322,7 @@ main(argc, argv)
 	 * print dbpath or rootdir.
 	 */
 	if (pflag) {
-		char *dir = (rflag) ? root : dbpath;
-		fprintf(stdout, "%s\n", dir);
+		fprintf(stdout, "%s\n", (rflag) ? root : dbpath);
 		exit(0);
 	}
 	/*
@@ -385,7 +384,7 @@ main(argc, argv)
 	 */
 	{
 		int unique = 0;
-		char *sort;
+		const char *sort;
 
 		/*
 		 * We cannot depend on the command PATH, because global(1)
@@ -588,7 +587,7 @@ completion(dbpath, root, prefix)
 	const char *root;
 	const char *prefix;
 {
-	char *p;
+	const char *p;
 	int flags = GTOP_KEY;
 	GTOP *gtop;
 	int db;
@@ -655,9 +654,9 @@ idutils(pattern, dbpath)
 	FILE *ip, *op;
 	STRBUF *ib = strbuf_open(0);
 	char edit[IDENTLEN+1];
-	char *line, *p, *path, *lno;
+	const char *path, *lno, *lid;
 	int linenum, count;
-	char *lid;
+	char *p, *line;
 
 	lid = usable("lid");
 	if (!lid)
@@ -758,9 +757,9 @@ grep(pattern)
 {
 	FILE *op, *fp;
 	STRBUF *ib = strbuf_open(MAXBUFLEN);
-	char *path, *p;
+	const char *path, *p;
 	char edit[IDENTLEN+1];
-	char *buffer;
+	const char *buffer;
 	int linenum, count;
 	int flags = 0;
 	regex_t	preg;
@@ -828,7 +827,7 @@ pathlist(dbpath, av)
 	const char *av;
 {
 	FILE *op;
-	char *path, *p;
+	const char *path, *p;
 	regex_t preg;
 	int count;
 
@@ -902,9 +901,9 @@ parsefile(argc, argv, cwd, root, dbpath, db)
 	int db;
 {
 	char buf[MAXPATHLEN+1], *path;
-	char *p;
+	const char *p;
 	FILE *ip, *op;
-	char *parser, *av;
+	const char *parser, *av;
 	int count;
 	STRBUF *sb = strbuf_open(0);
 	STRBUF *com = strbuf_open(0);
@@ -1010,7 +1009,7 @@ search(pattern, root, dbpath, db)
 	const char *dbpath;
 	int db;
 {
-	char *p;
+	const char *p;
 	int count = 0;
 	FILE *op;
 	GTOP *gtop;
@@ -1042,7 +1041,7 @@ search(pattern, root, dbpath, db)
 		flags |= GTOP_BASICREGEX;
 	for (p = gtags_first(gtop, pattern, flags); p; p = gtags_next(gtop)) {
 		if (lflag) {
-			char *q;
+			const char *q;
 			/* locate start point of a path */
 			q = locatestring(p, "./", MATCH_FIRST);
 			if (!locatestring(q, localprefix, MATCH_AT_FIRST))
@@ -1069,7 +1068,7 @@ includepath(line, path)
 	const char *line;
 	const char *path;
 {
-	char *p;
+	const char *p;
 	int length;
 
 	if (!(p = locatestring(line, "./", MATCH_FIRST)))

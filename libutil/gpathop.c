@@ -75,7 +75,7 @@ gpath_open(dbpath, mode, flags)
 	if (mode == 1)
 		_nextkey = 1;
 	else {
-		char *p = dbop_get(dbop, NEXTKEY);
+		const char *p = dbop_get(dbop, NEXTKEY);
 
 		if (p == NULL)
 			die("nextkey not found in GPATH.");
@@ -110,7 +110,7 @@ gpath_put(path)
  *	i)	path	path name
  *	r)		file id
  */
-char *
+const char *
 gpath_path2fid(path)
 	const char *path;
 {
@@ -123,7 +123,7 @@ gpath_path2fid(path)
  *	i)	fid	file id
  *	r)		path name
  */
-char *
+const char *
 gpath_fid2path(fid)
 	const char *fid;
 {
@@ -138,7 +138,7 @@ void
 gpath_delete(path)
 	const char *path;
 {
-	char *fid;
+	const char *fid;
 
 	assert(opened == 1);
 	assert(_mode == 2);
@@ -216,7 +216,7 @@ gfind_open(dbpath, local)
  *
  *	r)		path
  */
-char	*
+const char *
 gfind_read(void)
 {
 	assert(gfind_opened == 1);
