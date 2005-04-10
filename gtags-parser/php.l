@@ -48,6 +48,13 @@
 #include "strbuf.h"
 #include "php_res.h"
 
+#define lex_symbol_generation_rule(x) php_ ## x
+#define LEXLEX lex_symbol_generation_rule(lex)
+#define LEXTEXT lex_symbol_generation_rule(text)
+#define LEXLENG lex_symbol_generation_rule(leng)
+#define LEXRESTART lex_symbol_generation_rule(restart)
+#define LEXLINENO lex_symbol_generation_rule(lineno)
+
 #define PHP_TOKEN		1
 #define PHP_VARIABLE		2
 #define PHP_STRING		3
@@ -100,7 +107,7 @@ debug_print(s, va_alist)
 #ifdef ECHO
 #undef ECHO
 #endif
-#define ECHO debug_print("%s", phptext)
+#define ECHO debug_print("%s", LEXTEXT)
 #ifdef PUT
 #undef PUT
 #endif
@@ -132,7 +139,7 @@ ALPHA		[a-zA-Z_\x80-\xff]
 ALPHANUM	[a-zA-Z_\x80-\xff0-9]
 WORD		{ALPHA}{ALPHANUM}*
 %start	PHP STRING LITERAL
-%option 8bit caseless noyywrap nounput yylineno prefix="php"
+%option 8bit caseless noyywrap nounput yylineno prefix="php_"
 %%
 \n			ECHO;
  /* Start PHP */
@@ -167,8 +174,8 @@ WORD		{ALPHA}{ALPHANUM}*
 					die("unexpected end of comment.");
 				debug_print(">");
 			}
-<PHP>"//".*		debug_print("<%s>", phptext);
-<PHP>"#".*		debug_print("<%s>", phptext);
+<PHP>"//".*		debug_print("<%s>", LEXTEXT);
+<PHP>"#".*		debug_print("<%s>", LEXTEXT);
 
  /* String */
 <PHP>\"			{ strbuf_reset(string); BEGIN STRING; }
@@ -178,8 +185,8 @@ WORD		{ALPHA}{ALPHANUM}*
 					
 				return PHP_STRING;
 			}
-<STRING>\\.		strbuf_puts(string, phptext);
-<STRING>.		strbuf_putc(string, phptext[0]);
+<STRING>\\.		strbuf_puts(string, LEXTEXT);
+<STRING>.		strbuf_putc(string, LEXTEXT[0]);
 
  /* Literal */
 <PHP>\'			{ strbuf_reset(string); BEGIN LITERAL; }
@@ -189,8 +196,8 @@ WORD		{ALPHA}{ALPHANUM}*
 					
 				return PHP_STRING;
 			}
-<LITERAL>\\.		strbuf_puts(string, phptext);
-<LITERAL>.		strbuf_putc(string, phptext[0]);
+<LITERAL>\\.		strbuf_puts(string, LEXTEXT);
+<LITERAL>.		strbuf_putc(string, LEXTEXT[0]);
 
  /* Cast */
 <PHP>\([ \t]*(bool|boolean|int|integer|real|double|float|string|array|object)[ \t]*\)
@@ -201,11 +208,11 @@ WORD		{ALPHA}{ALPHANUM}*
 				 * ${abc}\0
 				 */
 				if (YY_START == STRING)
-					strbuf_puts(string, phptext);
-				memcpy(phptext, &phptext[2], phpleng - 3);
-				phptext[phpleng - 3] = '\0';
-				phpleng = phpleng - 3;
-				debug_print("<V:%s>", phptext);
+					strbuf_puts(string, LEXTEXT);
+				memcpy(LEXTEXT, &LEXTEXT[2], LEXLENG - 3);
+				LEXTEXT[LEXLENG - 3] = '\0';
+				LEXLENG = LEXLENG - 3;
+				debug_print("<V:%s>", LEXTEXT);
 
 				return PHP_VARIABLE;
 			}
@@ -215,28 +222,28 @@ WORD		{ALPHA}{ALPHANUM}*
 				 * $abc\0
 				 */
 				if (YY_START == STRING)
-					strbuf_puts(string, phptext);
-				memcpy(phptext, &phptext[1], phpleng - 1);
-				phptext[phpleng - 1] = '\0';
-				phpleng = phpleng - 1;
-				debug_print("<V:%s>", phptext);
+					strbuf_puts(string, LEXTEXT);
+				memcpy(LEXTEXT, &LEXTEXT[1], LEXLENG - 1);
+				LEXTEXT[LEXLENG - 1] = '\0';
+				LEXLENG = LEXLENG - 1;
+				debug_print("<V:%s>", LEXTEXT);
 
 				return PHP_VARIABLE;
 			}
-<PHP>{NUMBER}		debug_print("<N:%s>", phptext);
+<PHP>{NUMBER}		debug_print("<N:%s>", LEXTEXT);
 <PHP>{WORD}		{
-				int id = php_reserved_word(phptext, phpleng);
+				int id = php_reserved_word(LEXTEXT, LEXLENG);
 				if (id) {
-					debug_print("<Reserved:%s>", phptext);
+					debug_print("<Reserved:%s>", LEXTEXT);
 					return id;
 				} else {
-					debug_print("<T:%s>", phptext);
+					debug_print("<T:%s>", LEXTEXT);
 					return PHP_TOKEN;
 				}
 			}
  /* Operator */
 <PHP>[{}]		{
-				int c = phptext[0];
+				int c = LEXTEXT[0];
 				if (c == PHP_LBRACE)
 					level++;
 				else
@@ -246,7 +253,7 @@ WORD		{ALPHA}{ALPHANUM}*
 				return c;
 			}
 <PHP>[][()]		{
-				return phptext[0];
+				return LEXTEXT[0];
 			}
 <PHP>[-+*/%&~^]=?	ECHO;
 <PHP>[=><!]=		ECHO;
@@ -271,82 +278,82 @@ php(file)
 	if (linetable_open(file) == -1)
 		die("'%s' cannot open.", file);
 
-	yyrestart(NULL);
-	while ((token = phplex()) != 0) {
+	LEXRESTART(NULL);
+	while ((token = LEXLEX()) != 0) {
 		switch (token) {
 		case PHP_DEFINE:
-			if (phplex() != PHP_LPAREN)
+			if (LEXLEX() != PHP_LPAREN)
 				break;
-			if (phplex() != PHP_STRING)
+			if (LEXLEX() != PHP_STRING)
 				break;
 			if (target == DEF)
-				PUT(strbuf_value(string), phplineno, file);
+				PUT(strbuf_value(string), LEXLINENO, file);
 			break;
 		case PHP_CLASS:
-			if (phplex() != PHP_TOKEN)
+			if (LEXLEX() != PHP_TOKEN)
 				break;
 			if (target == DEF)
-				PUT(phptext, phplineno, file);
+				PUT(LEXTEXT, LEXLINENO, file);
 			break;
 		case PHP_FUNCTION:
 		case PHP_CFUNCTION:
 		case PHP_OLD_FUNCTION:
-			if (phplex() != PHP_TOKEN)
+			if (LEXLEX() != PHP_TOKEN)
 				break;
 			if (target == DEF)
-				PUT(phptext, phplineno, file);
+				PUT(LEXTEXT, LEXLINENO, file);
 			break;
 		case PHP_VARIABLE:
-			if (php_reserved_variable(phptext, phpleng)) {
+			if (php_reserved_variable(LEXTEXT, LEXLENG)) {
 				if (target == SYM)
-					PUT(phptext, phplineno, file);
-				if (phplex() == PHP_LBRACK && phplex() == PHP_STRING && phplex() == PHP_RBRACK) {
+					PUT(LEXTEXT, LEXLINENO, file);
+				if (LEXLEX() == PHP_LBRACK && LEXLEX() == PHP_STRING && LEXLEX() == PHP_RBRACK) {
 					char *str = strbuf_value(string);
 
 					if (strchr(str, '$') == 0)
 						if (target == SYM)
-							PUT(str, phplineno, file);
+							PUT(str, LEXLINENO, file);
 				}
-			} else if (!strcmp(phptext, "this")) {
+			} else if (!strcmp(LEXTEXT, "this")) {
 				;
 			} else {
 				if (target == SYM)
-					PUT(phptext, phplineno, file);
+					PUT(LEXTEXT, LEXLINENO, file);
 			}
 			break;
 		case PHP_POINTER:
-			if (phplex() != PHP_TOKEN)
+			if (LEXLEX() != PHP_TOKEN)
 				break;
 			/* FALLTHROUGH */
 		case PHP_TOKEN:
 			if (target == REF) {
-				if (defined(phptext))
-					PUT(phptext, phplineno, file);
+				if (defined(LEXTEXT))
+					PUT(LEXTEXT, LEXLINENO, file);
 			} else if (target == SYM) {
-				if (!defined(phptext))
-					PUT(phptext, phplineno, file);
+				if (!defined(LEXTEXT))
+					PUT(LEXTEXT, LEXLINENO, file);
 			}
 			break;
 		case PHP_NEW:
-			if (phplex() != PHP_TOKEN)
+			if (LEXLEX() != PHP_TOKEN)
 				break;
 			if (target == REF)
-				PUT(phptext, phplineno, file);
+				PUT(LEXTEXT, LEXLINENO, file);
 			break;
 		/*
 		 * ${x->y}
 		 */
 		case PHP_DOLLAR:
-			if (phplex() != PHP_LBRACE)
+			if (LEXLEX() != PHP_LBRACE)
 				break;
-			while ((token = phplex()) != PHP_RBRACE) {
+			while ((token = LEXLEX()) != PHP_RBRACE) {
 				if (token == PHP_TOKEN) {
 					if (target == REF) {
-						if (defined(phptext))
-							PUT(phptext, phplineno, file);
+						if (defined(LEXTEXT))
+							PUT(LEXTEXT, LEXLINENO, file);
 					} else if (target == SYM) {
-						if (!defined(phptext))
-							PUT(phptext, phplineno, file);
+						if (!defined(LEXTEXT))
+							PUT(LEXTEXT, LEXLINENO, file);
 					}
 				}
 			}

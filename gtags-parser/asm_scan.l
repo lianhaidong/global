@@ -36,8 +36,13 @@
 #include "linetable.h"
 #include "strbuf.h"
 
-#define yylval asmlval
-#define yylloc asmlloc
+#define lex_symbol_generation_rule(x) asm_ ## x
+#define LEXTEXT lex_symbol_generation_rule(text)
+#define LEXLENG lex_symbol_generation_rule(leng)
+#define LEXLINENO lex_symbol_generation_rule(lineno)
+#define LEXRESTART lex_symbol_generation_rule(restart)
+#define LEXLVAL lex_symbol_generation_rule(lval)
+#define LEXLLOC lex_symbol_generation_rule(lloc)
 
 #define YY_INPUT(buf, result, max_size) do {				\
 	if ((result = linetable_read(buf, max_size)) == -1)		\
@@ -45,9 +50,9 @@
 } while (0)
 
 #define ADD_SYM() do {							\
-	yylval = strbuf_getlen(asm_symtable);				\
-	yylloc.first_line = yylineno;					\
-	strbuf_puts0(asm_symtable, yytext);				\
+	LEXLVAL = strbuf_getlen(asm_symtable);				\
+	LEXLLOC.first_line = LEXLINENO;					\
+	strbuf_puts0(asm_symtable, LEXTEXT);				\
 } while (0)
 
 extern const char *asm_input_file;
@@ -68,7 +73,7 @@ WORD		{ALPHA}{ALPHANUM}*
 %x C_COMMENT CPP_COMMENT STRING LITERAL
 %s PREPROCESSOR_LINE
 
-%option 8bit yylineno stack noyywrap noyy_top_state prefix="asm"
+%option 8bit yylineno stack noyywrap noyy_top_state prefix="asm_"
 
 %%
 
@@ -85,7 +90,7 @@ WORD		{ALPHA}{ALPHANUM}*
 	"*"+"/"		{ yy_pop_state(); }
 	<<EOF>> {
 		if (wflag)
-			warning("unexpected eof. [+%d %s]", yylineno, asm_input_file);
+			warning("unexpected eof. [+%d %s]", LEXLINENO, asm_input_file);
 		yyterminate();
 	}
 }
@@ -123,7 +128,7 @@ WORD		{ALPHA}{ALPHANUM}*
 	^[ \t]*\#[ \t]*define	{ yy_push_state(PREPROCESSOR_LINE); return ASM_DEFINE; }
 	^[ \t]*\#[ \t]*undef	{ yy_push_state(PREPROCESSOR_LINE); return ASM_UNDEF; }
 	^[ \t]*\#[ \t]*{WORD} {
-		if (asm_reserved_sharp(yytext, yyleng)) {
+		if (asm_reserved_sharp(LEXTEXT, LEXLENG)) {
 			yy_push_state(PREPROCESSOR_LINE);
 			return ASM_DIRECTIVE;
 		} else {
@@ -151,12 +156,12 @@ WORD		{ALPHA}{ALPHANUM}*
 
 \\\n
 \n		{ return '\n'; }
-.		{ return yytext[0]; }
+.		{ return LEXTEXT[0]; }
 
 %%
 
 void
 asm_initscan(void)
 {
-	yyrestart(NULL);
+	LEXRESTART(NULL);
 }

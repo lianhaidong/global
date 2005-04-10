@@ -68,7 +68,7 @@ static int target;
 %token ASM_DIRECTIVE		/* #xxx */
 
 %start input
-%name-prefix="asm"
+%name-prefix="asm_"
 
 %%
 
@@ -158,7 +158,7 @@ const char *file;
 	asm_symtable = strbuf_open(0);
 	asm_initscan();
 
-	asmparse();
+	asm_parse();
 
 	strbuf_close(asm_symtable);
 	linetable_close();
