@@ -130,7 +130,7 @@ C_family(file, type)
 	if (type == TYPE_YACC)
 		ymode = 1;		/* allow token like '%xxx' */
 
-	while ((cc = nexttoken(interested, reserved_word)) != EOF) {
+	while ((cc = nexttoken(interested, c_reserved_word)) != EOF) {
 		switch (cc) {
 		case SYMBOL:		/* symbol	*/
 			if (inC && peekc(0) == '('/* ) */) {
@@ -274,14 +274,14 @@ C_family(file, type)
 		case SHARP_UNDEF:
 			startmacro = 1;
 			savelevel = level;
-			if ((c = nexttoken(interested, reserved_word)) != SYMBOL) {
+			if ((c = nexttoken(interested, c_reserved_word)) != SYMBOL) {
 				pushbacktoken();
 				break;
 			}
 			if (peekc(1) == '('/* ) */) {
 				if (target == DEF)
 					PUT(token, lineno, sp);
-				while ((c = nexttoken("()", reserved_word)) != EOF && c != '\n' && c != /* ( */ ')')
+				while ((c = nexttoken("()", c_reserved_word)) != EOF && c != '\n' && c != /* ( */ ')')
 					if (c == SYMBOL && target == SYM)
 						PUT(token, lineno, sp);
 				if (c == '\n')
@@ -305,7 +305,7 @@ C_family(file, type)
 		case SHARP_WARNING:
 		case SHARP_IDENT:
 		case SHARP_SCCS:
-			while ((c = nexttoken(interested, reserved_word)) != EOF && c != '\n')
+			while ((c = nexttoken(interested, c_reserved_word)) != EOF && c != '\n')
 				;
 			break;
 		case SHARP_IFDEF:
@@ -317,10 +317,10 @@ C_family(file, type)
 			condition_macro(cc, target);
 			break;
 		case SHARP_SHARP:		/* ## */
-			(void)nexttoken(interested, reserved_word);
+			(void)nexttoken(interested, c_reserved_word);
 			break;
 		case C_STRUCT:
-			c = nexttoken(interested, reserved_word);
+			c = nexttoken(interested, c_reserved_word);
 			if (c == '{' /* } */) {
 				pushbacktoken();
 				break;
@@ -355,7 +355,7 @@ C_family(file, type)
 
 				/* skip type qualifiers */
 				do {
-					c = nexttoken("{}(),;", reserved_word);
+					c = nexttoken("{}(),;", c_reserved_word);
 				} while (IS_TYPE_QUALIFIER(c) || c == '\n');
 
 				if (wflag && c == EOF) {
@@ -365,14 +365,14 @@ C_family(file, type)
 					char *interest_enum = "{},;";
 					int c_ = c;
 
-					c = nexttoken(interest_enum, reserved_word);
+					c = nexttoken(interest_enum, c_reserved_word);
 					/* read enum name if exist */
 					if (c == SYMBOL) {
 						if (target == SYM)
 							PUT(token, lineno, sp);
-						c = nexttoken(interest_enum, reserved_word);
+						c = nexttoken(interest_enum, c_reserved_word);
 					}
-					for (; c != EOF; c = nexttoken(interest_enum, reserved_word)) {
+					for (; c != EOF; c = nexttoken(interest_enum, c_reserved_word)) {
 						switch (c) {
 						case SHARP_IFDEF:
 						case SHARP_IFNDEF:
@@ -428,7 +428,7 @@ C_family(file, type)
 						PUT(token, lineno, sp);
 				}
 				savetok[0] = 0;
-				while ((c = nexttoken("(),;", reserved_word)) != EOF) {
+				while ((c = nexttoken("(),;", c_reserved_word)) != EOF) {
 					switch (c) {
 					case SHARP_IFDEF:
 					case SHARP_IFNDEF:
@@ -508,7 +508,7 @@ process_attribute(target)
 	 * Skip '...' in __attribute__((...))
 	 * but pick up symbols in it.
 	 */
-	while ((c = nexttoken("()", reserved_word)) != EOF) {
+	while ((c = nexttoken("()", c_reserved_word)) != EOF) {
 		if (c == '(')
 			brace++;
 		else if (c == ')')
@@ -543,7 +543,7 @@ function_definition(target, arg1)
 	int accept_arg1 = 0;
 
 	brace_level = isdefine = 0;
-	while ((c = nexttoken("()", reserved_word)) != EOF) {
+	while ((c = nexttoken("()", c_reserved_word)) != EOF) {
 		switch (c) {
 		case SHARP_IFDEF:
 		case SHARP_IFNDEF:
@@ -580,7 +580,7 @@ function_definition(target, arg1)
 	if (c == EOF)
 		return 0;
 	brace_level = 0;
-	while ((c = nexttoken(",;[](){}=", reserved_word)) != EOF) {
+	while ((c = nexttoken(",;[](){}=", c_reserved_word)) != EOF) {
 		switch (c) {
 		case SHARP_IFDEF:
 		case SHARP_IFNDEF:
@@ -650,7 +650,7 @@ condition_macro(cc, target)
 		cur->if0only = 0;
 		if (peekc(0) == '0')
 			cur->if0only = 1;
-		else if ((cc = nexttoken(NULL, reserved_word)) == SYMBOL && !strcmp(token, "notdef"))
+		else if ((cc = nexttoken(NULL, c_reserved_word)) == SYMBOL && !strcmp(token, "notdef"))
 			cur->if0only = 1;
 		else
 			pushbacktoken();
@@ -684,7 +684,7 @@ condition_macro(cc, target)
 			}
 		}
 	}
-	while ((cc = nexttoken(NULL, reserved_word)) != EOF && cc != '\n') {
+	while ((cc = nexttoken(NULL, c_reserved_word)) != EOF && cc != '\n') {
                 if (cc == SYMBOL && strcmp(token, "defined") != 0) {
 			if (target == REF) {
 				if (dflag && defined(token))

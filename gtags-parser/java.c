@@ -74,10 +74,10 @@ java(file)
 
 	if (!opentoken(file))
 		die("'%s' cannot open.", file);
-	while ((c = nexttoken(interested, reserved_word)) != EOF) {
+	while ((c = nexttoken(interested, java_reserved_word)) != EOF) {
 		switch (c) {
 		case SYMBOL:					/* symbol */
-			for (; c == SYMBOL && peekc(1) == '.'; c = nexttoken(interested, reserved_word)) {
+			for (; c == SYMBOL && peekc(1) == '.'; c = nexttoken(interested, java_reserved_word)) {
 				if (target == SYM)
 					PUT(token, lineno, sp);
 			}
@@ -139,7 +139,7 @@ java(file)
 			break;
 		case JAVA_CLASS:
 		case JAVA_INTERFACE:
-			if ((c = nexttoken(interested, reserved_word)) == SYMBOL) {
+			if ((c = nexttoken(interested, java_reserved_word)) == SYMBOL) {
 				strlimcpy(classname, token, sizeof(classname));
 				startclass = 1;
 				if (target == DEF)
@@ -148,7 +148,7 @@ java(file)
 			break;
 		case JAVA_NEW:
 		case JAVA_INSTANCEOF:
-			while ((c = nexttoken(interested, reserved_word)) == SYMBOL && peekc(1) == '.')
+			while ((c = nexttoken(interested, java_reserved_word)) == SYMBOL && peekc(1) == '.')
 				if (target == SYM)
 					PUT(token, lineno, sp);
 			if (c == SYMBOL)
@@ -167,7 +167,7 @@ java(file)
 		case JAVA_LONG:
 		case JAVA_SHORT:
 		case JAVA_VOID:
-			if (peekc(1) == '.' && (c = nexttoken(interested, reserved_word)) != JAVA_CLASS)
+			if (peekc(1) == '.' && (c = nexttoken(interested, java_reserved_word)) != JAVA_CLASS)
 				pushbacktoken();
 			break;
 		default:

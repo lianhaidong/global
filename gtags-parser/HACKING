@@ -48,7 +48,8 @@ This mechanism is independent of lex and bison.
 		v
 	<prefix>_res.h		include file
 
-(3) Include above file from lex source and you can use reserved_word() function.
+(3) Include above file from lex source and you can use
+    <prefix>_reserved_word() function.
 
 	Lex source file
 	+-------------------------------------
@@ -56,8 +57,8 @@ This mechanism is independent of lex and bison.
 	|#include "<prefix>_res.h"
 	|...
 	|WORD	{
-	|		if (reserved_word(yytext, yyleng)) {
-	|		    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	|		if (<prefix>_reserved_word(yytext, yyleng)) {
+	|		    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	|			...
 	+-------------------------------------
 

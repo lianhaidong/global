@@ -22,6 +22,9 @@
 #endif
 
 #include <stdio.h>
+#ifdef STDC_HEADERS
+#include <stdlib.h>
+#endif
 #include <getopt.h>
 #include "closeout.h"
 #include "long-options.h"

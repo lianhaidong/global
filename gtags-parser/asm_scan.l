@@ -123,7 +123,7 @@ WORD		{ALPHA}{ALPHANUM}*
 	^[ \t]*\#[ \t]*define	{ yy_push_state(PREPROCESSOR_LINE); return ASM_DEFINE; }
 	^[ \t]*\#[ \t]*undef	{ yy_push_state(PREPROCESSOR_LINE); return ASM_UNDEF; }
 	^[ \t]*\#[ \t]*{WORD} {
-		if (reserved_sharp(yytext, yyleng)) {
+		if (asm_reserved_sharp(yytext, yyleng)) {
 			yy_push_state(PREPROCESSOR_LINE);
 			return ASM_DIRECTIVE;
 		} else {

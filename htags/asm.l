@@ -136,7 +136,7 @@ WORD		{ALPHA}{ALPHANUM}*
 		}
 	}
 <ASM>^[ \t]*\#[ \t]*{WORD} {
-		if ((last_directive = reserved_sharp(LEXTEXT, LEXLENG)) != 0) {
+		if ((last_directive = asm_reserved_sharp(LEXTEXT, LEXLENG)) != 0) {
 			put_macro(LEXTEXT);
 			yy_push_state(PREPROCESSOR_LINE);
 		} else {

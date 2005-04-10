@@ -231,11 +231,11 @@ sub generate_procedure {
 	local($TYPE) = $type;
 
 	$TYPE =~ tr/a-z/A-Z/;
-	print "static int reserved_${type}(const char *, int);\n";
-	print "static int\n";
-	print "reserved_${type}(str, len)\n";
-	print "const char *str;\n";
-	print "int len;\n";
+	print "int ${prefix}_reserved_${type}(const char *, int);\n";
+	print "int\n";
+	print "${prefix}_reserved_${type}(str, len)\n";
+	print "\tconst char *str;\n";
+	print "\tint len;\n";
 	print "{\n";
 	print "\tstruct keyword *keyword;\n";
 	print "\n";

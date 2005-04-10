@@ -225,7 +225,7 @@ WORD		{ALPHA}{ALPHANUM}*
 			}
 <PHP>{NUMBER}		debug_print("<N:%s>", phptext);
 <PHP>{WORD}		{
-				int id = reserved_word(phptext, phpleng);
+				int id = php_reserved_word(phptext, phpleng);
 				if (id) {
 					debug_print("<Reserved:%s>", phptext);
 					return id;
@@ -297,7 +297,7 @@ php(file)
 				PUT(phptext, phplineno, file);
 			break;
 		case PHP_VARIABLE:
-			if (reserved_variable(phptext, phpleng)) {
+			if (php_reserved_variable(phptext, phpleng)) {
 				if (target == SYM)
 					PUT(phptext, phplineno, file);
 				if (phplex() == PHP_LBRACK && phplex() == PHP_STRING && phplex() == PHP_RBRACK) {

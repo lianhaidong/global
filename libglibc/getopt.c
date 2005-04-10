@@ -179,6 +179,9 @@ static char *posixly_correct;
    whose names are inconsistent.  */
 
 char *getenv ();
+int strcmp(const char *, const char *);
+int strncmp(const char *, const char *, size_t);
+size_t strlen(const char *);
 
 static char *
 my_index (str, chr)
@@ -534,11 +537,11 @@ _getopt_internal (argc, argv, optstring, longopts, longind, long_only)
 	    {
 	      /* Don't test has_arg with >, because some C compilers don't
 		 allow it to be used on enums.  */
-	      if (pfound->has_arg)
+	      if (pfound->has_arg) {
 		optarg = nameend + 1;
-	      else
+	      } else
 		{
-		  if (opterr)
+		  if (opterr) {
 		   if (argv[optind - 1][1] == '-')
 		    /* --option */
 		    fprintf (stderr,
@@ -549,7 +552,7 @@ _getopt_internal (argc, argv, optstring, longopts, longind, long_only)
 		    fprintf (stderr,
 		     _("%s: option `%c%s' doesn't allow an argument\n"),
 		     argv[0], argv[optind - 1][0], pfound->name);
-
+		   }
 		  nextchar += strlen (nextchar);
 		  return '?';
 		}

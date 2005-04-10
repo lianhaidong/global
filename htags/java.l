@@ -90,7 +90,7 @@ WORD		{ALPHA}{ALPHANUM}*
 
 <JAVA>{NUMBER}	ECHO;
 <JAVA>{WORD} {
-		if (reserved_word(LEXTEXT, LEXLENG))
+		if (java_reserved_word(LEXTEXT, LEXLENG))
 			put_reserved_word(LEXTEXT);
 		else {
 			struct anchor *a = anchor_get(LEXTEXT, LEXLENG, 0, LINENO);

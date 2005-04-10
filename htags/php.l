@@ -180,7 +180,7 @@ WORD		{ALPHA}{ALPHANUM}*
 	}
 <PHP>{WORD} {
 		struct anchor *a = NULL;
-		if (reserved_word(LEXTEXT, LEXLENG))
+		if (php_reserved_word(LEXTEXT, LEXLENG))
 			put_reserved_word(LEXTEXT);
 		else {
 			a = anchor_get(LEXTEXT, LEXLENG, 0, LINENO);

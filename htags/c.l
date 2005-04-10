@@ -149,7 +149,7 @@ YACC_IDENTIFIER	({ALPHA}|\.)({ALPHANUM}|\.)*
 		}
 	}
 	^[ \t]*\#[ \t]*{WORD} {
-		if ((last_directive = reserved_sharp(LEXTEXT, LEXLENG)) != 0)
+		if ((last_directive = c_reserved_sharp(LEXTEXT, LEXLENG)) != 0)
 			put_macro(LEXTEXT);
 		else {
 			ECHO;
@@ -165,7 +165,7 @@ YACC_IDENTIFIER	({ALPHA}|\.)({ALPHANUM}|\.)*
  /* Yacc directive */
 <YACC_DECLARATIONS,YACC_RULES>{
 	{YACC_DIRECTIVE} {
-		if (reserved_yacc(LEXTEXT, LEXLENG))
+		if (c_reserved_yacc(LEXTEXT, LEXLENG))
 			put_reserved_word(LEXTEXT);
 		else {
 			ECHO;
@@ -203,7 +203,7 @@ YACC_IDENTIFIER	({ALPHA}|\.)({ALPHANUM}|\.)*
 }
 <C,PREPROCESSOR_LINE,YACC_PROLOGUE,BRACED_CODE>{
 	{WORD} {
-		if (reserved_word(LEXTEXT, LEXLENG))
+		if (c_reserved_word(LEXTEXT, LEXLENG))
 			put_reserved_word(LEXTEXT);
 		else if (YY_START == PREPROCESSOR_LINE
 		    && (last_directive == SHARP_IF || last_directive == SHARP_ELIF)

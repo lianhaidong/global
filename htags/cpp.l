@@ -136,7 +136,7 @@ WORD		{ALPHA}{ALPHANUM}*
 		}
 	}
 <CPP>^[ \t]*\#[ \t]*{WORD} {
-		if ((last_directive = reserved_sharp(LEXTEXT, LINENO)) != 0)
+		if ((last_directive = cpp_reserved_sharp(LEXTEXT, LINENO)) != 0)
 			put_macro(LEXTEXT);
 		else {
 			ECHO;
@@ -150,7 +150,7 @@ WORD		{ALPHA}{ALPHANUM}*
 
 <CPP,PREPROCESSOR_LINE>{NUMBER}	ECHO;
 <CPP,PREPROCESSOR_LINE>{WORD} {
-		if (reserved_word(LEXTEXT, LEXLENG))
+		if (cpp_reserved_word(LEXTEXT, LEXLENG))
 			put_reserved_word(LEXTEXT);
 		else if (YY_START == PREPROCESSOR_LINE
 		    && (last_directive == SHARP_IF || last_directive == SHARP_ELIF)

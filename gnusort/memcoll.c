@@ -21,7 +21,7 @@
 # include <config.h>
 #endif
 
-#ifndef __GNUC__
+/* #ifndef __GNUC__ */
 # ifdef HAVE_ALLOCA_H
 #  include <alloca.h>
 # else
@@ -38,7 +38,7 @@ char *alloca ();
 #   endif
 #  endif
 # endif
-#endif
+/* #endif */
 
 #if HAVE_STRING_H
 # include <string.h>
