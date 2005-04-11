@@ -1929,7 +1929,7 @@ main(argc, argv)
 	 * (11) style sheet file (style.css)
 	 */
 	if (enable_xhtml) {
-		char src[MAXPATHLEN], dst[MAXPATHLEN];;
+		char src[MAXPATHLEN], dst[MAXPATHLEN];
 		snprintf(src, sizeof(src), "%s/gtags/style.css", datadir);
 		snprintf(dst, sizeof(dst), "%s/style.css", distpath);
 		copyfile(src, dst);
