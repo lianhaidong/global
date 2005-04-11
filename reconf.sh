@@ -110,6 +110,10 @@ case $1 in
 	./configure CFLAGS='-g -p -Wall -DDEBUG'
 	make -s
 	;;
+--warn)
+	./configure CFLAGS='-g -O2 -Wall'
+	make -s
+	;;
 -c|--configure|--make|--install)
 	./configure
 	;;
