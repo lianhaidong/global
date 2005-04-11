@@ -53,7 +53,6 @@ if ($form{'pattern'} eq '') {
 	exit 0;
 }
 $pattern = $form{'pattern'};
-$from = $form{'from'};
 $flag = '';
 $words = 'definitions';
 if ($form{'type'} eq 'reference') {
@@ -152,7 +151,7 @@ $pattern =~ s/([&<>])/$ctab{$1}/ge;
 print "@title_begin@" . $pattern . "@title_end@\n";
 print "Following $words are matched to above pattern.@hr@\n";
 $cnt = 0;
-local($tag, $lno, $filename, $fileno);
+local($tag, $lno, $filename);
 print "@verbatim_begin@\n";
 open(PIPEOUT, "| @gtagspath@ --convert");
 if ($?) {	
