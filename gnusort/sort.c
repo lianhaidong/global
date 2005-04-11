@@ -1380,7 +1380,7 @@ checkfp (FILE *fp, const char *file_name)
   int cc;			/* Character count. */
   int alloc;
   int line_number = 1;
-  struct line *disorder_line;
+  struct line *disorder_line = NULL;
   int disorder_line_number = 0;
 
 #ifdef lint  /* Suppress `used before initialized' warning.  */
@@ -1479,7 +1479,7 @@ mergefps (FILE **fps, register int nfps, FILE *ofp, const char *output_file)
   struct lines lines[NMERGE];	/* Line tables for each buffer. */
   struct line saved;		/* Saved line for unique check. */
   int savedflag = 0;		/* True if there is a saved line. */
-  int savealloc;		/* Size allocated for the saved line. */
+  int savealloc = 0;		/* Size allocated for the saved line. */
   int cur[NMERGE];		/* Current line in each line table. */
   int ord[NMERGE];		/* Table representing a permutation of fps,
 				   such that lines[ord[0]].lines[cur[ord[0]]]
