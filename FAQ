@@ -28,8 +28,8 @@ A1. No, it doesn't. GNU GLOBAL supports only UNIX(POSIX) environment.
            http://www.gnu.org/software/global/download.html
 
 ----------------------------------------------------------------------------
-Q2. GLOBAL skip some functions.
-    For example, GLOBAL skip the function 'func' in this example.
+Q2. GLOBAL skips some functions.
+    For example, GLOBAL skips the function 'func()' in this example.
 
 	#define M(a)	static char *string = a;
 
@@ -39,10 +39,10 @@ Q2. GLOBAL skip some functions.
 		...
 	}
 
-A2. GLOBAL cannot recognize that pattern, because M(a) seems to be
-    a function definition.
+A2. GLOBAL cannot recognize 'func()', because M(a) seems to be a function
+    definition.
 
-    It should be follows.
+    It should be follows:
 
 	#define M(a)	static char *string = a
 
@@ -52,8 +52,8 @@ A2. GLOBAL cannot recognize that pattern, because M(a) seems to be
 		...
 	}
 
-    Otherwise, you can tell gtags(1) that by listing the macros in
-    '.notfunction' file in current directory.
+    Otherwise, you can tell gtags(1) that 'M' is not a function by listing
+    the macros in '.notfunction' file in the current directory.
 
 	[.notfunction]
 	+---------------
@@ -70,16 +70,17 @@ Q3. I have set up 'gtags.conf' to use emacs's ctags command with GLOBAL
 	$ ls G*
 	GPATH   GTAGS
 
-A3. Emacs's ctags cannot locate function referencies. So, gtags cannot make
-    GRTAGS tag file with it. With the result that you cannot use htags and
-    global's -r option.
+A3. Since Emacs's ctags cannot locate function referencies, gtags(1) cannot
+    make GRTAGS tag file with it. With the result that htags(1) doesn't
+    work because it requires both GTAGS and GRTAGS.
+    Besides, you cannot use the -r(--reference) option of global(1).
 
 ----------------------------------------------------------------------------
 Q4. Deleted.
 ----------------------------------------------------------------------------
 Q5. Deleted.
 ----------------------------------------------------------------------------
-Q6. It seems that gtags cannot treat files which include blanks in the path.
+Q6. It seems that gtags(1) cannot treat files which include blanks in the path.
     Why?
 
 A6. Because it is hard for GLOBAL to treat them correctly with keeping
@@ -88,10 +89,10 @@ A6. Because it is hard for GLOBAL to treat them correctly with keeping
     the priority is not high. The best way is no to use blanks in path name.
 
 ----------------------------------------------------------------------------
-Q7. Gtags(1) and htags(1) works only on one directory. So, we cannot refer
-    library functions like strlen from my project. Any solutions?
+Q7. Gtags(1) and htags(1) work only for one directory tree. So, we cannot
+    refer library functions like strlen() from my project. Any solutions?
 
-A7. In global(1), you can use GTAGSLIBPATH environment variable.
+A7. For global(1), you can use GTAGSLIBPATH environment variable.
 
 	[library]	/usr/src/lib
 	[your project]	/usr/home/project
@@ -101,7 +102,8 @@ A7. In global(1), you can use GTAGSLIBPATH environment variable.
 	$ global strlen
 	../../../usr/src/lib/libc/string/strlen.c
 
-    In htags(1), you can do it by copying them into your source project.
+    For htags(1), you can merge library directories into your source project
+    by copying them.
     For example:
 
 	$ cd /usr/home/project
@@ -114,7 +116,7 @@ Q8. Deleted.
 ----------------------------------------------------------------------------
 Q9. Deleted.
 ----------------------------------------------------------------------------
-Q10. Does GLOBAL support multi-bytes code set?
+Q10. Does GLOBAL support multi-byte code set?
      Which character code set is supported?
 
 A10. GLOBAL doesn't support multi-byte character code set yet.

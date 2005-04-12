@@ -27,7 +27,7 @@ environments. It supports C, C++, Yacc, Java, PHP4 and assembler source code.
 
 	Please see 'doc/global.txi'(texinfo format) to know how to use GLOBAL.
 	The descriptions about new facilities are added to 'NEWS'.  At least,
-	you had better read '[INCOMPATIBLE CHANGES]' for each version.
+	you should read '[INCOMPATIBLE CHANGES]' for each version.
 
 * License
 
@@ -37,7 +37,7 @@ environments. It supports C, C++, Yacc, Java, PHP4 and assembler source code.
 
 * Latest information
 
-	You can see the latest information on GLOBAL's WWW.
+	You can see the latest information on GLOBAL's web site.
 
 	http://www.gnu.org/software/global/whatsnew.html
 

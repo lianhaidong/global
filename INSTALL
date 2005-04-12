@@ -27,7 +27,7 @@ Installation of GNU GLOBAL.
 
 o If you want to format man files then nroff is needed.
 
-   Additionally, if you setup man(1) on your system then you can use man
+   Additionally, if you set up man(1) on your system then you can use man
    command to read GLOBAL's online manuals.
 
 o If you want to use the -I option of global(1) then id-utils(1) is needed.
@@ -36,7 +36,7 @@ o If you want to use the -I option of global(1) then id-utils(1) is needed.
 
 	ftp://ftp.gnu.org/pub/gnu/id-utils/
   
-o If you want to use --form(-f) or --dynamic option of htags then
+o If you want to use --form(-f) or --dynamic option of htags(1) then
   PERL version 4 or later is needed.
 
    If you don't have it, you can fetch it from this site.
@@ -97,7 +97,7 @@ o Nvi-1.81.5
 o Emacs
 
    Global supports GNU Emacs and XEmacs. If you meet some troubles,
-   please let me know.
+   please mail to bug-global@gnu.org.
 
    You can get them at:
 
@@ -106,9 +106,10 @@ o Emacs
 	XEmacs:
 		http://www.xemacs.org
 
-   If you have installed it then copy gtags.el in this package to the emacs
-   lisp library directory or place the file in a directory
-   (for example "~/lisp") and write $HOME/.emacs like this.
+   If one of above systems is already install, gtags.el is installed by
+   default installation of GLOBAL. If it doesn't work then you can place
+   gtags.el in a directory (for example "~/lisp") and write $HOME/.emacs
+   like this.
 
 	+-----------------------------------------------
 	|(setq load-path (cons "~/lisp" load-path))
