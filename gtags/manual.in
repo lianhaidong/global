@@ -23,19 +23,17 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	GTAGS,1,Feb 2005,GNU Project
+@HEADER	GTAGS,1,April 2005,GNU Project
 @NAME	gtags - create tag files for global.
 @SYNOPSIS
 	@name{gtags} [-c][-i][-I][-o][-P][-q][-v][-w][@arg{dbpath}]
 @DESCRIPTION
 	@name{Gtags} makes @file{GTAGS}, @file{GRTAGS}, @file{GSYMS} and @file{GPATH}
 	file for @xref{global,1}.
-	@name{Gtags} trace subdirectories, read source files,
-	locate symbols and save the information into tag files
-	in current directory.
+	@name{Gtags} trace the subdirectories under the current directory,
+	read source files, locate symbols and save the information
+	into tag files.
 	You should execute this command at the root of the source tree.
-	If your source directory is on a read only device like CDROM,
-	specify @arg{dbpath} of the directory on which make tag files.
 
 	C, C++, yacc, java, PHP and Assembly source files are supported.
 	Files whose names end in @file{.c} or @file{.h} are assumed to be
@@ -80,6 +78,11 @@
 		Verbose mode.
 	@item{@option{-w}, @option{--warning}}
 		Print warning messages.
+	@item{@arg{dbpath}, @option{--warning}}
+		The directory in which tag files are generated.
+		The default is the current directory.
+		It is useful when your source directory is on a read only
+		device like CDROM.
 	@end_itemize
 @EXAMPLES
 	$ ls -F
