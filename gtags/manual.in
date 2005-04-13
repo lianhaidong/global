@@ -28,11 +28,10 @@
 @SYNOPSIS
 	@name{gtags} [-c][-i][-I][-o][-P][-q][-v][-w][@arg{dbpath}]
 @DESCRIPTION
-	@name{Gtags} makes @file{GTAGS}, @file{GRTAGS}, @file{GSYMS} and @file{GPATH}
-	file for @xref{global,1}.
-	@name{Gtags} trace the subdirectories under the current directory,
-	read source files, locate symbols and save the information
-	into tag files.
+	@name{Gtags} recursively collect the source files under
+	the current directory,
+	pickup symbols and write the cross-reference data into tag files
+	(@file{GTAGS}, @file{GRTAGS}, @file{GSYMS} and @file{GPATH}).
 	You should execute this command at the root of the source tree.
 
 	C, C++, yacc, java, PHP and Assembly source files are supported.
@@ -118,7 +117,7 @@
 	@end_itemize
 @CONFIGURATION
 	The following configuration variables affect the execution of @name{gtags}.
-	You can see the default value for each variable with @option{--config} option.
+	You can see the default value for each variable with the @option{--config} option.
 	@begin_itemize
 	@item{@code{GTAGS}(string)}
 		If this variable is set, its value is used as the
