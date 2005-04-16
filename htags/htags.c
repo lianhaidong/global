@@ -124,6 +124,7 @@ const char *cvsweb_url;
 const char *cvsweb_cvsroot;
 const char *gtagslabel;
 const char *title;
+const char *xhtml_version = "1.0";
 
 /*
  * Constant values.
@@ -1298,6 +1299,13 @@ configuration(argc, argv)
 		if (p == NULL)
 			die("short of memory.");
 		langmap = p;
+	}
+	strbuf_reset(sb);
+	if (getconfs("xhtml_version", sb)) {
+		p = strdup(strbuf_value(sb));
+		if (p == NULL)
+			die("short of memory.");
+		xhtml_version = p;
 	}
 	/* insert htags_options into the head of ARGSV array. */
 	strbuf_reset(sb);

@@ -105,6 +105,7 @@ extern const char *cvsweb_url;
 extern const char *cvsweb_cvsroot;
 extern const char *gtagslabel;
 extern const char *title;
+extern const char *xhtml_version;
 
 extern const char *title_define_index;
 extern const char *title_file_index;

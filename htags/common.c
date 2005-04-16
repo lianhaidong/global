@@ -109,6 +109,11 @@ const char *noframes_begin	= "<noframes>";
 const char *noframes_end	= "</noframes>";
 
 /*
+ * 1: Enforce XHTML1.0 strict or XHTML1.1.
+ */
+static int strict_xhtml = 0;
+
+/*
  * print string and new line.
  *
  * This function is a replacement of fprintf(op, "%s\n", s) in htags.
@@ -125,14 +130,14 @@ fputs_nl(s, op)
 /*
  * XHTML support.
  *
- * If the --xhtml option is specified then we take 'XHTML 1.1'.
- * If both of the --xhtml and the --frame option are specified
- * then we take 'XHTML 1.0 Frameset'.
+ * If the --xhtml option is specified, htags(1) generates XHTML output.
  * We define each style for the tags in 'style.css' in this directory.
  */
 void
 setup_xhtml(void)
 {
+	if (!strcmp(xhtml_version, "1.1") && !Fflag)
+		strict_xhtml = 1;
 	html_begin		= "<html xmlns='http://www.w3.org/1999/xhtml'>";
 	html_end		= "</html>";
 	html_head_begin		= "<head>";
@@ -220,12 +225,26 @@ gen_page_begin(title, subdir)
 
 	strbuf_clear(sb);
 	if (enable_xhtml) {
-		strbuf_puts_nl(sb, "<?xml version='1.0' encoding='ISO-8859-1'?>");
-		strbuf_sprintf(sb, "<?xml-stylesheet type='text/css' href='%sstyle.css'?>\n", dir);
+		/*
+		 * Since some browser cannot treat "<?xml...>", we don't
+		 * write the declaration as long as XHTML1.1 is not required.
+		 */
+		if (strict_xhtml) {
+			strbuf_puts_nl(sb, "<?xml version='1.0' encoding='ISO-8859-1'?>");
+			strbuf_sprintf(sb, "<?xml-stylesheet type='text/css' href='%sstyle.css'?>\n", dir);
+		}
+		/*
+		 * If the --frame option are specified then we take
+		 * 'XHTML 1.0 Frameset', else if the config variable
+		 * 'xhtml_version' is set to '1.1' then we take 'XHTML 1.1',
+		 * else 'XHTML 1.0 Transitional'.
+		 */
 		if (Fflag)
 			strbuf_puts_nl(sb, "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Frameset//EN' 'http:://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd'>");
-		else
+		else if (strict_xhtml)
 			strbuf_puts_nl(sb, "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.1//EN' 'http:://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd'>");
+		else
+			strbuf_puts_nl(sb, "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http:://www.w3.org/TR/xhtml1/DTD/xhtml1-Transitional.dtd'>");
 	}
 	strbuf_puts_nl(sb, html_begin);
 	strbuf_puts_nl(sb, html_head_begin);
@@ -286,12 +305,10 @@ const char *
 gen_name_number(number)
 	int number;
 {
-	STATIC_STRBUF(sb);
-	const char *id = enable_xhtml ? "id" : "name";
+	static char buf[32];
 
-	strbuf_clear(sb);
-	strbuf_sprintf(sb, "<a %s='%d'%s>", id, number, empty_element);
-	return strbuf_value(sb);
+	snprintf(buf, sizeof(buf), "%d", number);
+	return gen_name_string(buf);
 }
 /*
  * Generate name tag.
@@ -301,10 +318,21 @@ gen_name_string(name)
 	const char *name;
 {
 	STATIC_STRBUF(sb);
-	const char *id = enable_xhtml ? "id" : "name";
 
 	strbuf_clear(sb);
-	strbuf_sprintf(sb, "<a %s='%s'%s>", id, name, empty_element);
+	if (enable_xhtml) {
+		/*
+		 * Since some browser cannot understand "<a id='xxx' />",
+		 * we put both of 'id=' and 'name=' as long as XHTML1.1
+		 * is not required. XHTML1.1 prohibit 'name='.
+		 */
+		if (strict_xhtml)
+			strbuf_sprintf(sb, "<a id='%s' />", name);
+		else
+			strbuf_sprintf(sb, "<a id='%s' name='%s' />", name, name);
+	} else {
+		strbuf_sprintf(sb, "<a name='%s'>", name);
+	}
 	return strbuf_value(sb);
 }
 /*
