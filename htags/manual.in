@@ -33,13 +33,16 @@
 	In advance of using this command, you must execute
 	@xref{gtags,1} from the root directory of the source tree.
 	Then you can execute @name{htags} from the same place.
-	@name{Htags} makes an @file{HTML} directory and generates hypertext in it.
-
+	@name{Htags} makes an directory named @file{HTML} and generates
+	hypertext in it.
 	You can start browsing from @file{HTML/index.html}.
-	Once the hypertext is generated, you can move it anywhere and browse it
-	with any browser.
 
-	You must use the same parser for both @xref{gtags,1} and @name{htags}.
+	Since @name{htags} generates static hypertext as long as
+	the @option{-D}, @option{-f} and @option{-c} option are not specified,
+	you can move it anywhere and browse it with any browser without
+	web server.
+
+	You must use same parser for both @xref{gtags,1} and @name{htags}.
 	If you use the default parser, it is not necessary to consider for it.
 
 @OPTIONS
