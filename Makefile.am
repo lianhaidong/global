@@ -18,7 +18,9 @@ EXTRA_DIST = FAQ LICENSE \
 
 gtagsdir = ${datadir}/gtags
 gtags_DATA = AUTHORS COPYING ChangeLog FAQ INSTALL LICENSE NEWS README THANKS \
-        globash.rc gtags.conf gtags.pl gtags.vim nvi-1.79-gtags.diff \
+        globash.rc gtags.conf gtags.el gtags.pl gtags.vim nvi-1.79-gtags.diff \
 	htags/bless.sh.tmpl htags/global.cgi.tmpl htags/style.css
 
-dist_lisp_LISP = gtags.el
+# If you would like to install gtags.el to the lisp directory then uncomment
+# the following line.
+# dist_lisp_LISP = gtags.el
