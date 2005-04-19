@@ -20,6 +20,23 @@ ___________________________________
 GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 4.8.5 - April 19 2005, by Shigio YAMAGUCHI
+
+* htags: XHTML support(--xhtml) added.
+  If the --frame option is specified then generate XHTML-1.0 Frameset,
+  else if config variable 'xhtml_version' is set to 1.1 then generate
+  XHTML-1.1 else XHTML 1.0 Transitional.
+  You can customize the appearance using style sheet file 'style.css'.
+* htags: Added config variable 'xhtml_version'.
+* htags: Added 'html/' to the fault skip list of htags(1).
+  It is the output directory of doxygen document.
+* gtags-parser: Added yacc directives introduced in bison-2.0.
+  %default-prec(%default_prec)
+  %expect-rr(%expect_rr)
+  %initial-action
+  %no-default-prec(%no_default_prec,%no_default-prec,%no-default_prec)
+  %nondeterministic-parser
+
 Version 4.8.4 - March 4 2005, by Shigio YAMAGUCHI
 
 Fixed bugs:

@@ -19,6 +19,30 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+April 19 2005, Shigio YAMAGUCHI
+
+	* htags: Added new functions to generate anchor tag.
+	  For <a href=*** ...>
+	  - gen_href_begin_with_title_target()
+	  - gen_href_begin_simple()
+	  - gen_href_begin()
+	  - gen_href_begin_with_title()
+	  - gen_href_end()
+	  For <a name=***>
+	  - gen_name_number()
+	  - gen_name_string()
+	* htags, gtags-parser: Defined lex name generation rule.
+	  - Change prefix * to *_.
+	  - New lex name generation rule.
+	  - New macro definition (LEXTEXT, LEXLENG, ...))
+	* Added new macro STATIC_STRBUF(sb).
+	* Added new macros (PART_TAG, PART_LNO, PART_PATH, PART_LINE).
+	* strbuf.[ch]: Memory management was made more efficient.
+	* Added const prefix to char * if it is suitable.
+	* Install gtags.el into the $datadir/gtags directory instead of
+	  the site lisp directory because the installation procedure
+	  fails when the site lisp directory doesn't exist.
+
 February 26 2005, Shigio YAMAGUCHI
 
         * Required version of autotools was updated.
