@@ -38,7 +38,7 @@
 	You can start browsing from @file{HTML/index.html}.
 
 	Since @name{htags} generates static hypertext as long as
-	the @option{-D}, @option{-f} and @option{-c} option are not specified,
+	the @option{-D} or @option{-f} option is not specified,
 	you can move it anywhere and browse it with any browser without
 	web server.
 
