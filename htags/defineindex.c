@@ -52,7 +52,7 @@ makedefineindex(file, total, defines)
 	int count = 0;
 	int alpha_count = 0;
 	FILE *MAP = NULL;
-	FILE *DEFINES, *old, *STDOUT, *TAGS, *ALPHA = NULL;
+	FILE *DEFINES, *STDOUT, *TAGS, *ALPHA = NULL;
 	STRBUF *sb = strbuf_open(0);
 	STRBUF *url = strbuf_open(0);
 	/* Index link */
@@ -98,7 +98,6 @@ makedefineindex(file, total, defines)
 	/*
 	 * map DEFINES to STDOUT.
 	 */
-	old = STDOUT;
 	STDOUT = DEFINES;
 	snprintf(command, sizeof(command), "global -c");
 	if ((TAGS = popen(command, "r")) == NULL)
@@ -272,7 +271,6 @@ makedefineindex(file, total, defines)
 	}
 	if (pclose(TAGS) != 0)
 		die("'%s' failed.", command);
-	STDOUT = old;
 	if (aflag && alpha[0]) {
 		char tmp[128];
 		const char *msg = (alpha_count == 1) ? "definition is contained." : "definitions are contained.";
