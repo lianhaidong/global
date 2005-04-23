@@ -49,25 +49,25 @@ to generate language specific symbols.
  * and PREPROCESSOR_LINE as %start values, even if they are not used.
  * It assumed that CPP_COMMENT and SHELL_COMMENT is one line comment.
  */
-static int lineno;
+static int lexcommon_lineno;
 static int begin_line;
 /*
  * If you want newline to terminate string, set this variable to 1.
  */
 static int newline_terminate_string = 0;
 
-#define LINENO	lineno
+#define LINENO lexcommon_lineno
 
 #define DEFAULT_BEGIN_OF_FILE_ACTION {					\
         LEXIN = ip;							\
         LEXRESTART(LEXIN);						\
-        lineno = 1;							\
+        LINENO = 1;							\
         begin_line = 1;							\
 }
 
 #define DEFAULT_YY_USER_ACTION {					\
 	if (begin_line) {						\
-		put_begin_of_line(lineno);				\
+		put_begin_of_line(LINENO);				\
 		switch (YY_START) {					\
 		case C_COMMENT:						\
 		case CPP_COMMENT:					\
@@ -96,9 +96,9 @@ static int newline_terminate_string = 0;
 	}								\
 	if (YY_START == PREPROCESSOR_LINE)				\
 		yy_pop_state();						\
-	put_end_of_line(lineno);					\
+	put_end_of_line(LINENO);					\
 	/* for the next line */						\
-	lineno++;							\
+	LINENO++;							\
 	begin_line = 1;							\
 }
 
@@ -111,9 +111,9 @@ static int newline_terminate_string = 0;
 		echos(comment_end);					\
 		break;							\
 	}								\
-	put_end_of_line(lineno);					\
+	put_end_of_line(LINENO);					\
 	/* for the next line */						\
-	lineno++;							\
+	LINENO++;							\
 	begin_line = 1;							\
 }
 
