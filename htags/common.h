@@ -21,6 +21,17 @@
 #define _COMMON_H_
 
 /*
+ * Parameter values.
+ */
+/* gen_image() */
+#define CURRENT	0
+#define PARENT 1
+
+/* gen_page_begin() */
+#define SUBDIR 1
+#define TOPDIR 0
+
+/*
  * tag
  */
 extern const char *html_begin;
@@ -80,12 +91,6 @@ extern const char *br;
 extern const char *empty_element;
 extern const char *noframes_begin;
 extern const char *noframes_end;
-
-/*
- * Parameter for gen_image();
- */
-#define CURRENT	0
-#define PARENT 1
 
 int fputs_nl(const char *, FILE *);
 void setup_html();

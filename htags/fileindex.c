@@ -655,7 +655,7 @@ makefileindex(file, files)
 	if ((FILES = fopen(makepath(distpath, file, NULL), "w")) == NULL)
 		die("cannot open file '%s'.", file);
 
-	fputs_nl(gen_page_begin(title_file_index, 0), FILES);
+	fputs_nl(gen_page_begin(title_file_index, TOPDIR), FILES);
 	fputs_nl(body_begin, FILES);
 	fputs(header_begin, FILES);
 	fputs(gen_href_begin(NULL, "files", normal_suffix, NULL), FILES);
@@ -765,7 +765,7 @@ makefileindex(file, files)
 				strbuf_reset(sb);
 				strbuf_puts(sb, path);
 				strbuf_putc(sb, '/');
-				fputs_nl(gen_page_begin(strbuf_value(sb), 1), STDOUT);
+				fputs_nl(gen_page_begin(strbuf_value(sb), SUBDIR), STDOUT);
 				fputs_nl(body_begin, STDOUT);
 				fprintf(STDOUT, "%s%sroot%s/", header_begin, gen_href_begin(NULL, indexlink, normal_suffix, NULL), gen_href_end());
 				{
@@ -984,7 +984,7 @@ makeincludeindex(void)
 
 			snprintf(path, sizeof(path), "%s/%s/%d.%s", distpath, INCS, no, HTML);
 			INCLUDE = open_file_queue(path);
-			fputs_nl(gen_page_begin(last, 1), INCLUDE);
+			fputs_nl(gen_page_begin(last, SUBDIR), INCLUDE);
 			fputs_nl(body_begin, INCLUDE);
 			fputs_nl(verbatim_begin, INCLUDE);
 			{
@@ -1028,7 +1028,7 @@ makeincludeindex(void)
 
 			snprintf(path, sizeof(path), "%s/%s/%d.%s", distpath, INCREFS, no, HTML);
 			INCLUDE = open_file_queue(path);
-			fputs_nl(gen_page_begin(last, 1), INCLUDE);
+			fputs_nl(gen_page_begin(last, SUBDIR), INCLUDE);
 			fputs_nl(body_begin, INCLUDE);
 			fputs_nl(gen_list_begin(), INCLUDE);
 			{

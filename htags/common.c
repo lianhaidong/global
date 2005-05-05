@@ -213,15 +213,16 @@ upperdir(dir)
  * Generate beginning of page
  *
  *	i)	title	title of this page
- *	i)	subdir	1: this page is in subdirectory
+ *	i)	place	SUBDIR: this page is in sub directory
+ *			TOPDIR: this page is in the top directory
  */
 const char *
-gen_page_begin(title, subdir)
+gen_page_begin(title, place)
 	const char *title;
-	int subdir;
+	int place;
 {
 	STATIC_STRBUF(sb);
-	const char *dir = subdir ? "../" : "";
+	const char *dir = (place == SUBDIR) ? "../" : "";
 
 	strbuf_clear(sb);
 	if (enable_xhtml) {
