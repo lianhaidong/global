@@ -441,8 +441,8 @@ put_anchor(name, type, lineno)
 					s = "reference";
 				else
 					s = "symbol";
-				snprintf(tmp, sizeof(tmp), "%s?pattern=%s&type=%s",
-					action, name, s);
+				snprintf(tmp, sizeof(tmp), "%s?pattern=%s%stype=%s",
+					action, name, quote_amp, s);
 				file = tmp;
 			} else {
 				if (type == 'R')

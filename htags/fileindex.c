@@ -819,8 +819,8 @@ makefileindex(file, files)
 			if (notsource && dynamic) {
 				if (!(*action == '/' || count_stack(dirstack) == 0))
 					dir = "..";
-				snprintf(tmp, sizeof(tmp), "%s?pattern=%s&type=source",
-					action, encode(_));
+				snprintf(tmp, sizeof(tmp), "%s?pattern=%s%stype=source",
+					action, encode(_), quote_amp);
 				file = tmp;
 			} else {
 				dir = count_stack(dirstack) ? upperdir(SRCS) : SRCS;

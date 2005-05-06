@@ -288,16 +288,16 @@ main(argc, argv)
 		 * Read line from stdin and replace " ./<file name> "
 		 * with the file number like this.
 		 *
-		 * <A HREF="http://xxx/global/S/ ./main.c .html#110">main</A>\n
+		 * <a href='http://xxx/global/S/ ./main.c .html#110'>main</a>\n
 		 *				|
 		 *				v
-		 * <A HREF="http://xxx/global/S/39.html#110">main</A>\n
+		 * <a href='http://xxx/global/S/39.html#110'>main</a>\n
 		 *
 		 * If the file name is not found in GPATH, change into the path to CGI script.
-		 * <A HREF="http://xxx/global/S/ ./README .html#9">main</A>\n
+		 * <a href='http://xxx/global/S/ ./README .html#9'>main</a>\n
 		 *				|
 		 *				v
-		 * <A HREF="http://xxx/global/cgi-bin/global.cgi?pattern=README&type=source#9">main</A>\n
+		 * <a href='http://xxx/global/cgi-bin/global.cgi?pattern=README&amp;type=source#9'>main</a>\n
 		 */
 		if (gpath_open(".", 0, 0) < 0)
 			die("GPATH not found.");
@@ -343,7 +343,7 @@ main(argc, argv)
 					else
 						printf("%%%02x", c);
 				}
-				fputs("&type=source", stdout);
+				fputs("&amp;type=source", stdout);
 				for (; *q && *q != '#'; q++)
 					;
 				if (*q == '\0') {

@@ -227,7 +227,7 @@ makedefineindex(file, total, defines)
 				if (*action != '/' && aflag)
 					strbuf_puts(url, "../");
 				strbuf_puts(url, action);
-				strbuf_sprintf(url, "?pattern=%s&type=definitions", tag);
+				strbuf_sprintf(url, "?pattern=%s%stype=definitions", tag, quote_amp);
 			} else {
 				if (aflag)
 					strbuf_puts(url, "../");
