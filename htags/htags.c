@@ -332,6 +332,7 @@ generate_file(dist, file)
                 {"@message_end@", message_end},
                 {"@verbatim_begin@", verbatim_begin},
                 {"@verbatim_end@", verbatim_end},
+                {"@lineno_anchor@", NULL},
                 {"@global_path@", global_path},
                 {"@gtags_path@", gtags_path},
                 {"@normal_suffix@", normal_suffix},
@@ -348,6 +349,7 @@ generate_file(dist, file)
 
 	tab[0].value = gen_page_begin("Result", SUBDIR);
 	tab[1].value = gen_page_end();
+	tab[12].value = gen_name_string("$.");
 	/*
 	 * construct regular expression.
 	 */

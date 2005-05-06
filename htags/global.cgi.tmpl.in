@@ -127,7 +127,7 @@ if ($form{'type'} eq 'source') {
 	print "@verbatim_begin@\n";
 	while (<PIPE>) {
 		s/([&<>])/$ctab{$1}/ge;
-		print "<a name=$.>";
+		print "@lineno_anchor@";
 		print;
 	}
 	close(PIPE);
