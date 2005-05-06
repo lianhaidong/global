@@ -671,8 +671,12 @@ gen_input_with_title_checked(name, value, type, checked, title)
 		strbuf_sprintf(sb, " name='%s'", name);
 	if (value)
 		strbuf_sprintf(sb, " value='%s'", value);
-	if (checked)
-		strbuf_puts(sb, " checked");
+	if (checked) {
+		if (enable_xhtml)
+			strbuf_puts(sb, " checked='checked'");
+		else
+			strbuf_puts(sb, " checked");
+	}
 	if (title)
 		strbuf_sprintf(sb, " title='%s'", title);
 	strbuf_sprintf(sb, "%s>", empty_element);
