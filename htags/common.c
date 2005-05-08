@@ -694,7 +694,7 @@ gen_frameset_begin(contents)
 	STATIC_STRBUF(sb);
 
 	strbuf_clear(sb);
-	strbuf_sprintf(sb, "<frameset %s%s>", contents, empty_element);
+	strbuf_sprintf(sb, "<frameset %s>", contents);
 	return strbuf_value(sb);
 }
 /*
