@@ -605,7 +605,7 @@ gen_form_begin(target)
 	strbuf_sprintf(sb, "<form method='get' action='%s'", action);
 	if (target)
 		strbuf_sprintf(sb, " target='%s'", target);
-	strbuf_sprintf(sb, "%s>", empty_element);
+	strbuf_puts(sb, ">");
 	return strbuf_value(sb);
 }
 /*
