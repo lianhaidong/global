@@ -215,11 +215,14 @@ upperdir(dir)
  *	i)	title	title of this page
  *	i)	place	SUBDIR: this page is in sub directory
  *			TOPDIR: this page is in the top directory
+ *	i)	use_frameset
+ *			use frameset document type or not
  */
 const char *
-gen_page_begin(title, place)
+gen_page_begin(title, place, use_frameset)
 	const char *title;
 	int place;
+	int use_frameset;
 {
 	STATIC_STRBUF(sb);
 	const char *dir = (place == SUBDIR) ? "../" : "";
@@ -236,13 +239,15 @@ gen_page_begin(title, place)
 		}
 		/*
 		 * If the --frame option are specified then we take
-		 * 'XHTML 1.0 Frameset', else if the config variable
-		 * 'xhtml_version' is set to '1.1' then we take 'XHTML 1.1',
+		 * 'XHTML 1.0 Frameset' for index.html
+		 * and 'XHTML 1.0 Transitional' for other files,
+		 * else if the config variable 'xhtml_version' is
+		 * set to '1.1' then we take 'XHTML 1.1',
 		 * else 'XHTML 1.0 Transitional'.
 		 */
-		if (Fflag)
+		if (use_frameset)
 			strbuf_puts_nl(sb, "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Frameset//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd'>");
-		else if (strict_xhtml)
+		else if (!Fflag && strict_xhtml)
 			strbuf_puts_nl(sb, "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.1//EN' 'http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd'>");
 		else
 			strbuf_puts_nl(sb, "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-Transitional.dtd'>");

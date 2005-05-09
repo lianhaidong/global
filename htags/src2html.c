@@ -702,7 +702,7 @@ src2html(src, html, notsource)
 	if (!notsource) {
 		anchor_load(src);
 	}
-	fputs_nl(gen_page_begin(src, SUBDIR), out);
+	fputs_nl(gen_page_begin(src, SUBDIR, 0), out);
 	fputs_nl(body_begin, out);
 	/*
          * print the header

@@ -347,7 +347,7 @@ generate_file(dist, file)
         };
 	int tabsize = sizeof(tab) / sizeof(struct map);
 
-	tab[0].value = gen_page_begin("Result", SUBDIR);
+	tab[0].value = gen_page_begin("Result", SUBDIR, 0);
 	tab[1].value = gen_page_end();
 	tab[12].value = gen_name_string("$.");
 	/*
@@ -499,7 +499,7 @@ makehelp(file)
 	op = fopen(makepath(distpath, file, NULL), "w");
 	if (!op)
 		die("cannot make help file.");
-	fputs_nl(gen_page_begin("HELP", TOPDIR), op);
+	fputs_nl(gen_page_begin("HELP", TOPDIR, 0), op);
 	fputs_nl(body_begin, op);
 	fputs(header_begin, op);
 	fputs("Usage of Links", op);
@@ -628,7 +628,7 @@ makeindex(file, title, index)
 	op = fopen(makepath(distpath, file, NULL), "w");
 	if (!op)
 		die("cannot make file '%s'.", file);
-	fputs_nl(gen_page_begin(title, TOPDIR), op);
+	fputs_nl(gen_page_begin(title, TOPDIR, Fflag), op);
 	if (Fflag) {
 		fputs_nl(gen_frameset_begin("cols='200,*'"), op);
 		if (fflag) {
@@ -676,7 +676,7 @@ makemainindex(file, index)
 	op = fopen(makepath(distpath, file, NULL), "w");
 	if (!op)
 		die("cannot make file '%s'.", file);
-	fputs_nl(gen_page_begin(title, TOPDIR), op);
+	fputs_nl(gen_page_begin(title, TOPDIR, 0), op);
 	fputs_nl(body_begin, op);
 	fputs(index, op);
 	fputs_nl(body_end, op);
@@ -698,7 +698,7 @@ makesearchindex(file)
 	op = fopen(makepath(distpath, file, NULL), "w");
 	if (!op)
 		die("cannot create file '%s'.", file);
-	fputs_nl(gen_page_begin("SEARCH", TOPDIR), op);
+	fputs_nl(gen_page_begin("SEARCH", TOPDIR, 0), op);
 	fputs_nl(body_begin, op);
 	fputs(makesearchpart(action, id, "mains"), op);
 	fputs_nl(body_end, op);

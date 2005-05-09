@@ -173,7 +173,7 @@ makedupindex(void)
 				if (first_line[0]) {
 					if (!dynamic) {
 						op = open_dup_file(db, count);
-						fputs_nl(gen_page_begin(tag, SUBDIR), op);
+						fputs_nl(gen_page_begin(tag, SUBDIR, 0), op);
 						fputs_nl(body_begin, op);
 						fputs_nl(gen_list_begin(), op);
 						fputs_nl(gen_list_body(srcdir, first_line), op);
