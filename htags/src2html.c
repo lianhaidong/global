@@ -707,6 +707,8 @@ src2html(src, html, notsource)
 	/*
          * print the header
          */
+	if (insert_header)
+		fputs(gen_insert_header(SUBDIR), out);
 	fputs(gen_name_string("TOP"), out);
 	fputs(header_begin, out);
         fputs(fill_anchor(indexlink, src), out);
@@ -894,6 +896,8 @@ src2html(src, html, notsource)
 		fprintf(out, "%s[+%d %s]%s", position_begin, last_lineno, src, position_end);
 	fputs(" */", out);
 	fputs_nl(comment_end, out);
+	if (insert_footer)
+		fputs(gen_insert_footer(SUBDIR), out);
 	fputs_nl(body_end, out);
 	fputs_nl(gen_page_end(), out);
 	if (!notsource)

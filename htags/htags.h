@@ -51,7 +51,6 @@
 
 extern int w32;
 extern const char *www;
-extern const char *include_header;
 extern int file_count;
 extern int sep;
 extern int exitflag;
@@ -106,6 +105,8 @@ extern const char *cvsweb_cvsroot;
 extern const char *gtagslabel;
 extern const char *title;
 extern const char *xhtml_version;
+extern const char *insert_header;
+extern const char *insert_footer;
 
 extern const char *title_define_index;
 extern const char *title_file_index;

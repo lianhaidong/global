@@ -66,7 +66,6 @@ void makeincludeindex();
  */
 int w32 = W32;				/* Windows32 environment	*/
 const char *www = "http://www.gnu.org/software/global/";
-const char *include_header;
 int file_count = 0;
 int sep = '/';
 const char *save_config;
@@ -125,6 +124,8 @@ const char *cvsweb_cvsroot;
 const char *gtagslabel;
 const char *title;
 const char *xhtml_version = "1.0";
+const char *insert_header;		/* --insert-header=<file>	*/
+const char *insert_footer;		/* --insert-footer=<file>	*/
 
 /*
  * Constant values.
@@ -238,6 +239,8 @@ static struct option const long_options[] = {
         {"id", required_argument, NULL, 1},
         {"nocgi", no_argument, NULL, 1},
         {"no-map-file", no_argument, &no_map_file, 1},
+        {"insert-header", required_argument, NULL, 1},
+        {"insert-footer", required_argument, NULL, 1},
         {"statistics", no_argument, &statistics, 1},
         {"style-sheet", required_argument, NULL, 1},
         {"version", no_argument, &show_version, 1},
@@ -653,7 +656,11 @@ makeindex(file, title, index)
 		fputs_nl(gen_frameset_end(), op);
 	} else {
 		fputs_nl(body_begin, op);
+		if (insert_header)
+			fputs(gen_insert_header(TOPDIR), op);
 		fputs(index, op);
+		if (insert_footer)
+			fputs(gen_insert_footer(TOPDIR), op);
 		fputs_nl(body_end, op);
 	}
 	fputs_nl(gen_page_end(), op);
@@ -678,7 +685,11 @@ makemainindex(file, index)
 		die("cannot make file '%s'.", file);
 	fputs_nl(gen_page_begin(title, TOPDIR, 0), op);
 	fputs_nl(body_begin, op);
+	if (insert_header)
+		fputs(gen_insert_header(TOPDIR), op);
 	fputs(index, op);
+	if (insert_footer)
+		fputs(gen_insert_footer(TOPDIR), op);
 	fputs_nl(body_end, op);
 	fputs_nl(gen_page_end(), op);
 	fclose(op);
@@ -850,10 +861,6 @@ makecommonpart(title, defines, files)
 	char command[MAXFILLEN];
 	const char *_;
 
-	if (include_header) {
-		strbuf_puts_nl(sb, include_header);
-		strbuf_puts_nl(sb, hr);
-	}
 	strbuf_puts(sb, title_begin);
 	strbuf_puts(sb, title);
 	strbuf_puts_nl(sb, title_end);
@@ -1501,6 +1508,10 @@ main(argc, argv)
 				;	/* --gtagslabel is estimated only once. */
 			else if (!strcmp("style-sheet", long_options[option_index].name))
                                 style_sheet = optarg;
+			else if (!strcmp("insert-header", long_options[option_index].name))
+				insert_header = optarg;
+			else if (!strcmp("insert-footer", long_options[option_index].name))
+				insert_footer = optarg;
                         break;
                 case 'a':
                         aflag++;
@@ -1560,6 +1571,10 @@ main(argc, argv)
                         break;
 		}
 	}
+	if (insert_header && !test("fr", insert_header))
+		die("page header file '%s' not found.", insert_header);
+	if (insert_footer && !test("fr", insert_footer))
+		die("page footer file '%s' not found.", insert_footer);
 	if (no_map_file)
 		map_file = 0;
         argc -= optind;

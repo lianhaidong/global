@@ -85,6 +85,10 @@
 	@item{@option{--gtagslabel} @arg{label}}
 		@arg{label} is used for the label of configuration file.
 		The default is @code{default}.
+	@item{@option{--insert-header} @arg{file}}
+		Insert custom header derived from @arg{file} after <body> tag.
+	@item{@option{--insert-footer} @arg{file}}
+		Insert custom footer derived from @arg{file} before </body> tag.
 	@item{@option{-m}, @option{--main-func} @arg{name}}
 		Specify the main function name. The default is @code{main}.
 	@item{@option{-n}, @option{--line-number}}
