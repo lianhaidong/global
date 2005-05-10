@@ -352,7 +352,7 @@ generate_file(dist, file)
 
 	tab[0].value = gen_page_begin("Result", SUBDIR, 0);
 	tab[1].value = gen_page_end();
-	tab[12].value = gen_name_string("$.");
+	tab[12].value = gen_name_string("L$.");
 	/*
 	 * construct regular expression.
 	 */
