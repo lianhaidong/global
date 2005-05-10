@@ -34,6 +34,7 @@ Dan Fandrich		port to Windows 32 environment.
 Darryl Okahata		benchmark report about global(1).
 David Aspinwall		port to Cygwin 32 environment.
 David Brownlee		advice about fine coding style of C.
+Dimitri van Heesch      integration of Doxygen and GLOBAL.
 Don Fisher		bug report about the buffer overflow in htags(1).
 Dunford, Martin		advice about Windows 32 version of GLOBAL.
 Dirk Schultheis		advice about compat.h for Solaris.
