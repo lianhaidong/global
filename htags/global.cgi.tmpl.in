@@ -167,7 +167,7 @@ while (<PIPE>) {
 	($tag, $lno, $filename) = split;
 	s/([&<>])/$ctab{$1}/ge;
 	# " ./$filename " is replaced with file number by gtags --convert.
-	s!(^[^ \t]+)!<a href='$htmlbase/S/ ./$filename .@HTML@#$lno'>$1<\/a>!;
+	s!(^[^ \t]+)!<a href='$htmlbase/S/ ./$filename .@HTML@#L$lno'>$1<\/a>!;
 	print PIPEOUT;
 }
 $| = 1;	# flush buffer

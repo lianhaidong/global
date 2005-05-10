@@ -389,7 +389,7 @@ gen_name_number(number)
 {
 	static char buf[32];
 
-	snprintf(buf, sizeof(buf), "%d", number);
+	snprintf(buf, sizeof(buf), "L%d", number);
 	return gen_name_string(buf);
 }
 /*
@@ -459,6 +459,12 @@ gen_href_begin_with_title_target(dir, file, suffix, key, title, target)
 	}
 	if (key) {
 		strbuf_putc(sb, '#');
+		/*
+		 * If the key starts with a digit, it assumed line number.
+		 * XHTML 1.1 profibits number as an anchor.
+		 */
+		if (isdigit(*key))
+			strbuf_putc(sb, 'L');
 		strbuf_puts(sb, key);
 	}
 	strbuf_putc(sb, '\'');

@@ -248,11 +248,11 @@ makedefineindex(file, total, defines)
 			path += 2;		/* remove './' */
 
 			fid = path2fid(path);
-			snprintf(url_for_map, sizeof(url_for_map), "%s/%s.%s#%s",
+			snprintf(url_for_map, sizeof(url_for_map), "%s/%s.%s#L%s",
 				SRCS, fid, HTML, lno);
 			if (aflag)
 				strbuf_puts(url, "../");
-			strbuf_sprintf(url, "%s/%s.%s#%s", SRCS, fid, HTML, lno);
+			strbuf_sprintf(url, "%s/%s.%s#L%s", SRCS, fid, HTML, lno);
 			snprintf(guide, sizeof(guide), "Defined at %s in %s.", lno, path);
 			recover(&ptable);
 		}
