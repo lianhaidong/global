@@ -356,7 +356,7 @@ gen_page_begin(title, place)
 	const char *title;
 	int place;
 {
-	gen_page_generic_begin(title, place, 0);
+	return gen_page_generic_begin(title, place, 0);
 }
 /*
  * Generate beginning of frameset page
@@ -367,7 +367,7 @@ const char *
 gen_frameset_page_begin(title)
 	const char *title;
 {
-	gen_page_generic_begin(title, TOPDIR, 1);
+	return gen_page_generic_begin(title, TOPDIR, 1);
 }
 /*
  * Generate end of page
