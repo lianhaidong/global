@@ -323,8 +323,12 @@ generate_file(dist, file)
                 const char *name;
                 const char *value;
         } tab[] = {
+		/* dynamic initialization */
                 {"@page_begin@", NULL},
                 {"@page_end@", NULL},
+                {"@lineno_anchor@", NULL},
+
+		/* static initialization */
                 {"@body_begin@", body_begin},
                 {"@body_end@", body_end},
                 {"@title_begin@", title_begin},
@@ -335,7 +339,6 @@ generate_file(dist, file)
                 {"@message_end@", message_end},
                 {"@verbatim_begin@", verbatim_begin},
                 {"@verbatim_end@", verbatim_end},
-                {"@lineno_anchor@", NULL},
                 {"@global_path@", global_path},
                 {"@gtags_path@", gtags_path},
                 {"@normal_suffix@", normal_suffix},
@@ -352,7 +355,7 @@ generate_file(dist, file)
 
 	tab[0].value = gen_page_begin("Result", SUBDIR, 0);
 	tab[1].value = gen_page_end();
-	tab[12].value = gen_name_string("L$.");
+	tab[2].value = gen_name_string("L$.");
 	/*
 	 * construct regular expression.
 	 */
