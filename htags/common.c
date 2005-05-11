@@ -326,7 +326,7 @@ gen_page_generic_begin(title, place, use_frameset)
 		else if (!Fflag && strict_xhtml)
 			strbuf_puts_nl(sb, "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.1//EN' 'http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd'>");
 		else
-			strbuf_puts_nl(sb, "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-Transitional.dtd'>");
+			strbuf_puts_nl(sb, "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>");
 	}
 	strbuf_puts_nl(sb, html_begin);
 	strbuf_puts_nl(sb, html_head_begin);
