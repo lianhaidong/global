@@ -74,7 +74,7 @@ makedefineindex(file, total, defines)
 	}
 	if (!(DEFINES = fopen(makepath(distpath, file, NULL), "w")))
 		die("cannot make function index '%s'.", file);
-	fputs_nl(gen_page_begin(title_define_index, TOPDIR, 0), DEFINES);
+	fputs_nl(gen_page_begin(title_define_index, TOPDIR), DEFINES);
 	fputs_nl(body_begin, DEFINES);
 	fputs(header_begin, DEFINES);
 	if (Fflag)
@@ -184,7 +184,7 @@ makedefineindex(file, total, defines)
 			if (!ALPHA)
 				die("cannot make alphabetical function index.");
 			snprintf(buf, sizeof(buf), "[%s]", alpha);
-			fputs_nl(gen_page_begin(buf, SUBDIR, 0), ALPHA);
+			fputs_nl(gen_page_begin(buf, SUBDIR), ALPHA);
 			fputs_nl(body_begin, ALPHA);
 			fprintf(ALPHA, "%s[%s]%s\n", header_begin, alpha, header_end);
 			fputs(gen_href_begin_with_title(NULL, indexlink, normal_suffix, NULL, index_string), ALPHA);

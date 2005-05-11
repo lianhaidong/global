@@ -286,7 +286,7 @@ gen_insert_footer(place)
 	return sed(ip, place);
 }
 /*
- * Generate beginning of page
+ * Generate beginning of generic page
  *
  *	i)	title	title of this page
  *	i)	place	SUBDIR: this page is in sub directory
@@ -294,8 +294,8 @@ gen_insert_footer(place)
  *	i)	use_frameset
  *			use frameset document type or not
  */
-const char *
-gen_page_begin(title, place, use_frameset)
+static const char *
+gen_page_generic_begin(title, place, use_frameset)
 	const char *title;
 	int place;
 	int use_frameset;
@@ -343,6 +343,31 @@ gen_page_begin(title, place, use_frameset)
 		strbuf_puts(sb, style_sheet);
 	strbuf_puts(sb, html_head_end);
 	return strbuf_value(sb);
+}
+/*
+ * Generate beginning of normal page
+ *
+ *	i)	title	title of this page
+ *	i)	place	SUBDIR: this page is in sub directory
+ *			TOPDIR: this page is in the top directory
+ */
+const char *
+gen_page_begin(title, place)
+	const char *title;
+	int place;
+{
+	gen_page_generic_begin(title, place, 0);
+}
+/*
+ * Generate beginning of frameset page
+ *
+ *	i)	title	title of this page
+ */
+const char *
+gen_frameset_page_begin(title)
+	const char *title;
+{
+	gen_page_generic_begin(title, TOPDIR, 1);
 }
 /*
  * Generate end of page

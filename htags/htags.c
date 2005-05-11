@@ -353,7 +353,7 @@ generate_file(dist, file)
         };
 	int tabsize = sizeof(tab) / sizeof(struct map);
 
-	tab[0].value = gen_page_begin("Result", SUBDIR, 0);
+	tab[0].value = gen_page_begin("Result", SUBDIR);
 	tab[1].value = gen_page_end();
 	tab[2].value = gen_name_string("L$.");
 	/*
@@ -505,7 +505,7 @@ makehelp(file)
 	op = fopen(makepath(distpath, file, NULL), "w");
 	if (!op)
 		die("cannot make help file.");
-	fputs_nl(gen_page_begin("HELP", TOPDIR, 0), op);
+	fputs_nl(gen_page_begin("HELP", TOPDIR), op);
 	fputs_nl(body_begin, op);
 	fputs(header_begin, op);
 	fputs("Usage of Links", op);
@@ -634,8 +634,8 @@ makeindex(file, title, index)
 	op = fopen(makepath(distpath, file, NULL), "w");
 	if (!op)
 		die("cannot make file '%s'.", file);
-	fputs_nl(gen_page_begin(title, TOPDIR, Fflag), op);
 	if (Fflag) {
+		fputs_nl(gen_frameset_page_begin(title), op);
 		fputs_nl(gen_frameset_begin("cols='200,*'"), op);
 		if (fflag) {
 			fputs_nl(gen_frameset_begin("rows='33%,33%,*'"), op);
@@ -657,7 +657,9 @@ makeindex(file, title, index)
 		fputs_nl(body_end, op);
 		fputs_nl(noframes_end, op);
 		fputs_nl(gen_frameset_end(), op);
+		fputs_nl(gen_page_end(), op);
 	} else {
+		fputs_nl(gen_page_begin(title, TOPDIR), op);
 		fputs_nl(body_begin, op);
 		if (insert_header)
 			fputs(gen_insert_header(TOPDIR), op);
@@ -665,8 +667,8 @@ makeindex(file, title, index)
 		if (insert_footer)
 			fputs(gen_insert_footer(TOPDIR), op);
 		fputs_nl(body_end, op);
+		fputs_nl(gen_page_end(), op);
 	}
-	fputs_nl(gen_page_end(), op);
 	fclose(op);
 	file_count++;
 }
@@ -686,7 +688,7 @@ makemainindex(file, index)
 	op = fopen(makepath(distpath, file, NULL), "w");
 	if (!op)
 		die("cannot make file '%s'.", file);
-	fputs_nl(gen_page_begin(title, TOPDIR, 0), op);
+	fputs_nl(gen_page_begin(title, TOPDIR), op);
 	fputs_nl(body_begin, op);
 	if (insert_header)
 		fputs(gen_insert_header(TOPDIR), op);
@@ -712,7 +714,7 @@ makesearchindex(file)
 	op = fopen(makepath(distpath, file, NULL), "w");
 	if (!op)
 		die("cannot create file '%s'.", file);
-	fputs_nl(gen_page_begin("SEARCH", TOPDIR, 0), op);
+	fputs_nl(gen_page_begin("SEARCH", TOPDIR), op);
 	fputs_nl(body_begin, op);
 	fputs(makesearchpart(action, id, "mains"), op);
 	fputs_nl(body_end, op);
