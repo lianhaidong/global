@@ -19,6 +19,12 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+May 12 2005, Shigio YAMAGUCHI
+
+        * htags: New macro TOPDIR and SUBDIR added for readability.
+        * htags: Quoted the "&" in attribute value.
+        * Changed the address of FSF for each file.
+
 April 19 2005, Shigio YAMAGUCHI
 
 	* htags: Added new functions to generate anchor tag.

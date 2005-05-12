@@ -21,7 +21,7 @@ dnl You should have received a copy of the GNU General Public License
 dnl along with this program; if not, write to the Free Software
 dnl Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.
 dnl
-AC_INIT(GNU GLOBAL, 4.8.5)
+AC_INIT(GNU GLOBAL, 4.8.6)
 AC_CONFIG_SRCDIR(global/global.c)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_PREREQ(2.59)

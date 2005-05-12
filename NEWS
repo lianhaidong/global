@@ -20,6 +20,20 @@ ___________________________________
 GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 4.8.6 - May 12 2005, by Shigio YAMAGUCHI
+
+[INCOMPATIBLE CHANGES]
+* htags: Changed the value of id attribute and name attribute of
+  line number anchor from line number itself to 'L' + line number
+  like this.
+	<a name='100'> => <a name='L100'>
+  It is because XHTML prohibit the id attribute which starts
+  with a digit. If you refer these anchors from outer system,
+  please rewrite it.
+
+[OTHER CHANGES]
+* htags: New option --insert-header and --insert-footer added.
+
 Version 4.8.5 - April 19 2005, by Shigio YAMAGUCHI
 
 * htags: XHTML support(--xhtml) added.
