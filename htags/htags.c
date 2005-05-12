@@ -510,7 +510,8 @@ makehelp(file)
 	fputs(header_begin, op);
 	fputs("Usage of Links", op);
 	fputs_nl(header_end, op);
-	fputs(verbatim_begin, op);
+	if (!icon_list)
+		fputs(verbatim_begin, op);
 	fputs("/* ", op);
 	for (n = 0; n <= last; n++) {
 		if (icon_list) {
@@ -524,7 +525,10 @@ makehelp(file)
 	if (show_position)
 		fprintf(op, "[+line file]");
 	fputs(" */", op);
-	fputs_nl(verbatim_end, op);
+	if (!icon_list)
+		fputs_nl(verbatim_end, op);
+	else
+		fputc('\n', op);
 	fputs_nl(define_list_begin, op);
 	for (n = 0; n <= last; n++) {
 		fputs(define_term_begin, op);
