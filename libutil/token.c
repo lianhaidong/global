@@ -38,16 +38,16 @@
  * File input method.
  */
 int lineno;
-const unsigned char *sp, *cp, *lp;
+const char *sp, *cp, *lp;
 int crflag;			/* 1: return '\n', 0: doesn't return */
 int cmode;			/* allow token which start with '#' */
 int cppmode;			/* allow '::' as a token */
 int ymode;			/* allow token which start with '%' */
-unsigned char token[MAXTOKEN];
-unsigned char curfile[MAXPATHLEN];
+char token[MAXTOKEN];
+char curfile[MAXPATHLEN];
 int continued_line;		/* previous line ends with '\\' */
 
-static unsigned char ptok[MAXTOKEN];
+static char ptok[MAXTOKEN];
 static int lasttok;
 static FILE *ip;
 static STRBUF *ib;
@@ -111,7 +111,7 @@ nexttoken(interested, reserved)
 	int (*reserved)(const char *, int);
 {
 	int c;
-	unsigned char *p;
+	char *p;
 	int sharp = 0;
 	int percent = 0;
 

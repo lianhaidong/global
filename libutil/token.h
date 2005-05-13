@@ -27,14 +27,14 @@
 
 #define SYMBOL		0
 
-extern const unsigned char *sp, *cp, *lp;
+extern const char *sp, *cp, *lp;
 extern int lineno;
 extern int crflag;
 extern int cmode;
 extern int cppmode;
 extern int ymode;
-extern unsigned char token[MAXTOKEN];
-extern unsigned char curfile[MAXPATHLEN];
+extern char token[MAXTOKEN];
+extern char curfile[MAXPATHLEN];
 extern int continued_line;
 
 #define nextchar() \
@@ -43,7 +43,7 @@ extern int continued_line;
 			EOF : \
 			(lineno++, *cp == 0 ? \
 				(lp = cp, cp = NULL, continued_line = 0, '\n') : \
-				*cp++)) : \
+				(unsigned char)*cp++)) : \
 		(*cp == 0 ? (lp = cp, cp = NULL, continued_line = 0, '\n') : *cp++))
 #define atfirst (sp && sp == (cp ? cp - 1 : lp))
 
