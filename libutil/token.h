@@ -44,7 +44,9 @@ extern int continued_line;
 			(lineno++, *cp == 0 ? \
 				(lp = cp, cp = NULL, continued_line = 0, '\n') : \
 				(unsigned char)*cp++)) : \
-		(*cp == 0 ? (lp = cp, cp = NULL, continued_line = 0, '\n') : *cp++))
+		(*cp == 0 ? \
+			(lp = cp, cp = NULL, continued_line = 0, '\n') : \
+			(unsigned char)*cp++))
 #define atfirst (sp && sp == (cp ? cp - 1 : lp))
 
 int opentoken(const char *);
