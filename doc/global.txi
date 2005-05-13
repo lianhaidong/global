@@ -23,7 +23,7 @@ This file documents the GNU GLOBAL source code tag system.
 Copyright (c) 2000, 2001, 2002, 2003, 2004 Tama Communications Corporation
 
 Permission is granted to copy, distribute and/or modify this document
-under the terms of the GNU Free Documentation License, Version 1.1
+under the terms of the GNU Free Documentation License, Version 1.2
 or any later version published by the Free Software Foundation;
 with no Invariant Sections, with no Front-Cover Texts,
 and with no Back-Cover Texts.
@@ -68,8 +68,8 @@ This manual documents version @value{VERSION} of the GNU GLOBAL source code tag 
 * Global::                              Command line GLOBAL.
 * Applications::			Various applications.
 * Other topics::                        Other topics.
-* Reference::				Reference manual.
-* GNU Free Documentation License::	GNU Free Documentation License.
+* Reference::                           Command References.
+* Copying This Manual::                 Copying This Manual.
 * Index::                               Option index.
 @end menu
 @end ifinfo
@@ -2161,12 +2161,19 @@ Instead, you can use incremental updating facility (@samp{-u} option).
 @c Reference manual.
 @c ***************************************************************************
 @node Reference
-@chapter Reference manual
+@chapter Command References
 @include reference.txi
 
 @c ***************************************************************************
 @c FDL
 @c ***************************************************************************
+@node Copying This Manual
+@appendix Copying This Manual
+
+@menu
+* GNU Free Documentation License::      License for copying this manual.
+@end menu
+
 @include fdl.txi
 
 @node Index
