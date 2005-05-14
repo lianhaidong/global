@@ -56,7 +56,7 @@ is_binary(path)
 	char buf[32];
 	int i, c, size;
 
-	ip = open(path, 0);
+	ip = open(path, O_RDONLY);
 	if (ip < 0)
 		die("cannot open file '%s' in read mode.", path);
 	size = read(ip, buf, sizeof(buf));
