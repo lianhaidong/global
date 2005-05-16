@@ -639,7 +639,7 @@ makeindex(file, title, index)
 	if (!op)
 		die("cannot make file '%s'.", file);
 	if (Fflag) {
-		fputs_nl(gen_frameset_page_begin(title), op);
+		fputs_nl(gen_page_frameset_begin(title), op);
 		fputs_nl(gen_frameset_begin("cols='200,*'"), op);
 		if (fflag) {
 			fputs_nl(gen_frameset_begin("rows='33%,33%,*'"), op);

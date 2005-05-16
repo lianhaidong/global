@@ -101,7 +101,7 @@ const char *upperdir(const char *);
 const char *gen_insert_header(int);
 const char *gen_insert_footer(int);
 const char *gen_page_begin(const char *, int);
-const char *gen_frameset_page_begin(const char *);
+const char *gen_page_frameset_begin(const char *);
 const char *gen_page_end();
 const char *gen_image(int, const char *, const char *);
 const char *gen_name_number(int);

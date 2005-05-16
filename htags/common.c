@@ -364,7 +364,7 @@ gen_page_begin(title, place)
  *	i)	title	title of this page
  */
 const char *
-gen_frameset_page_begin(title)
+gen_page_frameset_begin(title)
 	const char *title;
 {
 	return gen_page_generic_begin(title, TOPDIR, 1);
