@@ -20,7 +20,8 @@
 @ifinfo
 This file documents the GNU GLOBAL source code tag system.
 
-Copyright (c) 2000, 2001, 2002, 2003, 2004 Tama Communications Corporation
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005
+Tama Communications Corporation
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.2
@@ -39,7 +40,8 @@ Free Documentation License".
 @c copyright page
 @page
 @vskip 0pt plus 1filll
-Copyright @copyright{} 2000, 2001, 2002, 2003, 2004 Tama Communications Corporation
+Copyright @copyright{} 2000, 2001, 2002, 2003, 2004, 2005
+Tama Communications Corporation
 @sp 2
 This is the first edition of the GNU GLOBAL documentation,@*
 and is consistent with @value{VERSION}.@*
@@ -48,7 +50,7 @@ Published by Tama Communications Corporation @*
 Tama-shi, Tokyo, Japan.@*
 
 Permission is granted to copy, distribute and/or modify this document
-under the terms of the GNU Free Documentation License, Version 1.1
+under the terms of the GNU Free Documentation License, Version 1.2
 or any later version published by the Free Software Foundation;
 with no Invariant Sections, with no Front-Cover Texts,
 and with no Back-Cover Texts.
@@ -119,6 +121,7 @@ GNU GLOBAL has following features:
 	@item Emacs editor (emacs, mule, xemacs)
 	@item Glimmer editor
 	@item Web browser
+	@item Doxygen documentation system
 	@end itemize
 @item find the locations of a specified object quickly.
 @item locate not only object definitions but also object references.
@@ -555,6 +558,7 @@ one command, for example:
 * Vim editor::                          Vim using GLOBAL.
 * Emacs editor::                        Extended emacs using GLOBAL.
 * Web browser::                         Hypertext generator.
+* Doxygen documentation system::	Doxygen using GLOBAL.
 @end menu
 
 @c ***************************************************************************
@@ -1933,7 +1937,7 @@ of FreeBSD kernel needs:
 
 Please invoke gtags(1)(See @xref{gtags}.) and htags(1)(See @xref{htags}.)
 in order like this:
-
+e
 @example
 
     (at your source directory)
@@ -1973,6 +1977,38 @@ Using mozilla, you can also utilize hypertext from your command line like this:
     
 @end example
 But in this case, you must not move HTML directory from the source directory.
+
+@c ***************************************************************************
+@c Doxygen documentation system
+@c ***************************************************************************
+@node Doxygen documentation system
+@section Doxygen using global
+
+You can use GLOBAL as a source browser of Doxygen.
+
+Doxygen Release 1.4.3 or later includs config option USE_HTAGS.
+When enabled in combination with SOURCE_BROWSER=YES, htags(1) is
+used as the source browser instead of doxygen's own. 
+
+Here is an example.
+
+@example
+
+(in source directory)
+$ doxygen -g
+$ vi Doxyfile
++---------------------------------
+|...
+|INPUT                  = .
+|RECURSIVE              = YES
+|SOURCE_BROWSER         = YES
+|USE_HTAGS              = YES
+|...
+
+$ doxygen
+$ lynx html/index.html
+
+@end example
 
 @c ***************************************************************************
 @c Other topics
