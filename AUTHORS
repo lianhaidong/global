@@ -39,17 +39,62 @@ Please see files ChangeLog and THANKS.
 Separate packages
 =================
 
-GLOBAL is distributed with the files:
+GLOBAL is distributed with the files derived from the following packages.
 
-(GNU C Library)
-regex.c, regex.h, snprintf.c, getopt.c, getopt1.c and getopt.h
-(BSD DB Library)
-bt_close.c, bt_open.c, bt_seq.c, db.c, queue.h, bt_conv.c, bt_overflow.c,
-bt_split.c, db.h bt_debug.c, bt_page.c, bt_utils.c, extern.h bt_delete.c,
-bt_put.c, btree.h, mpool.c bt_get.c, bt_search.c, compat.h, mpool.h
-(GNU sort)
-closeout.c, closeout.h, error.c, error.h, hard-locale.c, hard-locale.h,
-long-options.c, long-options.h, memcoll.c, memcoll.h, sort.c, sys2.h,
-system.h, version-etc.c, version-etc.h, xalloc.h, xmalloc.c
+o BSD DB Library by University of California, Berkeley.
+  (http://www.cs.berkeley.edu/)
+
+	libdb/bt_close.c
+	libdb/bt_conv.c
+	libdb/bt_debug.c
+	libdb/bt_delete.c
+	libdb/bt_get.c
+	libdb/bt_open.c
+	libdb/bt_overflow.c
+	libdb/bt_page.c
+	libdb/bt_put.c
+	libdb/bt_search.c
+	libdb/bt_seq.c
+	libdb/bt_split.c
+	libdb/bt_utils.c
+	libdb/btree.h
+	libdb/compat.h
+	libdb/db.c
+	libdb/db.h
+	libdb/extern.h
+	libdb/mpool.c
+	libdb/mpool.h
+	libdb/queue.h
+
+o GNU C Library by Free Software Foundation, Inc.
+  (http://www.gnu.org/software/libc/libc.html)
+
+	libglibc/getopt.c
+	libglibc/getopt.h
+	libglibc/getopt1.c
+	libglibc/regex.c
+	libglibc/regex.h
+	libglibc/snprintf.c
+
+o Textutils by Free Software Foundation, Inc.
+  (http://www.gnu.org/software/textutils/textutils.html)
+
+	gnusort/closeout.c
+	gnusort/closeout.h
+	gnusort/error.c
+	gnusort/error.h
+	gnusort/hard-locale.c
+	gnusort/hard-locale.h
+	gnusort/long-options.c
+	gnusort/long-options.h
+	gnusort/memcoll.c
+	gnusort/memcoll.h
+	gnusort/sort.c
+	gnusort/sys2.h
+	gnusort/system.h
+	gnusort/version-etc.c
+	gnusort/version-etc.h
+	gnusort/xalloc.h
+	gnusort/xmalloc.c
 
 they are considered a separate package, not part of GLOBAL proper.
