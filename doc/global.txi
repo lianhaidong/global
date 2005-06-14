@@ -156,7 +156,7 @@ It is a big merit of GLOBAL compared with any other tag system.
 @node   Preparation
 @section Preparation.
 
-First of all, you must execute gtags(1)(See @xref{gtags}.) at the root of source tree.
+First of all, you must execute gtags(1)(@pxref{gtags}) at the root of source tree.
 For example, if you want to browse vi's source code:
 
 @example
@@ -595,7 +595,7 @@ Yor can manage directory list by cookie facility.
 @node   Preparation(globash)
 @subsection Preparation.
 
-First, do the preparation of global. (Please see @xref{Preparation}.).
+First, do the preparation of global. @xref{Preparation}.
 And you can invoke bash(1) with ---rcfile option.
 @example
 
@@ -633,7 +633,7 @@ If you need help then please type 'ghelp'.
 @subsection Basic usage.
 
 @itemize @bullet
-@item Almost global(1)(See @xref{global}.)'s command character is available as a command.
+@item Almost global(1)(@pxref{global})'s command character is available as a command.
 @example
 
     [/usr/src/sys] x fork               <- @r{(global -x fork)}
@@ -789,7 +789,7 @@ Less viewer support duplicated tag.
 @node   Preparation(less)
 @subsection Preparation.
 
-First, do the preparation of global. (Please see @xref{Preparation}.).
+First, do the preparation of global. @xref{Preparation}.
 
 Second, to use global from less, you need to set environment variable
 @code{LESSGLOBALTAGS} to "global".
@@ -947,7 +947,7 @@ You can use GLOBAL's facilities only in 'gtags mode'.
 @node   Preparation(nvi-1.79)
 @subsection Preparation.
 
-First, do the preparation of global. (Please see @xref{Preparation}.).
+First, do the preparation of global. @xref{Preparation}.
 
 Second, to use global from nvi, you need to get into @dfn{gtagsmode}.
 There are several ways to do this:
@@ -986,7 +986,7 @@ Write the above set command to the @file{.exrc} or @file{.nexrc} and start nvi
 
 @end example
 
-You must start nvi under the source tree described in @xref{Preparation}.
+You must start nvi under the source tree described in @ref{Preparation}.
 @end enumerate
 
 @c ***************************************************************************
@@ -1156,7 +1156,7 @@ Recognition of the current token and its type.
 @node   Preparation(nvi-1.81.5)
 @subsection Preparation.
 
-First, do the preparation of global. (Please see @xref{Preparation}.).
+First, do the preparation of global. @xref{Preparation}.
 
 Second, to use global from nvi, you need write to @file{.nexrc} like this:
 It assumed that gtags.pl is put on @file{$HOME/perl}.
@@ -1176,7 +1176,7 @@ It assumed that gtags.pl is put on @file{$HOME/perl}.
 
 @end example
 
-You must start nvi under the source tree described in @xref{Preparation}.
+You must start nvi under the source tree described in @ref{Preparation}.
 
 @c ***************************************************************************
 @node   Basic usage(nvi-1.81.5)
@@ -1296,7 +1296,7 @@ Mouse events are supported.
 @node   Preparation(elvis)
 @subsection Preparation.
 
-First, do the preparation of global. (Please see @xref{Preparation}.).
+First, do the preparation of global. @xref{Preparation}.
 
 Second, start elvis and execute @code{set tagprg="global -t $1"} like this.
 @opindex -t
@@ -1489,7 +1489,7 @@ Special character '%', '#' and input completion are available.
 @node   Preparation(vim)
 @subsection Preparation.
 
-First, do the preparation of global. (Please see @xref{Preparation}.).
+First, do the preparation of global. @xref{Preparation}.
 
 Second, copy @file{gtags.vim} to your plugin directory or source it
 from your vimrc.
@@ -1630,7 +1630,7 @@ If you are editing @file{main.c} itself, you can use '%' instead.
     :Gtags -gi paTtern         <- @r{match to both 'PATTERN' and 'pattern'.}
 
 @end example
-	About the other options, See @xref{global}.
+	About the other options, @xref{global}.
 
 @item The GtagsCursor command brings you to the definition or reference of
 	the current token in C language.
@@ -1709,7 +1709,7 @@ Mouse events are supported.
 @node   Preparation(emacs)
 @subsection Preparation.
 
-First, do the preparation of global. (Please see @xref{Preparation}.).
+First, do the preparation of global. @xref{Preparation}.
 
 Second, to use global from emacs, you need to load the @file{gtags.el}
 and execute gtags-mode function in it.
@@ -1933,9 +1933,9 @@ of FreeBSD kernel needs:
 
 @end example
 
-Please invoke gtags(1)(See @xref{gtags}.) and htags(1)(See @xref{htags}.)
+Please invoke gtags(1)(@pxref{gtags}) and htags(1)(@pxref{htags})
 in order like this:
-e
+
 @example
 
     (at your source directory)
@@ -2041,7 +2041,7 @@ If @file{$HOME/.globalrc} exists then GLOBAL use it. Else if @file{/etc/gtags.co
 exists then GLOBAL use it. Otherwise default value will be used.
 The format of @file{gtags.conf} is resemble to termcap(5). By default, 'default'
 target is used.
-About the capabilities, please see each command manual. (See @xref{Reference}.)
+About the capabilities, please see each command manual. @xref{Reference}.
 
 @c ***************************************************************************
 @node   Plugin
