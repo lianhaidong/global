@@ -279,6 +279,7 @@ php(file)
 		die("'%s' cannot open.", file);
 
 	LEXRESTART(NULL);
+	LEXLINENO = 1;
 	while ((token = LEXLEX()) != 0) {
 		switch (token) {
 		case PHP_DEFINE:

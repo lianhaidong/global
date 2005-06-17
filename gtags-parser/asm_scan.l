@@ -164,4 +164,5 @@ void
 asm_initscan(void)
 {
 	LEXRESTART(NULL);
+	LEXLINENO = 1;
 }
