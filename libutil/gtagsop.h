@@ -42,7 +42,7 @@
 #define GTAGS_CREATE	1
 #define GTAGS_MODIFY	2
 
-/* gtagsopen() */
+/* gtags_open() */
 #define GTAGS_STANDARD		0	/* standard format */
 #define GTAGS_COMPACT		1	/* compact format */
 #define GTAGS_PATHINDEX		2	/* use path index */
@@ -86,10 +86,8 @@ typedef struct {
 const char *dbname(int);
 void makecommand(const char *, const char *, STRBUF *);
 void formatcheck(const char *, int);
-int notnamechar(const char *);
 GTOP *gtags_open(const char *, const char *, int, int, int);
 void gtags_put(GTOP *, const char *, const char *);
-const char *gtags_get(GTOP *, const char *);
 void gtags_add(GTOP *, const char *, const char *, int);
 void gtags_delete(GTOP *, const char *);
 const char *gtags_first(GTOP *, const char *, int);

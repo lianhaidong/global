@@ -187,7 +187,7 @@ formatcheck(line, format)
 		die("too small number of parts.\n'%s'", line);
 	}
 	for (p = ptable.part[1].start; *p; p++) {
-		if (!isdigit(*p)) {
+		if (!isdigit((unsigned char)*p)) {
 			recover(&ptable);
 			die("line number includes other than digit.\n'%s'", line);
 		}
@@ -204,7 +204,7 @@ formatcheck(line, format)
 	}
 	if (format & GTAGS_PATHINDEX) {
 		for (p = ptable.part[2].start; *p; p++)
-			if (!isdigit(*p)) {
+			if (!isdigit((unsigned char)*p)) {
 				recover(&ptable);
 				die("file number includes other than digit.\n'%s'", line);
 			}
@@ -309,7 +309,7 @@ gtags_open(dbpath, root, db, mode, flags)
 		const char *p;
 
 		if ((p = dbop_get(gtop->dbop, VERSIONKEY)) != NULL) {
-			for (p += strlen(VERSIONKEY); *p && isspace(*p); p++)
+			for (p += strlen(VERSIONKEY); *p && isspace((unsigned char)*p); p++)
 				;
 			gtop->format_version = atoi(p);
 		}
