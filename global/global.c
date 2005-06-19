@@ -269,7 +269,7 @@ main(argc, argv)
 	if (sflag && rflag)
 		die_with_code(2, "both of -s and -r are not allowed.");
 	/*
-	 * only -c, -i, -P and -p allows no argument.
+	 * only -c, -u, -P and -p allows no argument.
 	 */
 	if (!av && !show_filter) {
 		switch (command) {
