@@ -181,7 +181,7 @@ match(curtag, line)
 	for (p = curtag; *p; p++)
 		if (*p != *q++)
 			return 0;
-	if (!isspace(*q))
+	if (!isspace((unsigned char)*q))
 		return 0;
 	return 1;
 }
@@ -424,7 +424,7 @@ main(argc, argv)
 				die("gtags --sed: path name not found.");
 			*p++ = '\0';
 			fputs(ctags_x, stdout);
-			while (*p && !isspace(*p))
+			while (*p && !isspace((unsigned char)*p))
 				p++;
 			fputs(sed_string, stdout);
 			fputs(p, stdout);
@@ -460,7 +460,7 @@ main(argc, argv)
 				/* curtag = current tag name */
 				STRBUF *curtag = strbuf_open(0);
 				const char *p = ctags_x;
-				while (!isspace(*p))
+				while (!isspace((unsigned char)*p))
 					strbuf_putc(curtag, *p++);
 				/* read until next tag name */
 				do {
@@ -1033,7 +1033,7 @@ put_converting(line, absolute, cxref)
 	 */
 	if (cxref) {
 		/* print tag name */
-		for (; *p && !isspace(*p); p++)
+		for (; *p && !isspace((unsigned char)*p); p++)
 			(void)putc(*p, stdout);
 		/* print blanks and line number */
 		for (; *p && *p != '.'; p++)
@@ -1045,7 +1045,7 @@ put_converting(line, absolute, cxref)
 	 * make absolute path.
 	 */
 	strbuf_setlen(abspath, start_point);
-	for (; *p && !isspace(*p); p++)
+	for (; *p && !isspace((unsigned char)*p); p++)
 		strbuf_putc(abspath, *p);
 	/*
 	 * put path with converting.
