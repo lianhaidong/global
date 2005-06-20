@@ -53,7 +53,6 @@ extern int w32;
 extern const char *www;
 extern int file_count;
 extern int sep;
-extern int exitflag;
 extern const char *save_config;
 extern const char *save_argv;
 
