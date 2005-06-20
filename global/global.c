@@ -39,6 +39,9 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
+#ifdef HAVE_LIMITS_H
+#include <limits.h>
+#endif
 #include "getopt.h"
 
 #include "global.h"
@@ -57,6 +60,7 @@ void idutils(const char *, const char *);
 void grep(const char *);
 void pathlist(const char *, const char *);
 void parsefile(int, char **, const char *, const char *, const char *, int);
+static int exec_parser(const char *, const char *, const char *, const char *, FILE *);
 void printtag(FILE *, const char *);
 int search(const char *, const char *, const char *, int);
 int includepath(const char *, const char *);
@@ -91,6 +95,8 @@ int show_filter;			/* undocumented command */
 int use_tagfiles;
 int debug;
 const char *extra_options;
+
+extern char **environ;
 
 static void
 usage(void)
@@ -901,13 +907,14 @@ parsefile(argc, argv, cwd, root, dbpath, db)
 	int db;
 {
 	char buf[MAXPATHLEN+1], *path;
-	const char *p;
-	FILE *ip, *op;
+	FILE *op;
 	const char *parser, *av;
 	int count;
 	STRBUF *sb = strbuf_open(0);
-	STRBUF *com = strbuf_open(0);
-	STRBUF *ib = strbuf_open(MAXBUFLEN);
+	STRBUF *path_list = strbuf_open(MAXPATHLEN);
+	int path_list_max;
+	int force_processing_one_file;
+	char **e;
 
 	/*
 	 * teach parser where is dbpath.
@@ -920,6 +927,27 @@ parsefile(argc, argv, cwd, root, dbpath, db)
 	if (!getconfs(dbname(db), sb))
 		die("cannot get parser for %s.", dbname(db));
 	parser = strbuf_value(sb);
+
+	/*
+	 * determine the maximum length of the list of paths.
+	 */
+#if !defined(ARG_MAX) && defined(_SC_ARG_MAX)
+#define ARG_MAX		sysconf(_SC_ARG_MAX)
+#endif
+#ifdef ARG_MAX
+	path_list_max = ARG_MAX;
+	path_list_max -= 2048;
+	if (path_list_max > 20 * 1024)
+		path_list_max = 20 * 1024;
+	for (e = environ; *e != NULL; e++)
+		path_list_max -= strlen(*e) + 1;
+	path_list_max -= strlen(parser);
+	path_list_max -= 40;
+	force_processing_one_file = (path_list_max <= 0);
+#else
+	path_list_max = 0;
+	force_processing_one_file = 1;
+#endif
 
 	if (!(op = openfilter()))
 		die("cannot open output filter.");
@@ -958,31 +986,30 @@ parsefile(argc, argv, cwd, root, dbpath, db)
 				fprintf(stderr, "'%s' not found in GPATH.\n", path);
 			continue;
 		}
-		if (chdir(root) < 0)
-			die("cannot move to '%s' directory.", root);
-		/*
-		 * make command line.
-		 */
-		strbuf_reset(com);
-		makecommand(parser, path, com);
-		if (debug)
-			fprintf(stderr, "executing %s\n", strbuf_value(com));
-		if (!(ip = popen(strbuf_value(com), "r")))
-			die("cannot execute '%s'.", strbuf_value(com));
-		while ((p = strbuf_fgets(ib, ip, STRBUF_NOCRLF)) != NULL) {
-			count++;
-			printtag(op, p);
+
+		if (force_processing_one_file) {
+			count += exec_parser(parser, path, cwd, root, op);
+			continue;
 		}
-		if (pclose(ip) < 0)
-			die("terminated abnormally.");
-		if (chdir(cwd) < 0)
-			die("cannot move to '%s' directory.", cwd);
+
+		if (strbuf_getlen(path_list) + 1 + strlen(path) > path_list_max) {
+			count += exec_parser(parser, strbuf_value(path_list),
+					cwd, root, op);
+			strbuf_reset(path_list);
+		}
+
+		if (strbuf_getlen(path_list))
+			strbuf_putc(path_list, ' ');
+		strbuf_puts(path_list, path);
+	}
+	if (strbuf_getlen(path_list)) {
+		count += exec_parser(parser, strbuf_value(path_list),
+				cwd, root, op);
 	}
 	gpath_close();
 	closefilter(op);
 	strbuf_close(sb);
-	strbuf_close(com);
-	strbuf_close(ib);
+	strbuf_close(path_list);
 	if (vflag) {
 		if (count == 0)
 			fprintf(stderr, "object not found");
@@ -992,6 +1019,57 @@ parsefile(argc, argv, cwd, root, dbpath, db)
 			fprintf(stderr, "%d objects located", count);
 		fprintf(stderr, " (no index used).\n");
 	}
+}
+/*
+ * exec_parser: execute parser
+ *
+ *	i)	parser		template of command line
+ *	i)	path_list	space separated list of path
+ *	i)	cwd		current directory
+ *	i)	root		root directory of source tree
+ *	i)	op		filter to output
+ *	r)			number of objects found
+ */
+static int
+exec_parser(parser, path_list, cwd, root, op)
+	const char *parser;
+	const char *path_list;
+	const char *cwd;
+	const char *root;
+	FILE *op;
+{
+	const char *p;
+	FILE *ip;
+	int count;
+	STRBUF *com = strbuf_open(0);
+	STRBUF *ib = strbuf_open(MAXBUFLEN);
+
+	if (chdir(root) < 0)
+		die("cannot move to '%s' directory.", root);
+	/*
+	 * make command line.
+	 */
+	makecommand(parser, path_list, com);
+	if (debug)
+		fprintf(stderr, "executing %s\n", strbuf_value(com));
+	if (!(ip = popen(strbuf_value(com), "r")))
+		die("cannot execute '%s'.", strbuf_value(com));
+
+	count = 0;
+	while ((p = strbuf_fgets(ib, ip, STRBUF_NOCRLF)) != NULL) {
+		count++;
+		printtag(op, p);
+	}
+
+	if (pclose(ip) < 0)
+		die("terminated abnormally.");
+	if (chdir(cwd) < 0)
+		die("cannot move to '%s' directory.", cwd);
+
+	strbuf_close(com);
+	strbuf_close(ib);
+
+	return count;
 }
 /*
  * search: search specified function 
