@@ -42,6 +42,8 @@ if test ${ac_cv_path_PERL} = no; then
 	PERL=SPECIFY_ABSOLUTE_PATH_OF_PERL
 fi
 
+AC_GNU_SOURCE
+
 dnl Checks for libraries.
 
 dnl Checks for header files.
