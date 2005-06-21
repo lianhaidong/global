@@ -941,7 +941,7 @@ parsefile(argc, argv, cwd, root, dbpath, db)
 		path_list_max = 20 * 1024;
 	for (e = environ; *e != NULL; e++)
 		path_list_max -= strlen(*e) + 1;
-	path_list_max -= strlen(parser);
+	path_list_max -= strbuf_getlen(sb);
 	path_list_max -= 40;
 	force_processing_one_file = (path_list_max <= 0);
 #else
