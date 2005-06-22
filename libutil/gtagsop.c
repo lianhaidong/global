@@ -540,13 +540,15 @@ gtags_delete(gtop, path)
 	GTOP *gtop;
 	const char *path;
 {
-	const char *p;
+	const char *p, *fid;
 	/*
 	 * In compact format, a path is saved as a file number.
 	 */
-	if (gtop->format & GTAGS_PATHINDEX)
-		if ((path = gpath_fid2path(path)) == NULL)
+	if (gtop->format & GTAGS_PATHINDEX) {
+		if ((fid = gpath_path2fid(path)) == NULL)
 			die("GPATH is corrupted.('%s' not found)", path);
+		path = fid;
+	}
 	/*
 	 * read sequentially, because db(1) has just one index.
 	 */
