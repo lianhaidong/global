@@ -899,9 +899,7 @@ createtags(dbpath, root, db)
 	 */
 	if (!getconfs(dbname(db), sb))
 		die("cannot get tag command. (%s)", dbname(db));
-	comline = strdup(strbuf_value(sb));
-	if (!comline)
-		die("short of memory.");
+	comline = strbuf_value(sb);
 	/*
 	 * GTAGS needed to make GRTAGS.
 	 */
@@ -921,9 +919,8 @@ createtags(dbpath, root, db)
 		if (cflag == 1)
 			flags |= GTAGS_COMPACT;
 	}
-	strbuf_reset(sb);
-	if (vflag > 1 && getconfs(dbname(db), sb))
-		fprintf(stderr, " using tag command '%s <path>'.\n", strbuf_value(sb));
+	if (vflag > 1)
+		fprintf(stderr, " using tag command '%s <path>'.\n", comline);
 	gtop = gtags_open(dbpath, root, db, GTAGS_CREATE, flags);
 	for (find_open(NULL); (path = find_read()) != NULL; ) {
 		int	gflags = 0;
@@ -964,7 +961,6 @@ createtags(dbpath, root, db)
 	total = count;				/* save total count */
 	find_close();
 	gtags_close(gtop);
-	free((void *)comline);
 	strbuf_close(sb);
 }
 /*
