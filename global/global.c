@@ -96,8 +96,6 @@ int use_tagfiles;
 int debug;
 const char *extra_options;
 
-extern char **environ;
-
 static void
 usage(void)
 {
@@ -914,7 +912,6 @@ parsefile(argc, argv, cwd, root, dbpath, db)
 	STRBUF *path_list = strbuf_open(MAXPATHLEN);
 	int path_list_max;
 	int force_processing_one_file;
-	char **e;
 
 	/*
 	 * teach parser where is dbpath.
@@ -939,8 +936,7 @@ parsefile(argc, argv, cwd, root, dbpath, db)
 	path_list_max -= 2048;
 	if (path_list_max > 20 * 1024)
 		path_list_max = 20 * 1024;
-	for (e = environ; *e != NULL; e++)
-		path_list_max -= strlen(*e) + 1;
+	path_list_max -= env_size();
 	path_list_max -= strbuf_getlen(sb);
 	path_list_max -= 40;
 	force_processing_one_file = (path_list_max <= 0);

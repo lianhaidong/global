@@ -37,6 +37,8 @@
 #include "env.h"
 #include "strbuf.h"
 
+extern char **environ;
+
 /*
  * set_env: put environment variable.
  *
@@ -72,3 +74,19 @@ get_home_directory(void)
 	return getenv("HOME");
 #endif
 }
+
+/*
+ * env_size: calculate the size of area used by environment.
+ */
+int
+env_size(void)
+{
+	char **e;
+	int size = 0;
+
+	for (e = environ; *e != NULL; e++)
+		size += strlen(*e) + 1;
+
+	return size;
+}
+

@@ -22,5 +22,6 @@
 
 void set_env(const char *, const char *);
 char *get_home_directory(void);
+int env_size(void);
 
 #endif /* ! _ENV_H_ */
