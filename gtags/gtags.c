@@ -63,7 +63,7 @@ void onintr(int);
 int match(const char *, const char *);
 int main(int, char **);
 int incremental(const char *, const char *);
-void updatetags(const char *, const char *, const char *, int);
+void updatetags(const char *, const char *, STRBUF *, STRBUF *, STRBUF *, int);
 void createtags(const char *, const char *, int);
 int printconf(const char *);
 void set_base_directory(const char *, const char *);
@@ -681,6 +681,8 @@ incremental(dbpath, root)
 	STRBUF *deletelist = strbuf_open(0);
 	int updated = 0;
 	const char *path;
+	const char *end;
+	int db;
 
 	if (vflag) {
 		fprintf(stderr, " Tag found in '%s'.\n", dbpath);
@@ -727,60 +729,40 @@ incremental(dbpath, root)
 		}
 	}
 	gpath_close();
-	if (strbuf_getlen(addlist) + strbuf_getlen(deletelist) + strbuf_getlen(updatelist))
+	if (strbuf_getlen(addlist) + strbuf_getlen(deletelist) + strbuf_getlen(updatelist)) {
 		updated = 1;
-	/*
-	 * execute updating.
-	 */
-	signal_setup();
-	if (strbuf_getlen(updatelist) > 0) {
-		const char *start = strbuf_value(updatelist);
-		const char *end = start + strbuf_getlen(updatelist);
-		const char *p;
+		/*
+		 * execute updating.
+		 */
+		signal_setup();
 
-		for (p = start; p < end; p += strlen(p) + 1) {
-			updatetags(dbpath, root, p, 0);
-			if (exitflag)
-				exit(1);
-		}
-		updated = 1;
-	}
-	if (strbuf_getlen(addlist) > 0) {
-		const char *start = strbuf_value(addlist);
-		const char *end = start + strbuf_getlen(addlist);
-		const char *p;
-
-		for (p = start; p < end; p += strlen(p) + 1) {
-			updatetags(dbpath, root, p, 1);
-			if (exitflag)
-				exit(1);
-		}
-		updated = 1;
-	}
-	if (strbuf_getlen(deletelist) > 0) {
-		const char *start = strbuf_value(deletelist);
-		const char *end = start + strbuf_getlen(deletelist);
-		const char *p;
-
-		for (p = start; p < end; p += strlen(p) + 1) {
-			updatetags(dbpath, root, p, 2);
+		for (db = GTAGS; db < GTAGLIM; db++) {
+			/*
+			 * GTAGS needed at least.
+			 */
+			if ((db == GRTAGS || db == GSYMS)
+			    && !test("f", makepath(dbpath, dbname(db), NULL)))
+				continue;
+			if (vflag)
+				fprintf(stderr, "[%s] Updating '%s'.\n", now(), dbname(db));
+			updatetags(dbpath, root, addlist, updatelist, deletelist, db);
 			if (exitflag)
 				exit(1);
 		}
 
 		gpath_open(dbpath, 2, 0);
-		for (p = start; p < end; p += strlen(p) + 1) {
+		path = strbuf_value(deletelist);
+		end = path + strbuf_getlen(deletelist);
+		while (path < end) {
+			gpath_delete(path);
 			if (exitflag)
 				break;
-			gpath_delete(p);
+			path += strlen(path) + 1;
 		}
 		gpath_close();
-		updated = 1;
-	}
-	if (exitflag)
-		exit(1);
-	if (updated) {
-		int db;
+		if (exitflag)
+			exit(1);
+
 		/*
 		 * Update modification time of tag files
 		 * because they may have no definitions.
@@ -807,72 +789,83 @@ incremental(dbpath, root)
 /*
  * updatetags: update tag file.
  *
- *	i)	dbpath	directory in which tag file exist
- *	i)	root	root directory of source tree
- *	i)	path	path which should be updated
- *	i)	type	0:update, 1:add, 2:delete
+ *	i)	dbpath		directory in which tag file exist
+ *	i)	root		root directory of source tree
+ *	i)	addlist		\0 separated list of added files
+ *	i)	updatelist	\0 separated list of modified files
+ *	i)	deletelist	\0 separated list of deleted files
+ *	i)	db		GTAGS, GRTAGS, GSYMS
  */
 void
-updatetags(dbpath, root, path, type)
+updatetags(dbpath, root, addlist, updatelist, deletelist, db)
 	const char *dbpath;
 	const char *root;
-	const char *path;
-	int type;
+	STRBUF *addlist;
+	STRBUF *updatelist;
+	STRBUF *deletelist;
+	int db;
 {
 	GTOP *gtop;
+	const char *path;
+	const char *comline;
+	const char *end1, *end2;
 	STRBUF *sb = strbuf_open(0);
-	int db;
-	const char *msg = NULL;
+	int gflags;
 
-	switch (type) {
-	case 0:	msg = "Updating"; break;
-	case 1: msg = "Adding"; break;
-	case 2:	msg = "Deleting"; break;
-	}
-	if (vflag)
-		fprintf(stderr, " %s tags of %s ...", msg, path + 2);
-	for (db = GTAGS; db < GTAGLIM; db++) {
-		int gflags = 0;
+	/*
+	 * GTAGS needed to make GRTAGS.
+	 */
+	if (db == GRTAGS && !test("f", makepath(dbpath, dbname(GTAGS), NULL)))
+		die("GTAGS needed to create GRTAGS.");
 
+	/*
+	 * get tag command.
+	 */
+	if (!getconfs(dbname(db), sb))
+		die("cannot get tag command. (%s)", dbname(db));
+	comline = strbuf_value(sb);
+
+	gtop = gtags_open(dbpath, root, db, GTAGS_MODIFY, 0);
+
+	path = strbuf_value(deletelist);
+	end1 = path + strbuf_getlen(deletelist);
+	end2 = strbuf_value(updatelist) + strbuf_getlen(updatelist);
+	for (;;) {
+		if (path == end1)
+			path = strbuf_value(updatelist);
+		if (path == end2)
+			break;
+		if (vflag)
+			fprintf(stderr, " deleting tags of %s\n", path);
+		gtags_delete(gtop, path);
 		if (exitflag)
 			break;
-		/*
-		 * GTAGS needed at least.
-		 */
-		if ((db == GRTAGS || db == GSYMS) && !test("f", makepath(dbpath, dbname(db), NULL)))
-			continue;
-		/*
-		 * GTAGS needed to make GRTAGS.
-		 */
-		if (db == GRTAGS && !test("f", makepath(dbpath, dbname(GTAGS), NULL)))
-			die("GTAGS needed to create GRTAGS.");
-		if (vflag)
-			fprintf(stderr, "%s", dbname(db));
-		/*
-		 * get tag command.
-		 */
-		strbuf_reset(sb);
-		if (!getconfs(dbname(db), sb))
-			die("cannot get tag command. (%s)", dbname(db));
-		gtop = gtags_open(dbpath, root, db, GTAGS_MODIFY, 0);
-		if (type != 1)
-			gtags_delete(gtop, path);
-		if (vflag)
-			fprintf(stderr, "..");
-		if (type != 2) {
-			if (extractmethod)
-				gflags |= GTAGS_EXTRACTMETHOD;
-			if (debug)
-				gflags |= GTAGS_DEBUG;
-			gtags_add(gtop, strbuf_value(sb), path, gflags);
-		}
-		gtags_close(gtop);
+		path += strlen(path) + 1;
 	}
+
+	gflags = 0;
+	if (extractmethod)
+		gflags |= GTAGS_EXTRACTMETHOD;
+	if (debug)
+		gflags |= GTAGS_DEBUG;
+	path = strbuf_value(addlist);
+	end1 = path + strbuf_getlen(addlist);
+	end2 = strbuf_value(updatelist) + strbuf_getlen(updatelist);
+	for (;;) {
+		if (path == end1)
+			path = strbuf_value(updatelist);
+		if (path == end2)
+			break;
+		if (vflag)
+			fprintf(stderr, " adding tags of %s\n", path);
+		gtags_add(gtop, comline, path, gflags);
+		if (exitflag)
+			break;
+		path += strlen(path) + 1;
+	}
+
+	gtags_close(gtop);
 	strbuf_close(sb);
-	if (exitflag)
-		return;
-	if (vflag)
-		fprintf(stderr, " Done.\n");
 }
 /*
  * createtags: create tags file
