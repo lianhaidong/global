@@ -681,8 +681,6 @@ incremental(dbpath, root)
 	STRBUF *deletelist = strbuf_open(0);
 	int updated = 0;
 	const char *path;
-	const char *end;
-	int db;
 
 	if (vflag) {
 		fprintf(stderr, " Tag found in '%s'.\n", dbpath);
@@ -729,12 +727,14 @@ incremental(dbpath, root)
 		}
 	}
 	gpath_close();
-	if (strbuf_getlen(addlist) + strbuf_getlen(deletelist) + strbuf_getlen(updatelist)) {
+	if (strbuf_getlen(addlist) + strbuf_getlen(deletelist) + strbuf_getlen(updatelist))
 		updated = 1;
-		/*
-		 * execute updating.
-		 */
-		signal_setup();
+	/*
+	 * execute updating.
+	 */
+	signal_setup();
+	if (updated) {
+		int db;
 
 		for (db = GTAGS; db < GTAGLIM; db++) {
 			/*
@@ -749,20 +749,24 @@ incremental(dbpath, root)
 			if (exitflag)
 				exit(1);
 		}
+	}
+	if (strbuf_getlen(deletelist) > 0) {
+		const char *start = strbuf_value(deletelist);
+		const char *end = start + strbuf_getlen(deletelist);
+		const char *p;
 
 		gpath_open(dbpath, 2, 0);
-		path = strbuf_value(deletelist);
-		end = path + strbuf_getlen(deletelist);
-		while (path < end) {
-			gpath_delete(path);
+		for (p = start; p < end; p += strlen(p) + 1) {
 			if (exitflag)
 				break;
-			path += strlen(path) + 1;
+			gpath_delete(p);
 		}
 		gpath_close();
-		if (exitflag)
-			exit(1);
-
+	}
+	if (exitflag)
+		exit(1);
+	if (updated) {
+		int db;
 		/*
 		 * Update modification time of tag files
 		 * because they may have no definitions.
