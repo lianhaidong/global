@@ -525,7 +525,7 @@ convertpath(dbpath, htmldir, path, sb)
 	/*
 	 * new style.
 	 */
-	if (gpath_open(dbpath, 0, 0) == 0) {
+	if (gpath_open(dbpath, 0) == 0) {
 		char key[MAXPATHLEN+1];
 		int tag1 = strbuf_getlen(sb);
 

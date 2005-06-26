@@ -237,7 +237,6 @@ gtags_open(dbpath, root, db, mode, flags)
 {
 	GTOP *gtop;
 	int dbmode = 0;
-	int dbopflags = 0;
 
 	if ((gtop = (GTOP *)calloc(sizeof(GTOP), 1)) == NULL)
 		die("short of memory.");
@@ -261,8 +260,7 @@ gtags_open(dbpath, root, db, mode, flags)
 	/*
 	 * allow duplicate records.
 	 */
-	dbopflags = DBOP_DUP;
-	gtop->dbop = dbop_open(makepath(dbpath, dbname(db), NULL), dbmode, 0644, dbopflags);
+	gtop->dbop = dbop_open(makepath(dbpath, dbname(db), NULL), dbmode, 0644, DBOP_DUP);
 	if (gtop->dbop == NULL) {
 		if (dbmode == 1)
 			die("cannot make %s.", dbname(db));
@@ -323,7 +321,7 @@ gtags_open(dbpath, root, db, mode, flags)
 		}
 	}
 	if (gtop->format & GTAGS_PATHINDEX || gtop->mode != GTAGS_READ) {
-		if (gpath_open(dbpath, dbmode, dbopflags) < 0) {
+		if (gpath_open(dbpath, dbmode) < 0) {
 			if (dbmode == 1)
 				die("cannot create GPATH.");
 			else

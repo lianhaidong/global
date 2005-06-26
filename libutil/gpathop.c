@@ -52,15 +52,13 @@ static int created;
  *	i)	mode	0: read only
  *			1: create
  *			2: modify
- *	i)	flags	DBOP_POSTGRES
  *	r)		0: normal
  *			-1: error
  */
 int
-gpath_open(dbpath, mode, flags)
+gpath_open(dbpath, mode)
 	const char *dbpath;
 	int mode;
-	int flags;
 {
 	assert(opened == 0);
 	/*
@@ -69,7 +67,7 @@ gpath_open(dbpath, mode, flags)
 	_mode = mode;
 	if (mode == 1 && created)
 		mode = 0;
-	dbop = dbop_open(makepath(dbpath, dbname(GPATH), NULL), mode, 0644, flags);
+	dbop = dbop_open(makepath(dbpath, dbname(GPATH), NULL), mode, 0644, 0);
 	if (dbop == NULL)
 		return -1;
 	if (mode == 1)

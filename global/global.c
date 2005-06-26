@@ -947,7 +947,7 @@ parsefile(argc, argv, cwd, root, dbpath, db)
 
 	if (!(op = openfilter()))
 		die("cannot open output filter.");
-	if (gpath_open(dbpath, 0, 0) < 0)
+	if (gpath_open(dbpath, 0) < 0)
 		die("GPATH not found.");
 	count = 0;
 	for (; argc > 0; argv++, argc--) {

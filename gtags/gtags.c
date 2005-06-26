@@ -299,7 +299,7 @@ main(argc, argv)
 		 *				v
 		 * <a href='http://xxx/global/cgi-bin/global.cgi?pattern=README&amp;type=source#9'>main</a>\n
 		 */
-		if (gpath_open(".", 0, 0) < 0)
+		if (gpath_open(".", 0) < 0)
 			die("GPATH not found.");
 		while (strbuf_fgets(ib, stdin, 0) != NULL) {
 			p = strbuf_value(ib);
@@ -694,7 +694,7 @@ incremental(dbpath, root)
 		die("stat failed '%s'.", path);
 	gtags_mtime = statp.st_mtime;
 
-	if (gpath_open(dbpath, 0, 0) < 0)
+	if (gpath_open(dbpath, 0) < 0)
 		die("GPATH not found.");
 	/*
 	 * make add list and update list.
@@ -755,7 +755,7 @@ incremental(dbpath, root)
 		const char *end = start + strbuf_getlen(deletelist);
 		const char *p;
 
-		gpath_open(dbpath, 2, 0);
+		gpath_open(dbpath, 2);
 		for (p = start; p < end; p += strlen(p) + 1) {
 			if (exitflag)
 				break;

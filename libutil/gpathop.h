@@ -28,7 +28,7 @@
 
 #define NEXTKEY		" __.NEXTKEY"
 
-int gpath_open(const char *, int, int);
+int gpath_open(const char *, int);
 const char *gpath_path2fid(const char *);
 const char *gpath_fid2path(const char *);
 void gpath_put(const char *);
