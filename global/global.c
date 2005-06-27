@@ -48,6 +48,10 @@
 #include "regex.h"
 #include "const.h"
 
+#if !defined(ARG_MAX) && defined(_SC_ARG_MAX)
+#define ARG_MAX		sysconf(_SC_ARG_MAX)
+#endif
+
 static void usage(void);
 static void help(void);
 static void setcom(int);
@@ -911,7 +915,6 @@ parsefile(argc, argv, cwd, root, dbpath, db)
 	STRBUF *sb = strbuf_open(0);
 	STRBUF *path_list = strbuf_open(MAXPATHLEN);
 	int path_list_max;
-	int force_processing_one_file;
 
 	/*
 	 * teach parser where is dbpath.
@@ -928,9 +931,6 @@ parsefile(argc, argv, cwd, root, dbpath, db)
 	/*
 	 * determine the maximum length of the list of paths.
 	 */
-#if !defined(ARG_MAX) && defined(_SC_ARG_MAX)
-#define ARG_MAX		sysconf(_SC_ARG_MAX)
-#endif
 #ifdef ARG_MAX
 	path_list_max = ARG_MAX;
 	path_list_max -= 2048;
@@ -939,10 +939,10 @@ parsefile(argc, argv, cwd, root, dbpath, db)
 	path_list_max -= env_size();
 	path_list_max -= strbuf_getlen(sb);
 	path_list_max -= 40;
-	force_processing_one_file = (path_list_max <= 0);
+	if (path_list_max < 0)
+		path_list_max = 0;
 #else
 	path_list_max = 0;
-	force_processing_one_file = 1;
 #endif
 
 	if (!(op = openfilter()))
@@ -983,12 +983,8 @@ parsefile(argc, argv, cwd, root, dbpath, db)
 			continue;
 		}
 
-		if (force_processing_one_file) {
-			count += exec_parser(parser, path, cwd, root, op);
-			continue;
-		}
-
-		if (strbuf_getlen(path_list) + 1 + strlen(path) > path_list_max) {
+		if (strbuf_getlen(path_list)
+		    && strbuf_getlen(path_list) + 1 + strlen(path) > path_list_max) {
 			count += exec_parser(parser, strbuf_value(path_list),
 					cwd, root, op);
 			strbuf_reset(path_list);
