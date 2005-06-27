@@ -762,8 +762,6 @@ incremental(dbpath, root)
 			if ((db == GRTAGS || db == GSYMS)
 			    && !test("f", makepath(dbpath, dbname(db), NULL)))
 				continue;
-			if (vflag)
-				fprintf(stderr, "[%s] Updating '%s'.\n", now(), dbname(db));
 			updatetags(dbpath, root, fidset, max_fid, extractlist, db);
 			if (exitflag)
 				exit(1);
@@ -835,6 +833,9 @@ updatetags(dbpath, root, fidset, max_fid, extractlist, db)
 	STRBUF *sb = strbuf_open(0);
 	int gflags;
 
+	if (vflag)
+		fprintf(stderr, " Updating '%s'...", dbname(db));
+
 	/*
 	 * GTAGS needed to make GRTAGS.
 	 */
@@ -852,12 +853,12 @@ updatetags(dbpath, root, fidset, max_fid, extractlist, db)
 
 	if (max_fid > 0) {
 		if (vflag)
-			fprintf(stderr, " deleting tags\n");
+			fputs(" Deleting tags..", stderr);
 		gtags_delete_by_fidset(gtop, fidset, max_fid);
 	}
 
-	if (vflag)
-		fprintf(stderr, " adding tags\n");
+	if (vflag && strbuf_getlen(extractlist))
+		fputs(" Adding tags..", stderr);
 	gflags = 0;
 	if (extractmethod)
 		gflags |= GTAGS_EXTRACTMETHOD;
@@ -874,6 +875,10 @@ updatetags(dbpath, root, fidset, max_fid, extractlist, db)
 
 	gtags_close(gtop);
 	strbuf_close(sb);
+	if (exitflag)
+		return;
+	if (vflag)
+		fputs(" Done.\n", stderr);
 }
 /*
  * createtags: create tags file
