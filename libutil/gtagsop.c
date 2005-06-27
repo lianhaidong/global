@@ -36,6 +36,9 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
+#ifdef HAVE_LIMITS_H
+#include <limits.h>
+#endif
 
 #include "char.h"
 #include "conf.h"
@@ -556,6 +559,49 @@ gtags_delete(gtop, path)
 	/*
 	 * don't delete from path index.
 	 */
+}
+/*
+ * gtags_delete_by_fidset: delete records belong to set of fid.
+ *
+ *	i)	gtop	GTOP structure
+ *	i)	fidset	bit array of fid
+ *	i)	max_fid	number of bits in bit array
+ */
+void
+gtags_delete_by_fidset(gtop, fidset, max_fid)
+	GTOP *gtop;
+	const unsigned char *fidset;
+	int max_fid;
+{
+	const char *line, *p;
+	SPLIT ptable;
+	int fid, n;
+
+	for (line = dbop_first(gtop->dbop, NULL, NULL, 0); line; line = dbop_next(gtop->dbop)) {
+		n = split((char *)line, 4, &ptable);
+		if (gtop->format & GTAGS_COMPACT) {
+			if (n != 3)
+				die("illegal compact format.\n");
+			p = ptable.part[1].start;
+		} else {
+			if (n < 4) {
+				recover(&ptable);
+				die("too small number of parts.\n'%s'", line);
+			}
+			p = ptable.part[2].start;
+		}
+		if (!(gtop->format & GTAGS_PATHINDEX)) {
+			p = gpath_path2fid(p);
+			if (p == NULL)
+				die("GPATH is corrupted.");
+		}
+		fid = atoi(p);
+		recover(&ptable);
+		if (fid >= max_fid)
+			continue;
+		if (fidset[fid  / CHAR_BIT] & (1 << (fid % CHAR_BIT)))
+			dbop_delete(gtop->dbop, NULL);
+	}
 }
 /*
  * gtags_first: return first record

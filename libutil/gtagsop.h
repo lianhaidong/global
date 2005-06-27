@@ -90,6 +90,7 @@ GTOP *gtags_open(const char *, const char *, int, int, int);
 void gtags_put(GTOP *, const char *, const char *);
 void gtags_add(GTOP *, const char *, const char *, int);
 void gtags_delete(GTOP *, const char *);
+void gtags_delete_by_fidset(GTOP *, const unsigned char *, int);
 const char *gtags_first(GTOP *, const char *, int);
 const char *gtags_next(GTOP *);
 void gtags_close(GTOP *);
