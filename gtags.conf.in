@@ -96,7 +96,7 @@ ctags-exuberant|Exuberant Ctags|ctags by Darren Hiebert:\
 	:tc=common:\
 	:suffixes=s,a,sa,asm,C,H,cpp,cxx,hxx,hpp,cc,c,h,y:\
 	:extractmethod:\
-	:GTAGS=/usr/local/bin/ctags-exuberant -x %s | perl -ne '\
+	:GTAGS=/usr/local/bin/ctags-exuberant -xu %s | perl -ne '\
 		if (/^operator \\S+\\s+function\\s/) { s/^operator //; }\
 		($name, $type, $no, $path, $line) = split(/[ \\t]+/, $_, 5);\
 		printf(STDOUT "%-16s %4d %-16s %s", $name, $no, $path, $line);':
