@@ -41,6 +41,7 @@ AC_PATH_PROG(PERL, perl, no)
 if test ${ac_cv_path_PERL} = no; then
 	PERL=SPECIFY_ABSOLUTE_PATH_OF_PERL
 fi
+AC_CHECK_TOOL(AR, ar)
 
 AC_GNU_SOURCE
 
