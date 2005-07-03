@@ -66,7 +66,9 @@ void onintr(int);
 int match(const char *, const char *);
 int main(int, char **);
 int incremental(const char *, const char *);
-void updatetags(const char *, const char *, const unsigned char *, int, STRBUF *, int);
+void updatetags(const char *, const char *, const char *, int);
+int incremental_optimized_for_speed(const char *, const char *);
+void updatetags_optimized_for_speed(const char *, const char *, const unsigned char *, int, STRBUF *, int);
 void createtags(const char *, const char *, int);
 int printconf(const char *);
 void set_base_directory(const char *, const char *);
@@ -590,7 +592,10 @@ main(argc, argv)
 		 */
 		if (!test("f", makepath(dbpath, dbname(GPATH), NULL)))
 			die("Old version tag file found. Please remake it.");
-		(void)incremental(dbpath, cwd);
+		if (vflag)
+			(void)incremental(dbpath, cwd);
+		else
+			(void)incremental_optimized_for_speed(dbpath, cwd);
 		exit(0);
 	}
 	/*
@@ -679,10 +684,9 @@ incremental(dbpath, root)
 {
 	struct stat statp;
 	time_t gtags_mtime;
-	STRBUF *extractlist = strbuf_open(0);
+	STRBUF *addlist = strbuf_open(0);
+	STRBUF *updatelist = strbuf_open(0);
 	STRBUF *deletelist = strbuf_open(0);
-	unsigned char *fidset;
-	int max_fid = 0;
 	int updated = 0;
 	const char *path;
 
@@ -690,6 +694,215 @@ incremental(dbpath, root)
 		fprintf(stderr, " Tag found in '%s'.\n", dbpath);
 		fprintf(stderr, " Incremental update.\n");
 	}
+	/*
+	 * get modified time of GTAGS.
+	 */
+	path = makepath(dbpath, dbname(GTAGS), NULL);
+	if (stat(path, &statp) < 0)
+		die("stat failed '%s'.", path);
+	gtags_mtime = statp.st_mtime;
+
+	if (gpath_open(dbpath, 0) < 0)
+		die("GPATH not found.");
+	/*
+	 * make add list and update list.
+	 */
+	for (find_open(NULL); (path = find_read()) != NULL; ) {
+		/* a blank at the head of path means 'NOT SOURCE'. */
+		if (*path == ' ')
+			continue;
+		if (stat(path, &statp) < 0)
+			die("stat failed '%s'.", path);
+		if (!gpath_path2fid(path))
+			strbuf_puts0(addlist, path);
+		else if (gtags_mtime < statp.st_mtime)
+			strbuf_puts0(updatelist, path);
+	}
+	find_close();
+	/*
+	 * make delete list.
+	 */
+	{
+		char fid[32];
+		int i, limit = gpath_nextkey();
+
+		for (i = 1; i < limit; i++) {
+			snprintf(fid, sizeof(fid), "%d", i);
+			if ((path = gpath_fid2path(fid)) == NULL)
+				continue;
+			if (!test("f", path))
+				strbuf_puts0(deletelist, path);
+		}
+	}
+	gpath_close();
+	if (strbuf_getlen(addlist) + strbuf_getlen(deletelist) + strbuf_getlen(updatelist))
+		updated = 1;
+	/*
+	 * execute updating.
+	 */
+	signal_setup();
+	if (strbuf_getlen(updatelist) > 0) {
+		const char *start = strbuf_value(updatelist);
+		const char *end = start + strbuf_getlen(updatelist);
+		const char *p;
+
+		for (p = start; p < end; p += strlen(p) + 1) {
+			updatetags(dbpath, root, p, 0);
+			if (exitflag)
+				exit(1);
+		}
+		updated = 1;
+	}
+	if (strbuf_getlen(addlist) > 0) {
+		const char *start = strbuf_value(addlist);
+		const char *end = start + strbuf_getlen(addlist);
+		const char *p;
+
+		for (p = start; p < end; p += strlen(p) + 1) {
+			updatetags(dbpath, root, p, 1);
+			if (exitflag)
+				exit(1);
+		}
+		updated = 1;
+	}
+	if (strbuf_getlen(deletelist) > 0) {
+		const char *start = strbuf_value(deletelist);
+		const char *end = start + strbuf_getlen(deletelist);
+		const char *p;
+
+		for (p = start; p < end; p += strlen(p) + 1) {
+			updatetags(dbpath, root, p, 2);
+			if (exitflag)
+				exit(1);
+		}
+
+		gpath_open(dbpath, 2);
+		for (p = start; p < end; p += strlen(p) + 1) {
+			if (exitflag)
+				break;
+			gpath_delete(p);
+		}
+		gpath_close();
+		updated = 1;
+	}
+	if (exitflag)
+		exit(1);
+	if (updated) {
+		int db;
+		/*
+		 * Update modification time of tag files
+		 * because they may have no definitions.
+		 */
+		for (db = GTAGS; db < GTAGLIM; db++)
+#ifdef HAVE_UTIMES
+			utimes(makepath(dbpath, dbname(db), NULL), NULL);
+#else
+			utime(makepath(dbpath, dbname(db), NULL), NULL);
+#endif /* HAVE_UTIMES */
+	}
+	if (vflag) {
+		if (updated)
+			fprintf(stderr, " Global databases have been modified.\n");
+		else
+			fprintf(stderr, " Global databases are up to date.\n");
+		fprintf(stderr, "[%s] Done.\n", now());
+	}
+	strbuf_close(addlist);
+	strbuf_close(deletelist);
+	strbuf_close(updatelist);
+	return updated;
+}
+/*
+ * updatetags: update tag file.
+ *
+ *	i)	dbpath	directory in which tag file exist
+ *	i)	root	root directory of source tree
+ *	i)	path	path which should be updated
+ *	i)	type	0:update, 1:add, 2:delete
+ */
+void
+updatetags(dbpath, root, path, type)
+	const char *dbpath;
+	const char *root;
+	const char *path;
+	int type;
+{
+	GTOP *gtop;
+	STRBUF *sb = strbuf_open(0);
+	int db;
+	const char *msg = NULL;
+
+	switch (type) {
+	case 0:	msg = "Updating"; break;
+	case 1: msg = "Adding"; break;
+	case 2:	msg = "Deleting"; break;
+	}
+	if (vflag)
+		fprintf(stderr, " %s tags of %s ...", msg, path + 2);
+	for (db = GTAGS; db < GTAGLIM; db++) {
+		int gflags = 0;
+
+		if (exitflag)
+			break;
+		/*
+		 * GTAGS needed at least.
+		 */
+		if ((db == GRTAGS || db == GSYMS) && !test("f", makepath(dbpath, dbname(db), NULL)))
+			continue;
+		/*
+		 * GTAGS needed to make GRTAGS.
+		 */
+		if (db == GRTAGS && !test("f", makepath(dbpath, dbname(GTAGS), NULL)))
+			die("GTAGS needed to create GRTAGS.");
+		if (vflag)
+			fprintf(stderr, "%s", dbname(db));
+		/*
+		 * get tag command.
+		 */
+		strbuf_reset(sb);
+		if (!getconfs(dbname(db), sb))
+			die("cannot get tag command. (%s)", dbname(db));
+		gtop = gtags_open(dbpath, root, db, GTAGS_MODIFY, 0);
+		if (type != 1)
+			gtags_delete(gtop, path);
+		if (vflag)
+			fprintf(stderr, "..");
+		if (type != 2) {
+			if (extractmethod)
+				gflags |= GTAGS_EXTRACTMETHOD;
+			if (debug)
+				gflags |= GTAGS_DEBUG;
+			gtags_add(gtop, strbuf_value(sb), path, gflags);
+		}
+		gtags_close(gtop);
+	}
+	strbuf_close(sb);
+	if (exitflag)
+		return;
+	if (vflag)
+		fprintf(stderr, " Done.\n");
+}
+/*
+ * incremental_optimized_for_speed: incremental update
+ *
+ *	i)	dbpath	dbpath directory
+ *	i)	root	root directory of source tree
+ *	r)		0: not updated, 1: updated
+ */
+int
+incremental_optimized_for_speed(dbpath, root)
+	const char *dbpath;
+	const char *root;
+{
+	struct stat statp;
+	time_t gtags_mtime;
+	STRBUF *extractlist = strbuf_open(0);
+	STRBUF *deletelist = strbuf_open(0);
+	unsigned char *fidset;
+	int max_fid = 0;
+	int updated = 0;
+	const char *path;
+
 	/*
 	 * get modified time of GTAGS.
 	 */
@@ -762,7 +975,7 @@ incremental(dbpath, root)
 			if ((db == GRTAGS || db == GSYMS)
 			    && !test("f", makepath(dbpath, dbname(db), NULL)))
 				continue;
-			updatetags(dbpath, root, fidset, max_fid, extractlist, db);
+			updatetags_optimized_for_speed(dbpath, root, fidset, max_fid, extractlist, db);
 			if (exitflag)
 				exit(1);
 		}
@@ -795,20 +1008,13 @@ incremental(dbpath, root)
 			utime(makepath(dbpath, dbname(db), NULL), NULL);
 #endif /* HAVE_UTIMES */
 	}
-	if (vflag) {
-		if (updated)
-			fprintf(stderr, " Global databases have been modified.\n");
-		else
-			fprintf(stderr, " Global databases are up to date.\n");
-		fprintf(stderr, "[%s] Done.\n", now());
-	}
 	strbuf_close(extractlist);
 	strbuf_close(deletelist);
 	free(fidset);
 	return updated;
 }
 /*
- * updatetags: update tag file.
+ * updatetags_optimized_for_speed: update tag file.
  *
  *	i)	dbpath		directory in which tag file exist
  *	i)	root		root directory of source tree
@@ -818,7 +1024,7 @@ incremental(dbpath, root)
  *	i)	db		GTAGS, GRTAGS, GSYMS
  */
 void
-updatetags(dbpath, root, fidset, max_fid, extractlist, db)
+updatetags_optimized_for_speed(dbpath, root, fidset, max_fid, extractlist, db)
 	const char *dbpath;
 	const char *root;
 	const unsigned char *fidset;
@@ -832,9 +1038,6 @@ updatetags(dbpath, root, fidset, max_fid, extractlist, db)
 	const char *end;
 	STRBUF *sb = strbuf_open(0);
 	int gflags;
-
-	if (vflag)
-		fprintf(stderr, " Updating '%s'...", dbname(db));
 
 	/*
 	 * GTAGS needed to make GRTAGS.
@@ -851,14 +1054,9 @@ updatetags(dbpath, root, fidset, max_fid, extractlist, db)
 
 	gtop = gtags_open(dbpath, root, db, GTAGS_MODIFY, 0);
 
-	if (max_fid > 0) {
-		if (vflag)
-			fputs(" Deleting tags..", stderr);
+	if (max_fid > 0)
 		gtags_delete_by_fidset(gtop, fidset, max_fid);
-	}
 
-	if (vflag && strbuf_getlen(extractlist))
-		fputs(" Adding tags..", stderr);
 	gflags = 0;
 	if (extractmethod)
 		gflags |= GTAGS_EXTRACTMETHOD;
@@ -875,10 +1073,6 @@ updatetags(dbpath, root, fidset, max_fid, extractlist, db)
 
 	gtags_close(gtop);
 	strbuf_close(sb);
-	if (exitflag)
-		return;
-	if (vflag)
-		fputs(" Done.\n", stderr);
 }
 /*
  * createtags: create tags file
