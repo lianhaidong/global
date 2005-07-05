@@ -34,6 +34,7 @@
 #include "find.h"
 #include "getdbpath.h"
 #include "gtagsop.h"
+#include "idset.h"
 #include "is_unixy.h"
 #include "langmap.h"
 #include "linetable.h"
