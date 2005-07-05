@@ -121,7 +121,7 @@ dbname(db)
  * makecommand: make command line to make global tag file
  *
  *	i)	comline	skeleton command line
- *	i)	path	path name
+ *	i)	path_list	\0 separated list of path names
  *	o)	sb	command line
  *
  * command skeleton is like this:
@@ -130,22 +130,32 @@ dbname(db)
  *	'gtags-parser -r'
  */
 void
-makecommand(comline, path, sb)
+makecommand(comline, path_list, sb)
 	const char *comline;
-	const char *path;
+	STRBUF *path_list;
 	STRBUF *sb;
 {
 	const char *p = locatestring(comline, "%s", MATCH_FIRST);
+	const char *path, *end;
 
 	if (p) {
 		strbuf_nputs(sb, comline, p - comline);
-		strbuf_puts(sb, path);
-		strbuf_puts(sb, p + 2);
 	} else {
 		strbuf_puts(sb, comline);
 		strbuf_putc(sb, ' ');
-		strbuf_puts(sb, path);
 	}
+
+	path = strbuf_value(path_list);
+	end = path + strbuf_getlen(path_list);
+	while (path < end) {
+		strbuf_puts(sb, path);
+		path += strlen(path) + 1;
+		if (path < end)
+			strbuf_putc(sb, ' ');
+	}
+
+	if (p)
+		strbuf_puts(sb, p + 2);
 }
 /*
  * formatcheck: check format of tag command's output
@@ -198,14 +208,13 @@ formatcheck(line, format)
 	/*
 	 * path name
 	 */
-	if (format == GTAGS_STANDARD) {
+	if ((format & (GTAGS_PATHINDEX | GTAGS_COMPACT)) != (GTAGS_PATHINDEX | GTAGS_COMPACT)) {
 		p = ptable.part[2].start;
 		if (!(*p == '.' && *(p + 1) == '/' && *(p + 2))) {
 			recover(&ptable);
 			die("path name must start with './'.\n'%s'", line);
 		}
-	}
-	if (format & GTAGS_PATHINDEX) {
+	} else {
 		for (p = ptable.part[2].start; *p; p++)
 			if (!isdigit((unsigned char)*p)) {
 				recover(&ptable);
@@ -341,7 +350,8 @@ gtags_open(dbpath, root, db, mode, flags)
 			gtop->ib = strbuf_open(MAXBUFLEN);
 		else
 			gtop->sb = strbuf_open(0);
-	}
+	} else if (gtop->format == GTAGS_PATHINDEX && gtop->mode != GTAGS_READ)
+		gtop->sb = strbuf_open(0);
 	return gtop;
 }
 /*
@@ -351,7 +361,8 @@ gtags_open(dbpath, root, db, mode, flags)
  *	i)	tag	tag name
  *	i)	record	ctags -x image
  *
- * NOTE: If format is GTAGS_COMPACT then this function is destructive.
+ * NOTE: If format is GTAGS_COMPACT or GTAGS_PATHINDEX
+ *       then this function is destructive.
  */
 void
 gtags_put(gtop, tag, record)
@@ -362,9 +373,33 @@ gtags_put(gtop, tag, record)
 	const char *line, *path;
 	SPLIT ptable;
 
-	if (gtop->format == GTAGS_STANDARD || gtop->format == GTAGS_PATHINDEX) {
+	if (gtop->format == GTAGS_STANDARD) {
 		/* entab(record); */
 		dbop_put(gtop->dbop, tag, record);
+		return;
+	}
+	if (gtop->format == GTAGS_PATHINDEX) {
+		const char *fid;
+		char *p = locatestring(record, "./", MATCH_FIRST);
+		int savec;
+
+		if (p == NULL)
+			die("path name not found.");
+		path = p;
+		p += 2;
+		while (*p && !isspace((unsigned char)*p))
+			p++;
+		savec = *p;
+		*p = '\0';
+		fid = gpath_path2fid(path);
+		if (fid == NULL)
+			die("GPATH is corrupted.('%s' not found)", path);
+		*p = savec;
+		strbuf_reset(gtop->sb);
+		strbuf_nputs(gtop->sb, record, path - record);
+		strbuf_puts(gtop->sb, fid);
+		strbuf_puts(gtop->sb, p);
+		dbop_put(gtop->dbop, tag, strbuf_value(gtop->sb));
 		return;
 	}
 	/*
@@ -403,18 +438,18 @@ gtags_put(gtop, tag, record)
 	recover(&ptable);
 }
 /*
- * gtags_add: add tags belonging to the path into tag file.
+ * gtags_add: add tags belonging to the path list into tag file.
  *
  *	i)	gtop	descripter of GTOP
  *	i)	comline	tag command line
- *	i)	path	source file
+ *	i)	path_list	\0 separated list of source files
  *	i)	flags	GTAGS_UNIQUE, GTAGS_EXTRACTMETHOD, GTAGS_DEBUG
  */
 void
-gtags_add(gtop, comline, path, flags)
+gtags_add(gtop, comline, path_list, flags)
 	GTOP *gtop;
 	const char *comline;
-	const char *path;
+	STRBUF *path_list;
 	int flags;
 {
 	const char *ctags_x;
@@ -422,35 +457,41 @@ gtags_add(gtop, comline, path, flags)
 	STRBUF *sb = strbuf_open(0);
 	STRBUF *ib = strbuf_open(MAXBUFLEN);
 	const char *fid;
+	const char *path, *end;
 
 	/*
 	 * add path index if not yet.
 	 */
-	gpath_put(path);
+	path = strbuf_value(path_list);
+	end = path + strbuf_getlen(path_list);
+	while (path < end) {
+		gpath_put(path);
+		path += strlen(path) + 1;
+	}
 	/*
 	 * make command line.
 	 */
-	makecommand(comline, path, sb);
-	/*
-	 * get file id.
-	 */
-	if (gtop->format & GTAGS_PATHINDEX) {
-		if (!(fid = gpath_path2fid(path)))
-			die("GPATH is corrupted.('%s' not found)", path);
-	} else
-		fid = "0";
+	makecommand(comline, path_list, sb);
 	/*
 	 * Compact format.
 	 */
-	if (gtop->format & GTAGS_PATHINDEX) {
-		strbuf_puts(sb, "| gtags --sed");
-		strbuf_putc(sb, ' ');
-		strbuf_puts(sb, fid);
-	}
-	if (gtop->format & GTAGS_COMPACT)
+	if (gtop->format & GTAGS_COMPACT) {
+		if (gtop->format & GTAGS_PATHINDEX) {
+			/*
+			 * get file id.
+			 */
+			path = strbuf_value(path_list);
+			if (!(fid = gpath_path2fid(path)))
+				die("GPATH is corrupted.('%s' not found)", path);
+			strbuf_puts(sb, "| gtags --sed");
+			strbuf_putc(sb, ' ');
+			strbuf_puts(sb, fid);
+		}
+
 		strbuf_puts(sb, "| gnusort -k 1,1 -k 2,2n");
-	if (flags & GTAGS_UNIQUE)
-		strbuf_puts(sb, " -u");
+		if (flags & GTAGS_UNIQUE)
+			strbuf_puts(sb, " -u");
+	}
 #ifdef DEBUG
 	if (flags & GTAGS_DEBUG)
 		fprintf(stderr, "gtags_add() executing '%s'\n", strbuf_value(sb));

@@ -64,7 +64,7 @@ void idutils(const char *, const char *);
 void grep(const char *);
 void pathlist(const char *, const char *);
 void parsefile(int, char **, const char *, const char *, const char *, int);
-static int exec_parser(const char *, const char *, const char *, const char *, FILE *);
+static int exec_parser(const char *, STRBUF *, const char *, const char *, FILE *);
 void printtag(FILE *, const char *);
 int search(const char *, const char *, const char *, int);
 int includepath(const char *, const char *);
@@ -984,20 +984,15 @@ parsefile(argc, argv, cwd, root, dbpath, db)
 		}
 
 		if (strbuf_getlen(path_list)
-		    && strbuf_getlen(path_list) + 1 + strlen(path) > path_list_max) {
-			count += exec_parser(parser, strbuf_value(path_list),
-					cwd, root, op);
+		    && strbuf_getlen(path_list) + strlen(path) > path_list_max) {
+			count += exec_parser(parser, path_list, cwd, root, op);
 			strbuf_reset(path_list);
 		}
 
-		if (strbuf_getlen(path_list))
-			strbuf_putc(path_list, ' ');
-		strbuf_puts(path_list, path);
+		strbuf_puts0(path_list, path);
 	}
-	if (strbuf_getlen(path_list)) {
-		count += exec_parser(parser, strbuf_value(path_list),
-				cwd, root, op);
-	}
+	if (strbuf_getlen(path_list))
+		count += exec_parser(parser, path_list, cwd, root, op);
 	gpath_close();
 	closefilter(op);
 	strbuf_close(sb);
@@ -1016,7 +1011,7 @@ parsefile(argc, argv, cwd, root, dbpath, db)
  * exec_parser: execute parser
  *
  *	i)	parser		template of command line
- *	i)	path_list	space separated list of path
+ *	i)	path_list	\0 separated list of paths
  *	i)	cwd		current directory
  *	i)	root		root directory of source tree
  *	i)	op		filter to output
@@ -1025,7 +1020,7 @@ parsefile(argc, argv, cwd, root, dbpath, db)
 static int
 exec_parser(parser, path_list, cwd, root, op)
 	const char *parser;
-	const char *path_list;
+	STRBUF *path_list;
 	const char *cwd;
 	const char *root;
 	FILE *op;
