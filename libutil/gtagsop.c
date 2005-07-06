@@ -36,9 +36,6 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#ifdef HAVE_LIMITS_H
-#include <limits.h>
-#endif
 
 #include "char.h"
 #include "conf.h"
@@ -58,7 +55,6 @@
 
 static const char *unpack_pathindex(const char *);
 static const char *genrecord(GTOP *);
-static int belongto(GTOP *, const char *, const char *);
 static regex_t reg;
 
 /*
@@ -533,45 +529,6 @@ gtags_add(gtop, comline, path_list, flags)
 	strbuf_close(ib);
 }
 /*
- * belongto: wheather or not record belongs to the path.
- *
- *	i)	gtop	GTOP structure
- *	i)	path	path name (in standard format)
- *			path number (in compact format)
- *	i)	line	record
- *	r)		1: belong, 0: not belong
- *
- */
-static int
-belongto(gtop, path, line)
-	GTOP *gtop;
-	const char *path;
-	const char *line;		/* virtually const */
-{
-	const char *p = NULL;
-	int status, n;
-	SPLIT ptable;
-
-	/*
-	 * Get path.
-	 */
-	n = split((char *)line, 4, &ptable);
-	if (gtop->format == GTAGS_STANDARD || gtop->format == GTAGS_PATHINDEX) {
-		if (n < 4) {
-			recover(&ptable);
-			die("too small number of parts.\n'%s'", line);
-		}
-		p = ptable.part[2].start;
-	} else if (gtop->format & GTAGS_COMPACT) {
-		if (n != 3)
-			die("illegal compact format.\n");
-		p = ptable.part[1].start;
-	}
-	status = !strcmp(p, path) ? 1 : 0;
-	recover(&ptable);
-	return status;
-}
-/*
  * gtags_delete: delete records belong to set of fid.
  *
  *	i)	gtop	GTOP structure
@@ -606,8 +563,6 @@ gtags_delete(gtop, deleteset)
 		}
 		fid = atoi(p);
 		recover(&ptable);
-		if (fid >= deleteset->max)
-			continue;
 		if (idset_contains(deleteset, fid))
 			dbop_delete(gtop->dbop, NULL);
 	}
