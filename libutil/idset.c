@@ -35,13 +35,13 @@ Idset: usage and memory status
 
 				 00000000  00111111  11112222
 				 01234567  89012345  67890123
-idset = idset_open(21)		[00000000][00000000][000000__](3bytes)
+idset = idset_open(21)		[00000000][00000000][00000___](3bytes)
 				  v
-idset_add(idset, 1)		[01000000][00000000][000000__]
+idset_add(idset, 1)		[01000000][00000000][00000___]
 				   v
-idset_add(idset, 2)		[01100000][00000000][000000__]
+idset_add(idset, 2)		[01100000][00000000][00000___]
 				                         v
-idset_add(idset, 20)		[01100000][00000000][000010__]
+idset_add(idset, 20)		[01100000][00000000][00001___]
 
 idset_contains(idset, 2) == true
 idset_contains(idset, 3) == false
@@ -77,7 +77,7 @@ idset_add(idset, id)
 	IDSET *idset;
 	unsigned int id;
 {
-	if (id > idset->size)
+	if (id >= idset->size)
 		die("idset_add: id is out of range.");
 	idset->set[id / CHAR_BIT] |= 1 << (id % CHAR_BIT);
 	if (id >= idset->max)
@@ -95,10 +95,6 @@ idset_contains(idset, id)
 	IDSET *idset;
 	unsigned int id;
 {
-	/*
-	if (id > idset->size)
-		die("idset_contains: id is out of range.");
-	*/
 	return (id >= idset->max) ? 0 :
 			(idset->set[id / CHAR_BIT] & (1 << (id % CHAR_BIT)));
 }
