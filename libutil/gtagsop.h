@@ -86,7 +86,7 @@ typedef struct {
 
 const char *dbname(int);
 void makecommand(const char *, STRBUF *, STRBUF *);
-void formatcheck(const char *, int);
+void formatcheck(const char *);
 GTOP *gtags_open(const char *, const char *, int, int, int);
 void gtags_put(GTOP *, const char *, const char *);
 void gtags_add(GTOP *, const char *, STRBUF *, int);

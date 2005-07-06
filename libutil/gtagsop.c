@@ -157,27 +157,14 @@ makecommand(comline, path_list, sb)
  * formatcheck: check format of tag command's output
  *
  *	i)	line	input
- *	i)	format	format
  *
- * [STANDARD FORMAT]
  * 0                 1  2              3
  * ----------------------------------------------------
  * func              83 ./func.c       func()
- *
- * [PATHINDEX FORMAT]
- * 0                 1  2              3
- * ----------------------------------------------------
- * func              83 38             func()
- *
- * [COMPACT FORMAT]
- * 0    1  2
- * ----------------------------------------------------
- * func 38 83,95,103,205
  */
 void
-formatcheck(line, format)
+formatcheck(line)
 	const char *line;		/* virtually const */
-	int format;
 {
 	int n;
 	const char *p;
@@ -204,19 +191,12 @@ formatcheck(line, format)
 	/*
 	 * path name
 	 */
-	if ((format & (GTAGS_PATHINDEX | GTAGS_COMPACT)) != (GTAGS_PATHINDEX | GTAGS_COMPACT)) {
-		p = ptable.part[2].start;
-		if (!(*p == '.' && *(p + 1) == '/' && *(p + 2))) {
-			recover(&ptable);
-			die("path name must start with './'.\n'%s'", line);
-		}
-	} else {
-		for (p = ptable.part[2].start; *p; p++)
-			if (!isdigit((unsigned char)*p)) {
-				recover(&ptable);
-				die("file number includes other than digit.\n'%s'", line);
-			}
+	p = ptable.part[2].start;
+	if (!(*p == '.' && *(p + 1) == '/' && *(p + 2))) {
+		recover(&ptable);
+		die("path name must start with './'.\n'%s'", line);
 	}
+
 	recover(&ptable);
 }
 /*
@@ -366,7 +346,7 @@ gtags_put(gtop, tag, record)
 	const char *tag;
 	const char *record;		/* virtually const */
 {
-	const char *line, *path;
+	const char *line, *path, *fid;
 	SPLIT ptable;
 
 	if (gtop->format == GTAGS_STANDARD) {
@@ -375,7 +355,6 @@ gtags_put(gtop, tag, record)
 		return;
 	}
 	if (gtop->format == GTAGS_PATHINDEX) {
-		const char *fid;
 		char *p = locatestring(record, "./", MATCH_FIRST);
 		int savec;
 
@@ -422,6 +401,12 @@ gtags_put(gtop, tag, record)
 		strbuf_reset(gtop->sb);
 		strbuf_puts(gtop->sb, strmake(record, " \t"));
 		strbuf_putc(gtop->sb, ' ');
+		if (gtop->format & GTAGS_PATHINDEX) {
+			fid = gpath_path2fid(path);
+			if (fid == NULL)
+				die("GPATH is corrupted.('%s' not found)", path);
+			path = fid;
+		}
 		strbuf_puts(gtop->sb, path);
 		strbuf_putc(gtop->sb, ' ');
 		strbuf_puts(gtop->sb, line);
@@ -452,7 +437,6 @@ gtags_add(gtop, comline, path_list, flags)
 	FILE *ip;
 	STRBUF *sb = strbuf_open(0);
 	STRBUF *ib = strbuf_open(MAXBUFLEN);
-	const char *fid;
 	const char *path, *end;
 
 	/*
@@ -472,19 +456,7 @@ gtags_add(gtop, comline, path_list, flags)
 	 * Compact format.
 	 */
 	if (gtop->format & GTAGS_COMPACT) {
-		if (gtop->format & GTAGS_PATHINDEX) {
-			/*
-			 * get file id.
-			 */
-			path = strbuf_value(path_list);
-			if (!(fid = gpath_path2fid(path)))
-				die("GPATH is corrupted.('%s' not found)", path);
-			strbuf_puts(sb, "| gtags --sed");
-			strbuf_putc(sb, ' ');
-			strbuf_puts(sb, fid);
-		}
-
-		strbuf_puts(sb, "| gnusort -k 1,1 -k 2,2n");
+		strbuf_puts(sb, "| gnusort -k3,3 -k 1,1 -k 2,2n");
 		if (flags & GTAGS_UNIQUE)
 			strbuf_puts(sb, " -u");
 	}
@@ -500,7 +472,7 @@ gtags_add(gtop, comline, path_list, flags)
 		strbuf_trim(ib);
 #ifdef DEBUG
 		if (flags & GTAGS_DEBUG)
-			formatcheck(ctags_x, gtop->format);
+			formatcheck(ctags_x);
 #endif
 		/* tag = $1 */
 		strlimcpy(tag, strmake(ctags_x, " \t"), sizeof(tag));

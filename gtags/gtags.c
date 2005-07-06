@@ -88,7 +88,6 @@ int show_help;
 int show_config;
 int do_convert;
 int do_find;
-int do_sed;
 int do_sort;
 int do_relative;
 int do_absolute;
@@ -102,7 +101,6 @@ int secure_mode;
 int noxargs;
 const char *extra_options;
 const char *info_string;
-const char *sed_string;
 
 int extractmethod;
 int total;
@@ -145,7 +143,6 @@ static struct option const long_options[] = {
 	{"other", no_argument, &other_files, 1},
 	{"relative", no_argument, &do_relative, 1},
 	{"secure", no_argument, &secure_mode, 1},
-	{"sed", required_argument, &do_sed, 1},
 	{"sort", no_argument, &do_sort, 1},
 	{"version", no_argument, &show_version, 1},
 	{"help", no_argument, &show_help, 1},
@@ -218,9 +215,6 @@ main(argc, argv)
 			} else if (!strcmp(p, "config")) {
 				if (optarg)
 					info_string = optarg;
-			} else if (!strcmp(p, "sed")) {
-				if (optarg)
-					sed_string = optarg;
 			} else if (gtagsconf || gtagslabel) {
 				char value[MAXPATHLEN+1];
 				const char *name = (gtagsconf) ? "GTAGSCONF" : "GTAGSLABEL";
@@ -417,27 +411,6 @@ main(argc, argv)
 			fputc('\n', stdout);
 		}
 		vfind_close();
-		exit(0);
-	} else if (do_sed) {
-		/*
-		 * This code is used by gtags(1) to convert from path to
-		 * file id. The 'gtags --sed fid' is equivalent with
-		 * 'sed "s@<path>@fid@"'.
-		 */
-		STRBUF *ib = strbuf_open(MAXBUFLEN);
-		const char *ctags_x;
-
-		while ((ctags_x = strbuf_fgets(ib, stdin, 0)) != NULL) {
-			char *p = locatestring(ctags_x, "./", MATCH_FIRST);
-			if (p == NULL)
-				die("gtags --sed: path name not found.");
-			*p++ = '\0';
-			fputs(ctags_x, stdout);
-			while (*p && !isspace((unsigned char)*p))
-				p++;
-			fputs(sed_string, stdout);
-			fputs(p, stdout);
-		}
 		exit(0);
 	} else if (do_sort) {
 		/*
@@ -870,10 +843,6 @@ updatetags(dbpath, root, deleteset, addlist, db)
 #endif
 
 	gtop = gtags_open(dbpath, root, db, GTAGS_MODIFY, 0);
-	if (gtop->format & GTAGS_COMPACT) {
-		/* force processing files individually. */
-		path_list_max = 0;
-	}
 
 	if (vflag) {
 		char fid[32];
@@ -994,10 +963,6 @@ createtags(dbpath, root, db)
 	if (vflag > 1)
 		fprintf(stderr, " using tag command '%s <path>'.\n", comline);
 	gtop = gtags_open(dbpath, root, db, GTAGS_CREATE, flags);
-	if (gtop->format & GTAGS_COMPACT) {
-		/* force processing files individually. */
-		path_list_max = 0;
-	}
 	gflags = 0;
 	if (extractmethod)
 		gflags |= GTAGS_EXTRACTMETHOD;
