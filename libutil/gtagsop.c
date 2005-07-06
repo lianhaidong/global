@@ -572,47 +572,15 @@ belongto(gtop, path, line)
 	return status;
 }
 /*
- * gtags_delete: delete records belong to path.
+ * gtags_delete: delete records belong to set of fid.
  *
  *	i)	gtop	GTOP structure
- *	i)	path	path name
+ *	i)	deleteset bit array of fid
  */
 void
-gtags_delete(gtop, path)
+gtags_delete(gtop, deleteset)
 	GTOP *gtop;
-	const char *path;
-{
-	const char *p, *fid;
-	/*
-	 * In compact format, a path is saved as a file number.
-	 */
-	if (gtop->format & GTAGS_PATHINDEX) {
-		if ((fid = gpath_path2fid(path)) == NULL)
-			die("GPATH is corrupted.('%s' not found)", path);
-		path = fid;
-	}
-	/*
-	 * read sequentially, because db(1) has just one index.
-	 */
-	for (p = dbop_first(gtop->dbop, NULL, NULL, 0); p; p = dbop_next(gtop->dbop))
-		if (belongto(gtop, path, p))
-			dbop_delete(gtop->dbop, NULL);
-	/*
-	 * don't delete from path index.
-	 */
-}
-/*
- * gtags_delete_by_fidset: delete records belong to set of fid.
- *
- *	i)	gtop	GTOP structure
- *	i)	fidset	bit array of fid
- *	i)	max_fid	number of bits in bit array
- */
-void
-gtags_delete_by_fidset(gtop, fidset, max_fid)
-	GTOP *gtop;
-	const unsigned char *fidset;
-	int max_fid;
+	IDSET *deleteset;
 {
 	const char *line, *p;
 	SPLIT ptable;
@@ -638,9 +606,9 @@ gtags_delete_by_fidset(gtop, fidset, max_fid)
 		}
 		fid = atoi(p);
 		recover(&ptable);
-		if (fid >= max_fid)
+		if (fid >= deleteset->max)
 			continue;
-		if (fidset[fid  / CHAR_BIT] & (1 << (fid % CHAR_BIT)))
+		if (idset_contains(deleteset, fid))
 			dbop_delete(gtop->dbop, NULL);
 	}
 }

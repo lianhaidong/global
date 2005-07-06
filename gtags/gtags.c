@@ -70,7 +70,7 @@ void onintr(int);
 int match(const char *, const char *);
 int main(int, char **);
 int incremental(const char *, const char *);
-void updatetags(const char *, const char *, const unsigned char *, int, STRBUF *, int);
+void updatetags(const char *, const char *, IDSET *, STRBUF *, int);
 void createtags(const char *, const char *, int);
 int printconf(const char *);
 void set_base_directory(const char *, const char *);
@@ -685,10 +685,9 @@ incremental(dbpath, root)
 {
 	struct stat statp;
 	time_t gtags_mtime;
-	STRBUF *extractlist = strbuf_open(0);
+	STRBUF *addlist = strbuf_open(0);
 	STRBUF *deletelist = strbuf_open(0);
-	unsigned char *fidset;
-	int max_fid = 0;
+	IDSET *deleteset;
 	int updated = 0;
 	const char *path;
 
@@ -706,15 +705,12 @@ incremental(dbpath, root)
 
 	if (gpath_open(dbpath, 0) < 0)
 		die("GPATH not found.");
-	fidset = (unsigned char *)calloc((gpath_nextkey() + CHAR_BIT - 1) / CHAR_BIT, 1);
-	if (fidset == NULL)
-		die("short of memory.");
+	deleteset = idset_open(gpath_nextkey());
 	/*
 	 * make add list and update list.
 	 */
 	for (find_open(NULL); (path = find_read()) != NULL; ) {
 		const char *fid;
-		int i;
 
 		/* a blank at the head of path means 'NOT SOURCE'. */
 		if (*path == ' ')
@@ -722,13 +718,10 @@ incremental(dbpath, root)
 		if (stat(path, &statp) < 0)
 			die("stat failed '%s'.", path);
 		if ((fid = gpath_path2fid(path)) == NULL)
-			strbuf_puts0(extractlist, path);
+			strbuf_puts0(addlist, path);
 		else if (gtags_mtime < statp.st_mtime) {
-			strbuf_puts0(extractlist, path);
-			i = atoi(fid);
-			fidset[i / CHAR_BIT] |= 1 << (i % CHAR_BIT);
-			if (i >= max_fid)
-				max_fid = i + 1;
+			strbuf_puts0(addlist, path);
+			idset_add(deleteset, atoi(fid));
 		}
 	}
 	find_close();
@@ -745,14 +738,12 @@ incremental(dbpath, root)
 				continue;
 			if (!test("f", path)) {
 				strbuf_puts0(deletelist, path);
-				fidset[i / CHAR_BIT] |= 1 << (i % CHAR_BIT);
-				if (i >= max_fid)
-					max_fid = i + 1;
+				idset_add(deleteset, i);
 			}
 		}
 	}
 	gpath_close();
-	if (strbuf_getlen(extractlist) + strbuf_getlen(deletelist))
+	if (strbuf_getlen(addlist) + strbuf_getlen(deletelist))
 		updated = 1;
 	/*
 	 * execute updating.
@@ -770,7 +761,7 @@ incremental(dbpath, root)
 				continue;
 			if (vflag)
 				fprintf(stderr, "[%s] Updating '%s'.\n", now(), dbname(db));
-			updatetags(dbpath, root, fidset, max_fid, extractlist, db);
+			updatetags(dbpath, root, deleteset, addlist, db);
 			if (exitflag)
 				exit(1);
 		}
@@ -810,9 +801,10 @@ incremental(dbpath, root)
 			fprintf(stderr, " Global databases are up to date.\n");
 		fprintf(stderr, "[%s] Done.\n", now());
 	}
-	strbuf_close(extractlist);
+	strbuf_close(addlist);
 	strbuf_close(deletelist);
-	free(fidset);
+	idset_close(deleteset);
+
 	return updated;
 }
 /*
@@ -820,18 +812,16 @@ incremental(dbpath, root)
  *
  *	i)	dbpath		directory in which tag file exist
  *	i)	root		root directory of source tree
- *	i)	fidset		bit array of fid of deleted or modified files 
- *	i)	max_fid		number of bits in bit array
- *	i)	extractlist	\0 separated list of added or modified files
+ *	i)	deleteset	bit array of fid of deleted or modified files 
+ *	i)	addlist		\0 separated list of added or modified files
  *	i)	db		GTAGS, GRTAGS, GSYMS
  */
 void
-updatetags(dbpath, root, fidset, max_fid, extractlist, db)
+updatetags(dbpath, root, deleteset, addlist, db)
 	const char *dbpath;
 	const char *root;
-	const unsigned char *fidset;
-	int max_fid;
-	STRBUF *extractlist;
+	IDSET *deleteset;
+	STRBUF *addlist;
 	int db;
 {
 	GTOP *gtop;
@@ -890,8 +880,8 @@ updatetags(dbpath, root, fidset, max_fid, extractlist, db)
 		const char *path;
 		int i;
 
-		for (i = 0; i < max_fid; i++) {
-			if (fidset[i / CHAR_BIT] & (1 << (i % CHAR_BIT))) {
+		for (i = 0; i < deleteset->max; i++) {
+			if (idset_contains(deleteset, i)) {
 				snprintf(fid, sizeof(fid), "%d", i);
 				path = gpath_fid2path(fid);
 				if (path == NULL)
@@ -900,16 +890,16 @@ updatetags(dbpath, root, fidset, max_fid, extractlist, db)
 			}
 		}
 	}
-	if (max_fid > 0)
-		gtags_delete_by_fidset(gtop, fidset, max_fid);
+	if (deleteset->max > 0)
+		gtags_delete(gtop, deleteset);
 
 	gflags = 0;
 	if (extractmethod)
 		gflags |= GTAGS_EXTRACTMETHOD;
 	if (debug)
 		gflags |= GTAGS_DEBUG;
-	path_list->sbuf = path_list->curp = strbuf_value(extractlist);
-	end = path_list->curp + strbuf_getlen(extractlist);
+	path_list->sbuf = path_list->curp = strbuf_value(addlist);
+	end = path_list->curp + strbuf_getlen(addlist);
 	while (path_list->curp < end) {
 		if (vflag)
 			fprintf(stderr, " adding tags of %s\n", path_list->curp + 2);
