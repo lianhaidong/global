@@ -25,6 +25,7 @@
 #ifdef HAVE_LIMITS_H
 #include <limits.h>
 #endif
+#include "die.h"
 #include "idset.h"
 
 /*
