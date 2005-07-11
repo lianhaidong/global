@@ -107,6 +107,33 @@ INCLUDES='-I$(top_srcdir)/libutil -I$(top_srcdir)/libdb -I$(top_srcdir)/libglibc
 LDADD='../libutil/libgloutil.a ../libdb/libglodb.a ../libglibc/libgloglibc.a'
 
 dnl
+dnl This option is for debugging GLOBAL. Not for normal use.
+dnl
+AC_ARG_WITH(db185-compat,
+[  --with-db185-compat[=DIR] use DB1.85 compatible API included in DB2 or later ],
+[
+	if test "$withval" != 'no'; then
+		case "$withval" in
+		''|yes)
+			;;
+		*)
+			if ! test -d $withval; then
+				AC_MSG_ERROR([directory $withval not found.])
+			fi
+			if ! test -r $withval/include/db_185.h; then
+				AC_MSG_ERROR([header $withval/include/db_185.h not found.])
+			fi
+			INCLUDES="$INCLUDES -I$withval/include"
+			LDFLAGS="$LDFLAGS -L$withval/lib"
+			;;
+		esac
+		LDADD='../libutil/libgloutil.a -ldb ../libglibc/libgloglibc.a'
+		AC_DEFINE(USE_DB185_COMPAT,1,[Define if you use DB1.85 compatible API.])
+	fi
+],[ with_db185_compat='no' ])
+AM_CONDITIONAL([USE_DB185_COMPAT], [test "$with_db185_compat" != no])
+
+dnl
 dnl for home-etc support
 dnl
 AC_MSG_CHECKING(for home-etc support)

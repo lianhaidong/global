@@ -10,7 +10,11 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
-SUBDIRS= libdb libglibc libutil gnusort gtags-parser global gozilla gtags htags doc
+SUBDIRS = libglibc libutil
+if !USE_DB185_COMPAT
+        SUBDIRS += libdb
+endif
+SUBDIRS += gnusort gtags-parser global gozilla gtags htags doc
 
 EXTRA_DIST = FAQ LICENSE \
 	gtags.conf gtags.el nvi-1.79-gtags.diff reconf.sh globash.rc \

@@ -23,7 +23,11 @@
 #define _DBOP_H_
 
 #include "gparam.h"
+#ifdef USE_DB185_COMPAT
+#include <db_185.h>
+#else
 #include "db.h"
+#endif
 #include "regex.h"
 #include "strbuf.h"
 
