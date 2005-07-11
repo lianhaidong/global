@@ -147,6 +147,8 @@ varray_assign(vb, index, force)
 			vb->vbuf = (char *)malloc(vb->size * vb->alloced);
 		else
 			vb->vbuf = (char *)realloc(vb->vbuf, vb->size * vb->alloced);
+		if (vb->vbuf == NULL)
+			die("short of memory.");
 		if (debug)
 			fprintf(stderr, "Expanded: from %d to %d.\n", old_alloced, vb->alloced);
 	}
