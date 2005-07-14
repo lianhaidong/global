@@ -18,6 +18,7 @@ SUBDIRS += gnusort gtags-parser global gozilla gtags htags doc
 
 EXTRA_DIST = FAQ LICENSE \
 	gtags.conf gtags.el nvi-1.79-gtags.diff reconf.sh globash.rc \
+	htags-refkit/Makefile htags-refkit/README htags-refkit/htags_path2url.c \
 	convert.pl gtags.pl gtags.vim
 
 gtagsdir = ${datadir}/gtags
