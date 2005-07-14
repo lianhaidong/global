@@ -26,8 +26,13 @@ GNU GLOBAL source code tag system is covered by the followings:
 
 nvi-1.79-gtags.diff
 
-     This file is placed into the public domain by the author,
-     Shigio YAMAGUCHI
+    This file is placed into the public domain by the author,
+    Shigio YAMAGUCHI
+
+Htags Hyper-text Reference Kit (htags_path2url.c):
+
+    This file is placed into the public domain by the author,
+    2005 Tama Communications Corporation.
 
 Getopt for GNU (getopt.c getopt.h getopt1.c):
 
