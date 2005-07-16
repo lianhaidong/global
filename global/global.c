@@ -96,7 +96,6 @@ int xflag;				/* [option]		*/
 int show_version;
 int show_help;
 int show_filter;			/* undocumented command */
-int use_tagfiles;
 int debug;
 const char *extra_options;
 
