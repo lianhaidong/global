@@ -401,7 +401,7 @@ strbuf_fgets(sb, ip, flags)
  *	i)	sb	STRBUF structure
  *	i)	s	similar to sprintf()
  *			Currently the following format is supported.
- *			%s, %d, %<number>d, %<number>s
+ *			%s, %d, %<number>d, %<number>s, %-<number>d, %-<number>s
  */
 void
 #ifdef HAVE_STDARG_H
@@ -438,7 +438,7 @@ strbuf_sprintf(sb, s, va_alist)
 		if (*s == '\0')
 			break;
 		if (*s == '%') {
-			int c = *++s;
+			int c = (unsigned char)*++s;
 			/*
 			 * '%%' means '%'.
 			 */
@@ -450,13 +450,17 @@ strbuf_sprintf(sb, s, va_alist)
 			 * we forward the job to snprintf(3).
 			 * o %<number>d
 			 * o %<number>s
+			 * o %-<number>d
+			 * o %-<number>s
 			 */
-			else if (isdigit(c)) {
+			else if (isdigit(c) || (c == '-' && isdigit((unsigned char)*(s + 1)))) {
 				char format[32], buf[1024];
 				int i = 0;
 
 				format[i++] = '%';
-				while (isdigit(*s))
+				if (c == '-')
+					format[i++] = *s++;
+				while (isdigit((unsigned char)*s))
 					format[i++] = *s++;
 				format[i++] = c = *s;
 				format[i] = '\0';
