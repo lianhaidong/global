@@ -176,11 +176,15 @@ linetable_print(op, lineno)
 	if (lineno <= 0)
 		die("linetable_print: line number must >= 1 (lineno = %d)", lineno);
 	s = linetable_get(lineno, NULL);
-	if (s == NULL)
-		return;
-	for (p = s; *p != '\n'; p++)
-		;
-	if (p > s)
+	if (vb->length == lineno) {
+		/*
+		 * The last line may not include newline.
+		 */
+		fwrite(s, 1, endp - s, op);
+		if (endp[-1] != '\n')
+			fputc('\n', op);
+	} else {
+		p = linetable_get(lineno + 1, NULL);
 		fwrite(s, 1, p - s, op);
-	fputc('\n', op);
+	}
 }
