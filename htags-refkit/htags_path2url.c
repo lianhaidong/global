@@ -247,6 +247,10 @@ htags_unload_filemap()
  *	i)	line	0: ignored, !=0: line number in path.
  *	o)	url	result url
  *	i)	size	size of url
+ *	gi)	global_htmldir	HTML directory of htags
+ *	gi)	global_contents	filemap contents (for free)
+ *	gi)	global_map	filemap index.
+ *	gi)	global_maplines	lines of filemap index.
  *	r)		0: succesful
  *			1: path not found
  *			-1: filemap not loaded yet
