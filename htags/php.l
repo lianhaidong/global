@@ -1,6 +1,6 @@
 %{
 /*
- * Copyright (c) 2002, 2004 Tama Communications Corporation
+ * Copyright (c) 2002, 2004, 2005 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -52,6 +52,8 @@
 
 #define YY_USER_ACTION DEFAULT_YY_USER_ACTION
 
+char end_of_here_document[IDENTLEN+1];
+
 %}
  /* Definitions */
 H		0[Xx][0-9A-Fa-f]+
@@ -64,7 +66,7 @@ ALPHA		[a-zA-Z_\x80-\xff]
 ALPHANUM	[a-zA-Z_\x80-\xff0-9]
 WORD		{ALPHA}{ALPHANUM}*
 
-%start	PHP C_COMMENT CPP_COMMENT SHELL_COMMENT STRING LITERAL PREPROCESSOR_LINE
+%start	PHP C_COMMENT CPP_COMMENT SHELL_COMMENT STRING LITERAL HEREDOCUMENT PREPROCESSOR_LINE
 %option 8bit noyywrap noyy_top_state stack prefix="php_"
 %%
  /* Start PHP */
@@ -97,6 +99,20 @@ WORD		{ALPHA}{ALPHANUM}*
 <LITERAL>\'	{ ECHO; yy_pop_state(); }
 <LITERAL>\\.	{ put_char(LEXTEXT[0]); put_char(LEXTEXT[1]); }
 
+ /* Here document */
+<PHP><<<{WORD} {
+		put_string(LEXTEXT);
+		/* extract word and save */
+		if (LEXLENG - 3 > IDENTLEN)
+			die("Too long name '%s'.", LEXTEXT + 3);
+		strcpy(end_of_here_document, LEXTEXT + 3);
+		yy_push_state(HEREDOCUMENT);
+	}
+<HEREDOCUMENT>^{WORD} {
+		ECHO;
+		if (!strcmp(end_of_here_document, LEXTEXT))
+			yy_pop_state();
+	}
 <PHP>^[ \t]*include[ \t]*\( {
 		int c;
 
