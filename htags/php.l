@@ -74,7 +74,7 @@ WORD		{ALPHA}{ALPHANUM}*
 <INITIAL>"<%"		{ put_string(LEXTEXT); BEGIN PHP; }
 <INITIAL>"<script[ \t]+language=(\")?php(\")?>" { put_string(LEXTEXT); BEGIN PHP; }
  /* Ignore HTML */
-<INITIAL>.              ECHO;
+<INITIAL>.              put_string(LEXTEXT);
  /* End of PHP */
 <PHP>"?>"		{ put_string(LEXTEXT); BEGIN INITIAL; }
 <PHP>"%>"               { put_string(LEXTEXT); BEGIN INITIAL; }
