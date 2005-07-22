@@ -27,6 +27,7 @@
 #include <stdio.h>
 #ifdef STDC_HEADERS
 #include <stdlib.h>
+#include <stddef.h>
 #endif
 #ifdef HAVE_STRING_H
 #include <string.h>
@@ -53,6 +54,11 @@
 #include "strmake.h"
 #include "tab.h"
 
+#define HASHBUCKETS	256
+
+static unsigned int hashpjw(const char *);
+static int compare_lno(const void *, const void *);
+static void gtop_flush_htab(GTOP *);
 static const char *unpack_pathindex(const char *);
 static const char *genrecord(GTOP *);
 static regex_t reg;
@@ -324,8 +330,12 @@ gtags_open(dbpath, root, db, mode, flags)
 		strlimcpy(gtop->root, root, sizeof(gtop->root));
 		if (gtop->mode == GTAGS_READ)
 			gtop->ib = strbuf_open(MAXBUFLEN);
-		else
+		else {
 			gtop->sb = strbuf_open(0);
+			gtop->htab = calloc(sizeof(struct gtop_compact_entry *), HASHBUCKETS);
+			if (gtop->htab == NULL)
+				die("short of memory.");
+		}
 	} else if (gtop->format == GTAGS_PATHINDEX && gtop->mode != GTAGS_READ)
 		gtop->sb = strbuf_open(0);
 	return gtop;
@@ -346,8 +356,10 @@ gtags_put(gtop, tag, record)
 	const char *tag;
 	const char *record;		/* virtually const */
 {
-	const char *line, *path, *fid;
+	const char *line, *path;
 	SPLIT ptable;
+	struct gtop_compact_entry *entry, **prev;
+	int *lno;
 
 	if (gtop->format == GTAGS_STANDARD) {
 		/* entab(record); */
@@ -356,6 +368,7 @@ gtags_put(gtop, tag, record)
 	}
 	if (gtop->format == GTAGS_PATHINDEX) {
 		char *p = locatestring(record, "./", MATCH_FIRST);
+		const char *fid;
 		int savec;
 
 		if (p == NULL)
@@ -387,36 +400,132 @@ gtags_put(gtop, tag, record)
 	line = ptable.part[1].start;
 	path = ptable.part[2].start;
 	/*
-	 * First time, it occurs, because 'prev_tag' and 'prev_path' are NULL.
+	 * Register each record into the hash table.
+	 * Duplicated records will be combined.
 	 */
-	if (strcmp(gtop->prev_tag, tag) || strcmp(gtop->prev_path, path)) {
-		if (gtop->prev_tag[0]) {
-			dbop_put(gtop->dbop, gtop->prev_tag, strbuf_value(gtop->sb));
-		}
-		strlimcpy(gtop->prev_tag, tag, sizeof(gtop->prev_tag));
-		strlimcpy(gtop->prev_path, path, sizeof(gtop->prev_path));
-		/*
-		 * Start creating new record.
-		 */
-		strbuf_reset(gtop->sb);
-		strbuf_puts(gtop->sb, strmake(record, " \t"));
-		strbuf_putc(gtop->sb, ' ');
-		if (gtop->format & GTAGS_PATHINDEX) {
-			fid = gpath_path2fid(path);
-			if (fid == NULL)
-				die("GPATH is corrupted.('%s' not found)", path);
-			path = fid;
-		}
-		strbuf_puts(gtop->sb, path);
-		strbuf_putc(gtop->sb, ' ');
-		strbuf_puts(gtop->sb, line);
-	} else {
-		strbuf_putc(gtop->sb, ',');
-		strbuf_puts(gtop->sb, line);
-		if (strbuf_getlen(gtop->sb) > DBOP_PAGESIZE / 4)
-			gtop->prev_path[0] = '\0';
+	if (gtop->prev_path[0] && strcmp(gtop->prev_path, path))
+		gtop_flush_htab(gtop);
+	strlimcpy(gtop->prev_path, path, sizeof(gtop->prev_path));
+	for (prev = gtop->htab + hashpjw(record) % HASHBUCKETS;
+	     (entry = *prev) != NULL;
+	     prev = &entry->next) {
+		if (strcmp(entry->tag, record) == 0)
+			break;
 	}
+	if (entry == NULL) {
+		entry = malloc(offsetof(struct gtop_compact_entry, tag) + strlen(record) + 1);
+		if (entry == NULL)
+			die("short of memory.");
+		entry->next = NULL;
+		entry->vb = varray_open(sizeof(int), 100);
+		strcpy(entry->tag, record);
+		*prev = entry;
+	}
+	lno = varray_append(entry->vb);
+	*lno = atoi(line);
 	recover(&ptable);
+}
+/*
+ * hashpjw: calculate hash value for given string.
+ *
+ *	i)	string
+ *	r)	hash value
+ */
+static unsigned int
+hashpjw(s)
+	const char *s;
+{
+	unsigned int h, g;
+
+	h = strlen(s);
+	while (*s != '\0') {
+		h <<= 4;
+		h += (unsigned char)*s++;
+		g = h & 0xf0000000;
+		if (g != 0)
+			h = h ^ (g >> 24) ^ g;
+	}
+
+	return h;
+}
+/*
+ * compare_lno: compare function for sorting line number.
+ */
+static int
+compare_lno(s1, s2)
+	const void *s1;
+	const void *s2;
+{
+	return *(const int *)s1 - *(const int *)s2;
+}
+/*
+ * gtop_flush_htab: register each record into the tag database and delete from the hash table.
+ *
+ *	i)	gtop	descripter of GTOP
+ */
+static void
+gtop_flush_htab(gtop)
+	GTOP *gtop;
+{
+	const char *path, *key;
+	struct gtop_compact_entry *entry, *next;
+	int *lno_array;
+	int i, j, savelen;
+
+	path = gtop->prev_path;
+	if (gtop->format & GTAGS_PATHINDEX) {
+		path = gpath_path2fid(gtop->prev_path);
+		if (path == NULL)
+			die("GPATH is corrupted.('%s' not found)", gtop->prev_path);
+	}
+
+	for (i = 0; i < HASHBUCKETS; i++) {
+		for (entry = gtop->htab[i]; entry != NULL; entry = next) {
+			/*
+			 * extract method when class method definition.
+			 *
+			 * Ex: Class::method(...)
+			 *
+			 * key	= 'method'
+			 * data = 'Class::method  103 ./class.cpp ...'
+			 */
+			key = entry->tag;
+			if (gtop->flags & GTAGS_EXTRACTMETHOD) {
+				if ((key = locatestring(entry->tag, ".", MATCH_LAST)) != NULL)
+					key++;
+				else if ((key = locatestring(entry->tag, "::", MATCH_LAST)) != NULL)
+					key += 2;
+				else
+					key = entry->tag;
+			}
+			lno_array = varray_assign(entry->vb, 0, 0);
+			qsort(lno_array, entry->vb->length, sizeof(int), compare_lno); 
+			strbuf_reset(gtop->sb);
+			strbuf_puts(gtop->sb, entry->tag);
+			strbuf_putc(gtop->sb, ' ');
+			strbuf_puts(gtop->sb, path);
+			strbuf_putc(gtop->sb, ' ');
+			savelen = strbuf_getlen(gtop->sb);
+			for (j = 0; j < entry->vb->length; j++) {
+				if ((gtop->flags & GTAGS_UNIQUE) && j > 0
+				    && lno_array[j - 1] == lno_array[j])
+					continue;
+				if (strbuf_getlen(gtop->sb) > savelen)
+					strbuf_putc(gtop->sb, ',');
+				strbuf_putn(gtop->sb, lno_array[j]);
+				if (strbuf_getlen(gtop->sb) > DBOP_PAGESIZE / 4) {
+					dbop_put(gtop->dbop, key, strbuf_value(gtop->sb));
+					strbuf_setlen(gtop->sb, savelen);
+				}
+			}
+			if (strbuf_getlen(gtop->sb) > savelen)
+				dbop_put(gtop->dbop, key, strbuf_value(gtop->sb));
+			varray_close(entry->vb);
+			next = entry->next;
+			free(entry);
+		}
+		gtop->htab[i] = NULL;
+	}
 }
 /*
  * gtags_add: add tags belonging to the path list into tag file.
@@ -438,14 +547,18 @@ gtags_add(gtop, comline, path_list, flags)
 	STRBUF *sb = strbuf_open(0);
 	STRBUF *ib = strbuf_open(MAXBUFLEN);
 	const char *path, *end;
+	int path_num;
 
+	gtop->flags = flags;
 	/*
 	 * add path index if not yet.
 	 */
 	path = strbuf_value(path_list);
 	end = path + strbuf_getlen(path_list);
+	path_num = 0;
 	while (path < end) {
 		gpath_put(path);
+		path_num++;
 		path += strlen(path) + 1;
 	}
 	/*
@@ -455,11 +568,10 @@ gtags_add(gtop, comline, path_list, flags)
 	/*
 	 * Compact format.
 	 */
-	if (gtop->format & GTAGS_COMPACT) {
-		strbuf_puts(sb, "| gnusort -k3,3 -k 1,1 -k 2,2n");
-		if (flags & GTAGS_UNIQUE)
-			strbuf_puts(sb, " -u");
-	}
+	if ((gtop->format & GTAGS_COMPACT) != 0
+	    && locatestring(comline, "gtags-parser", MATCH_FIRST) == NULL
+	    && path_num > 1)
+		strbuf_puts(sb, "| gnusort -k3,3");
 #ifdef DEBUG
 	if (flags & GTAGS_DEBUG)
 		fprintf(stderr, "gtags_add() executing '%s'\n", strbuf_value(sb));
@@ -662,14 +774,17 @@ void
 gtags_close(gtop)
 	GTOP *gtop;
 {
-	if (gtop->format & GTAGS_PATHINDEX || gtop->mode != GTAGS_READ)
-		gpath_close();
-	if (gtop->sb && gtop->prev_tag[0])
-		dbop_put(gtop->dbop, gtop->prev_tag, strbuf_value(gtop->sb));
+	if (gtop->htab) {
+		if (gtop->prev_path[0])
+			gtop_flush_htab(gtop);
+		free(gtop->htab);
+	}
 	if (gtop->sb)
 		strbuf_close(gtop->sb);
 	if (gtop->ib)
 		strbuf_close(gtop->ib);
+	if (gtop->format & GTAGS_PATHINDEX || gtop->mode != GTAGS_READ)
+		gpath_close();
 	dbop_close(gtop->dbop);
 	free(gtop);
 }
