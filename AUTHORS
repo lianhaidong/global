@@ -25,12 +25,13 @@ Port to Windows 32 (for Borland C++ Compiler) by Dan Fandrich.
 Port to DJGPP by Jason Hood.
 (libutil/is_unixy.[ch] and most of #ifdef __DJGPP__.)
 
-Improvements to htags and gtags-parser by Hideki IWAMOTO.
+Improvements to htags, gtags and gtags-parser by Hideki IWAMOTO.
 * INCLUDED FROM index(htags)
 * CVS REPOSITORY link(htags)
 * Real support of Yacc source code(htags)
 * Rewrite parser for assembly language using Yacc(asm_scan.l,asm_parse.y)
 * Config variable 'langmap'(htags)
+* Improvement of gtags using xargs(1).
 Besides he has contributed many improvements to GLOBAL.
 
 There are also many others who have contributed patches and fixes.
