@@ -798,14 +798,9 @@ updatetags(dbpath, root, deleteset, addlist, db)
 	int db;
 {
 	GTOP *gtop;
-	const char *comline;
-	const char *end;
-	STRBUF *sb = strbuf_open(0);
+	STRBUF *comline = strbuf_open(0);
 	int gflags;
-	STATIC_STRBUF(path_list);
 	int path_list_max;
-	int savec;
-	int pathlen;
 
 	/*
 	 * GTAGS needed to make GRTAGS.
@@ -816,10 +811,8 @@ updatetags(dbpath, root, deleteset, addlist, db)
 	/*
 	 * get tag command.
 	 */
-	if (!getconfs(dbname(db), sb))
+	if (!getconfs(dbname(db), comline))
 		die("cannot get tag command. (%s)", dbname(db));
-	comline = strbuf_value(sb);
-
 	/*
 	 * determine the maximum length of the list of paths.
 	 */
@@ -833,7 +826,7 @@ updatetags(dbpath, root, deleteset, addlist, db)
 		if (path_list_max > 20 * 1024)
 			path_list_max = 20 * 1024;
 		path_list_max -= env_size();
-		path_list_max -= strbuf_getlen(sb);
+		path_list_max -= strbuf_getlen(comline);
 		path_list_max -= 40;
 		if (path_list_max < 0)
 			path_list_max = 0;
@@ -841,9 +834,7 @@ updatetags(dbpath, root, deleteset, addlist, db)
 #else
 	path_list_max = 0;
 #endif
-
 	gtop = gtags_open(dbpath, root, db, GTAGS_MODIFY, 0);
-
 	if (vflag) {
 		char fid[32];
 		const char *path;
@@ -861,34 +852,54 @@ updatetags(dbpath, root, deleteset, addlist, db)
 	}
 	if (deleteset->max > 0)
 		gtags_delete(gtop, deleteset);
-
 	gflags = 0;
 	if (extractmethod)
 		gflags |= GTAGS_EXTRACTMETHOD;
 	if (debug)
 		gflags |= GTAGS_DEBUG;
-	path_list->sbuf = path_list->curp = strbuf_value(addlist);
-	end = path_list->curp + strbuf_getlen(addlist);
-	while (path_list->curp < end) {
-		if (vflag)
-			fprintf(stderr, " adding tags of %s\n", path_list->curp + 2);
-		pathlen = strlen(path_list->curp);
-		if (strbuf_getlen(path_list)
-		    && strbuf_getlen(path_list) + pathlen > path_list_max) {
-			savec = *path_list->curp;
-			gtags_add(gtop, comline, path_list, gflags);
-			*path_list->curp = savec;
-			path_list->sbuf = path_list->curp;
+	/*
+	 * If the --noxargs option is not specified, we pass the parser
+	 * the source file as a lot as possible to decrease the invoking
+	 * frequency of the parser.
+	 */
+	{
+		STRBUF *path_list = strbuf_open(0);
+		const char *path = strbuf_value(addlist);
+		const char *end = path + strbuf_getlen(addlist);
+
+		while (path < end) {
+			int pathlen = strlen(path);
+
+			if (vflag)
+				fprintf(stderr, " adding tags of %s\n", path + 2);
+			/*
+			 * Execute parser when path name collects enough.
+			 * Though the path_list is \0 separated list of path,
+			 * we can think its length equals to the length of
+			 * argument string because each \0 can be replaced
+			 * with a blank.
+			 */
+			if (strbuf_getlen(path_list)) {
+				if (path_list_max == 0 || strbuf_getlen(path_list) + pathlen > path_list_max) {
+					gtags_add(gtop, strbuf_value(comline), path_list, gflags);
+					strbuf_reset(path_list);
+				}
+			}
+			if (exitflag)
+				break;
+			/*
+			 * Add a path to the path list.
+			 */
+			strbuf_puts0(path_list, path);
+			path += pathlen + 1;
 		}
-		if (exitflag)
-			break;
-		path_list->curp += pathlen + 1;
+		if (strbuf_getlen(path_list))
+			gtags_add(gtop, strbuf_value(comline), path_list, gflags);
+		strbuf_close(path_list);
 	}
-	if (strbuf_getlen(path_list))
-		gtags_add(gtop, comline, path_list, gflags);
 
 	gtags_close(gtop);
-	strbuf_close(sb);
+	strbuf_close(comline);
 }
 /*
  * createtags: create tags file
@@ -906,8 +917,7 @@ createtags(dbpath, root, db)
 	const char *path;
 	GTOP *gtop;
 	int flags, gflags;
-	const char *comline;
-	STRBUF *sb = strbuf_open(0);
+	STRBUF *comline = strbuf_open(0);
 	int count = 0;
 	STRBUF *path_list = strbuf_open(MAXPATHLEN);
 	int path_list_max;
@@ -915,9 +925,8 @@ createtags(dbpath, root, db)
 	/*
 	 * get tag command.
 	 */
-	if (!getconfs(dbname(db), sb))
+	if (!getconfs(dbname(db), comline))
 		die("cannot get tag command. (%s)", dbname(db));
-	comline = strbuf_value(sb);
 	/*
 	 * GTAGS needed to make GRTAGS.
 	 */
@@ -937,7 +946,7 @@ createtags(dbpath, root, db)
 		if (path_list_max > 20 * 1024)
 			path_list_max = 20 * 1024;
 		path_list_max -= env_size();
-		path_list_max -= strbuf_getlen(sb);
+		path_list_max -= strbuf_getlen(comline);
 		path_list_max -= 40;
 		if (path_list_max < 0)
 			path_list_max = 0;
@@ -961,13 +970,18 @@ createtags(dbpath, root, db)
 			flags |= GTAGS_COMPACT;
 	}
 	if (vflag > 1)
-		fprintf(stderr, " using tag command '%s <path>'.\n", comline);
+		fprintf(stderr, " using tag command '%s <path>'.\n", strbuf_value(comline));
 	gtop = gtags_open(dbpath, root, db, GTAGS_CREATE, flags);
 	gflags = 0;
 	if (extractmethod)
 		gflags |= GTAGS_EXTRACTMETHOD;
 	if (debug)
 		gflags |= GTAGS_DEBUG;
+	/*
+	 * If the --noxargs option is not specified, we pass the parser
+	 * the source file as a lot as possible to decrease the invoking
+	 * frequency of the parser.
+	 */
 	for (find_open(NULL); (path = find_read()) != NULL; ) {
 		int skip = 0;
 
@@ -997,19 +1011,30 @@ createtags(dbpath, root, db)
 		}
 		if (skip)
 			continue;
-		if (strbuf_getlen(path_list)
-		    && strbuf_getlen(path_list) + strlen(path) > path_list_max) {
-			gtags_add(gtop, comline, path_list, gflags);
-			strbuf_reset(path_list);
+		/*
+		 * Execute parser when path name collects enough.
+		 * Though the path_list is \0 separated list of string,
+		 * we can think its length equals to the length of
+		 * argument string because each \0 can be replaced
+		 * with a blank.
+		 */
+		if (strbuf_getlen(path_list)) {
+			if (path_list_max == 0 || strbuf_getlen(path_list) + strlen(path) > path_list_max) {
+				gtags_add(gtop, strbuf_value(comline), path_list, gflags);
+				strbuf_reset(path_list);
+			}
 		}
+		/*
+		 * Add a path to path_list.
+		 */
 		strbuf_puts0(path_list, path);
 	}
 	if (strbuf_getlen(path_list))
-		gtags_add(gtop, comline, path_list, gflags);
+		gtags_add(gtop, strbuf_value(comline), path_list, gflags);
 	total = count;				/* save total count */
 	find_close();
 	gtags_close(gtop);
-	strbuf_close(sb);
+	strbuf_close(comline);
 	strbuf_close(path_list);
 }
 /*

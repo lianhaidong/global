@@ -909,9 +909,8 @@ parsefile(argc, argv, cwd, root, dbpath, db)
 {
 	char buf[MAXPATHLEN+1], *path;
 	FILE *op;
-	const char *parser, *av;
 	int count;
-	STRBUF *sb = strbuf_open(0);
+	STRBUF *comline = strbuf_open(0);
 	STRBUF *path_list = strbuf_open(MAXPATHLEN);
 	int path_list_max;
 
@@ -923,10 +922,8 @@ parsefile(argc, argv, cwd, root, dbpath, db)
 	/*
 	 * get parser.
 	 */
-	if (!getconfs(dbname(db), sb))
+	if (!getconfs(dbname(db), comline))
 		die("cannot get parser for %s.", dbname(db));
-	parser = strbuf_value(sb);
-
 	/*
 	 * determine the maximum length of the list of paths.
 	 */
@@ -936,7 +933,7 @@ parsefile(argc, argv, cwd, root, dbpath, db)
 	if (path_list_max > 20 * 1024)
 		path_list_max = 20 * 1024;
 	path_list_max -= env_size();
-	path_list_max -= strbuf_getlen(sb);
+	path_list_max -= strbuf_getlen(comline);
 	path_list_max -= 40;
 	if (path_list_max < 0)
 		path_list_max = 0;
@@ -950,7 +947,8 @@ parsefile(argc, argv, cwd, root, dbpath, db)
 		die("GPATH not found.");
 	count = 0;
 	for (; argc > 0; argv++, argc--) {
-		av = argv[0];
+		const char *av = argv[0];
+
 		if (!test("f", av)) {
 			if (test("d", av)) {
 				if (!qflag)
@@ -981,20 +979,29 @@ parsefile(argc, argv, cwd, root, dbpath, db)
 				fprintf(stderr, "'%s' not found in GPATH.\n", path);
 			continue;
 		}
-
-		if (strbuf_getlen(path_list)
-		    && strbuf_getlen(path_list) + strlen(path) > path_list_max) {
-			count += exec_parser(parser, path_list, cwd, root, op);
-			strbuf_reset(path_list);
+		/*
+		 * Execute parser when path name collects enough.
+		 * Though the path_list is \0 separated list of string,
+		 * we can think its length equals to the length of
+		 * argument string because each \0 can be replaced
+		 * with a blank.
+		 */
+		if (strbuf_getlen(path_list)) {
+			if (strbuf_getlen(path_list) + strlen(path) > path_list_max) {
+				count += exec_parser(strbuf_value(comline), path_list, cwd, root, op);
+				strbuf_reset(path_list);
+			}
 		}
-
+		/*
+		 * Add a path to the path list.
+		 */
 		strbuf_puts0(path_list, path);
 	}
 	if (strbuf_getlen(path_list))
-		count += exec_parser(parser, path_list, cwd, root, op);
+		count += exec_parser(strbuf_value(comline), path_list, cwd, root, op);
 	gpath_close();
 	closefilter(op);
-	strbuf_close(sb);
+	strbuf_close(comline);
 	strbuf_close(path_list);
 	if (vflag) {
 		if (count == 0)

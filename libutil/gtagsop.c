@@ -566,7 +566,11 @@ gtags_add(gtop, comline, path_list, flags)
 	 */
 	makecommand(comline, path_list, sb);
 	/*
-	 * Compact format.
+	 * Compact format requires the output of parser sorted by the path.
+	 *
+	 * We assume that the output of gtags-parser is sorted by the path.
+	 * About the other parsers, it is not guaranteed, so we sort it
+	 * using external sort command (gnusort).
 	 */
 	if ((gtop->format & GTAGS_COMPACT) != 0
 	    && locatestring(comline, "gtags-parser", MATCH_FIRST) == NULL
@@ -628,6 +632,9 @@ gtags_delete(gtop, deleteset)
 	int fid, n;
 
 	for (line = dbop_first(gtop->dbop, NULL, NULL, 0); line; line = dbop_next(gtop->dbop)) {
+		/*
+		 * Extract the path, and if needed, convert it into the file id.
+		 */
 		n = split((char *)line, 4, &ptable);
 		if (gtop->format & GTAGS_COMPACT) {
 			if (n != 3)
@@ -647,6 +654,9 @@ gtags_delete(gtop, deleteset)
 		}
 		fid = atoi(p);
 		recover(&ptable);
+		/*
+		 * If the file id exists in the deleteset, delete the record.
+		 */
 		if (idset_contains(deleteset, fid))
 			dbop_delete(gtop->dbop, NULL);
 	}
