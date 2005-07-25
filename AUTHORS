@@ -31,7 +31,10 @@ Improvements to htags, gtags and gtags-parser by Hideki IWAMOTO.
 * Real support of Yacc source code(htags)
 * Rewrite parser for assembly language using Yacc(asm_scan.l,asm_parse.y)
 * Config variable 'langmap'(htags)
-* Improvement of gtags using xargs(1).
+* Improvement of performance by decreasing the frequency of the
+  parser invoking(gtags)
+* Improvement of performance by changing algorithm of incremental
+  updating(gtags)
 Besides he has contributed many improvements to GLOBAL.
 
 There are also many others who have contributed patches and fixes.
