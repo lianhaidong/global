@@ -29,6 +29,8 @@
 #include <strings.h>
 #endif
 
+#define YYLTYPE		int
+
 #include "asm_parse.h"
 #include "asm_res.h"
 #include "die.h"
@@ -51,7 +53,7 @@
 
 #define ADD_SYM() do {							\
 	LEXLVAL = strbuf_getlen(asm_symtable);				\
-	LEXLLOC.first_line = LEXLINENO;					\
+	LEXLLOC = LEXLINENO;						\
 	strbuf_puts0(asm_symtable, LEXTEXT);				\
 } while (0)
 

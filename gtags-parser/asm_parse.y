@@ -31,6 +31,10 @@
 #include "linetable.h"
 #include "strbuf.h"
 
+#define YYLTYPE		int
+
+#define YYLLOC_DEFAULT(Current, Rhs, N)	((Current) = (Rhs)[1])
+
 #undef PUT
 #define PUT(tag, lno) do {						\
 	if (!nflag) {							\
@@ -82,10 +86,10 @@ line:	ASM_ENTRY '(' ASM_SYMBOL ')' error '\n'
 				char *sym = GET_SYM($1);
 
 				if (defined(sym))
-					PUT(sym, @1.first_line);
+					PUT(sym, @1);
 			}
 			if (target == DEF)
-				PUT(GET_SYM($3), @3.first_line);
+				PUT(GET_SYM($3), @3);
 			strbuf_reset(asm_symtable);
 		}
 	| ASM_CALL ASM_SYMBOL error '\n'
@@ -98,7 +102,7 @@ line:	ASM_ENTRY '(' ASM_SYMBOL ')' error '\n'
 
 					if ((isalpha(c) || c == '_' || c >= 0x80)
 					    && defined(&sym[1]))
-						PUT(&sym[1], @2.first_line);
+						PUT(&sym[1], @2);
 				}
 			}
 			strbuf_reset(asm_symtable);
@@ -110,30 +114,30 @@ line:	ASM_ENTRY '(' ASM_SYMBOL ')' error '\n'
 
 				sym = GET_SYM($2);
 				if (defined(sym))
-					PUT(sym, @2.first_line);
+					PUT(sym, @2);
 
 				sym = GET_SYM($4);
 				if (defined(sym))
-					PUT(sym, @4.first_line);
+					PUT(sym, @4);
 			}
 			strbuf_reset(asm_symtable);
 		}
 	| "#define" ASM_SYMBOL error '\n'
 		{
 			if (target == DEF && dflag)
-				PUT(GET_SYM($2), @2.first_line);
+				PUT(GET_SYM($2), @2);
 			strbuf_reset(asm_symtable);
 		}
 	| "#define" ASM_SYMBOL_PAREN error '\n'
 		{
 			if (target == DEF)
-				PUT(GET_SYM($2), @2.first_line);
+				PUT(GET_SYM($2), @2);
 			strbuf_reset(asm_symtable);
 		}
 	| "#undef" ASM_SYMBOL error '\n'
 		{
 			if (target == DEF && dflag)
-				PUT(GET_SYM($2), @2.first_line);
+				PUT(GET_SYM($2), @2);
 			strbuf_reset(asm_symtable);
 		}
 	| error '\n'
