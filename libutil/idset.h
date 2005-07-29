@@ -29,6 +29,7 @@ typedef struct {
 IDSET *idset_open(unsigned int);
 void idset_add(IDSET *, unsigned int);
 int idset_contains(IDSET *, unsigned int);
+int idset_count(IDSET *);
 void idset_close(IDSET *);
 
 #endif /* ! _IDSET_H_ */

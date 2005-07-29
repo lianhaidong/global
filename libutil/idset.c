@@ -47,7 +47,7 @@ idset_add(idset, 20)		[01100000][00000000][00001___]
 idset_contains(idset, 2) == true
 idset_contains(idset, 3) == false
 
-close_idset(idset)		[]
+idset_close(idset)		[]
  */
 /*
  * Allocate memory for new idset.
@@ -98,6 +98,23 @@ idset_contains(idset, id)
 {
 	return (id >= idset->max) ? 0 :
 			(idset->set[id / CHAR_BIT] & (1 << (id % CHAR_BIT)));
+}
+/*
+ * Return bits of idset.
+ *
+ *	i)	idset	idset structure
+ *	r)		number of bits
+ */
+int
+idset_count(idset)
+	IDSET *idset;
+{
+	int id, count = 0;
+
+	for (id = 0; id < idset->max; id++)
+		if (idset->set[id / CHAR_BIT] & (1 << (id % CHAR_BIT)))
+			count++;
+	return count;
 }
 /*
  * Free memory for the idset.

@@ -70,7 +70,7 @@ void onintr(int);
 int match(const char *, const char *);
 int main(int, char **);
 int incremental(const char *, const char *);
-void updatetags(const char *, const char *, IDSET *, STRBUF *, int);
+void updatetags(const char *, const char *, IDSET *, STRBUF *, int, int);
 void createtags(const char *, const char *, int);
 int printconf(const char *);
 void set_base_directory(const char *, const char *);
@@ -662,6 +662,7 @@ incremental(dbpath, root)
 	STRBUF *deletelist = strbuf_open(0);
 	IDSET *deleteset;
 	int updated = 0;
+	int addtotal = 0;
 	const char *path;
 
 	if (vflag) {
@@ -690,10 +691,12 @@ incremental(dbpath, root)
 			continue;
 		if (stat(path, &statp) < 0)
 			die("stat failed '%s'.", path);
-		if ((fid = gpath_path2fid(path)) == NULL)
+		if ((fid = gpath_path2fid(path)) == NULL) {
 			strbuf_puts0(addlist, path);
-		else if (gtags_mtime < statp.st_mtime) {
+			addtotal++;
+		} else if (gtags_mtime < statp.st_mtime) {
 			strbuf_puts0(addlist, path);
+			addtotal++;
 			idset_add(deleteset, atoi(fid));
 		}
 	}
@@ -734,7 +737,7 @@ incremental(dbpath, root)
 				continue;
 			if (vflag)
 				fprintf(stderr, "[%s] Updating '%s'.\n", now(), dbname(db));
-			updatetags(dbpath, root, deleteset, addlist, db);
+			updatetags(dbpath, root, deleteset, addlist, addtotal, db);
 			if (exitflag)
 				exit(1);
 		}
@@ -787,14 +790,16 @@ incremental(dbpath, root)
  *	i)	root		root directory of source tree
  *	i)	deleteset	bit array of fid of deleted or modified files 
  *	i)	addlist		\0 separated list of added or modified files
+ *	i)	addtotal	number of files in addlist
  *	i)	db		GTAGS, GRTAGS, GSYMS
  */
 void
-updatetags(dbpath, root, deleteset, addlist, db)
+updatetags(dbpath, root, deleteset, addlist, addtotal, db)
 	const char *dbpath;
 	const char *root;
 	IDSET *deleteset;
 	STRBUF *addlist;
+	int addtotal;
 	int db;
 {
 	GTOP *gtop;
@@ -838,6 +843,8 @@ updatetags(dbpath, root, deleteset, addlist, db)
 	if (vflag) {
 		char fid[32];
 		const char *path;
+		int seqno = 1;
+		int total = idset_count(deleteset);
 		int i;
 
 		for (i = 0; i < deleteset->max; i++) {
@@ -846,7 +853,7 @@ updatetags(dbpath, root, deleteset, addlist, db)
 				path = gpath_fid2path(fid);
 				if (path == NULL)
 					die("GPATH is corrupted.");
-				fprintf(stderr, " deleting tags of %s\n", path + 2);
+				fprintf(stderr, " [%d/%d] deleting tags of %s\n", seqno++, total, path + 2);
 			}
 		}
 	}
@@ -866,12 +873,13 @@ updatetags(dbpath, root, deleteset, addlist, db)
 		STRBUF *path_list = strbuf_open(0);
 		const char *path = strbuf_value(addlist);
 		const char *end = path + strbuf_getlen(addlist);
+		int seqno = 1;
 
 		while (path < end) {
 			int pathlen = strlen(path);
 
 			if (vflag)
-				fprintf(stderr, " adding tags of %s\n", path + 2);
+				fprintf(stderr, " [%d/%d] adding tags of %s\n", seqno++, addtotal, path + 2);
 			/*
 			 * Execute parser when path name collects enough.
 			 * Though the path_list is \0 separated list of path,
