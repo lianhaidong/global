@@ -2179,7 +2179,15 @@ Instead, you can use incremental updating facility (@samp{-u} option).
     [Sun Dec  6 16:27:47 JST 1998] Gtags started
      Tag found in '/usr/src/sys'.
      Incremental update.
-     Updating tags of 'kern/tty.c' ...GTAGS..GRTAGS..GSYMS.. Done.
+    [Sun Dec  6 16:28:48 JST 1998] Updating 'GTAGS'.
+     [1/1] deleting tags of kern/tty.c
+     [1/1] adding tags of kern/tty.c
+    [Sun Dec  6 16:28:59 JST 1998] Updating 'GRTAGS'.
+     [1/1] deleting tags of kern/tty.c
+     [1/1] adding tags of kern/tty.c
+    [Sun Dec  6 16:28:14 JST 1998] Updating 'GSYMS'.
+     [1/1] deleting tags of kern/tty.c
+     [1/1] adding tags of kern/tty.c
      Global databases have been modified.
     [Sun Dec  6 16:28:30 JST 1998] Done.
     $ global -vu                            # @r{try again}
