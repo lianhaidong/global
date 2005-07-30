@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003 Tama Communications Corporation
+ * Copyright (c) 2003, 2005 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -29,6 +29,9 @@
 #else
 #include <strings.h>
 #endif
+#ifdef HAVE_LIMITS_H
+#include <limits.h>
+#endif
 #ifdef HAVE_HOME_ETC_H
 #include <home_etc.h>
 #endif
@@ -38,6 +41,10 @@
 #include "strbuf.h"
 
 extern char **environ;
+
+#if !defined(ARG_MAX) && defined(_SC_ARG_MAX)
+#define ARG_MAX         sysconf(_SC_ARG_MAX)
+#endif
 
 /*
  * set_env: put environment variable.
@@ -90,3 +97,31 @@ env_size(void)
 	return size;
 }
 
+/*
+ * exec_line_limit: upper limit of bytes of exec line.
+ *
+ *	r)	0: unknown or cannot afford long line.
+ *		> 0: upper limit of exec line
+ */
+int
+exec_line_limit()
+{
+	int limit = 0;
+
+#ifdef ARG_MAX
+	/*
+	 * POSIX.2 limits the exec(2) line length to ARG_MAX - 2048.
+	 */
+	limit = ARG_MAX - 2048;
+	/*
+	 * The reason is unknown but the xargs(1) in GNU findutils
+	 * use this limit.
+	 */
+	if (limit > 20 * 1024)
+		limit = 20 * 1024;
+	limit -= env_size();
+	if (limit < 0)
+		limit = 0;
+#endif
+	return limit;
+}

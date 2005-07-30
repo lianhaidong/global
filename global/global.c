@@ -39,18 +39,11 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#ifdef HAVE_LIMITS_H
-#include <limits.h>
-#endif
 #include "getopt.h"
 
 #include "global.h"
 #include "regex.h"
 #include "const.h"
-
-#if !defined(ARG_MAX) && defined(_SC_ARG_MAX)
-#define ARG_MAX		sysconf(_SC_ARG_MAX)
-#endif
 
 static void usage(void);
 static void help(void);
@@ -927,19 +920,11 @@ parsefile(argc, argv, cwd, root, dbpath, db)
 	/*
 	 * determine the maximum length of the list of paths.
 	 */
-#ifdef ARG_MAX
-	path_list_max = ARG_MAX;
-	path_list_max -= 2048;
-	if (path_list_max > 20 * 1024)
-		path_list_max = 20 * 1024;
-	path_list_max -= env_size();
+	path_list_max = exec_line_limit();
 	path_list_max -= strbuf_getlen(comline);
 	path_list_max -= 40;
 	if (path_list_max < 0)
 		path_list_max = 0;
-#else
-	path_list_max = 0;
-#endif
 
 	if (!(op = openfilter()))
 		die("cannot open output filter.");

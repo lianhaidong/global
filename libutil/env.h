@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2004 Tama Communications Corporation
+ * Copyright (c) 2003, 2004, 2005 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -23,5 +23,6 @@
 void set_env(const char *, const char *);
 char *get_home_directory(void);
 int env_size(void);
+int exec_line_limit(void);
 
 #endif /* ! _ENV_H_ */
