@@ -68,10 +68,10 @@
 	@item{@option{--info} @arg{info}}
 		Pass info string to external system.
 		Currently you can use it with -P option.
-	@item{@option{--noxargs}}
-		By default, gtags use @xref{xargs,1} to minimize the
-		frequency of the parser invoking. The @option{--noxargs}
-		suppresses this behavior.
+	@item{@option{-n}, @option{--max-args} @arg{number}}
+		Maximum number of arguments for the parser.
+		By default, gtags invokes the parser with arguments
+		as a lot as possible to decrease the frequency of invoking.
 	@item{@option{-o}, @option{--omit-gsyms}}
 		Suppress making @file{GSYMS} file.
 		Use this option if you don't use -s option of @xref{global,1}.

@@ -76,6 +76,7 @@ int oflag;					/* suppress making GSYMS */
 int qflag;					/* quiet mode */
 int wflag;					/* warning message */
 int vflag;					/* verbose mode */
+int max_args;
 int show_version;
 int show_help;
 int show_config;
@@ -91,7 +92,6 @@ int gtagslabel;
 int other_files;
 int debug;
 int secure_mode;
-int noxargs;
 const char *extra_options;
 const char *info_string;
 
@@ -132,7 +132,7 @@ static struct option const long_options[] = {
 	{"gtagsconf", required_argument, &gtagsconf, 1},
 	{"gtagslabel", required_argument, &gtagslabel, 1},
 	{"idutils", no_argument, NULL, 'I'},
-	{"noxargs", no_argument, &noxargs, 1},
+	{"max-args", required_argument, NULL, 'n'},
 	{"other", no_argument, &other_files, 1},
 	{"relative", no_argument, &do_relative, 1},
 	{"secure", no_argument, &secure_mode, 1},
@@ -199,7 +199,7 @@ main(argc, argv)
 	int optchar;
 	int option_index = 0;
 
-	while ((optchar = getopt_long(argc, argv, "cGiIoPqvw", long_options, &option_index)) != EOF) {
+	while ((optchar = getopt_long(argc, argv, "cGiIn:oPqvw", long_options, &option_index)) != EOF) {
 		switch (optchar) {
 		case 0:
 			p = long_options[option_index].name;
@@ -230,6 +230,11 @@ main(argc, argv)
 			break;
 		case 'I':
 			Iflag++;
+			break;
+		case 'n':
+			max_args = atoi(optarg);
+			if (max_args <= 0)
+				die("--max-args option requires number > 0.");
 			break;
 		case 'o':
 			oflag++;
@@ -799,6 +804,7 @@ updatetags(dbpath, root, deleteset, addlist, addtotal, db)
 	STRBUF *comline = strbuf_open(0);
 	int gflags;
 	int path_list_max;
+	int arg_count = 0;
 
 	/*
 	 * GTAGS needed to make GRTAGS.
@@ -846,7 +852,7 @@ updatetags(dbpath, root, deleteset, addlist, addtotal, db)
 	if (debug)
 		gflags |= GTAGS_DEBUG;
 	/*
-	 * If the --noxargs option is not specified, we pass the parser
+	 * If the --max-args option is not specified, we pass the parser
 	 * the source file as a lot as possible to decrease the invoking
 	 * frequency of the parser.
 	 */
@@ -869,9 +875,13 @@ updatetags(dbpath, root, deleteset, addlist, addtotal, db)
 			 * with a blank.
 			 */
 			if (strbuf_getlen(path_list)) {
-				if (path_list_max == 0 || strbuf_getlen(path_list) + pathlen > path_list_max) {
+				if (path_list_max == 0 ||
+				    (max_args > 0 && arg_count >= max_args) ||
+				    strbuf_getlen(path_list) + pathlen > path_list_max)
+				{
 					gtags_add(gtop, strbuf_value(comline), path_list, gflags);
 					strbuf_reset(path_list);
+					arg_count = 0;
 				}
 			}
 			if (exitflag)
@@ -881,6 +891,7 @@ updatetags(dbpath, root, deleteset, addlist, addtotal, db)
 			 */
 			strbuf_puts0(path_list, path);
 			path += pathlen + 1;
+			arg_count++;
 		}
 		if (strbuf_getlen(path_list))
 			gtags_add(gtop, strbuf_value(comline), path_list, gflags);
@@ -908,6 +919,7 @@ createtags(dbpath, root, db)
 	int flags, gflags;
 	STRBUF *comline = strbuf_open(0);
 	int count = 0;
+	int arg_count = 0;
 	STRBUF *path_list = strbuf_open(MAXPATHLEN);
 	int path_list_max;
 
@@ -954,7 +966,7 @@ createtags(dbpath, root, db)
 	if (debug)
 		gflags |= GTAGS_DEBUG;
 	/*
-	 * If the --noxargs option is not specified, we pass the parser
+	 * If the --max-args option is not specified, we pass the parser
 	 * the source file as a lot as possible to decrease the invoking
 	 * frequency of the parser.
 	 */
@@ -995,15 +1007,20 @@ createtags(dbpath, root, db)
 		 * with a blank.
 		 */
 		if (strbuf_getlen(path_list)) {
-			if (path_list_max == 0 || strbuf_getlen(path_list) + strlen(path) > path_list_max) {
+			if (path_list_max == 0 ||
+			    (max_args > 0 && arg_count >= max_args) ||
+			    strbuf_getlen(path_list) + strlen(path) > path_list_max)
+			{
 				gtags_add(gtop, strbuf_value(comline), path_list, gflags);
 				strbuf_reset(path_list);
+				arg_count = 0;
 			}
 		}
 		/*
 		 * Add a path to path_list.
 		 */
 		strbuf_puts0(path_list, path);
+		arg_count++;
 	}
 	if (strbuf_getlen(path_list))
 		gtags_add(gtop, strbuf_value(comline), path_list, gflags);
