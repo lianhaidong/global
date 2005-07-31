@@ -369,14 +369,17 @@ main(argc, argv)
 
 		if (argc) {
 			if (secure_mode) {
-				char	buf[MAXPATHLEN+1], *path;
+				char buf[MAXPATHLEN+1], *path;
+				size_t rootlen;
+
 				getdbpath(cwd, root, dbpath, 0);
 				path = realpath(argv[0], buf);
 				if (path == NULL)
 					die("realpath(%s, buf) failed. (errno=%d).", argv[0], errno);
 				if (!isabspath(path))
 					die("realpath(3) is not compatible with BSD version.");
-				if (strncmp(path, root, strlen(root)))
+				rootlen = strlen(root);
+				if (strncmp(path, root, rootlen) || path[rootlen] != '/')
 					die("'%s' is out of source tree.", path);
 			}
 			ip = fopen(argv[0], "r");
