@@ -89,7 +89,7 @@ trim(s)
 	char *p;
 
 	for (p = s; *s; s++) {
-		if (isspace(*s))
+		if (isspace((unsigned char)*s))
 			continue;	
 		if (*s == '\\' && *(s + 1))
 			s++;
@@ -134,7 +134,7 @@ prepare_source(void)
 			const char *p;
 
 			for (p = suffp; *p && *p != ','; p++) {
-				if (!isalnum(*p))
+				if (!isalnum((unsigned char)*p))
 					strbuf_putc(sb, '\\');
 				strbuf_putc(sb, *p);
 			}
@@ -198,8 +198,10 @@ prepare_skip(void)
 	/*
 	 * load skip data.
 	 */
-	if (!getconfs("skip", reg))
+	if (!getconfs("skip", reg)) {
+		strbuf_close(reg);
 		return;
+	}
 	skiplist = strdup(strbuf_value(reg));
 	if (!skiplist)
 		die("short of memory.");
