@@ -52,7 +52,6 @@
 #include "strbuf.h"
 #include "strlimcpy.h"
 #include "strmake.h"
-#include "tab.h"
 
 #define HASHBUCKETS	256
 
