@@ -26,7 +26,7 @@
 @HEADER	GTAGS,1,July 2005,GNU Project
 @NAME	gtags - create tag files for global.
 @SYNOPSIS
-	@name{gtags} [-c][-i][-I][-n number][-o][-P][-q][-v][-w][@arg{dbpath}]
+	@name{gtags} [-c][-i][-I][-n number][-o][-q][-v][-w][@arg{dbpath}]
 @DESCRIPTION
 	@name{Gtags} recursively collect the source files under
 	the current directory,
@@ -65,9 +65,6 @@
 		@xref{global,1} with the -u option.
 	@item{@option{-I}, @option{--idutils}}
 		Make index files for @xref{id-utils,1}.
-	@item{@option{--info} @arg{info}}
-		Pass info string to external system.
-		Currently you can use it with -P option.
 	@item{@option{-n}, @option{--max-args} @arg{number}}
 		Maximum number of arguments for @xref{gtags-parser,1}.
 		By default, gtags invokes the parser with arguments

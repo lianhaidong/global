@@ -114,9 +114,7 @@ help(void)
 }
 
 static struct option const long_options[] = {
-	{"absolute", no_argument, &do_absolute, 1},
 	{"compact", no_argument, NULL, 'c'},
-	{"cxref", no_argument, &cxref, 1},
 	{"idutils", no_argument, NULL, 'I'},
 	{"incremental", no_argument, NULL, 'i'},
 	{"max-args", required_argument, NULL, 'n'},
@@ -126,8 +124,10 @@ static struct option const long_options[] = {
 	{"warning", no_argument, NULL, 'w'},
 
 	/* long name only */
+	{"absolute", no_argument, &do_absolute, 1},
 	{"config", optional_argument, &show_config, 1},
 	{"convert", no_argument, &do_convert, 1},
+	{"cxref", no_argument, &cxref, 1},
 	{"debug", no_argument, &debug, 1},
 	{"expand", required_argument, &do_expand, 1},
 	{"find", no_argument, &do_find, 1},
@@ -199,7 +199,7 @@ main(argc, argv)
 	int optchar;
 	int option_index = 0;
 
-	while ((optchar = getopt_long(argc, argv, "cGiIn:oPqvw", long_options, &option_index)) != EOF) {
+	while ((optchar = getopt_long(argc, argv, "ciIn:oqvwse", long_options, &option_index)) != EOF) {
 		switch (optchar) {
 		case 0:
 			p = long_options[option_index].name;
