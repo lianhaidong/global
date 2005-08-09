@@ -94,7 +94,6 @@ extern const char *noframes_end;
 
 int fputs_nl(const char *, FILE *);
 void setup_xhtml();
-const char *meta_record();
 const char *upperdir(const char *);
 const char *gen_insert_header(int);
 const char *gen_insert_footer(int);
