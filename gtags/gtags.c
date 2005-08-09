@@ -944,7 +944,7 @@ createtags(dbpath, root, db)
 	path_list_max -= strbuf_getlen(comline);
 	path_list_max -= 40;
 	if (path_list_max < 0)
-		path_list_max = 0;;
+		path_list_max = 0;
 
 	flags = 0;
 	/*
