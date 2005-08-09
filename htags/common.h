@@ -93,9 +93,7 @@ extern const char *noframes_begin;
 extern const char *noframes_end;
 
 int fputs_nl(const char *, FILE *);
-void setup_html();
 void setup_xhtml();
-void setup_tex();
 const char *meta_record();
 const char *upperdir(const char *);
 const char *gen_insert_header(int);
