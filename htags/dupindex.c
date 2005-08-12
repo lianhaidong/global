@@ -29,7 +29,6 @@
 #endif
 #include "cache.h"
 #include "common.h"
-#include "queue.h"
 #include "global.h"
 #include "htags.h"
 
