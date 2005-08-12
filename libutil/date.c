@@ -25,6 +25,7 @@
 #include <time.h>
 #include "die.h"
 #include "strlimcpy.h"
+#include "date.h"
 /*
  * now: current date and time
  *
