@@ -574,7 +574,7 @@ gtags_add(gtop, comline, path_list, flags)
 	if ((gtop->format & GTAGS_COMPACT) != 0
 	    && locatestring(comline, "gtags-parser", MATCH_FIRST) == NULL
 	    && path_num > 1)
-		strbuf_puts(sb, "| gnusort -k3,3");
+		strbuf_puts(sb, "| gnusort -k 3,3");
 #ifdef DEBUG
 	if (flags & GTAGS_DEBUG)
 		fprintf(stderr, "gtags_add() executing '%s'\n", strbuf_value(sb));
