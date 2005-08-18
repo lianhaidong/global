@@ -153,7 +153,7 @@ makedupindex(void)
 				}				
 				/* single entry */
 				if (first_line[0]) {
-					if (split(first_line, 3, &ptable) < 3) {
+					if (split(first_line, 4, &ptable) < 3) {
 						recover(&ptable);
 						die("too small number of parts.(2)\n'%s'", ctags_x);
 					}
@@ -210,7 +210,7 @@ makedupindex(void)
 		if (first_line[0]) {
 			SPLIT ptable;
 
-			if (split(first_line, 3, &ptable) < 3) {
+			if (split(first_line, 4, &ptable) < 3) {
 				recover(&ptable);
 				die("too small number of parts.(3)\n'%s'", ctags_x);
 			}

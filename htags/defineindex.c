@@ -239,7 +239,7 @@ makedefineindex(file, total, defines)
 			SPLIT ptable;
 			const char *lno, *fid, *path;
 
-			if (split((char *)line, 3, &ptable) < 3) {
+			if (split((char *)line, 2, &ptable) < 2) {
 				recover(&ptable);
 				die("too small number of parts in makedefineindex().\n'%s'", line);
 			}
