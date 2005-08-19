@@ -55,6 +55,10 @@
 	@item{@option{--config} @arg{name}}
 		Show the value of config variable @arg{name}.
 		If @arg{name} is not specified then show whole of config entry.
+	@item{@option{--file} @arg{file}}
+		Read from @arg{file} a list of file names which should be parsed.
+		If @arg{file} is @file{-}, read from standard input.
+		File names must be separated by newline.
 	@item{@option{--gtagsconf} @arg{file}}
 		Load user's configuration from @arg{file}.
 	@item{@option{--gtagslabel} @arg{label}}

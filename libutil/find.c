@@ -29,6 +29,9 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #endif
+#ifdef HAVE_LIMITS_H
+#include <limits.h>
+#endif
 #include <stdio.h>
 #ifdef STDC_HEADERS
 #include <stdlib.h>
@@ -52,8 +55,10 @@
 #include "is_unixy.h"
 #include "locatestring.h"
 #include "makepath.h"
+#include "path.h"
 #include "strbuf.h"
 #include "strlimcpy.h"
+#include "test.h"
 
 /*
  * usage of find_xxx()
@@ -72,10 +77,20 @@ static regex_t *suff = &suff_area;	/* regex for suffixes */
 static STRBUF *list;
 static int list_count;
 static char **listarray;		/* list for skipping full path */
+static FILE *ip;
+static STRBUF *ib;
+static char root[MAXPATHLEN + 1];
+static size_t rootlen;
+static char buf[MAXPATHLEN + 1];
 static int opened;
+#define FIND_OPEN	1
+#define FILELIST_OPEN	2
 static int retval;
 
 static void trim(char *);
+static char *find_read_filelist(void);
+
+extern int qflag;
 #ifdef DEBUG
 extern int debug;
 #endif
@@ -390,7 +405,7 @@ find_open(start)
 	const char *start;
 {
 	assert(opened == 0);
-	opened = 1;
+	opened = FIND_OPEN;
 
 	if (!start)
 		start = ".";
@@ -414,6 +429,39 @@ find_open(start)
 	prepare_skip();
 }
 /*
+ * find_open_filelist: find_open like interface for handling output of find(1).
+ *
+ *	i)	filename	file including list of file names.
+ *				When "-" is specified, read from standard input.
+ *	i)	rootdir		root directory of source tree
+ */
+void
+find_open_filelist(filename, rootdir)
+	const char *filename;
+	const char *rootdir;
+{
+	assert(opened == 0);
+	opened = FILELIST_OPEN;
+	ib = strbuf_open(MAXBUFLEN);
+	if (filename[0] == '-' && filename[1] == '\0') {
+		ip = stdin;
+	} else {
+		if (test("d", filename))
+			die("'%s' is a directory.", filename);
+		if (!test("f", filename))
+			die("'%s' not found.", filename);
+		if (!test("r", filename))
+			die("'%s' is not readable.", filename);
+		ip = fopen(filename, "r");
+		if (ip == NULL)
+			die("cannot open '%s'.", filename);
+	}
+	strlimcpy(root, rootdir, sizeof(root));
+	rootlen = strlen(root);
+	prepare_skip();
+	prepare_source();
+}
+/*
  * find_read: read path without GPATH.
  *
  *	r)		path
@@ -422,8 +470,10 @@ char    *
 find_read(void)
 {
 	static char val[MAXPATHLEN+1];
-	extern int qflag;
 
+	assert(opened != 0);
+	if (opened == FILELIST_OPEN)
+		return find_read_filelist();
 	for (;;) {
 		while (curp->p < curp->end) {
 			char type = *(curp->p);
@@ -497,15 +547,84 @@ find_read(void)
 	return NULL;
 }
 /*
+ * find_read_filelist: read path from file
+ *
+ *	r)		path
+ */
+static char *
+find_read_filelist()
+{
+	char *path;
+
+	for (;;) {
+		path = strbuf_fgets(ib, ip, STRBUF_NOCRLF);
+		if (path == NULL) {
+			/* EOF */
+			return NULL;
+		}
+		if (*path == '\0') {
+			/* skip empty line.  */
+			continue;
+		}
+		if (!test("f", path)) {
+			if (!qflag) {
+				if (test("d", path))
+					fprintf(stderr, "'%s' is a directory.\n", path);
+				else
+					fprintf(stderr, "'%s' not found.\n", path);
+			}
+			continue;
+		}
+		if (realpath(path, buf) == NULL) {
+			if (!qflag)
+				fprintf(stderr, "realpath(\"%s\", buf) failed.\n", path);
+			continue;
+		}
+		if (!isabspath(buf))
+			die("realpath(3) is not compatible with BSD version.");
+		if (strncmp(buf, root, rootlen) || buf[rootlen] != '/') {
+			if (!qflag)
+				fprintf(stderr, "'%s' is out of source tree.\n", buf);
+			continue;
+		}
+		path = buf + rootlen - 1;
+		*path = '.';
+		/*
+		 * GLOBAL cannot treat path which includes blanks.
+		 * It will be improved in the future.
+		 */
+		if (locatestring(path, " ", MATCH_LAST)) {
+			if (!qflag)
+				fprintf(stderr, "'%s' ignored, because it includes blank.\n", path + 2);
+			continue;
+		}
+		if (skipthisfile(path))
+			continue;
+		/*
+		 * A blank at the head of path means
+		 * other than source file.
+		 */
+		if (regexec(suff, path, 0, 0, 0) != 0)
+			*--path = ' ';
+		return path;
+	}
+}
+/*
  * find_close: close iterator.
  */
 void
 find_close(void)
 {
-	assert(opened == 1);
-	for (curp = &stack[0]; curp < topp; curp++)
-		if (curp->sb != NULL)
-			strbuf_close(curp->sb);
+	assert(opened != 0);
+	if (opened == FIND_OPEN) {
+		for (curp = &stack[0]; curp < topp; curp++)
+			if (curp->sb != NULL)
+				strbuf_close(curp->sb);
+	} else {
+		if (ip != stdin)
+			fclose(ip);
+		strbuf_close(ib);
+	}
 	regfree(suff);
 	if (skip)
 		regfree(skip);

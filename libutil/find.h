@@ -23,6 +23,7 @@
 #define _FIND_H_
 
 void find_open(const char *);
+void find_open_filelist(const char *, const char *);
 char *find_read(void);
 void find_close(void);
 

@@ -94,6 +94,7 @@ int debug;
 int secure_mode;
 const char *extra_options;
 const char *info_string;
+const char *file_list;
 
 int extractmethod;
 int total;
@@ -130,6 +131,7 @@ static struct option const long_options[] = {
 	{"cxref", no_argument, &cxref, 1},
 	{"debug", no_argument, &debug, 1},
 	{"expand", required_argument, &do_expand, 1},
+	{"file", required_argument, NULL, 0},
 	{"find", no_argument, &do_find, 1},
 	{"gtagsconf", required_argument, &gtagsconf, 1},
 	{"gtagslabel", required_argument, &gtagslabel, 1},
@@ -220,6 +222,8 @@ main(argc, argv)
 				}
 				set_env(name, value);
 				gtagsconf = gtagslabel = 0;
+			} else if (!strcmp(p, "file")) {
+				file_list = optarg;
 			}
 			break;
 		case 'c':
@@ -684,7 +688,11 @@ incremental(dbpath, root)
 	/*
 	 * make add list and update list.
 	 */
-	for (find_open(NULL); (path = find_read()) != NULL; ) {
+	if (file_list)
+		find_open_filelist(file_list, root);
+	else
+		find_open(NULL);
+	while ((path = find_read()) != NULL) {
 		const char *fid;
 
 		/* a blank at the head of path means 'NOT SOURCE'. */
@@ -925,6 +933,7 @@ createtags(dbpath, root, db)
 	int arg_count = 0;
 	STRBUF *path_list = strbuf_open(MAXPATHLEN);
 	int path_list_max;
+	static int gpath_created;
 
 	/*
 	 * get tag command.
@@ -973,7 +982,13 @@ createtags(dbpath, root, db)
 	 * the source file as a lot as possible to decrease the invoking
 	 * frequency of the parser.
 	 */
-	for (find_open(NULL); (path = find_read()) != NULL; ) {
+	if (gpath_created)
+		gfind_open(dbpath, NULL);
+	else if (file_list)
+		find_open_filelist(file_list, root);
+	else
+		find_open(NULL);
+	while ((path = gpath_created ? gfind_read() : find_read()) != NULL) {
 		int skip = 0;
 
 		/* a blank at the head of path means 'NOT SOURCE'. */
@@ -1028,7 +1043,11 @@ createtags(dbpath, root, db)
 	if (strbuf_getlen(path_list))
 		gtags_add(gtop, strbuf_value(comline), path_list, gflags);
 	total = count;				/* save total count */
-	find_close();
+	if (gpath_created)
+		gfind_close();
+	else
+		find_close();
+	gpath_created = 1;
 	gtags_close(gtop);
 	strbuf_close(comline);
 	strbuf_close(path_list);
