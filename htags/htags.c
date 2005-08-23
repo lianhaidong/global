@@ -43,6 +43,7 @@
 #include "getopt.h"
 #include "regex.h"
 #include "global.h"
+#include "anchor.h"
 #include "cache.h"
 #include "common.h"
 #include "htags.h"
@@ -754,6 +755,32 @@ makehtaccess(file)
 	fclose(op);
 }
 /*
+ * Wrapper of src2html()
+ */
+static int
+do_src2html(path_list, count, total)
+	STRBUF *path_list;
+	int count;
+	int total;
+{
+	int notsource;
+	char path[MAXPATHLEN];
+	const char *_ = strbuf_value(path_list);
+	const char *end = _ + strbuf_getlen(path_list);
+	const char *p;
+
+	while (_ < end) {
+		notsource = *_++;
+		count++;
+		message(" [%d/%d] converting %s", count, total, _);
+		p = path2fid(_);
+		snprintf(path, sizeof(path), "%s/%s/%s.%s", distpath, SRCS, p, HTML);
+		src2html(_, path, notsource);
+		_ += strlen(_) + 1;
+	}
+	return count;
+}
+/*
  * makehtml: make html files
  *
  *	i)	total	number of files.
@@ -765,8 +792,11 @@ makehtml(total)
 	FILE *ip;
 	const char *_;
 	int count = 0;
-	char command[MAXFILLEN], path[MAXPATHLEN];
+	char command[MAXFILLEN];
 	STRBUF *sb = strbuf_open(0);
+	STRBUF *alllist = strbuf_open(0);
+	STRBUF *srclist = strbuf_open(0);
+	int path_list_max = anchor_pathlist_limit();
 
 	if (other_files && !dynamic)
 		snprintf(command, sizeof(command), "%s --other | gnusort -t / -k 2", findcom);
@@ -777,7 +807,6 @@ makehtml(total)
 		die("cannot execute command '%s'.", command);
 	while ((_ = strbuf_fgets(sb, ip, STRBUF_NOCRLF)) != NULL) {
 		int notsource = 0;
-		const char *p;
 
 		if (*_ == ' ') {
 			if (!other_files)
@@ -789,18 +818,40 @@ makehtml(total)
 				continue;
 			}
 			notsource = 1;
+		} else {
+			/*
+			 * Execute parser when path name collects enough.
+			 * Though the path_list is \0 separated list of string,
+			 * we can think its length equals to the length of
+			 * argument string because each \0 can be replaced
+			 * with a blank.
+			 */
+			if (strbuf_getlen(srclist)) {
+				if (strbuf_getlen(srclist) + strlen(_) > path_list_max) {
+					anchor_prepare(srclist);
+					count = do_src2html(alllist, count, total);
+					strbuf_reset(srclist);
+					strbuf_reset(alllist);
+				}
+			}
+			/*
+			 * Add a path to the path list.
+			 */
+			strbuf_puts0(srclist, _);
 		}
-		count++;
-		_ += 2;
-		p = _;
-		message(" [%d/%d] converting %s", count, total, p);
-		p = path2fid(p);
-		snprintf(path, sizeof(path), "%s/%s/%s.%s", distpath, SRCS, p, HTML);
-		src2html(_, path, notsource);
+		strbuf_putc(alllist, notsource);
+		strbuf_puts0(alllist, _ + 2);
+	}
+	if (strbuf_getlen(alllist)) {
+		if (strbuf_getlen(srclist))
+			anchor_prepare(srclist);
+		do_src2html(alllist, count, total);
 	}
 	if (pclose(ip) != 0)
 		die("cannot traverse directory.(%s)", command);
 	strbuf_close(sb);
+	strbuf_close(alllist);
+	strbuf_close(srclist);
 }
 /*
  * copy file.

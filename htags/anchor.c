@@ -34,6 +34,15 @@
 #include "anchor.h"
 #include "htags.h"
 
+struct anchor_input {
+	STRBUF *command;
+	FILE *ip;
+	STRBUF *ib;
+	char *ctags_x;
+	SPLIT ptable;
+};
+
+static struct anchor_input anchor_input[GTAGLIM - GTAGS];
 static struct anchor *table;
 static VARRAY *vb;
 
@@ -57,6 +66,88 @@ static int LAST;
 static struct anchor *CURRENTDEF;
 
 /*
+ * anchor_pathlist_limit: determine the maximum length of the list of paths.
+ */
+int
+anchor_pathlist_limit()
+{
+	int limit, db, max = 0;
+	STRBUF *comline = strbuf_open(0);
+
+	limit = exec_line_limit();
+	for (db = GTAGS; db < GTAGLIM; db++) {
+		if (!symbol && db == GSYMS)
+			continue;
+		strbuf_reset(comline);
+		if (!getconfs(dbname(db), comline))
+			die("cannot get parser for %s.", dbname(db));
+		if (strbuf_getlen(comline) > max)
+			max = strbuf_getlen(comline);
+	}
+	strbuf_close(comline);
+	limit -= max + 40;
+	if (limit < 0)
+		limit = 0;
+	return limit;
+}
+/*
+ * anchor_prepare: setup input stream.
+ *
+ *	i)	path_list	\0 separated list of paths
+ */
+void
+anchor_prepare(path_list)
+	STRBUF *path_list;
+{
+	int db;
+	struct anchor_input *input;
+	STRBUF *comline = strbuf_open(0);
+
+	for (db = GTAGS; db < GTAGLIM; db++) {
+		if (!symbol && db == GSYMS)
+			continue;
+		input = &anchor_input[db - GTAGS];
+		input->command = strbuf_open(0);
+		input->ib = strbuf_open(MAXBUFLEN);
+		strbuf_reset(comline);
+		if (!getconfs(dbname(db), comline))
+			die("cannot get parser for %s.", dbname(db));
+		makecommand(strbuf_value(comline), path_list, input->command);
+		/*
+		 * We assume that the output of gtags-parser is sorted by the path.
+		 * About the other parsers, it is not guaranteed, so we sort it
+		 * using external sort command (gnusort).
+		 */
+		if (locatestring(strbuf_value(comline), "gtags-parser", MATCH_FIRST) == NULL)
+			strbuf_puts(input->command, "| gnusort -k 3,3");
+		input->ip = popen(strbuf_value(input->command), "r");
+		if (input->ip == NULL)
+			die("cannot execute command '%s'.", strbuf_value(input->command));
+		if (input->ctags_x != NULL) {
+			recover(&input->ptable);
+			die("The output of parser is illegal.\n%s", input->ctags_x);
+		}
+		input->ctags_x = strbuf_fgets(input->ib, input->ip, STRBUF_NOCRLF);
+		if (input->ctags_x == NULL) {
+			if (pclose(input->ip) != 0)
+				die("command '%s' failed.", strbuf_value(input->command));
+			strbuf_close(input->ib);
+			strbuf_close(input->command);
+			continue;
+		}
+		if (split(input->ctags_x, 4, &input->ptable) < 4) {
+			recover(&input->ptable);
+			die("too small number of parts in anchor_prepare().\n'%s'", input->ctags_x);
+		}
+		if (input->ptable.part[PART_PATH].start[0] != '.'
+		 || input->ptable.part[PART_PATH].start[1] != '/') {
+			recover(&input->ptable);
+			die("The output of parser is illegal.\n%s", input->ctags_x);
+		}
+	}
+	strbuf_close(comline);
+}
+/*
  * anchor_load: load anchor table
  *
  *	i)	file	file name
@@ -65,10 +156,7 @@ void
 anchor_load(file)
 	const char *file;
 {
-	char command[MAXFILLEN];
-	const char *options[] = {NULL, "", "r", "s"};
-	STRBUF *sb = strbuf_open(0);
-	FILE *ip;
+	struct anchor_input *input;
 	int i, db;
 
 	FIRST = LAST = 0;
@@ -80,34 +168,26 @@ anchor_load(file)
 		varray_reset(vb);
 
 	for (db = GTAGS; db < GTAGLIM; db++) {
-		char *ctags_x;
-
 		if (!symbol && db == GSYMS)
 			continue;
+		input = &anchor_input[db - GTAGS];
 		/*
-		 * Setup input stream.
+		 * Read from input stream until it reaches end of file
+		 * or the line of another file appears.
 		 */
-		snprintf(command, sizeof(command), "global -fn%s \"%s\"", options[db], file);
-		ip = popen(command, "r");
-		if (ip == NULL)
-			die("cannot execute command '%s'.", command);
-		while ((ctags_x = strbuf_fgets(sb, ip, STRBUF_NOCRLF)) != NULL) {
-			SPLIT ptable;
+		while (input->ctags_x != NULL
+		       && strcmp(input->ptable.part[PART_PATH].start + 2, file) == 0) {
 			struct anchor *a;
 			int type;
 
-			if (split(ctags_x, 4, &ptable) < 4) {
-				recover(&ptable);
-				die("too small number of parts in anchor_load().\n'%s'", ctags_x);
-			}
 			if (db == GTAGS) {
 				const char *p;
 
-				for (p = ptable.part[PART_LINE].start; *p && isspace((unsigned char)*p); p++)
+				for (p = input->ptable.part[PART_LINE].start; *p && isspace((unsigned char)*p); p++)
 					;
 				if (!*p) {
-					recover(&ptable);
-					die("The output of global is illegal.\n%s", p);
+					recover(&input->ptable);
+					die("The output of parser is illegal.\n%s", input->ctags_x);
 				}
 				type = 'D';
 				if (*p == '#') {
@@ -127,16 +207,30 @@ anchor_load(file)
 				type = 'Y';
 			/* allocate an entry */
 			a = varray_append(vb);
-			a->lineno = atoi(ptable.part[PART_LNO].start);
+			a->lineno = atoi(input->ptable.part[PART_LNO].start);
 			a->type = type;
 			a->done = 0;
-			settag(a, ptable.part[PART_TAG].start);
-			recover(&ptable);
+			settag(a, input->ptable.part[PART_TAG].start);
+			recover(&input->ptable);
+			input->ctags_x = strbuf_fgets(input->ib, input->ip, STRBUF_NOCRLF);
+			if (input->ctags_x == NULL) {
+				if (pclose(input->ip) != 0)
+					die("command '%s' failed.", strbuf_value(input->command));
+				strbuf_close(input->ib);
+				strbuf_close(input->command);
+				break;
+			}
+			if (split(input->ctags_x, 4, &input->ptable) < 4) {
+				recover(&input->ptable);
+				die("too small number of parts in anchor_load().\n'%s'", input->ctags_x);
+			}
+			if (input->ptable.part[PART_PATH].start[0] != '.'
+			 || input->ptable.part[PART_PATH].start[1] != '/') {
+				recover(&input->ptable);
+				die("The output of parser is illegal.\n%s", input->ctags_x);
+			}
 		}
-		if (pclose(ip) != 0)
-			die("command '%s' failed.", command);
 	}
-	strbuf_close(sb);
 	if (vb->length == 0) {
 		table = NULL;
 	} else {
