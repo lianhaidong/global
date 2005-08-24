@@ -81,11 +81,9 @@ static FILE *ip;
 static STRBUF *ib;
 static char root[MAXPATHLEN + 1];
 static size_t rootlen;
-static char buf[MAXPATHLEN + 1];
 static int opened;
 #define FIND_OPEN	1
 #define FILELIST_OPEN	2
-static int retval;
 
 static void trim(char *);
 static char *find_read_filelist(void);
@@ -142,6 +140,7 @@ prepare_source(void)
 	trim(sufflist);
 	{
 		const char *suffp;
+		int retval;
 
 		strbuf_reset(sb);
 		strbuf_puts(sb, "\\.(");       /* ) */
@@ -250,6 +249,8 @@ prepare_skip(void)
 	strbuf_unputc(reg, '|');
 	strbuf_putc(reg, ')');
 	if (reg_count > 0) {
+		int retval;
+
 		/*
 		 * compile regular expression.
 		 */
@@ -554,6 +555,7 @@ find_read(void)
 static char *
 find_read_filelist()
 {
+	static char buf[MAXPATHLEN + 1];
 	char *path;
 
 	for (;;) {
