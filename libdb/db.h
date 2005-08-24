@@ -101,7 +101,9 @@ typedef enum { DB_BTREE, DB_HASH, DB_RECNO } DBTYPE;
 /* Access method description structure. */
 typedef struct __db {
 	DBTYPE type;			/* Underlying db type. */
-	int (*close)	(struct __db *);
+	/* The 2nd argument was added in order to
+	   avoid useless writing just before unlink. */
+	int (*close)	(struct __db *, int);
 	int (*del)	(const struct __db *, const DBT *, u_int);
 	int (*get)	(const struct __db *, const DBT *, DBT *, u_int);
 	int (*put)	(const struct __db *, DBT *, const DBT *, u_int);

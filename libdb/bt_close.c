@@ -66,8 +66,9 @@ static int bt_meta(BTREE *);
  *	RET_ERROR, RET_SUCCESS
  */
 int
-__bt_close(dbp)
+__bt_close(dbp, abandon)
 	DB *dbp;
+	int abandon;
 {
 	BTREE *t;
 	int fd;
@@ -81,7 +82,7 @@ __bt_close(dbp)
 	}
 
 	/* Sync the tree. */
-	if (__bt_sync(dbp, 0) == RET_ERROR)
+	if (!abandon && __bt_sync(dbp, 0) == RET_ERROR)
 		return (RET_ERROR);
 
 	/* Close the memory pool. */

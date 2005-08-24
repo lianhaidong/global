@@ -375,7 +375,11 @@ dbop_close(dbop)
 {
 	DB *db = dbop->db;
 
+#ifdef USE_DB185_COMPAT
 	(void)db->close(db);
+#else
+	(void)db->close(db, (dbop->openflags & DBOP_REMOVE) ? 1 : 0);
+#endif
 	if (dbop->openflags & DBOP_REMOVE)
 		(void)unlink(dbop->dbname);
 	else if (dbop->perm && chmod(dbop->dbname, dbop->perm) < 0)

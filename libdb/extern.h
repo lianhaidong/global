@@ -29,7 +29,7 @@
  *	@(#)extern.h	8.10 (Berkeley) 7/20/94
  */
 
-int	 __bt_close(DB *);
+int	 __bt_close(DB *, int);
 int	 __bt_cmp(BTREE *, const DBT *, EPG *);
 int	 __bt_crsrdel(BTREE *, EPGNO *);
 int	 __bt_defcmp(const DBT *, const DBT *);
