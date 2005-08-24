@@ -61,6 +61,7 @@ static int bt_meta(BTREE *);
  *
  * Parameters:
  *	dbp:	pointer to access method
+ *	abandon: 1: don't sync, 0: sync
  *
  * Returns:
  *	RET_ERROR, RET_SUCCESS
@@ -82,6 +83,11 @@ __bt_close(dbp, abandon)
 	}
 
 	/* Sync the tree. */
+	/*
+	 * If abandon flag is set, omit writing to the disk.
+	 * Since the writing spend much time, you should use this flag
+	 * when you remove the file after closing.
+	 */
 	if (!abandon && __bt_sync(dbp, 0) == RET_ERROR)
 		return (RET_ERROR);
 

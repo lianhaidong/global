@@ -378,6 +378,9 @@ dbop_close(dbop)
 #ifdef USE_DB185_COMPAT
 	(void)db->close(db);
 #else
+	/*
+	 * If DBOP_REMOVE is specified, omit writing to the disk in __bt_close().
+	 */
 	(void)db->close(db, (dbop->openflags & DBOP_REMOVE) ? 1 : 0);
 #endif
 	if (dbop->openflags & DBOP_REMOVE)
