@@ -6,8 +6,10 @@
  *
  * Two library function, qsort(3) and bsearch(3), are requried.
  */
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/param.h>
 #include <sys/stat.h>
 
@@ -47,7 +49,7 @@ struct map
  * Global variables.
  *
  * These variables are set by htags_load_filemap(), and referred by
- * htags_spec2url() and htags_unload_filemap().
+ * htags_path2url() and htags_unload_filemap().
  */
 static char *global_contents;		/* filemap contents		*/
 static struct map *global_map;		/* file -> url mapping table	*/
@@ -140,7 +142,7 @@ create_filemap_index(area, size, map, lines)
 	int i;
 
 	/* Count line number */
-	for (p = area;  p < endp; p++)
+	for (p = area; p < endp; p++)
 		if (*p == '\n')
 			n++; 
 	status = -1;
@@ -264,7 +266,6 @@ htags_path2url(path, line, url, size)
 	char *url;
 	int size;
 {
-	static char *p = NULL;
 	struct map tmp;
 	struct map *result;
 
