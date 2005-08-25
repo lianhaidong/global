@@ -133,13 +133,11 @@ static FILE *
 open_input_file(file)
 	const char *file;
 {
-	char command[MAXFILLEN];
 	FILE *ip;
 
-	snprintf(command, sizeof(command), "gtags --expand -%d < %s", tabs, file);
-	ip = popen(command, "r");
+	ip = fopen(file, "r");
 	if (!ip)
-		die("cannot execute '%s'.", command);
+		die("cannot open file '%s'.", file);
 	curpfile = file;
 	warned = 0;
 	return ip;
@@ -151,8 +149,7 @@ static void
 close_input_file(ip)
 	FILE *ip;
 {
-	if (pclose(ip) != 0)
-		die("command 'gtags --expand -%d' failed.", tabs);
+	fclose(ip);
 }
 /*
  * Open HTML file.
@@ -756,18 +753,27 @@ src2html(src, html, notsource)
 		fputs_nl(verbatim_begin, out);
 		last_lineno = 0;
 		while ((_ = strbuf_fgets(sb, in, STRBUF_NOCRLF)) != NULL) {
+			int dst = 0;
+
 			fputs(gen_name_number(++last_lineno), out);
 			for (; *_; _++) {
 				int c = *_;
 
-				if (c == '&')
-					fputs(quote_amp, out);
-				else if (c == '<')
-					fputs(quote_little, out);
-				else if (c == '>')
-					fputs(quote_great, out);
-				else
-					fputc(c, out);
+				if (c == '\t') {
+					do {
+						putc(' ', out);
+					} while (++dst % tabs);
+				} else {
+					if (c == '&')
+						fputs(quote_amp, out);
+					else if (c == '<')
+						fputs(quote_little, out);
+					else if (c == '>')
+						fputs(quote_great, out);
+					else
+						fputc(c, out);
+					dst++;
+				}
 			}
 			fputc('\n', out);
 		}

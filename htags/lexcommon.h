@@ -56,6 +56,39 @@ static int begin_line;
  */
 static int newline_terminate_string = 0;
 
+/*
+ * Convert tabs to spaces.
+ */
+static int dest_column;
+static int left_spaces;
+
+#define YY_INPUT(buf, result, max_size) do {				\
+	int n = 0;							\
+	while (n < max_size) {						\
+		int c;							\
+		if (left_spaces > 0) {					\
+			left_spaces--;					\
+			c = ' ';					\
+		} else {						\
+			c = getc(LEXIN);				\
+			if (c == EOF) {					\
+				if (ferror(LEXIN))			\
+					die("read error.");		\
+				break;					\
+			}						\
+			if (c == '\t') {				\
+				left_spaces = tabs - dest_column % tabs;\
+				continue;				\
+			}						\
+		}							\
+		buf[n++] = c;						\
+		dest_column++;						\
+		if (c == '\n')						\
+			dest_column = 0;				\
+	}								\
+	result = n;							\
+} while (0)
+
 #define LINENO lexcommon_lineno
 
 #define DEFAULT_BEGIN_OF_FILE_ACTION {					\
@@ -63,6 +96,8 @@ static int newline_terminate_string = 0;
         LEXRESTART(LEXIN);						\
         LINENO = 1;							\
         begin_line = 1;							\
+	dest_column = 0;						\
+	left_spaces = 0;						\
 }
 
 #define DEFAULT_YY_USER_ACTION {					\
