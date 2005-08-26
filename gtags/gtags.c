@@ -116,6 +116,7 @@ help(void)
 
 static struct option const long_options[] = {
 	{"compact", no_argument, NULL, 'c'},
+	{"file", required_argument, NULL, 'f'},
 	{"idutils", no_argument, NULL, 'I'},
 	{"incremental", no_argument, NULL, 'i'},
 	{"max-args", required_argument, NULL, 'n'},
@@ -131,7 +132,6 @@ static struct option const long_options[] = {
 	{"cxref", no_argument, &cxref, 1},
 	{"debug", no_argument, &debug, 1},
 	{"expand", required_argument, &do_expand, 1},
-	{"file", required_argument, NULL, 0},
 	{"find", no_argument, &do_find, 1},
 	{"gtagsconf", required_argument, &gtagsconf, 1},
 	{"gtagslabel", required_argument, &gtagslabel, 1},
@@ -201,7 +201,7 @@ main(argc, argv)
 	int optchar;
 	int option_index = 0;
 
-	while ((optchar = getopt_long(argc, argv, "ciIn:oqvwse", long_options, &option_index)) != EOF) {
+	while ((optchar = getopt_long(argc, argv, "cf:iIn:oqvwse", long_options, &option_index)) != EOF) {
 		switch (optchar) {
 		case 0:
 			p = long_options[option_index].name;
@@ -222,12 +222,13 @@ main(argc, argv)
 				}
 				set_env(name, value);
 				gtagsconf = gtagslabel = 0;
-			} else if (!strcmp(p, "file")) {
-				file_list = optarg;
 			}
 			break;
 		case 'c':
 			cflag++;
+			break;
+		case 'f':
+			file_list = optarg;
 			break;
 		case 'i':
 			iflag++;

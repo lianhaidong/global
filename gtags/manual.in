@@ -23,10 +23,10 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	GTAGS,1,July 2005,GNU Project
+@HEADER	GTAGS,1,Aug 2005,GNU Project
 @NAME	gtags - create tag files for global.
 @SYNOPSIS
-	@name{gtags} [-c][-i][-I][-n number][-o][-q][-v][-w][@arg{dbpath}]
+	@name{gtags} [-c][-f file][-i][-I][-n number][-o][-q][-v][-w][@arg{dbpath}]
 @DESCRIPTION
 	@name{Gtags} recursively collect the source files under
 	the current directory,
@@ -55,8 +55,11 @@
 	@item{@option{--config} @arg{name}}
 		Show the value of config variable @arg{name}.
 		If @arg{name} is not specified then show whole of config entry.
-	@item{@option{--file} @arg{file}}
-		Read from @arg{file} a list of file names which should be parsed.
+	@item{@option{-f}, @option{--file} @arg{file}}
+		Read from @arg{file} a list of file names which should be
+		considered as the candidate of source files.
+		By default, all files under the current directory are
+		considered as the candidate.
 		If @arg{file} is @file{-}, read from standard input.
 		File names must be separated by newline.
 	@item{@option{--gtagsconf} @arg{file}}
