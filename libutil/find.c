@@ -640,10 +640,12 @@ find_close(void)
 		for (curp = &stack[0]; curp < topp; curp++)
 			if (curp->sb != NULL)
 				strbuf_close(curp->sb);
-	} else {
-		if (ip != stdin)
+	} else if (opened == FILELIST_OPEN) {
+		if (ip != temp)
 			fclose(ip);
 		strbuf_close(ib);
+	} else {
+		die("illegal find_close");
 	}
 	regfree(suff);
 	if (skip)
