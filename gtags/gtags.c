@@ -934,7 +934,6 @@ createtags(dbpath, root, db)
 	int arg_count = 0;
 	STRBUF *path_list = strbuf_open(MAXPATHLEN);
 	int path_list_max;
-	static int gpath_created;
 
 	/*
 	 * get tag command.
