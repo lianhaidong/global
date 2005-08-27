@@ -79,7 +79,6 @@ static int list_count;
 static char **listarray;		/* list for skipping full path */
 static FILE *ip;
 static FILE *temp;
-static STRBUF *ib;
 static char root[MAXPATHLEN + 1];
 static size_t rootlen;
 static int opened;
@@ -444,7 +443,6 @@ find_open_filelist(filename, rootdir)
 {
 	assert(opened == 0);
 	opened = FILELIST_OPEN;
-	ib = strbuf_open(MAXBUFLEN);
 
 	if (!strcmp(filename, "-")) {
 		/*
@@ -573,9 +571,11 @@ find_read(void)
 static char *
 find_read_filelist()
 {
+	STATIC_STRBUF(ib);
 	static char buf[MAXPATHLEN + 1];
 	char *path;
 
+	strbuf_clear(ib);
 	for (;;) {
 		path = strbuf_fgets(ib, ip, STRBUF_NOCRLF);
 		if (path == NULL) {
@@ -643,7 +643,6 @@ find_close(void)
 	} else if (opened == FILELIST_OPEN) {
 		if (ip != temp)
 			fclose(ip);
-		strbuf_close(ib);
 	} else {
 		die("illegal find_close");
 	}
