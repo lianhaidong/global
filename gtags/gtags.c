@@ -983,13 +983,11 @@ createtags(dbpath, root, db)
 	 * the source file as a lot as possible to decrease the invoking
 	 * frequency of the parser.
 	 */
-	if (gpath_created)
-		gfind_open(dbpath, NULL);
-	else if (file_list)
+	if (file_list)
 		find_open_filelist(file_list, root);
 	else
 		find_open(NULL);
-	while ((path = gpath_created ? gfind_read() : find_read()) != NULL) {
+	while ((path = find_read()) != NULL) {
 		int skip = 0;
 
 		/* a blank at the head of path means 'NOT SOURCE'. */
@@ -1044,11 +1042,7 @@ createtags(dbpath, root, db)
 	if (strbuf_getlen(path_list))
 		gtags_add(gtop, strbuf_value(comline), path_list, gflags);
 	total = count;				/* save total count */
-	if (gpath_created)
-		gfind_close();
-	else
-		find_close();
-	gpath_created = 1;
+	find_close();
 	gtags_close(gtop);
 	strbuf_close(comline);
 	strbuf_close(path_list);

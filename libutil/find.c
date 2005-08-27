@@ -78,6 +78,7 @@ static STRBUF *list;
 static int list_count;
 static char **listarray;		/* list for skipping full path */
 static FILE *ip;
+static FILE *temp;
 static STRBUF *ib;
 static char root[MAXPATHLEN + 1];
 static size_t rootlen;
@@ -444,8 +445,21 @@ find_open_filelist(filename, rootdir)
 	assert(opened == 0);
 	opened = FILELIST_OPEN;
 	ib = strbuf_open(MAXBUFLEN);
-	if (filename[0] == '-' && filename[1] == '\0') {
-		ip = stdin;
+
+	if (!strcmp(filename, "-")) {
+		/*
+		 * If the filename is '-', copy standard input onto
+		 * temporary file to be able to read repeatedly.
+		 */
+		if (temp == NULL) {
+			char buf[MAXPATHLEN+1];
+
+			temp = tmpfile();
+			while (fgets(buf, sizeof(buf), stdin) != NULL)
+				fputs(buf, temp);
+		}
+		rewind(temp);
+		ip = temp;
 	} else {
 		if (test("d", filename))
 			die("'%s' is a directory.", filename);
@@ -459,6 +473,10 @@ find_open_filelist(filename, rootdir)
 	}
 	strlimcpy(root, rootdir, sizeof(root));
 	rootlen = strlen(root);
+
+	/*
+	 * prepare regular expressions.
+	 */
 	prepare_skip();
 	prepare_source();
 }
