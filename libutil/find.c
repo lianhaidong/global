@@ -636,14 +636,19 @@ void
 find_close(void)
 {
 	assert(opened != 0);
-	/*
-	 * In the case of FILELIST_OPEN, we don't close file
-	 * to read it repeatedly.
-	 */
 	if (opened == FIND_OPEN) {
 		for (curp = &stack[0]; curp < topp; curp++)
 			if (curp->sb != NULL)
 				strbuf_close(curp->sb);
+	} else if (opened == FILELIST_OPEN) {
+		/*
+		 * The --file=- option is specified, we don't close file
+		 * to read it repeatedly.
+		 */
+		if (ip != temp)
+			fclose(ip);
+	} else {
+		die("illegal find_close");
 	}
 	regfree(suff);
 	if (skip)
