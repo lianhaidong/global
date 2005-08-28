@@ -92,7 +92,6 @@ int gtagslabel;
 int other_files;
 int debug;
 int secure_mode;
-int warn_multiple_filelist;
 const char *extra_options;
 const char *info_string;
 const char *file_list;
@@ -229,8 +228,6 @@ main(argc, argv)
 			cflag++;
 			break;
 		case 'f':
-			if (file_list)
-				warn_multiple_filelist = 1;
 			file_list = optarg;
 			break;
 		case 'i':
@@ -272,8 +269,6 @@ main(argc, argv)
 		version(NULL, vflag);
 	if (show_help)
 		help();
-	if (warn_multiple_filelist)
-		warning("-f(--file) option specified more than once, last value used.");
 
 	argc -= optind;
         argv += optind;
