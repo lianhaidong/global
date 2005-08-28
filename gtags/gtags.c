@@ -228,6 +228,8 @@ main(argc, argv)
 			cflag++;
 			break;
 		case 'f':
+			if (file_list)
+				warning("-f(--file) option specified more than once, last value used.");
 			file_list = optarg;
 			break;
 		case 'i':
