@@ -837,11 +837,7 @@ updatetags(dbpath, root, deleteset, addlist, addtotal, db)
 	/*
 	 * determine the maximum length of the list of paths.
 	 */
-	path_list_max = exec_line_limit();
-	path_list_max -= strbuf_getlen(comline);
-	path_list_max -= 40;
-	if (path_list_max < 0)
-		path_list_max = 0;
+	path_list_max = exec_line_limit(strbuf_getlen(comline));
 
 	gtop = gtags_open(dbpath, root, db, GTAGS_MODIFY, 0);
 	if (vflag) {
@@ -954,11 +950,7 @@ createtags(dbpath, root, db)
 	/*
 	 * determine the maximum length of the list of paths.
 	 */
-	path_list_max = exec_line_limit();
-	path_list_max -= strbuf_getlen(comline);
-	path_list_max -= 40;
-	if (path_list_max < 0)
-		path_list_max = 0;
+	path_list_max = exec_line_limit(strbuf_getlen(comline));
 
 	flags = 0;
 	/*

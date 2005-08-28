@@ -100,11 +100,13 @@ env_size(void)
 /*
  * exec_line_limit: upper limit of bytes of exec line.
  *
+ *	i)	length	command line length
  *	r)	0: unknown or cannot afford long line.
  *		> 0: upper limit of exec line
  */
 int
-exec_line_limit()
+exec_line_limit(length)
+	int length;
 {
 	int limit = 0;
 
@@ -119,6 +121,19 @@ exec_line_limit()
 	 */
 	if (limit > 20 * 1024)
 		limit = 20 * 1024;
+	/*
+	 * Add the command line length.
+	 * We estimates additional 80 bytes for popen(3) and space for
+	 * the additional sort command.
+	 *
+	 * for "/bin/sh -c "				11bytes
+	 * for " | gnusort -k 1,1 -k 3,3 -k 2,2n"	32bytes
+	 * reserve					37bytes
+	 * ----------------------------------------------------
+	 * Total					80 bytes
+	 */
+	limit -= length + 80;
+
 	limit -= env_size();
 	if (limit < 0)
 		limit = 0;

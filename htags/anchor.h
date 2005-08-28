@@ -65,7 +65,6 @@ struct anchor {
 #define A_HELP		7
 #define A_LIMIT		8
 
-int anchor_pathlist_limit(void);
 void anchor_prepare(STRBUF *);
 void anchor_load(const char *);
 void anchor_unload(void);

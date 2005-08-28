@@ -23,6 +23,6 @@
 void set_env(const char *, const char *);
 char *get_home_directory(void);
 int env_size(void);
-int exec_line_limit(void);
+int exec_line_limit(int length);
 
 #endif /* ! _ENV_H_ */

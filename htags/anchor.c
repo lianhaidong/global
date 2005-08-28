@@ -66,31 +66,6 @@ static int LAST;
 static struct anchor *CURRENTDEF;
 
 /*
- * anchor_pathlist_limit: determine the maximum length of the list of paths.
- */
-int
-anchor_pathlist_limit()
-{
-	int limit, db, max = 0;
-	STRBUF *comline = strbuf_open(0);
-
-	limit = exec_line_limit();
-	for (db = GTAGS; db < GTAGLIM; db++) {
-		if (!symbol && db == GSYMS)
-			continue;
-		strbuf_reset(comline);
-		if (!getconfs(dbname(db), comline))
-			die("cannot get parser for %s.", dbname(db));
-		if (strbuf_getlen(comline) > max)
-			max = strbuf_getlen(comline);
-	}
-	strbuf_close(comline);
-	limit -= max + 40;
-	if (limit < 0)
-		limit = 0;
-	return limit;
-}
-/*
  * anchor_prepare: setup input stream.
  *
  *	i)	path_list	\0 separated list of paths
