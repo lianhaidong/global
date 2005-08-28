@@ -35,6 +35,18 @@
  *	ASSOC *b = assoc_open('b');
  *
  * This is for internal use.
+ *
+ * [Why we don't use invisible db file for associate array?]
+ *
+ * Dbopen() with NULL path name creates invisible db file. It is useful
+ * for many applications but I didn't use it because:
+ *
+ * 1. Temporary db file might grow up to hundreds of mega bytes or more.
+ *    If the file is invisible, the administrator of the machine cannot
+ *    understand why file system is full though there is no large file.
+ *    We shouldn't make invisible, huge temporary db file.
+ * 2. It is difficult for us to debug programs using unnamed, invisible
+ *    temporary db file.
  */
 /*
  * get temporary file name.
