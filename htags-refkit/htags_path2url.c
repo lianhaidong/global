@@ -54,7 +54,7 @@ struct map
 static char *global_contents;		/* filemap contents		*/
 static struct map *global_map;		/* file -> url mapping table	*/
 static int global_maplines;		/* the lines of global_map	*/
-static const char *global_htmldir;	/* HTML directory of htags	*/
+static char global_htmldir[MAXPATHLEN+1];/* HTML directory of htags	*/
 
 /*----------------------------------------------------------------------*/
 /* Local functions							*/
@@ -227,7 +227,7 @@ htags_load_filemap(dir)
 		(void)free(area);
 		return status;
 	}
-	global_htmldir = dir;
+	strcpy(global_htmldir, dir);
 	global_contents = area;
 	global_map = map;
 	global_maplines = lines;
