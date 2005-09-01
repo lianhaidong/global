@@ -56,11 +56,19 @@
 #include "global.h"
 #include "const.h"
 
+struct dup_entry {
+	int offset;
+	SPLIT ptable;
+	int lineno;
+	int skip;
+};
+
 static void usage(void);
 static void help(void);
 void signal_setup(void);
 void onintr(int);
-int match(const char *, const char *);
+static int compare_dup_entry(const void *, const void *);
+static void put_lines(char *, struct dup_entry *, int);
 int main(int, char **);
 int incremental(const char *, const char *);
 void updatetags(const char *, const char *, IDSET *, STRBUF *, int, int);
@@ -172,19 +180,56 @@ signal_setup(void)
 #endif
 }
 
-int
-match(curtag, line)
-	const char *curtag;
-	const char *line;
+/*
+ * compare_dup_entry: compare function for sorting.
+ */
+static int
+compare_dup_entry(v1, v2)
+	const void *v1;
+	const void *v2;
 {
-	const char *p, *q = line;
+	const struct dup_entry *e1 = v1, *e2 = v2;
+	int ret;
 
-	for (p = curtag; *p; p++)
-		if (*p != *q++)
-			return 0;
-	if (!isspace((unsigned char)*q))
-		return 0;
-	return 1;
+	if ((ret = strcmp(e1->ptable.part[PART_PATH].start,
+			  e2->ptable.part[PART_PATH].start)) != 0)
+		return ret;
+	return e1->lineno - e2->lineno;
+}
+/*
+ * put_lines: sort and print duplicate lines
+ */
+static void
+put_lines(lines, entries, entry_count)
+	char *lines;
+	struct dup_entry *entries;
+	int entry_count;
+{
+	int i;
+
+	for (i = 0; i < entry_count; i++) {
+		char *ctags_x = lines + entries[i].offset;
+		SPLIT *ptable = &entries[i].ptable;
+
+		if (split(ctags_x, 4, ptable) < 4) {
+			recover(ptable);
+			die("too small number of parts.\n'%s'", ctags_x);
+		}
+		entries[i].lineno = atoi(ptable->part[PART_LNO].start);
+		entries[i].skip = 0;
+	}
+	qsort(entries, entry_count, sizeof(struct dup_entry), compare_dup_entry);
+	for (i = 1; i < entry_count; i++) {
+		if (entries[i].lineno == entries[i - 1].lineno
+		 && strcmp(entries[i].ptable.part[PART_PATH].start,
+			   entries[i - 1].ptable.part[PART_PATH].start) == 0)
+			entries[i].skip = 1;
+	}
+	for (i = 0; i < entry_count; i++) {
+		recover(&entries[i].ptable);
+		if (!entries[i].skip)
+			puts(lines + entries[i].offset);
+	}
 }
 
 int
@@ -431,34 +476,51 @@ main(argc, argv)
 		 * is already sorted in alphabetical order by tag name,
 		 * we splited the output into relatively small unit and
 		 * execute sort for each unit.
-		 *
-		 * It is not certain whether the present unit value is the best.
 		 */
-		int unit = 1500;
 		STRBUF *ib = strbuf_open(MAXBUFLEN);
-		const char *ctags_x = strbuf_fgets(ib, stdin, 0);
+		STRBUF *sb = strbuf_open(MAXBUFLEN);
+		VARRAY *vb = varray_open(sizeof(struct dup_entry), 100);
+		char *ctags_x, prev[IDENTLEN];
 
-		while (ctags_x != NULL) {
-			int count = 0;
-			FILE *op = popen("gnusort -k 1,1 -k 3,3 -k 2,2n -u", "w");
-			do {
-				fputs(ctags_x, op);
-			} while ((ctags_x = strbuf_fgets(ib, stdin, 0)) != NULL && ++count < unit);
-			if (ctags_x) {
-				/* curtag = current tag name */
-				STRBUF *curtag = strbuf_open(0);
-				const char *p = ctags_x;
-				while (!isspace((unsigned char)*p))
-					strbuf_putc(curtag, *p++);
-				/* read until next tag name */
-				do {
-					fputs(ctags_x, op);
-				} while ((ctags_x = strbuf_fgets(ib, stdin, 0)) != NULL
-					&& match(strbuf_value(curtag), ctags_x));
+		prev[0] = '\0';
+		while ((ctags_x = strbuf_fgets(ib, stdin, STRBUF_NOCRLF)) != NULL) {
+			const char *tag;
+			struct dup_entry *entry;
+			SPLIT ptable;
+
+			if (split(ctags_x, 2, &ptable) < 2) {
+				recover(&ptable);
+				die("too small number of parts.\n'%s'", ctags_x);
 			}
-			if (pclose(op) != 0)
-				die("terminated abnormally.");
+			tag = ptable.part[PART_TAG].start;
+			if (prev[0] == '\0' || strcmp(prev, tag) != 0) {
+				if (prev[0] != '\0') {
+					if (vb->length == 1)
+						puts(strbuf_value(sb));
+					else
+						put_lines(strbuf_value(sb),
+							varray_assign(vb, 0, 0),
+							vb->length);
+				}
+				strlimcpy(prev, tag, sizeof(prev));
+				strbuf_reset(sb);
+				varray_reset(vb);
+			}
+			entry = varray_append(vb);
+			entry->offset = strbuf_getlen(sb);
+			recover(&ptable);
+			strbuf_puts0(sb, ctags_x);
 		}
+		if (prev[0] != '\0') {
+			if (vb->length == 1)
+				puts(strbuf_value(sb));
+			else
+				put_lines(strbuf_value(sb),
+					varray_assign(vb, 0, 0), vb->length);
+		}
+		strbuf_close(ib);
+		strbuf_close(sb);
+		varray_close(vb);
 		exit(0);
 	} else if (do_relative || do_absolute) {
 		/*
