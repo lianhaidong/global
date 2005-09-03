@@ -354,7 +354,7 @@ main(argc, argv)
 			die("GPATH not found.");
 		while (strbuf_fgets(ib, stdin, 0) != NULL) {
 			p = strbuf_value(ib);
-			if (strncmp("<a ", p, 3))
+			if (!locatestring(p, "<a ", MATCH_AT_FIRST))
 				continue;
 			q = locatestring(p, "/S/ ", MATCH_FIRST);
 			if (q == NULL) {

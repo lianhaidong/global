@@ -169,12 +169,11 @@ anchor_load(file)
 					for (p++; *p && isspace((unsigned char)*p); p++)
 						;
 					if (*p) {
-						if (!strncmp(p, "define", sizeof("define") - 1))
-							type = 'M';
-						else if (!strncmp(p, "undef", sizeof("undef") - 1))
+						if (locatestring(p, "define", MATCH_AT_FIRST) ||
+						    locatestring(p, "undef", MATCH_AT_FIRST))
 							type = 'M';
 					}
-				} else if (!strncmp(p, "typedef", sizeof("typedef") - 1))
+				} else if (locatestring(p, "typedef", MATCH_AT_FIRST))
 					type = 'T';
 			}  else if (db == GRTAGS)
 				type = 'R';

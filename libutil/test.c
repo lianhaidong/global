@@ -63,7 +63,7 @@ is_binary(path)
 	close(ip);
 	if (size < 0)
 		return 1;
-	if (!strncmp(buf, "!<arch>", 7))
+	if (locatestring(buf, "!<arch>", MATCH_AT_FIRST))
 		return 1;
 	for (i = 0; i < size; i++) {
 		c = (unsigned char)buf[i];

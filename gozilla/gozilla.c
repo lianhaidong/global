@@ -450,7 +450,7 @@ isprotocol(url)
 {
 	const char *p;
 
-	if (!strncmp(url, "file:", 5))
+	if (locatestring(url, "file:", MATCH_AT_FIRST))
 		return 1;
 	/*
 	 * protocol's style is like http://xxx.

@@ -110,7 +110,7 @@ makedefineindex(file, total, defines)
 		count++;
 		tag = _;
 		message(" [%d/%d] adding %s", count, total, tag);
-		if (aflag && (alpha[0] == '\0' || strncmp(tag, alpha, strlen(alpha)))) {
+		if (aflag && (alpha[0] == '\0' || !locatestring(tag, alpha, MATCH_AT_FIRST))) {
 			const char *msg = (alpha_count == 1) ? "definition is contained." : "definitions are contained.";
 			int c;
 
