@@ -36,6 +36,44 @@ extern int debug;
 #include "locatestring.h"
 
 /*
+
+String locator: usage and memory status
+
+        'v': result pointer
+ 
+string = "ABC XYZ XYZ ABC"
+
+pointer = locatestring(string, "XYZ", MATCH_FIRST);
+             v
+        "ABC XYZ XYZ ABC"
+
+pointer = locatestring(string, "XYZ", MATCH_LAST);
+                 v
+        "ABC XYZ XYZ ABC"
+
+pointer = locatestring(string, "XYZ", MATCH_AT_FIRST);
+
+        "ABC XYZ XYZ ABC" (nothing pointed)
+
+pointer = locatestring(string, "ABC", MATCH_AT_FIRST);
+            v
+        "ABC XYZ XYZ ABC" (point the following character)
+
+pointer = locatestring(string, "ABC", MATCH_AT_LAST);
+                     v
+        "ABC XYZ XYZ ABC"
+
+pointer = locatestring(string, "ABC XYZ XYZ ABC", MATCH_COMPLETE);
+         v
+        "ABC XYZ XYZ ABC"
+
+pointer = locatestring(string, "xyZ", MATCH_FIRST|IGNORE_CASE);
+             v
+        "ABC XYZ XYZ ABC"
+
+ */
+
+/*
  * strincmp: strncmp with ignoring case.
  *
  *	Interface is same with strncmp.
