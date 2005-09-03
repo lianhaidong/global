@@ -559,6 +559,17 @@ main(argc, argv)
 			die("mkid not found.");
 	}
 
+	/*
+	 * If the file_list is given, it must be readable file.
+	 */
+	if (file_list) {
+		if (test("d", file_list))
+			die("'%s' is a directory.", file_list);
+		else if (!test("f", file_list))
+			die("'%s' not found.", file_list);
+		else if (!test("r", file_list))
+			die("'%s' is not readable.", file_list);
+	}
 	if (!getcwd(cwd, MAXPATHLEN))
 		die("cannot get current directory.");
 	canonpath(cwd);

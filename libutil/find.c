@@ -459,12 +459,6 @@ find_open_filelist(filename, rootdir)
 		rewind(temp);
 		ip = temp;
 	} else {
-		if (test("d", filename))
-			die("'%s' is a directory.", filename);
-		if (!test("f", filename))
-			die("'%s' not found.", filename);
-		if (!test("r", filename))
-			die("'%s' is not readable.", filename);
 		ip = fopen(filename, "r");
 		if (ip == NULL)
 			die("cannot open '%s'.", filename);
