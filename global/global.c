@@ -60,7 +60,6 @@ void parsefile(int, char **, const char *, const char *, const char *, int);
 static int exec_parser(const char *, STRBUF *, const char *, const char *, FILE *);
 void printtag(FILE *, const char *);
 int search(const char *, const char *, const char *, int);
-int includepath(const char *, const char *);
 void ffformat(char *, int, const char *);
 
 STRBUF *sortfilter;			/* sort filter		*/
@@ -1115,31 +1114,6 @@ search(pattern, root, dbpath, db)
 		strbuf_close(sb);
 	gtags_close(gtop);
 	return count;
-}
-/*
- * includepath: check if the path included in tag line or not.
- *
- *	i)	line	tag line
- *	i)	path	path
- *	r)		0: doesn't included, 1: included
- */
-int
-includepath(line, path)
-	const char *line;
-	const char *path;
-{
-	const char *p;
-	int length;
-
-	if (!(p = locatestring(line, "./", MATCH_FIRST)))
-		die("invalid tag format (path not found).");
-	length = strlen(path);
-	if (strncmp(p, path, length))
-		return 0;
-	p += length;
-	if (*p == ' ' || *p == '\t')
-		return 1;
-	return 0;
 }
 /*
  * ffformat: string copy with converting blank chars into %ff format.
