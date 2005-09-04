@@ -900,14 +900,15 @@ parsefile(argc, argv, cwd, root, dbpath, db)
 	const char *dbpath;
 	int db;
 {
+	char rootdir[MAXPATHLEN+1];
 	char buf[MAXPATHLEN+1], *path;
 	FILE *op;
 	int count;
 	STRBUF *comline = strbuf_open(0);
 	STRBUF *path_list = strbuf_open(MAXPATHLEN);
 	int path_list_max;
-	size_t rootlen = strlen(root);
 
+	snprintf(rootdir, sizeof(rootdir), "%s/", root);
 	/*
 	 * teach parser where is dbpath.
 	 */
@@ -949,12 +950,18 @@ parsefile(argc, argv, cwd, root, dbpath, db)
 			die("realpath(%s, buf) failed. (errno=%d).", av, errno);
 		if (!isabspath(path))
 			die("realpath(3) is not compatible with BSD version.");
-		if (strncmp(path, root, rootlen) || path[rootlen] != '/') {
+		/*
+		 * Remove the root part of path and insert './'.
+		 *      rootdir  /a/b/
+		 *      path     /a/b/c/d.c -> c/d.c -> ./c/d.c
+		 */
+		path = locatestring(path, rootdir, MATCH_AT_FIRST);
+		if (path == NULL) {
 			if (!qflag)
 				fprintf(stderr, "'%s' is out of source tree.\n", path);
 			continue;
 		}
-		path += rootlen - 1;
+		path -= 2;
 		*path = '.';
 		if (!gpath_path2fid(path)) {
 			if (!qflag)

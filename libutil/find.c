@@ -79,8 +79,7 @@ static int list_count;
 static char **listarray;		/* list for skipping full path */
 static FILE *ip;
 static FILE *temp;
-static char root[MAXPATHLEN + 1];
-static size_t rootlen;
+static char rootdir[MAXPATHLEN+1];
 static int opened;
 #define FIND_OPEN	1
 #define FILELIST_OPEN	2
@@ -434,12 +433,12 @@ find_open(start)
  *
  *	i)	filename	file including list of file names.
  *				When "-" is specified, read from standard input.
- *	i)	rootdir		root directory of source tree
+ *	i)	root		root directory of source tree
  */
 void
-find_open_filelist(filename, rootdir)
+find_open_filelist(filename, root)
 	const char *filename;
-	const char *rootdir;
+	const char *root;
 {
 	assert(opened == 0);
 	opened = FILELIST_OPEN;
@@ -463,8 +462,7 @@ find_open_filelist(filename, rootdir)
 		if (ip == NULL)
 			die("cannot open '%s'.", filename);
 	}
-	strlimcpy(root, rootdir, sizeof(root));
-	rootlen = strlen(root);
+	snprintf(rootdir, sizeof(rootdir), "%s/", root);
 
 	/*
 	 * prepare regular expressions.
@@ -596,12 +594,18 @@ find_read_filelist()
 		}
 		if (!isabspath(buf))
 			die("realpath(3) is not compatible with BSD version.");
-		if (strncmp(buf, root, rootlen) || buf[rootlen] != '/') {
+		/*
+		 * Remove the root part of buf and insert './'.
+		 *	rootdir  /a/b/
+		 *	buf      /a/b/c/d.c -> c/d.c -> ./c/d.c
+		 */
+		path = locatestring(buf, rootdir, MATCH_AT_FIRST);
+		if (path == NULL) {
 			if (!qflag)
 				fprintf(stderr, "'%s' is out of source tree.\n", buf);
 			continue;
 		}
-		path = buf + rootlen - 1;
+		path -= 2;
 		*path = '.';
 		/*
 		 * GLOBAL cannot treat path which includes blanks.

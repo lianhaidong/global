@@ -420,16 +420,16 @@ main(argc, argv)
 		if (argc) {
 			if (secure_mode) {
 				char buf[MAXPATHLEN+1], *path;
-				size_t rootlen;
+				char rootdir[MAXPATHLEN+1];
 
 				getdbpath(cwd, root, dbpath, 0);
+				snprintf(rootdir, sizeof(rootdir), "%s/", root);
 				path = realpath(argv[0], buf);
 				if (path == NULL)
 					die("realpath(%s, buf) failed. (errno=%d).", argv[0], errno);
 				if (!isabspath(path))
 					die("realpath(3) is not compatible with BSD version.");
-				rootlen = strlen(root);
-				if (strncmp(path, root, rootlen) || path[rootlen] != '/')
+				if (!locatestring(path, rootdir, MATCH_AT_FIRST))
 					die("'%s' is out of source tree.", path);
 			}
 			ip = fopen(argv[0], "r");
