@@ -1075,28 +1075,24 @@ configuration(argc, argv)
 		char *confpath = NULL;
 		char *label = NULL;
 		char *opt_gtagsconf = "--gtagsconf";
-		int leng_gtagsconf = strlen(opt_gtagsconf);
 		char *opt_gtagslabel = "--gtagslabel";
-		int leng_gtagslabel = strlen(opt_gtagslabel);
 
 		for (i = 1; i < argc; i++) {
-			if (!strncmp(argv[i], opt_gtagsconf, leng_gtagsconf)) {
-				if (!strcmp(argv[i], opt_gtagsconf)) {
+			if ((p = locatestring(argv[i], opt_gtagsconf, MATCH_AT_FIRST))) {
+				if (*p == '\0') {
 					if (++i >= argc)
 						die("%s needs an argument.", opt_gtagsconf);
 					confpath = argv[i];
 				} else {
-					p = argv[i] + leng_gtagsconf;
 					if (*p++ == '=' && *p)
 						confpath = p;
 				}
-			} else if (!strncmp(argv[i], opt_gtagslabel, leng_gtagslabel)) {
-				if (!strcmp(argv[i], opt_gtagslabel)) {
+			} else if ((p = locatestring(argv[i], opt_gtagslabel, MATCH_AT_FIRST))) {
+				if (*p == '\0') {
 					if (++i >= argc)
 						die("%s needs an argument.", opt_gtagslabel);
 					label = argv[i];
 				} else {
-					p = argv[i] + leng_gtagslabel;
 					if (*p++ == '=' && *p)
 						label = p;
 				}
@@ -1462,8 +1458,8 @@ save_environment(argc, argv)
 			 * skip --gtagsconf because it is already read
 			 * as config value.
 			 */
-			if (!strncmp(argv[i], opt_gtagsconf, leng_gtagsconf)) {
-				if (!strcmp(argv[i], opt_gtagsconf))
+			if ((p = locatestring(argv[i], opt_gtagsconf, MATCH_AT_FIRST))) {
+				if (*p == '\0')
 					i++;
 				continue;
 			}
