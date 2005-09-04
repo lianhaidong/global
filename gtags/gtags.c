@@ -560,9 +560,9 @@ main(argc, argv)
 	}
 
 	/*
-	 * If the file_list is given, it must be readable file.
+	 * If the file_list other than "-" is given, it must be readable file.
 	 */
-	if (file_list) {
+	if (file_list && strcmp(file_list, "-")) {
 		if (test("d", file_list))
 			die("'%s' is a directory.", file_list);
 		else if (!test("f", file_list))
