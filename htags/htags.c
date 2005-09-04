@@ -1449,7 +1449,6 @@ save_environment(argc, argv)
 	 */
 	{
 		char *opt_gtagsconf = "--gtagsconf";
-		int leng_gtagsconf = strlen(opt_gtagsconf);
 
 		for (i = 1; i < argc; i++) {
 			char *blank;
