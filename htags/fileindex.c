@@ -726,13 +726,13 @@ makefileindex(file, files)
 				pop_stack(pop);
 			}
 			while (count_stack(push)) {
-				char cur[MAXPATHLEN], tmp[MAXPATHLEN];
+				char parent[MAXPATHLEN], cur[MAXPATHLEN], tmp[MAXPATHLEN];
 				const char *last;
 				if (count_stack(dirstack)) {
-					parent = path2fid(join_stack(dirstack));
+					strlimcpy(parent, path2fid(join_stack(dirstack)), sizeof(parent));
 					suffix = HTML;
 				} else {
-					parent = indexlink;
+					strlimcpy(parent, indexlink, sizeof(parent));
 					suffix = normal_suffix;
 				}
 				push_stack(dirstack, shift_stack(push));
