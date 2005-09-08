@@ -26,17 +26,16 @@ Port to DJGPP by Jason Hood.
 (libutil/is_unixy.[ch] and most of #ifdef __DJGPP__.)
 
 Improvements to htags, gtags and gtags-parser by Hideki IWAMOTO.
-* INCLUDED FROM index(htags)
-* CVS REPOSITORY link(htags)
-* Real support of Yacc source code(htags)
-* Rewrite parser for assembly language using Yacc(asm_scan.l,asm_parse.y)
-* Config variable 'langmap'(htags)
-* Improved the performance of gtags by decreasing the frequency of
-  invoking parser.
-* Improved the performance of gtags by changing algorithm of incremental
-  updating.
-* Improved the performance of htags by decreasing the frequency of
-  invoking parser.
+* INCLUDED FROM index of htags.
+* CVS REPOSITORY link of htags.
+* Real support of Yacc source code of htags.
+* Rewriting parser for assembly language using Yacc(asm_scan.l,asm_parse.y).
+* Adding config variable 'langmap' to htags.
+* Performance improvement of gtags and htags by decreasing the frequency
+  of invoking parser.
+* Performance improvement of the incremental updating of gtags by changing
+  algorithm.
+* Adding the --file filelist option of htags.
 Besides he has contributed many improvements to GLOBAL.
 
 There are also many others who have contributed patches and fixes.
