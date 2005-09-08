@@ -35,7 +35,7 @@ Improvements to htags, gtags and gtags-parser by Hideki IWAMOTO.
   of invoking parser.
 * Performance improvement of the incremental updating of gtags by changing
   algorithm.
-* Adding the --file filelist option of htags.
+* Adding the --file filelist option of gtags.
 Besides he has contributed many improvements to GLOBAL.
 
 There are also many others who have contributed patches and fixes.
