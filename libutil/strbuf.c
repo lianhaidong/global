@@ -97,6 +97,7 @@ strbuf_dump(msg)
 {
 	STRBUF *sb;
 	int i = 0;
+	long total = 0, used = 0;
 
 	fprintf(stderr, "[%s/%s]\n", progname, msg);
 	for (sb = top.next; sb && sb != &top; sb = sb->next) {
@@ -104,15 +105,14 @@ strbuf_dump(msg)
 		char *end = p + strbuf_getlen(sb);
 
 		*sb->curp = 0;
-		fprintf(stderr, "%d\tsize=%d", strbuf_getlen(sb));
-		if (strbuf_getlen(sb) <= strlen(p))
-			fprintf(stderr, ", value=|%s|\n", p);
-		else {
-			fputc('\n', stderr);
-			for (; p < end; p += strlen(p) + 1)
-				fprintf(stderr, "\t|%s|", p);
-		}
+		fprintf(stderr, "(%d)\tsize=%d used=%d ", ++i, sb->sbufsize, strbuf_getlen(sb));
+		total += sb->sbufsize;
+		used += strbuf_getlen(sb);
+		for (; p < end; p += strlen(p) + 1)
+			fprintf(stderr, "[%s]", p);
+		fputc('\n', stderr);
 	}
+	fprintf(stderr, "Total %ld bytes, used %ld bytes\n", total, used);
 }
 #endif
 /*
