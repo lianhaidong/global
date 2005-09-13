@@ -21,7 +21,9 @@ environments. It supports C, C++, Yacc, Java, PHP4 and assembler source code.
 
 * Support OS
 
-	UNIX(POSIX) compatible operating system like GNU and BSD.
+	GNU system - Debian, Fedora, Suse, etc.
+	BSD system - FreeBSD, NetBSD, OpenBSD, MacOSX, etc.
+	Besides, various POSIX compatible systems.
 
 * Installation
 
