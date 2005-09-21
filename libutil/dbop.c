@@ -93,7 +93,9 @@ dbop_open(path, mode, perm, flags)
 	info.psize = DBOP_PAGESIZE;
 	/*
 	 * accept user's request but needs 0.5MB at least.
+	 * The default value is 5MB.
 	 */
+	info.cachesize = 5000000;
 	if (getenv("GTAGSCACHE") != NULL)
 		info.cachesize = atoi(getenv("GTAGSCACHE"));
 	if (info.cachesize < 500000)
