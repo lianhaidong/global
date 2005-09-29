@@ -19,6 +19,26 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+September 30 2005, Shigio YAMAGUCHI
+
+        * Updated GNU Free Documentation License.(1.1->1.2)
+        * Updated doc/texinfo.tex using texinfo-4.8.
+        * BSD advertising clause was deleted, according to the declaration
+          by UCB.
+        * Added new module idset.
+        * Added new function exec_line_limit() in env.c.
+        * Added new function find_open_filelist() for the --file=xxx option.
+          Find_read() and find_close() is shared by both find_open_filelist()
+          and find_open().
+        * Added new config option --with-db185-compat[=DIR].
+          This is not for normal use, but for debugging.
+        * Decreased use of popen() by moving the conversion from tabs to
+          spaces into htags.
+        * Reimplemented 'gtags --sort' without gnusort.
+        * The default cache size was changed from 500000 to 5000000.
+          Though I was assuming the machine equipped with 32-64MB,
+          in a recent machine, even small one has 256-512MB memory.
+
 May 12 2005, Shigio YAMAGUCHI
 
         * htags: New macro TOPDIR and SUBDIR added for readability.
