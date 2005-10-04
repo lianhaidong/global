@@ -26,11 +26,7 @@
 #include <config.h>
 #endif
 #include <stdio.h>
-#ifdef HAVE_STDARG_H
 #include <stdarg.h>
-#else
-#include <varargs.h>
-#endif
 #ifdef STDC_HEADERS
 #include <stdlib.h>
 #endif
@@ -67,12 +63,7 @@
 #define PHP_LBRACK		'['
 #define PHP_RBRACK		']'
 
-#ifdef HAVE_STDARG_H
 static void debug_print(const char *, ...);
-#else
-static void debug_print();
-#endif
-
 static int level;			/* block nest level */
 static STRBUF *string;			/* string */
 
@@ -80,23 +71,13 @@ static STRBUF *string;			/* string */
  * For debug.
  */
 static void
-#ifdef HAVE_STDARG_H
 debug_print(const char *s, ...)
-#else
-debug_print(s, va_alist)
-	const char *s;
-	va_dcl
-#endif
 {
 	va_list ap;
 
 	if (!debug)
 		return;
-#ifdef HAVE_STDARG_H
 	va_start(ap, s);
-#else
-	va_start(ap);
-#endif
 	(void)vfprintf(stderr, s, ap);
 	va_end(ap);
 }

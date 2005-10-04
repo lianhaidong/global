@@ -56,23 +56,13 @@ sethandler(proc)
 	exit_proc = proc;
 }
 void
-#ifdef HAVE_STDARG_H
 die(const char *s, ...)
-#else
-die(s, va_alist)
-	const char *s;
-	va_dcl
-#endif
 {
 	va_list ap;
 
 	if (!quiet) {
 		fprintf(stderr, "%s: ", progname);
-#ifdef HAVE_STDARG_H
 		va_start(ap, s);
-#else
-		va_start(ap);
-#endif
 		(void)vfprintf(stderr, s, ap);
 		va_end(ap);
 		fputs("\n", stderr);
@@ -85,24 +75,13 @@ die(s, va_alist)
 }
 
 void
-#ifdef HAVE_STDARG_H
 die_with_code(int n, const char *s, ...)
-#else
-die_with_code(n, s, va_alist)
-	int n;
-	const char *s;
-	va_dcl
-#endif
 {
 	va_list ap;
 
 	if (!quiet) {
 		fprintf(stderr, "%s: ", progname);
-#ifdef HAVE_STDARG_H
 		va_start(ap, s);
-#else
-		va_start(ap);
-#endif
 		(void)vfprintf(stderr, s, ap);
 		va_end(ap);
 		fputs("\n", stderr);
@@ -114,45 +93,25 @@ die_with_code(n, s, va_alist)
 	exit(n);
 }
 void
-#ifdef HAVE_STDARG_H
 message(const char *s, ...)
-#else
-message(s, va_alist)
-	const char *s;
-	va_dcl
-#endif
 {
 	va_list ap;
 
 	if (!quiet && verbose) {
-#ifdef HAVE_STDARG_H
 		va_start(ap, s);
-#else
-		va_start(ap);
-#endif
 		(void)vfprintf(stderr, s, ap);
 		va_end(ap);
 		fputs("\n", stderr);
 	}
 }
 void
-#ifdef HAVE_STDARG_H
 warning(const char *s, ...)
-#else
-warning(s, va_alist)
-	const char *s;
-	va_dcl
-#endif
 {
 	va_list ap;
 
 	if (!quiet) {
 		fputs("Warning: ", stderr);
-#ifdef HAVE_STDARG_H
 		va_start(ap, s);
-#else
-		va_start(ap);
-#endif
 		(void)vfprintf(stderr, s, ap);
 		va_end(ap);
 		fputs("\n", stderr);

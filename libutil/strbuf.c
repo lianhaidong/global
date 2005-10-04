@@ -404,22 +404,11 @@ strbuf_fgets(sb, ip, flags)
  *			%s, %d, %<number>d, %<number>s, %-<number>d, %-<number>s
  */
 void
-#ifdef HAVE_STDARG_H
 strbuf_sprintf(STRBUF *sb, const char *s, ...)
-#else
-strbuf_sprintf(sb, s, va_alist)
-	STRBUF *sb;
-	const char *s;
-	va_dcl
-#endif
 {
 	va_list ap;
 
-#ifdef HAVE_STDARG_H
 	va_start(ap, s);
-#else
-	va_start(ap);
-#endif
 	if (sb->alloc_failed)
 		return;
 	for (; *s; s++) {

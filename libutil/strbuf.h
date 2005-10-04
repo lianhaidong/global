@@ -28,11 +28,7 @@
 #else
 #include <strings.h>
 #endif
-#ifdef HAVE_STDARG_H 
 #include <stdarg.h>
-#else
-#include <varargs.h>
-#endif
 
 #ifndef __attribute__
 /* This feature is available in gcc versions 2.5 and later.  */
@@ -138,12 +134,8 @@ char *strbuf_value(STRBUF *);
 void strbuf_trim(STRBUF *);
 void strbuf_close(STRBUF *);
 char *strbuf_fgets(STRBUF *, FILE *, int);
-#ifdef HAVE_STDARG_H
 void strbuf_sprintf(STRBUF *sb, const char *s, ...)
 	__attribute__ ((__format__ (__printf__, 2, 3)));
-#else
-void strbuf_sprintf();
-#endif
 STRBUF *strbuf_open_tempbuf();
 void strbuf_release_tempbuf(STRBUF *);
 #ifdef STRBUF_LINK

@@ -25,12 +25,7 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-
-#ifdef HAVE_STDARG_H 
 #include <stdarg.h>
-#else
-#include <varargs.h>
-#endif
 
 #ifndef __attribute__
 /* This feature is available in gcc versions 2.5 and later.  */
@@ -51,29 +46,13 @@ void setquiet();
 void setverbose();
 void setdebug();
 void sethandler(void (*proc)());
-#ifdef HAVE_STDARG_H
 void die(const char *s, ...)
 	__attribute__ ((__noreturn__, __format__ (__printf__, 1, 2)));
-#else
-void die();
-#endif
-#ifdef HAVE_STDARG_H
 void die_with_code(int n, const char *s, ...)
 	__attribute__ ((__noreturn__, __format__ (__printf__, 2, 3)));
-#else
-void die_with_code();
-#endif
-#ifdef HAVE_STDARG_H
 void message(const char *s, ...)
 	__attribute__ ((__format__ (__printf__, 1, 2)));
-#else
-void message();
-#endif
-#ifdef HAVE_STDARG_H
 void warning(const char *s, ...)
 	__attribute__ ((__format__ (__printf__, 1, 2)));
-#else
-void warning();
-#endif
 
 #endif /* ! _DIE_H_ */
