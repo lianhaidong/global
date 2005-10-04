@@ -72,10 +72,7 @@ static char global_htmldir[MAXPATHLEN+1];/* HTML directory of htags	*/
  *		-4: cannot read FILEMAP.
  */
 static int
-load_filemap_contents(file, area, size)
-	const char *file;
-	char **area;
-	int *size;
+load_filemap_contents(const char *file, char **area, int *size)
 {
 	struct stat st;
 	char *p = NULL;
@@ -111,9 +108,7 @@ err:
  * comparison function for bsearch().
  */
 static int
-cmp(s1, s2)
-	const void *s1;
-	const void *s2;
+cmp(const void *s1, const void *s2)
 {
 	return strcmp(((struct map *)s1)->name, ((struct map *)s2)->name);
 }
@@ -129,11 +124,7 @@ cmp(s1, s2)
  *		-5: illegal format.
  */
 static int
-create_filemap_index(area, size, map, lines)
-	char *area;
-	int size;
-	struct map **map;
-	int *lines;
+create_filemap_index(char *area, int size, struct map **map, int *lines)
 {
 	char *p, *endp = area + size;
 	struct map *m;
@@ -183,7 +174,7 @@ ferr:
  * unloads FILEMAP.
  */
 static void
-unload_filemap()
+unload_filemap(void)
 {
 	(void)free(global_map);
 	global_map = NULL;
@@ -209,8 +200,7 @@ unload_filemap()
  *			-5: format error.
  */
 int
-htags_load_filemap(dir)
-	const char *dir;
+htags_load_filemap(const char *dir)
 {
 	int status = 0;
 	char *area;
@@ -237,7 +227,7 @@ htags_load_filemap(dir)
  * unloads FILEMAP.
  */
 void
-htags_unload_filemap()
+htags_unload_filemap(void)
 {
 	unload_filemap();
 }
@@ -260,11 +250,7 @@ htags_unload_filemap()
  * URL: <html dir>/S/<file id>.html#<line number>
  */
 int
-htags_path2url(path, line, url, size)
-	const char *path;
-	int line;
-	char *url;
-	int size;
+htags_path2url(const char *path, int line, char *url, int size)
 {
 	struct map tmp;
 	struct map *result;
@@ -292,9 +278,7 @@ htags_path2url(path, line, url, size)
  * $ _
  */
 int
-main(argc, argv)
-	int argc;
-	char **argv;
+main(int argc, char **argv)
 {
 	char url[MAXPATHLEN];
 	char *path, *html;

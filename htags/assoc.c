@@ -55,8 +55,7 @@
  *      r)              temporary file name
  */
 static const char *
-get_tmpfile(uniq)
-        int uniq;
+get_tmpfile(int uniq)
 {
         static char path[MAXPATHLEN];
         int pid = getpid();
@@ -72,8 +71,7 @@ get_tmpfile(uniq)
  *	r)		descriptor
  */
 ASSOC *
-assoc_open(c)
-	int c;
+assoc_open(int c)
 {
 	ASSOC *assoc = (ASSOC *)malloc(sizeof(ASSOC));
 	const char *tmpfile = get_tmpfile(c);
@@ -92,8 +90,7 @@ assoc_open(c)
  *	i)	assoc	descriptor
  */
 void
-assoc_close(assoc)
-	ASSOC *assoc;
+assoc_close(ASSOC *assoc)
 {
 	if (assoc == NULL)
 		return;
@@ -110,10 +107,7 @@ assoc_close(assoc)
  *	i)	value	value
  */
 void
-assoc_put(assoc, name, value)
-	ASSOC *assoc;
-	const char *name;
-	const char *value;
+assoc_put(ASSOC *assoc, const char *name, const char *value)
 {
 	if (assoc->dbop == NULL)
 		abort();
@@ -127,9 +121,7 @@ assoc_put(assoc, name, value)
  *	r)		value
  */
 const char *
-assoc_get(assoc, name)
-	ASSOC *assoc;
-	const char *name;
+assoc_get(ASSOC *assoc, const char *name)
 {
 	if (assoc->dbop == NULL)
 		abort();

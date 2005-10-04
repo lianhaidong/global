@@ -53,11 +53,8 @@
  * o following libutil functions:
  *   test(), dbop_open(), strlimcpy(), strbuf_puts(), die()
  */
-char	*
-makepath(dir, file, suffix)
-	const char *dir;
-	const char *file;
-	const char *suffix;
+char *
+makepath(const char *dir, const char *file, const char *suffix)
 {
 	STATIC_STRBUF(sb);
 	int length;

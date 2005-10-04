@@ -91,8 +91,7 @@ struct lang_entry lang_switch[] = {
  *	r)		language entry
  */
 static struct lang_entry *
-get_lang_entry(lang)
-	const char *lang;
+get_lang_entry(const char *lang)
 {
 	int i, size = sizeof(lang_switch) / sizeof(struct lang_entry);
 
@@ -130,8 +129,7 @@ static int last_lineno;
  *	r)		file pointer
  */
 static FILE *
-open_input_file(file)
-	const char *file;
+open_input_file(const char *file)
 {
 	FILE *ip;
 
@@ -146,8 +144,7 @@ open_input_file(file)
  * Close source file.
  */
 static void
-close_input_file(ip)
-	FILE *ip;
+close_input_file(FILE *ip)
 {
 	fclose(ip);
 }
@@ -158,8 +155,7 @@ close_input_file(ip)
  *	r)		file pointer
  */
 static FILE *
-open_output_file(file)
-	const char *file;
+open_output_file(const char *file)
 {
 	char command[MAXFILLEN];
 	FILE *op;
@@ -181,8 +177,7 @@ open_output_file(file)
  * Close HTML file.
  */
 static void
-close_output_file(op)
-	FILE *op;
+close_output_file(FILE *op)
 {
 	if (cflag) {
 		if (pclose(op) != 0)
@@ -196,8 +191,7 @@ close_output_file(op)
  * You should use this function to put a control character.
  */
 void
-echoc(c)
-	int c;
+echoc(int c)
 {
         strbuf_putc(outbuf, c);
 }
@@ -207,8 +201,7 @@ echoc(c)
  * You should use this function to put a control sequence.
  */
 void
-echos(s)
-	const char *s;
+echos(const char *s)
 {
         strbuf_puts(outbuf, s);
 }
@@ -224,9 +217,7 @@ echos(s)
  *       r)              hypertext file name string
  */
 const char *
-fill_anchor(root, path)
-	const char *root;
-	const char *path;
+fill_anchor(const char *root, const char *path)
 {
 	STATIC_STRBUF(sb);
 	char buf[MAXBUFLEN], *limit, *p;
@@ -270,8 +261,7 @@ fill_anchor(root, path)
  *	r)	HTML
  */
 const char *
-link_format(ref)
-        int ref[A_SIZE];
+link_format(int ref[A_SIZE])
 {
 	STATIC_STRBUF(sb);
 	const char **label = icon_list ? anchor_comment : anchor_label;
@@ -314,8 +304,7 @@ link_format(ref)
  *	r)		guide string
  */
 const char *
-generate_guide(lineno)
-	int lineno;
+generate_guide(int lineno)
 {
 	STATIC_STRBUF(sb);
 	int i = 0;
@@ -346,10 +335,7 @@ generate_guide(lineno)
  *	r)		tooltip string
  */
 const char *
-tooltip(type, lno, opt)
-	int type;
-	int lno;
-	const char *opt;
+tooltip(int type, int lno, const char *opt)
 {
 	STATIC_STRBUF(sb);
 
@@ -395,10 +381,7 @@ tooltip(type, lno, opt)
  *	i)	lineno	current line no
  */
 void
-put_anchor(name, type, lineno)
-	char *name;
-	int type;
-	int lineno;
+put_anchor(char *name, int type, int lineno)
 {
 	const char *line;
 	int db;
@@ -474,9 +457,7 @@ put_anchor(name, type, lineno)
  *	i)	path	path name for display
  */
 void
-put_include_anchor(inc, path)
-	struct data *inc;
-	const char *path;
+put_include_anchor(struct data *inc, const char *path)
 {
 	if (inc->count == 1)
 		strbuf_puts(outbuf, gen_href_begin(NULL, path2fid(strbuf_value(inc->contents)), HTML, NULL));
@@ -492,8 +473,7 @@ put_include_anchor(inc, path)
  * Put a reserved word. (if, while, ...)
  */
 void
-put_reserved_word(word)
-	const char *word;
+put_reserved_word(const char *word)
 {
 	strbuf_puts(outbuf, reserved_begin);
 	strbuf_puts(outbuf, word);
@@ -503,8 +483,7 @@ put_reserved_word(word)
  * Put a macro (#define,#undef,...) 
  */
 void
-put_macro(word)
-	const char *word;
+put_macro(const char *word)
 {
 	strbuf_puts(outbuf, sharp_begin);
 	strbuf_puts(outbuf, word);
@@ -514,9 +493,7 @@ put_macro(word)
  * Print warning message when unkown preprocessing directive is found.
  */
 void
-unknown_preprocessing_directive(word, lineno)
-	const char *word;
-	int lineno;
+unknown_preprocessing_directive(const char *word, int lineno)
 {
 	word = strtrim(word, TRIM_ALL, NULL);
 	warning("unknown preprocessing directive '%s'. [+%d %s]", word, lineno, curpfile);
@@ -527,8 +504,7 @@ unknown_preprocessing_directive(word, lineno)
  * Print warning message when unexpected eof.
  */
 void
-unexpected_eof(lineno)
-	int lineno;
+unexpected_eof(int lineno)
 {
 	warning("unexpected eof. [+%d %s]", lineno, curpfile);
 	if (colorize_warned_line)
@@ -538,9 +514,7 @@ unexpected_eof(lineno)
  * Print warning message when unknown yacc directive is found.
  */
 void
-unknown_yacc_directive(word, lineno)
-	const char *word;
-	int lineno;
+unknown_yacc_directive(const char *word, int lineno)
 {
 	warning("unknown yacc directive '%s'. [+%d %s]", word, lineno, curpfile);
 	if (colorize_warned_line)
@@ -550,9 +524,7 @@ unknown_yacc_directive(word, lineno)
  * Print warning message when unmatched brace is found.
  */
 void
-missing_left(word, lineno)
-	const char *word;
-	int lineno;
+missing_left(const char *word, int lineno)
 {
 	warning("missing left '%s'. [+%d %s]", word, lineno, curpfile);
 	if (colorize_warned_line)
@@ -564,8 +536,7 @@ missing_left(word, lineno)
  * If you want to put '<', '>' and '&', you should echoc() instead.
  */
 void
-put_char(c)
-        int c;
+put_char(int c)
 {
         if (c == '<')
 		strbuf_puts(outbuf, quote_little);
@@ -582,8 +553,7 @@ put_char(c)
  * If you want to put HTML tag itself, you should echoc() instead.
  */
 void
-put_string(s)
-        const char *s;
+put_string(const char *s)
 {
 	for (; *s; s++)
 		put_char(*s);
@@ -592,8 +562,7 @@ put_string(s)
  * Put brace ('{', '}')
  */
 void
-put_brace(text)
-        const char *text;
+put_brace(const char *text)
 {
 	strbuf_puts(outbuf, brace_begin);
 	strbuf_puts(outbuf, text);
@@ -610,8 +579,7 @@ static const char *guide = NULL;
  * Begin of line processing.
  */
 void
-put_begin_of_line(lineno)
-        int lineno;
+put_begin_of_line(int lineno)
 {
         if (definition_header != NO_HEADER) {
                 if (define_line(lineno))
@@ -634,8 +602,7 @@ put_begin_of_line(lineno)
  * This function flush and clear it.
  */
 void
-put_end_of_line(lineno)
-	int lineno;
+put_end_of_line(int lineno)
 {
 	fputs(gen_name_number(lineno), out);
         if (nflag)
@@ -674,10 +641,7 @@ put_end_of_line(lineno)
  *       i)      notsource 1: isn't source, 0: source.
  */
 void
-src2html(src, html, notsource)
-	const char *src;
-	const char *html;
-	int notsource;
+src2html(const char *src, const char *html, int notsource)
 {
 	char indexlink[128];
 

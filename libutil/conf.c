@@ -73,8 +73,7 @@ static void includelabel(STRBUF *, const char *, int);
  * :var1=a b :
  */
 static void
-trim(l)
-	char *l;
+trim(char *l)
 {
 	char *f, *b;
 	int colon = 0;
@@ -113,8 +112,7 @@ trim(l)
  * o format check.
  */
 static const char *
-readrecord(label)
-	const char *label;
+readrecord(const char *label)
 {
 	char *p;
 	int flag = STRBUF_NOCRLF;
@@ -174,10 +172,7 @@ readrecord(label)
  *	i)	level	nest level for check
  */
 static void
-includelabel(sb, label, level)
-	STRBUF	*sb;
-	const char *label;
-	int	level;
+includelabel(STRBUF *sb, const char *label, int	level)
 {
 	const char *savep, *p, *q;
 
@@ -373,9 +368,7 @@ openconf(void)
  *	r)		1: found, 0: not found
  */
 int
-getconfn(name, num)
-	const char *name;
-	int *num;
+getconfn(const char *name, int *num)
 {
 	const char *p;
 	char buf[MAXPROPLEN+1];
@@ -399,9 +392,7 @@ getconfn(name, num)
  *	r)		1: found, 0: not found
  */
 int
-getconfs(name, sb)
-	const char *name;
-	STRBUF *sb;
+getconfs(const char *name, STRBUF *sb)
 {
 	const char *p;
 	char buf[MAXPROPLEN+1];
@@ -449,8 +440,7 @@ getconfs(name, sb)
  *	r)		1: TRUE, 0: FALSE
  */
 int
-getconfb(name)
-	const char *name;
+getconfb(const char *name)
 {
 	char buf[MAXPROPLEN+1];
 

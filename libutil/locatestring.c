@@ -79,10 +79,7 @@ pointer = locatestring(string, "xyZ", MATCH_FIRST|IGNORE_CASE);
  *	Interface is same with strncmp.
  */
 static int
-strincmp(string, pattern, len)
-	const char *string;
-	const char *pattern;
-	size_t len;
+strincmp(const char *string, const char *pattern, size_t len)
 {
 	unsigned char s, p;
 
@@ -118,10 +115,7 @@ strincmp(string, pattern, len)
 int	(*cmpfunc)(char *, char*, int);
 
 char *
-locatestring(string, pattern, flag)
-	const char *string;
-	const char *pattern;
-	int flag;
+locatestring(const char *string, const char *pattern, int flag)
 {
 	int c = *pattern;
 	int plen = strlen(pattern);

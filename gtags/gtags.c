@@ -160,8 +160,7 @@ int exitflag = 0;
 static const char *langmap = DEFAULTLANGMAP;
 
 void
-onintr(signo)
-	int signo;
+onintr(int signo)
 {
 	signo = 0;      /* to satisfy compiler */
 	exitflag = 1;
@@ -184,9 +183,7 @@ signal_setup(void)
  * compare_dup_entry: compare function for sorting.
  */
 static int
-compare_dup_entry(v1, v2)
-	const void *v1;
-	const void *v2;
+compare_dup_entry(const void *v1, const void *v2)
 {
 	const struct dup_entry *e1 = v1, *e2 = v2;
 	int ret;
@@ -200,10 +197,7 @@ compare_dup_entry(v1, v2)
  * put_lines: sort and print duplicate lines
  */
 static void
-put_lines(lines, entries, entry_count)
-	char *lines;
-	struct dup_entry *entries;
-	int entry_count;
+put_lines(char *lines, struct dup_entry *entries, int entry_count)
 {
 	int i;
 
@@ -233,9 +227,7 @@ put_lines(lines, entries, entry_count)
 }
 
 int
-main(argc, argv)
-	int argc;
-	char *argv[];
+main(int argc, char **argv)
 {
 	char root[MAXPATHLEN+1];
 	char dbpath[MAXPATHLEN+1];
@@ -731,9 +723,7 @@ main(argc, argv)
  *	r)		0: not updated, 1: updated
  */
 int
-incremental(dbpath, root)
-	const char *dbpath;
-	const char *root;
+incremental(const char *dbpath, const char *root)
 {
 	struct stat statp;
 	time_t gtags_mtime;
@@ -877,13 +867,7 @@ incremental(dbpath, root)
  *	i)	db		GTAGS, GRTAGS, GSYMS
  */
 void
-updatetags(dbpath, root, deleteset, addlist, addtotal, db)
-	const char *dbpath;
-	const char *root;
-	IDSET *deleteset;
-	STRBUF *addlist;
-	int addtotal;
-	int db;
+updatetags(const char *dbpath, const char *root, IDSET *deleteset, STRBUF *addlist, int addtotal, int db)
 {
 	GTOP *gtop;
 	STRBUF *comline = strbuf_open(0);
@@ -990,10 +974,7 @@ updatetags(dbpath, root, deleteset, addlist, addtotal, db)
  *	i)	db	GTAGS, GRTAGS, GSYMS
  */
 void
-createtags(dbpath, root, db)
-	const char *dbpath;
-	const char *root;
-	int db;
+createtags(const char *dbpath, const char *root, int db)
 {
 	const char *path;
 	GTOP *gtop;
@@ -1118,8 +1099,7 @@ createtags(dbpath, root, db)
  *	r)		exit code
  */
 int
-printconf(name)
-	const char *name;
+printconf(const char *name)
 {
 	int num;
 	int exist = 1;
@@ -1149,9 +1129,7 @@ static STRBUF *abspath;
 static char basedir[MAXPATHLEN+1];
 static int start_point;
 void
-set_base_directory(root, cwd)
-	const char *root;
-	const char *cwd;
+set_base_directory(const char *root, const char *cwd)
 {
 	abspath = strbuf_open(MAXPATHLEN);
 	strbuf_puts(abspath, root);
@@ -1164,10 +1142,7 @@ set_base_directory(root, cwd)
 	/* leave abspath unclosed. */
 }
 void
-put_converting(line, absolute, cxref)
-	const char *line;
-	int absolute;
-	int cxref;
+put_converting(const char *line, int absolute, int cxref)
 {
 	char buf[MAXPATHLEN+1];
 	const char *p = line;

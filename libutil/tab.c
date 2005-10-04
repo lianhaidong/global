@@ -35,8 +35,7 @@ static int tabs = 8;
  *	i)	n	tab stop
  */
 void
-settabs(n)
-	int n;
+settabs(int n)
 {
 	if (n < 1 || n > 32)
 		return;
@@ -49,9 +48,7 @@ settabs(n)
  *	i)	buf	string including tabs
  */
 void
-detab(op, buf)
-	FILE *op;
-	const char *buf;
+detab(FILE *op, const char *buf)
 {
 	int src, dst;
 	char c;
@@ -76,8 +73,7 @@ detab(op, buf)
  *	io)	buf	string buffer
  */
 void
-entab(buf)
-	char *buf;
+entab(char *buf)
 {
 	int blanks = 0;
 	int pos, src, dst;

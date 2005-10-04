@@ -43,8 +43,7 @@ static int nextkey;
  * load the contents of GPATH file into the memory.
  */
 void
-load_gpath(dbpath)
-	const char *dbpath;
+load_gpath(const char *dbpath)
 {
 	DBOP *dbop;
 	const char *path;
@@ -83,8 +82,7 @@ unload_gpath(void)
  *	r)		id
  */
 const char *
-path2fid(path)
-	const char *path;
+path2fid(const char *path)
 {
 	static char number[32];
 	const char *p;

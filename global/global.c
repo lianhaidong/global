@@ -140,8 +140,7 @@ static struct option const long_options[] = {
 
 static int command;
 static void
-setcom(c)
-	int c;
+setcom(int c)
 {
 	if (command == 0)
 		command = c;
@@ -149,9 +148,7 @@ setcom(c)
 		usage();
 }
 int
-main(argc, argv)
-	int argc;
-	char *argv[];
+main(int argc, char **argv)
 {
 	const char *av = NULL;
 	int count;
@@ -534,8 +531,7 @@ main(argc, argv)
  *	o)	filter buffer
  */
 void
-makefilter(sb)
-	STRBUF *sb;
+makefilter(STRBUF *sb)
 {
 	if (!nflag) {
 		strbuf_puts(sb, strbuf_value(sortfilter));
@@ -566,8 +562,7 @@ openfilter(void)
 	return op;
 }
 void
-closefilter(op)
-	FILE *op;
+closefilter(FILE *op)
 {
 	if (op != stdout)
 		if (pclose(op) != 0)
@@ -581,10 +576,7 @@ closefilter(op)
  *	i)	prefix	prefix of primary key
  */
 void
-completion(dbpath, root, prefix)
-	const char *dbpath;
-	const char *root;
-	const char *prefix;
+completion(const char *dbpath, const char *root, const char *prefix)
 {
 	const char *p;
 	int flags = GTOP_KEY;
@@ -611,9 +603,7 @@ completion(dbpath, root, prefix)
  *	i)	line	tag's line
  */
 void
-printtag(op, line)
-	FILE *op;
-	const char *line;		/* virtually const */
+printtag(FILE *op, const char *line)		/* virtually const */
 {
 	if (xflag) {
 		fputs(line, op);
@@ -646,9 +636,7 @@ printtag(op, line)
  *	i)	dbpath	GTAGS directory
  */
 void
-idutils(pattern, dbpath)
-	const char *pattern;
-	const char *dbpath;
+idutils(const char *pattern, const char *dbpath)
 {
 	FILE *ip, *op;
 	STRBUF *ib = strbuf_open(0);
@@ -751,8 +739,7 @@ idutils(pattern, dbpath)
  *	i)	pattern	POSIX regular expression
  */
 void
-grep(pattern)
-	const char *pattern;
+grep(const char *pattern)
 {
 	FILE *op, *fp;
 	STRBUF *ib = strbuf_open(MAXBUFLEN);
@@ -821,9 +808,7 @@ grep(pattern)
  *	i)	dbpath
  */
 void
-pathlist(dbpath, av)
-	const char *dbpath;
-	const char *av;
+pathlist(const char *dbpath, const char *av)
 {
 	FILE *op;
 	const char *path, *p;
@@ -891,13 +876,7 @@ pathlist(dbpath, av)
  *	i)	db	type of parse
  */
 void
-parsefile(argc, argv, cwd, root, dbpath, db)
-	int argc;
-	char **argv;
-	const char *cwd;
-	const char *root;
-	const char *dbpath;
-	int db;
+parsefile(int argc, char **argv, const char *cwd, const char *root, const char *dbpath, int db)
 {
 	char rootdir[MAXPATHLEN+1];
 	char buf[MAXPATHLEN+1], *path;
@@ -1012,12 +991,7 @@ parsefile(argc, argv, cwd, root, dbpath, db)
  *	r)			number of objects found
  */
 static int
-exec_parser(parser, path_list, cwd, root, op)
-	const char *parser;
-	STRBUF *path_list;
-	const char *cwd;
-	const char *root;
-	FILE *op;
+exec_parser(const char *parser, STRBUF *path_list, const char *cwd, const char *root, FILE *op)
 {
 	const char *p;
 	FILE *ip;
@@ -1062,11 +1036,7 @@ exec_parser(parser, path_list, cwd, root, op)
  *	r)			count of output lines
  */
 int
-search(pattern, root, dbpath, db)
-	const char *pattern;
-	const char *root;
-	const char *dbpath;
-	int db;
+search(const char *pattern, const char *root, const char *dbpath, int db)
 {
 	const char *p;
 	int count = 0;
@@ -1123,10 +1093,7 @@ search(pattern, root, dbpath, db)
  *	i)	from	string
  */
 void
-ffformat(to, size, from)
-	char *to;
-	int size;
-	const char *from;
+ffformat(char *to, int size, const char *from)
 {
 	const char *p;
 	char *e = to;

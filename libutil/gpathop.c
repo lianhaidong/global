@@ -56,9 +56,7 @@ static int created;
  *			-1: error
  */
 int
-gpath_open(dbpath, mode)
-	const char *dbpath;
-	int mode;
+gpath_open(const char *dbpath, int mode)
 {
 	assert(opened == 0);
 	/*
@@ -88,8 +86,7 @@ gpath_open(dbpath, mode)
  *	i)	path	path name
  */
 void
-gpath_put(path)
-	const char *path;
+gpath_put(const char *path)
 {
 	char fid[32];
 
@@ -109,8 +106,7 @@ gpath_put(path)
  *	r)		file id
  */
 const char *
-gpath_path2fid(path)
-	const char *path;
+gpath_path2fid(const char *path)
 {
 	assert(opened == 1);
 	return dbop_get(dbop, path);
@@ -122,8 +118,7 @@ gpath_path2fid(path)
  *	r)		path name
  */
 const char *
-gpath_fid2path(fid)
-	const char *fid;
+gpath_fid2path(const char *fid)
 {
 	return dbop_get(dbop, fid);
 }
@@ -133,8 +128,7 @@ gpath_fid2path(fid)
  *	i)	path	path name
  */
 void
-gpath_delete(path)
-	const char *path;
+gpath_delete(const char *path)
 {
 	const char *fid;
 
@@ -196,9 +190,7 @@ static char gfind_prefix[MAXPATHLEN+1];
  * gfind_open: start iterator using GPATH.
  */
 void
-gfind_open(dbpath, local)
-	const char *dbpath;
-	const char *local;
+gfind_open(const char *dbpath, const char *local)
 {
 	assert(gfind_opened == 0);
 	assert(gfind_first == 0);

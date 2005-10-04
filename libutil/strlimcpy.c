@@ -35,10 +35,7 @@
  * because strlimcpy abort when it beyond the limit.
  */
 void
-strlimcpy(dest, source, limit)
-	char *dest;
-	const char *const source;
-	const int limit;
+strlimcpy(char *dest, const char *const source, const int limit)
 {
 	int n = (int)limit;
 	const char *s = source;

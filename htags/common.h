@@ -93,13 +93,13 @@ extern const char *noframes_begin;
 extern const char *noframes_end;
 
 int fputs_nl(const char *, FILE *);
-void setup_xhtml();
+void setup_xhtml(void);
 const char *upperdir(const char *);
 const char *gen_insert_header(int);
 const char *gen_insert_footer(int);
 const char *gen_page_begin(const char *, int);
 const char *gen_page_frameset_begin(const char *);
-const char *gen_page_end();
+const char *gen_page_end(void);
 const char *gen_image(int, const char *, const char *);
 const char *gen_name_number(int);
 const char *gen_name_string(const char *);
@@ -107,20 +107,20 @@ const char *gen_href_begin_with_title_target(const char *, const char *, const c
 const char *gen_href_begin_with_title(const char *, const char *, const char *, const char *, const char *);
 const char *gen_href_begin(const char *, const char *, const char *, const char *);
 const char *gen_href_begin_simple(const char *);
-const char *gen_href_end();
-const char *gen_list_begin();
+const char *gen_href_end(void);
+const char *gen_list_begin(void);
 const char *gen_list_body(const char *, const char *);
-const char *gen_list_end();
+const char *gen_list_end(void);
 const char *gen_div_begin(const char *);
-const char *gen_div_end();
+const char *gen_div_end(void);
 const char *gen_form_begin(const char *);
-const char *gen_form_end();
+const char *gen_form_end(void);
 const char *gen_input(const char *, const char *, const char *);
 const char *gen_input_radio(const char *, const char *, int, const char *);
 const char *gen_input_checkbox(const char *, const char *, const char *);
 const char *gen_input_with_title_checked(const char *, const char *, const char *, int, const char *);
 const char *gen_frameset_begin(const char *);
-const char *gen_frameset_end();
+const char *gen_frameset_end(void);
 const char *gen_frame(const char *, const char *);
 
 #endif /* ! _COMMON_H_ */

@@ -53,9 +53,7 @@ extern char **environ;
  *	i)	val	value
  */
 void
-set_env(var, val)
-	const char *var;
-	const char *val;
+set_env(const char *var, const char *val)
 {
 #ifdef HAVE_PUTENV
 	STRBUF *sb = strbuf_open(0);
@@ -105,8 +103,7 @@ env_size(void)
  *		> 0: upper limit of exec line
  */
 int
-exec_line_limit(length)
-	int length;
+exec_line_limit(int length)
 {
 	int limit = 0;
 

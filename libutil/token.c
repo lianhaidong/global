@@ -59,8 +59,7 @@ static void pushbackchar(void);
  * opentoken:
  */
 int
-opentoken(file)
-	const char *file;
+opentoken(const char *file)
 {
 	/*
 	 * b flag is needed for WIN32 environment. Almost unix ignore it.
@@ -106,9 +105,7 @@ closetoken(void)
  */
 
 int
-nexttoken(interested, reserved)
-	const char *interested;
-	int (*reserved)(const char *, int);
+nexttoken(const char *interested, int (*reserved)(const char *, int))
 {
 	int c;
 	char *p;
@@ -257,8 +254,7 @@ pushbacktoken(void)
  * Peekc() read ahead following blanks but doesn't chage line.
  */
 int
-peekc(immediate)
-	int immediate;
+peekc(int immediate)
 {
 	int c;
 	long pos;

@@ -43,11 +43,7 @@
  *			== NULL: error
  */
 char *
-abs2rel(path, base, result, size)
-	const char *path;
-	const char *base;
-	char *result;
-	const int size;
+abs2rel(const char *path, const char *base, char *result, const int size)
 {
 	const char *pp, *bp, *branch;
 	/*

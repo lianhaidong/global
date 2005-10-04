@@ -119,9 +119,7 @@ static int strict_xhtml = 0;
  * This function is a replacement of fprintf(op, "%s\n", s) in htags.
  */
 int
-fputs_nl(s, op)
-	const char *s;
-	FILE *op;
+fputs_nl(const char *s, FILE *op)
 {
 	fputs(s, op);
 	putc('\n', op);
@@ -200,8 +198,7 @@ setup_xhtml(void)
  * Generate upper directory.
  */
 const char *
-upperdir(dir)
-	const char *dir;
+upperdir(const char *dir)
 {
 	STATIC_STRBUF(sb);
 
@@ -215,9 +212,7 @@ upperdir(dir)
  * of the 'HTML' directory.
  */
 static const char *
-sed(ip, place)
-	FILE *ip;
-	int place;
+sed(FILE *ip, int place)
 {
 	STATIC_STRBUF(sb);
 	const char *parent_dir = (place == SUBDIR) ? "../.." : "..";
@@ -253,8 +248,7 @@ sed(ip, place)
  * Generate custom header.
  */
 const char *
-gen_insert_header(place)
-	int place;
+gen_insert_header(int place)
 {
 	static FILE *ip;
 
@@ -271,8 +265,7 @@ gen_insert_header(place)
  * Generate custom footer.
  */
 const char *
-gen_insert_footer(place)
-	int place;
+gen_insert_footer(int place)
 {
 	static FILE *ip;
 
@@ -295,10 +288,7 @@ gen_insert_footer(place)
  *			use frameset document type or not
  */
 static const char *
-gen_page_generic_begin(title, place, use_frameset)
-	const char *title;
-	int place;
-	int use_frameset;
+gen_page_generic_begin(const char *title, int place, int use_frameset)
 {
 	STATIC_STRBUF(sb);
 	const char *dir = (place == SUBDIR) ? "../" : "";
@@ -352,9 +342,7 @@ gen_page_generic_begin(title, place, use_frameset)
  *			TOPDIR: this page is in the top directory
  */
 const char *
-gen_page_begin(title, place)
-	const char *title;
-	int place;
+gen_page_begin(const char *title, int place)
 {
 	return gen_page_generic_begin(title, place, 0);
 }
@@ -364,8 +352,7 @@ gen_page_begin(title, place)
  *	i)	title	title of this page
  */
 const char *
-gen_page_frameset_begin(title)
-	const char *title;
+gen_page_frameset_begin(const char *title)
 {
 	return gen_page_generic_begin(title, TOPDIR, 1);
 }
@@ -388,10 +375,7 @@ gen_page_end(void)
  *	i)	alt	alt string
  */
 const char *
-gen_image(where, file, alt)
-	int where;
-	const char *file;
-	const char *alt;
+gen_image(int where, const char *file, const char *alt)
 {
 	STATIC_STRBUF(sb);
 	const char *dir = (where == PARENT) ? "../icons" : "icons";
@@ -409,8 +393,7 @@ gen_image(where, file, alt)
  * Generate name tag.
  */
 const char *
-gen_name_number(number)
-	int number;
+gen_name_number(int number)
 {
 	static char buf[32];
 
@@ -421,8 +404,7 @@ gen_name_number(number)
  * Generate name tag.
  */
 const char *
-gen_name_string(name)
-	const char *name;
+gen_name_string(const char *name)
 {
 	STATIC_STRBUF(sb);
 
@@ -455,13 +437,7 @@ gen_name_string(name)
  *	r)		generated anchor tag
  */
 const char *
-gen_href_begin_with_title_target(dir, file, suffix, key, title, target)
-	const char *dir;
-	const char *file;
-	const char *suffix;
-	const char *key;
-	const char *title;
-	const char *target;
+gen_href_begin_with_title_target(const char *dir, const char *file, const char *suffix, const char *key, const char *title, const char *target)
 {
 	STATIC_STRBUF(sb);
 
@@ -504,8 +480,7 @@ gen_href_begin_with_title_target(dir, file, suffix, key, title, target)
  * Generate simple anchor begin tag.
  */
 const char *
-gen_href_begin_simple(file)
-	const char *file;
+gen_href_begin_simple(const char *file)
 {
 	return gen_href_begin_with_title_target(NULL, file, NULL, NULL, NULL, NULL);
 }
@@ -513,11 +488,7 @@ gen_href_begin_simple(file)
  * Generate anchor begin tag without title and target.
  */
 const char *
-gen_href_begin(dir, file, suffix, key)
-	const char *dir;
-	const char *file;
-	const char *suffix;
-	const char *key;
+gen_href_begin(const char *dir, const char *file, const char *suffix, const char *key)
 {
 	return gen_href_begin_with_title_target(dir, file, suffix, key, NULL, NULL);
 }
@@ -525,12 +496,7 @@ gen_href_begin(dir, file, suffix, key)
  * Generate anchor begin tag without target.
  */
 const char *
-gen_href_begin_with_title(dir, file, suffix, key, title)
-	const char *dir;
-	const char *file;
-	const char *suffix;
-	const char *key;
-	const char *title;
+gen_href_begin_with_title(const char *dir, const char *file, const char *suffix, const char *key, const char *title)
 {
 	return gen_href_begin_with_title_target(dir, file, suffix, key, title, NULL);
 }
@@ -580,9 +546,7 @@ gen_list_begin(void)
  * s must be choped.
  */
 const char *
-gen_list_body(srcdir, string)
-	const char *srcdir;
-	const char *string;		/* virtually const */
+gen_list_body(const char *srcdir, const char *string)		/* virtually const */
 {
 	STATIC_STRBUF(sb);
 	const char *p, *filename, *fid;
@@ -673,8 +637,7 @@ gen_list_end(void)
  *	i)	align	right,left,center
  */
 const char *
-gen_div_begin(align)
-	const char *align;
+gen_div_begin(const char *align)
 {
 	STATIC_STRBUF(sb);
 
@@ -708,8 +671,7 @@ gen_div_end(void)
  *	i)	target	target
  */
 const char *
-gen_form_begin(target)
-	const char *target;
+gen_form_begin(const char *target)
 {
 	STATIC_STRBUF(sb);
 
@@ -732,10 +694,7 @@ gen_form_end(void)
  * Generate input tag
  */
 const char *
-gen_input(name, value, type)
-	const char *name;
-	const char *value;
-	const char *type;
+gen_input(const char *name, const char *value, const char *type)
 {
 	return gen_input_with_title_checked(name, value, type, 0, NULL);
 }
@@ -743,11 +702,7 @@ gen_input(name, value, type)
  * Generate input radiobox tag
  */
 const char *
-gen_input_radio(name, value, checked, title)
-	const char *name;
-	const char *value;
-	int checked;
-	const char *title;
+gen_input_radio(const char *name, const char *value, int checked, const char *title)
 {
 	return gen_input_with_title_checked(name, value, "radio", checked, title);
 }
@@ -755,10 +710,7 @@ gen_input_radio(name, value, checked, title)
  * Generate input checkbox tag
  */
 const char *
-gen_input_checkbox(name, value, title)
-	const char *name;
-	const char *value;
-	const char *title;
+gen_input_checkbox(const char *name, const char *value, const char *title)
 {
 	return gen_input_with_title_checked(name, value, "checkbox", 0, title);
 }
@@ -766,12 +718,7 @@ gen_input_checkbox(name, value, title)
  * Generate input radio tag
  */
 const char *
-gen_input_with_title_checked(name, value, type, checked, title)
-	const char *name;
-	const char *value;
-	const char *type;
-	int checked;
-	const char *title;
+gen_input_with_title_checked(const char *name, const char *value, const char *type, int checked, const char *title)
 {
 	STATIC_STRBUF(sb);
 
@@ -800,8 +747,7 @@ gen_input_with_title_checked(name, value, type, checked, title)
  *	i)	target	target
  */
 const char *
-gen_frameset_begin(contents)
-	const char *contents;
+gen_frameset_begin(const char *contents)
 {
 	STATIC_STRBUF(sb);
 
@@ -823,9 +769,7 @@ gen_frameset_end(void)
  *	i)	target	target
  */
 const char *
-gen_frame(name, src)
-	const char *name;
-	const char *src;
+gen_frame(const char *name, const char *src)
 {
 	STATIC_STRBUF(sb);
 

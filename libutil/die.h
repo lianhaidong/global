@@ -42,9 +42,9 @@
 
 extern	const char *progname;
 
-void setquiet();
-void setverbose();
-void setdebug();
+void setquiet(void);
+void setverbose(void);
+void setdebug(void);
 void sethandler(void (*proc)());
 void die(const char *s, ...)
 	__attribute__ ((__noreturn__, __format__ (__printf__, 1, 2)));

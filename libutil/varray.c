@@ -84,9 +84,7 @@ static int debug = 0;
  *	r)	vb	VARRAY structure
  */
 VARRAY *
-varray_open(size, expand)
-	int size;
-	int expand;
+varray_open(int size, int expand)
 {
 	VARRAY *vb = (VARRAY *)malloc(sizeof(VARRAY));
 
@@ -115,10 +113,7 @@ varray_open(size, expand)
  * This procedure doesn't operate the contents of the array.
  */
 void *
-varray_assign(vb, index, force)
-	VARRAY *vb;
-	int index;
-	int force;
+varray_assign(VARRAY *vb, int index, int force)
 {
 	if (index < 0)
 		die("varray_assign: illegal index value.");
@@ -164,8 +159,7 @@ varray_assign(vb, index, force)
  * This procedure doesn't operate the contents of the array.
  */
 void *
-varray_append(vb)
-	VARRAY *vb;
+varray_append(VARRAY *vb)
 {
 	return varray_assign(vb, vb->length, 1);
 }
@@ -175,8 +169,7 @@ varray_append(vb)
  *	i)	vb	VARRAY structure
  */
 void
-varray_reset(vb)
-	VARRAY	*vb;
+varray_reset(VARRAY *vb)
 {
 	vb->length = 0;
 }
@@ -186,8 +179,7 @@ varray_reset(vb)
  *	i)	vb	VARRAY structure
  */
 void
-varray_close(vb)
-	VARRAY	*vb;
+varray_close(VARRAY *vb)
 {
 	if (vb) {
 		if (vb->vbuf)

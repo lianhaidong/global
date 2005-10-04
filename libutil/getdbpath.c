@@ -52,8 +52,7 @@ static const char *makeobjdir;		/* obj directory		*/
  * setupvariables: load variables regard to BSD OBJ directory.
  */
 static void
-setupvariables(verbose)
-	int verbose;
+setupvariables(int verbose)
 {
 	const char *p;
 
@@ -86,11 +85,7 @@ setupvariables(verbose)
  * This behavior is same with BSD make(1)'s one.
  */
 int
-gtagsexist(candidate, dbpath, size, verbose)
-	const char *candidate;
-	char *dbpath;
-	int size;
-	int verbose;
+gtagsexist(const char *candidate, char *dbpath, int size, int verbose)
 {
 	char path[MAXPATHLEN+1];
 
@@ -153,11 +148,7 @@ gtagsexist(candidate, dbpath, size, verbose)
  * and exit.
  */
 void
-getdbpath(cwd, root, dbpath, verbose)
-	char *cwd;
-	char *root;
-	char *dbpath;
-	int verbose;
+getdbpath(char *cwd, char *root, char *dbpath, int verbose)
 {
 	struct stat sb;
 	char *p;

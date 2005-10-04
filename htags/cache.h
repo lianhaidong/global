@@ -20,9 +20,9 @@
 #ifndef _CACHE_H_
 #define _CACHE_H_
 
-void cache_open();
+void cache_open(void);
 void cache_put(int, const char *, const char *);
 const char *cache_get(int, const char *);
-void cache_close();
+void cache_close(void);
 
 #endif /* ! _CACHE_H_ */

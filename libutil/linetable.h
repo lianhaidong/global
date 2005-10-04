@@ -25,7 +25,7 @@
 int linetable_open(const char *);
 int linetable_read(char *, int);
 char *linetable_get(int, int *);
-void linetable_close();
+void linetable_close(void);
 void linetable_print(FILE *, int);
 
 #endif /* ! _LINETABLE_H */

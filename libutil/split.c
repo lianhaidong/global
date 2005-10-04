@@ -89,10 +89,7 @@
  *	r)		part count
  */
 int
-split(line, npart, list)
-	char *line;
-	int npart;
-	SPLIT *list;
+split(char *line, int npart, SPLIT *list)
 {
 	char *s = line;
 	struct part *part = &list->part[0];
@@ -134,8 +131,7 @@ split(line, npart, list)
  *	io)	list	split table
  */
 void
-recover(list)
-	SPLIT *list;
+recover(SPLIT *list)
 {
 	int i, c;
 	for (i = 0; i < list->npart; i++) {
@@ -147,8 +143,7 @@ recover(list)
  * split_dump: dump split structure.
  */
 void
-split_dump(list)
-	SPLIT *list;
+split_dump(SPLIT *list)
 {
 	int i;
 	struct part *part;

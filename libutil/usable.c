@@ -53,8 +53,7 @@ static const char *suffix[] = {".exe", ".com", ".bat",};
  *			!=NULL: absolute path of command.
  */
 char *
-usable(command)
-	const char *command;
+usable(const char *command)
 {
 	STRBUF *sb;
 	char *p;

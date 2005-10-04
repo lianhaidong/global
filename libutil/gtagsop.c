@@ -112,8 +112,7 @@ static const char *tagslist[] = {"GPATH", "GTAGS", "GRTAGS", "GSYMS"};
  *	r)		dbname
  */
 const char *
-dbname(db)
-	int db;
+dbname(int db)
 {
 	assert(db >= 0 && db < GTAGLIM);
 	return tagslist[db];
@@ -131,10 +130,7 @@ dbname(db)
  *	'gtags-parser -r'
  */
 void
-makecommand(comline, path_list, sb)
-	const char *comline;
-	STRBUF *path_list;
-	STRBUF *sb;
+makecommand(const char *comline, STRBUF *path_list, STRBUF *sb)
 {
 	const char *p = locatestring(comline, "%s", MATCH_FIRST);
 	const char *path, *end;
@@ -168,8 +164,7 @@ makecommand(comline, path_list, sb)
  * func              83 ./func.c       func()
  */
 void
-formatcheck(line)
-	const char *line;		/* virtually const */
+formatcheck(const char *line)		/* virtually const */
 {
 	int n;
 	const char *p;
@@ -221,12 +216,7 @@ formatcheck(line)
  * GTAGS_PATHINDEX needs GTAGS_COMPACT.
  */
 GTOP *
-gtags_open(dbpath, root, db, mode, flags)
-	const char *dbpath;
-	const char *root;
-	int db;
-	int mode;
-	int flags;
+gtags_open(const char *dbpath, const char *root, int db, int mode, int flags)
 {
 	GTOP *gtop;
 	int dbmode = 0;
@@ -350,10 +340,7 @@ gtags_open(dbpath, root, db, mode, flags)
  *       then this function is destructive.
  */
 void
-gtags_put(gtop, tag, record)
-	GTOP *gtop;
-	const char *tag;
-	const char *record;		/* virtually const */
+gtags_put(GTOP *gtop, const char *tag, const char *record)	/* virtually const */
 {
 	const char *line, *path;
 	SPLIT ptable;
@@ -431,8 +418,7 @@ gtags_put(gtop, tag, record)
  *	r)	hash value
  */
 static unsigned int
-hashpjw(s)
-	const char *s;
+hashpjw(const char *s)
 {
 	unsigned int h, g;
 
@@ -451,9 +437,7 @@ hashpjw(s)
  * compare_lno: compare function for sorting line number.
  */
 static int
-compare_lno(s1, s2)
-	const void *s1;
-	const void *s2;
+compare_lno(const void *s1, const void *s2)
 {
 	return *(const int *)s1 - *(const int *)s2;
 }
@@ -463,8 +447,7 @@ compare_lno(s1, s2)
  *	i)	gtop	descripter of GTOP
  */
 static void
-gtop_flush_htab(gtop)
-	GTOP *gtop;
+gtop_flush_htab(GTOP *gtop)
 {
 	const char *path, *key;
 	struct gtop_compact_entry *entry, *next;
@@ -535,11 +518,7 @@ gtop_flush_htab(gtop)
  *	i)	flags	GTAGS_UNIQUE, GTAGS_EXTRACTMETHOD, GTAGS_DEBUG
  */
 void
-gtags_add(gtop, comline, path_list, flags)
-	GTOP *gtop;
-	const char *comline;
-	STRBUF *path_list;
-	int flags;
+gtags_add(GTOP *gtop, const char *comline, STRBUF *path_list, int flags)
 {
 	const char *ctags_x;
 	FILE *ip;
@@ -622,9 +601,7 @@ gtags_add(gtop, comline, path_list, flags)
  *	i)	deleteset bit array of fid
  */
 void
-gtags_delete(gtop, deleteset)
-	GTOP *gtop;
-	IDSET *deleteset;
+gtags_delete(GTOP *gtop, IDSET *deleteset)
 {
 	const char *line, *p;
 	SPLIT ptable;
@@ -676,10 +653,7 @@ gtags_delete(gtop, deleteset)
  *	r)		record
  */
 const char *
-gtags_first(gtop, pattern, flags)
-	GTOP *gtop;
-	const char *pattern;
-	int flags;
+gtags_first(GTOP *gtop, const char *pattern, int flags)
 {
 	int dbflags = 0;
 	char prefix[IDENTLEN+1];
@@ -741,8 +715,7 @@ gtags_first(gtop, pattern, flags)
  *			NULL end of tag
  */
 const char *
-gtags_next(gtop)
-	GTOP *gtop;
+gtags_next(GTOP *gtop)
 {
 	const char *line;
 	/*
@@ -780,8 +753,7 @@ gtags_next(gtop)
  *	i)	gtop	GTOP structure
  */
 void
-gtags_close(gtop)
-	GTOP *gtop;
+gtags_close(GTOP *gtop)
 {
 	if (gtop->htab) {
 		if (gtop->prev_path[0])
@@ -803,8 +775,7 @@ gtags_close(gtop)
  *	i)	line	tag line
  */
 static const char *
-unpack_pathindex(line)
-	const char *line;		/* virtually const */
+unpack_pathindex(const char *line)	/* virtually const */
 {
 	STATIC_STRBUF(output);
 	SPLIT ptable;
@@ -840,8 +811,7 @@ unpack_pathindex(line)
  *	r)		tag line
  */
 static const char *
-genrecord(gtop)
-	GTOP *gtop;
+genrecord(GTOP *gtop)
 {
 	SPLIT ptable;
 	static char output[MAXBUFLEN+1];

@@ -95,8 +95,7 @@ extern int debug;
  * trim: remove blanks and '\'.
  */
 static void
-trim(s)
-	char *s;
+trim(char *s)
 {
 	char *p;
 
@@ -300,8 +299,7 @@ prepare_skip(void)
  *	r)		1: skip, 0: dont skip
  */
 int
-skipthisfile(path)
-	const char *path;
+skipthisfile(const char *path)
 {
 	const char *first, *last;
 	int i;
@@ -352,9 +350,7 @@ static  struct {
  * means directory 'dir1', file 'file1' and symbolic link 'link'.
  */
 static int
-getdirs(dir, sb)
-	const char *dir;
-	STRBUF *sb;
+getdirs(const char *dir, STRBUF *sb)
 {
 	DIR *dirp;
 	struct dirent *dp;
@@ -401,8 +397,7 @@ getdirs(dir, sb)
  *			If NULL, assumed '.' directory.
  */
 void
-find_open(start)
-	const char *start;
+find_open(const char *start)
 {
 	assert(opened == 0);
 	opened = FIND_OPEN;
@@ -436,9 +431,7 @@ find_open(start)
  *	i)	root		root directory of source tree
  */
 void
-find_open_filelist(filename, root)
-	const char *filename;
-	const char *root;
+find_open_filelist(const char *filename, const char *root)
 {
 	assert(opened == 0);
 	opened = FILELIST_OPEN;
@@ -561,7 +554,7 @@ find_read(void)
  *	r)		path
  */
 static char *
-find_read_filelist()
+find_read_filelist(void)
 {
 	STATIC_STRBUF(ib);
 	static char buf[MAXPATHLEN + 1];

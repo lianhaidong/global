@@ -60,11 +60,7 @@ int print_statistics = 0;
  *	r)		descripter for dbop_xxx()
  */
 DBOP *
-dbop_open(path, mode, perm, flags)
-	const char *path;
-	int mode;
-	int perm;
-	int flags;
+dbop_open(const char *path, int mode, int perm, int flags)
 {
 	DB *db;
 	int rw = 0;
@@ -128,9 +124,7 @@ dbop_open(path, mode, perm, flags)
  *	r)		pointer to data
  */
 const char *
-dbop_get(dbop, name)
-	DBOP *dbop;
-	const char *name;
+dbop_get(DBOP *dbop, const char *name)
 {
 	DB *db = dbop->db;
 	DBT key, dat;
@@ -159,10 +153,7 @@ dbop_get(dbop, name)
  *	i)	data	data
  */
 void
-dbop_put(dbop, name, data)
-	DBOP *dbop;
-	const char *name;
-	const char *data;
+dbop_put(DBOP *dbop, const char *name, const char *data)
 {
 	DB *db = dbop->db;
 	DBT key, dat;
@@ -194,9 +185,7 @@ dbop_put(dbop, name, data)
  *	i)	path	path name
  */
 void
-dbop_delete(dbop, path)
-	DBOP *dbop;
-	const char *path;
+dbop_delete(DBOP *dbop, const char *path)
 {
 	DB *db = dbop->db;
 	DBT key;
@@ -219,10 +208,7 @@ dbop_delete(dbop, path)
  *	i)	dat	data
  */
 void
-dbop_update(dbop, key, dat)
-	DBOP *dbop;
-	const char *key;
-	const char *dat;
+dbop_update(DBOP *dbop, const char *key, const char *dat)
 {
 	dbop_put(dbop, key, dat);
 }
@@ -241,11 +227,7 @@ dbop_update(dbop, key, dat)
  *	r)		data
  */
 const char *
-dbop_first(dbop, name, preg, flags)
-	DBOP *dbop;
-	const char *name;
-	regex_t *preg;
-	int	flags;
+dbop_first(DBOP *dbop, const char *name, regex_t *preg, int flags)
 {
 	DB *db = dbop->db;
 	DBT key, dat;
@@ -317,8 +299,7 @@ dbop_first(dbop, name, preg, flags)
  * Db_next always skip meta records.
  */
 const char *
-dbop_next(dbop)
-	DBOP *dbop;
+dbop_next(DBOP *dbop)
 {
 	DB *db = dbop->db;
 	int flags = dbop->ioflags;
@@ -361,8 +342,7 @@ dbop_next(dbop)
  *	r)		last data
  */
 const char *
-dbop_lastdat(dbop)
-	DBOP *dbop;
+dbop_lastdat(DBOP *dbop)
 {
 	return dbop->lastdat;
 }
@@ -372,8 +352,7 @@ dbop_lastdat(dbop)
  *	i)	dbop	dbop descripter
  */
 void
-dbop_close(dbop)
-	DBOP *dbop;
+dbop_close(DBOP *dbop)
 {
 	DB *db = dbop->db;
 

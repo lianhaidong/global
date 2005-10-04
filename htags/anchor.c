@@ -53,8 +53,7 @@ static struct anchor *CURRENT;
 
 /* compare routine for qsort(3) */
 static int
-cmp(s1, s2)
-	const void *s1, *s2;
+cmp(const void *s1, const void *s2)
 {
 	return ((struct anchor *)s1)->lineno - ((struct anchor *)s2)->lineno;
 }
@@ -71,8 +70,7 @@ static struct anchor *CURRENTDEF;
  *	i)	path_list	\0 separated list of paths
  */
 void
-anchor_prepare(path_list)
-	STRBUF *path_list;
+anchor_prepare(STRBUF *path_list)
 {
 	int db;
 	struct anchor_input *input;
@@ -128,8 +126,7 @@ anchor_prepare(path_list)
  *	i)	file	file name
  */
 void
-anchor_load(file)
-	const char *file;
+anchor_load(const char *file)
 {
 	struct anchor_input *input;
 	int i, db;
@@ -291,11 +288,7 @@ anchor_next(void)
  *			!=0: D, M, T, R, Y
  */
 struct anchor *
-anchor_get(name, length, type, lineno)
-	const char *name;
-	int length;
-	int type;
-	int lineno;
+anchor_get(const char *name, int length, int type, int lineno)
 {
 	struct anchor *p = curp ? curp : start;
 
@@ -325,8 +318,7 @@ anchor_get(name, length, type, lineno)
  *	r)		1: definition, 0: not definition
  */
 int
-define_line(lineno)
-	int lineno;
+define_line(int lineno)
 {
 	struct anchor *p = curp ? curp : start;
 
@@ -352,8 +344,7 @@ define_line(lineno)
  *		(previous, next, first, last, top, bottom)
  */
 int *
-anchor_getlinks(lineno)
-	int lineno;
+anchor_getlinks(int lineno)
 {
 	static int ref[A_SIZE];
 	int i;
@@ -401,9 +392,7 @@ anchor_getlinks(lineno)
 	return ref;
 }
 void
-anchor_dump(op, lineno)
-	FILE *op;
-	int lineno;
+anchor_dump(FILE *op, int lineno)
 {
 	struct anchor *a;
 

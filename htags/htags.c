@@ -278,8 +278,7 @@ clean(void)
  * This handler is set up in signal_setup().
  */
 static void
-suddenly(signo)
-        int signo;
+suddenly(int signo)
 {
         signo = 0;      /* to satisfy compiler */
 
@@ -310,9 +309,7 @@ signal_setup(void)
  *	i)	file	file name
  */
 static void
-generate_file(dist, file)
-	const char *dist;
-	const char *file;
+generate_file(const char *dist, const char *file)
 {
 	regex_t preg;
 	regmatch_t pmatch[2];
@@ -428,9 +425,7 @@ generate_file(dist, file)
  * makeprogram: make CGI program
  */
 static void
-makeprogram(cgidir, file)
-	const char *cgidir;
-	const char *file;
+makeprogram(const char *cgidir, const char *file)
 {
 	generate_file(cgidir, file);
 }
@@ -438,8 +433,7 @@ makeprogram(cgidir, file)
  * makebless: make bless.sh file.
  */
 static void
-makebless(file)
-	const char *file;
+makebless(const char *file)
 {
 	const char *save = action;
 	action = saction;
@@ -453,9 +447,7 @@ makebless(file)
  *	i)	file	file name
  */
 static void
-makeghtml(cgidir, file)
-	const char *cgidir;
-	const char *file;
+makeghtml(const char *cgidir, const char *file)
 {
 	FILE *op;
 
@@ -472,8 +464,7 @@ makeghtml(cgidir, file)
  * makerebuild: make rebuild script
  */
 static void
-makerebuild(file)
-	const char *file;
+makerebuild(const char *file)
 {
 	FILE *op;
 
@@ -494,8 +485,7 @@ makerebuild(file)
  * makehelp: make help file
  */
 static void
-makehelp(file)
-	const char *file;
+makehelp(const char *file)
 {
 	const char **label = icon_list ? anchor_comment : anchor_label;
 	const char **icons = anchor_icons;
@@ -566,10 +556,7 @@ makehelp(file)
  *	r)		html
  */
 static char *
-makesearchpart(action, id, target)
-	const char *action;
-	const char *id;
-	const char *target;
+makesearchpart(const char *action, const char *id, const char *target)
 {
 	STATIC_STRBUF(sb);
 
@@ -629,10 +616,7 @@ makesearchpart(action, id, target)
  *	i)	index	common part
  */
 static void
-makeindex(file, title, index)
-	const char *file;
-	const char *title;
-	const char *index;
+makeindex(const char *file, const char *title, const char *index)
 {
 	FILE *op;
 
@@ -684,9 +668,7 @@ makeindex(file, title, index)
  *	i)	index	common part
  */
 static void
-makemainindex(file, index)
-	const char *file;
-	const char *index;
+makemainindex(const char *file, const char *index)
 {
 	FILE *op;
 
@@ -711,8 +693,7 @@ makemainindex(file, index)
  *	i)	file	file name
  */
 static void
-makesearchindex(file)
-	const char *file;
+makesearchindex(const char *file)
 {
 	FILE *op;
 
@@ -731,8 +712,7 @@ makesearchindex(file)
  * makehtaccess: make .htaccess skeleton file.
  */
 static void
-makehtaccess(file)
-	const char *file;
+makehtaccess(const char *file)
 {
 	FILE *op;
 
@@ -758,10 +738,7 @@ makehtaccess(file)
  * Wrapper of src2html()
  */
 static int
-do_src2html(path_list, count, total)
-	STRBUF *path_list;
-	int count;
-	int total;
+do_src2html(STRBUF *path_list, int count, int total)
 {
 	int notsource;
 	char path[MAXPATHLEN];
@@ -786,8 +763,7 @@ do_src2html(path_list, count, total)
  *	i)	total	number of files.
  */
 static void
-makehtml(total)
-	int total;
+makehtml(int total)
 {
 	FILE *ip;
 	const char *_;
@@ -878,9 +854,7 @@ makehtml(total)
  * copy file.
  */
 static void
-copyfile(from, to)
-	const char *from;
-	const char *to;
+copyfile(const char *from, const char *to)
 {
 	int ip, op, size;
 	char buf[8192];
@@ -905,10 +879,7 @@ copyfile(from, to)
  * By default, htags uses link system call without making a copy.
  */
 static void
-duplicatefile(file, from, to)
-	const char *file;
-	const char *from;
-	const char *to;
+duplicatefile(const char *file, const char *from, const char *to)
 {
 	char from_path[MAXPATHLEN];
 	char to_path[MAXPATHLEN];
@@ -931,10 +902,7 @@ duplicatefile(file, from, to)
  *	r)	index	common part
  */
 static char *
-makecommonpart(title, defines, files)
-	const char *title;
-	const char *defines;
-	const char *files;
+makecommonpart(const char *title, const char *defines, const char *files)
 {
 	FILE *ip;
 	STRBUF *sb = strbuf_open(0);
@@ -1059,9 +1027,7 @@ basic_check(void)
  * load configuration variables.
  */
 static void
-configuration(argc, argv)
-	int argc;
-	char *argv[];
+configuration(int argc, char **argv)
 {
 	STRBUF *sb = strbuf_open(0);
 	int i, n;
@@ -1407,9 +1373,7 @@ configuration(argc, argv)
  * save_environment: save configuration data and arguments.
  */
 static void
-save_environment(argc, argv)
-	int argc;
-	char *argv[];
+save_environment(int argc, char **argv)
 {
 	char command[MAXFILLEN];
 	STRBUF *sb = strbuf_open(0);
@@ -1477,9 +1441,7 @@ save_environment(argc, argv)
 }
 
 char **
-append_options(argc, argv)
-	int *argc;
-	char *argv[];
+append_options(int *argc, char **argv)
 {
 
 	STRBUF *sb = strbuf_open(0);
@@ -1538,9 +1500,7 @@ append_options(argc, argv)
 	return argv;
 }
 int
-main(argc, argv)
-        int argc;
-        char *argv[];
+main(int argc, char **argv)
 {
 	const char *path, *av = NULL;
 	int func_total, file_total;

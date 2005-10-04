@@ -93,8 +93,7 @@ help(void)
  * |www	http://www.xxx.yyy/
  */
 static const char *
-alias(alias_name)
-	const char *alias_name;
+alias(const char *alias_name)
 {
 	FILE *ip;
 	STRBUF *sb = strbuf_open(0);
@@ -153,9 +152,7 @@ end:
 }
 
 int
-main(argc, argv)
-	int argc;
-	char *argv[];
+main(int argc, char **argv)
 {
 	char c;
 	const char *p, *browser = NULL, *definition = NULL;
@@ -293,9 +290,7 @@ main(argc, argv)
  *	o)	URL	URL begin with 'file:'
  */
 void
-getdefinitionURL(arg, URL)
-	const char *arg;
-	STRBUF *URL;
+getdefinitionURL(const char *arg, STRBUF *URL)
 {
 	char cwd[MAXPATHLEN+1];
 	char root[MAXPATHLEN+1];
@@ -375,9 +370,7 @@ getdefinitionURL(arg, URL)
  *	o)	URL	URL begin with 'file:'
  */
 void
-getURL(arg, URL)
-	const char *arg;
-	STRBUF *URL;
+getURL(const char *arg, STRBUF *URL)
 {
 	char cwd[MAXPATHLEN+1];
 	char root[MAXPATHLEN+1];
@@ -445,8 +438,7 @@ getURL(arg, URL)
  *	r)		1: protocol, 0: file
  */
 int
-isprotocol(url)
-	const char *url;
+isprotocol(const char *url)
 {
 	const char *p;
 
@@ -471,8 +463,7 @@ isprotocol(url)
  *	r)		1: source file, 0: not source file
  */
 int
-issource(path)
-	const char *path;
+issource(const char *path)
 {
 	STRBUF *sb = strbuf_open(0);
 	char *p;
@@ -508,11 +499,7 @@ issource(path)
  *	r)		0: normal, -1: error
  */
 int
-convertpath(dbpath, htmldir, path, sb)
-	const char *dbpath;
-	const char *htmldir;
-	const char *path;
-	STRBUF *sb;
+convertpath(const char *dbpath, const char *htmldir, const char *path, STRBUF *sb)
 {
 	static const char *suffix[] = {".html", ".htm"};
 	static const char *gz = ".gz";
@@ -577,9 +564,7 @@ convertpath(dbpath, htmldir, path, sb)
  *
  */
 void
-sendbrowser(browser, url)
-	const char *browser;
-	const char *url;
+sendbrowser(const char *browser, const char *url)
 {
 	int pid;
 	char com[1024], *path;

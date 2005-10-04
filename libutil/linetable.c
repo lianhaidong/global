@@ -58,8 +58,7 @@ static void linetable_put(int, int);
  *			-1: cannot open file.
  */
 int
-linetable_open(path)
-	const char *path;
+linetable_open(const char *path)
 {
 	FILE *ip;
 	struct stat sb;
@@ -96,9 +95,7 @@ linetable_open(path)
  *			!=-1: number of bytes actually read
  */
 int
-linetable_read(buf, size)
-	char *buf;
-	int size;
+linetable_read(char *buf, int size)
 {
 	int leaved = endp - curp;
 
@@ -118,9 +115,7 @@ linetable_read(buf, size)
  *	i)	lineno	line number of the line (>= 1)
  */
 void
-linetable_put(offset, lineno)
-	int offset;
-	int lineno;
+linetable_put(int offset, int lineno)
 {
 	int *entry;
 
@@ -138,9 +133,7 @@ linetable_put(offset, lineno)
  *	r)		line pointer
  */
 char *
-linetable_get(lineno, offset)
-	int lineno;
-	int *offset;
+linetable_get(int lineno, int *offset)
 {
 	int addr;
 
@@ -167,9 +160,7 @@ linetable_close(void)
  *	i)	lineno	line number (>= 1)
  */
 void
-linetable_print(op, lineno)
-	FILE *op;
-	int lineno;
+linetable_print(FILE *op, int lineno)
 {
 	const char *s, *p;
 

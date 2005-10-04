@@ -43,9 +43,7 @@
  *	 to this function may destroy the area.
  */
 const char *
-strmake(p, lim)
-	const char *p;
-	const char *lim;
+strmake(const char *p, const char *lim)
 {
 	STATIC_STRBUF(sb);
 	const char *c;
@@ -83,10 +81,7 @@ end:
  *	 to this function may destroy the area.
  */
 const char *
-strtrim(p, flag, len)
-	const char *p;
-	int flag;
-	int *len;
+strtrim(const char *p, int flag, int *len)
 {
 	STATIC_STRBUF(sb);
 	int cut_off = -1;

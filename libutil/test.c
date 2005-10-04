@@ -49,8 +49,7 @@
  *	r)	0: is not binary, 1: is binary
  */
 static int
-is_binary(path)
-	const char *path;
+is_binary(const char *path)
 {
 	int ip;
 	char buf[32];
@@ -92,9 +91,7 @@ is_binary(path)
  * You can specify more than one character. It assumed 'AND' test.
  */
 int
-test(flags, path)
-	const char *flags;
-	const char *path;
+test(const char *flags, const char *path)
 {
 	static struct stat sb;
 	int c;

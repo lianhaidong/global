@@ -61,11 +61,7 @@ open_pool(void)
  *	i)	id	string id
  */
 static void
-put_pool(head, name, contents, id)
-	struct pool *head;
-	const char *name;
-	const char *contents;
-	int id;
+put_pool(struct pool *head, const char *name, const char *contents, int id)
 {
 	struct data *data;
 
@@ -95,9 +91,7 @@ put_pool(head, name, contents, id)
  *	r)		descriptor
  */
 static struct data *
-get_pool(head, name)
-	struct pool *head;
-	const char *name;
+get_pool(struct pool *head, const char *name)
 {
 	struct data *data;
 
@@ -113,8 +107,7 @@ get_pool(head, name)
  *	r)		descriptor
  */
 static struct data *
-first_data(head)
-	struct pool *head;
+first_data(struct pool *head)
 {
 	return SLIST_FIRST(head);
 }
@@ -124,8 +117,7 @@ first_data(head)
  *	r)		descriptor
  */
 static struct data *
-next_data(data)
-	struct data *data;
+next_data(struct data *data)
 {
 	return SLIST_NEXT(data, next);
 }
@@ -158,10 +150,7 @@ init_inc(void)
  *	i)	id	path id
  */
 void
-put_inc(file, path, id)
-	const char *file;
-	const char *path;
-	int id;
+put_inc(const char *file, const char *path, int id)
 {
 	put_pool(head_inc, file, path, id);
 }
@@ -172,8 +161,7 @@ put_inc(file, path, id)
  *	r)		descriptor
  */
 struct data *
-get_inc(name)
-	const char *name;
+get_inc(const char *name)
 {
 	return get_pool(head_inc, name);
 }
@@ -207,9 +195,7 @@ next_inc(void)
  *	i)	id	path id
  */
 void
-put_included(file, path)
-	const char *file;
-	const char *path;
+put_included(const char *file, const char *path)
 {
 	put_pool(head_included, file, path, 0);
 }
@@ -220,8 +206,7 @@ put_included(file, path)
  *	r)		descriptor
  */
 struct data *
-get_included(name)
-	const char *name;
+get_included(const char *name)
 {
 	return get_pool(head_included, name);
 }

@@ -50,9 +50,7 @@ static char command[MAXFILLEN];
  *	r)	op	file pointer
  */
 static FILE *
-open_dup_file(db, count)
-	int db;
-	int count;
+open_dup_file(int db, int count)
 {
 	char path[MAXPATHLEN];
 	FILE *op;
@@ -76,8 +74,7 @@ open_dup_file(db, count)
  *	i)	op	file pointer
  */
 static void
-close_dup_file(op)
-	FILE *op;
+close_dup_file(FILE *op)
 {
 	if (cflag) {
 		if (pclose(op) != 0)

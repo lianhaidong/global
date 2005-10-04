@@ -48,8 +48,7 @@ static STRBUF *active_map;
  * language map		c\0.c.h\0java\0.java\0cpp\0.C.H\0
  */
 void
-setup_langmap(map)
-	const char *map;
+setup_langmap(const char *map)
 {
 	char *p;
 	int onsuffix = 0;		/* not on suffix string */
@@ -76,8 +75,7 @@ setup_langmap(map)
  * decide the language of the suffix.
  */
 const char *
-decide_lang(suffix)
-	const char *suffix;
+decide_lang(const char *suffix)
 {
 	const char *lang, *list, *tail;
 
@@ -100,9 +98,7 @@ decide_lang(suffix)
  * return true if suffix matches with one in suffix list.
  */
 static int
-match_suffix_list(suffix, list)
-	const char *suffix;
-	const char *list;
+match_suffix_list(const char *suffix, const char *list)
 {
 	while (*list) {
 		if (locatestring(list, suffix, MATCH_AT_FIRST
@@ -121,9 +117,7 @@ match_suffix_list(suffix, list)
  * make the suffixes value from langmap value.
  */
 void
-make_suffixes(langmap, sb)
-	const char *langmap;
-	STRBUF *sb;
+make_suffixes(const char *langmap, STRBUF *sb)
 {
 	const char *p;
 	int onsuffix = 0;		/* not on suffix string */

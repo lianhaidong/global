@@ -44,9 +44,7 @@ static int opened = 0;
  *	i)	other	pick up other than source files.
  */
 void
-vfind_open(local, other)
-	const char *local;
-	int other;
+vfind_open(const char *local, int other)
 {
 	char root[MAXPATHLEN+1];
 	char dbpath[MAXPATHLEN+1];

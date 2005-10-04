@@ -49,9 +49,7 @@ get_version(void)
  * version: print version information.
  */
 void
-version(name, verbose)
-	const char *name;
-	const int verbose;
+version(const char *name, const int verbose)
 {
 	if (name == NULL)
 		name = progname;

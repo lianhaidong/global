@@ -53,8 +53,7 @@ idset_close(idset)		[]
  * Allocate memory for new idset.
  */
 IDSET *
-idset_open(size)
-	unsigned int size;
+idset_open(unsigned int size)
 {
 	IDSET *idset = malloc(sizeof(IDSET));
 
@@ -74,9 +73,7 @@ idset_open(size)
  *	i)	id	id number
  */
 void
-idset_add(idset, id)
-	IDSET *idset;
-	unsigned int id;
+idset_add(IDSET *idset, unsigned int id)
 {
 	if (id >= idset->size)
 		die("idset_add: id is out of range.");
@@ -92,9 +89,7 @@ idset_add(idset, id)
  *	r)		true: contains, false: doesn't contain
  */
 int
-idset_contains(idset, id)
-	IDSET *idset;
-	unsigned int id;
+idset_contains(IDSET *idset, unsigned int id)
 {
 	return (id >= idset->max) ? 0 :
 			(idset->set[id / CHAR_BIT] & (1 << (id % CHAR_BIT)));
@@ -106,8 +101,7 @@ idset_contains(idset, id)
  *	r)		number of bits
  */
 int
-idset_count(idset)
-	IDSET *idset;
+idset_count(IDSET *idset)
 {
 	int id, count = 0;
 
@@ -120,8 +114,7 @@ idset_count(idset)
  * Free memory for the idset.
  */
 void
-idset_close(idset)
-	IDSET *idset;
+idset_close(IDSET *idset)
 {
 	free(idset->set);
 	free(idset);

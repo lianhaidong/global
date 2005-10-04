@@ -47,8 +47,7 @@ initialize(void)
  *	r)		1: is regex, 0: not regex
  */
 int
-isregexchar(c)
-	int c;
+isregexchar(int c)
 {
 	if (!init)
 		initialize();
@@ -61,8 +60,7 @@ isregexchar(c)
  *	r)		1: is regex, 0: not regex
  */
 int
-isregex(s)
-	const char *s;
+isregex(const char *s)
 {
 	int c;
 
@@ -79,8 +77,7 @@ isregex(s)
  *	'aaa' => \'\a\a\a\'
  */
 const char *
-quote_string(s)
-	const char *s;
+quote_string(const char *s)
 {
 	STATIC_STRBUF(sb);
 

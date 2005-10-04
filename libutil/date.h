@@ -21,6 +21,6 @@
 #ifndef _NOW_H_
 #define _NOW_H_
 
-const char *now();
+const char *now(void);
 
 #endif /* ! _NOW_H_ */

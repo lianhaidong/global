@@ -44,10 +44,7 @@
  *	gi)	tag cache
  */
 int
-makedefineindex(file, total, defines)
-	const char *file;
-	int total;
-	STRBUF *defines;
+makedefineindex(const char *file, int total, STRBUF *defines)
 {
 	int count = 0;
 	int alpha_count = 0;

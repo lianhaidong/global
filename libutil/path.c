@@ -46,8 +46,7 @@
  *	r)		1: absolute, 0: not absolute
  */
 int
-isabspath(p)
-	const char *p;
+isabspath(const char *p)
 {
 	if (p[0] == '/')
 		return 1;
@@ -69,8 +68,7 @@ isabspath(p)
  * Note: canonpath rewrite argument buffer.
  */
 char *
-canonpath(path)
-	char *path;
+canonpath(char *path)
 {
 #ifdef __DJGPP__
 	char *p;
@@ -154,9 +152,7 @@ canonpath(path)
  * realpath: get the complete path
  */
 char *
-realpath(in_path, out_path)
-	const char *in_path;
-	char *out_path;
+realpath(const char *in_path, char *out_path)
 {
 #ifdef __DJGPP__
 	/*

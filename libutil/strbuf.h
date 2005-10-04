@@ -136,12 +136,12 @@ void strbuf_close(STRBUF *);
 char *strbuf_fgets(STRBUF *, FILE *, int);
 void strbuf_sprintf(STRBUF *sb, const char *s, ...)
 	__attribute__ ((__format__ (__printf__, 2, 3)));
-STRBUF *strbuf_open_tempbuf();
+STRBUF *strbuf_open_tempbuf(void);
 void strbuf_release_tempbuf(STRBUF *);
 #ifdef STRBUF_LINK
 void strbuf_setname(STRBUF *, const char *);
 STRBUF *strbuf_getbuf(const char *);
-void strbuf_closeall();
+void strbuf_closeall(void);
 #endif
 
 #endif /* ! _STRBUF_H */

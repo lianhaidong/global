@@ -47,8 +47,7 @@
  * java: read java file and pickup tag entries.
  */
 void
-java(file)
-	const char *file;
+java(const char *file)
 {
 	int c;
 	int level;					/* brace level */

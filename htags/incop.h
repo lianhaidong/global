@@ -31,14 +31,14 @@ struct data {
         STRBUF *contents;
 };
 
-void init_inc();
+void init_inc(void);
 void put_inc(const char *, const char *, int);
 struct data *get_inc(const char *);
-struct data *first_inc();
-struct data *next_inc();
+struct data *first_inc(void);
+struct data *next_inc(void);
 void put_included(const char *, const char *);
 struct data *get_included(const char *);
-struct data *first_included();
-struct data *next_included();
+struct data *first_included(void);
+struct data *next_included(void);
 
 #endif /* ! _INCOP_H */

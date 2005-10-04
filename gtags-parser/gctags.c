@@ -103,8 +103,7 @@ static struct lang_entry lang_switch[] = {
  *      r)              language entry
  */
 static struct lang_entry *
-get_lang_entry(lang)
-        const char *lang;
+get_lang_entry(const char *lang)
 {
         int i, size = sizeof(lang_switch) / sizeof(struct lang_entry);
 
@@ -156,9 +155,7 @@ static struct option const long_options[] = {
 };
 
 int
-main(argc, argv)
-	int argc;
-	char **argv;
+main(int argc, char **argv)
 {
 	char *p;
 	int optchar;
@@ -303,15 +300,13 @@ main(argc, argv)
 }
 
 int
-cmp(s1, s2)
-	const void *s1, *s2;
+cmp(const void *s1, const void *s2)
 {
 	return strcmp(((struct words *)s1)->name, ((struct words *)s2)->name);
 }
 
 int
-isnotfunction(name)
-	char *name;
+isnotfunction(char *name)
 {
 	struct words tmp;
 	struct words *result;
@@ -324,9 +319,7 @@ isnotfunction(name)
 }
 
 void
-dbg_print(level, s)
-	int level;
-	const char *s;
+dbg_print(int level, const char *s)
 {
 	if (!debug)
 		return;

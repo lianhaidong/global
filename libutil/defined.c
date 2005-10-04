@@ -38,8 +38,7 @@ static DBOP *dbop = NULL;
  * to decide whether or not the tag is defined.
  */
 int
-defined(name)
-	const char *name;
+defined(const char *name)
 {
 	if (dbop == NULL) {
 		const char *dbpath;

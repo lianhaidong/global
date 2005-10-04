@@ -68,8 +68,8 @@ struct anchor {
 void anchor_prepare(STRBUF *);
 void anchor_load(const char *);
 void anchor_unload(void);
-struct anchor *anchor_first();
-struct anchor *anchor_next();
+struct anchor *anchor_first(void);
+struct anchor *anchor_next(void);
 struct anchor *anchor_get(const char *, int, int, int);
 int define_line(int);
 int *anchor_getlinks(int);

@@ -92,8 +92,7 @@ STRBUF	top;
  * strbuf_dump: dump string buffers
  */
 void
-strbuf_dump(msg)
-	const char *msg;
+strbuf_dump(const char *msg)
 {
 	STRBUF *sb;
 	int i = 0;
@@ -122,9 +121,7 @@ strbuf_dump(msg)
  *	i)	length	required room
  */
 void
-__strbuf_expandbuf(sb, length)
-	STRBUF *sb;
-	int length;
+__strbuf_expandbuf(STRBUF *sb, int length)
 {
 	int count = sb->curp - sb->sbuf;
 	int newsize = sb->sbufsize + (length > EXPANDSIZE ? length : EXPANDSIZE);
@@ -152,8 +149,7 @@ __strbuf_expandbuf(sb, length)
  *	r)	sb	STRBUF structure
  */
 STRBUF *
-strbuf_open(init)
-	int init;
+strbuf_open(int init)
 {
 	STRBUF *sb = (STRBUF *)calloc(sizeof(STRBUF), 1);
 
@@ -192,8 +188,7 @@ strbuf_open(init)
  * For the detail, see 'STATIC_STRBUF(sb)' macro in strbuf.h.
  */
 void
-strbuf_clear(sb)
-	STRBUF *sb;
+strbuf_clear(STRBUF *sb)
 {
 	if (sb == NULL)
 		die("NULL string buffer. (strbuf_clear)");
@@ -217,10 +212,7 @@ strbuf_clear(sb)
  *	i)	len	length of string
  */
 void
-strbuf_nputs(sb, s, len)
-	STRBUF *sb;
-	const char *s;
-	int len;
+strbuf_nputs(STRBUF *sb, const char *s, int len)
 {
 	if (!sb->alloc_failed && len > 0) {
 		if (sb->curp + len > sb->endp)
@@ -236,9 +228,7 @@ strbuf_nputs(sb, s, len)
  *	i)	s	string
  */
 void
-strbuf_puts(sb, s)
-	STRBUF *sb;
-	const char *s;
+strbuf_puts(STRBUF *sb, const char *s)
 {
 	if (!sb->alloc_failed) {
 		while (*s) {
@@ -255,9 +245,7 @@ strbuf_puts(sb, s)
  *	i)	s	string
  */
 void
-strbuf_puts_nl(sb, s)
-	STRBUF *sb;
-	const char *s;
+strbuf_puts_nl(STRBUF *sb, const char *s)
 {
 	if (!sb->alloc_failed) {
 		while (*s) {
@@ -277,9 +265,7 @@ strbuf_puts_nl(sb, s)
  *	i)	n	number
  */
 void
-strbuf_putn(sb, n)
-	STRBUF *sb;
-	int n;
+strbuf_putn(STRBUF *sb, int n)
 {
 	if (n == 0) {
 		strbuf_putc(sb, '0');
@@ -305,9 +291,7 @@ strbuf_putn(sb, n)
  *	r)		0: do nothing, 1: removed
  */
 int
-strbuf_unputc(sb, c)
-	STRBUF *sb;
-	int c;
+strbuf_unputc(STRBUF *sb, int c)
 {
 	if (sb->curp > sb->sbuf && *(sb->curp - 1) == c) {
 		sb->curp--;
@@ -322,8 +306,7 @@ strbuf_unputc(sb, c)
  *	r)		string
  */
 char *
-strbuf_value(sb)
-	STRBUF *sb;
+strbuf_value(STRBUF *sb)
 {
 	*sb->curp = 0;
 	return sb->sbuf;
@@ -334,8 +317,7 @@ strbuf_value(sb)
  *	i)	sb	STRBUR structure
  */
 void
-strbuf_trim(sb)
-	STRBUF *sb;
+strbuf_trim(STRBUF *sb)
 {
 	char *p = sb->curp;
 
@@ -358,10 +340,7 @@ strbuf_trim(sb)
  * include '\r' and '\n'.
  */
 char *
-strbuf_fgets(sb, ip, flags)
-	STRBUF *sb;
-	FILE *ip;
-	int flags;
+strbuf_fgets(STRBUF *sb, FILE *ip, int flags)
 {
 	if (!(flags & STRBUF_APPEND))
 		strbuf_reset(sb);
@@ -477,8 +456,7 @@ strbuf_sprintf(STRBUF *sb, const char *s, ...)
  *	i)	sb	STRBUF structure
  */
 void
-strbuf_close(sb)
-	STRBUF	*sb;
+strbuf_close(STRBUF *sb)
 {
 #ifdef STRBUF_LINK
 	sb->prev->next = sb->next;
@@ -514,8 +492,7 @@ strbuf_open_tempbuf(void)
 	return sb;
 }
 void
-strbuf_release_tempbuf(sb)
-	STRBUF *sb;
+strbuf_release_tempbuf(STRBUF *sb)
 {
 	used = 0;
 }
@@ -527,9 +504,7 @@ strbuf_release_tempbuf(sb)
  *	i)	name	name
  */
 void
-strbuf_setname(sb, name)
-	STRBUF  *sb;
-	const char *name;
+strbuf_setname(STRBUF  *sb, const char *name)
 {
 	char *p = strdup(name);
 	if (p == NULL) {
@@ -548,8 +523,7 @@ strbuf_setname(sb, name)
  *	r)		STRBUF structure
  */
 STRBUF *
-strbuf_getbuf(name)
-	const char *name;
+strbuf_getbuf(const char *name)
 {
 	STRBUF *sb;
 

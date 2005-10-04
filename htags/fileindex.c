@@ -75,8 +75,7 @@ static SLIST_HEAD(, file) file_q;
  * You can get file pointer any time using select_file_queue() with path.
  */
 static FILE *
-open_file_queue(path)
-	const char *path;
+open_file_queue(const char *path)
 {
 	struct file *file = (struct file *)malloc(sizeof(struct file));
 
@@ -110,8 +109,7 @@ open_file_queue(path)
  *			NULL: path not found.
  */
 static FILE *
-select_file_queue(path)
-	const char *path;
+select_file_queue(const char *path)
 {
 	struct file *file;
 
@@ -127,8 +125,7 @@ select_file_queue(path)
  *	i)	path	path name
  */
 static void
-close_file_queue(path)
-	const char *path;
+close_file_queue(const char *path)
 {
 	struct file *file;
 
@@ -215,9 +212,7 @@ settrace(void)
  *	i)	sp	stack descriptor
  */
 void
-static dump_stack(sp, label)
-	struct dirstack *sp;
-	const char *label;
+static dump_stack(struct dirstack *sp, const char *label)
 {
 	char *start = sp->start;
 	char *last = sp->last - 1;
@@ -239,8 +234,7 @@ static dump_stack(sp, label)
  *	r)		stack descriptor
  */
 static struct dirstack *
-make_stack(name)
-	const char *name;
+make_stack(const char *name)
 {
 	struct dirstack *sp = (struct dirstack *)malloc(sizeof(struct dirstack));
 	if (!sp)
@@ -269,9 +263,7 @@ make_stack(name)
  *
  */
 static void
-set_stack(sp, path)
-	struct dirstack *sp;
-	const char *path;
+set_stack(struct dirstack *sp, const char *path)
 {
 	int length = strlen(path) + 1;
 	char *p;
@@ -304,9 +296,7 @@ set_stack(sp, path)
  *	i)	s	string
  */
 static void
-push_stack(sp, s)
-	struct dirstack *sp;
-	const char *s;
+push_stack(struct dirstack *sp, const char *s)
 {
 	int length = strlen(s) + 1;
 
@@ -332,8 +322,7 @@ push_stack(sp, s)
  *	r)		string
  */
 static const char *
-top_stack(sp)
-	struct dirstack *sp;
+top_stack(struct dirstack *sp)
 {
 	char *start = sp->start;
 	char *last = sp->last;
@@ -361,9 +350,7 @@ top_stack(sp)
  *	r)		string
  */
 static const char *
-next_stack(sp, cur)
-	struct dirstack *sp;
-	const char *cur;
+next_stack(struct dirstack *sp, const char *cur)
 {
 	char *last = sp->last;
 
@@ -383,8 +370,7 @@ next_stack(sp, cur)
  *	r)		string
  */
 static const char *
-pop_stack(sp)
-	struct dirstack *sp;
+pop_stack(struct dirstack *sp)
 {
 	char *last = (char *)top_stack(sp);
 	int length = strlen(last) + 1;
@@ -405,8 +391,7 @@ pop_stack(sp)
  *	r)		string
  */
 static const char *
-shift_stack(sp)
-	struct dirstack *sp;
+shift_stack(struct dirstack *sp)
 {
 	char *start = sp->start;
 	char *last = sp->last;
@@ -433,9 +418,7 @@ shift_stack(sp)
  *	i)	from	stack descriptor
  */
 static void
-copy_stack(to, from)
-	struct dirstack *to;
-	struct dirstack *from;
+copy_stack(struct dirstack *to, struct dirstack *from)
 {
 	char *start = from->start;
 	char *last = from->last;
@@ -455,8 +438,7 @@ copy_stack(to, from)
  *	r)		path name
  */
 static const char *
-join_stack(sp)
-	struct dirstack *sp;
+join_stack(struct dirstack *sp)
 {
 	char *start = sp->start;
 	char *last = sp->last - 1;
@@ -475,8 +457,7 @@ join_stack(sp)
  *	i)	sp	stack descriptor
  */
 static void
-delete_stack(sp)
-	struct dirstack *sp;
+delete_stack(struct dirstack *sp)
 {
 	free(sp);
 }
@@ -490,8 +471,7 @@ delete_stack(sp)
  *	r)		encoded URL
  */
 static const char *
-encode(url)
-        const char *url;
+encode(const char *url)
 {
 	STATIC_STRBUF(sb);
         const char *p;
@@ -516,9 +496,7 @@ encode(url)
  *	r)		last name
  */
 static const char *
-extract_lastname(image, is_php)
-	const char *image;
-	int is_php;
+extract_lastname(const char *image, int is_php)
 {
 	static char buf[MAXBUFLEN];
 	const char *p;
@@ -604,9 +582,7 @@ extract_lastname(image, is_php)
  *	o)	files
  */
 int
-makefileindex(file, files)
-	const char *file;
-	STRBUF *files;
+makefileindex(const char *file, STRBUF *files)
 {
 	FILE *FIND, *FILEMAP, *FILES, *STDOUT, *op = NULL;
 	char *_;
