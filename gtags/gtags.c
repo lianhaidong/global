@@ -65,8 +65,6 @@ struct dup_entry {
 
 static void usage(void);
 static void help(void);
-void signal_setup(void);
-void onintr(int);
 static int compare_dup_entry(const void *, const void *);
 static void put_lines(char *, struct dup_entry *, int);
 int main(int, char **);
@@ -152,32 +150,7 @@ static struct option const long_options[] = {
 	{ 0 }
 };
 
-/*
- * Gtags catch signal even if the parent ignore it.
- */
-int exitflag = 0;
-
 static const char *langmap = DEFAULTLANGMAP;
-
-void
-onintr(int signo)
-{
-	signo = 0;      /* to satisfy compiler */
-	exitflag = 1;
-}
-
-void
-signal_setup(void)
-{
-	signal(SIGINT, onintr);
-	signal(SIGTERM, onintr);
-#ifdef SIGHUP
-	signal(SIGHUP, onintr);
-#endif
-#ifdef SIGQUIT
-	signal(SIGQUIT, onintr);
-#endif
-}
 
 /*
  * compare_dup_entry: compare function for sorting.
@@ -646,7 +619,6 @@ main(int argc, char **argv)
 	/*
  	 * create GTAGS, GRTAGS and GSYMS
 	 */
-	signal_setup();
 	total = 0;					/* counting file */
 	for (db = GTAGS; db < GTAGLIM; db++) {
 
@@ -677,8 +649,6 @@ main(int argc, char **argv)
 				if (system(strbuf_value(sb)))
 					fprintf(stderr, "GSYMS_extra command failed: %s\n", strbuf_value(sb));
 		}
-		if (exitflag)
-			exit(1);
 	}
 	/*
 	 * create id-utils index.
@@ -797,7 +767,6 @@ incremental(const char *dbpath, const char *root)
 	/*
 	 * execute updating.
 	 */
-	signal_setup();
 	if (updated) {
 		int db;
 
@@ -811,8 +780,6 @@ incremental(const char *dbpath, const char *root)
 			if (vflag)
 				fprintf(stderr, "[%s] Updating '%s'.\n", now(), dbname(db));
 			updatetags(dbpath, root, deleteset, addlist, addtotal, db);
-			if (exitflag)
-				exit(1);
 		}
 	}
 	if (strbuf_getlen(deletelist) > 0) {
@@ -822,14 +789,10 @@ incremental(const char *dbpath, const char *root)
 
 		gpath_open(dbpath, 2);
 		for (p = start; p < end; p += strlen(p) + 1) {
-			if (exitflag)
-				break;
 			gpath_delete(p);
 		}
 		gpath_close();
 	}
-	if (exitflag)
-		exit(1);
 	if (updated) {
 		int db;
 		/*
@@ -949,8 +912,6 @@ updatetags(const char *dbpath, const char *root, IDSET *deleteset, STRBUF *addli
 					arg_count = 0;
 				}
 			}
-			if (exitflag)
-				break;
 			/*
 			 * Add a path to the path list.
 			 */
@@ -1038,8 +999,6 @@ createtags(const char *dbpath, const char *root, int db)
 		/* a blank at the head of path means 'NOT SOURCE'. */
 		if (*path == ' ')
 			continue;
-		if (exitflag)
-			break;
 		count++;
 		/*
 		 * GSYMS doesn't treat asembler.
