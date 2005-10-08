@@ -28,6 +28,10 @@
 #include "die.h"
 #include "idset.h"
 
+#ifndef CHAR_BIT
+#define CHAR_BIT 8
+#endif
+
 /*
 Idset: usage and memory status
 
