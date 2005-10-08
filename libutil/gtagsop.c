@@ -164,7 +164,7 @@ makecommand(const char *comline, STRBUF *path_list, STRBUF *sb)
  * func              83 ./func.c       func()
  */
 void
-formatcheck(const char *line)		/* virtually const */
+formatcheck(const char *ctags_x)		/* virtually const */
 {
 	int n;
 	const char *p;
@@ -173,28 +173,28 @@ formatcheck(const char *line)		/* virtually const */
 	/*
 	 * Extract parts.
 	 */
-	n = split((char *)line, 4, &ptable);
+	n = split((char *)ctags_x, 4, &ptable);
 
 	/*
 	 * line number
 	 */
 	if (n < 4) {
 		recover(&ptable);
-		die("too small number of parts.\n'%s'", line);
+		die("too small number of parts.\n'%s'", ctags_x);
 	}
-	for (p = ptable.part[1].start; *p; p++) {
+	for (p = ptable.part[PART_LNO].start; *p; p++) {
 		if (!isdigit((unsigned char)*p)) {
 			recover(&ptable);
-			die("line number includes other than digit.\n'%s'", line);
+			die("line number includes other than digit.\n'%s'", ctags_x);
 		}
 	}
 	/*
 	 * path name
 	 */
-	p = ptable.part[2].start;
+	p = ptable.part[PART_PATH].start;
 	if (!(*p == '.' && *(p + 1) == '/' && *(p + 2))) {
 		recover(&ptable);
-		die("path name must start with './'.\n'%s'", line);
+		die("path name must start with './'.\n'%s'", ctags_x);
 	}
 
 	recover(&ptable);
@@ -334,27 +334,27 @@ gtags_open(const char *dbpath, const char *root, int db, int mode, int flags)
  *
  *	i)	gtop	descripter of GTOP
  *	i)	tag	tag name
- *	i)	record	ctags -x image
+ *	i)	ctags_x	ctags -x image
  *
  * NOTE: If format is GTAGS_COMPACT or GTAGS_PATHINDEX
  *       then this function is destructive.
  */
 void
-gtags_put(GTOP *gtop, const char *tag, const char *record)	/* virtually const */
+gtags_put(GTOP *gtop, const char *tag, const char *ctags_x)	/* virtually const */
 {
-	const char *line, *path;
+	const char *tagname;
 	SPLIT ptable;
 	struct gtop_compact_entry *entry, **prev;
 	int *lno;
 
 	if (gtop->format == GTAGS_STANDARD) {
-		/* entab(record); */
-		dbop_put(gtop->dbop, tag, record);
+		/* entab(ctags_x); */
+		dbop_put(gtop->dbop, tag, ctags_x);
 		return;
 	}
 	if (gtop->format == GTAGS_PATHINDEX) {
-		char *p = locatestring(record, "./", MATCH_FIRST);
-		const char *fid;
+		char *p = locatestring(ctags_x, "./", MATCH_FIRST);
+		const char *fid, *path;
 		int savec;
 
 		if (p == NULL)
@@ -370,7 +370,7 @@ gtags_put(GTOP *gtop, const char *tag, const char *record)	/* virtually const */
 			die("GPATH is corrupted.('%s' not found)", path);
 		*p = savec;
 		strbuf_reset(gtop->sb);
-		strbuf_nputs(gtop->sb, record, path - record);
+		strbuf_nputs(gtop->sb, ctags_x, path - ctags_x);
 		strbuf_puts(gtop->sb, fid);
 		strbuf_puts(gtop->sb, p);
 		dbop_put(gtop->dbop, tag, strbuf_value(gtop->sb));
@@ -379,36 +379,35 @@ gtags_put(GTOP *gtop, const char *tag, const char *record)	/* virtually const */
 	/*
 	 * gtop->format & GTAGS_COMPACT
 	 */
-	if (split((char *)record, 4, &ptable) != 4) {
+	if (split((char *)ctags_x, 4, &ptable) != 4) {
 		recover(&ptable);
-		die("illegal tag format.\n'%s'", record);
+		die("illegal tag format.\n'%s'", ctags_x);
 	}
-	line = ptable.part[1].start;
-	path = ptable.part[2].start;
+	tagname = ptable.part[PART_TAG].start;
 	/*
 	 * Register each record into the hash table.
 	 * Duplicated records will be combined.
 	 */
-	if (gtop->prev_path[0] && strcmp(gtop->prev_path, path))
+	if (gtop->prev_path[0] && strcmp(gtop->prev_path, ptable.part[PART_PATH].start))
 		gtop_flush_htab(gtop);
-	strlimcpy(gtop->prev_path, path, sizeof(gtop->prev_path));
-	for (prev = gtop->htab + hashpjw(record) % HASHBUCKETS;
+	strlimcpy(gtop->prev_path, ptable.part[PART_PATH].start, sizeof(gtop->prev_path));
+	for (prev = gtop->htab + hashpjw(tagname) % HASHBUCKETS;
 	     (entry = *prev) != NULL;
 	     prev = &entry->next) {
-		if (strcmp(entry->tag, record) == 0)
+		if (strcmp(entry->tag, tagname) == 0)
 			break;
 	}
 	if (entry == NULL) {
-		entry = malloc(offsetof(struct gtop_compact_entry, tag) + strlen(record) + 1);
+		entry = malloc(offsetof(struct gtop_compact_entry, tag) + strlen(tagname) + 1);
 		if (entry == NULL)
 			die("short of memory.");
 		entry->next = NULL;
 		entry->vb = varray_open(sizeof(int), 100);
-		strcpy(entry->tag, record);
+		strcpy(entry->tag, tagname);
 		*prev = entry;
 	}
 	lno = varray_append(entry->vb);
-	*lno = atoi(line);
+	*lno = atoi(ptable.part[PART_LNO].start);
 	recover(&ptable);
 }
 /*

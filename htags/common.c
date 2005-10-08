@@ -546,18 +546,18 @@ gen_list_begin(void)
  * s must be choped.
  */
 const char *
-gen_list_body(const char *srcdir, const char *string)		/* virtually const */
+gen_list_body(const char *srcdir, const char *ctags_x)		/* virtually const */
 {
 	STATIC_STRBUF(sb);
 	const char *p, *filename, *fid;
 	SPLIT ptable;
 
 	strbuf_clear(sb);
-	if (split((char *)string, 4, &ptable) < 4) {
+	if (split((char *)ctags_x, 4, &ptable) < 4) {
 		recover(&ptable);
-		die("too small number of parts in list_body().\n'%s'", string);
+		die("too small number of parts in list_body().\n'%s'", ctags_x);
 	}
-	filename = ptable.part[2].start + 2;		/* remove './' */
+	filename = ptable.part[PART_PATH].start + 2;	/* remove './' */
 	fid = path2fid(filename);
 	if (table_list) {
 		if (enable_xhtml) {
@@ -601,7 +601,7 @@ gen_list_body(const char *srcdir, const char *string)		/* virtually const */
 		strbuf_puts(sb, gen_href_begin(srcdir, fid, HTML, ptable.part[PART_LNO].start));
 		strbuf_puts(sb, ptable.part[PART_TAG].start);
 		strbuf_puts(sb, gen_href_end());
-		p = string + strlen(ptable.part[PART_TAG].start);
+		p = ctags_x + strlen(ptable.part[PART_TAG].start);
 		recover(&ptable);
 
 		for (; *p; p++) {

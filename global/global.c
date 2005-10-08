@@ -600,13 +600,13 @@ completion(const char *dbpath, const char *root, const char *prefix)
  * printtag: print a tag's line
  *
  *	i)	op	output stream
- *	i)	line	tag's line
+ *	i)	ctags_x	ctags -x format record
  */
 void
-printtag(FILE *op, const char *line)		/* virtually const */
+printtag(FILE *op, const char *ctags_x)		/* virtually const */
 {
 	if (xflag) {
-		fputs(line, op);
+		fputs(ctags_x, op);
 	} else {
 		SPLIT ptable;
 		int n;
@@ -614,16 +614,16 @@ printtag(FILE *op, const char *line)		/* virtually const */
 		/*
 		 * Split tag line.
 		 */
-		n = split((char *)line, 4, &ptable);
+		n = split((char *)ctags_x, 4, &ptable);
 
 		if (tflag) {
-			fputs(ptable.part[0].start, op);	/* tag */
+			fputs(ptable.part[PART_TAG].start, op);	/* tag */
 			(void)putc('\t', op);
-			fputs(ptable.part[2].start, op);	/* path */
+			fputs(ptable.part[PART_PATH].start, op);/* path */
 			(void)putc('\t', op);
-			fputs(ptable.part[1].start, op);	/* line number */
+			fputs(ptable.part[PART_LNO].start, op);	/* line number */
 		} else {
-			fputs(ptable.part[2].start, op);	/* path */
+			fputs(ptable.part[PART_PATH].start, op);/* path */
 		}
 		recover(&ptable);
 	}
