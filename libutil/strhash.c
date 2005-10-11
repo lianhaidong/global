@@ -27,6 +27,7 @@
 
 #include "die.h"
 #include "strhash.h"
+#include "hash-string.h"
 #include "obstack.h"
 
 /*
