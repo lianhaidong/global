@@ -28,6 +28,7 @@
 #include "dbop.h"
 #include "idset.h"
 #include "strbuf.h"
+#include "strhash.h"
 #include "varray.h"
 
 #define VERSIONKEY	" __.VERSION"
@@ -60,12 +61,6 @@
 #define GTOP_IGNORECASE		16	/* ignore case distinction */
 #define GTOP_BASICREGEX		32	/* use basic regular expression */
 
-struct gtop_compact_entry {
-	struct gtop_compact_entry *next;
-	VARRAY *vb;			/* array of line numbers */
-	char tag[1];
-};
-
 typedef struct {
 	DBOP *dbop;			/* descripter of DBOP */
 	int format_version;		/* format version */
@@ -88,7 +83,7 @@ typedef struct {
 	FILE *fp;			/* descriptor of 'path' */
 	const char *lnop;		/* current line number */
 	int lno;			/* integer value of 'lnop' */
-	struct gtop_compact_entry **htab;/* hash table */
+	STRHASH *pool;			/* record pool for compact format */
 } GTOP;
 
 const char *dbname(int);

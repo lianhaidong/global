@@ -40,9 +40,9 @@
 
 #include "char.h"
 #include "conf.h"
-#include "gparam.h"
 #include "dbop.h"
 #include "die.h"
+#include "gparam.h"
 #include "gtagsop.h"
 #include "locatestring.h"
 #include "makepath.h"
@@ -50,14 +50,15 @@
 #include "gpathop.h"
 #include "split.h"
 #include "strbuf.h"
+#include "strhash.h"
 #include "strlimcpy.h"
 #include "strmake.h"
+#include "varray.h"
 
 #define HASHBUCKETS	256
 
-static unsigned int hashpjw(const char *);
 static int compare_lno(const void *, const void *);
-static void gtop_flush_htab(GTOP *);
+static void flush_pool(GTOP *);
 static const char *unpack_pathindex(const char *);
 static const char *genrecord(GTOP *);
 static regex_t reg;
@@ -321,9 +322,7 @@ gtags_open(const char *dbpath, const char *root, int db, int mode, int flags)
 			gtop->ib = strbuf_open(MAXBUFLEN);
 		else {
 			gtop->sb = strbuf_open(0);
-			gtop->htab = calloc(sizeof(struct gtop_compact_entry *), HASHBUCKETS);
-			if (gtop->htab == NULL)
-				die("short of memory.");
+			gtop->pool = strhash_open(HASHBUCKETS, NULL);
 		}
 	} else if (gtop->format == GTAGS_PATHINDEX && gtop->mode != GTAGS_READ)
 		gtop->sb = strbuf_open(0);
@@ -342,17 +341,17 @@ gtags_open(const char *dbpath, const char *root, int db, int mode, int flags)
 void
 gtags_put(GTOP *gtop, const char *tag, const char *ctags_x)	/* virtually const */
 {
-	const char *tagname;
-	SPLIT ptable;
-	struct gtop_compact_entry *entry, **prev;
-	int *lno;
-
+	/*
+	 * Standard format.
+	 */
 	if (gtop->format == GTAGS_STANDARD) {
 		/* entab(ctags_x); */
 		dbop_put(gtop->dbop, tag, ctags_x);
-		return;
 	}
-	if (gtop->format == GTAGS_PATHINDEX) {
+	/*
+	 * Only pathindex format. (not compact format)
+	 */
+	else if (gtop->format == GTAGS_PATHINDEX) {
 		char *p = locatestring(ctags_x, "./", MATCH_FIRST);
 		const char *fid, *path;
 		int savec;
@@ -374,63 +373,54 @@ gtags_put(GTOP *gtop, const char *tag, const char *ctags_x)	/* virtually const *
 		strbuf_puts(gtop->sb, fid);
 		strbuf_puts(gtop->sb, p);
 		dbop_put(gtop->dbop, tag, strbuf_value(gtop->sb));
-		return;
 	}
 	/*
-	 * gtop->format & GTAGS_COMPACT
+	 * Compact format. (gtop->format & GTAGS_COMPACT)
 	 */
-	if (split((char *)ctags_x, 4, &ptable) != 4) {
+	else {
+		SPLIT ptable;
+		struct sh_entry *entry;
+		VARRAY *vb;
+		int *lno;
+
+		if (split((char *)ctags_x, 4, &ptable) != 4) {
+			recover(&ptable);
+			die("illegal tag format.\n'%s'", ctags_x);
+		}
+		/*
+		 * Flush the pool when path is changed.
+		 * Line numbers in the pool will be sorted and duplicated
+		 * records will be combined.
+		 *
+		 * pool    "funcA"   | 1| 3| 7|23|11| 2|...
+		 *           v
+		 * output  funcA 33 1,2,3,7,11,23...
+		 */
+		if (gtop->prev_path[0] && strcmp(gtop->prev_path, ptable.part[PART_PATH].start)) {
+			flush_pool(gtop);
+			strhash_reset(gtop->pool);
+		}
+		strlimcpy(gtop->prev_path, ptable.part[PART_PATH].start, sizeof(gtop->prev_path));
+		/*
+		 * Register each record into the pool.
+		 *
+		 * Pool image:
+		 *
+		 * tagname   lno
+		 * ------------------------------
+		 * "funcA"   | 1| 3| 7|23|11| 2|...
+		 * "funcB"   |34| 2| 5|66| 3|...
+		 * ...
+		 */
+		entry = strhash_assign(gtop->pool, ptable.part[PART_TAG].start, 1);
+		if (entry->value == NULL)
+			entry->value = vb = varray_open(sizeof(int), 100);
+		else
+			vb = (VARRAY *)entry->value;
+		lno = varray_append(vb);
+		*lno = atoi(ptable.part[PART_LNO].start);
 		recover(&ptable);
-		die("illegal tag format.\n'%s'", ctags_x);
 	}
-	tagname = ptable.part[PART_TAG].start;
-	/*
-	 * Register each record into the hash table.
-	 * Duplicated records will be combined.
-	 */
-	if (gtop->prev_path[0] && strcmp(gtop->prev_path, ptable.part[PART_PATH].start))
-		gtop_flush_htab(gtop);
-	strlimcpy(gtop->prev_path, ptable.part[PART_PATH].start, sizeof(gtop->prev_path));
-	for (prev = gtop->htab + hashpjw(tagname) % HASHBUCKETS;
-	     (entry = *prev) != NULL;
-	     prev = &entry->next) {
-		if (strcmp(entry->tag, tagname) == 0)
-			break;
-	}
-	if (entry == NULL) {
-		entry = malloc(offsetof(struct gtop_compact_entry, tag) + strlen(tagname) + 1);
-		if (entry == NULL)
-			die("short of memory.");
-		entry->next = NULL;
-		entry->vb = varray_open(sizeof(int), 100);
-		strcpy(entry->tag, tagname);
-		*prev = entry;
-	}
-	lno = varray_append(entry->vb);
-	*lno = atoi(ptable.part[PART_LNO].start);
-	recover(&ptable);
-}
-/*
- * hashpjw: calculate hash value for given string.
- *
- *	i)	string
- *	r)	hash value
- */
-static unsigned int
-hashpjw(const char *s)
-{
-	unsigned int h, g;
-
-	h = strlen(s);
-	while (*s != '\0') {
-		h <<= 4;
-		h += (unsigned char)*s++;
-		g = h & 0xf0000000;
-		if (g != 0)
-			h = h ^ (g >> 24) ^ g;
-	}
-
-	return h;
 }
 /*
  * compare_lno: compare function for sorting line number.
@@ -441,71 +431,78 @@ compare_lno(const void *s1, const void *s2)
 	return *(const int *)s1 - *(const int *)s2;
 }
 /*
- * gtop_flush_htab: register each record into the tag database and delete from the hash table.
+ * flush_pool: flush the pool and write is as compact format.
  *
  *	i)	gtop	descripter of GTOP
  */
 static void
-gtop_flush_htab(GTOP *gtop)
+flush_pool(GTOP *gtop)
 {
-	const char *path, *key;
-	struct gtop_compact_entry *entry, *next;
-	int *lno_array;
-	int i, j, savelen;
+	struct sh_entry *entry;
+	const char *path = gtop->prev_path;
 
-	path = gtop->prev_path;
 	if (gtop->format & GTAGS_PATHINDEX) {
 		path = gpath_path2fid(gtop->prev_path);
 		if (path == NULL)
 			die("GPATH is corrupted.('%s' not found)", gtop->prev_path);
 	}
+	/*
+	 * Write records as compact format and free line number table
+	 * for each entry in the pool.
+	 */
+	for (entry = strhash_first(gtop->pool); entry; entry = strhash_next(gtop->pool)) {
+		VARRAY *vb = (VARRAY *)entry->value;
+		int *lno_array = varray_assign(vb, 0, 0);
+		const char *key = entry->name;
 
-	for (i = 0; i < HASHBUCKETS; i++) {
-		for (entry = gtop->htab[i]; entry != NULL; entry = next) {
-			/*
-			 * extract method when class method definition.
-			 *
-			 * Ex: Class::method(...)
-			 *
-			 * key	= 'method'
-			 * data = 'Class::method  103 ./class.cpp ...'
-			 */
-			key = entry->tag;
-			if (gtop->flags & GTAGS_EXTRACTMETHOD) {
-				if ((key = locatestring(entry->tag, ".", MATCH_LAST)) != NULL)
-					key++;
-				else if ((key = locatestring(entry->tag, "::", MATCH_LAST)) != NULL)
-					key += 2;
-				else
-					key = entry->tag;
-			}
-			lno_array = varray_assign(entry->vb, 0, 0);
-			qsort(lno_array, entry->vb->length, sizeof(int), compare_lno); 
-			strbuf_reset(gtop->sb);
-			strbuf_puts(gtop->sb, entry->tag);
-			strbuf_putc(gtop->sb, ' ');
-			strbuf_puts(gtop->sb, path);
-			strbuf_putc(gtop->sb, ' ');
-			savelen = strbuf_getlen(gtop->sb);
-			for (j = 0; j < entry->vb->length; j++) {
-				if ((gtop->flags & GTAGS_UNIQUE) && j > 0
-				    && lno_array[j - 1] == lno_array[j])
+		/*
+		 * extract method when class method definition.
+		 *
+		 * Ex: Class::method(...)
+		 *
+		 * key	= 'method'
+		 * data = 'Class::method  103 ./class.cpp ...'
+		 */
+		if (gtop->flags & GTAGS_EXTRACTMETHOD) {
+			if ((key = locatestring(entry->name, ".", MATCH_LAST)) != NULL)
+				key++;
+			else if ((key = locatestring(entry->name, "::", MATCH_LAST)) != NULL)
+				key += 2;
+			else
+				key = entry->name;
+		}
+		/* Sort line number table */
+		qsort(lno_array, vb->length, sizeof(int), compare_lno); 
+
+		strbuf_reset(gtop->sb);
+		strbuf_puts(gtop->sb, entry->name);
+		strbuf_putc(gtop->sb, ' ');
+		strbuf_puts(gtop->sb, path);
+		strbuf_putc(gtop->sb, ' ');
+		{
+			int savelen = strbuf_getlen(gtop->sb);
+			int last = 0;		/* line 0 doesn't exist */
+			int i;
+
+			for (i = 0; i < vb->length; i++) {
+				int n = lno_array[i];
+
+				if ((gtop->flags & GTAGS_UNIQUE) && n == last)
 					continue;
 				if (strbuf_getlen(gtop->sb) > savelen)
 					strbuf_putc(gtop->sb, ',');
-				strbuf_putn(gtop->sb, lno_array[j]);
+				strbuf_putn(gtop->sb, n);
 				if (strbuf_getlen(gtop->sb) > DBOP_PAGESIZE / 4) {
 					dbop_put(gtop->dbop, key, strbuf_value(gtop->sb));
 					strbuf_setlen(gtop->sb, savelen);
 				}
+				last = n;
 			}
 			if (strbuf_getlen(gtop->sb) > savelen)
 				dbop_put(gtop->dbop, key, strbuf_value(gtop->sb));
-			varray_close(entry->vb);
-			next = entry->next;
-			free(entry);
 		}
-		gtop->htab[i] = NULL;
+		/* Free line number table */
+		varray_close(vb);
 	}
 }
 /*
@@ -754,10 +751,10 @@ gtags_next(GTOP *gtop)
 void
 gtags_close(GTOP *gtop)
 {
-	if (gtop->htab) {
+	if (gtop->pool) {
 		if (gtop->prev_path[0])
-			gtop_flush_htab(gtop);
-		free(gtop->htab);
+			flush_pool(gtop);
+		strhash_close(gtop->pool);
 	}
 	if (gtop->sb)
 		strbuf_close(gtop->sb);
