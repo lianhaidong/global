@@ -80,6 +80,10 @@ o GNU C Library by Free Software Foundation, Inc.
 	libglibc/regex.c
 	libglibc/regex.h
 	libglibc/snprintf.c
+	libglibc/obstack.c
+	libglibc/obstack.h
+	libglibc/hash-string.c
+	libglibc/hash-string.h
 
 o Textutils by Free Software Foundation, Inc.
   (http://www.gnu.org/software/textutils/textutils.html)
