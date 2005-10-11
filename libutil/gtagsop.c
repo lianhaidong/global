@@ -380,7 +380,6 @@ gtags_put(GTOP *gtop, const char *tag, const char *ctags_x)	/* virtually const *
 	else {
 		SPLIT ptable;
 		struct sh_entry *entry;
-		VARRAY *vb;
 		int *lno;
 
 		if (split((char *)ctags_x, 4, &ptable) != 4) {
@@ -414,10 +413,8 @@ gtags_put(GTOP *gtop, const char *tag, const char *ctags_x)	/* virtually const *
 		 */
 		entry = strhash_assign(gtop->pool, ptable.part[PART_TAG].start, 1);
 		if (entry->value == NULL)
-			entry->value = vb = varray_open(sizeof(int), 100);
-		else
-			vb = (VARRAY *)entry->value;
-		lno = varray_append(vb);
+			entry->value = varray_open(sizeof(int), 100);
+		lno = varray_append((VARRAY *)entry->value);
 		*lno = atoi(ptable.part[PART_LNO].start);
 		recover(&ptable);
 	}
