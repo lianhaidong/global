@@ -609,12 +609,11 @@ printtag(FILE *op, const char *ctags_x)		/* virtually const */
 		fputs(ctags_x, op);
 	} else {
 		SPLIT ptable;
-		int n;
 
 		/*
 		 * Split tag line.
 		 */
-		n = split((char *)ctags_x, 4, &ptable);
+		split((char *)ctags_x, 4, &ptable);
 
 		if (tflag) {
 			fputs(ptable.part[PART_TAG].start, op);	/* tag */
