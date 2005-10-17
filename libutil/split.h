@@ -34,6 +34,9 @@
 #define PART_LNO  1
 #define PART_PATH 2
 #define PART_LINE 3
+#define PART_FID_COMP	1
+#define PART_FID_PIDX	2
+#define PART_LNO_COMP	2
 
 typedef struct {
         int npart;
