@@ -887,7 +887,7 @@ genrecord(GTOP *gtop)
 
 	if (!gtop->opened) {
 		SPLIT ptable;
-		const char *fid, *path;
+		const char *path;
 
 		gtop->opened = 1;
 		/*
