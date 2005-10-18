@@ -91,11 +91,11 @@ static regex_t reg;
  * GLOBAL-4.5.1 -	support format version 1, 2 and 3.
  *			if (format version > 3) then print error message.
  * format version 1 (default):
- *	original format.
+ *	Standard format
  * format version 2 (gtags -c):
- *	compact format + pathindex format
+ *	Compact format + Pathindex option
  * format version 3 (gtags -cc):
- *	only pathindex format (undocumented)
+ *	Compact format without Pathindex option (undocumented)
  *
  * About GTAGS and GRTAGS, the default format is still version 1.
  * Since if version number is not found then it assumes version 1, we
@@ -114,22 +114,40 @@ static regex_t reg;
  * 203|main(int argc, char **argv)
  *    |{
  *
- * (Standard format)
+ * Standard format (e.g. GTAGS by gtags)
  *
  * 0                 1   2                3
  * ------------------------------------------------------------------
  * main              203 ./gtags/gtags.c  main(int argc, char **argv)
  *
- * (Pathindex format)
- * 0                 1   2   3
- * ----------------------------------------------------
- * main              203 22  main(int argc, char **argv)
+ * Standard format + Pathindex option (e.g. GTAGS by gtags -cc)
+ * 0                 1   2  3
+ * ------------------------------------------------------------------
+ * main              203 22 main(int argc, char **argv)
  *
- * (Compact format)
+ * Compact format (e.g. GSYMS by gtags)
+ *
+ * 0    1               2
+ * ----------------------------------------------------
+ * main ./gtags/gtags.c 203
+ *
+ * Compact format + Pathindex option (e.g. GTAGS by gtags -c)
  *
  * 0    1  2
  * ----------------------------------------------------
  * main 22 203
+ *
+ * [Correspondence of gtags option and format]
+ *
+ *         |                 gtags option
+ * tagfile |   (none)  |      -cc             |      -c
+ * --------+-----------+----------------------+-------------------
+ * GTAGS   | STANDARD  | STANDARD + PATHINDEX | COMPACT + PATHINDEX
+ * --------+-----------+----------------------+-------------------
+ * GRTAGS  | STANDARD  | STANDARD + PATHINDEX | COMPACT + PATHINDEX
+ * --------+-----------+----------------------+-------------------
+ * GSYMS   | COMPACT   | COMPACT  + PATHINDEX | COMPACT + PATHINDEX
+ *
  */
 static int support_version = 3;	/* acceptable format version   */
 static const char *tagslist[] = {"GPATH", "GTAGS", "GRTAGS", "GSYMS"};
@@ -622,36 +640,37 @@ gtags_add(GTOP *gtop, const char *comline, STRBUF *path_list, int flags)
 void
 gtags_delete(GTOP *gtop, IDSET *deleteset)
 {
-	const char *tagline, *s_fid;
+	const char *tagline, *path, *s_fid;
 	SPLIT ptable;
 	int fid;
 
 	for (tagline = dbop_first(gtop->dbop, NULL, NULL, 0); tagline; tagline = dbop_next(gtop->dbop)) {
 		/*
-		 * Extract fid from the tag line.
+		 * Extract path from the tag line.
 		 */
 		split((char *)tagline, 4, &ptable);
-		if (gtop->format == GTAGS_STANDARD) {
-			if (ptable.npart < 4) {
-				recover(&ptable);
-				die("too small number of parts.\n'%s'", tagline);
-			}
-			s_fid = gpath_path2fid(ptable.part[PART_PATH].start);
-			if (s_fid == NULL)
-				die("GPATH is corrupted.");
-		}
-		else if (gtop->format == GTAGS_PATHINDEX) {
-			if (ptable.npart < 4) {
-				recover(&ptable);
-				die("too small number of parts in pathindex format.\n'%s'", tagline);
-			}
-			s_fid = ptable.part[PART_FID_PIDX].start;
-		} else {	/* gtop->format & GTAGS_COMPACT */
+		if (gtop->format & GTAGS_COMPACT) {
 			if (ptable.npart != 3) {
 				recover(&ptable);
 				die("too small number of parts in compact format.\n'%s'", tagline);
 			}
-			s_fid = ptable.part[PART_FID_COMP].start;
+			path = ptable.part[PART_PATH_COMP].start;
+		} else {	/* Standard format */
+			if (ptable.npart < 4) {
+				recover(&ptable);
+				die("too small number of parts in standard format.\n'%s'", tagline);
+			}
+			path = ptable.part[PART_PATH].start;
+		}
+		/*
+		 * Convert the path into file id.
+		 */
+		if (gtop->format & GTAGS_PATHINDEX)
+			s_fid = path;	/* Nothing to do. */
+		else {
+			s_fid = gpath_path2fid(path);
+			if (s_fid == NULL)
+				die("GPATH is corrupted.");
 		}
 		fid = atoi(s_fid);
 		recover(&ptable);
@@ -735,11 +754,20 @@ gtags_first(GTOP *gtop, const char *pattern, int flags)
 	}
 	tagline = dbop_first(gtop->dbop, key, preg, dbflags);
 	if (tagline) {
+		/*
+		 * Standard format (or only key)
+		 */
 		if (gtop->format == GTAGS_STANDARD || gtop->flags & GTOP_KEY)
 			return tagline;
+		/*
+		 * Standard format + Pathindex option.
+		 */
 		else if (gtop->format == GTAGS_PATHINDEX)
 			return unpack_pathindex(tagline);
-		else {	/* Compact format */
+		/*
+		 * Compact format
+		 */
+		else {
 			gtop->line = (char *)tagline;
 			gtop->opened = 0;
 			return genrecord(gtop);
@@ -759,21 +787,20 @@ gtags_next(GTOP *gtop)
 {
 	const char *tagline;
 	/*
-	 * If it is standard format or only key.
-	 * Just return it.
+	 * Standard format (or only key)
 	 */
 	if (gtop->format == GTAGS_STANDARD || gtop->flags & GTOP_KEY) {
 		return dbop_next(gtop->dbop);
 	}
 	/*
-	 * Pathindex format.
+	 * Standard format + Pathindex option.
 	 */
 	else if (gtop->format == GTAGS_PATHINDEX) {
 		tagline = dbop_next(gtop->dbop);
 		return (tagline == NULL) ? NULL : unpack_pathindex(tagline);
 	}
 	/*
-	 * gtop->format & GTAGS_COMPACT
+	 * Compact format
 	 */
 	else {
 		const char *ctags_x;
@@ -816,7 +843,7 @@ gtags_close(GTOP *gtop)
 /*
  * unpack_pathindex: convert pathindex format into standard format.
  *
- *	i)	tagline	tag line (pathindex format)
+ *	i)	tagline	tag line (Standard format + pathindex option)
  */
 static const char *
 unpack_pathindex(const char *tagline)	/* virtually const */
@@ -833,17 +860,17 @@ unpack_pathindex(const char *tagline)	/* virtually const */
 	/*
 	 * extract file id and convert into path name.
 	 */
-	path = gpath_fid2path(ptable.part[PART_FID_PIDX].start);
+	path = gpath_fid2path(ptable.part[PART_PATH].start);
 	if (path == NULL)
-		die("GPATH is corrupted.(fid '%s' not found)", ptable.part[PART_FID_PIDX].start);
+		die("GPATH is corrupted.(fid '%s' not found)", ptable.part[PART_PATH].start);
 	recover(&ptable);
 	/*
 	 * copy line with converting fid into path name.
 	 */
 	strbuf_clear(output);
-	strbuf_nputs(output, tagline, ptable.part[PART_FID_PIDX].start - tagline);
+	strbuf_nputs(output, tagline, ptable.part[PART_PATH].start - tagline);
 	strbuf_puts(output, path);
-	strbuf_puts(output, ptable.part[PART_FID_PIDX].end);
+	strbuf_puts(output, ptable.part[PART_PATH].end);
 
 	return strbuf_value(output);
 }
@@ -863,6 +890,9 @@ genrecord(GTOP *gtop)
 		const char *fid, *path;
 
 		gtop->opened = 1;
+		/*
+		 * Compact format
+		 */
 		split(gtop->line, 3, &ptable);
 		if (ptable.npart != 3) {
 			recover(&ptable);
@@ -872,9 +902,14 @@ genrecord(GTOP *gtop)
 		strlimcpy(gtop->tag, ptable.part[PART_TAG].start, sizeof(gtop->tag));
 
 		/* Path name */
-		fid = ptable.part[PART_FID_COMP].start;
-		if ((path = gpath_fid2path(fid)) == NULL)
-			die("GPATH is corrupted.('%s' not found)", fid);
+		path = ptable.part[PART_PATH_COMP].start;
+		if (gtop->format & GTAGS_PATHINDEX) {
+			const char *p;
+
+			if ((p = gpath_fid2path(path)) == NULL)
+				die("GPATH is corrupted.('%s' not found)", path);
+			path = p;
+		}
 		strlimcpy(gtop->path, path, sizeof(gtop->path));
 
 		/* line number list */

@@ -966,8 +966,9 @@ createtags(const char *dbpath, const char *root, int db)
 	/*
 	 * Compact format:
 	 *
-	 * -c: COMPACT format.
-	 * -cc: PATHINDEX format.
+	 * non: STANDARD format
+	 * -c:  COMPACT format + PATHINDEX option
+	 * -cc: STANDARD format + PATHINDEX option
 	 * Ths -cc is undocumented.
 	 * In the future, it may become the standard format of GLOBAL.
 	 */
