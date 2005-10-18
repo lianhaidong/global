@@ -211,6 +211,7 @@ void
 strhash_close(STRHASH *sh)
 {
 	strhash_reset(sh);
+	obstack_free(&sh->pool, NULL);
 	free(sh->htab);
 	free(sh);
 }
