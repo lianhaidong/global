@@ -22,7 +22,6 @@
 
 #include "obstack.h"
 #include "queue.h"
-#include "strbuf.h"
 
 struct sh_entry {
 	SLIST_ENTRY(sh_entry) ptr;

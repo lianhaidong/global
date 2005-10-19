@@ -29,7 +29,6 @@
 #include "idset.h"
 #include "strbuf.h"
 #include "strhash.h"
-#include "varray.h"
 
 #define VERSIONKEY	" __.VERSION"
 #define COMPACTKEY	" __.COMPACT"
