@@ -302,7 +302,7 @@ push_stack(struct dirstack *sp, const char *s)
 
 	if (sp->leaved < length) {
 		fprintf(stderr, "s = %s, leaved = %d, length = %d, bufsize = %d\n",
-			s, sp->leaved, length, sp->last - sp->buf);
+			s, sp->leaved, length, (int)(sp->last - sp->buf));
 		dump_stack(sp, "abort in push_stack");
 		abort();
 	}
