@@ -68,31 +68,45 @@ static struct anchor *CURRENTDEF;
  * anchor_prepare: setup input stream.
  *
  *	i)	path_list	\0 separated list of paths
+ *
  */
 void
 anchor_prepare(STRBUF *path_list)
 {
+	/*
+	 * Option table:
+	 * We use blank string instead of null string not to change the length.
+	 */
+	char *options[] = {NULL, " ", "r", "s"};
 	int db;
 	struct anchor_input *input;
-	STRBUF *comline = strbuf_open(0);
 
 	for (db = GTAGS; db < GTAGLIM; db++) {
+		char comline[MAXFILLEN];
+
 		if (!symbol && db == GSYMS)
 			continue;
-		input = &anchor_input[db - GTAGS];
+		/*
+		 * Setup input stream.
+		 *
+		 * Htags(1) should not use gtags-parser(1) directly;
+		 * it should use global(1) with the -f option instead.
+		 * Because gtags-parser is part of the implementation of
+		 * gtags(1) and global(1), and htags is only an application
+		 * program which uses global(1). If htags depends on
+		 * gtags-parser, it will become difficult to change the
+		 * implementation of gtags and global.
+		 */
+		snprintf(comline, sizeof(comline), "global -fn%s",  options[db]);
+		input = &anchor_input[db];
 		input->command = strbuf_open(0);
 		input->ib = strbuf_open(MAXBUFLEN);
-		strbuf_reset(comline);
-		if (!getconfs(dbname(db), comline))
-			die("cannot get parser for %s.", dbname(db));
-		makecommand(strbuf_value(comline), path_list, input->command);
+		makecommand(comline, path_list, input->command);
 		/*
-		 * We assume that the output of gtags-parser is sorted by the path.
-		 * About the other parsers, it is not guaranteed, so we sort it
-		 * using external sort command (gnusort).
+		 * Though the output of global -f is not necessarily sorted
+		 * by the path, it is guaranteed that the records concerning
+		 * the same file are consecutive.
 		 */
-		if (locatestring(strbuf_value(comline), "gtags-parser", MATCH_FIRST) == NULL)
-			strbuf_puts(input->command, "| gnusort -k 3,3");
 		input->ip = popen(strbuf_value(input->command), "r");
 		if (input->ip == NULL)
 			die("cannot execute command '%s'.", strbuf_value(input->command));
@@ -118,7 +132,6 @@ anchor_prepare(STRBUF *path_list)
 			die("The output of parser is illegal.\n%s", input->ctags_x);
 		}
 	}
-	strbuf_close(comline);
 }
 /*
  * anchor_load: load anchor table
@@ -142,7 +155,7 @@ anchor_load(const char *file)
 	for (db = GTAGS; db < GTAGLIM; db++) {
 		if (!symbol && db == GSYMS)
 			continue;
-		input = &anchor_input[db - GTAGS];
+		input = &anchor_input[db];
 		/*
 		 * Read from input stream until it reaches end of file
 		 * or the line of another file appears.
