@@ -659,7 +659,7 @@ idutils(const char *pattern, const char *dbpath)
 	char edit[IDENTLEN+1];
 	const char *path, *lno, *lid;
 	int linenum, count;
-	char *p, *line;
+	char *p, *grep;
 
 	lid = usable("lid");
 	if (!lid)
@@ -670,6 +670,7 @@ idutils(const char *pattern, const char *dbpath)
 	ffformat(edit, sizeof(edit), pattern);
 	/*
 	 * make lid command line.
+	 * Invoke lid with the --result=grep option to generate grep format.
 	 */
 	strbuf_puts(ib, lid);
 	strbuf_puts(ib, " --separator=newline");
@@ -692,14 +693,14 @@ idutils(const char *pattern, const char *dbpath)
 	if (!(op = openfilter()))
 		die("cannot open output filter.");
 	count = 0;
-	while ((line = strbuf_fgets(ib, ip, STRBUF_NOCRLF)) != NULL) {
-		p = line;
+	while ((grep = strbuf_fgets(ib, ip, STRBUF_NOCRLF)) != NULL) {
+		p = grep;
 		/* extract filename */
 		path = p;
 		while (*p && *p != ':')
 			p++;
 		if ((xflag || tflag) && !*p)
-			die("invalid lid(id-utils) output format. '%s'", line);
+			die("invalid lid(id-utils) output format. '%s'", grep);
 		*p++ = 0;
 		if (lflag) {
 			if (!locatestring(path, localprefix + 2, MATCH_AT_FIRST))
@@ -717,11 +718,11 @@ idutils(const char *pattern, const char *dbpath)
 		while (*p && isdigit(*p))
 			p++;
 		if (*p != ':')
-			die("invalid lid(id-utils) output format. '%s'", line);
+			die("invalid lid(id-utils) output format. '%s'", grep);
 		*p++ = 0;
 		linenum = atoi(lno);
 		if (linenum <= 0)
-			die("invalid lid(id-utils) output format. '%s'", line);
+			die("invalid lid(id-utils) output format. '%s'", grep);
 		/*
 		 * print out.
 		 */
