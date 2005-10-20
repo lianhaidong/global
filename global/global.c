@@ -376,6 +376,10 @@ main(int argc, char **argv)
 		localprefix = NULL;
 	}
 	/*
+	 * Decide tag type.
+	 */
+	db = (rflag) ? GRTAGS : ((sflag) ? GSYMS : GTAGS);
+	/*
 	 * make sort filter.
 	 */
 	{
@@ -399,9 +403,23 @@ main(int argc, char **argv)
 		}
 		if (tflag) 			/* ctags format */
 			strbuf_puts(sortfilter, " -k 1,1 -k 2,2 -k 3,3n");
-		else if (fflag)
-			strbuf_setlen(sortfilter, 0);
-		else if (xflag)			/* print details */
+		else if (fflag) {
+			STRBUF *sb = strbuf_open(0);
+			/*
+			 * By default, the -f option need sort filter,
+			 * because there is a possibility that an external
+			 * parser is used instead of gtags-parser(1).
+			 * Clear the sort filter when understanding that
+			 * the parser is gtags-parser.
+			 */
+			if (!getconfs(dbname(db), sb))
+				die("cannot get parser for %s.", dbname(db));
+			if (locatestring(strbuf_value(sb), "gtags-parser", MATCH_FIRST))
+				strbuf_setlen(sortfilter, 0);
+			else
+				strbuf_puts(sortfilter, " -k 3,3 -k 2,2n");
+			strbuf_close(sb);
+		} else if (xflag)			/* print details */
 			strbuf_puts(sortfilter, " -k 1,1 -k 3,3 -k 2,2n");
 		else if (!unique)		/* print just a file name */
 			strbuf_puts(sortfilter, " -u");
@@ -456,7 +474,6 @@ main(int argc, char **argv)
 		pathlist(dbpath, av);
 		exit(0);
 	}
-	db = (rflag) ? GRTAGS : ((sflag) ? GSYMS : GTAGS);
 	/*
 	 * print function definitions.
 	 */
@@ -890,7 +907,6 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 	 * teach parser where is dbpath.
 	 */
 	set_env("GTAGSDBPATH", dbpath);
-
 	/*
 	 * get parser.
 	 */
