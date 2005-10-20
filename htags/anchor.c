@@ -42,7 +42,7 @@ struct anchor_input {
 	SPLIT ptable;
 };
 
-static struct anchor_input anchor_input[GTAGLIM - GTAGS];
+static struct anchor_input anchor_input[GTAGLIM];
 static struct anchor *table;
 static VARRAY *vb;
 
