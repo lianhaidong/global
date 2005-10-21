@@ -44,6 +44,7 @@
 #include "gpathop.h"
 #include "split.h"
 #include "strbuf.h"
+#include "strhash.h"
 #include "strlimcpy.h"
 #include "strmake.h"
 #include "tab.h"
