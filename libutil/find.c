@@ -80,11 +80,13 @@ static char **listarray;		/* list for skipping full path */
 static FILE *ip;
 static FILE *temp;
 static char rootdir[MAXPATHLEN+1];
-static int opened;
+static int status;
 #define FIND_OPEN	1
 #define FILELIST_OPEN	2
+#define END_OF_FIND	3
 
 static void trim(char *);
+static char *find_read_traverse(void);
 static char *find_read_filelist(void);
 
 extern int qflag;
@@ -399,8 +401,8 @@ getdirs(const char *dir, STRBUF *sb)
 void
 find_open(const char *start)
 {
-	assert(opened == 0);
-	opened = FIND_OPEN;
+	assert(status == 0);
+	status = FIND_OPEN;
 
 	if (!start)
 		start = ".";
@@ -433,8 +435,8 @@ find_open(const char *start)
 void
 find_open_filelist(const char *filename, const char *root)
 {
-	assert(opened == 0);
-	opened = FILELIST_OPEN;
+	assert(status == 0);
+	status = FILELIST_OPEN;
 
 	if (!strcmp(filename, "-")) {
 		/*
@@ -468,14 +470,32 @@ find_open_filelist(const char *filename, const char *root)
  *
  *	r)		path
  */
-char    *
+char *
 find_read(void)
+{
+	static char *path;
+
+	assert(status != 0);
+	if (status == END_OF_FIND)
+		path = NULL;
+	else if (status == FILELIST_OPEN)
+		path = find_read_filelist();
+	else if (status == FIND_OPEN)
+		path = find_read_traverse();
+	else
+		die("find_read: internal error.");
+	return path;
+}
+/*
+ * find_read_traverse: read path without GPATH.
+ *
+ *	r)		path
+ */
+char *
+find_read_traverse(void)
 {
 	static char val[MAXPATHLEN+1];
 
-	assert(opened != 0);
-	if (opened == FILELIST_OPEN)
-		return find_read_filelist();
 	for (;;) {
 		while (curp->p < curp->end) {
 			char type = *(curp->p);
@@ -546,6 +566,7 @@ find_read(void)
 		curp--;
 		*(curp->dirp) = 0;
 	}
+	status = END_OF_FIND;
 	return NULL;
 }
 /*
@@ -558,13 +579,14 @@ find_read_filelist(void)
 {
 	STATIC_STRBUF(ib);
 	static char buf[MAXPATHLEN + 1];
-	char *path;
+	static char *path;
 
 	strbuf_clear(ib);
 	for (;;) {
 		path = strbuf_fgets(ib, ip, STRBUF_NOCRLF);
 		if (path == NULL) {
 			/* EOF */
+			status = END_OF_FIND;
 			return NULL;
 		}
 		if (*path == '\0') {
@@ -626,23 +648,23 @@ find_read_filelist(void)
 void
 find_close(void)
 {
-	assert(opened != 0);
-	if (opened == FIND_OPEN) {
+	assert(status != 0);
+	if (status == FIND_OPEN) {
 		for (curp = &stack[0]; curp < topp; curp++)
 			if (curp->sb != NULL)
 				strbuf_close(curp->sb);
-	} else if (opened == FILELIST_OPEN) {
+	} else if (status == FILELIST_OPEN) {
 		/*
 		 * The --file=- option is specified, we don't close file
 		 * to read it repeatedly.
 		 */
 		if (ip != temp)
 			fclose(ip);
-	} else {
+	} else if (status != END_OF_FIND) {
 		die("illegal find_close");
 	}
 	regfree(suff);
 	if (skip)
 		regfree(skip);
-	opened = 0;
+	status = 0;
 }
