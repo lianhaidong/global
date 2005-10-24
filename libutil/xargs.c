@@ -36,6 +36,7 @@
 #include "strbuf.h"
 #include "xargs.h"
 
+static int exec_line_limit(int);
 static char *repeat_find_read(void);
 static void repeat_find_next(void);
 static FILE *execute_command(XARGS *);
@@ -54,6 +55,48 @@ static XARGS *xargs_open_generic(const char *, int);
  *	puts(p);
  * xargs_close(xp);
  */
+/*
+ * exec_line_limit: upper limit of bytes of exec line.
+ *
+ *	i)	length	command line length
+ *	r)	0: unknown or cannot afford long line.
+ *		> 0: upper limit of exec line
+ */
+static int
+exec_line_limit(int length)
+{
+	int limit = 0;
+
+#ifdef ARG_MAX
+	/*
+	 * POSIX.2 limits the exec(2) line length to ARG_MAX - 2048.
+	 */
+	limit = ARG_MAX - 2048;
+	/*
+	 * The reason is unknown but the xargs(1) in GNU findutils
+	 * use this limit.
+	 */
+	if (limit > 20 * 1024)
+		limit = 20 * 1024;
+	/*
+	 * Add the command line length.
+	 * We estimates additional 80 bytes for popen(3) and space for
+	 * the additional sort command.
+	 *
+	 * for "/bin/sh -c "				11bytes
+	 * for " | gnusort -k 1,1 -k 3,3 -k 2,2n"	32bytes
+	 * reserve					37bytes
+	 * ----------------------------------------------------
+	 * Total					80 bytes
+	 */
+	limit -= length + 80;
+
+	limit -= env_size();
+	if (limit < 0)
+		limit = 0;
+#endif
+	return limit;
+}
 /*
  * repeatable find_read
  */
