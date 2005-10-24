@@ -776,25 +776,8 @@ makehtml(int total)
 
 	/*
 	 * Calculate the limit of path list.
- 	 */
-	{
-		int db;
-		int max = 0;
-		/*
-		 * Get the longest command line length except path list.
-		 */
-		for (db = GTAGS; db < GTAGLIM; db++) {
-			if (!symbol && db == GSYMS)
-				continue;
-			strbuf_reset(sb);
-			if (!getconfs(dbname(db), sb))
-				die("cannot get parser for %s.", dbname(db));
-			if (strbuf_getlen(sb) > max)
-				max = strbuf_getlen(sb);
-		}
-		path_list_max = exec_line_limit(max);
-		strbuf_reset(sb);
-	}
+	 */
+	path_list_max = exec_line_limit(strlen("global -fnr"));
 	if (other_files && !dynamic)
 		snprintf(command, sizeof(command), "%s --other | gnusort -t / -k 2", findcom);
 	else
