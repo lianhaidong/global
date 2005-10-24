@@ -180,6 +180,17 @@ strbuf_open(int init)
 	return sb;
 }
 /*
+ * strbuf_reset: reset string buffer.
+ *
+ *	i)	sb	string buffer
+ */
+void
+strbuf_reset(STRBUF *sb)
+{
+	sb->curp = sb->sbuf;
+	sb->alloc_failed = 0;
+}
+/*
  * strbuf_clear: clear static string buffer.
  *
  *	i)	sb	statically defined string buffer

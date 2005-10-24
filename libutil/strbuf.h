@@ -97,11 +97,6 @@ typedef struct _strbuf {
 	}\
 } while (0)
 
-#define strbuf_reset(sb) do {\
-	sb->curp = sb->sbuf;\
-	sb->alloc_failed = 0;\
-} while (0)
-
 #define strbuf_puts0(sb, s) do {\
 	strbuf_puts(sb, s);\
 	strbuf_putc(sb, '\0');\
@@ -124,6 +119,7 @@ void strbuf_dump(char *);
 #endif
 void __strbuf_expandbuf(STRBUF *, int);
 STRBUF *strbuf_open(int);
+void strbuf_reset(STRBUF *);
 void strbuf_clear(STRBUF *);
 void strbuf_nputs(STRBUF *, const char *, int);
 void strbuf_puts(STRBUF *, const char *);
