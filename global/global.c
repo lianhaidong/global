@@ -57,7 +57,6 @@ void idutils(const char *, const char *);
 void grep(const char *);
 void pathlist(const char *, const char *);
 void parsefile(int, char **, const char *, const char *, const char *, int);
-static int exec_parser(const char *, STRBUF *, const char *, const char *, FILE *);
 void printtag(FILE *, const char *);
 int search(const char *, const char *, const char *, int);
 void ffformat(char *, int, const char *);
@@ -898,10 +897,11 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 	char rootdir[MAXPATHLEN+1];
 	char buf[MAXPATHLEN+1], *path;
 	FILE *op;
-	int count;
+	int count = 0;
 	STRBUF *comline = strbuf_open(0);
 	STRBUF *path_list = strbuf_open(MAXPATHLEN);
-	int path_list_max;
+	XARGS *xp;
+	char *p;
 
 	snprintf(rootdir, sizeof(rootdir), "%s/", root);
 	/*
@@ -913,16 +913,13 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 	 */
 	if (!getconfs(dbname(db), comline))
 		die("cannot get parser for %s.", dbname(db));
-	/*
-	 * determine the maximum length of the list of paths.
-	 */
-	path_list_max = exec_line_limit(strbuf_getlen(comline));
-
 	if (!(op = openfilter()))
 		die("cannot open output filter.");
 	if (gpath_open(dbpath, 0) < 0)
 		die("GPATH not found.");
-	count = 0;
+	/*
+	 * Make a path list while checking the validity of path name.
+	 */
 	for (; argc > 0; argv++, argc--) {
 		const char *av = argv[0];
 
@@ -963,25 +960,26 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 			continue;
 		}
 		/*
-		 * Execute parser when path name collects enough.
-		 * Though the path_list is \0 separated list of string,
-		 * we can think its length equals to the length of
-		 * argument string because each \0 can be replaced
-		 * with a blank.
-		 */
-		if (strbuf_getlen(path_list)) {
-			if (strbuf_getlen(path_list) + strlen(path) > path_list_max) {
-				count += exec_parser(strbuf_value(comline), path_list, cwd, root, op);
-				strbuf_reset(path_list);
-			}
-		}
-		/*
 		 * Add a path to the path list.
 		 */
 		strbuf_puts0(path_list, path);
 	}
-	if (strbuf_getlen(path_list))
-		count += exec_parser(strbuf_value(comline), path_list, cwd, root, op);
+	/*
+	 * Execute parser in the root directory of source tree.
+	 */
+	if (chdir(root) < 0)
+		die("cannot move to '%s' directory.", root);
+	xp = xargs_open_with_strbuf(strbuf_value(comline), 0, path_list);
+	while ((p = xargs_read(xp)) != NULL) {
+		printtag(op, p);
+		count++;
+	}
+	xargs_close(xp);
+	if (chdir(cwd) < 0)
+		die("cannot move to '%s' directory.", cwd);
+	/*
+	 * Settlement
+	 */
 	gpath_close();
 	closefilter(op);
 	strbuf_close(comline);
@@ -995,52 +993,6 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 			fprintf(stderr, "%d objects located", count);
 		fprintf(stderr, " (no index used).\n");
 	}
-}
-/*
- * exec_parser: execute parser
- *
- *	i)	parser		template of command line
- *	i)	path_list	\0 separated list of paths
- *	i)	cwd		current directory
- *	i)	root		root directory of source tree
- *	i)	op		filter to output
- *	r)			number of objects found
- */
-static int
-exec_parser(const char *parser, STRBUF *path_list, const char *cwd, const char *root, FILE *op)
-{
-	const char *p;
-	FILE *ip;
-	int count;
-	STRBUF *com = strbuf_open(0);
-	STRBUF *ib = strbuf_open(MAXBUFLEN);
-
-	if (chdir(root) < 0)
-		die("cannot move to '%s' directory.", root);
-	/*
-	 * make command line.
-	 */
-	makecommand(parser, path_list, com);
-	if (debug)
-		fprintf(stderr, "executing %s\n", strbuf_value(com));
-	if (!(ip = popen(strbuf_value(com), "r")))
-		die("cannot execute '%s'.", strbuf_value(com));
-
-	count = 0;
-	while ((p = strbuf_fgets(ib, ip, STRBUF_NOCRLF)) != NULL) {
-		count++;
-		printtag(op, p);
-	}
-
-	if (pclose(ip) < 0)
-		die("terminated abnormally.");
-	if (chdir(cwd) < 0)
-		die("cannot move to '%s' directory.", cwd);
-
-	strbuf_close(com);
-	strbuf_close(ib);
-
-	return count;
 }
 /*
  * search: search specified function 

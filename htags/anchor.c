@@ -33,16 +33,9 @@
 #include "global.h"
 #include "anchor.h"
 #include "htags.h"
+#include "xargs.h"
 
-struct anchor_input {
-	STRBUF *command;
-	FILE *ip;
-	STRBUF *ib;
-	char *ctags_x;
-	SPLIT ptable;
-};
-
-static struct anchor_input anchor_input[GTAGLIM];
+static XARGS *anchor_input[GTAGLIM];
 static struct anchor *table;
 static VARRAY *vb;
 
@@ -67,28 +60,25 @@ static struct anchor *CURRENTDEF;
 /*
  * anchor_prepare: setup input stream.
  *
- *	i)	path_list	\0 separated list of paths
- *
+ *	i)	anchor_stream	file pointer of path list
  */
 void
-anchor_prepare(STRBUF *path_list)
+anchor_prepare(FILE *anchor_stream)
 {
 	/*
 	 * Option table:
-	 * We use blank string instead of null string not to change the length.
+	 * We use blank string as null option instead of null string("")
+	 * not to change the command length. This length influences
+	 * the number of arguments in the xargs processing.
 	 */
 	char *options[] = {NULL, " ", "r", "s"};
+	char comline[MAXFILLEN];
 	int db;
-	struct anchor_input *input;
 
 	for (db = GTAGS; db < GTAGLIM; db++) {
-		char comline[MAXFILLEN];
-
 		if (!symbol && db == GSYMS)
 			continue;
 		/*
-		 * Setup input stream.
-		 *
 		 * Htags(1) should not use gtags-parser(1) directly;
 		 * it should use global(1) with the -f option instead.
 		 * Because gtags-parser is part of the implementation of
@@ -96,53 +86,24 @@ anchor_prepare(STRBUF *path_list)
 		 * program which uses global(1). If htags depends on
 		 * gtags-parser, it will become difficult to change the
 		 * implementation of gtags and global.
-		 */
-		snprintf(comline, sizeof(comline), "global -fn%s",  options[db]);
-		input = &anchor_input[db];
-		input->command = strbuf_open(0);
-		input->ib = strbuf_open(MAXBUFLEN);
-		makecommand(comline, path_list, input->command);
-		/*
+		 *
 		 * Though the output of global -f is not necessarily sorted
 		 * by the path, it is guaranteed that the records concerning
 		 * the same file are consecutive.
 		 */
-		input->ip = popen(strbuf_value(input->command), "r");
-		if (input->ip == NULL)
-			die("cannot execute command '%s'.", strbuf_value(input->command));
-		if (input->ctags_x != NULL) {
-			recover(&input->ptable);
-			die("The output of parser is illegal.\n%s", input->ctags_x);
-		}
-		input->ctags_x = strbuf_fgets(input->ib, input->ip, STRBUF_NOCRLF);
-		if (input->ctags_x == NULL) {
-			if (pclose(input->ip) != 0)
-				die("command '%s' failed.", strbuf_value(input->command));
-			strbuf_close(input->ib);
-			strbuf_close(input->command);
-			continue;
-		}
-		if (split(input->ctags_x, 4, &input->ptable) < 4) {
-			recover(&input->ptable);
-			die("too small number of parts in anchor_prepare().\n'%s'", input->ctags_x);
-		}
-		if (input->ptable.part[PART_PATH].start[0] != '.'
-		 || input->ptable.part[PART_PATH].start[1] != '/') {
-			recover(&input->ptable);
-			die("The output of parser is illegal.\n%s", input->ctags_x);
-		}
+		snprintf(comline, sizeof(comline), "global -fn%s",  options[db]);
+		anchor_input[db] = xargs_open_with_file(comline, 0, anchor_stream);
 	}
 }
 /*
  * anchor_load: load anchor table
  *
- *	i)	file	file name
+ *	i)	path	path name
  */
 void
-anchor_load(const char *file)
+anchor_load(const char *path)
 {
-	struct anchor_input *input;
-	int i, db;
+	int db;
 
 	FIRST = LAST = 0;
 	end = CURRENT = NULL;
@@ -153,26 +114,43 @@ anchor_load(const char *file)
 		varray_reset(vb);
 
 	for (db = GTAGS; db < GTAGLIM; db++) {
+		XARGS *xp;
+		char *ctags_x;
+
 		if (!symbol && db == GSYMS)
 			continue;
-		input = &anchor_input[db];
+		if ((xp = anchor_input[db]) == NULL)
+			continue;
 		/*
 		 * Read from input stream until it reaches end of file
 		 * or the line of another file appears.
 		 */
-		while (input->ctags_x != NULL
-		       && strcmp(input->ptable.part[PART_PATH].start + 2, file) == 0) {
+		while ((ctags_x = xargs_read(xp)) != NULL) {
+			SPLIT ptable;
 			struct anchor *a;
 			int type;
 
+			if (split(ctags_x, 4, &ptable) < 4) {
+				recover(&ptable);
+				die("too small number of parts in anchor_prepare().\n'%s'", ctags_x);
+			}
+			if (!locatestring(ptable.part[PART_PATH].start, "./", MATCH_AT_FIRST)) {
+				recover(&ptable);
+				die("The output of parser is illegal.\n%s", ctags_x);
+			}
+			if (strcmp(ptable.part[PART_PATH].start, path) != 0) {
+				recover(&ptable);
+				xargs_unread(xp);
+				break;
+			}
 			if (db == GTAGS) {
-				const char *p;
+				char *p;
 
-				for (p = input->ptable.part[PART_LINE].start; *p && isspace((unsigned char)*p); p++)
+				for (p = ptable.part[PART_LINE].start; *p && isspace((unsigned char)*p); p++)
 					;
 				if (!*p) {
-					recover(&input->ptable);
-					die("The output of parser is illegal.\n%s", input->ctags_x);
+					recover(&ptable);
+					die("The output of parser is illegal.\n%s", ctags_x);
 				}
 				type = 'D';
 				if (*p == '#') {
@@ -191,34 +169,21 @@ anchor_load(const char *file)
 				type = 'Y';
 			/* allocate an entry */
 			a = varray_append(vb);
-			a->lineno = atoi(input->ptable.part[PART_LNO].start);
+			a->lineno = atoi(ptable.part[PART_LNO].start);
 			a->type = type;
 			a->done = 0;
-			settag(a, input->ptable.part[PART_TAG].start);
-			recover(&input->ptable);
-			input->ctags_x = strbuf_fgets(input->ib, input->ip, STRBUF_NOCRLF);
-			if (input->ctags_x == NULL) {
-				if (pclose(input->ip) != 0)
-					die("command '%s' failed.", strbuf_value(input->command));
-				strbuf_close(input->ib);
-				strbuf_close(input->command);
-				break;
-			}
-			if (split(input->ctags_x, 4, &input->ptable) < 4) {
-				recover(&input->ptable);
-				die("too small number of parts in anchor_load().\n'%s'", input->ctags_x);
-			}
-			if (input->ptable.part[PART_PATH].start[0] != '.'
-			 || input->ptable.part[PART_PATH].start[1] != '/') {
-				recover(&input->ptable);
-				die("The output of parser is illegal.\n%s", input->ctags_x);
-			}
+			settag(a, ptable.part[PART_TAG].start);
+			recover(&ptable);
+		}
+		if (ctags_x == NULL) {
+			xargs_close(anchor_input[db]);
+			anchor_input[db] = NULL;
 		}
 	}
 	if (vb->length == 0) {
 		table = NULL;
 	} else {
-		int used = vb->length;
+		int i, used = vb->length;
 		/*
 		 * Sort by lineno.
 		 */

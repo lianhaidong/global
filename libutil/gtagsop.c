@@ -164,43 +164,6 @@ dbname(int db)
 	return tagslist[db];
 }
 /*
- * makecommand: make command line to make global tag file
- *
- *	i)	comline	skeleton command line
- *	i)	path_list	\0 separated list of path names
- *	o)	sb	command line
- *
- * command skeleton is like this:
- *	'gtags-parser -r %s'
- * following skeleton is allowed too.
- *	'gtags-parser -r'
- */
-void
-makecommand(const char *comline, STRBUF *path_list, STRBUF *sb)
-{
-	const char *p = locatestring(comline, "%s", MATCH_FIRST);
-	const char *path, *end;
-
-	if (p) {
-		strbuf_nputs(sb, comline, p - comline);
-	} else {
-		strbuf_puts(sb, comline);
-		strbuf_putc(sb, ' ');
-	}
-
-	path = strbuf_value(path_list);
-	end = path + strbuf_getlen(path_list);
-	while (path < end) {
-		strbuf_puts(sb, path);
-		path += strlen(path) + 1;
-		if (path < end)
-			strbuf_putc(sb, ' ');
-	}
-
-	if (p)
-		strbuf_puts(sb, p + 2);
-}
-/*
  * formatcheck: check format of tag command's output
  *
  *	i)	ctags_x	tag line (ctags -x format)
@@ -210,7 +173,7 @@ makecommand(const char *comline, STRBUF *path_list, STRBUF *sb)
  * func              83 ./func.c       func()
  */
 void
-formatcheck(const char *ctags_x)		/* virtually const */
+formatcheck(const char *ctags_x)
 {
 	const char *p;
 	SPLIT ptable;
@@ -545,91 +508,6 @@ flush_pool(GTOP *gtop)
 		/* Free line number table */
 		varray_close(vb);
 	}
-}
-/*
- * gtags_add: add tags belonging to the path list into tag file.
- *
- *	i)	gtop	descripter of GTOP
- *	i)	comline	tag command line
- *	i)	path_list	\0 separated list of source files
- *	i)	flags	GTAGS_UNIQUE, GTAGS_EXTRACTMETHOD, GTAGS_DEBUG
- */
-void
-gtags_add(GTOP *gtop, const char *comline, STRBUF *path_list, int flags)
-{
-	const char *ctags_x;
-	FILE *ip;
-	STRBUF *sb = strbuf_open(0);
-	STRBUF *ib = strbuf_open(MAXBUFLEN);
-	const char *path, *end;
-	int path_num;
-
-	gtop->flags = flags;
-	/*
-	 * add path index if not yet.
-	 */
-	path = strbuf_value(path_list);
-	end = path + strbuf_getlen(path_list);
-	path_num = 0;
-	while (path < end) {
-		gpath_put(path);
-		path_num++;
-		path += strlen(path) + 1;
-	}
-	/*
-	 * make command line.
-	 */
-	makecommand(comline, path_list, sb);
-	/*
-	 * Compact format requires the output of parser sorted by the path.
-	 *
-	 * We assume that the output of gtags-parser is sorted by the path.
-	 * About the other parsers, it is not guaranteed, so we sort it
-	 * using external sort command (gnusort).
-	 */
-	if ((gtop->format & GTAGS_COMPACT) != 0
-	    && locatestring(comline, "gtags-parser", MATCH_FIRST) == NULL
-	    && path_num > 1)
-		strbuf_puts(sb, "| gnusort -k 3,3");
-#ifdef DEBUG
-	if (flags & GTAGS_DEBUG)
-		fprintf(stderr, "gtags_add() executing '%s'\n", strbuf_value(sb));
-#endif
-	if (!(ip = popen(strbuf_value(sb), "r")))
-		die("cannot execute '%s'.", strbuf_value(sb));
-	while ((ctags_x = strbuf_fgets(ib, ip, STRBUF_NOCRLF)) != NULL) {
-		char tag[MAXTOKEN], *p;
-
-		strbuf_trim(ib);
-#ifdef DEBUG
-		if (flags & GTAGS_DEBUG)
-			formatcheck(ctags_x);
-#endif
-		/* tag = $1 */
-		strlimcpy(tag, strmake(ctags_x, " \t"), sizeof(tag));
-		/*
-		 * extract method when class method definition.
-		 *
-		 * Ex: Class::method(...)
-		 *
-		 * key	= 'method'
-		 * data = 'Class::method  103 ./class.cpp ...'
-		 */
-		p = tag;
-		if (flags & GTAGS_EXTRACTMETHOD) {
-			if ((p = locatestring(tag, ".", MATCH_LAST)) != NULL)
-				p++;
-			else if ((p = locatestring(tag, "::", MATCH_LAST)) != NULL)
-				p += 2;
-			else
-				p = tag;
-		}
-		gtags_put(gtop, p, ctags_x);
-	}
-	if (pclose(ip) != 0)
-		die("terminated abnormally.");
-	strbuf_close(sb);
-	strbuf_close(ib);
 }
 /*
  * gtags_delete: delete records belong to set of fid.

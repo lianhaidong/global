@@ -69,7 +69,7 @@ static int compare_dup_entry(const void *, const void *);
 static void put_lines(char *, struct dup_entry *, int);
 int main(int, char **);
 int incremental(const char *, const char *);
-void updatetags(const char *, const char *, IDSET *, STRBUF *, int, int);
+void updatetags(const char *, const char *, IDSET *, STRBUF *, int);
 void createtags(const char *, const char *, int);
 int printconf(const char *);
 void set_base_directory(const char *, const char *);
@@ -619,7 +619,6 @@ main(int argc, char **argv)
 	/*
  	 * create GTAGS, GRTAGS and GSYMS
 	 */
-	total = 0;					/* counting file */
 	for (db = GTAGS; db < GTAGLIM; db++) {
 
 		if (oflag && db == GSYMS)
@@ -701,7 +700,6 @@ incremental(const char *dbpath, const char *root)
 	STRBUF *deletelist = strbuf_open(0);
 	IDSET *deleteset;
 	int updated = 0;
-	int addtotal = 0;
 	const char *path;
 
 	if (vflag) {
@@ -726,6 +724,7 @@ incremental(const char *dbpath, const char *root)
 		find_open_filelist(file_list, root);
 	else
 		find_open(NULL);
+	total = 0;
 	while ((path = find_read()) != NULL) {
 		const char *fid;
 
@@ -736,10 +735,10 @@ incremental(const char *dbpath, const char *root)
 			die("stat failed '%s'.", path);
 		if ((fid = gpath_path2fid(path)) == NULL) {
 			strbuf_puts0(addlist, path);
-			addtotal++;
+			total++;
 		} else if (gtags_mtime < statp.st_mtime) {
 			strbuf_puts0(addlist, path);
-			addtotal++;
+			total++;
 			idset_add(deleteset, atoi(fid));
 		}
 	}
@@ -779,7 +778,7 @@ incremental(const char *dbpath, const char *root)
 				continue;
 			if (vflag)
 				fprintf(stderr, "[%s] Updating '%s'.\n", now(), dbname(db));
-			updatetags(dbpath, root, deleteset, addlist, addtotal, db);
+			updatetags(dbpath, root, deleteset, addlist, db);
 		}
 	}
 	if (strbuf_getlen(deletelist) > 0) {
@@ -826,17 +825,27 @@ incremental(const char *dbpath, const char *root)
  *	i)	root		root directory of source tree
  *	i)	deleteset	bit array of fid of deleted or modified files 
  *	i)	addlist		\0 separated list of added or modified files
- *	i)	addtotal	number of files in addlist
  *	i)	db		GTAGS, GRTAGS, GSYMS
  */
+static void
+verbose_updatetags(char *path, int seqno, int skip)
+{
+	if (total)
+		fprintf(stderr, " [%d/%d]", seqno, total);
+	else
+		fprintf(stderr, " [%d]", seqno);
+	fprintf(stderr, " adding tags of %s", path);
+	if (skip)
+		fprintf(stderr, " (skipped)");
+	fputc('\n', stderr);
+}
 void
-updatetags(const char *dbpath, const char *root, IDSET *deleteset, STRBUF *addlist, int addtotal, int db)
+updatetags(const char *dbpath, const char *root, IDSET *deleteset, STRBUF *addlist, int db)
 {
 	GTOP *gtop;
 	STRBUF *comline = strbuf_open(0);
-	int gflags;
-	int path_list_max;
-	int arg_count = 0;
+	int flags;
+	int seqno;
 
 	/*
 	 * GTAGS needed to make GRTAGS.
@@ -849,19 +858,14 @@ updatetags(const char *dbpath, const char *root, IDSET *deleteset, STRBUF *addli
 	 */
 	if (!getconfs(dbname(db), comline))
 		die("cannot get tag command. (%s)", dbname(db));
-	/*
-	 * determine the maximum length of the list of paths.
-	 */
-	path_list_max = exec_line_limit(strbuf_getlen(comline));
-
 	gtop = gtags_open(dbpath, root, db, GTAGS_MODIFY, 0);
 	if (vflag) {
 		char fid[32];
 		const char *path;
-		int seqno = 1;
 		int total = idset_count(deleteset);
 		int i;
 
+		seqno = 1;
 		for (i = 0; i < deleteset->max; i++) {
 			if (idset_contains(deleteset, i)) {
 				snprintf(fid, sizeof(fid), "%d", i);
@@ -874,56 +878,50 @@ updatetags(const char *dbpath, const char *root, IDSET *deleteset, STRBUF *addli
 	}
 	if (deleteset->max > 0)
 		gtags_delete(gtop, deleteset);
-	gflags = 0;
+	flags = 0;
 	if (extractmethod)
-		gflags |= GTAGS_EXTRACTMETHOD;
+		flags |= GTAGS_EXTRACTMETHOD;
 	if (debug)
-		gflags |= GTAGS_DEBUG;
+		flags |= GTAGS_DEBUG;
 	/*
 	 * If the --max-args option is not specified, we pass the parser
 	 * the source file as a lot as possible to decrease the invoking
 	 * frequency of the parser.
 	 */
 	{
-		STRBUF *path_list = strbuf_open(0);
-		const char *path = strbuf_value(addlist);
-		const char *end = path + strbuf_getlen(addlist);
-		int seqno = 1;
+		XARGS *xp;
+		char *ctags_x;
+		char tag[MAXTOKEN], *p;
 
-		while (path < end) {
-			int pathlen = strlen(path);
-
-			if (vflag)
-				fprintf(stderr, " [%d/%d] adding tags of %s\n", seqno++, addtotal, path + 2);
+		xp = xargs_open_with_strbuf(strbuf_value(comline), max_args, addlist);
+		xp->put_gpath = 1;
+		if (vflag)
+			xp->verbose = verbose_updatetags;
+		if (db == GSYMS)
+			xp->skip_assembly = 1;
+		while ((ctags_x = xargs_read(xp)) != NULL) {
+			strlimcpy(tag, strmake(ctags_x, " \t"), sizeof(tag));
 			/*
-			 * Execute parser when path name collects enough.
-			 * Though the path_list is \0 separated list of path,
-			 * we can think its length equals to the length of
-			 * argument string because each \0 can be replaced
-			 * with a blank.
+			 * extract method when class method definition.
+			 *
+			 * Ex: Class::method(...)
+			 *
+			 * key	= 'method'
+			 * data = 'Class::method  103 ./class.cpp ...'
 			 */
-			if (strbuf_getlen(path_list)) {
-				if (path_list_max == 0 ||
-				    (max_args > 0 && arg_count >= max_args) ||
-				    strbuf_getlen(path_list) + pathlen > path_list_max)
-				{
-					gtags_add(gtop, strbuf_value(comline), path_list, gflags);
-					strbuf_reset(path_list);
-					arg_count = 0;
-				}
+			p = tag;
+			if (flags & GTAGS_EXTRACTMETHOD) {
+				if ((p = locatestring(tag, ".", MATCH_LAST)) != NULL)
+					p++;
+				else if ((p = locatestring(tag, "::", MATCH_LAST)) != NULL)
+					p += 2;
+				else
+					p = tag;
 			}
-			/*
-			 * Add a path to the path list.
-			 */
-			strbuf_puts0(path_list, path);
-			path += pathlen + 1;
-			arg_count++;
+			gtags_put(gtop, p, ctags_x);
 		}
-		if (strbuf_getlen(path_list))
-			gtags_add(gtop, strbuf_value(comline), path_list, gflags);
-		strbuf_close(path_list);
+		total = xargs_close(xp);
 	}
-
 	gtags_close(gtop);
 	strbuf_close(comline);
 }
@@ -934,17 +932,27 @@ updatetags(const char *dbpath, const char *root, IDSET *deleteset, STRBUF *addli
  *	i)	root	root directory of source tree
  *	i)	db	GTAGS, GRTAGS, GSYMS
  */
+static void
+verbose_createtags(char *path, int seqno, int skip)
+{
+	if (total)
+		fprintf(stderr, " [%d/%d]", seqno, total);
+	else
+		fprintf(stderr, " [%d]", seqno);
+	fprintf(stderr, " extracting tags of %s", path);
+	if (skip)
+		fprintf(stderr, " (skipped)");
+	fputc('\n', stderr);
+}
 void
 createtags(const char *dbpath, const char *root, int db)
 {
-	const char *path;
 	GTOP *gtop;
-	int flags, gflags;
+	int flags;
+	XARGS *xp;
+	char *ctags_x;
 	STRBUF *comline = strbuf_open(0);
-	int count = 0;
-	int arg_count = 0;
 	STRBUF *path_list = strbuf_open(MAXPATHLEN);
-	int path_list_max;
 
 	/*
 	 * get tag command.
@@ -956,13 +964,6 @@ createtags(const char *dbpath, const char *root, int db)
 	 */
 	if (db == GRTAGS && !test("f", makepath(dbpath, dbname(GTAGS), NULL)))
 		die("GTAGS needed to create GRTAGS.");
-
-	/*
-	 * determine the maximum length of the list of paths.
-	 */
-	path_list_max = exec_line_limit(strbuf_getlen(comline));
-
-	flags = 0;
 	/*
 	 * Compact format:
 	 *
@@ -972,6 +973,7 @@ createtags(const char *dbpath, const char *root, int db)
 	 * Ths -cc is undocumented.
 	 * In the future, it may become the standard format of GLOBAL.
 	 */
+	flags = 0;
 	if (cflag) {
 		flags |= GTAGS_PATHINDEX;
 		if (cflag == 1)
@@ -980,11 +982,26 @@ createtags(const char *dbpath, const char *root, int db)
 	if (vflag > 1)
 		fprintf(stderr, " using tag command '%s <path>'.\n", strbuf_value(comline));
 	gtop = gtags_open(dbpath, root, db, GTAGS_CREATE, flags);
-	gflags = 0;
+	/*
+	 * Set flags.
+	 */
+	gtop->flags = 0;
 	if (extractmethod)
-		gflags |= GTAGS_EXTRACTMETHOD;
+		gtop->flags |= GTAGS_EXTRACTMETHOD;
 	if (debug)
-		gflags |= GTAGS_DEBUG;
+		gtop->flags |= GTAGS_DEBUG;
+	/*
+	 * Compact format requires the tag records of the same file are
+	 * consecutive.
+	 *
+	 * We assume that the output of gtags-parser is consecutive for each
+	 * file. About the other parsers, it is not guaranteed, so we sort it
+	 * using external sort command (gnusort).
+	 */
+	if (gtop->format & GTAGS_COMPACT) {
+		if (locatestring(strbuf_value(comline), "gtags-parser", MATCH_FIRST) == NULL)
+			strbuf_puts(comline, "| gnusort -k 3,3");
+	}
 	/*
 	 * If the --max-args option is not specified, we pass the parser
 	 * the source file as a lot as possible to decrease the invoking
@@ -994,59 +1011,39 @@ createtags(const char *dbpath, const char *root, int db)
 		find_open_filelist(file_list, root);
 	else
 		find_open(NULL);
-	while ((path = find_read()) != NULL) {
-		int skip = 0;
+	/*
+	 * Add tags.
+	 */
+	xp = xargs_open_with_find(strbuf_value(comline), max_args);
+	xp->put_gpath = 1;
+	if (vflag)
+		xp->verbose = verbose_createtags;
+	if (db == GSYMS)
+		xp->skip_assembly = 1;
+	while ((ctags_x = xargs_read(xp)) != NULL) {
+		char tag[MAXTOKEN], *p;
 
-		/* a blank at the head of path means 'NOT SOURCE'. */
-		if (*path == ' ')
-			continue;
-		count++;
+		strlimcpy(tag, strmake(ctags_x, " \t"), sizeof(tag));
 		/*
-		 * GSYMS doesn't treat asembler.
+		 * extract method when class method definition.
+		 *
+		 * Ex: Class::method(...)
+		 *
+		 * key	= 'method'
+		 * data = 'Class::method  103 ./class.cpp ...'
 		 */
-		if (db == GSYMS) {
-			if (locatestring(path, ".s", MATCH_AT_LAST) != NULL ||
-			    locatestring(path, ".S", MATCH_AT_LAST) != NULL)
-				skip = 1;
-		}
-		if (vflag) {
-			if (total)
-				fprintf(stderr, " [%d/%d]", count, total);
+		p = tag;
+		if (gtop->flags & GTAGS_EXTRACTMETHOD) {
+			if ((p = locatestring(tag, ".", MATCH_LAST)) != NULL)
+				p++;
+			else if ((p = locatestring(tag, "::", MATCH_LAST)) != NULL)
+				p += 2;
 			else
-				fprintf(stderr, " [%d]", count);
-			fprintf(stderr, " extracting tags of %s", path + 2);
-			if (skip)
-				fprintf(stderr, " (skipped)");
-			fputc('\n', stderr);
+				p = tag;
 		}
-		if (skip)
-			continue;
-		/*
-		 * Execute parser when path name collects enough.
-		 * Though the path_list is \0 separated list of string,
-		 * we can think its length equals to the length of
-		 * argument string because each \0 can be replaced
-		 * with a blank.
-		 */
-		if (strbuf_getlen(path_list)) {
-			if (path_list_max == 0 ||
-			    (max_args > 0 && arg_count >= max_args) ||
-			    strbuf_getlen(path_list) + strlen(path) > path_list_max)
-			{
-				gtags_add(gtop, strbuf_value(comline), path_list, gflags);
-				strbuf_reset(path_list);
-				arg_count = 0;
-			}
-		}
-		/*
-		 * Add a path to path_list.
-		 */
-		strbuf_puts0(path_list, path);
-		arg_count++;
+		gtags_put(gtop, p, ctags_x);
 	}
-	if (strbuf_getlen(path_list))
-		gtags_add(gtop, strbuf_value(comline), path_list, gflags);
-	total = count;				/* save total count */
+	total = xargs_close(xp);
 	find_close();
 	gtags_close(gtop);
 	strbuf_close(comline);

@@ -735,29 +735,6 @@ makehtaccess(const char *file)
 	fclose(op);
 }
 /*
- * Wrapper of src2html()
- */
-static int
-do_src2html(STRBUF *path_list, int count, int total)
-{
-	int notsource;
-	char path[MAXPATHLEN];
-	const char *_ = strbuf_value(path_list);
-	const char *end = _ + strbuf_getlen(path_list);
-	const char *p;
-
-	while (_ < end) {
-		notsource = *_++;
-		count++;
-		message(" [%d/%d] converting %s", count, total, _);
-		p = path2fid(_);
-		snprintf(path, sizeof(path), "%s/%s/%s.%s", distpath, SRCS, p, HTML);
-		src2html(_, path, notsource);
-		_ += strlen(_) + 1;
-	}
-	return count;
-}
-/*
  * makehtml: make html files
  *
  *	i)	total	number of files.
@@ -765,19 +742,17 @@ do_src2html(STRBUF *path_list, int count, int total)
 static void
 makehtml(int total)
 {
-	FILE *ip;
-	const char *_;
-	int count = 0;
 	char command[MAXFILLEN];
+	FILE *ip, *source_stream, *anchor_stream;
+	const char *path;
+	int count = 0;
 	STRBUF *sb = strbuf_open(0);
-	STRBUF *alllist = strbuf_open(0);
-	STRBUF *srclist = strbuf_open(0);
-	int path_list_max;
 
 	/*
-	 * Calculate the limit of path list.
+	 * Create two same streams. The two have each independent file pointer.
+	 *      source_stream: for src2html()
+	 *      anchor_stream: for anchor_load().
 	 */
-	path_list_max = exec_line_limit(strlen("global -fnr"));
 	if (other_files && !dynamic)
 		snprintf(command, sizeof(command), "%s --other | gnusort -t / -k 2", findcom);
 	else
@@ -785,53 +760,50 @@ makehtml(int total)
 	ip = popen(command, "r");
 	if (!ip)
 		die("cannot execute command '%s'.", command);
-	while ((_ = strbuf_fgets(sb, ip, STRBUF_NOCRLF)) != NULL) {
+	source_stream = tmpfile();
+	anchor_stream = tmpfile();
+	while (strbuf_fgets(sb, ip, 0) != NULL) {
+		fputs(strbuf_value(sb), source_stream);
+		fputs(strbuf_value(sb), anchor_stream);
+	}
+	if (pclose(ip) != 0)
+		die("cannot traverse directory.(%s)", command);
+	rewind(source_stream);
+	/*
+	 * Prepare anchor stream for anchor_load().
+	 */
+	anchor_prepare(anchor_stream);
+	/*
+	 * For each path in the source stream, convert the path into HTML file.
+	 */
+	while ((path = strbuf_fgets(sb, source_stream, STRBUF_NOCRLF)) != NULL) {
+		char html[MAXPATHLEN];
 		int notsource = 0;
 
-		if (*_ == ' ') {
+		if (*path == ' ') {
 			if (!other_files)
 				continue;
-			_++;
-			if (test("b", _)) {
+			path++;
+			if (test("b", path)) {
 				if (wflag)
-					warning("'%s' is binary file. (skipped)", _);
+					warning("'%s' is binary file. (skipped)", path + 2);
 				continue;
 			}
 			notsource = 1;
 		} else {
 			/*
-			 * Execute parser when path name collects enough.
-			 * Though the path_list is \0 separated list of string,
-			 * we can think its length equals to the length of
-			 * argument string because each \0 can be replaced
-			 * with a blank.
+			 * load tags belonging to the path.
+			 * The path must be start "./".
 			 */
-			if (strbuf_getlen(srclist)) {
-				if (strbuf_getlen(srclist) + strlen(_) > path_list_max) {
-					anchor_prepare(srclist);
-					count = do_src2html(alllist, count, total);
-					strbuf_reset(srclist);
-					strbuf_reset(alllist);
-				}
-			}
-			/*
-			 * Add a path to the path list.
-			 */
-			strbuf_puts0(srclist, _);
+			anchor_load(path);
 		}
-		strbuf_putc(alllist, notsource);
-		strbuf_puts0(alllist, _ + 2);
+		count++;
+		path += 2;		/* remove './' at the head */
+		message(" [%d/%d] converting %s", count, total, path);
+		snprintf(html, sizeof(html), "%s/%s/%s.%s", distpath, SRCS, path2fid(path), HTML);
+		src2html(path, html, notsource);
 	}
-	if (strbuf_getlen(alllist)) {
-		if (strbuf_getlen(srclist))
-			anchor_prepare(srclist);
-		do_src2html(alllist, count, total);
-	}
-	if (pclose(ip) != 0)
-		die("cannot traverse directory.(%s)", command);
 	strbuf_close(sb);
-	strbuf_close(alllist);
-	strbuf_close(srclist);
 }
 /*
  * copy file.

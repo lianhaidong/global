@@ -657,12 +657,6 @@ src2html(const char *src, const char *html, int notsource)
 		snprintf(indexlink, sizeof(indexlink), "../files.%s", normal_suffix);
 	else
 		snprintf(indexlink, sizeof(indexlink), "../mains.%s", normal_suffix);
-	/*
-	 * load tags belonging to this file.
-	 */
-	if (!notsource) {
-		anchor_load(src);
-	}
 	fputs_nl(gen_page_begin(src, SUBDIR), out);
 	fputs_nl(body_begin, out);
 	/*
