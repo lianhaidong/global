@@ -111,7 +111,7 @@ dnl
 dnl This option is for debugging GLOBAL. Not for normal use.
 dnl
 AC_ARG_WITH(db185-compat,
-[  --with-db185-compat[=DIR] use DB1.85 compatible API included in DB2 or later ],
+[  --with-db185-compat[[=DIR]] use DB1.85 compatible API included in DB2 or later ],
 [
 	if test "$withval" != 'no'; then
 		case "$withval" in
@@ -139,7 +139,7 @@ dnl for home-etc support
 dnl
 AC_MSG_CHECKING(for home-etc support)
 AC_ARG_WITH(home-etc,
-[  --with-home-etc[=DIR]     include home-etc support ],
+[  --with-home-etc[[=DIR]]     include home-etc support [[DIR=/usr/local]] ],
 [
         if test "$withval" = 'no'; then
                 AC_MSG_RESULT(no)
@@ -178,7 +178,7 @@ dnl
 POSIX_SORT=gnusort
 AC_MSG_CHECKING(for external sort command support)
 AC_ARG_WITH(sort-command,
-[  --with-sort-command[[=COM]] use external sort command [[sort]] ],
+[  --with-sort-command[[=COM]] use external sort command [[COM=sort]] ],
 [
         if test "$withval" = 'no'; then
                 AC_MSG_RESULT(no)
