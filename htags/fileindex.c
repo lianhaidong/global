@@ -593,8 +593,7 @@ makefileindex(const char *file, STRBUF *files)
 	const char *target = (Fflag) ? "mains" : "_top";
 	struct dirstack *dirstack = make_stack("dirstack");
 	struct dirstack *fdstack = make_stack("fdstack");
-	const char *command = (other_files) ? "gtags --find --other | gnusort -t / -k 2"
-					: "gtags --find";
+	char command[MAXFILLEN];
 	struct dirstack *push = make_stack("push");
 	struct dirstack *pop = make_stack("pop");
 	/*
@@ -603,6 +602,10 @@ makefileindex(const char *file, STRBUF *files)
 	int flags = REG_EXTENDED;
 	regex_t is_include_file;
 
+	if (other_files)
+		snprintf(command, sizeof(command), "gtags --find --other | %s -t / -k 2", POSIX_SORT);
+	else
+		snprintf(command, sizeof(command), "gtags --find");
 	if (w32)
 		flags |= REG_ICASE;
 	strbuf_reset(sb);

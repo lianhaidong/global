@@ -388,12 +388,12 @@ main(int argc, char **argv)
 		/*
 		 * We cannot depend on the command PATH, because global(1)
 		 * might be called from WWW server. Since usable() looks for
-		 * the command in BINDIR directory first, gnusort need not
+		 * the command in BINDIR directory first, POSIX_SORT need not
 		 * be in command PATH.
 		 */
-		sort = usable("gnusort");
+		sort = usable(POSIX_SORT);
 		if (!sort)
-			die("gnusort not found.");
+			die("%s not found.", POSIX_SORT);
 		sortfilter = strbuf_open(0);
 		strbuf_puts(sortfilter, sort);
 		if (sflag) {

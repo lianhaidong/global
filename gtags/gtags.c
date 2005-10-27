@@ -1000,7 +1000,7 @@ createtags(const char *dbpath, const char *root, int db)
 	 */
 	if (gtop->format & GTAGS_COMPACT) {
 		if (locatestring(strbuf_value(comline), "gtags-parser", MATCH_FIRST) == NULL)
-			strbuf_puts(comline, "| gnusort -k 3,3");
+			strbuf_sprintf(comline, "| %s -k 3,3", POSIX_SORT);
 	}
 	/*
 	 * If the --max-args option is not specified, we pass the parser

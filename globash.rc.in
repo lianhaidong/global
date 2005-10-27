@@ -477,7 +477,7 @@ __gtags_gen_xref()
 		if [ "$__gtags_lasttag" != "" ]; then
 			case $__gtags_lastcom in
 			f)	sortfilter=cat;;
-			*)	sortfilter='gnusort -k 1,1 -k 3,3 -k 2,2n';;
+			*)	sortfilter='@POSIX_SORT@ -k 1,1 -k 3,3 -k 2,2n';;
 			esac
 			com="global -xn$__gtags_lastcom $__gtags_lasttag | $sortfilter >$XREF"
 			eval $com

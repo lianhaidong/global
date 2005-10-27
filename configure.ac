@@ -163,6 +163,46 @@ AC_ARG_WITH(home-etc,
         AC_MSG_RESULT(no)
 ])
 
+dnl
+dnl for external POSIX sort command support
+dnl
+dnl By default, GLOBAL uses built-in 'gnusort' command, which is GNU sort
+dnl itself. If you have GNU sort or another POSIX compatible sort command
+dnl in your system, you can use it without installing 'gnusort'.
+dnl
+dnl configure                                   # use built-in 'gnusort'
+dnl configure --with-sort-command	        # use system sort command
+dnl configure --with-sort-command=sort          # use system sort command
+dnl configure --with-sort-command=/usr/bin/sort # use specified sort command
+dnl
+POSIX_SORT=gnusort
+AC_MSG_CHECKING(for external sort command support)
+AC_ARG_WITH(sort-command,
+[  --with-sort-command[[=COM]] use external sort command [[sort]] ],
+[
+        if test "$withval" = 'no'; then
+                AC_MSG_RESULT(no)
+        else
+                case $withval in
+                ''|yes) POSIX_SORT=sort;;
+                *)      POSIX_SORT=$withval;;
+                esac
+		if echo $POSIX_SORT | grep '^/' >/dev/null && test ! -f $POSIX_SORT; then
+                       	AC_MSG_ERROR([command '$POSIX_SORT' not found.])
+		fi
+		export POSIX_SORT
+		if ! (sh -c "$POSIX_SORT -t ':' -k 1,1" < /dev/null > /dev/null 2>&1); then
+                       	AC_MSG_ERROR([command '$POSIX_SORT' is not POSIX compatible.])
+		fi
+                AC_MSG_RESULT([using $POSIX_SORT])
+        fi
+],[
+        AC_MSG_RESULT(no)
+])
+AC_DEFINE_UNQUOTED(POSIX_SORT,"$POSIX_SORT",[POSIX sort command.])
+AM_CONDITIONAL([USE_BUILTIN_SORT], [test "$POSIX_SORT" = gnusort])
+AC_SUBST(POSIX_SORT)
+
 AC_SUBST(INCLUDES)
 AC_SUBST(LDADD)
 AC_SUBST(LDFLAGS)
@@ -183,6 +223,7 @@ AC_SUBST(DEFAULTLANGMAP_QUOTED)
 
 AC_OUTPUT([Makefile
 	gtags.conf
+	globash.rc
 	libutil/langmap.h
 	htags/global.cgi.tmpl
 	libutil/Makefile

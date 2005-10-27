@@ -754,7 +754,7 @@ makehtml(int total)
 	 *      anchor_stream: for anchor_load().
 	 */
 	if (other_files && !dynamic)
-		snprintf(command, sizeof(command), "%s --other | gnusort -t / -k 2", findcom);
+		snprintf(command, sizeof(command), "%s --other | %s -t / -k 2", findcom, POSIX_SORT);
 	else
 		strlimcpy(command, findcom, sizeof(command));
 	ip = popen(command, "r");
@@ -897,7 +897,7 @@ makecommonpart(const char *title, const char *defines, const char *files)
 	}
 	strbuf_sprintf(sb, "%sMAINS%s\n", header_begin, header_end);
 
-	snprintf(command, sizeof(command), "%s -nx %s | gnusort -k 1,1 -k 3,3 -k 2,2n", global_path, main_func);
+	snprintf(command, sizeof(command), "%s -nx %s | %s -k 1,1 -k 3,3 -k 2,2n", global_path, main_func, POSIX_SORT);
         ip = popen(command, "r");
         if (!ip)
                 die("cannot execute command '%s'.", command);
@@ -958,8 +958,8 @@ basic_check(void)
 	/*
 	 * COMMAND EXISTENCE CHECK
 	 */
-	if (!(p = usable("gnusort")))
-		die("gnusort command required but not found.");
+	if (!(p = usable(POSIX_SORT)))
+		die("%s command required but not found.", POSIX_SORT);
 	strlimcpy(sort_path, p, sizeof(sort_path));
 	if (!(p = usable("gtags")))
 		die("gtags command required but not found.");
