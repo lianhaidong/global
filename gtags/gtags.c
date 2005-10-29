@@ -597,6 +597,11 @@ main(int argc, char **argv)
 	if (wflag)
 		set_env("GTAGSWARNING", "1");
 	/*
+	 * Use C locale in order to avoid the degradation of performance
+	 * by internationalized sort command.
+	 */
+	set_env("LC_ALL", "C");
+	/*
 	 * incremental update.
 	 */
 	if (iflag) {

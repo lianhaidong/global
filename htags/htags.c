@@ -1708,6 +1708,11 @@ main(int argc, char **argv)
 	set_env("GTAGSDBPATH", dbpath);
 	set_env("GTAGSLIBPATH", "");
 	/*
+	 * Use C locale in order to avoid the degradation of performance
+	 * by internationalized sort command.
+	 */
+	set_env("LC_ALL", "C");
+	/*
 	 * check directories
 	 */
 	if (fflag || cflag || dynamic) {

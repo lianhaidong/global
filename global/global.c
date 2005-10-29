@@ -450,6 +450,11 @@ main(int argc, char **argv)
 		exit(0);
 	}
 	/*
+	 * Use C locale in order to avoid the degradation of performance
+	 * by internationalized sort command.
+	 */
+	set_env("LC_ALL", "C");
+	/*
 	 * exec lid(id-utils).
 	 */
 	if (Iflag) {
