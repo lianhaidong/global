@@ -768,7 +768,7 @@ ghelp() {
 	echo
 	echo " - Standard aliases:"
 	echo "	<n> (n=1-999)	- show <n>"
-	echo "	.., ../.., ...	- cd .., cd ../.., ..."
+	echo "	..		- cd .."
 	echo "	..<n> (n=1-5)	- cd .. (* <n> times)"
 	echo "	l,t,n,p,.,c,m	- list,tags,next,prev,show,cookie,mark"
 	echo "	'\C-t'		- pop"
@@ -797,10 +797,6 @@ if [ "$gtags_aliases" = "1" ]; then
 		(( n++ ))
 	done
 	alias ..='cd ..'
-	alias ../..='cd ../..'
-	alias ../../..='cd ../../..'
-	alias ../../../..='cd ../../../..'
-	alias ../../../../..='cd ../../../../..'
 	alias ..1='cd ..'
 	alias ..2='cd ../..'
 	alias ..3='cd ../../..'
