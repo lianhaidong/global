@@ -36,6 +36,10 @@
 #include "strbuf.h"
 #include "xargs.h"
 
+#if !defined(ARG_MAX) && defined(_SC_ARG_MAX)
+#define ARG_MAX         sysconf(_SC_ARG_MAX)
+#endif
+
 static int exec_line_limit(int);
 static char *repeat_find_read(void);
 static void repeat_find_next(void);
@@ -445,5 +449,6 @@ xargs_close(XARGS *xp)
 		/* Nothing to do */
 		break;
 	}
+	free(xp);
 	return count;
 }

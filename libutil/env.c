@@ -29,9 +29,6 @@
 #else
 #include <strings.h>
 #endif
-#ifdef HAVE_LIMITS_H
-#include <limits.h>
-#endif
 #ifdef HAVE_HOME_ETC_H
 #include <home_etc.h>
 #endif
@@ -41,10 +38,6 @@
 #include "strbuf.h"
 
 extern char **environ;
-
-#if !defined(ARG_MAX) && defined(_SC_ARG_MAX)
-#define ARG_MAX         sysconf(_SC_ARG_MAX)
-#endif
 
 /*
  * set_env: put environment variable.
