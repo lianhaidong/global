@@ -101,10 +101,6 @@
 		binary files.
 	@item{@option{--statistics}}
 		Print statistics information.
-	@item{@option{--style-sheet} @arg{file}}
-		Load style sheet file and insert it into <head> tag.
-		If you use the @option{--xhtml} option, you should use
-		@file{style.css} instead.
 	@item{@option{-s}, @option{--symbol}}
 		Make anchors not only for functions but also other symbols.
 		@file{GSYMS} tag file needed.

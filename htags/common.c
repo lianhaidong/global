@@ -329,8 +329,6 @@ gen_page_generic_begin(const char *title, int place, int use_frameset)
 		strbuf_sprintf(sb, "<meta http-equiv='Content-Style-Type' content='text/css'%s>\n", empty_element);
 		strbuf_sprintf(sb, "<link rel='stylesheet' type='text/css' href='%sstyle.css'%s>\n", dir, empty_element);
 	}
-	if (style_sheet)
-		strbuf_puts(sb, style_sheet);
 	strbuf_puts(sb, html_head_end);
 	return strbuf_value(sb);
 }

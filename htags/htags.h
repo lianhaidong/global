@@ -98,7 +98,6 @@ extern const char *action_value;
 extern const char *id_value;
 extern const char *cgidir;
 extern const char *main_func;
-extern const char *style_sheet;
 extern const char *cvsweb_url;
 extern const char *cvsweb_cvsroot;
 extern const char *gtagslabel;

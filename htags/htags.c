@@ -119,7 +119,6 @@ const char *action_value;
 const char *id_value;
 const char *cgidir;
 const char *main_func = "main";
-const char *style_sheet;
 const char *cvsweb_url;
 const char *cvsweb_cvsroot;
 const char *gtagslabel;
@@ -243,7 +242,6 @@ static struct option const long_options[] = {
         {"insert-header", required_argument, NULL, 1},
         {"insert-footer", required_argument, NULL, 1},
         {"statistics", no_argument, &statistics, 1},
-        {"style-sheet", required_argument, NULL, 1},
         {"version", no_argument, &show_version, 1},
         {"help", no_argument, &show_help, 1},
         { 0 }
@@ -1497,8 +1495,6 @@ main(int argc, char **argv)
 				;	/*  --gtagsconf is estimated only once. */
 			else if (!strcmp("gtagslabel", long_options[option_index].name))
 				;	/* --gtagslabel is estimated only once. */
-			else if (!strcmp("style-sheet", long_options[option_index].name))
-                                style_sheet = optarg;
 			else if (!strcmp("insert-header", long_options[option_index].name))
 				insert_header = optarg;
 			else if (!strcmp("insert-footer", long_options[option_index].name))
@@ -1636,22 +1632,6 @@ main(int argc, char **argv)
 	}
 	if (dynamic && Sflag)
 		die("Current implementation doesn't allow both -D(--dynamic) and the -S(--secure-cgi).");
-	if (style_sheet) {
-		char buf[MAXBUFLEN];
-		STRBUF *sb = strbuf_open(0);
-		FILE *ip = fopen(style_sheet, "r");
-
-		if (ip) {
-			while (fgets(buf, sizeof(buf), ip)) {
-				if (*buf != '\t' && *buf != '<')
-					strbuf_putc(sb, '\t');
-				strbuf_puts(sb, buf);
-			}
-			fclose(ip);
-		};
-		style_sheet = strbuf_value(sb);
-		/* Doesn't close string buffer. */
-	}
 	if (icon_list && !test("f", icon_list))
 		die("icon_list '%s' not found.", icon_list);
 	/*
