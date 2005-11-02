@@ -906,7 +906,7 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 	STRBUF *comline = strbuf_open(0);
 	STRBUF *path_list = strbuf_open(MAXPATHLEN);
 	XARGS *xp;
-	char *p;
+	char *ctags_x;
 
 	snprintf(rootdir, sizeof(rootdir), "%s/", root);
 	/*
@@ -975,8 +975,8 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 	if (chdir(root) < 0)
 		die("cannot move to '%s' directory.", root);
 	xp = xargs_open_with_strbuf(strbuf_value(comline), 0, path_list);
-	while ((p = xargs_read(xp)) != NULL) {
-		printtag(op, p);
+	while ((ctags_x = xargs_read(xp)) != NULL) {
+		printtag(op, ctags_x);
 		count++;
 	}
 	xargs_close(xp);
@@ -1011,7 +1011,7 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 int
 search(const char *pattern, const char *root, const char *dbpath, int db)
 {
-	const char *p;
+	const char *ctags_x;
 	int count = 0;
 	FILE *op;
 	GTOP *gtop;
@@ -1041,15 +1041,15 @@ search(const char *pattern, const char *root, const char *dbpath, int db)
 	}
 	if (Gflag)
 		flags |= GTOP_BASICREGEX;
-	for (p = gtags_first(gtop, pattern, flags); p; p = gtags_next(gtop)) {
+	for (ctags_x = gtags_first(gtop, pattern, flags); ctags_x; ctags_x = gtags_next(gtop)) {
 		if (lflag) {
 			const char *q;
 			/* locate start point of a path */
-			q = locatestring(p, "./", MATCH_FIRST);
+			q = locatestring(ctags_x, "./", MATCH_FIRST);
 			if (!locatestring(q, localprefix, MATCH_AT_FIRST))
 				continue;
 		}
-		printtag(op, p);
+		printtag(op, ctags_x);
 		count++;
 	}
 	closefilter(op);
