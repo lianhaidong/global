@@ -165,7 +165,7 @@ repeat_find_next(void)
 static FILE *
 execute_command(XARGS *xp)
 {
-	int limit = exec_line_limit(0);
+	int limit;
 	STRBUF *comline = strbuf_open(0);
 	int count = 0;
 	int length;
@@ -179,8 +179,10 @@ execute_command(XARGS *xp)
 	meta_p = locatestring(xp->command, "%s", MATCH_FIRST);
 	if (meta_p) {
 		strbuf_nputs(comline, xp->command, meta_p - xp->command);
+		limit = exec_line_limit(strlen(meta_p + 2));
 	} else {
 		strbuf_puts(comline, xp->command);
+		limit = exec_line_limit(0);
 	}
 	/*
 	 * Append arguments as many as possible.
