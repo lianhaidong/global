@@ -849,7 +849,6 @@ updatetags(const char *dbpath, const char *root, IDSET *deleteset, STRBUF *addli
 {
 	GTOP *gtop;
 	STRBUF *comline = strbuf_open(0);
-	int flags;
 	int seqno;
 
 	/*
@@ -883,11 +882,26 @@ updatetags(const char *dbpath, const char *root, IDSET *deleteset, STRBUF *addli
 	}
 	if (deleteset->max > 0)
 		gtags_delete(gtop, deleteset);
-	flags = 0;
+	gtop->flags = 0;
 	if (extractmethod)
-		flags |= GTAGS_EXTRACTMETHOD;
+		gtop->flags |= GTAGS_EXTRACTMETHOD;
 	if (debug)
-		flags |= GTAGS_DEBUG;
+		gtop->flags |= GTAGS_DEBUG;
+	/*
+	 * Compact format requires the tag records of the same file are
+	 * consecutive.
+	 *
+	 * We assume that the output of gtags-parser is consecutive for each
+	 * file. About the other parsers, it is not guaranteed, so we sort it
+	 * using external sort command (gnusort).
+	 */
+	if (gtop->format & GTAGS_COMPACT) {
+		if (locatestring(strbuf_value(comline), "gtags-parser", MATCH_FIRST) == NULL) {
+			if (locatestring(strbuf_value(comline), "%s", MATCH_FIRST) == NULL)
+				strbuf_puts(comline, " %s");
+			strbuf_sprintf(comline, "| %s -k 3,3", POSIX_SORT);
+		}
+	}
 	/*
 	 * If the --max-args option is not specified, we pass the parser
 	 * the source file as a lot as possible to decrease the invoking
@@ -915,7 +929,7 @@ updatetags(const char *dbpath, const char *root, IDSET *deleteset, STRBUF *addli
 			 * data = 'Class::method  103 ./class.cpp ...'
 			 */
 			p = tag;
-			if (flags & GTAGS_EXTRACTMETHOD) {
+			if (gtop->flags & GTAGS_EXTRACTMETHOD) {
 				if ((p = locatestring(tag, ".", MATCH_LAST)) != NULL)
 					p++;
 				else if ((p = locatestring(tag, "::", MATCH_LAST)) != NULL)
