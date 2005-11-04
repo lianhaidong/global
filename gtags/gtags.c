@@ -1004,8 +1004,11 @@ createtags(const char *dbpath, const char *root, int db)
 	 * using external sort command (gnusort).
 	 */
 	if (gtop->format & GTAGS_COMPACT) {
-		if (locatestring(strbuf_value(comline), "gtags-parser", MATCH_FIRST) == NULL)
+		if (locatestring(strbuf_value(comline), "gtags-parser", MATCH_FIRST) == NULL) {
+			if (locatestring(strbuf_value(comline), "%s", MATCH_FIRST) == NULL)
+				strbuf_puts(comline, " %s");
 			strbuf_sprintf(comline, "| %s -k 3,3", POSIX_SORT);
+		}
 	}
 	/*
 	 * If the --max-args option is not specified, we pass the parser
