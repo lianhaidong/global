@@ -53,7 +53,6 @@
 #include "usable.h"
 #include "version.h"
 #include "varray.h"
-#include "vfind.h"
 #include "xargs.h"
 
 #endif /* ! _GLOBAL_H_ */
