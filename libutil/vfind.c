@@ -57,7 +57,7 @@ vfind_open(const char *local, int other)
 		opened = FIND_OPEN;
 	} else {
 		getdbpath(cwd, root, dbpath, 0);
-		gfind_open(dbpath, local);
+		gfind_open(dbpath, local, 0);
 		opened = GFIND_OPEN;
 	}
 }

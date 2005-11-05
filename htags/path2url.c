@@ -55,7 +55,7 @@ load_gpath(const char *dbpath)
 	if (dbop == NULL)
 		die("cannot open '%s'.", makepath(dbpath, dbname(GPATH), NULL));
 	for (path = dbop_first(dbop, "./", NULL, DBOP_PREFIX | DBOP_KEY); path; path = dbop_next(dbop)) {
-		const char *no = dbop_lastdat(dbop);
+		const char *no = dbop_lastdat(dbop, NULL);
 
 		path += 2;			/* remove './' */
 		assoc_put(assoc, path, no);

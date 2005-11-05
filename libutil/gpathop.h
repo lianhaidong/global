@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000
+ * Copyright (c) 1997, 1998, 1999, 2000, 2005
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -29,13 +29,13 @@
 #define NEXTKEY		" __.NEXTKEY"
 
 int gpath_open(const char *, int);
-const char *gpath_path2fid(const char *);
-const char *gpath_fid2path(const char *);
-void gpath_put(const char *);
+const char *gpath_path2fid(const char *, int *);
+const char *gpath_fid2path(const char *, int *);
+void gpath_put(const char *, int);
 void gpath_delete(const char *);
 void gpath_close(void);
 int gpath_nextkey(void);
-void gfind_open(const char *, const char *);
+void gfind_open(const char *, const char *, int);
 const char *gfind_read(void);
 void gfind_close(void);
 

@@ -518,7 +518,7 @@ convertpath(const char *dbpath, const char *htmldir, const char *path, STRBUF *s
 
 		strlimcpy(key, "./", sizeof(key));
 		strcat(key, path + 1);
-		p = gpath_path2fid(key);
+		p = gpath_path2fid(key, NULL);
 		if (p == NULL) {
 			gpath_close();
 			return -1;

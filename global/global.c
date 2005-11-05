@@ -54,7 +54,7 @@ FILE *openfilter(void);
 void closefilter(FILE *);
 void completion(const char *, const char *, const char *);
 void idutils(const char *, const char *);
-void grep(const char *);
+void grep(const char *, const char *);
 void pathlist(const char *, const char *);
 void parsefile(int, char **, const char *, const char *, const char *, int);
 void printtag(FILE *, const char *);
@@ -467,7 +467,7 @@ main(int argc, char **argv)
 	 */
 	if (gflag) {
 		chdir(root);
-		grep(av);
+		grep(dbpath, av);
 		exit(0);
 	}
 	/*
@@ -760,11 +760,11 @@ idutils(const char *pattern, const char *dbpath)
  *	i)	pattern	POSIX regular expression
  */
 void
-grep(const char *pattern)
+grep(const char *dbpath, const char *pattern)
 {
 	FILE *op, *fp;
 	STRBUF *ib = strbuf_open(MAXBUFLEN);
-	const char *path, *p;
+	const char *path;
 	char edit[IDENTLEN+1];
 	const char *buffer;
 	int linenum, count;
@@ -785,8 +785,8 @@ grep(const char *pattern)
 	if (!(op = openfilter()))
 		die("cannot open output filter.");
 	count = 0;
-	for (vfind_open(localprefix, oflag); (p = vfind_read()) != NULL; ) {
-		path = (*p == ' ') ? ++p : p;
+	gfind_open(dbpath, localprefix, oflag);
+	while ((path = gfind_read()) != NULL) {
 		if (!(fp = fopen(path, "r")))
 			die("cannot open file '%s'.", path);
 		linenum = 0;
@@ -809,7 +809,7 @@ grep(const char *pattern)
 		}
 		fclose(fp);
 	}
-	vfind_close();
+	gfind_close();
 	closefilter(op);
 	strbuf_close(ib);
 	regfree(&preg);
@@ -854,8 +854,8 @@ pathlist(const char *dbpath, const char *av)
 	if (!(op = openfilter()))
 		die("cannot open output filter.");
 	count = 0;
-	for (vfind_open(localprefix, oflag); (p = vfind_read()) != NULL; ) {
-		path = (*p == ' ') ? ++p : p;
+	gfind_open(dbpath, localprefix, oflag);
+	while ((path = gfind_read()) != NULL) {
 		/*
 		 * skip localprefix because end-user doesn't see it.
 		 */
@@ -872,7 +872,7 @@ pathlist(const char *dbpath, const char *av)
 		}
 		count++;
 	}
-	vfind_close();
+	gfind_close();
 	closefilter(op);
 	if (av)
 		regfree(&preg);
@@ -959,7 +959,7 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 		}
 		path -= 2;
 		*path = '.';
-		if (!gpath_path2fid(path)) {
+		if (!gpath_path2fid(path, NULL)) {
 			if (!qflag)
 				fprintf(stderr, "'%s' not found in GPATH.\n", path);
 			continue;

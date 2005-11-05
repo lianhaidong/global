@@ -125,25 +125,26 @@ repeat_find_next(void)
 
 /*
  * Common processing for each XARGS_XXXX type.
- *
- * o Always ignore path names which start with a blank.
  */
 #define APPEND_ARGUMENT(p) {\
 	char *path = (p);\
-	int skip = 0;\
 	length = strlen(path);\
-	if (*path == ' ')\
+	if (*path == ' ') {\
+		if (!test("b", ++path))\
+			gpath_put(path, 1);\
 		continue;\
+	}\
 	if (strbuf_getlen(comline) + length > limit)\
 		break;\
 	xp->seqno++;\
 	if (xp->put_gpath)\
-		gpath_put(path);\
-	if (xp->skip_assembly && locatestring(path, ".s", MATCH_AT_LAST|IGNORE_CASE) != NULL)\
-		skip = 1;\
-	if (xp->verbose)\
-		xp->verbose(path + 2, xp->seqno, skip);\
-	if (!skip) {\
+		gpath_put(path, 0);\
+	if (xp->skip_assembly && locatestring(path, ".s", MATCH_AT_LAST|IGNORE_CASE) != NULL) {\
+		if (xp->verbose)\
+			xp->verbose(path + 2, xp->seqno, 1);\
+	} else {\
+		if (xp->verbose)\
+			xp->verbose(path + 2, xp->seqno, 0);\
 		strbuf_putc(comline, ' ');\
 		strbuf_puts(comline, path);\
 		count++;\

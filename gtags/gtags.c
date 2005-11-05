@@ -345,7 +345,7 @@ main(int argc, char **argv)
 			 * files other than source code. In this case, file id
 			 * doesn't exist in GPATH.
 			 */
-			fid = gpath_path2fid(p);
+			fid = gpath_path2fid(p, NULL);
 			if (fid) {
 				fputs("/S/", stdout);
 				fputs(fid, stdout);
@@ -409,24 +409,17 @@ main(int argc, char **argv)
 	} else if (do_find) {
 		/*
 		 * This code is used by htags(1) to traverse file system.
-		 *
-		 * If the --other option is not specified, 'gtags --find'
-		 * read GPATH instead of traversing file. But if the option
-		 * is specified, it traverse file system every time.
-		 * It is because gtags doesn't record the paths other than
-		 * source file in GPATH.
-		 * Since it is slow, gtags should record not only source
-		 * files but also other files in GPATH in the future.
-		 * But it needs adding a new format version.
 		 */
 		const char *path;
 		const char *local = (argc) ? argv[0] : NULL;
 
-		for (vfind_open(local, other_files); (path = vfind_read()) != NULL; ) {
+		getdbpath(cwd, root, dbpath, 0);
+		gfind_open(dbpath, local, other_files);
+		while ((path = gfind_read()) != NULL) {
 			fputs(path, stdout);
 			fputc('\n', stdout);
 		}
-		vfind_close();
+		gfind_close();
 		exit(0);
 	} else if (do_sort) {
 		/*
@@ -703,9 +696,12 @@ incremental(const char *dbpath, const char *root)
 	time_t gtags_mtime;
 	STRBUF *addlist = strbuf_open(0);
 	STRBUF *deletelist = strbuf_open(0);
+	STRBUF *addlist_other = strbuf_open(0);
+	STRBUF *deletelist_other = strbuf_open(0);
 	IDSET *deleteset;
 	int updated = 0;
 	const char *path;
+	int i, limit;
 
 	if (vflag) {
 		fprintf(stderr, " Tag found in '%s'.\n", dbpath);
@@ -732,46 +728,60 @@ incremental(const char *dbpath, const char *root)
 	total = 0;
 	while ((path = find_read()) != NULL) {
 		const char *fid;
+		int other = 0;
 
 		/* a blank at the head of path means 'NOT SOURCE'. */
-		if (*path == ' ')
-			continue;
+		if (*path == ' ') {
+			if (test("b", ++path))
+				continue;
+			other = 1;
+		}
 		if (stat(path, &statp) < 0)
 			die("stat failed '%s'.", path);
-		if ((fid = gpath_path2fid(path)) == NULL) {
-			strbuf_puts0(addlist, path);
-			total++;
-		} else if (gtags_mtime < statp.st_mtime) {
-			strbuf_puts0(addlist, path);
-			total++;
-			idset_add(deleteset, atoi(fid));
+		fid = gpath_path2fid(path, NULL);
+		if (other) {
+			if (fid == NULL)
+				strbuf_puts0(addlist_other, path);
+		} else {
+			if (fid == NULL) {
+				strbuf_puts0(addlist, path);
+				total++;
+			} else if (gtags_mtime < statp.st_mtime) {
+				strbuf_puts0(addlist, path);
+				total++;
+				idset_add(deleteset, atoi(fid));
+			}
 		}
 	}
 	find_close();
 	/*
 	 * make delete list.
+	 *
+	 * deletelist: source files
+	 * deletelist_other: other files
 	 */
-	{
+	limit = gpath_nextkey();
+	for (i = 1; i < limit; i++) {
 		char fid[32];
-		int i, limit = gpath_nextkey();
+		int other;
 
-		for (i = 1; i < limit; i++) {
-			snprintf(fid, sizeof(fid), "%d", i);
-			if ((path = gpath_fid2path(fid)) == NULL)
-				continue;
-			if (!test("f", path)) {
+		snprintf(fid, sizeof(fid), "%d", i);
+		if ((path = gpath_fid2path(fid, &other)) == NULL)
+			continue;
+		if (!test("f", path)) {
+			if (other) {
+				strbuf_puts0(deletelist_other, path);
+			} else {
 				strbuf_puts0(deletelist, path);
 				idset_add(deleteset, i);
 			}
 		}
 	}
 	gpath_close();
-	if (strbuf_getlen(addlist) + strbuf_getlen(deletelist))
-		updated = 1;
 	/*
 	 * execute updating.
 	 */
-	if (updated) {
+	if (strbuf_getlen(addlist) + strbuf_getlen(deletelist)) {
 		int db;
 
 		for (db = GTAGS; db < GTAGLIM; db++) {
@@ -785,17 +795,37 @@ incremental(const char *dbpath, const char *root)
 				fprintf(stderr, "[%s] Updating '%s'.\n", now(), dbname(db));
 			updatetags(dbpath, root, deleteset, addlist, db);
 		}
+		updated = 1;
 	}
-	if (strbuf_getlen(deletelist) > 0) {
-		const char *start = strbuf_value(deletelist);
-		const char *end = start + strbuf_getlen(deletelist);
-		const char *p;
+	if (strbuf_getlen(deletelist) + strbuf_getlen(deletelist_other) + strbuf_getlen(addlist_other) > 0) {
+		const char *start, *end, *p;
 
+		if (vflag)
+			fprintf(stderr, "[%s] Updating '%s'.\n", now(), dbname(0));
 		gpath_open(dbpath, 2);
-		for (p = start; p < end; p += strlen(p) + 1) {
-			gpath_delete(p);
+		if (strbuf_getlen(deletelist) > 0) {
+			start = strbuf_value(deletelist);
+			end = start + strbuf_getlen(deletelist);
+
+			for (p = start; p < end; p += strlen(p) + 1)
+				gpath_delete(p);
+		}
+		if (strbuf_getlen(deletelist_other) > 0) {
+			start = strbuf_value(deletelist_other);
+			end = start + strbuf_getlen(deletelist_other);
+
+			for (p = start; p < end; p += strlen(p) + 1)
+				gpath_delete(p);
+		}
+		if (strbuf_getlen(addlist_other) > 0) {
+			start = strbuf_value(addlist_other);
+			end = start + strbuf_getlen(addlist_other);
+
+			for (p = start; p < end; p += strlen(p) + 1)
+				gpath_put(p, 1);
 		}
 		gpath_close();
+		updated = 1;
 	}
 	if (updated) {
 		int db;
@@ -819,6 +849,8 @@ incremental(const char *dbpath, const char *root)
 	}
 	strbuf_close(addlist);
 	strbuf_close(deletelist);
+	strbuf_close(addlist_other);
+	strbuf_close(deletelist_other);
 	idset_close(deleteset);
 
 	return updated;
@@ -873,7 +905,7 @@ updatetags(const char *dbpath, const char *root, IDSET *deleteset, STRBUF *addli
 		for (i = 0; i < deleteset->max; i++) {
 			if (idset_contains(deleteset, i)) {
 				snprintf(fid, sizeof(fid), "%d", i);
-				path = gpath_fid2path(fid);
+				path = gpath_fid2path(fid, NULL);
 				if (path == NULL)
 					die("GPATH is corrupted.");
 				fprintf(stderr, " [%d/%d] deleting tags of %s\n", seqno++, total, path + 2);

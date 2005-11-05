@@ -370,7 +370,7 @@ gtags_put(GTOP *gtop, const char *tag, const char *ctags_x)	/* virtually const *
 			p++;
 		savec = *p;
 		*p = '\0';
-		fid = gpath_path2fid(path);
+		fid = gpath_path2fid(path, NULL);
 		if (fid == NULL)
 			die("GPATH is corrupted.('%s' not found)", path);
 		*p = savec;
@@ -445,7 +445,7 @@ flush_pool(GTOP *gtop)
 	const char *path = gtop->prev_path;
 
 	if (gtop->format & GTAGS_PATHINDEX) {
-		path = gpath_path2fid(gtop->prev_path);
+		path = gpath_path2fid(gtop->prev_path, NULL);
 		if (path == NULL)
 			die("GPATH is corrupted.('%s' not found)", gtop->prev_path);
 	}
@@ -545,7 +545,7 @@ gtags_delete(GTOP *gtop, IDSET *deleteset)
 		if (gtop->format & GTAGS_PATHINDEX)
 			s_fid = path;	/* Nothing to do. */
 		else {
-			s_fid = gpath_path2fid(path);
+			s_fid = gpath_path2fid(path, NULL);
 			if (s_fid == NULL)
 				die("GPATH is corrupted.");
 		}
@@ -737,7 +737,7 @@ unpack_pathindex(const char *tagline)	/* virtually const */
 	/*
 	 * extract file id and convert into path name.
 	 */
-	path = gpath_fid2path(ptable.part[PART_PATH].start);
+	path = gpath_fid2path(ptable.part[PART_PATH].start, NULL);
 	if (path == NULL)
 		die("GPATH is corrupted.(fid '%s' not found)", ptable.part[PART_PATH].start);
 	recover(&ptable);
@@ -783,7 +783,7 @@ genrecord(GTOP *gtop)
 		if (gtop->format & GTAGS_PATHINDEX) {
 			const char *p;
 
-			if ((p = gpath_fid2path(path)) == NULL)
+			if ((p = gpath_fid2path(path, NULL)) == NULL)
 				die("GPATH is corrupted.('%s' not found)", path);
 			path = p;
 		}

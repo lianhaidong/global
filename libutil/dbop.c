@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2003
+ * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -48,6 +48,9 @@
 #include "test.h"
 
 int print_statistics = 0;
+
+#define ismeta(p)	(*((char *)(p)) == ' ')
+
 /*
  * dbop_open: open db database.
  *
@@ -113,6 +116,7 @@ dbop_open(const char *path, int mode, int perm, int flags)
 	dbop->openflags	= flags;
 	dbop->perm	= (mode == 1) ? perm : 0;
 	dbop->lastdat	= NULL;
+	dbop->lastsize	= 0;
 
 	return dbop;
 }
@@ -134,7 +138,8 @@ dbop_get(DBOP *dbop, const char *name)
 	key.size = strlen(name)+1;
 
 	status = (*db->get)(db, &key, &dat, 0);
-	dbop->lastdat	= (char *)dat.data;
+	dbop->lastdat = (char *)dat.data;
+	dbop->lastsize = dat.size;
 	switch (status) {
 	case RET_SUCCESS:
 		break;
@@ -143,7 +148,7 @@ dbop_get(DBOP *dbop, const char *name)
 	case RET_SPECIAL:
 		return (NULL);
 	}
-	return(dat.data);
+	return (dat.data);
 }
 /*
  * dbop_put: put data by a key.
@@ -168,6 +173,40 @@ dbop_put(DBOP *dbop, const char *name, const char *data)
 	key.size = strlen(name)+1;
 	dat.data = (char *)data;
 	dat.size = strlen(data)+1;
+
+	status = (*db->put)(db, &key, &dat, 0);
+	switch (status) {
+	case RET_SUCCESS:
+		break;
+	case RET_ERROR:
+	case RET_SPECIAL:
+		die("cannot write to database.");
+	}
+}
+/*
+ * dbop_put_withlen: put data by a key.
+ *
+ *	i)	dbop	descripter
+ *	i)	name	key
+ *	i)	data	data
+ *	i)	length	length of data
+ */
+void
+dbop_put_withlen(DBOP *dbop, const char *name, const char *data, int length)
+{
+	DB *db = dbop->db;
+	DBT key, dat;
+	int status;
+	int len;
+
+	if (!(len = strlen(name)))
+		die("primary key size == 0.");
+	if (len > MAXKEYLEN)
+		die("primary key too long.");
+	key.data = (char *)name;
+	key.size = strlen(name)+1;
+	dat.data = (char *)data;
+	dat.size = length;
 
 	status = (*db->put)(db, &key, &dat, 0);
 	switch (status) {
@@ -267,14 +306,16 @@ dbop_first(DBOP *dbop, const char *name, regex_t *preg, int flags)
 		for (status = (*db->seq)(db, &key, &dat, R_FIRST);
 			status == RET_SUCCESS;
 			status = (*db->seq)(db, &key, &dat, R_NEXT)) {
-			if (*((char *)key.data) == ' ')	/* meta record */
+			/* skip meta records */
+			if (ismeta(key.data))
 				continue;
 			if (preg && regexec(preg, (char *)key.data, 0, 0, 0) != 0)
 				continue;
 			break;
 		}
 	}
-	dbop->lastdat	= (char *)dat.data;
+	dbop->lastdat = (char *)dat.data;
+	dbop->lastsize = dat.size;
 	switch (status) {
 	case RET_SUCCESS:
 		break;
@@ -308,9 +349,10 @@ dbop_next(DBOP *dbop)
 
 	while ((status = (*db->seq)(db, &key, &dat, R_NEXT)) == RET_SUCCESS) {
 		assert(dat.data != NULL);
-		if (flags & DBOP_KEY && *((char *)key.data) == ' ')
+		/* skip meta records */
+		if (flags & DBOP_KEY && ismeta(key.data))
 			continue;
-		else if (*((char *)dat.data) == ' ')
+		else if (ismeta(dat.data))
 			continue;
 		if (flags & DBOP_KEY) {
 			if (!strcmp(dbop->prev, (char *)key.data))
@@ -320,6 +362,7 @@ dbop_next(DBOP *dbop)
 			strlimcpy(dbop->prev, (char *)key.data, sizeof(dbop->prev));
 		}
 		dbop->lastdat	= (char *)dat.data;
+		dbop->lastsize	= dat.size;
 		if (flags & DBOP_PREFIX) {
 			if (strncmp((char *)key.data, dbop->key, dbop->keylen))
 				return NULL;
@@ -342,8 +385,10 @@ dbop_next(DBOP *dbop)
  *	r)		last data
  */
 const char *
-dbop_lastdat(DBOP *dbop)
+dbop_lastdat(DBOP *dbop, int *size)
 {
+	if (size)
+		*size = dbop->lastsize;
 	return dbop->lastdat;
 }
 /*
