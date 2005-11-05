@@ -155,7 +155,7 @@ gpath_path2fid(const char *path, int *type)
 	const char *fid = dbop_get(dbop, path);
 	assert(opened == 1);
 	if (fid && type) {
-		char *flag = get_flag(dbop);
+		const char *flag = get_flag(dbop);
 		*type = (*flag == 'o') ? 1 : 0;
 			
 	}
@@ -176,7 +176,7 @@ gpath_fid2path(const char *fid, int *type)
 	const char *path = dbop_get(dbop, fid);
 	assert(opened == 1);
 	if (path && type) {
-		char *flag = get_flag(dbop);
+		const char *flag = get_flag(dbop);
 		*type = (*flag == 'o') ? 1 : 0;
 	}
 	return path;
