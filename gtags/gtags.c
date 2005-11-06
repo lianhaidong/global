@@ -781,7 +781,7 @@ incremental(const char *dbpath, const char *root)
 	/*
 	 * execute updating.
 	 */
-	if (strbuf_getlen(addlist) + strbuf_getlen(deletelist)) {
+	if (deleteset->max + strbuf_getlen(addlist)) {
 		int db;
 
 		for (db = GTAGS; db < GTAGLIM; db++) {
