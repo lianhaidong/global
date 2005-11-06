@@ -768,10 +768,11 @@ incremental(const char *dbpath, const char *root)
 		snprintf(fid, sizeof(fid), "%d", i);
 		if ((path = gpath_fid2path(fid, &other)) == NULL)
 			continue;
-		if (!test("f", path)) {
-			if (other) {
+		if (other) {
+			if (!test("f", path) || test("b", path))
 				strbuf_puts0(deletelist_other, path);
-			} else {
+		} else {
+			if (!test("f", path)) {
 				strbuf_puts0(deletelist, path);
 				idset_add(deleteset, i);
 			}
