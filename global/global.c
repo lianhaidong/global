@@ -954,7 +954,7 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 		path = locatestring(path, rootdir, MATCH_AT_FIRST);
 		if (path == NULL) {
 			if (!qflag)
-				fprintf(stderr, "'%s' is out of source tree.\n", path);
+				fprintf(stderr, "'%s' is out of source tree.\n", buf);
 			continue;
 		}
 		path -= 2;
