@@ -34,6 +34,7 @@
 #include "gpathop.h"
 #include "locatestring.h"
 #include "strbuf.h"
+#include "test.h"
 #include "xargs.h"
 
 #if !defined(ARG_MAX) && defined(_SC_ARG_MAX)
