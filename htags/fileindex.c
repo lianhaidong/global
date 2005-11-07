@@ -590,11 +590,9 @@ makefileindex(const char *file, STRBUF *files)
 	int count = 0;
 	const char *indexlink = (Fflag) ? "../files" : "../mains";
 	STRBUF *sb = strbuf_open(0);
-	STRBUF *input = strbuf_open(0);
 	const char *target = (Fflag) ? "mains" : "_top";
 	struct dirstack *dirstack = make_stack("dirstack");
 	struct dirstack *fdstack = make_stack("fdstack");
-	char command[MAXFILLEN];
 	struct dirstack *push = make_stack("push");
 	struct dirstack *pop = make_stack("pop");
 	/*
@@ -880,7 +878,6 @@ makefileindex(const char *file, STRBUF *files)
 	delete_stack(pop);
 
 	strbuf_close(sb);
-	strbuf_close(input);
 	return count;
 }
 void

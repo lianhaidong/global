@@ -740,7 +740,7 @@ static void
 makehtml(int total)
 {
 	GFIND *gp;
-	FILE *ip, *source_stream, *anchor_stream;
+	FILE *source_stream, *anchor_stream;
 	const char *path;
 	int count = 0;
 	STRBUF *sb = strbuf_open(0);

@@ -331,6 +331,6 @@ void
 gfind_close(GFIND *gfind)
 {
 	dbop_close(gfind->dbop);
-	free(gfind->prefix);
+	free((void *)gfind->prefix);
 	free(gfind);
 }
