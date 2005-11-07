@@ -296,7 +296,7 @@ main(int argc, char **argv)
 		STRBUF *ib = strbuf_open(MAXBUFLEN);
 		const char *fid;
 		char *p, *q;
-		int c;
+		int c, type;
 
 		/*
 		 * [Job]
@@ -309,7 +309,7 @@ main(int argc, char **argv)
 		 *				v
 		 * <a href='http://xxx/global/S/39.html#110'>main</a>\n
 		 *
-		 * If the file name is not found in GPATH, change into the path to CGI script.
+		 * If the file is not source code, change into the path to CGI script.
 		 * <a href='http://xxx/global/S/ ./README .html#9'>main</a>\n
 		 *				|
 		 *				v
@@ -341,12 +341,12 @@ main(int argc, char **argv)
 			*q++ = '\0';
 			/*
 			 * Convert path name into URL.
-			 * The output of 'global -xgo' may include lines about
-			 * files other than source code. In this case, file id
-			 * doesn't exist in GPATH.
+			 * The output of 'global -xgo' and 'global -xPo' may include
+			 * lines about files other than source code. In this case,
+			 * the HTML file corresponding to file id may not exist.
 			 */
-			fid = gpath_path2fid(p, NULL);
-			if (fid) {
+			fid = gpath_path2fid(p, &type);
+			if (fid && type == GPATH_SOURCE) {
 				fputs("/S/", stdout);
 				fputs(fid, stdout);
 				fputs(q, stdout);
