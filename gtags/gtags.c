@@ -87,7 +87,6 @@ int show_version;
 int show_help;
 int show_config;
 int do_convert;
-int do_find;
 int do_sort;
 int do_relative;
 int do_absolute;
@@ -95,7 +94,6 @@ int cxref;
 int do_expand;
 int gtagsconf;
 int gtagslabel;
-int other_files;
 int debug;
 int secure_mode;
 const char *extra_options;
@@ -138,10 +136,8 @@ static struct option const long_options[] = {
 	{"cxref", no_argument, &cxref, 1},
 	{"debug", no_argument, &debug, 1},
 	{"expand", required_argument, &do_expand, 1},
-	{"find", no_argument, &do_find, 1},
 	{"gtagsconf", required_argument, &gtagsconf, 1},
 	{"gtagslabel", required_argument, &gtagslabel, 1},
-	{"other", no_argument, &other_files, 1},
 	{"relative", no_argument, &do_relative, 1},
 	{"secure", no_argument, &secure_mode, 1},
 	{"sort", no_argument, &do_sort, 1},
@@ -405,22 +401,6 @@ main(int argc, char **argv)
 		while (strbuf_fgets(ib, ip, STRBUF_NOCRLF) != NULL)
 			detab(stdout, strbuf_value(ib));
 		strbuf_close(ib);
-		exit(0);
-	} else if (do_find) {
-		/*
-		 * This code is used by htags(1) to traverse file system.
-		 */
-		GFIND *gp;
-		const char *path;
-		const char *local = (argc) ? argv[0] : NULL;
-
-		getdbpath(cwd, root, dbpath, 0);
-		gp = gfind_open(dbpath, local, other_files);
-		while ((path = gfind_read(gp)) != NULL) {
-			fputs(path, stdout);
-			fputc('\n', stdout);
-		}
-		gfind_close(gp);
 		exit(0);
 	} else if (do_sort) {
 		/*
