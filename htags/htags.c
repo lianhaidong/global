@@ -740,66 +740,48 @@ static void
 makehtml(int total)
 {
 	GFIND *gp;
-	FILE *source_stream, *anchor_stream;
+	FILE *anchor_stream;
 	const char *path;
 	int count = 0;
-	STRBUF *sb = strbuf_open(0);
 
 	/*
-	 * Create two same streams. The two have each independent file pointer.
-	 *      source_stream: for src2html()
-	 *      anchor_stream: for anchor_load().
+	 * Create anchor stream for anchor_load().
 	 */
-	source_stream = tmpfile();
 	anchor_stream = tmpfile();
 	gp = gfind_open(dbpath, NULL, other_files && !dynamic);
 	while ((path = gfind_read(gp)) != NULL) {
-		if (gp->type == GPATH_OTHER)
-			fputc(' ', source_stream);
-		fputs(path, source_stream);
-		fputc('\n', source_stream);
 		if (gp->type == GPATH_OTHER)
 			fputc(' ', anchor_stream);
 		fputs(path, anchor_stream);
 		fputc('\n', anchor_stream);
 	}
 	gfind_close(gp);
-	rewind(source_stream);
 	/*
 	 * Prepare anchor stream for anchor_load().
 	 */
 	anchor_prepare(anchor_stream);
 	/*
-	 * For each path in the source stream, convert the path into HTML file.
+	 * For each path in GPATH, convert the path into HTML file.
 	 */
-	while ((path = strbuf_fgets(sb, source_stream, STRBUF_NOCRLF)) != NULL) {
+	gp = gfind_open(dbpath, NULL, other_files && !dynamic);
+	while ((path = gfind_read(gp)) != NULL) {
 		char html[MAXPATHLEN];
-		int notsource = 0;
 
-		if (*path == ' ') {
-			if (!other_files)
-				continue;
-			path++;
-			if (test("b", path)) {
-				if (wflag)
-					warning("'%s' is binary file. (skipped)", path + 2);
-				continue;
-			}
-			notsource = 1;
-		} else {
-			/*
-			 * load tags belonging to the path.
-			 * The path must be start "./".
-			 */
-			anchor_load(path);
-		}
+		if (gp->type == GPATH_OTHER && !other_files)
+			continue;
+		/*
+		 * load tags belonging to the path.
+		 * The path must be start "./".
+		 */
+		anchor_load(path);
+
 		count++;
 		path += 2;		/* remove './' at the head */
 		message(" [%d/%d] converting %s", count, total, path);
 		snprintf(html, sizeof(html), "%s/%s/%s.%s", distpath, SRCS, path2fid(path), HTML);
-		src2html(path, html, notsource);
+		src2html(path, html, gp->type == GPATH_OTHER);
 	}
-	strbuf_close(sb);
+	gfind_close(gp);
 }
 /*
  * copy file.
