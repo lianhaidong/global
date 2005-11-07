@@ -27,6 +27,7 @@
 #include "dbop.h"
 
 #define NEXTKEY		" __.NEXTKEY"
+#define VERSIONKEY	" __.VERSION"
 
 int gpath_open(const char *, int);
 const char *gpath_path2fid(const char *, int *);
@@ -35,7 +36,7 @@ void gpath_put(const char *, int);
 void gpath_delete(const char *);
 void gpath_close(void);
 int gpath_nextkey(void);
-void gfind_open(const char *, const char *, int);
+int gfind_open(const char *, const char *, int);
 const char *gfind_read(void);
 void gfind_close(void);
 

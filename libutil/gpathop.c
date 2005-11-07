@@ -68,6 +68,19 @@ get_flag(DBOP *dbop)
 	return flag;
 }
 /*
+ * get_version: get format version
+ */
+static int
+get_version(DBOP *dbop)
+{
+	const char *p;
+	int format_version = 1;			/* default format version */
+
+	if ((p = dbop_get(dbop, VERSIONKEY)) != NULL)
+		format_version = atoi(p);
+	return format_version;
+}
+/*
  * gpath_open: open gpath tag file
  *
  *	i)	dbpath	GTAGSDBPATH
@@ -225,9 +238,11 @@ gpath_close(void)
 		dbop_close(dbop);
 		return;
 	}
-	snprintf(fid, sizeof(fid), "%d", _nextkey);
-	if (_mode == 1 || _mode == 2)
+	if (_mode == 1 || _mode == 2) {
+		snprintf(fid, sizeof(fid), "%d", _nextkey);
 		dbop_update(dbop, NEXTKEY, fid);
+		dbop_update(dbop, VERSIONKEY, "2");
+	}
 	dbop_close(dbop);
 	if (_mode == 1)
 		created = 1;
@@ -249,7 +264,7 @@ static char gfind_prefix[MAXPATHLEN+1];
 /*
  * gfind_open: start iterator using GPATH.
  */
-void
+int
 gfind_open(const char *dbpath, const char *local, int other)
 {
 	assert(gfind_opened == 0);
@@ -261,6 +276,7 @@ gfind_open(const char *dbpath, const char *local, int other)
 	gfind_opened = 1;
 	gfind_first = 1;
 	gfind_other = other;
+	return get_version(gfind_dbop);
 }
 /*
  * gfind_read: read path using GPATH.

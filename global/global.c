@@ -785,7 +785,12 @@ grep(const char *dbpath, const char *pattern)
 	if (!(op = openfilter()))
 		die("cannot open output filter.");
 	count = 0;
-	gfind_open(dbpath, localprefix, oflag);
+	/*
+	 * The older version (4.8.7 or former) of GPATH doesn't have files
+	 * other than source file. The oflag requires new version of GPATH.
+	 */
+	if (gfind_open(dbpath, localprefix, oflag) < 2 && oflag)
+		die("GPATH is old format. Please remake it by invoking gtags(1).");
 	while ((path = gfind_read()) != NULL) {
 		if (!(fp = fopen(path, "r")))
 			die("cannot open file '%s'.", path);
@@ -854,7 +859,12 @@ pathlist(const char *dbpath, const char *av)
 	if (!(op = openfilter()))
 		die("cannot open output filter.");
 	count = 0;
-	gfind_open(dbpath, localprefix, oflag);
+	/*
+	 * The older version (4.8.7 or former) of GPATH doesn't have files
+	 * other than source file. The oflag requires new version of GPATH.
+	 */
+	if (gfind_open(dbpath, localprefix, oflag) < 2 && oflag)
+		die("GPATH is old format. Please remake it by invoking gtags(1).");
 	while ((path = gfind_read()) != NULL) {
 		/*
 		 * skip localprefix because end-user doesn't see it.
