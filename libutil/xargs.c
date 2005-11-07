@@ -131,15 +131,15 @@ repeat_find_next(void)
 	char *path = (p);\
 	length = strlen(path);\
 	if (*path == ' ') {\
-		if (!test("b", ++path))\
-			gpath_put(path, 1);\
+		if (!test("b", ++path) && xp->put_gpath)\
+			gpath_put(path, GPATH_OTHER);\
 		continue;\
 	}\
 	if (strbuf_getlen(comline) + length > limit)\
 		break;\
 	xp->seqno++;\
 	if (xp->put_gpath)\
-		gpath_put(path, 0);\
+		gpath_put(path, GPATH_SOURCE);\
 	if (xp->skip_assembly && locatestring(path, ".s", MATCH_AT_LAST|IGNORE_CASE) != NULL) {\
 		if (xp->verbose)\
 			xp->verbose(path + 2, xp->seqno, 1);\

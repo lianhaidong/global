@@ -584,8 +584,9 @@ extract_lastname(const char *image, int is_php)
 int
 makefileindex(const char *file, STRBUF *files)
 {
-	FILE *FIND, *FILEMAP, *FILES, *STDOUT, *op = NULL;
-	char *_;
+	FILE *FILEMAP, *FILES, *STDOUT, *op = NULL;
+	GFIND *gp;
+	const char *_;
 	int count = 0;
 	const char *indexlink = (Fflag) ? "../files" : "../mains";
 	STRBUF *sb = strbuf_open(0);
@@ -602,10 +603,6 @@ makefileindex(const char *file, STRBUF *files)
 	int flags = REG_EXTENDED;
 	regex_t is_include_file;
 
-	if (other_files)
-		snprintf(command, sizeof(command), "gtags --find --other | %s -t / -k 2", POSIX_SORT);
-	else
-		snprintf(command, sizeof(command), "gtags --find");
 	if (w32)
 		flags |= REG_ICASE;
 	strbuf_reset(sb);
@@ -629,8 +626,6 @@ makefileindex(const char *file, STRBUF *files)
 	/*
 	 * preparations.
 	 */
-	if ((FIND = popen(command, "r")) == NULL)
-		die("cannot fork.");
 	if ((FILES = fopen(makepath(distpath, file, NULL), "w")) == NULL)
 		die("cannot open file '%s'.", file);
 
@@ -650,19 +645,13 @@ makefileindex(const char *file, STRBUF *files)
 		if (!(FILEMAP = fopen(makepath(distpath, "FILEMAP", NULL), "w")))
                         die("cannot open '%s'.", makepath(distpath, "FILEMAP", NULL));
 	}
-	while ((_ = strbuf_fgets(input, FIND, STRBUF_NOCRLF)) != NULL) {
+	gp = gfind_open(dbpath, NULL, other_files);
+	while ((_ = gfind_read(gp)) != NULL) {
 		char fname[MAXPATHLEN];
-		int notsource = 0;
 
 		/* It seems like README or ChangeLog. */
-		if (*_ == ' ') {
-			if (!other_files)
-				continue;
-			_++;
-			if (test("b", _))
-				continue;
-			notsource = 1;
-		}
+		if (gp->type == GPATH_OTHER && !other_files)
+			continue;
 		_ += 2;			/* remove './' */
 		count++;
 		message(" [%d] adding %s", count, _);
@@ -795,7 +784,7 @@ makefileindex(const char *file, STRBUF *files)
 			char tmp[1024];
 			const char *file, *suffix = NULL, *dir = NULL;
 
-			if (notsource && dynamic) {
+			if (gp->type == GPATH_OTHER && dynamic) {
 				if (!(*action == '/' || count_stack(dirstack) == 0))
 					dir = "..";
 				snprintf(tmp, sizeof(tmp), "%s?pattern=%s%stype=source",
@@ -844,10 +833,9 @@ makefileindex(const char *file, STRBUF *files)
 		else
 			fputs(strbuf_value(sb), STDOUT);
 	}
+	gfind_close(gp);
 	if (map_file)
 		fclose(FILEMAP);
-	if (pclose(FIND) != 0)
-		die("cannot traverse directory.(%s)", command);
 	while (count_stack(dirstack) > 0) {
 		const char *parent, *suffix;
 

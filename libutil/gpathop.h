@@ -29,6 +29,26 @@
 #define NEXTKEY		" __.NEXTKEY"
 #define VERSIONKEY	" __.VERSION"
 
+/*
+ * File type
+ */
+#define GPATH_SOURCE	0
+#define GPATH_OTHER	1
+
+typedef struct {
+	/* set by gfind_open() */
+	DBOP *dbop;
+	const char *prefix;
+	int other;
+	int version;
+	/* set by gfind_open() and gfind_read() */
+	int first;
+	int eod;		/* end of data */
+	/* set by gfind_read() */
+	int type;		/* File type */
+	const char *path;	/* return value of gfind_read() */
+} GFIND;
+
 int gpath_open(const char *, int);
 const char *gpath_path2fid(const char *, int *);
 const char *gpath_fid2path(const char *, int *);
@@ -36,8 +56,8 @@ void gpath_put(const char *, int);
 void gpath_delete(const char *);
 void gpath_close(void);
 int gpath_nextkey(void);
-int gfind_open(const char *, const char *, int);
-const char *gfind_read(void);
-void gfind_close(void);
+GFIND *gfind_open(const char *, const char *, int);
+const char *gfind_read(GFIND *);
+void gfind_close(GFIND *);
 
 #endif /* ! _PATHOP_H_ */

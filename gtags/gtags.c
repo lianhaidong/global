@@ -410,16 +410,17 @@ main(int argc, char **argv)
 		/*
 		 * This code is used by htags(1) to traverse file system.
 		 */
+		GFIND *gp;
 		const char *path;
 		const char *local = (argc) ? argv[0] : NULL;
 
 		getdbpath(cwd, root, dbpath, 0);
-		gfind_open(dbpath, local, other_files);
-		while ((path = gfind_read()) != NULL) {
+		gp = gfind_open(dbpath, local, other_files);
+		while ((path = gfind_read(gp)) != NULL) {
 			fputs(path, stdout);
 			fputc('\n', stdout);
 		}
-		gfind_close();
+		gfind_close(gp);
 		exit(0);
 	} else if (do_sort) {
 		/*
@@ -823,7 +824,7 @@ incremental(const char *dbpath, const char *root)
 			end = start + strbuf_getlen(addlist_other);
 
 			for (p = start; p < end; p += strlen(p) + 1)
-				gpath_put(p, 1);
+				gpath_put(p, GPATH_OTHER);
 		}
 		gpath_close();
 		updated = 1;

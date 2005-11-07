@@ -64,7 +64,6 @@ extern char gtagsconf[MAXPATHLEN];
 extern char sort_path[MAXFILLEN];
 extern char gtags_path[MAXFILLEN];
 extern char global_path[MAXFILLEN];
-extern char findcom[MAXFILLEN];
 extern const char *null_device;
 extern const char *tmpdir;
 

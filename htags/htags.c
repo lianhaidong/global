@@ -81,7 +81,6 @@ char datadir[MAXPATHLEN];
 char sort_path[MAXFILLEN];
 char gtags_path[MAXFILLEN];
 char global_path[MAXFILLEN];
-char findcom[MAXFILLEN];
 const char *null_device = NULL_DEVICE;
 const char *tmpdir = "/tmp";
 
@@ -740,7 +739,7 @@ makehtaccess(const char *file)
 static void
 makehtml(int total)
 {
-	char command[MAXFILLEN];
+	GFIND *gp;
 	FILE *ip, *source_stream, *anchor_stream;
 	const char *path;
 	int count = 0;
@@ -751,21 +750,20 @@ makehtml(int total)
 	 *      source_stream: for src2html()
 	 *      anchor_stream: for anchor_load().
 	 */
-	if (other_files && !dynamic)
-		snprintf(command, sizeof(command), "%s --other | %s -t / -k 2", findcom, POSIX_SORT);
-	else
-		strlimcpy(command, findcom, sizeof(command));
-	ip = popen(command, "r");
-	if (!ip)
-		die("cannot execute command '%s'.", command);
 	source_stream = tmpfile();
 	anchor_stream = tmpfile();
-	while (strbuf_fgets(sb, ip, 0) != NULL) {
-		fputs(strbuf_value(sb), source_stream);
-		fputs(strbuf_value(sb), anchor_stream);
+	gp = gfind_open(dbpath, NULL, other_files && !dynamic);
+	while ((path = gfind_read(gp)) != NULL) {
+		if (gp->type == GPATH_OTHER)
+			fputc(' ', source_stream);
+		fputs(path, source_stream);
+		fputc('\n', source_stream);
+		if (gp->type == GPATH_OTHER)
+			fputc(' ', anchor_stream);
+		fputs(path, anchor_stream);
+		fputc('\n', anchor_stream);
 	}
-	if (pclose(ip) != 0)
-		die("cannot traverse directory.(%s)", command);
+	gfind_close(gp);
 	rewind(source_stream);
 	/*
 	 * Prepare anchor stream for anchor_load().
@@ -965,9 +963,6 @@ basic_check(void)
 	if (!(p = usable("global")))
 		die("global command required but not found.");
 	strlimcpy(global_path, p, sizeof(global_path));
-
-	snprintf(findcom, sizeof(findcom), "%s --find", gtags_path);
-
 	/*
 	 * Temporary directory.
 	 */
@@ -1680,6 +1675,16 @@ main(int argc, char **argv)
 		if (realpath(dbpath, buf) == NULL)
 			die("cannot get realpath of dbpath.");
 		strlimcpy(dbpath, buf, sizeof(dbpath));
+	}
+	/*
+	 * The older version (4.8.7 or former) of GPATH doesn't have files
+         * other than source file. The oflag requires new version of GPATH.
+	 */
+	if (other_files) {
+		GFIND *gp = gfind_open(dbpath, NULL, 0);
+		if (gp->version < 2)
+			die("GPATH is old format. Please remake it by invoking gtags(1).");
+		gfind_close(gp);
 	}
 	/*
 	 * for global(1) and gtags(1).

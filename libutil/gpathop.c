@@ -119,10 +119,12 @@ gpath_open(const char *dbpath, int mode)
  * gpath_put: put path name
  *
  *	i)	path	path name
- *	i)	other	0: source file, 1: other file
+ *	i)	type	path type
+ *			GPATH_SOURCE: source file
+ *			GPATH_OTHER: other file
  */
 void
-gpath_put(const char *path, int other)
+gpath_put(const char *path, int type)
 {
 	char fid[32];
 	STATIC_STRBUF(sb);
@@ -141,7 +143,7 @@ gpath_put(const char *path, int other)
 	 */
 	strbuf_clear(sb);
 	strbuf_puts0(sb, fid);
-	if (other)
+	if (type == GPATH_OTHER)
 		strbuf_puts0(sb, "o");
 	dbop_put_withlen(dbop, path, strbuf_value(sb), strbuf_getlen(sb));
 	/*
@@ -149,7 +151,7 @@ gpath_put(const char *path, int other)
 	 */
 	strbuf_clear(sb);
 	strbuf_puts0(sb, path);
-	if (other)
+	if (type == GPATH_OTHER)
 		strbuf_puts0(sb, "o");
 	dbop_put_withlen(dbop, fid, strbuf_value(sb), strbuf_getlen(sb));
 }
@@ -158,8 +160,8 @@ gpath_put(const char *path, int other)
  *
  *	i)	path	path name
  *	o)	type	path type
- *			0: source file
- *			1: other file
+ *			GPATH_SOURCE: source file
+ *			GPATH_OTHER: other file
  *	r)		file id
  */
 const char *
@@ -169,7 +171,7 @@ gpath_path2fid(const char *path, int *type)
 	assert(opened == 1);
 	if (fid && type) {
 		const char *flag = get_flag(dbop);
-		*type = (*flag == 'o') ? 1 : 0;
+		*type = (*flag == 'o') ? GPATH_OTHER : GPATH_SOURCE;
 			
 	}
 	return fid;
@@ -179,8 +181,8 @@ gpath_path2fid(const char *path, int *type)
  *
  *	i)	fid	file id
  *	o)	type	path type
- *			0: source file
- *			1: other file
+ *			GPATH_SOURCE: source file
+ *			GPATH_OTHER: other file
  *	r)		path name
  */
 const char *
@@ -190,7 +192,7 @@ gpath_fid2path(const char *fid, int *type)
 	assert(opened == 1);
 	if (path && type) {
 		const char *flag = get_flag(dbop);
-		*type = (*flag == 'o') ? 1 : 0;
+		*type = (*flag == 'o') ? GPATH_OTHER : GPATH_SOURCE;
 	}
 	return path;
 }
@@ -255,65 +257,80 @@ gpath_close(void)
  * because gfind_xxx() use GPATH (file index).
  * If GPATH exist then you should use this.
  */
-static DBOP *gfind_dbop;
-static int gfind_opened;
-static int gfind_first;
-static int gfind_other;
-static char gfind_prefix[MAXPATHLEN+1];
 
 /*
  * gfind_open: start iterator using GPATH.
+ *
+ *	i)	dbpath	dbpath
+ *	i)	local	local prefix
+ *			if NULL specified, it assumes "./";
+ *	i)	other	treat files other than source file.
+ *	r)		GFIND structure
  */
-int
+GFIND *
 gfind_open(const char *dbpath, const char *local, int other)
 {
-	assert(gfind_opened == 0);
-	assert(gfind_first == 0);
-	gfind_dbop = dbop_open(makepath(dbpath, dbname(GPATH), NULL), 0, 0, 0);
-	if (gfind_dbop == NULL)
+	GFIND *gfind = (GFIND *)malloc(sizeof(GFIND));
+
+	if (gfind == NULL)
+		die("short of memory.");
+	gfind->dbop = dbop_open(makepath(dbpath, dbname(GPATH), NULL), 0, 0, 0);
+	if (gfind->dbop == NULL)
 		die("GPATH not found.");
-	strlimcpy(gfind_prefix, (local) ? local : "./", sizeof(gfind_prefix));
-	gfind_opened = 1;
-	gfind_first = 1;
-	gfind_other = other;
-	return get_version(gfind_dbop);
+	gfind->path = NULL;
+	gfind->prefix = strdup(local ? local : "./");
+	if (gfind->prefix == NULL)
+		die("short of memory.");
+	gfind->first = 1;
+	gfind->eod = 0;
+	gfind->other = other;
+	gfind->type = GPATH_SOURCE;
+	gfind->version = get_version(gfind->dbop);
+	return gfind;
 }
 /*
  * gfind_read: read path using GPATH.
  *
+ *	i)	gfind	GFIND structure
  *	r)		path
  */
 const char *
-gfind_read(void)
+gfind_read(GFIND *gfind)
 {
-	const char *path, *flag;
+	const char *flag;
 
-	assert(gfind_opened == 1);
+	gfind->type = GPATH_SOURCE;
+	if (gfind->eod)
+		return NULL;
 	for (;;) {
-		if (gfind_first) {
-			gfind_first = 0;
-			path = dbop_first(gfind_dbop, gfind_prefix, NULL, DBOP_KEY | DBOP_PREFIX);
+		if (gfind->first) {
+			gfind->first = 0;
+			gfind->path = dbop_first(gfind->dbop, gfind->prefix, NULL, DBOP_KEY | DBOP_PREFIX);
 		} else {
-			path =  dbop_next(gfind_dbop);
+			gfind->path = dbop_next(gfind->dbop);
 		}
-		if (path == NULL || gfind_other)
+		if (gfind->path == NULL) {
+			gfind->eod = 1;
 			break;
+		}
 		/*
-		 * if gfind_other == 0, return only source files.
+		 * if gfind->other == 0, return only source files.
 		 * *flag == 'o' means 'other files' like README.
 		 */
-		flag = get_flag(gfind_dbop);
-		if (*flag != 'o')
+		flag = get_flag(gfind->dbop);
+		gfind->type = (*flag == 'o') ? GPATH_OTHER : GPATH_SOURCE;
+		if (gfind->other || gfind->type == GPATH_SOURCE)
 			break;
 	}
-	return path;
+	return gfind->path;
 }
 /*
  * gfind_close: close iterator.
  */
 void
-gfind_close(void)
+gfind_close(GFIND *gfind)
 {
-	dbop_close(gfind_dbop);
-	gfind_opened = gfind_first = 0;
+	dbop_close(gfind->dbop);
+	free(gfind->prefix);
+	free(gfind);
 }
