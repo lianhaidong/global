@@ -416,7 +416,7 @@ getURL(const char *arg, STRBUF *URL)
 #endif
 		strbuf_sprintf(URL, "file://%s", p);
 		if (linenumber)
-			strbuf_sprintf(URL, "#%d", linenumber);
+			strbuf_sprintf(URL, "#L%d", linenumber);
 		strbuf_close(sb);
 	} else {
 		/*
