@@ -698,7 +698,6 @@ incremental(const char *dbpath, const char *root)
 	STRBUF *addlist = strbuf_open(0);
 	STRBUF *deletelist = strbuf_open(0);
 	STRBUF *addlist_other = strbuf_open(0);
-	STRBUF *deletelist_other = strbuf_open(0);
 	IDSET *deleteset;
 	int updated = 0;
 	const char *path;
@@ -757,9 +756,6 @@ incremental(const char *dbpath, const char *root)
 	find_close();
 	/*
 	 * make delete list.
-	 *
-	 * deletelist: source files
-	 * deletelist_other: other files
 	 */
 	limit = gpath_nextkey();
 	for (i = 1; i < limit; i++) {
@@ -771,7 +767,7 @@ incremental(const char *dbpath, const char *root)
 			continue;
 		if (other) {
 			if (!test("f", path) || test("b", path))
-				strbuf_puts0(deletelist_other, path);
+				strbuf_puts0(deletelist, path);
 		} else {
 			if (!test("f", path)) {
 				strbuf_puts0(deletelist, path);
@@ -799,7 +795,7 @@ incremental(const char *dbpath, const char *root)
 		}
 		updated = 1;
 	}
-	if (strbuf_getlen(deletelist) + strbuf_getlen(deletelist_other) + strbuf_getlen(addlist_other) > 0) {
+	if (strbuf_getlen(deletelist) + strbuf_getlen(addlist_other) > 0) {
 		const char *start, *end, *p;
 
 		if (vflag)
@@ -808,13 +804,6 @@ incremental(const char *dbpath, const char *root)
 		if (strbuf_getlen(deletelist) > 0) {
 			start = strbuf_value(deletelist);
 			end = start + strbuf_getlen(deletelist);
-
-			for (p = start; p < end; p += strlen(p) + 1)
-				gpath_delete(p);
-		}
-		if (strbuf_getlen(deletelist_other) > 0) {
-			start = strbuf_value(deletelist_other);
-			end = start + strbuf_getlen(deletelist_other);
 
 			for (p = start; p < end; p += strlen(p) + 1)
 				gpath_delete(p);
@@ -852,7 +841,6 @@ incremental(const char *dbpath, const char *root)
 	strbuf_close(addlist);
 	strbuf_close(deletelist);
 	strbuf_close(addlist_other);
-	strbuf_close(deletelist_other);
 	idset_close(deleteset);
 
 	return updated;
