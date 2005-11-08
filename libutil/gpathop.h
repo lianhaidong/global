@@ -35,8 +35,6 @@
 #define GPATH_SOURCE	0
 #define GPATH_OTHER	1
 
-#define path2fid(p)	gpath_path2fid((p), NULL)
-
 typedef struct {
 	/* set by gfind_open() */
 	DBOP *dbop;

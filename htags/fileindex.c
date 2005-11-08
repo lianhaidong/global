@@ -36,6 +36,7 @@
 #include "global.h"
 #include "incop.h"
 #include "htags.h"
+#include "path2url.h"
 #include "common.h"
 #include "test.h"
 

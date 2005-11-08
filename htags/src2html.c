@@ -33,6 +33,7 @@
 #include "cache.h"
 #include "common.h"
 #include "incop.h"
+#include "path2url.h"
 #include "htags.h"
 
 /*----------------------------------------------------------------------*/

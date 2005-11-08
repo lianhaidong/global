@@ -43,6 +43,7 @@
 #include "global.h"
 #include "common.h"
 #include "htags.h"
+#include "path2url.h"
 
 /*
  * Tag definitions
