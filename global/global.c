@@ -401,7 +401,7 @@ main(int argc, char **argv)
 			unique = 1;
 		}
 		if (tflag) 			/* ctags format */
-			strbuf_puts(sortfilter, " -k 1,1 -k 2,2 -k 3,3n");
+			strbuf_puts(sortfilter, " -k 2,2 -k 3,3n");
 		else if (fflag) {
 			STRBUF *sb = strbuf_open(0);
 			/*
@@ -418,8 +418,10 @@ main(int argc, char **argv)
 			else
 				strbuf_puts(sortfilter, " -k 3,3 -k 2,2n");
 			strbuf_close(sb);
-		} else if (xflag)			/* print details */
-			strbuf_puts(sortfilter, " -k 1,1 -k 3,3 -k 2,2n");
+		} else if (gflag || Pflag)
+			strbuf_setlen(sortfilter, 0);
+		else if (xflag)			/* print details */
+			strbuf_puts(sortfilter, " -k 3,3 -k 2,2n");
 		else if (!unique)		/* print just a file name */
 			strbuf_puts(sortfilter, " -u");
 	}
