@@ -120,7 +120,6 @@ extern const char *file_icon;
 
 extern int ncol;
 extern int tabs;
-extern char stabs[];
 extern int full_path;
 extern int map_file;
 extern const char *icon_list;

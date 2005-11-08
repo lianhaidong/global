@@ -465,30 +465,6 @@ delete_stack(struct dirstack *sp)
 /* Main procedure							*/
 /*----------------------------------------------------------------------*/
 /*
- * Encode URL.
- *
- *	i)	url	URL
- *	r)		encoded URL
- */
-static const char *
-encode(const char *url)
-{
-	STATIC_STRBUF(sb);
-        const char *p;
-
-	strbuf_clear(sb);
-        for (p = url; *p; p++) {
-		int c = (unsigned char)*p;
-
-                if (isalnum(c))
-			strbuf_putc(sb, c);
-		else
-			strbuf_sprintf(sb, "%%%02x", c);
-        }
-
-	return strbuf_value(sb);
-}
-/*
  * extract_lastname: extract the last name of include line.
  *
  *	i)	image	source image of include
@@ -777,24 +753,7 @@ makefileindex(const char *file, STRBUF *files)
 		strbuf_reset(sb);
 		if (!no_order_list)
 			strbuf_puts(sb, item_begin);
-
-		{
-			char tmp[1024];
-			const char *file, *suffix = NULL, *dir = NULL;
-
-			if (gp->type == GPATH_OTHER && dynamic) {
-				if (!(*action == '/' || count_stack(dirstack) == 0))
-					dir = "..";
-				snprintf(tmp, sizeof(tmp), "%s?pattern=%s%stype=source",
-					action, encode(_), quote_amp);
-				file = tmp;
-			} else {
-				dir = count_stack(dirstack) ? upperdir(SRCS) : SRCS;
-				file = path2fid(_);
-				suffix = HTML;
-			}
-			strbuf_puts(sb, gen_href_begin_with_title_target(dir, file, suffix, NULL, _, target));
-		}
+		strbuf_puts(sb, gen_href_begin_with_title_target(count_stack(dirstack) ? upperdir(SRCS) : SRCS, path2fid(_), HTML, NULL, _, target));
 		if (icon_list) {
 			const char *lang, *suffix, *text_icon;
 

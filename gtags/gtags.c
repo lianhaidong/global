@@ -24,7 +24,6 @@
 #endif
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <errno.h>
 
 #include <ctype.h>
 #include <utime.h>
@@ -91,11 +90,9 @@ int do_sort;
 int do_relative;
 int do_absolute;
 int cxref;
-int do_expand;
 int gtagsconf;
 int gtagslabel;
 int debug;
-int secure_mode;
 const char *extra_options;
 const char *info_string;
 const char *file_list;
@@ -135,11 +132,9 @@ static struct option const long_options[] = {
 	{"convert", no_argument, &do_convert, 1},
 	{"cxref", no_argument, &cxref, 1},
 	{"debug", no_argument, &debug, 1},
-	{"expand", required_argument, &do_expand, 1},
 	{"gtagsconf", required_argument, &gtagsconf, 1},
 	{"gtagslabel", required_argument, &gtagslabel, 1},
 	{"relative", no_argument, &do_relative, 1},
-	{"secure", no_argument, &secure_mode, 1},
 	{"sort", no_argument, &do_sort, 1},
 	{"version", no_argument, &show_version, 1},
 	{"help", no_argument, &show_help, 1},
@@ -198,7 +193,6 @@ put_lines(char *lines, struct dup_entry *entries, int entry_count)
 int
 main(int argc, char **argv)
 {
-	char root[MAXPATHLEN+1];
 	char dbpath[MAXPATHLEN+1];
 	char cwd[MAXPATHLEN+1];
 	STRBUF *sb = strbuf_open(0);
@@ -292,7 +286,6 @@ main(int argc, char **argv)
 		STRBUF *ib = strbuf_open(MAXBUFLEN);
 		const char *fid;
 		char *p, *q;
-		int c, type;
 
 		/*
 		 * [Job]
@@ -305,11 +298,6 @@ main(int argc, char **argv)
 		 *				v
 		 * <a href='http://xxx/global/S/39.html#110'>main</a>\n
 		 *
-		 * If the file is not source code, change into the path to CGI script.
-		 * <a href='http://xxx/global/S/ ./README .html#9'>main</a>\n
-		 *				|
-		 *				v
-		 * <a href='http://xxx/global/cgi-bin/global.cgi?pattern=README&amp;type=source#9'>main</a>\n
 		 */
 		if (gpath_open(".", 0) < 0)
 			die("GPATH not found.");
@@ -322,11 +310,11 @@ main(int argc, char **argv)
 				printf("%s: ERROR(1): %s", progname, strbuf_value(ib));
 				continue;
 			}
-			/* Print just before "/S/ " and skip "/S/ ". */
+			/* Print from the head of line to "/S/". */
 			for (; p < q; p++)
 				putc(*p, stdout);
 			for (; *p && *p != ' '; p++)
-				;
+				putc(*p, stdout);
 			/* Extract path name. */
 			for (q = ++p; *q && *q != ' '; q++)
 				;
@@ -335,71 +323,14 @@ main(int argc, char **argv)
 				continue;
 			}
 			*q++ = '\0';
-			/*
-			 * Convert path name into URL.
-			 * The output of 'global -xgo' and 'global -xPo' may include
-			 * lines about files other than source code. In this case,
-			 * the HTML file corresponding to file id may not exist.
-			 */
-			fid = gpath_path2fid(p, &type);
-			if (fid && type == GPATH_SOURCE) {
-				fputs("/S/", stdout);
-				fputs(fid, stdout);
-				fputs(q, stdout);
-			} else {
-				fputs("/cgi-bin/global.cgi?pattern=", stdout);
-				p += 2;
-				while ((c = (unsigned char)*p++) != '\0') {
-					if (isalnum(c))
-						putc(c, stdout);
-					else
-						printf("%%%02x", c);
-				}
-				fputs("&amp;type=source", stdout);
-				for (; *q && *q != '#'; q++)
-					;
-				if (*q == '\0') {
-					printf("%s: ERROR(2): %s", progname, strbuf_value(ib));
-					continue;
-				}
-				fputs(q, stdout);
-			}
+			/* Convert path name into URL. */
+			fid = gpath_path2fid(p, NULL);
+			if (fid == NULL)
+				die("GPATH is corrupted.('%s' not found)", p);
+			fputs(fid, stdout);
+			fputs(q, stdout);
 		}
 		gpath_close();
-		strbuf_close(ib);
-		exit(0);
-	} else if (do_expand) {
-		/*
-		 * The 'gtags --expand' is nearly equivalent with 'expand'.
-		 * We made this command to decrease dependency to external
-		 * command. But now, the --secure option use this command
-		 * positively.
-		 */
-		FILE *ip;
-		STRBUF *ib = strbuf_open(MAXBUFLEN);
-
-		if (argc) {
-			if (secure_mode) {
-				char buf[MAXPATHLEN+1], *path;
-				char rootdir[MAXPATHLEN+1];
-
-				getdbpath(cwd, root, dbpath, 0);
-				snprintf(rootdir, sizeof(rootdir), "%s/", root);
-				path = realpath(argv[0], buf);
-				if (path == NULL)
-					die("realpath(%s, buf) failed. (errno=%d).", argv[0], errno);
-				if (!isabspath(path))
-					die("realpath(3) is not compatible with BSD version.");
-				if (!locatestring(path, rootdir, MATCH_AT_FIRST))
-					die("'%s' is out of source tree.", path);
-			}
-			ip = fopen(argv[0], "r");
-			if (ip == NULL)
-				exit(1);
-		} else
-			ip = stdin;
-		while (strbuf_fgets(ib, ip, STRBUF_NOCRLF) != NULL)
-			detab(stdout, strbuf_value(ib));
 		strbuf_close(ib);
 		exit(0);
 	} else if (do_sort) {

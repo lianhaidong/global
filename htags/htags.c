@@ -185,7 +185,6 @@ const char *file_icon = "text";
  */
 int ncol = 4;				/* columns of line number	*/
 int tabs = 8;				/* tab skip			*/
-char stabs[8];				/* tab skip (string)		*/
 int full_path = 0;			/* file index format		*/
 int map_file = 1;			/* 1: create MAP file		*/
 const char *icon_list = NULL;		/* use icon list		*/
@@ -321,7 +320,6 @@ generate_file(const char *dist, const char *file)
 		/* dynamic initialization */
                 {"@page_begin@", NULL},
                 {"@page_end@", NULL},
-                {"@lineno_anchor@", NULL},
 
 		/* static initialization */
                 {"@body_begin@", body_begin},
@@ -337,7 +335,6 @@ generate_file(const char *dist, const char *file)
                 {"@global_path@", global_path},
                 {"@gtags_path@", gtags_path},
                 {"@normal_suffix@", normal_suffix},
-                {"@tabs@", stabs},
                 {"@hr@", hr},
                 {"@br@", br},
                 {"@HTML@", HTML},
@@ -350,7 +347,6 @@ generate_file(const char *dist, const char *file)
 
 	tab[0].value = gen_page_begin("Result", SUBDIR);
 	tab[1].value = gen_page_end();
-	tab[2].value = gen_name_string("L$.");
 	/*
 	 * construct regular expression.
 	 */
@@ -748,7 +744,7 @@ makehtml(int total)
 	 * Create anchor stream for anchor_load().
 	 */
 	anchor_stream = tmpfile();
-	gp = gfind_open(dbpath, NULL, other_files && !dynamic);
+	gp = gfind_open(dbpath, NULL, other_files);
 	while ((path = gfind_read(gp)) != NULL) {
 		if (gp->type == GPATH_OTHER)
 			fputc(' ', anchor_stream);
@@ -763,7 +759,7 @@ makehtml(int total)
 	/*
 	 * For each path in GPATH, convert the path into HTML file.
 	 */
-	gp = gfind_open(dbpath, NULL, other_files && !dynamic);
+	gp = gfind_open(dbpath, NULL, other_files);
 	while ((path = gfind_read(gp)) != NULL) {
 		char html[MAXPATHLEN];
 
@@ -1025,7 +1021,6 @@ configuration(int argc, char **argv)
 		else
 			tabs = n;
 	}
-	snprintf(stabs, sizeof(stabs), "%d", tabs);
 	strbuf_reset(sb);
 	if (getconfs("gzipped_suffix", sb)) {
 		p = strdup(strbuf_value(sb));
