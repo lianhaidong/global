@@ -35,7 +35,6 @@
 #include "queue.h"
 #include "global.h"
 #include "incop.h"
-#include "path2url.h"
 #include "htags.h"
 #include "common.h"
 #include "test.h"

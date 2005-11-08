@@ -32,7 +32,6 @@
 #include "global.h"
 #include "anchor.h"
 #include "incop.h"
-#include "path2url.h"
 #include "common.h"
 #include "htags.h"
 #include "../gtags-parser/c_res.h"

@@ -39,7 +39,6 @@
 #include "common.h"
 #include "incop.h"
 #include "htags.h"
-#include "path2url.h"
 #include "../gtags-parser/php_res.h"
 
 #define lex_symbol_generation_rule(x) php_ ## x

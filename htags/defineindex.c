@@ -32,7 +32,6 @@
 #include "global.h"
 #include "cache.h"
 #include "htags.h"
-#include "path2url.h"
 #include "common.h"
 
 /*

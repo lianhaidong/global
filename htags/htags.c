@@ -48,7 +48,6 @@
 #include "common.h"
 #include "htags.h"
 #include "incop.h"
-#include "path2url.h"
 #include "const.h"
 
 void src2html(const char *, const char *, int);
@@ -266,7 +265,7 @@ help(void)
 void
 clean(void)
 {
-	unload_gpath();
+	gpath_close();
 	cache_close();
 }
 /*
@@ -1822,7 +1821,7 @@ main(int argc, char **argv)
 	/*
 	 * (#) load GPATH
 	 */
-	load_gpath(dbpath);
+	gpath_open(dbpath, 0);
 
 	/*
 	 * (3) make function entries (D/ and R/)

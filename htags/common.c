@@ -42,7 +42,6 @@
 
 #include "global.h"
 #include "common.h"
-#include "path2url.h"
 #include "htags.h"
 
 /*
