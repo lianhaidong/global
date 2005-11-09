@@ -85,7 +85,6 @@ int max_args;
 int show_version;
 int show_help;
 int show_config;
-int do_convert;
 int do_sort;
 int do_relative;
 int do_absolute;
@@ -130,7 +129,6 @@ static struct option const long_options[] = {
 	/* long name only */
 	{"absolute", no_argument, &do_absolute, 1},
 	{"config", optional_argument, &show_config, 1},
-	{"convert", no_argument, &do_convert, 1},
 	{"cxref", no_argument, &cxref, 1},
 	{"debug", no_argument, &debug, 1},
 	{"fileid", no_argument, &fileid, 1},
