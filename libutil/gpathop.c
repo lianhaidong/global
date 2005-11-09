@@ -47,6 +47,43 @@ static int opened;
 static int created;
 
 /*
+ * GPATH format version
+ *
+ * 1. Gtags(1) bury version number in GPATH.
+ * 2. Global(1) pick up the version number from GPATH. If the number
+ *    is not acceptable version number then global give up work any more
+ *    and display error message.
+ * 3. If version number is not found then it assumes version 1.
+ * 4. GPATH version is independent with the other tag files.
+ *
+ * [History of format version]
+ *
+ * GLOBAL-4.8.7		no idea about format version.
+ * GLOBAL-4.8.8(maybe)	understand format version.
+ *			support format version 2.
+ *			The invoking gtags -i (incremental updating) brings
+ *			GPATH to version 2.
+ *
+ * - Format version 1
+ *
+ * GPATH has only source files.
+ *
+ *      key             data
+ *      --------------------
+ *      ./aaa.c\0       11\0
+ *
+ * - Format version 2
+ *
+ * GPATH has not only source files but also other files like README.
+ * You can distinguish them by the flag following data value.
+ * At present, the flag value is only 'o'(other files).
+ *
+ *      key             data
+ *      --------------------
+ *      ./aaa.c\0       11\0
+ *      ./README\0      12\0o\0         <=== 'o' means other files.
+ */
+/*
  * get_flag: get flag value
  */
 static const char *
