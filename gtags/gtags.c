@@ -207,9 +207,7 @@ main(int argc, char **argv)
 		switch (optchar) {
 		case 0:
 			p = long_options[option_index].name;
-			if (!strcmp(p, "expand")) {
-				settabs(atoi(optarg + 1));
-			} else if (!strcmp(p, "config")) {
+			if (!strcmp(p, "config")) {
 				if (optarg)
 					info_string = optarg;
 			} else if (gtagsconf || gtagslabel) {
