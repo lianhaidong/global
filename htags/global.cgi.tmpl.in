@@ -115,8 +115,9 @@ if ($flag eq 'g' || $flag eq 'I') {
 local(%ctab) = ('&', '&amp;', '<', '&lt;', '>', '&gt;');
 #
 # fork and exec global(1) to avoid command substitutions in $pattern.
+# The --fileid print the file id of the path at the head of each line.
 #
-open(PIPE, "-|") || exec '@globalpath@', '-x'.$flag.$iflag.$oflag, '-e', $pattern;
+open(PIPE, "-|") || exec '@globalpath@', '-x'.$flag.$iflag.$oflag, '--fileid', '-e', $pattern;
 if ($?) {	
 	print "@error_begin@Error@error_end@\n";
 	print "@message_begin@Cannot execute global. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a>@message_end@\n";
@@ -130,26 +131,23 @@ print "Following $words are matched to above pattern.@hr@\n";
 $cnt = 0;
 local($tag, $lno, $filename);
 print "@verbatim_begin@\n";
-open(PIPEOUT, "| @gtagspath@ --convert");
-if ($?) {	
-	print "@error_begin@Error@error_end@\n";
-	print "@message_begin@Cannot execute gtags --convert. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a>@message_end@\n";
-	print "@body_end@\n";
-	print "@page_end@\n";
-	exit 0;
-}
-$| = 1;	# flush buffer
+#
+# Input format:
+#
+# fid tag   lno filename
+# ---------------------------------------------
+# 100@main  32 ./main.c main(argc, argv)
+#
 while (<PIPE>) {
 	$cnt++;
-	($tag, $lno, $filename) = split;
+	($fid_tag, $lno, $filename) = split;
+	($fid, $tag) = split(/@/, $fid_tag);
+	s/^[0-9]+@//;
 	s/([&<>])/$ctab{$1}/ge;
-	# " ./$filename " is replaced with file number by gtags --convert.
-	s!(^[^ \t]+)!<a href='$htmlbase/S/ ./$filename .@HTML@#L$lno'>$1<\/a>!;
-	print PIPEOUT;
+	s!(^[^ \t]+)!<a href='$htmlbase/S/$fid.@HTML@#L$lno'>$1<\/a>!;
+	print;
 }
-$| = 1;	# flush buffer
 close(PIPE);
-close(PIPEOUT);
 print "@verbatim_end@\n";
 if ($cnt == 0) {
 	print "@message_begin@Pattern not found. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a>@message_end@\n";

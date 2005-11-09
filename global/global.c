@@ -88,6 +88,7 @@ int show_version;
 int show_help;
 int show_filter;			/* undocumented command */
 int debug;
+int fileid;
 const char *extra_options;
 
 static void
@@ -131,6 +132,7 @@ static struct option const long_options[] = {
 
 	/* long name only */
 	{"debug", no_argument, &debug, 1},
+	{"fileid", no_argument, &fileid, 1},
 	{"version", no_argument, &show_version, 1},
 	{"help", no_argument, &show_help, 1},
 	{"filter", no_argument, &show_filter, 1},
@@ -436,10 +438,14 @@ main(int argc, char **argv)
 		strbuf_puts(pathfilter, " --relative");
 	if (xflag || tflag)
 		strbuf_puts(pathfilter, " --cxref");
+	if (fileid)
+		strbuf_puts(pathfilter, " --fileid");
 	strbuf_putc(pathfilter, ' ');
 	strbuf_puts(pathfilter, root);
 	strbuf_putc(pathfilter, ' ');
 	strbuf_puts(pathfilter, cwd);
+	strbuf_putc(pathfilter, ' ');
+	strbuf_puts(pathfilter, dbpath);
 	/*
 	 * print filter.
 	 */
