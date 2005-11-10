@@ -560,7 +560,7 @@ incremental(const char *dbpath, const char *root)
 	STRBUF *addlist = strbuf_open(0);
 	STRBUF *deletelist = strbuf_open(0);
 	STRBUF *addlist_other = strbuf_open(0);
-	IDSET *deleteset;
+	IDSET *deleteset, *findset;
 	int updated = 0;
 	const char *path;
 	int i, limit;
@@ -579,9 +579,17 @@ incremental(const char *dbpath, const char *root)
 
 	if (gpath_open(dbpath, 0) < 0)
 		die("GPATH not found.");
-	deleteset = idset_open(gpath_nextkey());
 	/*
-	 * make add list and update list.
+	 * deleteset:
+	 *	The list of the path name which should be deleted from GPATH.
+	 * findset:
+	 *	The list of the path name which exists in the current project.
+	 *	A project is limited by the --file option.
+	 */
+	deleteset = idset_open(gpath_nextkey());
+	findset = idset_open(gpath_nextkey());
+	/*
+	 * make add list and delete list for update.
 	 */
 	if (file_list)
 		find_open_filelist(file_list, root);
@@ -590,6 +598,7 @@ incremental(const char *dbpath, const char *root)
 	total = 0;
 	while ((path = find_read()) != NULL) {
 		const char *fid;
+		int n_fid = 0;
 		int other = 0;
 
 		/* a blank at the head of path means 'NOT SOURCE'. */
@@ -601,6 +610,10 @@ incremental(const char *dbpath, const char *root)
 		if (stat(path, &statp) < 0)
 			die("stat failed '%s'.", path);
 		fid = gpath_path2fid(path, NULL);
+		if (fid) { 
+			n_fid = atoi(fid);
+			idset_add(findset, n_fid);
+		}
 		if (other) {
 			if (fid == NULL)
 				strbuf_puts0(addlist_other, path);
@@ -611,7 +624,7 @@ incremental(const char *dbpath, const char *root)
 			} else if (gtags_mtime < statp.st_mtime) {
 				strbuf_puts0(addlist, path);
 				total++;
-				idset_add(deleteset, atoi(fid));
+				idset_add(deleteset, n_fid);
 			}
 		}
 	}
@@ -625,13 +638,21 @@ incremental(const char *dbpath, const char *root)
 		int other;
 
 		snprintf(fid, sizeof(fid), "%d", i);
+		/*
+		 * This is a hole of GPATH. The hole increases if the deletion
+		 * and the addition are repeated.
+		 */
 		if ((path = gpath_fid2path(fid, &other)) == NULL)
 			continue;
+		/*
+		 * The file which does not exist in the findset is treated
+		 * assuming that it does not exist in the file system.
+		 */
 		if (other) {
-			if (!test("f", path) || test("b", path))
+			if (!idset_contains(findset, i) || !test("f", path) || test("b", path))
 				strbuf_puts0(deletelist, path);
 		} else {
-			if (!test("f", path)) {
+			if (!idset_contains(findset, i) || !test("f", path)) {
 				strbuf_puts0(deletelist, path);
 				idset_add(deleteset, i);
 			}
@@ -704,6 +725,7 @@ incremental(const char *dbpath, const char *root)
 	strbuf_close(deletelist);
 	strbuf_close(addlist_other);
 	idset_close(deleteset);
+	idset_close(findset);
 
 	return updated;
 }
