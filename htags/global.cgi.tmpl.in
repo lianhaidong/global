@@ -31,7 +31,7 @@ $htmlbase =~ s!/[^\/]+$!!;		# remove file name.
 $htmlbase =~ s!/defines$!!;
 $htmlbase =~ s!/S$!!;
 $htmlbase =~ s!/$!!;
-if (! -x '@globalpath@' || ! -x '@gtagspath@') {
+if (! -x '@globalpath@') {
 	print "@error_begin@Error@error_end@\n";
 	print "@message_begin@Server side command not found. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a>@message_end@\n";
 	print "@body_end@\n";

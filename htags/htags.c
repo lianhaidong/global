@@ -332,8 +332,6 @@ generate_file(const char *dist, const char *file)
                 {"@message_end@", message_end},
                 {"@verbatim_begin@", verbatim_begin},
                 {"@verbatim_end@", verbatim_end},
-                {"@global_path@", global_path},
-                {"@gtags_path@", gtags_path},
                 {"@normal_suffix@", normal_suffix},
                 {"@hr@", hr},
                 {"@br@", br},
