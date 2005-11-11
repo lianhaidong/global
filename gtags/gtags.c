@@ -91,6 +91,7 @@ int cxref;
 int fileid;
 int gtagsconf;
 int gtagslabel;
+int unique;
 int debug;
 const char *extra_options;
 const char *info_string;
@@ -135,6 +136,7 @@ static struct option const long_options[] = {
 	{"gtagslabel", required_argument, &gtagslabel, 1},
 	{"relative", no_argument, &do_relative, 1},
 	{"sort", no_argument, &do_sort, 1},
+	{"unique", no_argument, &unique, 1},
 	{"version", no_argument, &show_version, 1},
 	{"help", no_argument, &show_help, 1},
 	{ 0 }
@@ -188,14 +190,16 @@ put_lines(char *lines, struct dup_entry *entries, int entry_count)
 		struct dup_entry *e = &entries[i];
 		int skip = 0;
 
-		if (!strcmp(e->ptable.part[PART_PATH].start, last_path)) {
-			if (e->lineno == last_lineno)
-				skip = 1;
-			else
+		if (unique) {
+			if (!strcmp(e->ptable.part[PART_PATH].start, last_path)) {
+				if (e->lineno == last_lineno)
+					skip = 1;
+				else
+					last_lineno = e->lineno;
+			} else {
 				last_lineno = e->lineno;
-		} else {
-			last_lineno = e->lineno;
-			strlimcpy(last_path, e->ptable.part[PART_PATH].start, sizeof(last_path));
+				strlimcpy(last_path, e->ptable.part[PART_PATH].start, sizeof(last_path));
+			}
 		}
 		recover(&e->ptable);
 		if (!skip)
@@ -300,9 +304,9 @@ main(int argc, char **argv)
 		 * As long as the input meets the undermentioned requirement,
 		 * you can use this special sort command as a sort filter for
 		 * global(1) instead of external sort command.
-		 * 'gtags --sort' is equivalent with
-		 * 'sort -k 1,1 -k 3,3 -k 2,2n -u', but does not need temporary
-		 *  files.
+		 * 'gtags --sort [--unique]' is equivalent with
+		 * 'sort -k 1,1 -k 3,3 -k 2,2n [-u]', but does not need
+		 * temporary files.
 		 *
 		 * - Requirement -
 		 * 1. input must be ctags -x format.
