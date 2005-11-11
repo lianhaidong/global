@@ -59,7 +59,6 @@ struct dup_entry {
 	int offset;
 	SPLIT ptable;
 	int lineno;
-	int skip;
 };
 
 static void usage(void);
@@ -164,6 +163,8 @@ static void
 put_lines(char *lines, struct dup_entry *entries, int entry_count)
 {
 	int i;
+	char last_path[MAXPATHLEN+1];
+	int last_lineno;
 
 	for (i = 0; i < entry_count; i++) {
 		char *ctags_x = lines + entries[i].offset;
@@ -174,19 +175,31 @@ put_lines(char *lines, struct dup_entry *entries, int entry_count)
 			die("too small number of parts.\n'%s'", ctags_x);
 		}
 		entries[i].lineno = atoi(ptable->part[PART_LNO].start);
-		entries[i].skip = 0;
 	}
 	qsort(entries, entry_count, sizeof(struct dup_entry), compare_dup_entry);
-	for (i = 1; i < entry_count; i++) {
-		if (entries[i].lineno == entries[i - 1].lineno
-		 && strcmp(entries[i].ptable.part[PART_PATH].start,
-			   entries[i - 1].ptable.part[PART_PATH].start) == 0)
-			entries[i].skip = 1;
-	}
+	/*
+	 * The variables last_xxx has always the value of previous record.
+	 * As for the initial value, it must be the value which does not
+	 * appear in an actual record.
+	 */
+	last_path[0] = '\0';
+	last_lineno = 0;
 	for (i = 0; i < entry_count; i++) {
-		recover(&entries[i].ptable);
-		if (!entries[i].skip)
-			puts(lines + entries[i].offset);
+		struct dup_entry *e = &entries[i];
+		int skip = 0;
+
+		if (!strcmp(e->ptable.part[PART_PATH].start, last_path)) {
+			if (e->lineno == last_lineno)
+				skip = 1;
+			else
+				last_lineno = e->lineno;
+		} else {
+			last_lineno = e->lineno;
+			strlimcpy(last_path, e->ptable.part[PART_PATH].start, sizeof(last_path));
+		}
+		recover(&e->ptable);
+		if (!skip)
+			puts(lines + e->offset);
 	}
 }
 
