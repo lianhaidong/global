@@ -295,17 +295,18 @@ main(int argc, char **argv)
 		exit(0);
 	} else if (do_sort) {
 		/*
-		 * This code and the makedupindex() in htags(1) compose
-		 * a pipeline 'global -x ".*" | gtags --sort'.
-		 * The 'gtags --sort' is equivalent with 'sort -k 1,1 -k 3,3 -k 2,2n -u'
-		 * but the latter is ineffective and needs a lot of temporary
-		 * files when applied to a huge file. (According to circumstances,
-		 * hundreds of files are generated.)
+		 * A special version of sort command.
 		 *
-		 * Utilizing the feature that the output of 'global -x ".*"'
-		 * is already sorted in alphabetical order by tag name,
-		 * we splited the output into relatively small unit and
-		 * execute sort for each unit.
+		 * As long as the input meets the undermentioned requirement,
+		 * you can use this special sort command as a sort filter for
+		 * global(1) instead of external sort command.
+		 * 'gtags --sort' is equivalent with
+		 * 'sort -k 1,1 -k 3,3 -k 2,2n -u', but does not need temporary
+		 *  files.
+		 *
+		 * - Requirement -
+		 * 1. input must be ctags -x format.
+		 * 2. input must be sorted in alphabetical order by tag name.
 		 */
 		STRBUF *ib = strbuf_open(MAXBUFLEN);
 		STRBUF *sb = strbuf_open(MAXBUFLEN);
