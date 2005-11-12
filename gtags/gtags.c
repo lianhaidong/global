@@ -181,8 +181,8 @@ put_lines(char *lines, struct dup_entry *entries, int entry_count)
 	qsort(entries, entry_count, sizeof(struct dup_entry), compare_dup_entry);
 	/*
 	 * The variables last_xxx has always the value of previous record.
-	 * As for the initial value, it must be the value which does not
-	 * appear in an actual record.
+	 * As for the initial value, it must be a value which does not
+	 * appear in actual records.
 	 */
 	last_path[0] = '\0';
 	last_lineno = 0;
