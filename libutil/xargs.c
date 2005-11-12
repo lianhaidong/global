@@ -131,7 +131,7 @@ repeat_find_next(void)
 	char *path = (p);\
 	length = strlen(path);\
 	if (*path == ' ') {\
-		if (!test("b", ++path) && xp->put_gpath)\
+		if (xp->put_gpath && !test("b", ++path))\
 			gpath_put(path, GPATH_OTHER);\
 		continue;\
 	}\
