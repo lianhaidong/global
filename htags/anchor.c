@@ -33,7 +33,6 @@
 #include "global.h"
 #include "anchor.h"
 #include "htags.h"
-#include "xargs.h"
 
 static XARGS *anchor_input[GTAGLIM];
 static struct anchor *table;
