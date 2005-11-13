@@ -88,6 +88,7 @@ int show_version;
 int show_help;
 int show_filter;			/* undocumented command */
 int debug;
+int devel;
 int fileid;
 const char *extra_options;
 
@@ -132,6 +133,7 @@ static struct option const long_options[] = {
 
 	/* long name only */
 	{"debug", no_argument, &debug, 1},
+	{"devel", no_argument, &devel, 1},
 	{"fileid", no_argument, &fileid, 1},
 	{"version", no_argument, &show_version, 1},
 	{"help", no_argument, &show_help, 1},
@@ -422,9 +424,16 @@ main(int argc, char **argv)
 			strbuf_close(sb);
 		} else if (gflag || Pflag)
 			strbuf_setlen(sortfilter, 0);
-		else if (xflag)			/* print details */
-			strbuf_puts(sortfilter, "  -k 1,1 -k 3,3 -k 2,2n");
-		else if (!unique)		/* print just a file name */
+		else if (xflag) {		/* print details */
+			if (devel) {
+				strbuf_reset(sortfilter);
+				strbuf_puts(sortfilter, "gtags --sort");
+				if (sflag)
+					strbuf_puts(sortfilter, " --unique");
+			} else {
+				strbuf_puts(sortfilter, " -k 1,1 -k 3,3 -k 2,2n");
+			}
+		} else if (!unique)		/* print just a file name */
 			strbuf_puts(sortfilter, " -u");
 	}
 	/*
