@@ -131,7 +131,7 @@ anchor_load(const char *path)
 
 			if (split(ctags_x, 4, &ptable) < 4) {
 				recover(&ptable);
-				die("too small number of parts in anchor_prepare().\n'%s'", ctags_x);
+				die("too small number of parts in anchor_load().\n'%s'", ctags_x);
 			}
 			if (!locatestring(ptable.part[PART_PATH].start, "./", MATCH_AT_FIRST)) {
 				recover(&ptable);
