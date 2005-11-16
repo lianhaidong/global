@@ -49,7 +49,7 @@
  *
  * usage: read from stdin, sort and write it to stdout.
  *
- * sort_ctags(0, stdin, stdout);
+ * tagsort(0, stdin, stdout);
  */
 /*
  * This entry corresponds to one record of ctags [-x] format.
@@ -170,7 +170,7 @@ put_lines(int unique, int ctags, char *lines, struct dup_entry *entries, int ent
  *	i)	op	output
  */
 void
-sort_ctags(int unique, int ctags, FILE *ip, FILE *op)
+tagsort(int unique, int ctags, FILE *ip, FILE *op)
 {
 	STRBUF *ib = strbuf_open(MAXBUFLEN);
 	STRBUF *sb = strbuf_open(MAXBUFLEN);

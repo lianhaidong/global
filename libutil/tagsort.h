@@ -22,6 +22,6 @@
 
 #include <stdio.h>
 
-void sort_ctags(int, int, FILE *ip, FILE *op);
+void tagsort(int, int, FILE *ip, FILE *op);
 
 #endif /* ! _SORT_H_ */

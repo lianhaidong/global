@@ -240,7 +240,7 @@ main(int argc, char **argv)
 		 * 1. input must be ctags -x format.
 		 * 2. input must be sorted in alphabetical order by tag name.
 		 */
-		sort_ctags(unique, ctags, stdin, stdout);
+		tagsort(unique, ctags, stdin, stdout);
 		exit(0);
 	} else if (do_relative || do_absolute) {
 		/*
