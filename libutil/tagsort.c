@@ -22,8 +22,10 @@
 #include <config.h>
 #endif
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/param.h>
 
+#include "die.h"
 #include "gparam.h"
 #include "split.h"
 #include "strbuf.h"
