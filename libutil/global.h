@@ -48,6 +48,7 @@
 #include "strlimcpy.h"
 #include "strmake.h"
 #include "tab.h"
+#include "tagsort.h"
 #include "test.h"
 #include "token.h"
 #include "usable.h"

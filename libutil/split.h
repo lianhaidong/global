@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002 Tama Communications Corporation
+ * Copyright (c) 2002, 2005 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -36,6 +36,15 @@
 #define PART_LINE 3
 #define PART_PATH_COMP	1
 #define PART_LNO_COMP	2
+/*
+ * Element id for ctags format.
+ *
+ * PART_TAG     PART_PATH     PART_LNO
+ * +----------------------------------------------
+ * |main        src/main      227
+ */
+#define PART_CTAGS_PATH 1
+#define PART_CTAGS_LNO  2
 
 typedef struct {
         int npart;

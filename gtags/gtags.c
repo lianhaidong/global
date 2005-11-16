@@ -55,16 +55,8 @@
 #include "global.h"
 #include "const.h"
 
-struct dup_entry {
-	int offset;
-	SPLIT ptable;
-	int lineno;
-};
-
 static void usage(void);
 static void help(void);
-static int compare_dup_entry(const void *, const void *);
-static void put_lines(char *, struct dup_entry *, int);
 int main(int, char **);
 int incremental(const char *, const char *);
 void updatetags(const char *, const char *, IDSET *, STRBUF *, int);
@@ -87,7 +79,8 @@ int show_config;
 int do_sort;
 int do_relative;
 int do_absolute;
-int cxref;
+int ctags;					/* option for do_sort */
+int cxref;			/* option for do_relative and do_absolute */
 int fileid;
 int gtagsconf;
 int gtagslabel;
@@ -129,6 +122,7 @@ static struct option const long_options[] = {
 	/* long name only */
 	{"absolute", no_argument, &do_absolute, 1},
 	{"config", optional_argument, &show_config, 1},
+	{"ctags", no_argument, &ctags, 1},
 	{"cxref", no_argument, &cxref, 1},
 	{"debug", no_argument, &debug, 1},
 	{"fileid", no_argument, &fileid, 1},
@@ -143,69 +137,6 @@ static struct option const long_options[] = {
 };
 
 static const char *langmap = DEFAULTLANGMAP;
-
-/*
- * compare_dup_entry: compare function for sorting.
- */
-static int
-compare_dup_entry(const void *v1, const void *v2)
-{
-	const struct dup_entry *e1 = v1, *e2 = v2;
-	int ret;
-
-	if ((ret = strcmp(e1->ptable.part[PART_PATH].start,
-			  e2->ptable.part[PART_PATH].start)) != 0)
-		return ret;
-	return e1->lineno - e2->lineno;
-}
-/*
- * put_lines: sort and print duplicate lines
- */
-static void
-put_lines(char *lines, struct dup_entry *entries, int entry_count)
-{
-	int i;
-	char last_path[MAXPATHLEN+1];
-	int last_lineno;
-
-	for (i = 0; i < entry_count; i++) {
-		char *ctags_x = lines + entries[i].offset;
-		SPLIT *ptable = &entries[i].ptable;
-
-		if (split(ctags_x, 4, ptable) < 4) {
-			recover(ptable);
-			die("too small number of parts.\n'%s'", ctags_x);
-		}
-		entries[i].lineno = atoi(ptable->part[PART_LNO].start);
-	}
-	qsort(entries, entry_count, sizeof(struct dup_entry), compare_dup_entry);
-	/*
-	 * The variables last_xxx has always the value of previous record.
-	 * As for the initial value, it must be a value which does not
-	 * appear in actual records.
-	 */
-	last_path[0] = '\0';
-	last_lineno = 0;
-	for (i = 0; i < entry_count; i++) {
-		struct dup_entry *e = &entries[i];
-		int skip = 0;
-
-		if (unique) {
-			if (!strcmp(e->ptable.part[PART_PATH].start, last_path)) {
-				if (e->lineno == last_lineno)
-					skip = 1;
-				else
-					last_lineno = e->lineno;
-			} else {
-				last_lineno = e->lineno;
-				strlimcpy(last_path, e->ptable.part[PART_PATH].start, sizeof(last_path));
-			}
-		}
-		recover(&e->ptable);
-		if (!skip)
-			puts(lines + e->offset);
-	}
-}
 
 int
 main(int argc, char **argv)
@@ -304,58 +235,12 @@ main(int argc, char **argv)
 		 * As long as the input meets the undermentioned requirement,
 		 * you can use this special sort command as a sort filter for
 		 * global(1) instead of external sort command.
-		 * 'gtags --sort [--unique]' is equivalent with
-		 * 'sort -k 1,1 -k 3,3 -k 2,2n [-u]', but does not need
-		 * temporary files.
 		 *
 		 * - Requirement -
 		 * 1. input must be ctags -x format.
 		 * 2. input must be sorted in alphabetical order by tag name.
 		 */
-		STRBUF *ib = strbuf_open(MAXBUFLEN);
-		STRBUF *sb = strbuf_open(MAXBUFLEN);
-		VARRAY *vb = varray_open(sizeof(struct dup_entry), 100);
-		char *ctags_x, prev[IDENTLEN];
-
-		prev[0] = '\0';
-		while ((ctags_x = strbuf_fgets(ib, stdin, STRBUF_NOCRLF)) != NULL) {
-			const char *tag;
-			struct dup_entry *entry;
-			SPLIT ptable;
-
-			if (split(ctags_x, 2, &ptable) < 2) {
-				recover(&ptable);
-				die("too small number of parts.\n'%s'", ctags_x);
-			}
-			tag = ptable.part[PART_TAG].start;
-			if (prev[0] == '\0' || strcmp(prev, tag) != 0) {
-				if (prev[0] != '\0') {
-					if (vb->length == 1)
-						puts(strbuf_value(sb));
-					else
-						put_lines(strbuf_value(sb),
-							varray_assign(vb, 0, 0),
-							vb->length);
-				}
-				strlimcpy(prev, tag, sizeof(prev));
-				strbuf_reset(sb);
-				varray_reset(vb);
-			}
-			entry = varray_append(vb);
-			entry->offset = strbuf_getlen(sb);
-			recover(&ptable);
-			strbuf_puts0(sb, ctags_x);
-		}
-		if (prev[0] != '\0') {
-			if (vb->length == 1)
-				puts(strbuf_value(sb));
-			else
-				put_lines(strbuf_value(sb),
-					varray_assign(vb, 0, 0), vb->length);
-		}
-		strbuf_close(ib);
-		strbuf_close(sb);
-		varray_close(vb);
+		sort_ctags(unique, ctags, stdin, stdout);
 		exit(0);
 	} else if (do_relative || do_absolute) {
 		/*

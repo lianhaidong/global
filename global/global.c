@@ -405,7 +405,14 @@ main(int argc, char **argv)
 			unique = 1;
 		}
 		if (tflag) 			/* ctags format */
-			strbuf_puts(sortfilter, " -k 1,1 -k 2,2 -k 3,3n");
+			if (devel) {
+				strbuf_reset(sortfilter);
+				strbuf_puts(sortfilter, "gtags --sort --ctags");
+				if (sflag)
+					strbuf_puts(sortfilter, " --unique");
+			} else {
+				strbuf_puts(sortfilter, " -k 1,1 -k 2,2 -k 3,3n");
+			}
 		else if (fflag) {
 			STRBUF *sb = strbuf_open(0);
 			/*
