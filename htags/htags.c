@@ -1638,7 +1638,7 @@ main(int argc, char **argv)
 	if (id_value) {
 		id = id_value;
 	}
-	if (!test("r", makepath(dbpath, dbname(GTAGS), NULL)) || !test("r", makepath(dbpath, dbname(GRTAGS), NULL)))
+	if (!test("fr", makepath(dbpath, dbname(GTAGS), NULL)) || !test("fr", makepath(dbpath, dbname(GRTAGS), NULL)))
 		die("GTAGS and/or GRTAGS not found. Htags needs both of them.");
 	if (symbol && !test("r", makepath(dbpath, dbname(GSYMS), NULL)))
 		die("-s(--symbol) option needs GSYMS tag file.");
