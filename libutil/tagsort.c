@@ -97,7 +97,6 @@ compare_dup_entry(const void *v1, const void *v2)
  *	i)	format	tag format
  *			TAGSORT_CTAGS_X: ctags -x format
  *			TAGSORT_CTAGS: ctags format
- *			TAGSORT_PATH: path name
  *	i)	lines	ctags stream
  *	i)	entries	sort target
  *	i)	entry_count number of entry of the entries
@@ -190,7 +189,6 @@ put_lines(int unique, int format, char *lines, struct dup_entry *entries, int en
  *	i)	format	tag format
  *			TAGSORT_CTAGS_X: ctags -x format
  *			TAGSORT_CTAGS: ctags format
- *			TAGSORT_PATH: path name
  *	i)	ip	input
  *	i)	op	output
  */
