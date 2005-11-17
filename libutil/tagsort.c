@@ -50,12 +50,12 @@
  * but does not need temporary files.
  *
  * - Requirement -
- * 1. input must be ctags -x format.
+ * 1. input must be ctags [-x] format.
  * 2. input must be sorted in alphabetical order by tag name.
  *
  * usage: read from stdin, sort and write it to stdout.
  *
- * tagsort(TAGSORT_CTAGS, stdin, stdout);
+ * tagsort(unique, TAGSORT_CTAGS, stdin, stdout);
  *
  * 2. path name only format
  *
