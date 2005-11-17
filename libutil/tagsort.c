@@ -21,12 +21,14 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/param.h>
 
 #include "die.h"
 #include "gparam.h"
+#include "dbop.h"
 #include "split.h"
 #include "strbuf.h"
 #include "strlimcpy.h"
@@ -35,6 +37,8 @@
 
 /*
  * A special version of sort command.
+ *
+ * 1. ctags [-x] format
  *
  * As long as the input meets the undermentioned requirement,
  * you can use this special sort command as a sort filter for
@@ -51,7 +55,13 @@
  *
  * usage: read from stdin, sort and write it to stdout.
  *
- * tagsort(0, stdin, stdout);
+ * tagsort(TAGSORT_CTAGS, stdin, stdout);
+ *
+ * 2. path name only format
+ *
+ * 'gtags --sort --pathname' is equivalent with
+ * 'sort -u'.
+ * The --pathname option always includes --unique option.
  */
 /*
  * This entry corresponds to one record of ctags [-x] format.
@@ -84,19 +94,22 @@ compare_dup_entry(const void *v1, const void *v2)
  *
  *	i)	unique	unique or not
  *			0: sort, 1: sort -u
- *	i)	ctags	format of the records
- *			0: ctags -x format, 1: ctags format
+ *	i)	format	tag format
+ *			TAGSORT_CTAGS_X: ctags -x format
+ *			TAGSORT_CTAGS: ctags format
+ *			TAGSORT_PATH: path name
  *	i)	lines	ctags stream
  *	i)	entries	sort target
  *	i)	entry_count number of entry of the entries
  *	i)	op	output file
  */
 static void
-put_lines(int unique, int ctags, char *lines, struct dup_entry *entries, int entry_count, FILE *op)
+put_lines(int unique, int format, char *lines, struct dup_entry *entries, int entry_count, FILE *op)
 {
 	int i;
 	char last_path[MAXPATHLEN+1];
 	int last_lineno;
+	int splits, part_lno, part_path;
 	/*
 	 * ctags format.
 	 *
@@ -111,10 +124,17 @@ put_lines(int unique, int ctags, char *lines, struct dup_entry *entries, int ent
 	 * |main             227 src/main       main()
 	 *
 	 */
-	int splits = ctags ? 3 : 4;
-	int part_lno = ctags ? PART_CTAGS_LNO : PART_LNO;
-	int part_path = ctags ? PART_CTAGS_PATH : PART_PATH;
-
+	if (format == TAGSORT_CTAGS) {
+		splits = 3;
+		part_lno = PART_CTAGS_LNO;
+		part_path = PART_CTAGS_PATH;
+	} else if (format == TAGSORT_CTAGS_X) {
+		splits = 4;
+		part_lno = PART_LNO;
+		part_path = PART_PATH;
+	} else {
+		die("internal error in put_lines.");
+	}
 	/*
 	 * Parse and sort ctags [-x] format records.
 	 */
@@ -164,15 +184,18 @@ put_lines(int unique, int ctags, char *lines, struct dup_entry *entries, int ent
 }
 
 /*
- * main body of sorting.
+ * ctags_sort: sort ctags [-x] format records
  *
  *	i)	unique	0: sort, 1: sort -u
- *	i)	ctags	0: ctags -x format, 1: ctags format
+ *	i)	format	tag format
+ *			TAGSORT_CTAGS_X: ctags -x format
+ *			TAGSORT_CTAGS: ctags format
+ *			TAGSORT_PATH: path name
  *	i)	ip	input
  *	i)	op	output
  */
-void
-tagsort(int unique, int ctags, FILE *ip, FILE *op)
+static void
+ctags_sort(int unique, int format, FILE *ip, FILE *op)
 {
 	STRBUF *ib = strbuf_open(MAXBUFLEN);
 	STRBUF *sb = strbuf_open(MAXBUFLEN);
@@ -201,7 +224,7 @@ tagsort(int unique, int ctags, FILE *ip, FILE *op)
 					fputc('\n', op);
 				} else
 					put_lines(unique,
-						ctags,
+						format,
 						strbuf_value(sb),
 						varray_assign(vb, 0, 0),
 						vb->length,
@@ -222,7 +245,7 @@ tagsort(int unique, int ctags, FILE *ip, FILE *op)
 			fputc('\n', op);
 		} else
 			put_lines(unique,
-				ctags,
+				format,
 				strbuf_value(sb),
 				varray_assign(vb, 0, 0),
 				vb->length,
@@ -231,4 +254,54 @@ tagsort(int unique, int ctags, FILE *ip, FILE *op)
 	strbuf_close(ib);
 	strbuf_close(sb);
 	varray_close(vb);
+}
+/*
+ * path_sort: sort path name only format records
+ *
+ *	i)	ip	input
+ *	i)	op	output
+ *
+ * This function is applicable in the output of find(1) etc.
+ */
+static void
+path_sort(FILE *ip, FILE *op)
+{
+	DBOP *dbop;
+	STRBUF *ib = strbuf_open(MAXBUFLEN);
+	const char *path;
+	const char *null = "";
+
+	dbop = dbop_open(NULL, 1, 0600, 0);
+	if (!dbop)
+		die("cannot make temporary file in path_sort().");
+	while ((path = strbuf_fgets(ib, ip, 0)) != NULL) {
+		dbop_put(dbop, path, null);
+	}
+	for (path = dbop_first(dbop, NULL, NULL, DBOP_KEY);
+	     path != NULL;
+	     path = dbop_next(dbop)) {
+		fputs(path, op);
+	}
+	dbop_close(dbop);
+	strbuf_close(ib);
+}
+/*
+ * tagsort:
+ *
+ *	i)	unique	0: sort, 1: sort -u
+ *			In TAGSORT_PATH format, it is always considered 1.
+ *	i)	format	tag format
+ *			TAGSORT_CTAGS_X: ctags -x format
+ *			TAGSORT_CTAGS: ctags format
+ *			TAGSORT_PATH: path name
+ *	i)	ip	input
+ *	i)	op	output
+ */
+void
+tagsort(int unique, int format, FILE *ip, FILE *op)
+{
+	if (format == TAGSORT_PATH)
+		path_sort(ip, op);
+	else
+		ctags_sort(unique, format, ip, op);	
 }

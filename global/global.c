@@ -399,49 +399,70 @@ main(int argc, char **argv)
 		if (!sort)
 			die("%s not found.", POSIX_SORT);
 		sortfilter = strbuf_open(0);
-		strbuf_puts(sortfilter, sort);
-		if (sflag) {
-			strbuf_puts(sortfilter, " -u");
-			unique = 1;
-		}
-		if (tflag) 			/* ctags format */
-			if (devel) {
-				strbuf_reset(sortfilter);
+		/*
+		 * The --devel option is for test.
+		 */
+		if (devel) {
+			if (tflag) { 			/* ctags format */
 				strbuf_puts(sortfilter, "gtags --sort --ctags");
 				if (sflag)
 					strbuf_puts(sortfilter, " --unique");
-			} else {
-				strbuf_puts(sortfilter, " -k 1,1 -k 2,2 -k 3,3n");
-			}
-		else if (fflag) {
-			STRBUF *sb = strbuf_open(0);
-			/*
-			 * By default, the -f option need sort filter,
-			 * because there is a possibility that an external
-			 * parser is used instead of gtags-parser(1).
-			 * Clear the sort filter when understanding that
-			 * the parser is gtags-parser.
-			 */
-			if (!getconfs(dbname(db), sb))
-				die("cannot get parser for %s.", dbname(db));
-			if (locatestring(strbuf_value(sb), "gtags-parser", MATCH_FIRST))
-				strbuf_setlen(sortfilter, 0);
-			else
-				strbuf_puts(sortfilter, " -k 3,3 -k 2,2n");
-			strbuf_close(sb);
-		} else if (gflag || Pflag)
-			strbuf_setlen(sortfilter, 0);
-		else if (xflag) {		/* print details */
-			if (devel) {
-				strbuf_reset(sortfilter);
+			} else if (fflag) {
+				STRBUF *sb = strbuf_open(0);
+				/*
+				 * By default, the -f option need sort filter,
+				 * because there is a possibility that an external
+				 * parser is used instead of gtags-parser(1).
+				 * Clear the sort filter when understanding that
+				 * the parser is gtags-parser.
+				 */
+				if (!getconfs(dbname(db), sb))
+					die("cannot get parser for %s.", dbname(db));
+				if (!locatestring(strbuf_value(sb), "gtags-parser", MATCH_FIRST)) {
+					strbuf_puts(sortfilter, sort);
+					strbuf_puts(sortfilter, " -k 3,3 -k 2,2n");
+				}
+				strbuf_close(sb);
+			} else if (gflag || Pflag) {
+				;	/* doesn't use sort filter */
+			} else if (xflag) {		/* print details */
 				strbuf_puts(sortfilter, "gtags --sort");
 				if (sflag)
 					strbuf_puts(sortfilter, " --unique");
-			} else {
-				strbuf_puts(sortfilter, " -k 1,1 -k 3,3 -k 2,2n");
+			} else {		/* print just a file name */
+				strbuf_puts(sortfilter, "gtags --sort --pathname");
 			}
-		} else if (!unique)		/* print just a file name */
-			strbuf_puts(sortfilter, " -u");
+		} else {
+			strbuf_puts(sortfilter, sort);
+			if (sflag) {
+				strbuf_puts(sortfilter, " -u");
+				unique = 1;
+			}
+			if (tflag) 			/* ctags format */
+				strbuf_puts(sortfilter, " -k 1,1 -k 2,2 -k 3,3n");
+			else if (fflag) {
+				STRBUF *sb = strbuf_open(0);
+				/*
+				 * By default, the -f option need sort filter,
+				 * because there is a possibility that an external
+				 * parser is used instead of gtags-parser(1).
+				 * Clear the sort filter when understanding that
+				 * the parser is gtags-parser.
+				 */
+				if (!getconfs(dbname(db), sb))
+					die("cannot get parser for %s.", dbname(db));
+				if (locatestring(strbuf_value(sb), "gtags-parser", MATCH_FIRST))
+					strbuf_setlen(sortfilter, 0);
+				else
+					strbuf_puts(sortfilter, " -k 3,3 -k 2,2n");
+				strbuf_close(sb);
+			} else if (gflag || Pflag)
+				strbuf_setlen(sortfilter, 0);
+			else if (xflag) {		/* print details */
+				strbuf_puts(sortfilter, " -k 1,1 -k 3,3 -k 2,2n");
+			} else if (!unique)		/* print just a file name */
+				strbuf_puts(sortfilter, " -u");
+		}
 	}
 	/*
 	 * make path filter.

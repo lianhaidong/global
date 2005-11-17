@@ -22,6 +22,10 @@
 
 #include <stdio.h>
 
+#define TAGSORT_CTAGS_X	0
+#define TAGSORT_CTAGS	1
+#define TAGSORT_PATH	2
+
 void tagsort(int, int, FILE *ip, FILE *op);
 
 #endif /* ! _SORT_H_ */

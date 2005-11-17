@@ -84,6 +84,7 @@ int cxref;			/* option for do_relative and do_absolute */
 int fileid;
 int gtagsconf;
 int gtagslabel;
+int pathname;
 int unique;
 int debug;
 const char *extra_options;
@@ -130,6 +131,7 @@ static struct option const long_options[] = {
 	{"gtagslabel", required_argument, &gtagslabel, 1},
 	{"relative", no_argument, &do_relative, 1},
 	{"sort", no_argument, &do_sort, 1},
+	{"pathname", no_argument, &pathname, 1},
 	{"unique", no_argument, &unique, 1},
 	{"version", no_argument, &show_version, 1},
 	{"help", no_argument, &show_help, 1},
@@ -229,6 +231,7 @@ main(int argc, char **argv)
 		}
 		exit(0);
 	} else if (do_sort) {
+		int format = pathname ? 2 : (ctags ? 1 : 0);
 		/*
 		 * A special version of sort command.
 		 *
@@ -237,10 +240,14 @@ main(int argc, char **argv)
 		 * global(1) instead of external sort command.
 		 *
 		 * - Requirement -
-		 * 1. input must be ctags -x format.
-		 * 2. input must be sorted in alphabetical order by tag name.
+		 * 1. input must be one of these format:
+		 *    0: ctags -x format
+		 *    1: ctags format
+		 *    2: path name
+		 * 2. input must be sorted in alphabetical order by tag name
+		 *    if it is ctags [-x] format.
 		 */
-		tagsort(unique, ctags, stdin, stdout);
+		tagsort(unique, format, stdin, stdout);
 		exit(0);
 	} else if (do_relative || do_absolute) {
 		/*
