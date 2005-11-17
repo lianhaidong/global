@@ -104,14 +104,17 @@ dbop_open(const char *path, int mode, int perm, int flags)
 	 * if unlink do job normally, those who already open tag file can use
 	 * it until closing.
 	 */
-	if (mode == 1 && test("f", path))
+	if (path != NULL && mode == 1 && test("f", path))
 		(void)unlink(path);
 	db = dbopen(path, rw, 0600, DB_BTREE, &info);
 	if (!db)
 		return NULL;
 	if (!(dbop = (DBOP *)malloc(sizeof(DBOP))))
 		die("short of memory.");
-	strlimcpy(dbop->dbname, path, sizeof(dbop->dbname));
+	if (path == NULL)
+		dbop->dbname[0] = '\0';
+	else
+		strlimcpy(dbop->dbname, path, sizeof(dbop->dbname));
 	dbop->db	= db;
 	dbop->openflags	= flags;
 	dbop->perm	= (mode == 1) ? perm : 0;
@@ -407,11 +410,13 @@ dbop_close(DBOP *dbop)
 	/*
 	 * If DBOP_REMOVE is specified, omit writing to the disk in __bt_close().
 	 */
-	(void)db->close(db, (dbop->openflags & DBOP_REMOVE) ? 1 : 0);
+	(void)db->close(db, (dbop->openflags & DBOP_REMOVE || dbop->dbname[0] == '\0') ? 1 : 0);
 #endif
-	if (dbop->openflags & DBOP_REMOVE)
-		(void)unlink(dbop->dbname);
-	else if (dbop->perm && chmod(dbop->dbname, dbop->perm) < 0)
-		die("cannot change file mode.");
+	if (dbop->dbname[0] != '\0') {
+		if (dbop->openflags & DBOP_REMOVE)
+			(void)unlink(dbop->dbname);
+		else if (dbop->perm && chmod(dbop->dbname, dbop->perm) < 0)
+			die("cannot change file mode.");
+	}
 	(void)free(dbop);
 }
