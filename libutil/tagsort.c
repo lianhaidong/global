@@ -123,15 +123,18 @@ put_lines(int unique, int format, char *lines, struct dup_entry *entries, int en
 	 * |main             227 src/main       main()
 	 *
 	 */
-	if (format == TAGSORT_CTAGS) {
+	switch (format) {
+	case TAGSORT_CTAGS:
 		splits = 3;
 		part_lno = PART_CTAGS_LNO;
 		part_path = PART_CTAGS_PATH;
-	} else if (format == TAGSORT_CTAGS_X) {
+		break;
+	case TAGSORT_CTAGS_X:
 		splits = 4;
 		part_lno = PART_LNO;
 		part_path = PART_PATH;
-	} else {
+		break;
+	default:
 		die("internal error in put_lines.");
 	}
 	/*
@@ -298,8 +301,15 @@ path_sort(FILE *ip, FILE *op)
 void
 tagsort(int unique, int format, FILE *ip, FILE *op)
 {
-	if (format == TAGSORT_PATH)
+	switch (format) {
+	case TAGSORT_PATH:
 		path_sort(ip, op);
-	else
+		break;
+	case TAGSORT_CTAGS_X:
+	case TAGSORT_CTAGS:
 		ctags_sort(unique, format, ip, op);	
+		break;
+	default:
+		die("internal error in tagsort.");
+	}
 }
