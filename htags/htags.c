@@ -78,7 +78,6 @@ char distpath[MAXPATHLEN];
 char gtagsconf[MAXPATHLEN];
 char datadir[MAXPATHLEN];
 
-char sort_path[MAXFILLEN];
 char gtags_path[MAXFILLEN];
 char global_path[MAXFILLEN];
 const char *null_device = NULL_DEVICE;
@@ -869,7 +868,7 @@ makecommonpart(const char *title, const char *defines, const char *files)
 	}
 	strbuf_sprintf(sb, "%sMAINS%s\n", header_begin, header_end);
 
-	snprintf(command, sizeof(command), "%s -nx %s | %s -k 1,1 -k 3,3 -k 2,2n", global_path, main_func, POSIX_SORT);
+	snprintf(command, sizeof(command), "%s -x %s", global_path, main_func);
         ip = popen(command, "r");
         if (!ip)
                 die("cannot execute command '%s'.", command);
@@ -930,9 +929,6 @@ basic_check(void)
 	/*
 	 * COMMAND EXISTENCE CHECK
 	 */
-	if (!(p = usable(POSIX_SORT)))
-		die("%s command required but not found.", POSIX_SORT);
-	strlimcpy(sort_path, p, sizeof(sort_path));
 	if (!(p = usable("gtags")))
 		die("gtags command required but not found.");
 	strlimcpy(gtags_path, p, sizeof(gtags_path));
