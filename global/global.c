@@ -87,6 +87,8 @@ int xflag;				/* [option]		*/
 int show_version;
 int show_help;
 int show_filter;			/* undocumented command */
+int nofilter;
+int nosource;				/* undocumented command */
 int debug;
 int devel;
 int fileid;
@@ -107,17 +109,22 @@ help(void)
 	exit(0);
 }
 
+#define SORT_FILTER	1
+#define PATH_FILTER	2
+#define BOTH_FILTER	(SORT_FILTER|PATH_FILTER)
+#define SHOW_FILTER	128
+
 static struct option const long_options[] = {
 	{"absolute", no_argument, NULL, 'a'},
 	{"completion", no_argument, NULL, 'c'},
 	{"regexp", required_argument, NULL, 'e'},
 	{"file", no_argument, NULL, 'f'},
 	{"local", no_argument, NULL, 'l'},
-	{"nofilter", no_argument, NULL, 'n'},
+	{"nofilter", optional_argument, NULL, 'n'},
 	{"grep", no_argument, NULL, 'g'},
 	{"basic-regexp", no_argument, NULL, 'G'},
 	{"ignore-case", no_argument, NULL, 'i'},
-	{"idutils", optional_argument, NULL, 'I'},
+	{"idutils", no_argument, NULL, 'I'},
 	{"other", no_argument, NULL, 'o'},
 	{"print-dbpath", no_argument, NULL, 'p'},
 	{"path", no_argument, NULL, 'P'},
@@ -137,7 +144,8 @@ static struct option const long_options[] = {
 	{"fileid", no_argument, &fileid, 1},
 	{"version", no_argument, &show_version, 1},
 	{"help", no_argument, &show_help, 1},
-	{"filter", no_argument, &show_filter, 1},
+	{"filter", optional_argument, NULL, SHOW_FILTER},
+	{"nosource", no_argument, &nosource, 1},
 	{ 0 }
 };
 
@@ -189,6 +197,14 @@ main(int argc, char **argv)
 			break;
 		case 'n':
 			nflag++;
+			if (optarg) {
+				if (!strcmp(optarg, "sort"))
+					nofilter = SORT_FILTER;
+				else if (!strcmp(optarg, "path"))
+					nofilter = PATH_FILTER;
+			} else {
+				nofilter = BOTH_FILTER;;
+			}
 			break;
 		case 'g':
 			gflag++;
@@ -240,6 +256,16 @@ main(int argc, char **argv)
 			break;
 		case 'x':
 			xflag++;
+			break;
+		case SHOW_FILTER:
+			if (optarg) {
+				if (!strcmp(optarg, "sort"))
+					show_filter = SORT_FILTER;
+				else if (!strcmp(optarg, "path"))
+					show_filter = PATH_FILTER;
+			} else {
+				show_filter = BOTH_FILTER;
+			}
 			break;
 		default:
 			usage();
@@ -298,6 +324,8 @@ main(int argc, char **argv)
 		lflag = 0;
 	if (tflag)
 		xflag = 0;
+	if (nflag > 1)
+		nosource = 1;	/* to keep compatibility */
 	/*
 	 * remove leading blanks.
 	 */
@@ -487,11 +515,26 @@ main(int argc, char **argv)
 	 * print filter.
 	 */
 	if (show_filter) {
-		STRBUF  *sb = strbuf_open(0);
+		STRBUF  *sb;
 
-		makefilter(sb);
-		fprintf(stdout, "%s\n", strbuf_value(sb));
-		strbuf_close(sb);
+		switch (show_filter) {
+		case SORT_FILTER:
+			if (!(nofilter & SORT_FILTER))
+				fprintf(stdout, "%s\n", strbuf_value(sortfilter));
+			break;
+		case PATH_FILTER:
+			if (!(nofilter & PATH_FILTER))
+				fprintf(stdout, "%s\n", strbuf_value(pathfilter));
+			break;
+		case BOTH_FILTER:
+			sb = strbuf_open(0);
+			makefilter(sb);
+			fprintf(stdout, "%s\n", strbuf_value(sb));
+			strbuf_close(sb);
+			break;
+		default:
+			die("internal error in show_filter.");
+		}
 		exit(0);
 	}
 	/*
@@ -599,9 +642,14 @@ main(int argc, char **argv)
 void
 makefilter(STRBUF *sb)
 {
-	if (!nflag) {
+	int set_sortfilter = 0;
+
+	if (!(nofilter & SORT_FILTER) && strbuf_getlen(sortfilter)) {
 		strbuf_puts(sb, strbuf_value(sortfilter));
-		if (strbuf_getlen(sortfilter) && strbuf_getlen(pathfilter))
+		set_sortfilter = 1;
+	}
+	if (!(nofilter & PATH_FILTER) && strbuf_getlen(pathfilter)) {
+		if (set_sortfilter)
 			strbuf_puts(sb, " | ");
 		strbuf_puts(sb, strbuf_value(pathfilter));
 	}
@@ -1086,7 +1134,7 @@ search(const char *pattern, const char *root, const char *dbpath, int db)
 	/*
 	 * search through tag file.
 	 */
-	if (nflag > 1)
+	if (nosource)
 		flags |= GTOP_NOSOURCE;
 	if (iflag) {
 		if (!isregex(pattern)) {

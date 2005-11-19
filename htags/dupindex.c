@@ -94,6 +94,7 @@ int
 makedupindex(void)
 {
 	STRBUF *sb = strbuf_open(0);
+	STRBUF *command = strbuf_open(0);
 	int definition_count = 0;
 	char srcdir[MAXPATHLEN];
 	int db;
@@ -108,16 +109,24 @@ makedupindex(void)
 		int writing = 0;
 		int count = 0;
 		int entry_count = 0;
-		char *ctags_x, tag[IDENTLEN], prev[IDENTLEN], first_line[MAXBUFLEN], command[MAXFILLEN];
+		char *ctags_x, tag[IDENTLEN], prev[IDENTLEN], first_line[MAXBUFLEN];
 
 		if (!symbol && db == GSYMS)
 			continue;
 		prev[0] = 0;
 		first_line[0] = 0;
-		snprintf(command, sizeof(command), "global -xn%s%s \".*\"%s",
-			 dynamic ? "n" : "", option,
-			 (!dynamic || db == GSYMS) ? " | gtags --sort --unique" : "");
-		if ((ip = popen(command, "r")) == NULL)
+		/*
+		 * construct command line.
+		 */
+		strbuf_reset(command);
+		strbuf_puts(command, "global -xn");
+		strbuf_puts(command, option);
+		if (dynamic)
+			strbuf_puts(command, " --nosource");
+		strbuf_puts(command, " \".*\"");
+		if (!dynamic || db == GSYMS)
+			 strbuf_puts(command, " | gtags --sort --unique");
+		if ((ip = popen(strbuf_value(command), "r")) == NULL)
 			die("cannot execute command '%s'.", command);
 		while ((ctags_x = strbuf_fgets(sb, ip, STRBUF_NOCRLF)) != NULL) {
 			SPLIT ptable;
@@ -217,5 +226,6 @@ makedupindex(void)
 		}
 	}
 	strbuf_close(sb);
+	strbuf_close(command);
 	return definition_count;
 }
