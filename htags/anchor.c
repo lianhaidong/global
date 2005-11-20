@@ -90,7 +90,7 @@ anchor_prepare(FILE *anchor_stream)
 		 * by the path, it is guaranteed that the records concerning
 		 * the same file are consecutive.
 		 */
-		snprintf(comline, sizeof(comline), "global -fn%s",  options[db]);
+		snprintf(comline, sizeof(comline), "global -f%s --nofilter=path", options[db]);
 		anchor_input[db] = xargs_open_with_file(comline, 0, anchor_stream);
 	}
 }
