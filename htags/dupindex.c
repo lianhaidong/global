@@ -127,7 +127,7 @@ makedupindex(void)
 		if (!dynamic || db == GSYMS)
 			 strbuf_puts(command, " | gtags --sort --unique");
 		if ((ip = popen(strbuf_value(command), "r")) == NULL)
-			die("cannot execute command '%s'.", command);
+			die("cannot execute command '%s'.", strbuf_value(command));
 		while ((ctags_x = strbuf_fgets(sb, ip, STRBUF_NOCRLF)) != NULL) {
 			SPLIT ptable;
 
@@ -198,7 +198,7 @@ makedupindex(void)
 		if (db == GTAGS)
 			definition_count = count;
 		if (pclose(ip) != 0)
-			die("'%s' failed.", command);
+			die("'%s' failed.", strbuf_value(command));
 		if (writing) {
 			if (!dynamic) {
 				fputs_nl(gen_list_end(), op);
