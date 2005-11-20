@@ -475,11 +475,7 @@ __gtags_gen_xref()
 			__gtags_lasttag=$2
 		fi
 		if [ "$__gtags_lasttag" != "" ]; then
-			case $__gtags_lastcom in
-			f)	sortfilter=cat;;
-			*)	sortfilter='LC_ALL=C @POSIX_SORT@ -k 1,1 -k 3,3 -k 2,2n';;
-			esac
-			com="global -xn$__gtags_lastcom $__gtags_lasttag | $sortfilter >$XREF"
+			com="global --nofilter=path -x$__gtags_lastcom $__gtags_lasttag >$XREF"
 			eval $com
 			__gtags_count=`wc -l < $XREF | sed 's/ //g'`
 		else
@@ -497,10 +493,7 @@ __gtags_list_xref()
 	if [ ! -s $XREF ]; then
 		return 1
 	fi
-	case $__gtags_lastcom in
-	f)	filter=`global --filter -f`;;
-	*)	filter=`global --filter -x`;;
-	esac
+	filter=`global --filter=path -$__gtags_lastcom`;;
 	case $filter in
 	'')	echo "Cannot get internal filter."
 		return 1;;
@@ -641,7 +634,7 @@ __gtags_view_tag() {
 	if [ "${EDITOR}" = "noedit" ]; then
 		return 0
 	fi
-	local filter=`global --filter -x`
+	local filter=`global --filter=path -x`
 	if [ "$filter" != "" ]; then
 		local com="sed -n '${__gtags_current}p' $XREF | $filter"
 		local line=$( eval $com )
