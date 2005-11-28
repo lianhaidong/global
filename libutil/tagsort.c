@@ -59,9 +59,9 @@
  *
  * 2. path name only format
  *
- * 'gtags --sort --pathname' is equivalent with
+ * 'gtags --sort --format=path' is equivalent with
  * 'sort -u'.
- * The --pathname option always includes --unique option.
+ * The --format=path option always includes --unique option.
  */
 /*
  * This entry corresponds to one record of ctags [-x] format.

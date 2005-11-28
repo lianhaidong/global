@@ -63,7 +63,10 @@ void updatetags(const char *, const char *, IDSET *, STRBUF *, int);
 void createtags(const char *, const char *, int);
 int printconf(const char *);
 void set_base_directory(const char *, const char *);
-void put_converting(const char *, int, int, int);
+void put_converting(const char *, int, int);
+
+#define PATH_RELATIVE	0
+#define PATH_ABSOLUTE	1
 
 int cflag;					/* compact format */
 int iflag;					/* incremental update */
@@ -76,20 +79,24 @@ int max_args;
 int show_version;
 int show_help;
 int show_config;
-int do_sort;
-int do_relative;
-int do_absolute;
-int ctags;					/* option for do_sort */
-int cxref;			/* option for do_relative and do_absolute */
-int fileid;
 int gtagsconf;
 int gtagslabel;
-int pathname;
-int unique;
 int debug;
-const char *extra_options;
 const char *info_string;
 const char *file_list;
+
+/*
+ * Path filter
+ */
+int do_path;
+int fileid;
+int pathconvert = PATH_RELATIVE;
+/*
+ * Sort filter
+ */
+int do_sort;
+int unique;
+int format = TAGSORT_PATH;
 
 int extractmethod;
 int total;
@@ -121,17 +128,14 @@ static struct option const long_options[] = {
 	{"warning", no_argument, NULL, 'w'},
 
 	/* long name only */
-	{"absolute", no_argument, &do_absolute, 1},
 	{"config", optional_argument, &show_config, 1},
-	{"ctags", no_argument, &ctags, 1},
-	{"cxref", no_argument, &cxref, 1},
+	{"format", required_argument, NULL, 0},
 	{"debug", no_argument, &debug, 1},
 	{"fileid", no_argument, &fileid, 1},
 	{"gtagsconf", required_argument, &gtagsconf, 1},
 	{"gtagslabel", required_argument, &gtagslabel, 1},
-	{"relative", no_argument, &do_relative, 1},
 	{"sort", no_argument, &do_sort, 1},
-	{"pathname", no_argument, &pathname, 1},
+	{"path", required_argument, &do_path, 1},
 	{"unique", no_argument, &unique, 1},
 	{"version", no_argument, &show_version, 1},
 	{"help", no_argument, &show_help, 1},
@@ -158,6 +162,16 @@ main(int argc, char **argv)
 			if (!strcmp(p, "config")) {
 				if (optarg)
 					info_string = optarg;
+			} else if (!strcmp(p, "path")) {
+				if (!strcmp("absolute", optarg))
+					pathconvert = PATH_ABSOLUTE;
+			} else if (!strcmp(p, "format")) {
+				if (!strcmp("ctags", optarg))
+					format = TAGSORT_CTAGS;
+				else if (!strcmp("path", optarg))
+					format = TAGSORT_PATH;
+				else
+					format = TAGSORT_CTAGS_X;
 			} else if (gtagsconf || gtagslabel) {
 				char value[MAXPATHLEN+1];
 				const char *name = (gtagsconf) ? "GTAGSCONF" : "GTAGSLABEL";
@@ -231,7 +245,6 @@ main(int argc, char **argv)
 		}
 		exit(0);
 	} else if (do_sort) {
-		int format = pathname ? 2 : (ctags ? 1 : 0);
 		/*
 		 * A special version of sort command.
 		 *
@@ -249,7 +262,7 @@ main(int argc, char **argv)
 		 */
 		tagsort(unique, format, stdin, stdout);
 		exit(0);
-	} else if (do_relative || do_absolute) {
+	} else if (do_path) {
 		/*
 		 * This is the main body of path filter.
 		 * This code extract path name from tag line and
@@ -264,7 +277,7 @@ main(int argc, char **argv)
 		 * main      10 main.c  main(argc, argv)\n
 		 * main      22 ../libc/func.c   main(argc, argv)\n
 		 *
-		 * Similarly, the --absolute option specified, then
+		 * Similarly, the --path=absolute option specified, then
 		 *		v
 		 * main      10 /prj/xxx/src/main.c  main(argc, argv)\n
 		 * main      22 /prj/xxx/libc/func.c   main(argc, argv)\n
@@ -275,13 +288,13 @@ main(int argc, char **argv)
 		const char *a_dbpath = argv[2];
 		const char *ctags_x;
 
-		if (argc < 2)
-			die("do_relative: 2 arguments needed.");
+		if (argc < 3)
+			die("do_path: 3 arguments needed.");
 		set_base_directory(a_root, a_cwd);
                 if (gpath_open(a_dbpath, 0) < 0)
                         die("GPATH not found.");
 		while ((ctags_x = strbuf_fgets(ib, stdin, 0)) != NULL)
-			put_converting(ctags_x, do_absolute ? 1 : 0, cxref, fileid);
+			put_converting(ctags_x, format, fileid);
 		gpath_close();
 		strbuf_close(ib);
 		exit(0);
@@ -917,8 +930,7 @@ printconf(const char *name)
  * put_converting: convert path into relative or absolute and print.
  *
  *	i)	raw output from global(1)
- *	i)	absolute 1: absolute, 0: relative
- *	i)	cxref 1: -x format, 0: file name only
+ *	i)	format	(defined in tagsort.h)
  *	i)	fileid 1: add fid to the head of line, 0: do nothing
  */
 static STRBUF *abspath;
@@ -938,7 +950,7 @@ set_base_directory(const char *root, const char *cwd)
 	/* leave abspath unclosed. */
 }
 void
-put_converting(const char *ctags, int absolute, int cxref, int fileid)
+put_converting(const char *tagline, int format, int fileid)
 {
 	char buf[MAXPATHLEN+1];
 	char *path, *p;
@@ -946,7 +958,9 @@ put_converting(const char *ctags, int absolute, int cxref, int fileid)
 	/*
 	 * print until path name.
 	 */
-	if (cxref) {
+	if (format == TAGSORT_PATH) {
+		path = (char *)tagline;
+	} else {	/* TAGSORT_CTAGS, TAGSORT_CTAGS_X */
 		int savec = 0;
 		/*
 		 * Move to the head of path name.
@@ -957,7 +971,7 @@ put_converting(const char *ctags, int absolute, int cxref, int fileid)
 		 * ctags -x:	main      20 ./main.c main()
 		 */
 		/* skip tag name */
-		for (p = (char *)ctags; *p && !isspace((unsigned char)*p); p++)
+		for (p = (char *)tagline; *p && !isspace((unsigned char)*p); p++)
 			;
 		/* skip blanks (and line number) */
 		for (; *p && *p != '.'; p++)
@@ -984,10 +998,8 @@ put_converting(const char *ctags, int absolute, int cxref, int fileid)
 			*p = savec;
 			putc('@', stdout);
 		}
-		for (p = (char *)ctags; *p && p < path; p++)
+		for (p = (char *)tagline; *p && p < path; p++)
 			(void)putc(*p, stdout);
-	} else {
-		path = (char *)ctags;
 	}
 	if (*path++ == '\0')
 		return;
@@ -1000,7 +1012,7 @@ put_converting(const char *ctags, int absolute, int cxref, int fileid)
 	/*
 	 * put path with converting.
 	 */
-	if (absolute) {
+	if (pathconvert == PATH_ABSOLUTE) {
 		(void)fputs(strbuf_value(abspath), stdout);
 	} else {
 		const char *a = strbuf_value(abspath);

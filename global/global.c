@@ -432,7 +432,7 @@ main(int argc, char **argv)
 		 */
 		if (devel) {
 			if (tflag) { 			/* ctags format */
-				strbuf_puts(sortfilter, "gtags --sort --ctags");
+				strbuf_puts(sortfilter, "gtags --sort --format=ctags");
 				if (sflag)
 					strbuf_puts(sortfilter, " --unique");
 			} else if (fflag) {
@@ -454,11 +454,11 @@ main(int argc, char **argv)
 			} else if (gflag || Pflag) {
 				;	/* doesn't use sort filter */
 			} else if (xflag) {		/* print details */
-				strbuf_puts(sortfilter, "gtags --sort");
+				strbuf_puts(sortfilter, "gtags --sort --format=ctags-x");
 				if (sflag)
 					strbuf_puts(sortfilter, " --unique");
 			} else {		/* print just a file name */
-				strbuf_puts(sortfilter, "gtags --sort --pathname");
+				strbuf_puts(sortfilter, "gtags --sort --format=path");
 			}
 		} else {
 			strbuf_puts(sortfilter, sort);
@@ -498,11 +498,15 @@ main(int argc, char **argv)
 	pathfilter = strbuf_open(0);
 	strbuf_puts(pathfilter, gtags);
 	if (aflag)	/* absolute path name */
-		strbuf_puts(pathfilter, " --absolute");
-	else		/* relative path name */
-		strbuf_puts(pathfilter, " --relative");
-	if (xflag || tflag)
-		strbuf_puts(pathfilter, " --cxref");
+		strbuf_puts(pathfilter, " --path=absolute");
+	else
+		strbuf_puts(pathfilter, " --path=relative");
+	if (tflag)
+		strbuf_puts(pathfilter, " --format=ctags");
+	else if (xflag)
+		strbuf_puts(pathfilter, " --format=ctags-x");
+	else
+		strbuf_puts(pathfilter, " --format=path");
 	if (fileid)
 		strbuf_puts(pathfilter, " --fileid");
 	strbuf_putc(pathfilter, ' ');
@@ -600,15 +604,21 @@ main(int argc, char **argv)
 			strbuf_reset(pathfilter);
 			strbuf_puts(pathfilter, gtags);
 			if (aflag)	/* absolute path name */
-				strbuf_puts(pathfilter, " --absolute");
-			else		/* relative path name */
-				strbuf_puts(pathfilter, " --relative");
-			if (xflag || tflag)
-				strbuf_puts(pathfilter, " --cxref");
+				strbuf_puts(pathfilter, " --path=absolute");
+			else
+				strbuf_puts(pathfilter, " --path=relative");
+			if (tflag)
+				strbuf_puts(pathfilter, " --format=ctags");
+			else if (xflag)
+				strbuf_puts(pathfilter, " --format=ctags-x");
+			else
+				strbuf_puts(pathfilter, " --format=path");
 			strbuf_putc(pathfilter, ' ');
 			strbuf_puts(pathfilter, lib);
 			strbuf_putc(pathfilter, ' ');
 			strbuf_puts(pathfilter, cwd);
+			strbuf_putc(pathfilter, ' ');
+			strbuf_puts(pathfilter, libdbpath);
 			count = search(av, lib, libdbpath, db);
 			if (count > 0 && !Tflag) {
 				strlimcpy(dbpath, libdbpath, sizeof(dbpath));
