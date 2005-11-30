@@ -65,9 +65,6 @@ int printconf(const char *);
 void set_base_directory(const char *, const char *);
 void put_converting(const char *, int, int);
 
-#define PATH_RELATIVE	0
-#define PATH_ABSOLUTE	1
-
 int cflag;					/* compact format */
 int iflag;					/* incremental update */
 int Iflag;					/* make  id-utils index */
@@ -96,7 +93,7 @@ int pathconvert = PATH_RELATIVE;
  */
 int do_sort;
 int unique;
-int format = TAGSORT_PATH;
+int format = FORMAT_PATH;
 
 int extractmethod;
 int total;
@@ -167,11 +164,11 @@ main(int argc, char **argv)
 					pathconvert = PATH_ABSOLUTE;
 			} else if (!strcmp(p, "format")) {
 				if (!strcmp("ctags", optarg))
-					format = TAGSORT_CTAGS;
+					format = FORMAT_CTAGS;
 				else if (!strcmp("path", optarg))
-					format = TAGSORT_PATH;
+					format = FORMAT_PATH;
 				else
-					format = TAGSORT_CTAGS_X;
+					format = FORMAT_CTAGS_X;
 			} else if (gtagsconf || gtagslabel) {
 				char value[MAXPATHLEN+1];
 				const char *name = (gtagsconf) ? "GTAGSCONF" : "GTAGSLABEL";
@@ -958,9 +955,9 @@ put_converting(const char *tagline, int format, int fileid)
 	/*
 	 * print until path name.
 	 */
-	if (format == TAGSORT_PATH) {
+	if (format == FORMAT_PATH) {
 		path = (char *)tagline;
-	} else {	/* TAGSORT_CTAGS, TAGSORT_CTAGS_X */
+	} else {	/* FORMAT_CTAGS, FORMAT_CTAGS_X */
 		int savec = 0;
 		/*
 		 * Move to the head of path name.

@@ -32,6 +32,7 @@
 #include "die.h"
 #include "env.h"
 #include "find.h"
+#include "format.h"
 #include "getdbpath.h"
 #include "gtagsop.h"
 #include "idset.h"

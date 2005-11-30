@@ -41,6 +41,7 @@
 #include "conf.h"
 #include "dbop.h"
 #include "die.h"
+#include "format.h"
 #include "gparam.h"
 #include "gtagsop.h"
 #include "locatestring.h"

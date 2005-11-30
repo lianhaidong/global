@@ -55,7 +55,7 @@
  *
  * usage: read from stdin, sort and write it to stdout.
  *
- * tagsort(unique, TAGSORT_CTAGS, stdin, stdout);
+ * tagsort(unique, FORMAT_CTAGS, stdin, stdout);
  *
  * 2. path name only format
  *
@@ -95,8 +95,8 @@ compare_dup_entry(const void *v1, const void *v2)
  *	i)	unique	unique or not
  *			0: sort, 1: sort -u
  *	i)	format	tag format
- *			TAGSORT_CTAGS_X: ctags -x format
- *			TAGSORT_CTAGS: ctags format
+ *			FORMAT_CTAGS_X: ctags -x format
+ *			FORMAT_CTAGS: ctags format
  *	i)	lines	ctags stream
  *	i)	entries	sort target
  *	i)	entry_count number of entry of the entries
@@ -124,12 +124,12 @@ put_lines(int unique, int format, char *lines, struct dup_entry *entries, int en
 	 *
 	 */
 	switch (format) {
-	case TAGSORT_CTAGS:
+	case FORMAT_CTAGS:
 		splits = 3;
 		part_lno = PART_CTAGS_LNO;
 		part_path = PART_CTAGS_PATH;
 		break;
-	case TAGSORT_CTAGS_X:
+	case FORMAT_CTAGS_X:
 		splits = 4;
 		part_lno = PART_LNO;
 		part_path = PART_PATH;
@@ -190,8 +190,8 @@ put_lines(int unique, int format, char *lines, struct dup_entry *entries, int en
  *
  *	i)	unique	0: sort, 1: sort -u
  *	i)	format	tag format
- *			TAGSORT_CTAGS_X: ctags -x format
- *			TAGSORT_CTAGS: ctags format
+ *			FORMAT_CTAGS_X: ctags -x format
+ *			FORMAT_CTAGS: ctags format
  *	i)	ip	input
  *	i)	op	output
  */
@@ -290,11 +290,11 @@ path_sort(FILE *ip, FILE *op)
  * tagsort:
  *
  *	i)	unique	0: sort, 1: sort -u
- *			In TAGSORT_PATH format, it is always considered 1.
+ *			In FORMAT_PATH format, it is always considered 1.
  *	i)	format	tag format
- *			TAGSORT_CTAGS_X: ctags -x format
- *			TAGSORT_CTAGS: ctags format
- *			TAGSORT_PATH: path name
+ *			FORMAT_CTAGS_X: ctags -x format
+ *			FORMAT_CTAGS: ctags format
+ *			FORMAT_PATH: path name
  *	i)	ip	input
  *	i)	op	output
  */
@@ -302,11 +302,11 @@ void
 tagsort(int unique, int format, FILE *ip, FILE *op)
 {
 	switch (format) {
-	case TAGSORT_PATH:
+	case FORMAT_PATH:
 		path_sort(ip, op);
 		break;
-	case TAGSORT_CTAGS_X:
-	case TAGSORT_CTAGS:
+	case FORMAT_CTAGS_X:
+	case FORMAT_CTAGS:
 		ctags_sort(unique, format, ip, op);	
 		break;
 	default:

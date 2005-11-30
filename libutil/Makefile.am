@@ -17,7 +17,7 @@ conf.h dbop.h defined.h die.h find.h getdbpath.h global.h gparam.h \
 gtagsop.h locatestring.h makepath.h path.h gpathop.h strbuf.h \
 strmake.h tab.h test.h token.h usable.h version.h is_unixy.h abs2rel.h \
 split.h strlimcpy.h linetable.h env.h char.h date.h langmap.h \
-varray.h idset.h strhash.h xargs.h tagsort.h
+varray.h idset.h strhash.h xargs.h tagsort.h format.h
 
 libgloutil_a_SOURCES = \
 conf.c dbop.c defined.c die.c find.c getdbpath.c gtagsop.c locatestring.c \
