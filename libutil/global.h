@@ -42,6 +42,7 @@
 #include "locatestring.h"
 #include "makepath.h"
 #include "path.h"
+#include "pathconvert.h"
 #include "gpathop.h"
 #include "split.h"
 #include "strbuf.h"
