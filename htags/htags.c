@@ -868,7 +868,7 @@ makecommonpart(const char *title, const char *defines, const char *files)
 	}
 	strbuf_sprintf(sb, "%sMAINS%s\n", header_begin, header_end);
 
-	snprintf(command, sizeof(command), "%s -x %s", global_path, main_func);
+	snprintf(command, sizeof(command), "%s -x --nofilter=path %s", global_path, main_func);
         ip = popen(command, "r");
         if (!ip)
                 die("cannot execute command '%s'.", command);
