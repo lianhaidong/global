@@ -83,7 +83,6 @@ extern int show_help;
 extern int show_version;
 extern int caution;
 extern int dynamic;
-extern int symbol;
 extern int statistics;
 
 extern int no_map_file;

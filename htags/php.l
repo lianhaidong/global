@@ -181,7 +181,7 @@ WORD		{ALPHA}{ALPHANUM}*
 		} else {
 			i = LEXLENG - 1;
 		}
-		if (symbol && (a = anchor_get(p, i, 'Y', LINENO)) != NULL) {
+		if ((a = anchor_get(p, i, 'Y', LINENO)) != NULL) {
 			echoc('$');
 			if (brace)
 				echoc('{');

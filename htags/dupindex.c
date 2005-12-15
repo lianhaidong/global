@@ -111,8 +111,6 @@ makedupindex(void)
 		int entry_count = 0;
 		char *ctags_x, tag[IDENTLEN], prev[IDENTLEN], first_line[MAXBUFLEN];
 
-		if (!symbol && db == GSYMS)
-			continue;
 		prev[0] = 0;
 		first_line[0] = 0;
 		/*

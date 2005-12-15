@@ -75,8 +75,6 @@ anchor_prepare(FILE *anchor_stream)
 	int db;
 
 	for (db = GTAGS; db < GTAGLIM; db++) {
-		if (!symbol && db == GSYMS)
-			continue;
 		/*
 		 * Htags(1) should not use gtags-parser(1) directly;
 		 * it should use global(1) with the -f option instead.
@@ -116,8 +114,6 @@ anchor_load(const char *path)
 		XARGS *xp;
 		char *ctags_x;
 
-		if (!symbol && db == GSYMS)
-			continue;
 		if ((xp = anchor_input[db]) == NULL)
 			continue;
 		/*

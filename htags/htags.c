@@ -102,7 +102,6 @@ int show_help;				/* --help command		*/
 int show_version;			/* --version command		*/
 int caution;				/* --caution option		*/
 int dynamic;				/* --dynamic(-D) option		*/
-int symbol;				/* --symbol(-s) option		*/
 int statistics;				/* --statistics option		*/
 
 int copy_files;				/* 1: copy tag files		*/
@@ -218,6 +217,10 @@ static struct option const long_options[] = {
         {"main-func", required_argument, NULL, 'm'},
         {"line-number", no_argument, NULL, 'n'},
         {"other", no_argument, NULL, 'o'},
+	/*
+	 * Though the -s(--symbol) was removed, this code
+	 * is left for compatibility.
+	 */
         {"symbol", no_argument, NULL, 's'},
         {"secure-cgi", required_argument, NULL, 'S'},
         {"title", required_argument, NULL, 't'},
@@ -1107,10 +1110,6 @@ configuration(int argc, char **argv)
 			*q = '\0';
 		script_alias = p;
 	}
-	if (getconfb("symbols"))	/* for backward compatibility */
-		symbol = 1;
-	if (getconfb("symbol"))
-		symbol = 1;
 	if (getconfb("dynamic"))
 		dynamic = 1;
 	strbuf_reset(sb);
@@ -1497,7 +1496,10 @@ main(int argc, char **argv)
 			other_files = 1;
                         break;
                 case 's':
-			symbol = 1;
+			/*
+			 * Though the -s(--symbol) was removed, this code
+			 * is left for compatibility.
+			 */
                         break;
                 case 'S':
 			Sflag++;
@@ -1634,10 +1636,10 @@ main(int argc, char **argv)
 	if (id_value) {
 		id = id_value;
 	}
-	if (!test("fr", makepath(dbpath, dbname(GTAGS), NULL)) || !test("fr", makepath(dbpath, dbname(GRTAGS), NULL)))
-		die("GTAGS and/or GRTAGS not found. Htags needs both of them.");
-	if (symbol && !test("r", makepath(dbpath, dbname(GSYMS), NULL)))
-		die("-s(--symbol) option needs GSYMS tag file.");
+	if (!test("fr", makepath(dbpath, dbname(GTAGS), NULL)) ||
+	    !test("fr", makepath(dbpath, dbname(GRTAGS), NULL)) ||
+	    !test("fr", makepath(dbpath, dbname(GSYMS), NULL)))
+		die("GTAGS, GRTAGS and/or GSYMS not found. Htags needs them.");
 	/*
 	 * make dbpath absolute.
 	 */
@@ -1740,9 +1742,6 @@ main(int argc, char **argv)
 			 */
 			if (dynamic)
 				if (!strcmp(p, DEFS) || !strcmp(p, REFS) || !strcmp(p, SYMS))
-					continue;
-			if (!symbol)
-				if (!strcmp(p, SYMS))
 					continue;
 			path = makepath(distpath, p, NULL);
 			if (!test("d", path))

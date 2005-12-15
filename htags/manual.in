@@ -26,7 +26,7 @@
 @HEADER	HTAGS,1,April 2005,GNU Project
 @NAME	htags - generate hypertext from source code.
 @SYNOPSIS
-	@name{htags} [-acDfFgnosvwx][-d @arg{dbpath}][-m @arg{name}][-S @arg{cgidir}][-t @arg{title}][@arg{htmldir}]
+	@name{htags} [-acDfFgnovwx][-d @arg{dbpath}][-m @arg{name}][-S @arg{cgidir}][-t @arg{title}][@arg{htmldir}]
 @DESCRIPTION
 	@name{Htags} makes hypertext of C, C++, Yacc, Java, PHP and Assembly source code.
 
@@ -101,9 +101,6 @@
 		binary files.
 	@item{@option{--statistics}}
 		Print statistics information.
-	@item{@option{-s}, @option{--symbol}}
-		Make anchors not only for functions but also other symbols.
-		@file{GSYMS} tag file needed.
 	@item{@option{-S}, @option{--secure-cgi} @arg{cgidir}}
 		Write CGI programs into the @arg{cgidir} to realize
 		a centralised CGI program.
@@ -262,9 +259,6 @@
 		Script alias for safe cgi script (@option{-S}).
 	@item{@code{show_position}(boolean)}
 		Show position per function definition. The default is false.
-	@item{@code{symbol}(boolean)}
-		Make anchors not only for functions but also other symbols.
-		@file{GSYMS} tag file needed.
 	@item{@code{definition_header}(no|before|right|after)}
 		Position of link header. The default is 'no'.
 	@item{@code{other_files}(boolean)}

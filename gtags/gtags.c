@@ -67,7 +67,6 @@ void set_base_directory(const char *, const char *);
 int cflag;					/* compact format */
 int iflag;					/* incremental update */
 int Iflag;					/* make  id-utils index */
-int oflag;					/* suppress making GSYMS */
 int qflag;					/* quiet mode */
 int wflag;					/* warning message */
 int vflag;					/* verbose mode */
@@ -118,6 +117,10 @@ static struct option const long_options[] = {
 	{"idutils", no_argument, NULL, 'I'},
 	{"incremental", no_argument, NULL, 'i'},
 	{"max-args", required_argument, NULL, 'n'},
+	/*
+	 * Though the -o(--omit-gsyms) was removed, this code
+	 * is left for compatibility.
+	 */
 	{"omit-gsyms", no_argument, NULL, 'o'},
 	{"quiet", no_argument, NULL, 'q'},
 	{"verbose", no_argument, NULL, 'v'},
@@ -200,7 +203,10 @@ main(int argc, char **argv)
 				die("--max-args option requires number > 0.");
 			break;
 		case 'o':
-			oflag++;
+			/*
+			 * Though the -o(--omit-gsyms) was removed, this code
+			 * is left for compatibility.
+			 */
 			break;
 		case 'q':
 			qflag++;
@@ -389,8 +395,6 @@ main(int argc, char **argv)
 	 */
 	for (db = GTAGS; db < GTAGLIM; db++) {
 
-		if (oflag && db == GSYMS)
-			continue;
 		strbuf_reset(sb);
 		/*
 		 * get parser for db. (gtags-parser by default)

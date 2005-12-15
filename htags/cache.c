@@ -64,8 +64,7 @@ cache_open(void)
 {
 	assoc[GTAGS]  = assoc_open('d');
 	assoc[GRTAGS] = assoc_open('r');
-	if (symbol)
-		assoc[GSYMS] = assoc_open('y');
+	assoc[GSYMS] = assoc_open('y');
 }
 /*
  * cache_put: put tag line.
