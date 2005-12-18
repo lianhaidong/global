@@ -56,7 +56,7 @@ const char *html_head_begin	= "<head>";
 const char *html_head_end	= "</head>";
 const char *html_title_begin	= "<title>";
 const char *html_title_end	= "</title>";
-const char *body_begin		= "<body>";
+const char *body_begin		= "<body text='#191970' bgcolor='#f5f5dc' vlink='gray'>";
 const char *body_end		= "</body>";
 const char *title_begin		= "<h1><font color='#cc0000'>";
 const char *title_end		= "</font></h1>";

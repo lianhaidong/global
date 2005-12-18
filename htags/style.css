@@ -9,6 +9,8 @@
  * WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
+body		{ color: #191970; background-color: #f5f5dc; }
+a.visited	{ color: gray; }
 .title		{ color: #cc0000; }
 .error		{ color: red; }
 .cvs		{ font-size: 90%; }

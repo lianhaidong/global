@@ -106,7 +106,7 @@ ctags-exuberant|Exuberant Ctags|ctags by Darren Hiebert:\
 # See htags(1).
 #---------------------------------------------------------------------
 htags:\
-	:body_begin=<body>:body_end=</body>:\
+	:body_begin=<body text='#191970' bgcolor='#f5f5dc' vlink='gray'>:body_end=</body>:\
 	:table_begin=<table>:table_end=</table>:\
 	:title_begin=<h1><font color='#cc0000'>:title_end=</font></h1>:\
 	:comment_begin=<i><font color='green'>:comment_end=</font></i>:\
