@@ -22,6 +22,7 @@
 #define _HTAGS_H_
 
 #include "gparam.h"
+#include "gtagsop.h"
 
 #if defined(_WIN32) || defined(__DJGPP__)
 #define W32	1
@@ -64,6 +65,7 @@ extern char gtagsconf[MAXPATHLEN];
 extern char sort_path[MAXFILLEN];
 extern char gtags_path[MAXFILLEN];
 extern char global_path[MAXFILLEN];
+extern int gtags_exist[GTAGLIM];
 extern const char *null_device;
 extern const char *tmpdir;
 

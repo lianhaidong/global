@@ -75,6 +75,7 @@ anchor_prepare(FILE *anchor_stream)
 	int db;
 
 	for (db = GTAGS; db < GTAGLIM; db++) {
+		anchor_input[db] = NULL;
 		/*
 		 * Htags(1) should not use gtags-parser(1) directly;
 		 * it should use global(1) with the -f option instead.
@@ -88,8 +89,10 @@ anchor_prepare(FILE *anchor_stream)
 		 * by the path, it is guaranteed that the records concerning
 		 * the same file are consecutive.
 		 */
-		snprintf(comline, sizeof(comline), "global -f%s --nofilter=path", options[db]);
-		anchor_input[db] = xargs_open_with_file(comline, 0, anchor_stream);
+		if (gtags_exist[db] == 1) {
+			snprintf(comline, sizeof(comline), "global -f%s --nofilter=path", options[db]);
+			anchor_input[db] = xargs_open_with_file(comline, 0, anchor_stream);
+		}
 	}
 }
 /*

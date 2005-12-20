@@ -80,6 +80,7 @@ char datadir[MAXPATHLEN];
 
 char gtags_path[MAXFILLEN];
 char global_path[MAXFILLEN];
+int gtags_exist[GTAGLIM];
 const char *null_device = NULL_DEVICE;
 const char *tmpdir = "/tmp";
 
@@ -1636,10 +1637,20 @@ main(int argc, char **argv)
 	if (id_value) {
 		id = id_value;
 	}
-	if (!test("fr", makepath(dbpath, dbname(GTAGS), NULL)) ||
-	    !test("fr", makepath(dbpath, dbname(GRTAGS), NULL)) ||
-	    !test("fr", makepath(dbpath, dbname(GSYMS), NULL)))
-		die("GTAGS, GRTAGS and/or GSYMS not found. Htags needs them.");
+	/*
+	 * Existence check of tag files.
+	 */
+	{
+		int i;
+		char *path;
+
+		for (i = GPATH; i < GTAGLIM; i++) {
+			path = makepath(dbpath, dbname(i), NULL);
+			gtags_exist[i] = test("fr", path);
+		}
+		if (!gtags_exist[GPATH] || !gtags_exist[GTAGS] || !gtags_exist[GRTAGS])
+			die("GPATH, GTAGS and/or GRTAGS not found. Htags needs them at least.");
+	}
 	/*
 	 * make dbpath absolute.
 	 */

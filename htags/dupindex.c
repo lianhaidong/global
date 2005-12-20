@@ -111,6 +111,8 @@ makedupindex(void)
 		int entry_count = 0;
 		char *ctags_x, tag[IDENTLEN], prev[IDENTLEN], first_line[MAXBUFLEN];
 
+		if (gtags_exist[db] == 0)
+			continue;
 		prev[0] = 0;
 		first_line[0] = 0;
 		/*
