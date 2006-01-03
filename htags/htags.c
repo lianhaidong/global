@@ -1648,8 +1648,8 @@ main(int argc, char **argv)
 			path = makepath(dbpath, dbname(i), NULL);
 			gtags_exist[i] = test("fr", path);
 		}
-		if (!gtags_exist[GPATH] || !gtags_exist[GTAGS] || !gtags_exist[GRTAGS])
-			die("GPATH, GTAGS and/or GRTAGS not found. Htags needs them at least.");
+		if (!gtags_exist[GPATH] || !gtags_exist[GTAGS])
+			die("GPATH and/or GTAGS not found. Htags needs them at least.");
 	}
 	/*
 	 * make dbpath absolute.
