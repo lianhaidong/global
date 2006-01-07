@@ -119,13 +119,11 @@ makedupindex(void)
 		 * construct command line.
 		 */
 		strbuf_reset(command);
-		strbuf_puts(command, "global -xn");
+		strbuf_puts(command, "global --nofilter=path -x");
 		strbuf_puts(command, option);
 		if (dynamic)
 			strbuf_puts(command, " --nosource");
 		strbuf_puts(command, " \".*\"");
-		if (!dynamic || db == GSYMS)
-			 strbuf_puts(command, " | gtags --sort --format=ctags --unique");
 		if ((ip = popen(strbuf_value(command), "r")) == NULL)
 			die("cannot execute command '%s'.", strbuf_value(command));
 		while ((ctags_x = strbuf_fgets(sb, ip, STRBUF_NOCRLF)) != NULL) {
