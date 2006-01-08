@@ -198,7 +198,7 @@
 	@item{@code{xhtml_version}(1.0|1.1)}
 		XHTML version. 1.0 and 1.1 are acceptable. The default is 1.0.
 	@item{@code{body_begin}(string)}
-		Begin tag for body. The default is '<body>'.
+		Begin tag for body. The default is '<body text=#191970 bgcolor=#f5f5dc vlink=gray>'.
 	@item{@code{body_end}(string)}
 		End tag for body. The default is '</body>'.
 	@item{@code{table_begin}(string)}
