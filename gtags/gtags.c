@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005
+ * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005, 2006
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -262,7 +262,13 @@ main(int argc, char **argv)
 		 * 2. input must be sorted in alphabetical order by tag name
 		 *    if it is ctags [-x] format.
 		 */
-		tagsort(unique, format, stdin, stdout);
+		STRBUF *ib = strbuf_open(MAXBUFLEN);
+		TAGSORT *ts = tagsort_open(stdout, format, unique);
+
+		while (strbuf_fgets(ib, stdin, STRBUF_NOCRLF) != NULL)
+			tagsort_put(ts, strbuf_value(ib));
+		tagsort_close(ts);
+		strbuf_close(ib);
 		exit(0);
 	} else if (do_path) {
 		/*

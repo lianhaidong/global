@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Tama Communications Corporation
+ * Copyright (c) 2005, 2006 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -36,13 +36,10 @@
 #include "varray.h"
 
 /*
- * A special version of sort command.
+ * Internal sort filter.
  *
  * 1. ctags [-x] format
  *
- * As long as the input meets the undermentioned requirement,
- * you can use this special sort command as a sort filter for
- * global(1) instead of external sort command.
  * 'gtags --sort [--unique]' is equivalent with
  * 'sort -k 1,1 -k 3,3 -k 2,2n [-u]',
  * and 'gtags --ctags --sort [--unique]' is equivalent with
@@ -50,18 +47,23 @@
  * but does not need temporary files.
  *
  * - Requirement -
- * 1. input must be ctags [-x] format.
- * 2. input must be sorted in alphabetical order by tag name.
- *
- * usage: read from stdin, sort and write it to stdout.
- *
- * tagsort(unique, FORMAT_CTAGS, stdin, stdout);
+ * (1) input must be ctags [-x] format.
+ * (2) input must be sorted in alphabetical order by tag name.
  *
  * 2. path name only format
  *
  * 'gtags --sort --format=path' is equivalent with
  * 'sort -u'.
  * The --format=path option always includes --unique option.
+ *
+ * Usage:
+ *
+ * TAGSORT *ts = tagsort_open(stdout, format, unique);
+ * 
+ * while (<getting new line>)
+ * 	tagsort_put(ts, <line>);
+ * tagsort_close(ts);
+ *
  */
 /*
  * This entry corresponds to one record of ctags [-x] format.
@@ -184,132 +186,162 @@ put_lines(int unique, int format, char *lines, struct dup_entry *entries, int en
 		}
 	}
 }
-
 /*
- * ctags_sort: sort ctags [-x] format records
+ * check_malloc: memory allocator
+ */
+static void *check_malloc(int size)
+{
+	void *p = (void *)malloc(size);
+	if (p == NULL)
+		die("short of memory.");
+	return p;
+}
+/*
+ * tagsort_open: open sort filter
  *
- *	i)	unique	0: sort, 1: sort -u
+ *	i)	op	output
  *	i)	format	tag format
+ *			-1: pass through
  *			FORMAT_CTAGS_X: ctags -x format
  *			FORMAT_CTAGS: ctags format
- *	i)	ip	input
- *	i)	op	output
+ *			FORMAT_PATH: path name
+ *	i)	unique	1: make the output unique.
+ *	r)		tagsort structure
+ *
+ * If it is not necessary to sort the output, please specify -1 for
+ * the argument 'format'. In that case, tagsort_put() is equivalent
+ * to fputs(op, line + '\n').
  */
-static void
-ctags_sort(int unique, int format, FILE *ip, FILE *op)
+TAGSORT *
+tagsort_open(FILE *op, int format, int unique)
 {
-	STRBUF *ib = strbuf_open(MAXBUFLEN);
-	STRBUF *sb = strbuf_open(MAXBUFLEN);
-	VARRAY *vb = varray_open(sizeof(struct dup_entry), 100);
-	char *ctags_x, prev[IDENTLEN];
+	TAGSORT *ts = (TAGSORT *)check_malloc(sizeof(TAGSORT));
 
-	prev[0] = '\0';
-	while ((ctags_x = strbuf_fgets(ib, ip, STRBUF_NOCRLF)) != NULL) {
-		const char *tag;
-		struct dup_entry *entry;
-		SPLIT ptable;
+	switch (format) {
+	case -1:		/* do nothing */
+		break;
+	case FORMAT_PATH:
+		ts->dbop = dbop_open(NULL, 1, 0600, 0);
+		if (!ts->dbop)
+			die("cannot make temporary file in tagsort_open().");
+		break;
+	case FORMAT_CTAGS:
+	case FORMAT_CTAGS_X:
+		ts->sb = strbuf_open(MAXBUFLEN);
+		ts->vb = varray_open(sizeof(struct dup_entry), 100);
+		ts->prev[0] = '\0';
+		break;
+	default:
+		die("tagsort_open() unknown format type.");
+	}
+	ts->format = format;
+	ts->op = op;
+	ts->unique = unique;
 
-		if (split(ctags_x, 2, &ptable) < 2) {
+	return ts;
+}
+/*
+ * tagsort_put: sort the output
+ *
+ *	i)	ts	tagsort structure
+ *	i)	line	record
+ */
+void
+tagsort_put(TAGSORT *ts, char *line)
+{
+	const char *tag;
+	struct dup_entry *entry;
+	SPLIT ptable;
+
+	switch (ts->format) {
+	case -1:
+		fputs(line, ts->op);
+		fputc('\n', ts->op);
+		break;
+	case FORMAT_PATH:
+		dbop_put(ts->dbop, line, "");
+		break;
+	case FORMAT_CTAGS:
+	case FORMAT_CTAGS_X:
+		/*
+		 * extract the tag name.
+		 */
+		if (split(line, 2, &ptable) < 2) {
 			recover(&ptable);
-			die("too small number of parts.\n'%s'", ctags_x);
+			die("too small number of parts.\n'%s'", line);
 		}
 		/*
 		 * collect the records with the same tag, sort and write
 		 * using put_lines().
 		 */
 		tag = ptable.part[PART_TAG].start;
-		if (strcmp(prev, tag) != 0) {
-			if (prev[0] != '\0') {
-				if (vb->length == 1) {
-					fputs(strbuf_value(sb), op);
-					fputc('\n', op);
+		if (strcmp(ts->prev, tag) != 0) {
+			if (ts->prev[0] != '\0') {
+				if (ts->vb->length == 1) {
+					fputs(strbuf_value(ts->sb), ts->op);
+					fputc('\n', ts->op);
 				} else
-					put_lines(unique,
-						format,
-						strbuf_value(sb),
-						varray_assign(vb, 0, 0),
-						vb->length,
-						op);
+					put_lines(ts->unique,
+						ts->format,
+						strbuf_value(ts->sb),
+						varray_assign(ts->vb, 0, 0),
+						ts->vb->length,
+						ts->op);
 			}
-			strlimcpy(prev, tag, sizeof(prev));
-			strbuf_reset(sb);
-			varray_reset(vb);
+			strlimcpy(ts->prev, tag, sizeof(ts->prev));
+			strbuf_reset(ts->sb);
+			varray_reset(ts->vb);
 		}
-		entry = varray_append(vb);
-		entry->offset = strbuf_getlen(sb);
+		entry = varray_append(ts->vb);
+		entry->offset = strbuf_getlen(ts->sb);
 		recover(&ptable);
-		strbuf_puts0(sb, ctags_x);
-	}
-	if (prev[0] != '\0') {
-		if (vb->length == 1) {
-			fputs(strbuf_value(sb), op);
-			fputc('\n', op);
-		} else
-			put_lines(unique,
-				format,
-				strbuf_value(sb),
-				varray_assign(vb, 0, 0),
-				vb->length,
-				op);
-	}
-	strbuf_close(ib);
-	strbuf_close(sb);
-	varray_close(vb);
-}
-/*
- * path_sort: sort path name only format records
- *
- *	i)	ip	input
- *	i)	op	output
- *
- * This function is applicable in the output of find(1) etc.
- */
-static void
-path_sort(FILE *ip, FILE *op)
-{
-	DBOP *dbop;
-	STRBUF *ib = strbuf_open(MAXBUFLEN);
-	const char *path;
-	const char *null = "";
-
-	dbop = dbop_open(NULL, 1, 0600, 0);
-	if (!dbop)
-		die("cannot make temporary file in path_sort().");
-	while ((path = strbuf_fgets(ib, ip, 0)) != NULL) {
-		dbop_put(dbop, path, null);
-	}
-	for (path = dbop_first(dbop, NULL, NULL, DBOP_KEY);
-	     path != NULL;
-	     path = dbop_next(dbop)) {
-		fputs(path, op);
-	}
-	dbop_close(dbop);
-	strbuf_close(ib);
-}
-/*
- * tagsort:
- *
- *	i)	unique	0: sort, 1: sort -u
- *			In FORMAT_PATH format, it is always considered 1.
- *	i)	format	tag format
- *			FORMAT_CTAGS_X: ctags -x format
- *			FORMAT_CTAGS: ctags format
- *			FORMAT_PATH: path name
- *	i)	ip	input
- *	i)	op	output
- */
-void
-tagsort(int unique, int format, FILE *ip, FILE *op)
-{
-	switch (format) {
-	case FORMAT_PATH:
-		path_sort(ip, op);
-		break;
-	case FORMAT_CTAGS_X:
-	case FORMAT_CTAGS:
-		ctags_sort(unique, format, ip, op);	
+		strbuf_puts0(ts->sb, line);
 		break;
 	default:
-		die("internal error in tagsort.");
+		die("tagsort_put() unknown format type.");
 	}
+}
+/*
+ * tagsort_close: close sort filter
+ *
+ *	i)	ts	tagsort structure
+ */
+void
+tagsort_close(TAGSORT *ts)
+{
+	const char *path;
+
+	switch (ts->format) {
+	case -1:		/* do nothing */
+		break;
+	case FORMAT_PATH:
+		for (path = dbop_first(ts->dbop, NULL, NULL, DBOP_KEY);
+		     path != NULL;
+		     path = dbop_next(ts->dbop)) {
+			fputs(path, ts->op);
+			fputc('\n', ts->op);
+		}
+		dbop_close(ts->dbop);
+		break;
+	case FORMAT_CTAGS:
+	case FORMAT_CTAGS_X:
+		if (ts->prev[0] != '\0') {
+			if (ts->vb->length == 1) {
+				fputs(strbuf_value(ts->sb), ts->op);
+				fputc('\n', ts->op);
+			} else
+				put_lines(ts->unique,
+					ts->format,
+					strbuf_value(ts->sb),
+					varray_assign(ts->vb, 0, 0),
+					ts->vb->length,
+					ts->op);
+		}
+		strbuf_close(ts->sb);
+		varray_close(ts->vb);
+		break;
+	default:
+		die("tagsort_close() unknown format type.");
+	}
+	(void)free(ts);
 }

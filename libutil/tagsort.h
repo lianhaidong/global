@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Tama Communications Corporation
+ * Copyright (c) 2005, 2006 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -17,12 +17,36 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.
  */
-#ifndef _SORT_H_
-#define _SORT_H_
+#ifndef _TAGSORT_H_
+#define _TAGSORT_H_
 
 #include <stdio.h>
+#include "dbop.h"
 #include "format.h"
+#include "strbuf.h"
+#include "varray.h"
 
-void tagsort(int, int, FILE *ip, FILE *op);
+typedef struct {
+	/*
+	 * Common area.
+	 */
+	int format;				/* format type */
+	int unique;				/* 1: make the output unique */
+	FILE *op;				/* output file */
+	/*
+	 * for FORMAT_PATH
+	 */
+	DBOP *dbop;
+	/*
+	 * for FORMAT_CTAGS/FORMAT_CTAGS_X
+	 */
+	STRBUF *sb;
+	VARRAY *vb;
+	char prev[IDENTLEN];
+} TAGSORT;
 
-#endif /* ! _SORT_H_ */
+TAGSORT *tagsort_open(FILE *, int, int);
+void tagsort_put(TAGSORT *, char *);
+void tagsort_close(TAGSORT *);
+
+#endif /* ! _TAGSORT_H_ */
