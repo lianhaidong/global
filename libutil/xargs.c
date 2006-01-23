@@ -280,9 +280,9 @@ xargs_open_generic(const char *command, int max_args)
 	 */
 	xp->put_gpath = 0;
 	/*
-	 * By default, we cut off the blanks at the tail of the line.
+	 * By default, we don't cut off the blanks at the tail of the line.
 	 */
-	xp->trim_line = 1;
+	xp->trim_line = 0;
 
 	return xp;
 }
