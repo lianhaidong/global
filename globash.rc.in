@@ -493,7 +493,7 @@ __gtags_list_xref()
 	if [ ! -s $XREF ]; then
 		return 1
 	fi
-	filter=`global --filter=path -$__gtags_lastcom`;;
+	filter=`global --filter=path -$__gtags_lastcom`
 	case $filter in
 	'')	echo "Cannot get internal filter."
 		return 1;;
