@@ -86,7 +86,7 @@ Q6. It seems that gtags(1) cannot treat files which include blanks in the path.
 A6. Because it is hard for GLOBAL to treat them correctly with keeping
     upper compatibility. Gtags(1) currently ignores files which include
     blanks in the path. We put the improvement to our TODO list but
-    the priority is not high. The best way is no to use blanks in path name.
+    the priority is not high. The best way is not to use blanks in path name.
 
 ----------------------------------------------------------------------------
 Q7. Gtags(1) and htags(1) work only for one directory tree. So, we cannot
