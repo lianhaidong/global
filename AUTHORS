@@ -85,25 +85,4 @@ o GNU C Library by Free Software Foundation, Inc.
 	libglibc/hash-string.c
 	libglibc/hash-string.h
 
-o Textutils by Free Software Foundation, Inc.
-  (http://www.gnu.org/software/textutils/textutils.html)
-
-	gnusort/closeout.c
-	gnusort/closeout.h
-	gnusort/error.c
-	gnusort/error.h
-	gnusort/hard-locale.c
-	gnusort/hard-locale.h
-	gnusort/long-options.c
-	gnusort/long-options.h
-	gnusort/memcoll.c
-	gnusort/memcoll.h
-	gnusort/sort.c
-	gnusort/sys2.h
-	gnusort/system.h
-	gnusort/version-etc.c
-	gnusort/version-etc.h
-	gnusort/xalloc.h
-	gnusort/xmalloc.c
-
 they are considered a separate package, not part of GLOBAL proper.
