@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005
+ * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005, 2006
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -50,14 +50,15 @@ static void help(void);
 static void setcom(int);
 int main(int, char **);
 void makefilter(STRBUF *);
-FILE *openfilter(void);
-void closefilter(FILE *);
+TAGSORT *openfilter(void);
+void printtag(TAGSORT *, const char *);
+void printtag_using(TAGSORT *, const char *, const char *, int, const char *);
+void closefilter(TAGSORT *);
 void completion(const char *, const char *, const char *);
 void idutils(const char *, const char *);
 void grep(const char *, const char *);
 void pathlist(const char *, const char *);
 void parsefile(int, char **, const char *, const char *, const char *, int);
-void printtag(FILE *, const char *);
 int search(const char *, const char *, const char *, int);
 void ffformat(char *, int, const char *);
 
@@ -90,9 +91,11 @@ int show_filter;			/* undocumented command */
 int nofilter;
 int nosource;				/* undocumented command */
 int debug;
-int devel;
 int fileid;
 const char *extra_options;
+int unique;
+int format;
+int passthru;
 
 static void
 usage(void)
@@ -140,7 +143,6 @@ static struct option const long_options[] = {
 
 	/* long name only */
 	{"debug", no_argument, &debug, 1},
-	{"devel", no_argument, &devel, 1},
 	{"fileid", no_argument, &fileid, 1},
 	{"version", no_argument, &show_version, 1},
 	{"help", no_argument, &show_help, 1},
@@ -410,87 +412,41 @@ main(int argc, char **argv)
 	 * Decide tag type.
 	 */
 	db = (rflag) ? GRTAGS : ((sflag) ? GSYMS : GTAGS);
+	unique = sflag ? 1 : 0;
+	/*
+	 * decide format
+	 */
+	if (fflag || gflag || Pflag || (nofilter & SORT_FILTER))
+		passthru = 1;
+	if (tflag) { 			/* ctags format */
+		format = FORMAT_CTAGS;
+	} else if (xflag) {		/* print details */
+		format = FORMAT_CTAGS_X;
+	} else {		/* print just a file name */
+		format = FORMAT_PATH;
+		unique = 1;
+	}
 	/*
 	 * make sort filter.
+	 *
+	 * If gtags-parser(1) is used, we calls internal sort filter,
+	 * else we calls external POSIX compatible sort command,
+	 * because the order of the external parser's output is not guaranteed.
 	 */
-	{
-		int unique = 0;
-		const char *sort;
+	sortfilter = strbuf_open(0);
+	if (fflag) {
+		STRBUF *sb = strbuf_open(0);
 
-		/*
-		 * We cannot depend on the command PATH, because global(1)
-		 * might be called from WWW server. Since usable() looks for
-		 * the command in BINDIR directory first, POSIX_SORT need not
-		 * be in command PATH.
-		 */
-		sort = usable(POSIX_SORT);
-		if (!sort)
-			die("%s not found.", POSIX_SORT);
-		sortfilter = strbuf_open(0);
-		/*
-		 * The --devel option is for test.
-		 */
-		if (devel) {
-			if (tflag) { 			/* ctags format */
-				strbuf_puts(sortfilter, "gtags --sort --format=ctags");
-				if (sflag)
-					strbuf_puts(sortfilter, " --unique");
-			} else if (fflag) {
-				STRBUF *sb = strbuf_open(0);
-				/*
-				 * By default, the -f option need sort filter,
-				 * because there is a possibility that an external
-				 * parser is used instead of gtags-parser(1).
-				 * Clear the sort filter when understanding that
-				 * the parser is gtags-parser.
-				 */
-				if (!getconfs(dbname(db), sb))
-					die("cannot get parser for %s.", dbname(db));
-				if (!locatestring(strbuf_value(sb), "gtags-parser", MATCH_FIRST)) {
-					strbuf_puts(sortfilter, sort);
-					strbuf_puts(sortfilter, " -k 3,3 -k 2,2n");
-				}
-				strbuf_close(sb);
-			} else if (gflag || Pflag) {
-				;	/* doesn't use sort filter */
-			} else if (xflag) {		/* print details */
-				strbuf_puts(sortfilter, "gtags --sort --format=ctags-x");
-				if (sflag)
-					strbuf_puts(sortfilter, " --unique");
-			} else {		/* print just a file name */
-				strbuf_puts(sortfilter, "gtags --sort --format=path");
-			}
-		} else {
+		if (!getconfs(dbname(db), sb))
+			die("cannot get parser for %s.", dbname(db));
+		if (!locatestring(strbuf_value(sb), "gtags-parser", MATCH_FIRST)) {
+			const char *sort = usable(POSIX_SORT);
+			if (!sort)
+				die("%s not found. POSIX sort(1) is required to use plug-in parser.", POSIX_SORT);
 			strbuf_puts(sortfilter, sort);
-			if (sflag) {
-				strbuf_puts(sortfilter, " -u");
-				unique = 1;
-			}
-			if (tflag) 			/* ctags format */
-				strbuf_puts(sortfilter, " -k 1,1 -k 2,2 -k 3,3n");
-			else if (fflag) {
-				STRBUF *sb = strbuf_open(0);
-				/*
-				 * By default, the -f option need sort filter,
-				 * because there is a possibility that an external
-				 * parser is used instead of gtags-parser(1).
-				 * Clear the sort filter when understanding that
-				 * the parser is gtags-parser.
-				 */
-				if (!getconfs(dbname(db), sb))
-					die("cannot get parser for %s.", dbname(db));
-				if (locatestring(strbuf_value(sb), "gtags-parser", MATCH_FIRST))
-					strbuf_setlen(sortfilter, 0);
-				else
-					strbuf_puts(sortfilter, " -k 3,3 -k 2,2n");
-				strbuf_close(sb);
-			} else if (gflag || Pflag)
-				strbuf_setlen(sortfilter, 0);
-			else if (xflag) {		/* print details */
-				strbuf_puts(sortfilter, " -k 1,1 -k 3,3 -k 2,2n");
-			} else if (!unique)		/* print just a file name */
-				strbuf_puts(sortfilter, " -u");
+			strbuf_puts(sortfilter, " -k 3,3 -k 2,2n");
 		}
+		strbuf_close(sb);
 	}
 	/*
 	 * make path filter.
@@ -501,11 +457,11 @@ main(int argc, char **argv)
 		strbuf_puts(pathfilter, " --path=absolute");
 	else
 		strbuf_puts(pathfilter, " --path=relative");
-	if (tflag)
+	if (tflag) 			/* ctags format */
 		strbuf_puts(pathfilter, " --format=ctags");
-	else if (xflag)
+	else if (xflag)			/* print details */
 		strbuf_puts(pathfilter, " --format=ctags-x");
-	else
+	else		/* print just a file name */
 		strbuf_puts(pathfilter, " --format=path");
 	if (fileid)
 		strbuf_puts(pathfilter, " --fileid");
@@ -607,11 +563,11 @@ main(int argc, char **argv)
 				strbuf_puts(pathfilter, " --path=absolute");
 			else
 				strbuf_puts(pathfilter, " --path=relative");
-			if (tflag)
+			if (tflag) 			/* ctags format */
 				strbuf_puts(pathfilter, " --format=ctags");
-			else if (xflag)
+			else if (xflag)			/* print details */
 				strbuf_puts(pathfilter, " --format=ctags-x");
-			else
+			else		/* print just a file name */
 				strbuf_puts(pathfilter, " --format=path");
 			strbuf_putc(pathfilter, ' ');
 			strbuf_puts(pathfilter, lib);
@@ -669,25 +625,34 @@ makefilter(STRBUF *sb)
  *
  *	gi)	pathfilter
  *	gi)	sortfilter
- *	r)		file pointer for output filter
+ *	r)		tagsort structure
  */
-FILE *
+TAGSORT *
 openfilter(void)
 {
-	FILE *op;
 	STRBUF *sb = strbuf_open(0);
+	FILE *op = stdout;
 
 	makefilter(sb);
-	if (strbuf_getlen(sb) == 0)
-		op = stdout;
-	else
+	if (strbuf_getlen(sb) > 0) {
 		op = popen(strbuf_value(sb), "w");
+		if (op == NULL)
+			die("cannot open output filter. '%s'", strbuf_value(sb));
+	}
 	strbuf_close(sb);
-	return op;
+	return tagsort_open(op, format, unique, passthru);
 }
+/*
+ * closefilter: close output filter.
+ *
+ *	i)	ts	tagsort structure
+ */
 void
-closefilter(FILE *op)
+closefilter(TAGSORT *ts)
 {
+	FILE *op = ts->op;
+
+	tagsort_close(ts);
 	if (op != stdout)
 		if (pclose(op) != 0)
 			die("terminated abnormally.");
@@ -723,34 +688,74 @@ completion(const char *dbpath, const char *root, const char *prefix)
 /*
  * printtag: print a tag's line
  *
- *	i)	op	output stream
+ *	i)	ts	output stream
  *	i)	ctags_x	ctags -x format record
  */
 void
-printtag(FILE *op, const char *ctags_x)		/* virtually const */
+printtag(TAGSORT *ts, const char *ctags_x)		/* virtually const */
 {
-	if (xflag) {
-		fputs(ctags_x, op);
-	} else {
-		SPLIT ptable;
+	SPLIT ptable;
 
-		/*
-		 * Split tag line.
-		 */
+	switch (ts->format) {
+	case FORMAT_CTAGS_X:
+		tagsort_put(ts, ctags_x);
+		break;
+	case FORMAT_CTAGS:
+	case FORMAT_PATH:
 		split((char *)ctags_x, 4, &ptable);
-
-		if (tflag) {
-			fputs(ptable.part[PART_TAG].start, op);	/* tag */
-			(void)putc('\t', op);
-			fputs(ptable.part[PART_PATH].start, op);/* path */
-			(void)putc('\t', op);
-			fputs(ptable.part[PART_LNO].start, op);	/* line number */
-		} else {
-			fputs(ptable.part[PART_PATH].start, op);/* path */
-		}
+		printtag_using(ts,
+			ptable.part[PART_TAG].start,		/* tag */
+			ptable.part[PART_PATH].start,		/* path */
+			atoi(ptable.part[PART_LNO].start),	/* line no */
+			NULL);
 		recover(&ptable);
+		break;
+	default:
+		break;
 	}
-	fputc('\n', op);
+}
+/*
+ * printtag_using: print a tag's line with arguments
+ *
+ *	i)	ts	output stream
+ *	i)	tag	tag name
+ *	i)	path	path name
+ *	i)	lineno	line number
+ *	i)	line	line image
+ */
+void
+printtag_using(TAGSORT *ts, const char *tag, const char *path, int lineno, const char *line)
+{
+	STATIC_STRBUF(sb);
+	char edit[MAXPATHLEN];
+
+	strbuf_clear(sb);
+	/*
+	 * normalize path name.
+	 */
+	if (*path != '.') {
+		int i = 0;
+		edit[i++] = '.';
+		edit[i++] = '/';
+		while ((edit[i++] = *path++) != NULL)
+			;
+		path = edit;
+	}
+	switch (ts->format) {
+	case FORMAT_PATH:
+		strbuf_puts(sb, path);
+		break;
+	case FORMAT_CTAGS:
+		strbuf_sprintf(sb, "%s\t%s\t%d", tag, path, lineno);
+		break;
+	case FORMAT_CTAGS_X:
+		strbuf_sprintf(sb, "%-16s %4d %-16s %s", tag, lineno, path, line);
+		break;
+	default:
+		die("printtag_using: format '%d' not supported.", ts->format);
+		break;
+	}
+	tagsort_put(ts, strbuf_value(sb));
 }
 /*
  * idutils:  lid(id-utils) pattern
@@ -761,7 +766,8 @@ printtag(FILE *op, const char *ctags_x)		/* virtually const */
 void
 idutils(const char *pattern, const char *dbpath)
 {
-	FILE *ip, *op;
+	FILE *ip;
+	TAGSORT *ts;
 	STRBUF *ib = strbuf_open(0);
 	char edit[IDENTLEN+1];
 	const char *path, *lno, *lid;
@@ -797,8 +803,7 @@ idutils(const char *pattern, const char *dbpath)
 		fprintf(stderr, "id-utils: %s\n", strbuf_value(ib));
 	if (!(ip = popen(strbuf_value(ib), "r")))
 		die("cannot execute '%s'.", strbuf_value(ib));
-	if (!(op = openfilter()))
-		die("cannot open output filter.");
+	ts = openfilter();
 	count = 0;
 	while ((grep = strbuf_fgets(ib, ip, STRBUF_NOCRLF)) != NULL) {
 		p = grep;
@@ -814,38 +819,36 @@ idutils(const char *pattern, const char *dbpath)
 				continue;
 		}
 		count++;
-		if (!xflag && !tflag) {
-			fprintf(op, "./%s\n", path);
-			continue;
-		}
-		/* extract line number */
-		while (*p && isspace(*p))
-			p++;
-		lno = p;
-		while (*p && isdigit(*p))
-			p++;
-		if (*p != ':')
-			die("invalid lid(id-utils) output format. '%s'", grep);
-		*p++ = 0;
-		linenum = atoi(lno);
-		if (linenum <= 0)
-			die("invalid lid(id-utils) output format. '%s'", grep);
-		/*
-		 * print out.
-		 */
-		if (tflag)
-			fprintf(op, "%s\t./%s\t%d\n", edit, path, linenum);
-		else {
-			char	buf[MAXPATHLEN+1];
-
-			snprintf(buf, sizeof(buf), "./%s", path);
-			fprintf(op, "%-16s %4d %-16s %s\n",
-					edit, linenum, buf, p);
+		switch (ts->format) {
+		case FORMAT_PATH:
+			printtag_using(ts, NULL, path, 0, NULL);
+			break;
+		case FORMAT_CTAGS:
+		case FORMAT_CTAGS_X:
+			/* extract line number */
+			while (*p && isspace(*p))
+				p++;
+			lno = p;
+			while (*p && isdigit(*p))
+				p++;
+			if (*p != ':')
+				die("invalid lid(id-utils) output format. '%s'", grep);
+			*p++ = 0;
+			linenum = atoi(lno);
+			if (linenum <= 0)
+				die("invalid lid(id-utils) output format. '%s'", grep);
+			/*
+			 * print out.
+			 */
+			printtag_using(ts, edit, path, linenum, p);
+			break;
+		default:
+			break;
 		}
 	}
 	if (pclose(ip) < 0)
 		die("terminated abnormally.");
-	closefilter(op);
+	closefilter(ts);
 	strbuf_close(ib);
 	if (vflag) {
 		if (count == 0)
@@ -865,7 +868,8 @@ idutils(const char *pattern, const char *dbpath)
 void
 grep(const char *dbpath, const char *pattern)
 {
-	FILE *op, *fp;
+	FILE *fp;
+	TAGSORT *ts;
 	GFIND *gp;
 	STRBUF *ib = strbuf_open(MAXBUFLEN);
 	const char *path;
@@ -886,8 +890,7 @@ grep(const char *dbpath, const char *pattern)
 		flags |= REG_ICASE;
 	if (regcomp(&preg, pattern, flags) != 0)
 		die("invalid regular expression.");
-	if (!(op = openfilter()))
-		die("cannot open output filter.");
+	ts = openfilter();
 	count = 0;
 	/*
 	 * The older version (4.8.7 or former) of GPATH doesn't have files
@@ -904,23 +907,15 @@ grep(const char *dbpath, const char *pattern)
 			linenum++;
 			if (regexec(&preg, buffer, 0, 0, 0) == 0) {
 				count++;
-				if (tflag)
-					fprintf(op, "%s\t%s\t%d\n",
-						edit, path, linenum);
-				else if (!xflag) {
-					fputs(path, op);
-					fputc('\n', op);
+				printtag_using(ts, edit, path, linenum, buffer);
+				if (ts->format == FORMAT_PATH)
 					break;
-				} else {
-					fprintf(op, "%-16s %4d %-16s %s\n",
-						edit, linenum, path, buffer);
-				}
 			}
 		}
 		fclose(fp);
 	}
 	gfind_close(gp);
-	closefilter(op);
+	closefilter(ts);
 	strbuf_close(ib);
 	regfree(&preg);
 	if (vflag) {
@@ -942,7 +937,7 @@ void
 pathlist(const char *dbpath, const char *av)
 {
 	GFIND *gp;
-	FILE *op;
+	TAGSORT *ts;
 	const char *path, *p;
 	regex_t preg;
 	int count;
@@ -962,8 +957,7 @@ pathlist(const char *dbpath, const char *av)
 	}
 	if (!localprefix)
 		localprefix = ".";
-	if (!(op = openfilter()))
-		die("cannot open output filter.");
+	ts = openfilter();
 	count = 0;
 	/*
 	 * The older version (4.8.7 or former) of GPATH doesn't have files
@@ -979,18 +973,11 @@ pathlist(const char *dbpath, const char *av)
 		p = path + strlen(localprefix) - 1;
 		if (av && regexec(&preg, p, 0, 0, 0) != 0)
 			continue;
-		if (xflag)
-			fprintf(op, "path\t1 %s \n", path);
-		else if (tflag)
-			fprintf(op, "path\t%s\t1\n", path);
-		else {
-			fputs(path, op);
-			fputc('\n', op);
-		}
+		printtag_using(ts, "path", path, 1, " ");
 		count++;
 	}
 	gfind_close(gp);
-	closefilter(op);
+	closefilter(ts);
 	if (av)
 		regfree(&preg);
 	if (vflag) {
@@ -1018,11 +1005,11 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 {
 	char rootdir[MAXPATHLEN+1];
 	char buf[MAXPATHLEN+1], *path;
-	FILE *op;
 	int count = 0;
 	STRBUF *comline = strbuf_open(0);
 	STRBUF *path_list = strbuf_open(MAXPATHLEN);
 	XARGS *xp;
+	TAGSORT *ts;
 	char *ctags_x;
 
 	snprintf(rootdir, sizeof(rootdir), "%s/", root);
@@ -1035,8 +1022,7 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 	 */
 	if (!getconfs(dbname(db), comline))
 		die("cannot get parser for %s.", dbname(db));
-	if (!(op = openfilter()))
-		die("cannot open output filter.");
+	ts = openfilter();
 	if (gpath_open(dbpath, 0) < 0)
 		die("GPATH not found.");
 	/*
@@ -1093,7 +1079,7 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 		die("cannot move to '%s' directory.", root);
 	xp = xargs_open_with_strbuf(strbuf_value(comline), 0, path_list);
 	while ((ctags_x = xargs_read(xp)) != NULL) {
-		printtag(op, ctags_x);
+		printtag(ts, ctags_x);
 		count++;
 	}
 	xargs_close(xp);
@@ -1103,7 +1089,7 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 	 * Settlement
 	 */
 	gpath_close();
-	closefilter(op);
+	closefilter(ts);
 	strbuf_close(comline);
 	strbuf_close(path_list);
 	if (vflag) {
@@ -1130,17 +1116,16 @@ search(const char *pattern, const char *root, const char *dbpath, int db)
 {
 	const char *ctags_x;
 	int count = 0;
-	FILE *op;
 	GTOP *gtop;
 	int flags = 0;
 	STRBUF *sb = NULL;
+	TAGSORT *ts;
 
 	/*
 	 * open tag file.
 	 */
 	gtop = gtags_open(dbpath, root, db, GTAGS_READ, 0);
-	if (!(op = openfilter()))
-		die("cannot open output filter.");
+	ts = openfilter();
 	/*
 	 * search through tag file.
 	 */
@@ -1166,10 +1151,10 @@ search(const char *pattern, const char *root, const char *dbpath, int db)
 			if (!locatestring(q, localprefix, MATCH_AT_FIRST))
 				continue;
 		}
-		printtag(op, ctags_x);
+		printtag(ts, ctags_x);
 		count++;
 	}
-	closefilter(op);
+	closefilter(ts);
 	if (sb)
 		strbuf_close(sb);
 	gtags_close(gtop);
