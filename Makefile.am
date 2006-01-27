@@ -14,9 +14,6 @@ SUBDIRS = libglibc libutil
 if !USE_DB185_COMPAT
         SUBDIRS += libdb
 endif
-if USE_BUILTIN_SORT
-        SUBDIRS += gnusort
-endif
 SUBDIRS += gtags-parser global gozilla gtags htags doc
 
 EXTRA_DIST = FAQ LICENSE \
