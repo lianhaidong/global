@@ -781,12 +781,17 @@ idutils(const char *pattern, const char *dbpath)
 	closefilter(ts);
 	strbuf_close(ib);
 	if (vflag) {
-		if (count == 0)
+		switch (count) {
+		case 0:
 			fprintf(stderr, "object not found");
-		if (count == 1)
+			break;
+		case 1:
 			fprintf(stderr, "%d object located", count);
-		if (count > 1)
+			break;
+		default:
 			fprintf(stderr, "%d objects located", count);
+			break;
+		}
 		fprintf(stderr, " (using id-utils index in '%s').\n", dbpath);
 	}
 }
@@ -849,12 +854,17 @@ grep(const char *pattern, const char *dbpath)
 	strbuf_close(ib);
 	regfree(&preg);
 	if (vflag) {
-		if (count == 0)
+		switch (count) {
+		case 0:
 			fprintf(stderr, "object not found");
-		if (count == 1)
+			break;
+		case 1:
 			fprintf(stderr, "%d object located", count);
-		if (count > 1)
+			break;
+		default:
 			fprintf(stderr, "%d objects located", count);
+			break;
+		}
 		fprintf(stderr, " (no index used).\n");
 	}
 }
@@ -911,12 +921,17 @@ pathlist(const char *pattern, const char *dbpath)
 	if (pattern)
 		regfree(&preg);
 	if (vflag) {
-		if (count == 0)
+		switch (count) {
+		case 0:
 			fprintf(stderr, "path not found");
-		if (count == 1)
+			break;
+		case 1:
 			fprintf(stderr, "%d path located", count);
-		if (count > 1)
+			break;
+		default:
 			fprintf(stderr, "%d paths located", count);
+			break;
+		}
 		fprintf(stderr, " (using '%s').\n", makepath(dbpath, dbname(GPATH), NULL));
 	}
 }
@@ -1023,12 +1038,17 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 	strbuf_close(comline);
 	strbuf_close(path_list);
 	if (vflag) {
-		if (count == 0)
+		switch (count) {
+		case 0:
 			fprintf(stderr, "object not found");
-		if (count == 1)
+			break;
+		case 1:
 			fprintf(stderr, "%d object located", count);
-		if (count > 1)
+			break;
+		default:
 			fprintf(stderr, "%d objects located", count);
+			break;
+		}
 		fprintf(stderr, " (no index used).\n");
 	}
 }
@@ -1159,17 +1179,20 @@ tagsearch(const char *pattern, const char *cwd, const char *root, const char *db
 		strbuf_close(sb);
 	}
 	if (vflag) {
-		if (total) {
-			if (total == 1)
-				fprintf(stderr, "%d object located", total);
-			if (total > 1)
-				fprintf(stderr, "%d objects located", total);
-		} else {
+		switch (total) {
+		case 0:
 			fprintf(stderr, "'%s' not found", pattern);
+			break;
+		case 1:
+			fprintf(stderr, "%d object located", total);
+			break;
+		default:
+			fprintf(stderr, "%d objects located", total);
+			break;
 		}
 		if (!Tflag)
-			fprintf(stderr, " (using '%s').", makepath(dbpath, dbname(db), NULL));
-		fputc('\n', stderr);
+			fprintf(stderr, " (using '%s')", makepath(dbpath, dbname(db), NULL));
+		fputs(".\n", stderr);
 	}
 }
 /*
