@@ -89,7 +89,6 @@ int convert_type = PATH_RELATIVE;
 /*
  * Sort filter
  */
-int do_sort;
 int unique;
 int format = FORMAT_PATH;
 
@@ -133,7 +132,6 @@ static struct option const long_options[] = {
 	{"fileid", no_argument, &fileid, 1},
 	{"gtagsconf", required_argument, &gtagsconf, 1},
 	{"gtagslabel", required_argument, &gtagslabel, 1},
-	{"sort", no_argument, &do_sort, 1},
 	{"path", required_argument, &do_path, 1},
 	{"unique", no_argument, &unique, 1},
 	{"version", no_argument, &show_version, 1},
@@ -245,30 +243,6 @@ main(int argc, char **argv)
 		} else {
 			fprintf(stdout, "%s\n", getconfline());
 		}
-		exit(0);
-	} else if (do_sort) {
-		/*
-		 * A special version of sort command.
-		 *
-		 * As long as the input meets the undermentioned requirement,
-		 * you can use this special sort command as a sort filter for
-		 * global(1) instead of external sort command.
-		 *
-		 * - Requirement -
-		 * 1. input must be one of these format:
-		 *    0: ctags -x format
-		 *    1: ctags format
-		 *    2: path name
-		 * 2. input must be sorted in alphabetical order by tag name
-		 *    if it is ctags [-x] format.
-		 */
-		STRBUF *ib = strbuf_open(MAXBUFLEN);
-		TAGSORT *ts = tagsort_open(stdout, format, unique, 1);
-
-		while (strbuf_fgets(ib, stdin, STRBUF_NOCRLF) != NULL)
-			tagsort_put(ts, strbuf_value(ib));
-		tagsort_close(ts);
-		strbuf_close(ib);
 		exit(0);
 	} else if (do_path) {
 		/*
