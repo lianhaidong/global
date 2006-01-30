@@ -60,7 +60,8 @@ void grep(const char *, const char *);
 void pathlist(const char *, const char *);
 void parsefile(int, char **, const char *, const char *, const char *, int);
 int search(const char *, const char *, const char *, int);
-void ffformat(char *, int, const char *);
+void tagsearch(const char *, const char *, const char *, const char *, int);
+void encode(char *, int, const char *);
 
 STRBUF *sortfilter;			/* sort filter		*/
 STRBUF *pathfilter;			/* path convert filter	*/
@@ -92,7 +93,7 @@ int nofilter;
 int nosource;				/* undocumented command */
 int debug;
 int fileid;
-const char *extra_options;
+const char *gtags;
 int unique;
 int format;
 int passthru;
@@ -164,21 +165,15 @@ int
 main(int argc, char **argv)
 {
 	const char *av = NULL;
-	int count;
 	int db;
 	int optchar;
 	int option_index = 0;
 	char cwd[MAXPATHLEN+1];			/* current directory	*/
 	char root[MAXPATHLEN+1];		/* root of source tree	*/
 	char dbpath[MAXPATHLEN+1];		/* dbpath directory	*/
-	const char *gtags;
 
 	while ((optchar = getopt_long(argc, argv, "ace:ifgGIlnopPqrstTuvx", long_options, &option_index)) != EOF) {
 		switch (optchar) {
-		case 0:
-			if (!strcmp("idutils", long_options[option_index].name))
-				extra_options = optarg;
-			break;
 		case 'a':
 			aflag++;
 			break;
@@ -355,7 +350,7 @@ main(int argc, char **argv)
 		exit(0);
 	}
 	/*
-	 * incremental update of tag files.
+	 * get gtags's path.
 	 */
 	gtags = usable("gtags");
 	if (!gtags)
@@ -363,6 +358,9 @@ main(int argc, char **argv)
 	gtags = strdup(gtags);
 	if (!gtags)
 		die("short of memory.");
+	/*
+	 * incremental update of tag files.
+	 */
 	if (uflag) {
 		STRBUF	*sb = strbuf_open(0);
 
@@ -379,7 +377,6 @@ main(int argc, char **argv)
 		strbuf_close(sb);
 		exit(0);
 	}
-
 	/*
 	 * complete function name
 	 */
@@ -508,96 +505,33 @@ main(int argc, char **argv)
 	if (Iflag) {
 		chdir(root);
 		idutils(av, dbpath);
-		exit(0);
 	}
 	/*
-	 * grep the pattern in a source tree.
+	 * search pattern (regular expression).
 	 */
-	if (gflag) {
+	else if (gflag) {
 		chdir(root);
-		grep(dbpath, av);
-		exit(0);
+		grep(av, dbpath);
 	}
 	/*
-	 * locate the path including the pattern in a source tree.
+	 * locate paths including the pattern.
 	 */
-	if (Pflag) {
+	else if (Pflag) {
 		chdir(root);
-		pathlist(dbpath, av);
-		exit(0);
+		pathlist(av, dbpath);
 	}
 	/*
-	 * print function definitions.
+	 * parse source files.
 	 */
-	if (fflag) {
+	else if (fflag) {
 		parsefile(argc, argv, cwd, root, dbpath, db);
-		exit(0);
 	}
 	/*
-	 * search in current source tree.
+	 * tag search.
 	 */
-	count = search(av, root, dbpath, db);
-	/*
-	 * search in library path.
-	 */
-	if (getenv("GTAGSLIBPATH") && (count == 0 || Tflag) && !lflag && !rflag) {
-		STRBUF *sb = strbuf_open(0);
-		char libdbpath[MAXPATHLEN+1];
-		char *p, *lib;
-
-		strbuf_puts(sb, getenv("GTAGSLIBPATH"));
-		p = strbuf_value(sb);
-		while (p) {
-			lib = p;
-			if ((p = locatestring(p, PATHSEP, MATCH_FIRST)) != NULL)
-				*p++ = 0;
-			if (!gtagsexist(lib, libdbpath, sizeof(libdbpath), 0))
-				continue;
-			if (!strcmp(dbpath, libdbpath))
-				continue;
-			if (!test("f", makepath(libdbpath, dbname(db), NULL)))
-				continue;
-			strbuf_reset(pathfilter);
-			strbuf_puts(pathfilter, gtags);
-			if (aflag)	/* absolute path name */
-				strbuf_puts(pathfilter, " --path=absolute");
-			else
-				strbuf_puts(pathfilter, " --path=relative");
-			if (tflag) 			/* ctags format */
-				strbuf_puts(pathfilter, " --format=ctags");
-			else if (xflag)			/* print details */
-				strbuf_puts(pathfilter, " --format=ctags-x");
-			else		/* print just a file name */
-				strbuf_puts(pathfilter, " --format=path");
-			strbuf_putc(pathfilter, ' ');
-			strbuf_puts(pathfilter, lib);
-			strbuf_putc(pathfilter, ' ');
-			strbuf_puts(pathfilter, cwd);
-			strbuf_putc(pathfilter, ' ');
-			strbuf_puts(pathfilter, libdbpath);
-			count = search(av, lib, libdbpath, db);
-			if (count > 0 && !Tflag) {
-				strlimcpy(dbpath, libdbpath, sizeof(dbpath));
-				break;
-			}
-		}
-		strbuf_close(sb);
+	else {
+		tagsearch(av, cwd, root, dbpath, db);
 	}
-	if (vflag) {
-		if (count) {
-			if (count == 1)
-				fprintf(stderr, "%d object located", count);
-			if (count > 1)
-				fprintf(stderr, "%d objects located", count);
-		} else {
-			fprintf(stderr, "'%s' not found", av);
-		}
-		if (!Tflag)
-			fprintf(stderr, " (using '%s').\n", makepath(dbpath, dbname(db), NULL));
-	}
-	strbuf_close(sortfilter);
-	strbuf_close(pathfilter);
-
 	return 0;
 }
 /*
@@ -780,7 +714,7 @@ idutils(const char *pattern, const char *dbpath)
 	/*
 	 * convert spaces into %FF format.
 	 */
-	ffformat(edit, sizeof(edit), pattern);
+	encode(edit, sizeof(edit), pattern);
 	/*
 	 * make lid command line.
 	 * Invoke lid with the --result=grep option to generate grep format.
@@ -793,10 +727,6 @@ idutils(const char *pattern, const char *dbpath)
 		strbuf_puts(ib, " --result=grep");
 	if (iflag)
 		strbuf_puts(ib, " --ignore-case");
-	if (extra_options) {
-		strbuf_putc(ib, ' ');
-		strbuf_puts(ib, extra_options);
-	}
 	strbuf_putc(ib, ' ');
 	strbuf_puts(ib, quote_string(pattern));
 	if (debug)
@@ -866,7 +796,7 @@ idutils(const char *pattern, const char *dbpath)
  *	i)	pattern	POSIX regular expression
  */
 void
-grep(const char *dbpath, const char *pattern)
+grep(const char *pattern, const char *dbpath)
 {
 	FILE *fp;
 	TAGSORT *ts;
@@ -882,7 +812,7 @@ grep(const char *dbpath, const char *pattern)
 	/*
 	 * convert spaces into %FF format.
 	 */
-	ffformat(edit, sizeof(edit), pattern);
+	encode(edit, sizeof(edit), pattern);
 
 	if (!Gflag)
 		flags |= REG_EXTENDED;
@@ -934,7 +864,7 @@ grep(const char *dbpath, const char *pattern)
  *	i)	dbpath
  */
 void
-pathlist(const char *dbpath, const char *av)
+pathlist(const char *pattern, const char *dbpath)
 {
 	GFIND *gp;
 	TAGSORT *ts;
@@ -942,7 +872,7 @@ pathlist(const char *dbpath, const char *av)
 	regex_t preg;
 	int count;
 
-	if (av) {
+	if (pattern) {
 		int flags = 0;
 
 		if (!Gflag)
@@ -952,7 +882,7 @@ pathlist(const char *dbpath, const char *av)
 #ifdef _WIN32
 		flags |= REG_ICASE;
 #endif /* _WIN32 */
-		if (regcomp(&preg, av, flags) != 0)
+		if (regcomp(&preg, pattern, flags) != 0)
 			die("invalid regular expression.");
 	}
 	if (!localprefix)
@@ -971,14 +901,14 @@ pathlist(const char *dbpath, const char *av)
 		 * skip localprefix because end-user doesn't see it.
 		 */
 		p = path + strlen(localprefix) - 1;
-		if (av && regexec(&preg, p, 0, 0, 0) != 0)
+		if (pattern && regexec(&preg, p, 0, 0, 0) != 0)
 			continue;
 		printtag_using(ts, "path", path, 1, " ");
 		count++;
 	}
 	gfind_close(gp);
 	closefilter(ts);
-	if (av)
+	if (pattern)
 		regfree(&preg);
 	if (vflag) {
 		if (count == 0)
@@ -1161,14 +1091,93 @@ search(const char *pattern, const char *root, const char *dbpath, int db)
 	return count;
 }
 /*
- * ffformat: string copy with converting blank chars into %ff format.
+ * tagsearch: execute tag search
+ *
+ *	i)	pattern		search pattern
+ *	i)	cwd		current directory
+ *	i)	root		root of source tree
+ *	i)	dbpath		database directory
+ *	i)	db		GTAGS,GRTAGS,GSYMS
+ */
+void
+tagsearch(const char *pattern, const char *cwd, const char *root, const char *dbpath, int db)
+{
+	int count;
+	char libdbpath[MAXPATHLEN+1];
+
+	/*
+	 * search in current source tree.
+	 */
+	count = search(pattern, root, dbpath, db);
+	/*
+	 * search in library path.
+	 */
+	if (getenv("GTAGSLIBPATH") && (count == 0 || Tflag) && !lflag && !rflag) {
+		STRBUF *sb = strbuf_open(0);
+		char *libdir, *nextp = NULL;
+
+		strbuf_puts(sb, getenv("GTAGSLIBPATH"));
+		/*
+		 * search for each tree in the library path.
+		 */
+		for (libdir = strbuf_value(sb); libdir; libdir = nextp) {
+			if ((nextp = locatestring(libdir, PATHSEP, MATCH_FIRST)) != NULL)
+				*nextp++ = 0;
+			if (!gtagsexist(libdir, libdbpath, sizeof(libdbpath), 0))
+				continue;
+			if (!strcmp(dbpath, libdbpath))
+				continue;
+			if (!test("f", makepath(libdbpath, dbname(db), NULL)))
+				continue;
+			strbuf_reset(pathfilter);
+			strbuf_puts(pathfilter, gtags);
+			if (aflag)	/* absolute path name */
+				strbuf_puts(pathfilter, " --path=absolute");
+			else
+				strbuf_puts(pathfilter, " --path=relative");
+			if (tflag) 			/* ctags format */
+				strbuf_puts(pathfilter, " --format=ctags");
+			else if (xflag)			/* print details */
+				strbuf_puts(pathfilter, " --format=ctags-x");
+			else		/* print just a file name */
+				strbuf_puts(pathfilter, " --format=path");
+			strbuf_putc(pathfilter, ' ');
+			strbuf_puts(pathfilter, libdir);
+			strbuf_putc(pathfilter, ' ');
+			strbuf_puts(pathfilter, cwd);
+			strbuf_putc(pathfilter, ' ');
+			strbuf_puts(pathfilter, libdbpath);
+			count = search(pattern, libdir, libdbpath, db);
+			if (count > 0 && !Tflag) {
+				/* for verbose message */
+				dbpath = libdbpath;
+				break;
+			}
+		}
+		strbuf_close(sb);
+	}
+	if (vflag) {
+		if (count) {
+			if (count == 1)
+				fprintf(stderr, "%d object located", count);
+			if (count > 1)
+				fprintf(stderr, "%d objects located", count);
+		} else {
+			fprintf(stderr, "'%s' not found", pattern);
+		}
+		if (!Tflag)
+			fprintf(stderr, " (using '%s').\n", makepath(dbpath, dbname(db), NULL));
+	}
+}
+/*
+ * encode: string copy with converting blank chars into %ff format.
  *
  *	o)	to	result
  *	i)	size	size of 'to' buffer
  *	i)	from	string
  */
 void
-ffformat(char *to, int size, const char *from)
+encode(char *to, int size, const char *from)
 {
 	const char *p;
 	char *e = to;
