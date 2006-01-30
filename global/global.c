@@ -1102,13 +1102,14 @@ search(const char *pattern, const char *root, const char *dbpath, int db)
 void
 tagsearch(const char *pattern, const char *cwd, const char *root, const char *dbpath, int db)
 {
-	int count;
+	int count, total = 0;
 	char libdbpath[MAXPATHLEN+1];
 
 	/*
 	 * search in current source tree.
 	 */
 	count = search(pattern, root, dbpath, db);
+	total += count;
 	/*
 	 * search in library path.
 	 */
@@ -1148,6 +1149,7 @@ tagsearch(const char *pattern, const char *cwd, const char *root, const char *db
 			strbuf_putc(pathfilter, ' ');
 			strbuf_puts(pathfilter, libdbpath);
 			count = search(pattern, libdir, libdbpath, db);
+			total += count;
 			if (count > 0 && !Tflag) {
 				/* for verbose message */
 				dbpath = libdbpath;
@@ -1157,16 +1159,17 @@ tagsearch(const char *pattern, const char *cwd, const char *root, const char *db
 		strbuf_close(sb);
 	}
 	if (vflag) {
-		if (count) {
-			if (count == 1)
-				fprintf(stderr, "%d object located", count);
-			if (count > 1)
-				fprintf(stderr, "%d objects located", count);
+		if (total) {
+			if (total == 1)
+				fprintf(stderr, "%d object located", total);
+			if (total > 1)
+				fprintf(stderr, "%d objects located", total);
 		} else {
 			fprintf(stderr, "'%s' not found", pattern);
 		}
 		if (!Tflag)
-			fprintf(stderr, " (using '%s').\n", makepath(dbpath, dbname(db), NULL));
+			fprintf(stderr, " (using '%s').", makepath(dbpath, dbname(db), NULL));
+		fputc('\n', stderr);
 	}
 }
 /*
