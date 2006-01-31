@@ -31,7 +31,7 @@ typedef struct {
 
 } CONVERT;
 
-CONVERT *convert_open(FILE *op, int type, int format, int fileid);
+CONVERT *convert_open(int, int, int, const char *, const char *, const char *, FILE *);
 void convert_put(CONVERT *cv, const char *line);
 void convert_close(CONVERT *cv);
 
