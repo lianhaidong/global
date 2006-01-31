@@ -264,9 +264,16 @@ main(int argc, char **argv)
 		 * main      10 /prj/xxx/src/main.c  main(argc, argv)\n
 		 * main      22 /prj/xxx/libc/func.c   main(argc, argv)\n
 		 */
+		STRBUF *ib = strbuf_open(MAXBUFLEN);
+		CONVERT *cv = convert_open(convert_type, format, fileid, argv[0], argv[1], argv[2], stdout);
+		char *ctags_x;
+
 		if (argc < 3)
-			die("do_path: 3 arguments needed.");
-		pathconvert(convert_type, format, fileid, argv[0], argv[1], argv[2], stdin, stdout);
+			die("gtags --path: 3 arguments needed.");
+		while ((ctags_x = strbuf_fgets(ib, stdin, 0)) != NULL)
+			convert_put(cv, ctags_x);
+		convert_close(cv);
+		strbuf_close(ib);
 		exit(0);
 	} else if (Iflag) {
 		if (!usable("mkid"))

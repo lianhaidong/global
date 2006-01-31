@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Tama Communications Corporation
+ * Copyright (c) 2005, 2006 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -20,6 +20,19 @@
 #ifndef _PATHCONVERT_H_
 #define _PATHCONVERT_H_
 
-void pathconvert(int, int, int, const char *, const char *, const char *, FILE *, FILE *);
+typedef struct {
+	FILE *op;
+	int type;		/* PATH_ABSOLUTE, PATH_RELATIVE */
+	int format;		/* defined in format.h */
+	int fileid;		/* 1: fileid */
+	STRBUF *abspath;
+	char basedir[MAXPATHLEN+1];
+	int start_point;
+
+} CONVERT;
+
+CONVERT *convert_open(FILE *op, int type, int format, int fileid);
+void convert_put(CONVERT *cv, const char *line);
+void convert_close(CONVERT *cv);
 
 #endif /* ! _PATHCONVERT_H_ */
