@@ -59,7 +59,7 @@ void idutils(const char *, const char *);
 void grep(const char *, const char *);
 void pathlist(const char *, const char *);
 void parsefile(int, char **, const char *, const char *, const char *, int);
-int search(const char *, const char *, const char *, int);
+int search(const char *, const char *, const char *, const char *, int);
 void tagsearch(const char *, const char *, const char *, const char *, int);
 void encode(char *, int, const char *);
 
@@ -554,6 +554,17 @@ makefilter(STRBUF *sb)
 		strbuf_puts(sb, strbuf_value(pathfilter));
 	}
 }
+
+/*
+ * output filter
+ */
+FILE *op;
+void
+output(const char *s)
+{
+	fputs(s, op);
+	fputc('\n', op);
+}
 /*
  * openfilter: open output filter.
  *
@@ -565,8 +576,8 @@ TAGSORT *
 openfilter(void)
 {
 	STRBUF *sb = strbuf_open(0);
-	FILE *op = stdout;
 
+	op = stdout;
 	makefilter(sb);
 	if (strbuf_getlen(sb) > 0) {
 		op = popen(strbuf_value(sb), "w");
@@ -574,7 +585,7 @@ openfilter(void)
 			die("cannot open output filter. '%s'", strbuf_value(sb));
 	}
 	strbuf_close(sb);
-	return tagsort_open(op, format, unique, passthru);
+	return tagsort_open(output, format, unique, passthru);
 }
 /*
  * closefilter: close output filter.
@@ -584,8 +595,6 @@ openfilter(void)
 void
 closefilter(TAGSORT *ts)
 {
-	FILE *op = ts->op;
-
 	tagsort_close(ts);
 	if (op != stdout)
 		if (pclose(op) != 0)
@@ -1057,12 +1066,13 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
  *
  *	i)	pattern		search pattern
  *	i)	root		root of source tree
+ *	i)	cwd		current directory
  *	i)	dbpath		database directory
  *	i)	db		GTAGS,GRTAGS,GSYMS
  *	r)			count of output lines
  */
 int
-search(const char *pattern, const char *root, const char *dbpath, int db)
+search(const char *pattern, const char *root, const char *cwd, const char *dbpath, int db)
 {
 	const char *ctags_x;
 	int count = 0;
@@ -1128,7 +1138,7 @@ tagsearch(const char *pattern, const char *cwd, const char *root, const char *db
 	/*
 	 * search in current source tree.
 	 */
-	count = search(pattern, root, dbpath, db);
+	count = search(pattern, root, cwd, dbpath, db);
 	total += count;
 	/*
 	 * search in library path.
@@ -1168,7 +1178,7 @@ tagsearch(const char *pattern, const char *cwd, const char *root, const char *db
 			strbuf_puts(pathfilter, cwd);
 			strbuf_putc(pathfilter, ' ');
 			strbuf_puts(pathfilter, libdbpath);
-			count = search(pattern, libdir, libdbpath, db);
+			count = search(pattern, libdir, cwd, libdbpath, db);
 			total += count;
 			if (count > 0 && !Tflag) {
 				/* for verbose message */

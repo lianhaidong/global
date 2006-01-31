@@ -71,8 +71,9 @@ struct dup_entry {
         int lineno;
 };
 
+void output(const char *);
 static int compare_dup_entry(const void *, const void *);
-static void put_lines(int, int, char *, struct dup_entry *, int, FILE *);
+static void put_lines(int, int, char *, struct dup_entry *, int, void (*output)(const char *));
 
 /*
  * compare_dup_entry: compare function for sorting dup_entries.
@@ -98,10 +99,10 @@ compare_dup_entry(const void *v1, const void *v2)
  *	i)	lines	ctags stream
  *	i)	entries	sort target
  *	i)	entry_count number of entry of the entries
- *	i)	op	output file
+ *	i)	output	output function
  */
 static void
-put_lines(int unique, int format, char *lines, struct dup_entry *entries, int entry_count, FILE *op)
+put_lines(int unique, int format, char *lines, struct dup_entry *entries, int entry_count, void (*output)(const char *))
 {
 	int i;
 	char last_path[MAXPATHLEN+1];
@@ -178,8 +179,7 @@ put_lines(int unique, int format, char *lines, struct dup_entry *entries, int en
 		recover(&e->ptable);
 		if (!skip) {
 			char *p = lines + e->offset;
-			fputs(p,  op);
-			fputc('\n', op);
+			output(p);
 		}
 	}
 }
@@ -196,7 +196,7 @@ static void *check_malloc(int size)
 /*
  * tagsort_open: open sort filter
  *
- *	i)	op	output
+ *	i)	output	output function
  *	i)	format	tag format
  *			FORMAT_CTAGS_X: ctags -x format
  *			FORMAT_CTAGS: ctags format
@@ -204,13 +204,9 @@ static void *check_malloc(int size)
  *	i)	unique	1: make the output unique.
  *	i)	pass	1: pass through
  *	r)		tagsort structure
- *
- * If it is not necessary to sort the output, please specify -1 for
- * the argument 'format'. In that case, tagsort_put() is equivalent
- * to fputs(op, line + '\n').
  */
 TAGSORT *
-tagsort_open(FILE *op, int format, int unique, int pass)
+tagsort_open(void (*output)(const char *), int format, int unique, int pass)
 {
 	TAGSORT *ts = (TAGSORT *)check_malloc(sizeof(TAGSORT));
 
@@ -231,7 +227,7 @@ tagsort_open(FILE *op, int format, int unique, int pass)
 			die("tagsort_open() unknown format type.");
 		}
 	}
-	ts->op = op;
+	ts->output = output;
 	ts->format = format;
 	ts->unique = unique;
 	ts->pass = pass;
@@ -255,8 +251,7 @@ tagsort_put(TAGSORT *ts, const char *line)	/* virtually const */
 	 * pass through.
 	 */
 	if (ts->pass) {
-		fputs(line, ts->op);
-		fputc('\n', ts->op);
+		ts->output(line);
 		return;
 	}
 	switch (ts->format) {
@@ -280,15 +275,14 @@ tagsort_put(TAGSORT *ts, const char *line)	/* virtually const */
 		if (strcmp(ts->prev, tag) != 0) {
 			if (ts->prev[0] != '\0') {
 				if (ts->vb->length == 1) {
-					fputs(strbuf_value(ts->sb), ts->op);
-					fputc('\n', ts->op);
+					ts->output(strbuf_value(ts->sb));
 				} else
 					put_lines(ts->unique,
 						ts->format,
 						strbuf_value(ts->sb),
 						varray_assign(ts->vb, 0, 0),
 						ts->vb->length,
-						ts->op);
+						ts->output);
 			}
 			strlimcpy(ts->prev, tag, sizeof(ts->prev));
 			strbuf_reset(ts->sb);
@@ -319,8 +313,7 @@ tagsort_close(TAGSORT *ts)
 			for (path = dbop_first(ts->dbop, NULL, NULL, DBOP_KEY);
 			     path != NULL;
 			     path = dbop_next(ts->dbop)) {
-				fputs(path, ts->op);
-				fputc('\n', ts->op);
+				ts->output(path);
 			}
 			dbop_close(ts->dbop);
 			break;
@@ -328,15 +321,14 @@ tagsort_close(TAGSORT *ts)
 		case FORMAT_CTAGS_X:
 			if (ts->prev[0] != '\0') {
 				if (ts->vb->length == 1) {
-					fputs(strbuf_value(ts->sb), ts->op);
-					fputc('\n', ts->op);
+					ts->output(strbuf_value(ts->sb));
 				} else
 					put_lines(ts->unique,
 						ts->format,
 						strbuf_value(ts->sb),
 						varray_assign(ts->vb, 0, 0),
 						ts->vb->length,
-						ts->op);
+						ts->output);
 			}
 			strbuf_close(ts->sb);
 			varray_close(ts->vb);

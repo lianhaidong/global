@@ -33,7 +33,7 @@ typedef struct {
 	int format;				/* format type */
 	int unique;				/* 1: unique */
 	int pass;				/* 1: pass through */
-	FILE *op;				/* output file */
+	void (*output)(const char *);		/* output function */
 	/*
 	 * for FORMAT_PATH
 	 */
@@ -46,7 +46,7 @@ typedef struct {
 	char prev[IDENTLEN];
 } TAGSORT;
 
-TAGSORT *tagsort_open(FILE *, int, int, int);
+TAGSORT *tagsort_open(void (*output)(const char *), int, int, int);
 void tagsort_put(TAGSORT *, const char *);
 void tagsort_close(TAGSORT *);
 
