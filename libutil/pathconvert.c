@@ -174,6 +174,7 @@ convert_put(CONVERT *cv, const char *tagline)
 	 * print the rest of the record.
 	 */
 	(void)fputs(p, cv->op);
+	(void)fputc('\n', cv->op);
 }
 void
 convert_close(CONVERT *cv)
