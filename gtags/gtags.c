@@ -822,7 +822,7 @@ createtags(const char *dbpath, const char *root, int db)
 	 *
 	 * We assume that the output of gtags-parser is consecutive for each
 	 * file. About the other parsers, it is not guaranteed, so we sort it
-	 * using external sort command (gnusort).
+	 * using external POSIX compatible sort command.
 	 */
 	if (gtop->format & GTAGS_COMPACT) {
 		if (locatestring(strbuf_value(comline), "gtags-parser", MATCH_FIRST) == NULL) {

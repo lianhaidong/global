@@ -85,12 +85,10 @@ exec_line_limit(int length)
 		limit = 20 * 1024;
 	/*
 	 * Add the command line length.
-	 * We estimates additional 80 bytes for popen(3) and space for
-	 * the additional sort command.
+	 * We estimates additional 80 bytes for popen(3).
 	 *
 	 * for "/bin/sh -c "				11bytes
-	 * for " | gnusort -k 1,1 -k 3,3 -k 2,2n"	32bytes
-	 * reserve					37bytes
+	 * reserve					69bytes
 	 * ----------------------------------------------------
 	 * Total					80 bytes
 	 */
