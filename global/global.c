@@ -711,7 +711,7 @@ printtag_using(TAGSORT *ts, const char *tag, const char *path, int lineno, const
 		int i = 0;
 		edit[i++] = '.';
 		edit[i++] = '/';
-		while ((edit[i++] = *path++) != NULL)
+		while ((edit[i++] = *path++) != '\0')
 			;
 		path = edit;
 	}
