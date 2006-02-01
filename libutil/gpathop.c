@@ -130,7 +130,10 @@ get_version(DBOP *dbop)
 int
 gpath_open(const char *dbpath, int mode)
 {
-	assert(opened == 0);
+	if (opened++ > 0) {
+		if (mode != _mode)
+			die("duplicate open with different mode.");
+	}
 	/*
 	 * We create GPATH just first time.
 	 */
@@ -149,7 +152,6 @@ gpath_open(const char *dbpath, int mode)
 			die("nextkey not found in GPATH.");
 		_nextkey = atoi(path);
 	}
-	opened = 1;
 	return 0;
 }
 /*
@@ -166,7 +168,7 @@ gpath_put(const char *path, int type)
 	char fid[32];
 	STATIC_STRBUF(sb);
 
-	assert(opened == 1);
+	assert(opened > 0);
 	if (_mode == 1 && created)
 		return;
 	if (dbop_get(dbop, path) != NULL)
@@ -205,7 +207,7 @@ const char *
 gpath_path2fid(const char *path, int *type)
 {
 	const char *fid = dbop_get(dbop, path);
-	assert(opened == 1);
+	assert(opened > 0);
 	if (fid && type) {
 		const char *flag = get_flag(dbop);
 		*type = (*flag == 'o') ? GPATH_OTHER : GPATH_SOURCE;
@@ -226,7 +228,7 @@ const char *
 gpath_fid2path(const char *fid, int *type)
 {
 	const char *path = dbop_get(dbop, fid);
-	assert(opened == 1);
+	assert(opened > 0);
 	if (path && type) {
 		const char *flag = get_flag(dbop);
 		*type = (*flag == 'o') ? GPATH_OTHER : GPATH_SOURCE;
@@ -243,7 +245,7 @@ gpath_delete(const char *path)
 {
 	const char *fid;
 
-	assert(opened == 1);
+	assert(opened > 0);
 	assert(_mode == 2);
 	assert(path[0] == '.' && path[1] == '/');
 	fid = dbop_get(dbop, path);
@@ -271,8 +273,8 @@ gpath_close(void)
 {
 	char fid[32];
 
-	assert(opened == 1);
-	opened = 0;
+	if (--opened > 0)
+		return;
 	if (_mode == 1 && created) {
 		dbop_close(dbop);
 		return;
