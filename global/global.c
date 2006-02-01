@@ -49,6 +49,7 @@ static void usage(void);
 static void help(void);
 static void setcom(int);
 int main(int, char **);
+void makepathfilter(int, int, int, const char *, const char *, const char *);
 void makefilter(STRBUF *);
 TAGSORT *openfilter(void);
 void printtag(TAGSORT *, const char *);
@@ -448,26 +449,7 @@ main(int argc, char **argv)
 	/*
 	 * make path filter.
 	 */
-	pathfilter = strbuf_open(0);
-	strbuf_puts(pathfilter, gtags);
-	if (aflag)	/* absolute path name */
-		strbuf_puts(pathfilter, " --path=absolute");
-	else
-		strbuf_puts(pathfilter, " --path=relative");
-	if (tflag) 			/* ctags format */
-		strbuf_puts(pathfilter, " --format=ctags");
-	else if (xflag)			/* print details */
-		strbuf_puts(pathfilter, " --format=ctags-x");
-	else		/* print just a file name */
-		strbuf_puts(pathfilter, " --format=path");
-	if (fileid)
-		strbuf_puts(pathfilter, " --fileid");
-	strbuf_putc(pathfilter, ' ');
-	strbuf_puts(pathfilter, root);
-	strbuf_putc(pathfilter, ' ');
-	strbuf_puts(pathfilter, cwd);
-	strbuf_putc(pathfilter, ' ');
-	strbuf_puts(pathfilter, dbpath);
+	makepathfilter(format, aflag ? PATH_ABSOLUTE : PATH_RELATIVE, fileid, root, cwd, dbpath);
 	/*
 	 * print filter.
 	 */
@@ -533,6 +515,53 @@ main(int argc, char **argv)
 		tagsearch(av, cwd, root, dbpath, db);
 	}
 	return 0;
+}
+/*
+ * makepathfilter: make path filter
+ */
+void
+makepathfilter(int format, int type, int fileid, const char *root, const char *cwd, const char *dbpath)
+{
+	if (pathfilter == NULL)
+		pathfilter = strbuf_open(0);
+	else
+		strbuf_reset(pathfilter);
+	strbuf_puts(pathfilter, gtags);
+
+	/*
+	 * construct path filter
+	 */
+	switch (type) {
+	case PATH_ABSOLUTE:	/* absolute path name */
+		strbuf_puts(pathfilter, " --path=absolute");
+		break;
+	case PATH_RELATIVE:	/* relative path name */
+		strbuf_puts(pathfilter, " --path=relative");
+		break;
+	default:
+		break;
+	}
+	switch (format) {
+	case FORMAT_CTAGS:		/* ctags format */
+		strbuf_puts(pathfilter, " --format=ctags");
+		break;
+	case FORMAT_CTAGS_X:		/* ctags -x format */
+		strbuf_puts(pathfilter, " --format=ctags-x");
+		break;
+	case FORMAT_PATH:		/* print just a file name */
+		strbuf_puts(pathfilter, " --format=path");
+		break;
+	default:
+		break;
+	}
+	if (fileid)
+		strbuf_puts(pathfilter, " --fileid");
+	strbuf_putc(pathfilter, ' ');
+	strbuf_puts(pathfilter, root);
+	strbuf_putc(pathfilter, ' ');
+	strbuf_puts(pathfilter, cwd);
+	strbuf_putc(pathfilter, ' ');
+	strbuf_puts(pathfilter, dbpath);
 }
 /*
  * makefilter: make filter string.
@@ -1160,24 +1189,14 @@ tagsearch(const char *pattern, const char *cwd, const char *root, const char *db
 				continue;
 			if (!test("f", makepath(libdbpath, dbname(db), NULL)))
 				continue;
-			strbuf_reset(pathfilter);
-			strbuf_puts(pathfilter, gtags);
-			if (aflag)	/* absolute path name */
-				strbuf_puts(pathfilter, " --path=absolute");
-			else
-				strbuf_puts(pathfilter, " --path=relative");
-			if (tflag) 			/* ctags format */
-				strbuf_puts(pathfilter, " --format=ctags");
-			else if (xflag)			/* print details */
-				strbuf_puts(pathfilter, " --format=ctags-x");
-			else		/* print just a file name */
-				strbuf_puts(pathfilter, " --format=path");
-			strbuf_putc(pathfilter, ' ');
-			strbuf_puts(pathfilter, libdir);
-			strbuf_putc(pathfilter, ' ');
-			strbuf_puts(pathfilter, cwd);
-			strbuf_putc(pathfilter, ' ');
-			strbuf_puts(pathfilter, libdbpath);
+
+			/*
+			 * reconstruct path filter
+			 */
+			makepathfilter(format, aflag ? PATH_ABSOLUTE : PATH_RELATIVE, 0, libdir, cwd, libdbpath);
+			/*
+			 * search again
+			 */
 			count = search(pattern, libdir, cwd, libdbpath, db);
 			total += count;
 			if (count > 0 && !Tflag) {
