@@ -175,6 +175,8 @@ main(int argc, char **argv)
 
 	while ((optchar = getopt_long(argc, argv, "ace:ifgGIlnopPqrstTuvx", long_options, &option_index)) != EOF) {
 		switch (optchar) {
+		case 0:
+			break;
 		case 'a':
 			aflag++;
 			break;
