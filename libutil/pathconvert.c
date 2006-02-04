@@ -22,6 +22,9 @@
 #endif
 #include <stdio.h>
 #include <ctype.h>
+#ifdef STDC_HEADERS
+#include <stdlib.h>
+#endif
 
 #include "abs2rel.h"
 #include "die.h"
@@ -181,4 +184,5 @@ convert_close(CONVERT *cv)
 {
 	strbuf_close(cv->abspath);
 	gpath_close();
+	free(cv);
 }
