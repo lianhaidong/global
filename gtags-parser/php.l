@@ -1,6 +1,6 @@
 %{
 /*
- * Copyright (c) 2003 Tama Communications Corporation
+ * Copyright (c) 2003, 2006 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -66,6 +66,8 @@
 static void debug_print(const char *, ...);
 static int level;			/* block nest level */
 static STRBUF *string;			/* string */
+static char end_of_here_document[IDENTLEN+1];
+static int pre_here_document;
 
 /*
  * For debug.
@@ -119,10 +121,17 @@ NUMBER		-?({L}|{D1}|{D2})
 ALPHA		[a-zA-Z_\x80-\xff]
 ALPHANUM	[a-zA-Z_\x80-\xff0-9]
 WORD		{ALPHA}{ALPHANUM}*
-%start	PHP STRING LITERAL
+%start	PHP STRING LITERAL HEREDOCUMENT
 %option 8bit caseless noyywrap nounput yylineno prefix="php_"
 %%
-\n			ECHO;
+\n			{
+				ECHO;
+				if (pre_here_document == 1) {
+					pre_here_document = 0;
+					debug_print("[BEGIN HEREDOCUMENT:%s]\n", end_of_here_document);
+					BEGIN HEREDOCUMENT;
+				}
+			}
  /* Start PHP */
 <INITIAL>"<?="		ECHO; BEGIN PHP;
 <INITIAL>"<?"		ECHO; BEGIN PHP;
@@ -180,10 +189,30 @@ WORD		{ALPHA}{ALPHANUM}*
 <LITERAL>\\.		strbuf_puts(string, LEXTEXT);
 <LITERAL>.		strbuf_putc(string, LEXTEXT[0]);
 
+ /* Here document */
+<PHP><<<{WORD}		{
+				debug_print("<L:%s>", LEXTEXT);
+				/* extract word and save */
+				if (LEXLENG - 3 > IDENTLEN)
+					die("Too long name '%s'.", LEXTEXT + 3);
+				strcpy(end_of_here_document, LEXTEXT + 3);
+				/* begin here document from the next line */
+				pre_here_document = 1;
+			}
+<HEREDOCUMENT>^[ \t]*{WORD} {
+				const char *keyword = strtrim((const char *)LEXTEXT, TRIM_HEAD, NULL);
+				ECHO;
+				if (!strcmp(end_of_here_document, keyword)) {
+					debug_print("[END HEREDOCUMENT]");
+					end_of_here_document[0] = '\0';
+					BEGIN PHP;
+				}
+			}
+
  /* Cast */
 <PHP>\([ \t]*(bool|boolean|int|integer|real|double|float|string|array|object)[ \t]*\)
 			;
-<PHP,STRING>$\{{WORD}\}	{
+<PHP,STRING,HEREDOCUMENT>$\{{WORD}\} {
 				/*
 				 * 0123456	yyleng = 6
 				 * ${abc}\0
@@ -197,7 +226,7 @@ WORD		{ALPHA}{ALPHANUM}*
 
 				return PHP_VARIABLE;
 			}
-<PHP,STRING>${WORD}	{
+<PHP,STRING,HEREDOCUMENT>${WORD} {
 				/*
 				 * 01234	yyleng = 4
 				 * $abc\0
@@ -211,6 +240,8 @@ WORD		{ALPHA}{ALPHANUM}*
 
 				return PHP_VARIABLE;
 			}
+<HEREDOCUMENT>.		ECHO;
+
 <PHP>{NUMBER}		debug_print("<N:%s>", LEXTEXT);
 <PHP>{WORD}		{
 				int id = php_reserved_word(LEXTEXT, LEXLENG);
@@ -239,7 +270,7 @@ WORD		{ALPHA}{ALPHANUM}*
 <PHP>[-+*/%&~^]=?	ECHO;
 <PHP>[=><!]=		ECHO;
 <PHP>[-+&|<>]{2}=?	ECHO;
-<PHP>"<>"|"<<<"		ECHO;
+<PHP>"<>"		ECHO;
 <PHP>"$"		{ ECHO; return PHP_DOLLAR; }
 <PHP>.			ECHO;
 

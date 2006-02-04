@@ -1,6 +1,6 @@
 %{
 /*
- * Copyright (c) 2002, 2004, 2005 Tama Communications Corporation
+ * Copyright (c) 2002, 2004, 2005, 2006 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -51,7 +51,8 @@
 
 #define YY_USER_ACTION DEFAULT_YY_USER_ACTION
 
-char end_of_here_document[IDENTLEN+1];
+static int pre_here_document;
+static char end_of_here_document[IDENTLEN+1];
 
 %}
  /* Definitions */
@@ -100,17 +101,22 @@ WORD		{ALPHA}{ALPHANUM}*
 
  /* Here document */
 <PHP><<<{WORD} {
-		put_string(LEXTEXT);
 		/* extract word and save */
 		if (LEXLENG - 3 > IDENTLEN)
 			die("Too long name '%s'.", LEXTEXT + 3);
 		strcpy(end_of_here_document, LEXTEXT + 3);
-		yy_push_state(HEREDOCUMENT);
+		put_string("<<<");
+		put_reserved_word(end_of_here_document);
+		/* begin here document from the next line */
+		pre_here_document = 1;
 	}
-<HEREDOCUMENT>^{WORD} {
-		ECHO;
-		if (!strcmp(end_of_here_document, LEXTEXT))
+<HEREDOCUMENT>^[ \t]*{WORD} {
+		const char *keyword = strtrim((const char *)LEXTEXT, TRIM_HEAD, NULL);
+		put_reserved_word(LEXTEXT);
+		if (!strcmp(end_of_here_document, keyword)) {
+			end_of_here_document[0] = '\0';
 			yy_pop_state();
+		}
 	}
 <PHP>^[ \t]*include[ \t]*\( {
 		int c;
@@ -158,8 +164,8 @@ WORD		{ALPHA}{ALPHANUM}*
 		}
 	}
 <PHP>{NUMBER}	ECHO;
-<PHP,STRING>\${WORD}	 |
-<PHP,STRING>\$\{{WORD}\} {
+<PHP,STRING,HEREDOCUMENT>\${WORD} |
+<PHP,STRING,HEREDOCUMENT>\$\{{WORD}\} {
 		struct anchor *a = NULL;
 		const char *p = LEXTEXT + 1;	/* skip '$' */
 		int brace = 0, i = 0;
@@ -209,7 +215,13 @@ WORD		{ALPHA}{ALPHANUM}*
 	}
 <PHP>[{}]	{ put_brace(LEXTEXT); }
  /* New line */
-\n		DEFAULT_END_OF_LINE_ACTION
+\n		{
+			DEFAULT_END_OF_LINE_ACTION
+			if (pre_here_document == 1) {
+				pre_here_document = 0;
+				yy_push_state(HEREDOCUMENT);
+			}
+		}
 .		{ put_char(LEXTEXT[0]); }
 
 %%

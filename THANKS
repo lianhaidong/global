@@ -43,6 +43,7 @@ Eric Paire		bug report about gtags-parser's memory violation.
 Gary Kline		advice about the name of parser.
 Giuseppe Corbelli	Global.py for glimmer code editor and an advice about vim.
 Hageseter, Trond E.	bug report about gtags-parser.
+Hendrik Visage		bug report about gtags-parser(here document of PHP).
 Hideaki Okada		idea about -g option of global(1).
 Hideki Iwamoto		many bug reports and improvements about gtags-parser(1), htags(1).
 Hideki Mori		advice about the name of parser.
