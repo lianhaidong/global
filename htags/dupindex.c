@@ -119,10 +119,17 @@ makedupindex(void)
 		 * construct command line.
 		 */
 		strbuf_reset(command);
-		strbuf_puts(command, "global --nofilter=path -x");
+		strbuf_puts(command, "global -x");
 		strbuf_puts(command, option);
-		if (dynamic)
+		strbuf_puts(command, " --nofilter=path");
+		/*
+		 * Optimization when the --dynamic option is specified.
+		 */
+		if (dynamic) {
 			strbuf_puts(command, " --nosource");
+			if (db != GSYMS)
+				strbuf_puts(command, " --nofilter=sort");
+		}
 		strbuf_puts(command, " \".*\"");
 		if ((ip = popen(strbuf_value(command), "r")) == NULL)
 			die("cannot execute command '%s'.", strbuf_value(command));
