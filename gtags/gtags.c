@@ -86,10 +86,6 @@ const char *file_list;
 int do_path;
 int fileid;
 int convert_type = PATH_RELATIVE;
-/*
- * Sort filter
- */
-int unique;
 int format = FORMAT_PATH;
 
 int extractmethod;
@@ -133,7 +129,6 @@ static struct option const long_options[] = {
 	{"gtagsconf", required_argument, &gtagsconf, 1},
 	{"gtagslabel", required_argument, &gtagslabel, 1},
 	{"path", required_argument, &do_path, 1},
-	{"unique", no_argument, &unique, 1},
 	{"version", no_argument, &show_version, 1},
 	{"help", no_argument, &show_help, 1},
 	{ 0 }
