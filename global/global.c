@@ -199,9 +199,9 @@ main(int argc, char **argv)
 			nflag++;
 			if (optarg) {
 				if (!strcmp(optarg, "sort"))
-					nofilter = SORT_FILTER;
+					nofilter |= SORT_FILTER;
 				else if (!strcmp(optarg, "path"))
-					nofilter = PATH_FILTER;
+					nofilter |= PATH_FILTER;
 			} else {
 				nofilter = BOTH_FILTER;;
 			}
