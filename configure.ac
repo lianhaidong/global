@@ -233,7 +233,6 @@ AC_SUBST(DEFAULTLANGMAP_QUOTED)
 
 AC_OUTPUT([Makefile
 	gtags.conf
-	globash.rc
 	libutil/langmap.h
 	htags/global.cgi.tmpl
 	libutil/Makefile
