@@ -23,7 +23,9 @@
 #endif
 #include <fcntl.h>
 #include <stdio.h>
+#ifdef STDC_HEADERS
 #include <stdlib.h>
+#endif
 #include <sys/param.h>
 
 #include "die.h"
@@ -65,13 +67,13 @@
  * This entry corresponds to one record of ctags [-x] format.
  */
 struct dup_entry {
-        int offset;
-        SPLIT ptable;
-        const char *path;
-        int lineno;
+	int offset;
+	int lineno;
+	char *path;
+	int pathlen;
+	int savec;
 };
 
-void output(const char *);
 static int compare_dup_entry(const void *, const void *);
 static void put_lines(int, int, char *, struct dup_entry *, int, void (*output)(const char *));
 
@@ -140,15 +142,21 @@ put_lines(int unique, int format, char *lines, struct dup_entry *entries, int en
 	 * Parse and sort ctags [-x] format records.
 	 */
 	for (i = 0; i < entry_count; i++) {
-		char *ctags_x = lines + entries[i].offset;
-		SPLIT *ptable = &entries[i].ptable;
+		struct dup_entry *e = &entries[i];
+		char *ctags_x = lines + e->offset;
+		SPLIT ptable;
 
-		if (split(ctags_x, splits, ptable) < splits) {
-			recover(ptable);
+		if (split(ctags_x, splits, &ptable) < splits) {
+			recover(&ptable);
 			die("too small number of parts.\n'%s'", ctags_x);
 		}
-		entries[i].lineno = atoi(ptable->part[part_lno].start);
-		entries[i].path = ptable->part[part_path].start;
+		e->lineno = atoi(ptable.part[part_lno].start);
+		e->path = ptable.part[part_path].start;
+		e->savec = ptable.part[part_path].savec;
+		e->pathlen = ptable.part[part_path].end - ptable.part[part_path].start;
+		recover(&ptable);
+		if (e->savec)
+			e->path[e->pathlen] = '\0';
 	}
 	qsort(entries, entry_count, sizeof(struct dup_entry), compare_dup_entry);
 	/*
@@ -176,7 +184,8 @@ put_lines(int unique, int format, char *lines, struct dup_entry *entries, int en
 				strlimcpy(last_path, e->path, sizeof(last_path));
 			}
 		}
-		recover(&e->ptable);
+		if (e->savec)
+			e->path[e->pathlen] = e->savec;
 		if (!skip) {
 			char *p = lines + e->offset;
 			output(p);
@@ -220,7 +229,7 @@ tagsort_open(void (*output)(const char *), int format, int unique, int pass)
 		case FORMAT_CTAGS:
 		case FORMAT_CTAGS_X:
 			ts->sb = strbuf_open(MAXBUFLEN);
-			ts->vb = varray_open(sizeof(struct dup_entry), 100);
+			ts->vb = varray_open(sizeof(struct dup_entry), 200);
 			ts->prev[0] = '\0';
 			break;
 		default:
