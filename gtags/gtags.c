@@ -348,11 +348,6 @@ main(int argc, char **argv)
 	if (wflag)
 		set_env("GTAGSWARNING", "1");
 	/*
-	 * Use C locale in order to avoid the degradation of performance
-	 * by internationalized sort command.
-	 */
-	set_env("LC_ALL", "C");
-	/*
 	 * incremental update.
 	 */
 	if (iflag) {
@@ -688,22 +683,12 @@ updatetags(const char *dbpath, const char *root, IDSET *deleteset, STRBUF *addli
 		gtop->flags |= GTAGS_DEBUG;
 	/*
 	 * Compact format requires the tag records of the same file are
-	 * consecutive.
-	 *
-	 * We assume that the output of gtags-parser is consecutive for each
-	 * file. About the other parsers, it is not guaranteed, so we sort it
-	 * using external POSIX compatible sort command.
+	 * consecutive. We assume that the output of gtags-parser and
+	 * any plug-in parsers are consecutive for each file.
+	 * if (gtop->format & GTAGS_COMPACT) {
+	 *	nothing to do
+	 * }
 	 */
-	if (gtop->format & GTAGS_COMPACT) {
-		if (locatestring(strbuf_value(comline), "gtags-parser", MATCH_FIRST) == NULL) {
-			const char *sort = usable(POSIX_SORT);
-			if (!sort)
-				die("%s not found. POSIX sort(1) is required to use plug-in parser.", POSIX_SORT);
-			if (locatestring(strbuf_value(comline), "%s", MATCH_FIRST) == NULL)
-				strbuf_puts(comline, " %s");
-			strbuf_sprintf(comline, "| %s -k 3,3", sort);
-		}
-	}
 	/*
 	 * If the --max-args option is not specified, we pass the parser
 	 * the source file as a lot as possible to decrease the invoking
@@ -813,22 +798,12 @@ createtags(const char *dbpath, const char *root, int db)
 		gtop->flags |= GTAGS_DEBUG;
 	/*
 	 * Compact format requires the tag records of the same file are
-	 * consecutive.
-	 *
-	 * We assume that the output of gtags-parser is consecutive for each
-	 * file. About the other parsers, it is not guaranteed, so we sort it
-	 * using external POSIX compatible sort command.
+	 * consecutive. We assume that the output of gtags-parser and
+	 * any plug-in parsers are consecutive for each file.
+	 * if (gtop->format & GTAGS_COMPACT) {
+	 *	nothing to do
+	 * }
 	 */
-	if (gtop->format & GTAGS_COMPACT) {
-		if (locatestring(strbuf_value(comline), "gtags-parser", MATCH_FIRST) == NULL) {
-			const char *sort = usable(POSIX_SORT);
-			if (!sort)
-				die("%s not found. POSIX sort(1) is required to use plug-in parser.", POSIX_SORT);
-			if (locatestring(strbuf_value(comline), "%s", MATCH_FIRST) == NULL)
-				strbuf_puts(comline, " %s");
-			strbuf_sprintf(comline, "| %s -k 3,3", sort);
-		}
-	}
 	/*
 	 * If the --max-args option is not specified, we pass the parser
 	 * the source file as a lot as possible to decrease the invoking

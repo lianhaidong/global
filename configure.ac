@@ -163,56 +163,6 @@ AC_ARG_WITH(home-etc,
         AC_MSG_RESULT(no)
 ])
 
-dnl
-dnl POSIX sort command (only for plug-in parsers)
-dnl
-dnl Gtags(1) and global(1) invoke system's sort command to use plug-in parsers,
-dnl because the order of the output is not guaranteed. By default, they use
-dnl system's sort command 'sort', but if you have another POSIX compatible
-dnl sort command in your system, you can use it with this option.
-dnl If this option is not specified, we don't check existence of sort.
-dnl
-dnl configure --with-sort-command=<sort> # use specified sort command
-dnl
-POSIX_SORT=sort
-AC_MSG_CHECKING(posix sort command)
-AC_ARG_WITH(sort-command,
-[  --with-sort-command=PROGRAM specify POSIX sort command ],
-[
-	case "$withval" in
-	''|yes|no)
-		AC_MSG_RESULT()
-		AC_MSG_ERROR([It is necessary to specify POSIX sort command.])
-		;;
-	*)	POSIX_SORT=$withval;;
-	esac
-	case $POSIX_SORT in
-	/*)
-		if test -f $POSIX_SORT && $POSIX_SORT -t ':' -k 3,3 -k 2,2n < /dev/null > /dev/null 2>&1; then
-			:
-		else
-			AC_MSG_RESULT()
-			AC_MSG_ERROR([POSIX sort command '$POSIX_SORT' is not found.])
-		fi
-		;;
-	*)
-		com=
-		for d in `echo $PATH | sed 's/:/ /g'`; do
-			c="$d/$POSIX_SORT"
-			if test -f $c && $c -t ':' -k 3,3 -k 2,2n < /dev/null > /dev/null 2>&1; then
-				com=$c
-				break
-			fi
-		done
-		if test "$com" = ''; then
-			AC_MSG_RESULT()
-			AC_MSG_ERROR([POSIX sort command '$POSIX_SORT' is not found.])
-		fi
-	esac
-])
-AC_MSG_RESULT([using $POSIX_SORT])
-AC_DEFINE_UNQUOTED(POSIX_SORT,"$POSIX_SORT",[POSIX sort command.])
-
 AC_SUBST(INCLUDES)
 AC_SUBST(LDADD)
 AC_SUBST(LDFLAGS)

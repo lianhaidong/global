@@ -429,25 +429,10 @@ main(int argc, char **argv)
 	/*
 	 * make sort filter.
 	 *
-	 * If gtags-parser(1) is used, we calls internal sort filter,
-	 * else we calls external POSIX compatible sort command,
-	 * because the order of the external parser's output is not guaranteed.
+	 * Though this code seems not to be significant, I will recover
+	 * external sort filter (gtags --sort ...) for debugging purpose.
 	 */
 	sortfilter = strbuf_open(0);
-	if (fflag) {
-		STRBUF *sb = strbuf_open(0);
-
-		if (!getconfs(dbname(db), sb))
-			die("cannot get parser for %s.", dbname(db));
-		if (!locatestring(strbuf_value(sb), "gtags-parser", MATCH_FIRST)) {
-			const char *sort = usable(POSIX_SORT);
-			if (!sort)
-				die("%s not found. POSIX sort(1) is required to use plug-in parser.", POSIX_SORT);
-			strbuf_puts(sortfilter, sort);
-			strbuf_puts(sortfilter, " -k 3,3 -k 2,2n");
-		}
-		strbuf_close(sb);
-	}
 	/*
 	 * make path filter.
 	 */
@@ -478,11 +463,6 @@ main(int argc, char **argv)
 		}
 		exit(0);
 	}
-	/*
-	 * Use C locale in order to avoid the degradation of performance
-	 * by internationalized sort command.
-	 */
-	set_env("LC_ALL", "C");
 	/*
 	 * exec lid(id-utils).
 	 */
