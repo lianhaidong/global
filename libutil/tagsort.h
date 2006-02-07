@@ -32,7 +32,7 @@ typedef struct {
 	 */
 	int format;				/* format type */
 	int unique;				/* 1: unique */
-	int pass;				/* 1: pass through */
+	int passthru;				/* 1: pass through */
 	void (*output)(const char *);		/* output function */
 	/*
 	 * for FORMAT_PATH

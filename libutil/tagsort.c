@@ -57,7 +57,7 @@
  *
  * Usage:
  *
- * TAGSORT *ts = tagsort_open(stdout, format, unique, pass);
+ * TAGSORT *ts = tagsort_open(stdout, format, unique, passthru);
  * while (<getting new line>)
  * 	tagsort_put(ts, <line>);
  * tagsort_close(ts);
@@ -211,15 +211,15 @@ static void *check_malloc(int size)
  *			FORMAT_CTAGS: ctags format
  *			FORMAT_PATH: path name
  *	i)	unique	1: make the output unique.
- *	i)	pass	1: pass through
+ *	i)	passthru 1: pass through
  *	r)		tagsort structure
  */
 TAGSORT *
-tagsort_open(void (*output)(const char *), int format, int unique, int pass)
+tagsort_open(void (*output)(const char *), int format, int unique, int passthru)
 {
 	TAGSORT *ts = (TAGSORT *)check_malloc(sizeof(TAGSORT));
 
-	if (!pass) {
+	if (!passthru) {
 		switch (format) {
 		case FORMAT_PATH:
 			ts->dbop = dbop_open(NULL, 1, 0600, 0);
@@ -239,7 +239,7 @@ tagsort_open(void (*output)(const char *), int format, int unique, int pass)
 	ts->output = output;
 	ts->format = format;
 	ts->unique = unique;
-	ts->pass = pass;
+	ts->passthru = passthru;
 
 	return ts;
 }
@@ -259,7 +259,7 @@ tagsort_put(TAGSORT *ts, const char *line)	/* virtually const */
 	/*
 	 * pass through.
 	 */
-	if (ts->pass) {
+	if (ts->passthru) {
 		ts->output(line);
 		return;
 	}
@@ -316,7 +316,7 @@ tagsort_close(TAGSORT *ts)
 {
 	const char *path;
 
-	if (!ts->pass) {
+	if (!ts->passthru) {
 		switch (ts->format) {
 		case FORMAT_PATH:
 			for (path = dbop_first(ts->dbop, NULL, NULL, DBOP_KEY);
