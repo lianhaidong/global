@@ -20,6 +20,10 @@
 #ifndef _PATHCONVERT_H_
 #define _PATHCONVERT_H_
 
+#include <stdio.h>
+#include "gparam.h"
+#include "strbuf.h"
+
 typedef struct {
 	FILE *op;
 	int type;		/* PATH_ABSOLUTE, PATH_RELATIVE */
