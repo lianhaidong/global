@@ -233,7 +233,7 @@ setup_sortfilter(int a_format, int a_unique, int a_passthru)
 void
 setup_pathfilter(int a_format, int a_type, int a_fileid, const char *a_root, const char *a_cwd, const char *a_dbpath)
 {
-	makepathfilter(format, a_type, a_fileid, a_root, a_cwd, a_dbpath);
+	makepathfilter(a_format, a_type, a_fileid, a_root, a_cwd, a_dbpath);
 	format = a_format;
 	type = a_type;
 	fileid = a_fileid;
