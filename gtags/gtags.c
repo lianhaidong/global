@@ -87,6 +87,11 @@ int do_path;
 int fileid;
 int convert_type = PATH_RELATIVE;
 int format = FORMAT_PATH;
+/*
+ * Sort filter
+ */
+int do_sort;
+int unique;
 
 int extractmethod;
 int total;
@@ -129,12 +134,21 @@ static struct option const long_options[] = {
 	{"gtagsconf", required_argument, &gtagsconf, 1},
 	{"gtagslabel", required_argument, &gtagslabel, 1},
 	{"path", required_argument, &do_path, 1},
+	{"sort", no_argument, &do_sort, 1},
+	{"unique", no_argument, &unique, 1},
 	{"version", no_argument, &show_version, 1},
 	{"help", no_argument, &show_help, 1},
 	{ 0 }
 };
 
 static const char *langmap = DEFAULTLANGMAP;
+
+void
+output(const char *s)
+{
+	fputs(s, stdout);
+	fputc('\n', stdout);
+}
 
 int
 main(int argc, char **argv)
@@ -238,6 +252,26 @@ main(int argc, char **argv)
 		} else {
 			fprintf(stdout, "%s\n", getconfline());
 		}
+		exit(0);
+	} else if (do_sort) {
+		/*
+		 * This is the main body of sort filter.
+		 *
+		 * - Requirement -
+		 * 1. input must be one of these format:
+		 *    0: ctags -x format
+		 *    1: ctags format
+		 *    2: path name
+		 * 2. input must be sorted in alphabetical order by tag name
+		 *    if it is ctags [-x] format.
+		 */
+		STRBUF *ib = strbuf_open(MAXBUFLEN);
+		TAGSORT *ts = tagsort_open(output, format, unique, 0);
+
+		while (strbuf_fgets(ib, stdin, STRBUF_NOCRLF) != NULL)
+			tagsort_put(ts, strbuf_value(ib));
+		tagsort_close(ts);
+		strbuf_close(ib);
 		exit(0);
 	} else if (do_path) {
 		/*
