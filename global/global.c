@@ -82,13 +82,13 @@ int Tflag;				/* [option]		*/
 int uflag;				/* command		*/
 int vflag;				/* [option]		*/
 int xflag;				/* [option]		*/
+int result;				/* [option]		*/
 int show_version;
 int show_help;
 int show_filter;			/* undocumented command */
 int nofilter;
 int nosource;				/* undocumented command */
 int debug;
-int fileid;
 const char *gtags;
 int unique;
 int format;
@@ -110,6 +110,7 @@ help(void)
 }
 
 #define SHOW_FILTER	128
+#define RESULT		129
 
 static struct option const long_options[] = {
 	{"absolute", no_argument, NULL, 'a'},
@@ -137,10 +138,10 @@ static struct option const long_options[] = {
 
 	/* long name only */
 	{"debug", no_argument, &debug, 1},
-	{"fileid", no_argument, &fileid, 1},
 	{"version", no_argument, &show_version, 1},
 	{"help", no_argument, &show_help, 1},
 	{"filter", optional_argument, NULL, SHOW_FILTER},
+	{"result", required_argument, NULL, RESULT},
 	{"nosource", no_argument, &nosource, 1},
 	{ 0 }
 };
@@ -258,6 +259,18 @@ main(int argc, char **argv)
 			} else {
 				show_filter = BOTH_FILTER;
 			}
+			break;
+		case RESULT:
+			if (!strcmp(optarg, "ctags-x"))
+				format = FORMAT_CTAGS_X;
+			else if (!strcmp(optarg, "ctags-xid"))
+				format = FORMAT_CTAGS_XID;
+			else if (!strcmp(optarg, "ctags"))
+				format = FORMAT_CTAGS;
+			else if (!strcmp(optarg, "path"))
+				format = FORMAT_PATH;
+			else
+				die_with_code(2, "unknown format type for the --result option.");
 			break;
 		default:
 			usage();
@@ -406,7 +419,9 @@ main(int argc, char **argv)
 	db = (rflag) ? GRTAGS : ((sflag) ? GSYMS : GTAGS);
 	unique = sflag ? 1 : 0;
 	/*
-	 * decide format
+	 * decide format.
+	 * The -t and -x option are given to priority more than
+	 * the --result option.
 	 */
 	if (fflag || gflag || Pflag || (nofilter & SORT_FILTER))
 		passthru = 1;
@@ -414,7 +429,7 @@ main(int argc, char **argv)
 		format = FORMAT_CTAGS;
 	} else if (xflag) {		/* print details */
 		format = FORMAT_CTAGS_X;
-	} else {		/* print just a file name */
+	} else if (format == 0) {	/* print just a file name */
 		format = FORMAT_PATH;
 		unique = 1;
 	}
@@ -425,7 +440,7 @@ main(int argc, char **argv)
 	/*
 	 * setup path filter.
 	 */
-	setup_pathfilter(format, aflag ? PATH_ABSOLUTE : PATH_RELATIVE, fileid, root, cwd, dbpath);
+	setup_pathfilter(format, aflag ? PATH_ABSOLUTE : PATH_RELATIVE, root, cwd, dbpath);
 	/*
 	 * print external filter.
 	 */
@@ -526,20 +541,17 @@ printtag(const char *ctags_x)		/* virtually const */
 	SPLIT ptable;
 
 	switch (format) {
-	case FORMAT_CTAGS_X:
-		filter_put(ctags_x);
-		break;
-	case FORMAT_CTAGS:
 	case FORMAT_PATH:
 		split((char *)ctags_x, 4, &ptable);
 		printtag_using(
-			ptable.part[PART_TAG].start,		/* tag */
+			NULL,					/* tag */
 			ptable.part[PART_PATH].start,		/* path */
-			atoi(ptable.part[PART_LNO].start),	/* line no */
+			NULL,					/* line no */
 			NULL);
 		recover(&ptable);
 		break;
 	default:
+		filter_put(ctags_x);
 		break;
 	}
 }
@@ -569,18 +581,16 @@ printtag_using(const char *tag, const char *path, int lineno, const char *line)
 			;
 		path = edit;
 	}
+	/*
+	 * The other format than FORMAT_PATH is always written as FORMAT_CTAGS_X.
+	 * Format conversion will be done in the following process.
+	 */
 	switch (format) {
 	case FORMAT_PATH:
 		strbuf_puts(sb, path);
 		break;
-	case FORMAT_CTAGS:
-		strbuf_sprintf(sb, "%s\t%s\t%d", tag, path, lineno);
-		break;
-	case FORMAT_CTAGS_X:
-		strbuf_sprintf(sb, "%-16s %4d %-16s %s", tag, lineno, path, line);
-		break;
 	default:
-		die("printtag_using: format '%d' not supported.", format);
+		strbuf_sprintf(sb, "%-16s %4d %-16s %s", tag, lineno, path, line);
 		break;
 	}
 	filter_put(strbuf_value(sb));
@@ -646,8 +656,7 @@ idutils(const char *pattern, const char *dbpath)
 		case FORMAT_PATH:
 			printtag_using(NULL, path, 0, NULL);
 			break;
-		case FORMAT_CTAGS:
-		case FORMAT_CTAGS_X:
+		default:
 			/* extract line number */
 			while (*p && isspace(*p))
 				p++;
@@ -664,8 +673,6 @@ idutils(const char *pattern, const char *dbpath)
 			 * print out.
 			 */
 			printtag_using(edit, path, linenum, p);
-			break;
-		default:
 			break;
 		}
 	}
@@ -1044,7 +1051,7 @@ tagsearch(const char *pattern, const char *cwd, const char *root, const char *db
 			/*
 			 * reconstruct path filter
 			 */
-			setup_pathfilter(format, aflag ? PATH_ABSOLUTE : PATH_RELATIVE, 0, libdir, cwd, libdbpath);
+			setup_pathfilter(format, aflag ? PATH_ABSOLUTE : PATH_RELATIVE, libdir, cwd, libdbpath);
 			/*
 			 * search again
 			 */

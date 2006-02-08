@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Tama Communications Corporation
+ * Copyright (c) 2005, 2006 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -27,21 +27,28 @@
  * +----------------------------------------------
  * |main             227 ./src/main     main()
  *
- * (2) ctags format (FORMAT_CTAGS)
+ * (2) ctags -x + file id format (FORMAT_CTAGS_XID)
+ *
+ * 0    PART_TAG+1 PART_LNO+1 PART_PATH+1   PART_LINE+1
+ * +----------------------------------------------
+ * |110	main             227 ./src/main     main()
+ *
+ * (3) ctags format (FORMAT_CTAGS)
  *
  * PART_TAG     PART_CTAGS_PATH    PART_CTAGS_LNO
  * +----------------------------------------------
  * |main        ./src/main         227
  *
- * (3) path name format (FORMAT_PATH)
+ * (4) path name format (FORMAT_PATH)
  *
  * +----------------------------------------------
  * |./src/main
  *
  */
-#define FORMAT_CTAGS	0
-#define FORMAT_CTAGS_X	1
-#define FORMAT_PATH	2
+#define FORMAT_CTAGS		1
+#define FORMAT_CTAGS_X		2
+#define FORMAT_CTAGS_XID	3
+#define FORMAT_PATH		4
 
 /*
  * FORMAT_CTAGS_X
@@ -72,7 +79,7 @@
 /*
  * Path name type
  */
-#define PATH_RELATIVE	0
-#define PATH_ABSOLUTE	1
+#define PATH_RELATIVE	1
+#define PATH_ABSOLUTE	2
 
 #endif /* ! _FORMAT_H_ */

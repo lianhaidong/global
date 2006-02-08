@@ -28,14 +28,13 @@ typedef struct {
 	FILE *op;
 	int type;		/* PATH_ABSOLUTE, PATH_RELATIVE */
 	int format;		/* defined in format.h */
-	int fileid;		/* 1: fileid */
 	STRBUF *abspath;
 	char basedir[MAXPATHLEN+1];
 	int start_point;
 
 } CONVERT;
 
-CONVERT *convert_open(int, int, int, const char *, const char *, const char *, FILE *);
+CONVERT *convert_open(int, int, const char *, const char *, const char *, FILE *);
 void convert_put(CONVERT *cv, const char *line);
 void convert_close(CONVERT *cv);
 

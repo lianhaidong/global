@@ -70,7 +70,6 @@ int unique;
 int passthru;
 /* path filter */
 int type;
-int fileid;
 
 /*
  * data for external filter
@@ -137,7 +136,7 @@ makesortfilter(int format, int unique, int passthru)
  * makepathfilter: make external path filter
  */
 static void
-makepathfilter(int format, int type, int fileid, const char *root, const char *cwd, const char *dbpath)
+makepathfilter(int format, int type, const char *root, const char *cwd, const char *dbpath)
 {
 	if (pathfilter == NULL)
 		pathfilter = strbuf_open(0);
@@ -171,8 +170,6 @@ makepathfilter(int format, int type, int fileid, const char *root, const char *c
 	default:
 		break;
 	}
-	if (fileid)
-		strbuf_puts(pathfilter, " --fileid");
 	strbuf_putc(pathfilter, ' ');
 	strbuf_puts(pathfilter, root);
 	strbuf_putc(pathfilter, ' ');
@@ -231,12 +228,11 @@ setup_sortfilter(int a_format, int a_unique, int a_passthru)
  * makepathfilter: make path filter
  */
 void
-setup_pathfilter(int a_format, int a_type, int a_fileid, const char *a_root, const char *a_cwd, const char *a_dbpath)
+setup_pathfilter(int a_format, int a_type, const char *a_root, const char *a_cwd, const char *a_dbpath)
 {
-	makepathfilter(a_format, a_type, a_fileid, a_root, a_cwd, a_dbpath);
+	makepathfilter(a_format, a_type, a_root, a_cwd, a_dbpath);
 	format = a_format;
 	type = a_type;
-	fileid = a_fileid;
 	strlimcpy(root, a_root, sizeof(root));
 	strlimcpy(cwd, a_cwd, sizeof(cwd));
 	strlimcpy(dbpath, a_dbpath, sizeof(dbpath));
@@ -310,7 +306,7 @@ filter_open(void)
 	void (*output)(const char *) = (nofilter & PATH_FILTER) ?
 				without_pathfilter : with_pathfilter;
 			
-	cv = convert_open(type, format, fileid, root, cwd, dbpath, stdout);
+	cv = convert_open(type, format, root, cwd, dbpath, stdout);
 	ts = tagsort_open(output, format, unique, passthru);
 }
 void

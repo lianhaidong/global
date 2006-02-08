@@ -30,7 +30,7 @@
 const char *getsortfilter(void);
 const char *getpathfilter(void);
 void setup_sortfilter(int, int, int);
-void setup_pathfilter(int, int, int, const char *, const char *, const char *);
+void setup_pathfilter(int, int, const char *, const char *, const char *);
 void makefilter(STRBUF *);
 void filter_open(void);
 void filter_put(const char *);

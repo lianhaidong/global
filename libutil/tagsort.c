@@ -75,7 +75,7 @@ struct dup_entry {
 };
 
 static int compare_dup_entry(const void *, const void *);
-static void put_lines(int, int, char *, struct dup_entry *, int, void (*output)(const char *));
+static void put_lines(int, char *, struct dup_entry *, int, void (*output)(const char *));
 
 /*
  * compare_dup_entry: compare function for sorting dup_entries.
@@ -95,28 +95,19 @@ compare_dup_entry(const void *v1, const void *v2)
  *
  *	i)	unique	unique or not
  *			0: sort, 1: sort -u
- *	i)	format	tag format
- *			FORMAT_CTAGS_X: ctags -x format
- *			FORMAT_CTAGS: ctags format
  *	i)	lines	ctags stream
  *	i)	entries	sort target
  *	i)	entry_count number of entry of the entries
  *	i)	output	output function
  */
 static void
-put_lines(int unique, int format, char *lines, struct dup_entry *entries, int entry_count, void (*output)(const char *))
+put_lines(int unique, char *lines, struct dup_entry *entries, int entry_count, void (*output)(const char *))
 {
 	int i;
 	char last_path[MAXPATHLEN+1];
 	int last_lineno;
 	int splits, part_lno, part_path;
 	/*
-	 * ctags format.
-	 *
-	 * PART_TAG     PART_PATH     PART_LNO
-	 * +----------------------------------------------
-	 * |main        src/main      227
-	 *
 	 * ctags -x format.
 	 *
 	 * PART_TAG     PART_LNO PART_PATH      PART_LINE
@@ -124,20 +115,9 @@ put_lines(int unique, int format, char *lines, struct dup_entry *entries, int en
 	 * |main             227 src/main       main()
 	 *
 	 */
-	switch (format) {
-	case FORMAT_CTAGS:
-		splits = 3;
-		part_lno = PART_CTAGS_LNO;
-		part_path = PART_CTAGS_PATH;
-		break;
-	case FORMAT_CTAGS_X:
-		splits = 4;
-		part_lno = PART_LNO;
-		part_path = PART_PATH;
-		break;
-	default:
-		die("internal error in put_lines.");
-	}
+	splits = 4;
+	part_lno = PART_LNO;
+	part_path = PART_PATH;
 	/*
 	 * Parse and sort ctags [-x] format records.
 	 */
@@ -207,9 +187,8 @@ static void *check_malloc(int size)
  *
  *	i)	output	output function
  *	i)	format	tag format
- *			FORMAT_CTAGS_X: ctags -x format
- *			FORMAT_CTAGS: ctags format
  *			FORMAT_PATH: path name
+ *			other: all format is FORMAT_CTAGS_X here.
  *	i)	unique	1: make the output unique.
  *	i)	passthru 1: pass through
  *	r)		tagsort structure
@@ -226,14 +205,11 @@ tagsort_open(void (*output)(const char *), int format, int unique, int passthru)
 			if (!ts->dbop)
 				die("cannot make temporary file in tagsort_open().");
 			break;
-		case FORMAT_CTAGS:
-		case FORMAT_CTAGS_X:
+		default:
 			ts->sb = strbuf_open(MAXBUFLEN);
 			ts->vb = varray_open(sizeof(struct dup_entry), 200);
 			ts->prev[0] = '\0';
 			break;
-		default:
-			die("tagsort_open() unknown format type.");
 		}
 	}
 	ts->output = output;
@@ -267,8 +243,7 @@ tagsort_put(TAGSORT *ts, const char *line)	/* virtually const */
 	case FORMAT_PATH:
 		dbop_put(ts->dbop, line, "");
 		break;
-	case FORMAT_CTAGS:
-	case FORMAT_CTAGS_X:
+	default:
 		/*
 		 * extract the tag name.
 		 */
@@ -287,7 +262,6 @@ tagsort_put(TAGSORT *ts, const char *line)	/* virtually const */
 					ts->output(strbuf_value(ts->sb));
 				} else
 					put_lines(ts->unique,
-						ts->format,
 						strbuf_value(ts->sb),
 						varray_assign(ts->vb, 0, 0),
 						ts->vb->length,
@@ -302,8 +276,6 @@ tagsort_put(TAGSORT *ts, const char *line)	/* virtually const */
 		recover(&ptable);
 		strbuf_puts0(ts->sb, line);
 		break;
-	default:
-		die("tagsort_put() unknown format type.");
 	}
 }
 /*
@@ -326,14 +298,12 @@ tagsort_close(TAGSORT *ts)
 			}
 			dbop_close(ts->dbop);
 			break;
-		case FORMAT_CTAGS:
-		case FORMAT_CTAGS_X:
+		default:
 			if (ts->prev[0] != '\0') {
 				if (ts->vb->length == 1) {
 					ts->output(strbuf_value(ts->sb));
 				} else
 					put_lines(ts->unique,
-						ts->format,
 						strbuf_value(ts->sb),
 						varray_assign(ts->vb, 0, 0),
 						ts->vb->length,
@@ -342,8 +312,6 @@ tagsort_close(TAGSORT *ts)
 			strbuf_close(ts->sb);
 			varray_close(ts->vb);
 			break;
-		default:
-			die("tagsort_close() unknown format type.");
 		}
 	}
 	(void)free(ts);

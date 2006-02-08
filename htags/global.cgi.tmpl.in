@@ -1,6 +1,6 @@
 #! @PERL@
 #
-# Copyright (c) 1997, 2004 Tama Communications Corporation
+# Copyright (c) 1997, 2004, 2006 Tama Communications Corporation
 #
 # This file is free software; as a special exception the author gives
 # unlimited permission to copy and/or distribute it, with or without
@@ -115,9 +115,10 @@ if ($flag eq 'g' || $flag eq 'I') {
 local(%ctab) = ('&', '&amp;', '<', '&lt;', '>', '&gt;');
 #
 # fork and exec global(1) to avoid command substitutions in $pattern.
-# The --fileid print the file id of the path at the head of each line.
+# The --result=ctags-xid print the file id of the path at the head
+# of each line.
 #
-open(PIPE, "-|") || exec '@globalpath@', '-x'.$flag.$iflag.$oflag, '--fileid', '-e', $pattern;
+open(PIPE, "-|") || exec '@globalpath@', '--result=ctags-xid'.$flag.$iflag.$oflag, '-e', $pattern;
 if ($?) {	
 	print "@error_begin@Error@error_end@\n";
 	print "@message_begin@Cannot execute global. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a>@message_end@\n";
@@ -136,13 +137,12 @@ print "@verbatim_begin@\n";
 #
 # fid tag   lno filename
 # ---------------------------------------------
-# 100@main  32 ./main.c main(argc, argv)
+# 100 main  32 ./main.c main(argc, argv)
 #
 while (<PIPE>) {
 	$cnt++;
-	($fid_tag, $lno, $filename) = split;
-	($fid, $tag) = split(/@/, $fid_tag);
-	s/^[0-9]+@//;
+	($fid, $tag, $lno, $filename) = split;
+	s/^[0-9]+[ \t]+//;
 	s/([&<>])/$ctab{$1}/ge;
 	s!(^[^ \t]+)!<a href='$htmlbase/S/$fid.@HTML@#L$lno'>$1<\/a>!;
 	print;

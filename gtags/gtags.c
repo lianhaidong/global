@@ -84,7 +84,6 @@ const char *file_list;
  * Path filter
  */
 int do_path;
-int fileid;
 int convert_type = PATH_RELATIVE;
 int format = FORMAT_PATH;
 /*
@@ -130,7 +129,6 @@ static struct option const long_options[] = {
 	{"config", optional_argument, &show_config, 1},
 	{"format", required_argument, NULL, 0},
 	{"debug", no_argument, &debug, 1},
-	{"fileid", no_argument, &fileid, 1},
 	{"gtagsconf", required_argument, &gtagsconf, 1},
 	{"gtagslabel", required_argument, &gtagslabel, 1},
 	{"path", required_argument, &do_path, 1},
@@ -294,7 +292,7 @@ main(int argc, char **argv)
 		 * main      22 /prj/xxx/libc/func.c   main(argc, argv)\n
 		 */
 		STRBUF *ib = strbuf_open(MAXBUFLEN);
-		CONVERT *cv = convert_open(convert_type, format, fileid, argv[0], argv[1], argv[2], stdout);
+		CONVERT *cv = convert_open(convert_type, format, argv[0], argv[1], argv[2], stdout);
 		char *ctags_x;
 
 		if (argc < 3)
