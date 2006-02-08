@@ -174,6 +174,8 @@ main(int argc, char **argv)
 					format = FORMAT_CTAGS;
 				else if (!strcmp("path", optarg))
 					format = FORMAT_PATH;
+				else if (!strcmp("grep", optarg))
+					format = FORMAT_GREP;
 				else
 					format = FORMAT_CTAGS_X;
 			} else if (gtagsconf || gtagslabel) {

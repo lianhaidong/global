@@ -213,6 +213,13 @@ convert_put(CONVERT *cv, const char *tagline)
 		fputc(' ', cv->op);
 		fputs(rest, cv->op);
 		break;
+	case FORMAT_GREP:
+		put_pathname(cv, path);
+		fputc(':', cv->op);
+		fputs(lineno, cv->op);
+		fputc(':', cv->op);
+		fputs(rest, cv->op);
+		break;
 	default:
 		die("unknown format type.");
 	}

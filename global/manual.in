@@ -1,5 +1,5 @@
 #
-# Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003
+# Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2006
 #	Tama Communications Corporation
 #
 # This file is part of GNU GLOBAL.
@@ -23,7 +23,7 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	GLOBAL,1,Nov 2004,GNU Project
+@HEADER	GLOBAL,1,February 2006,GNU Project
 @NAME	global - print the locations of specified object.
 @SYNOPSIS
 	@name{global} [-aGilnqrstTvx][-e] @arg{pattern}
@@ -109,6 +109,12 @@
 		Print the locations of object references.
 		By default, print object definitions.
 		With the @option{-p} option, print the root directory of source tree.
+	@item{@option{--result} @arg{format}}
+		@arg{format} may be 'path', `ctags', `ctags-x', or `grep'.
+		The @option{--result=ctags} and @option{--result=ctags-x} are
+		equivalent to the @option{-t} and @option{-x} respectively.
+		The @option{-t} and @option{-x} are given to priority
+		more than the @option{--result} option.
 	@item{@option{-s}, @option{--symbol}}
 		Print the locations of specified symbol other than function names.
 		You need @file{GSYMS} tags file. See @xref{gtags,1}.

@@ -44,11 +44,17 @@
  * +----------------------------------------------
  * |./src/main
  *
+ * (5) grep format (FORMAT_GREP)
+ *
+ * +----------------------------------------------
+ * |./src/main:227:main()
+ *
  */
 #define FORMAT_CTAGS		1
 #define FORMAT_CTAGS_X		2
 #define FORMAT_CTAGS_XID	3
 #define FORMAT_PATH		4
+#define FORMAT_GREP		5
 
 /*
  * FORMAT_CTAGS_X

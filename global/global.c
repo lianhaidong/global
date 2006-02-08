@@ -269,6 +269,8 @@ main(int argc, char **argv)
 				format = FORMAT_CTAGS;
 			else if (!strcmp(optarg, "path"))
 				format = FORMAT_PATH;
+			else if (!strcmp(optarg, "grep"))
+				format = FORMAT_GREP;
 			else
 				die_with_code(2, "unknown format type for the --result option.");
 			break;
