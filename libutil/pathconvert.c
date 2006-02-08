@@ -131,9 +131,9 @@ convert_open(int type, int format, const char *root, const char *cwd, const char
 void
 convert_put(CONVERT *cv, const char *tagline)
 {
-	char *tagnextp;
-	int tagnextc;
-	char *tag, *lineno, *path, *rest;
+	char *tagnextp = NULL;
+	int tagnextc = 0;
+	char *tag = NULL, *lineno = NULL, *path, *rest = NULL;
 
 	/*
 	 * parse tag line.
