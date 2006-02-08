@@ -794,7 +794,7 @@ pathlist(const char *pattern, const char *dbpath)
 			die("invalid regular expression.");
 	}
 	if (!localprefix)
-		localprefix = ".";
+		localprefix = "./";
 	filter_open();
 	count = 0;
 	/*
