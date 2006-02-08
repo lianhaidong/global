@@ -1818,7 +1818,8 @@ and reselect.
 If current token is a definition, it is equivalent to
 @kbd{Find tag (reference): @var{current token}RET},
 otherwise it is equivalent to @kbd{Find tag: @var{current token}RET}.
-(GLOBAL decides this intelligentlly, but may sometimes misunderstand.)
+(This facility is supported only in C language.
+GLOBAL decides this intelligentlly, but may sometimes misunderstand.)
 
 @item To go to any symbols which are not defined in @file{GTAGS}, try @code{gtags-find-symbol}.
 @example
