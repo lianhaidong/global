@@ -118,7 +118,12 @@ local(%ctab) = ('&', '&amp;', '<', '&lt;', '>', '&gt;');
 # The --result=ctags-xid print the file id of the path at the head
 # of each line.
 #
-open(PIPE, "-|") || exec '@globalpath@', '--result=ctags-xid'.$flag.$iflag.$oflag, '-e', $pattern;
+$flags = $flag . $iflag . $oflag;
+if ($flags eq '') {
+	open(PIPE, "-|") || exec '@globalpath@', '--result=ctags-xid', '-e', $pattern;
+} else {
+	open(PIPE, "-|") || exec '@globalpath@', '--result=ctags-xid', '-'.$flags, '-e', $pattern;
+}
 if ($?) {	
 	print "@error_begin@Error@error_end@\n";
 	print "@message_begin@Cannot execute global. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a>@message_end@\n";
