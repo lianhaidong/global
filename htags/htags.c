@@ -585,10 +585,9 @@ makesearchpart(const char *action, const char *id, const char *target)
 	strbuf_puts(sb, gen_input_radio("type", "path", 0, "Look for path name which matches to the specified pattern."));
 	strbuf_puts(sb, target ? "Path" : "Path name");
 	strbuf_puts_nl(sb, br);
-	if (enable_grep) {
-		strbuf_puts(sb, gen_input_radio("type", "grep", 0, "Retrieve lines which matches to the specified pattern."));
-		strbuf_puts_nl(sb, target ? "Grep" : "Grep pattern");
-	}
+	/* grep */
+	strbuf_puts(sb, gen_input_radio("type", "grep", 0, "Retrieve lines which matches to the specified pattern."));
+	strbuf_puts_nl(sb, target ? "Grep" : "Grep pattern");
 	if (enable_idutils && test("f", makepath(dbpath, "ID", NULL))) {
 		strbuf_puts(sb, gen_input_radio("type", "idutils", 0, "Retrieve lines which matches to the specified pattern using idutils(1)."));
 		strbuf_puts_nl(sb, target ? "Id" : "Id pattern");
