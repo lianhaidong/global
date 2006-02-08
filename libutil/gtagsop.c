@@ -830,7 +830,6 @@ genrecord(GTOP *gtop)
 			while (gtop->lno < lno) {
 				if (!(src = strbuf_fgets(gtop->ib, gtop->fp, STRBUF_NOCRLF)))
 					die("unexpected end of file. '%s'", gtop->path);
-				strbuf_trim(gtop->ib);
 				gtop->lno++;
 			}
 		}
