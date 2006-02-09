@@ -55,6 +55,13 @@ put_pathname(CONVERT *cv, const char *path)
 	const char *a, *b;
 
 	/*
+	 * print without conversion.
+	 */
+	if (cv->type == PATH_THROUGH) {
+		(void)fputs(path, cv->op);
+		return;
+	}
+	/*
 	 * make absolute path name.
 	 * 'path + 1' means skipping "." at the head.
 	 */
@@ -88,7 +95,7 @@ put_pathname(CONVERT *cv, const char *path)
 /*
  * convert_open: open convert filter
  *
- *	i)	type	PATH_ABSOLUTE, PATH_RELATIVE
+ *	i)	type	PATH_ABSOLUTE, PATH_RELATIVE, PATH_THROUGH
  *	i)	format	tag record format
  *	i)	root	root directory of source tree
  *	i)	cwd	current directory

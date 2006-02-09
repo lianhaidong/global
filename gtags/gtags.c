@@ -169,6 +169,10 @@ main(int argc, char **argv)
 			} else if (!strcmp(p, "path")) {
 				if (!strcmp("absolute", optarg))
 					convert_type = PATH_ABSOLUTE;
+				else if (!strcmp("relative", optarg))
+					convert_type = PATH_RELATIVE;
+				else if (!strcmp("through", optarg))
+					convert_type = PATH_THROUGH;
 			} else if (!strcmp(p, "format")) {
 				if (!strcmp("ctags", optarg))
 					format = FORMAT_CTAGS;
