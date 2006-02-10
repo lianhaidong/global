@@ -548,7 +548,7 @@ printtag(const char *ctags_x)		/* virtually const */
 		printtag_using(
 			NULL,					/* tag */
 			ptable.part[PART_PATH].start,		/* path */
-			NULL,					/* line no */
+			0,					/* line no */
 			NULL);
 		recover(&ptable);
 		break;
