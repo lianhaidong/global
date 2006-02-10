@@ -862,6 +862,16 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 	 */
 	set_env("GTAGSDBPATH", dbpath);
 	/*
+	 * teach parser language mapping.
+	 */
+	{
+		STRBUF *sb = strbuf_open(0);
+
+		if (getconfs("langmap", sb))
+			set_env("GTAGSLANGMAP", strbuf_value(sb));
+		strbuf_close(sb);
+	}
+	/*
 	 * get parser.
 	 */
 	if (!getconfs(dbname(db), comline))
