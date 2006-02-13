@@ -737,7 +737,7 @@ grep(const char *pattern, const char *dbpath)
 		die("GPATH is old format. Please remake it by invoking gtags(1).");
 	while ((path = gfind_read(gp)) != NULL) {
 		if (!(fp = fopen(path, "r")))
-			die("'%s' not found. Please remake it by invoking gtags(1).", path);
+			die("'%s' not found. Please remake tag files by invoking gtags(1).", path);
 		linenum = 0;
 		while ((buffer = strbuf_fgets(ib, fp, STRBUF_NOCRLF)) != NULL) {
 			linenum++;
