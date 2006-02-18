@@ -84,8 +84,8 @@ strincmp(const char *string, const char *pattern, size_t len)
 	unsigned char s, p;
 
 	while (len--) {
-		s = tolower(*string++);
-		p = tolower(*pattern++);
+		s = tolower((unsigned char)*string++);
+		p = tolower((unsigned char)*pattern++);
 		if (s != p)
 			return s - p;
 		if (s == 0)
