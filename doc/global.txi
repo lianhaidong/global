@@ -2017,7 +2017,7 @@ $ lynx html/index.html
 
 @menu
 * Configuration::                       How to config GLOBAL.
-* Plugin::                              How to plug in a parser.
+* Plugin::                              Plug-in parser.
 * Compact format::                      Compact format.
 * Incremental updating::                Incremental updating.
 @end menu
@@ -2046,28 +2046,15 @@ About the capabilities, please see each command manual. @xref{Reference}.
 
 @c ***************************************************************************
 @node   Plugin
-@section How to plug in a parser.
+@section Plug-in parser.
 
 You can write new parser and use as a plug-in parser.
 
+@subsection How to plug in a parser.
+
 Copy @file{gtags.conf} to @file{/etc/gtags.conf} or @file{$HOME/.globalrc}.
 
-For example, if you would like to use ctags based on etags (included
-by Emacs),
-
-@example
-
-    $ cd /@var{emacs source directory}/lib-src
-    $ make ctags
-    # cp ctags /usr/local/bin/ctags-emacs
-    $ export GTAGSLABEL=ctags-emacs         # @r{see gtags.conf}
-    $ gtags
-    $ ls G*
-    GPATH   GTAGS
-
-@end example
-
-Or if you would like to use exuberant ctags (included by Vim editor),
+If you would like to use exuberant ctags included by Vim editor,
 
 @example
 
@@ -2086,7 +2073,10 @@ Or if you would like to use exuberant ctags (included by Vim editor),
 these parsers don't support the @samp{-r} option and @samp{-s} option like gtags-parser(1) does.
 @opindex -r
 @opindex -s
-All plug-in parsers must print tag information to standard output
+
+@subsection Requirement of plug-in parser.
+
+Plug-in parser must print tag information to standard output
 in the same style as @code{ctags -x}, ie.:
 
 @example
@@ -2102,7 +2092,41 @@ in the same style as @code{ctags -x}, ie.:
 
 @end example
 
-Otherwise, you can make a suitable wrapper for the plug-in parser.
+Plug-in parser must process the files in the order they are given
+in the argument. In each file, any order is acceptable.
+
+@itemize @bullet
+@item Good example
+
+The following @code{good-prog} does correct operation as a plug-in parser.
+
+@example
+        $ good-prog a.c b.c        @r{<= order: a.c -> b.c}
+                    ~~~~~~~
+        main          25 a.c  main(int argc, char *argv[])
+        func          45 a.c  func(int a) @{
+        sub2          20 b.c  sub2() @{
+        sub1          10 b.c  sub1() @{
+                          ^
+                          |
+                         @r{*** order: a.c -> b.c (Good!)}
+@end example
+
+@item Bad example
+
+The following @code{bad-prog} does wrong operation as a plug-in parser.
+
+@example
+        $ bad-prog a.c b.c        @r{<= order: a.c -> b.c}
+        main          25 a.c  main(int argc, char *argv[])
+        sub2          20 b.c  sub2() @{
+        sub1          10 b.c  sub1() @{
+        func          45 a.c  func(int a) @{
+                          ^
+                          |
+                         @r{*** order: b.c -> a.c (BAD!!!)}
+@end example
+@end itemize
 
 @page
 @c ***************************************************************************
