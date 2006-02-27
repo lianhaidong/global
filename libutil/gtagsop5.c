@@ -79,12 +79,10 @@ static int support_version = 4;	/* acceptable format version   */
  *
  *	i)	dbpath	dbpath directory
  *	i)	root	root directory (needed when compact format)
- *	i)	db	GTAGS, GRTAGS, GSYMS
- *	i)	mode	GTAGS_READ: read only
+ *	i)	gtop->db	GTAGS, GRTAGS, GSYMS
+ *	i)	gtop->mode	GTAGS_READ: read only
  *			GTAGS_CREATE: create tag
  *			GTAGS_MODIFY: modify tag
- *	i)	flags	GTAGS_COMPACT
- *			GTAGS_PATHINDEX
  *	r)		GTOP structure
  *
  * when error occurred, gtagopen doesn't return.
@@ -164,8 +162,8 @@ gtags_open5(GTOP *gtop, const char *dbpath, const char *root)
 			gtop->sb = strbuf_open(0);
 			gtop->pool = strhash_open(HASHBUCKETS, NULL);
 		}
-	}
-	gtop->sb = strbuf_open(0);
+	} else if (gtop->mode != GTAGS_READ)
+		gtop->sb = strbuf_open(0);
 	return gtop;
 }
 /*
@@ -193,7 +191,7 @@ gtags_put5(GTOP *gtop, const char *tag, const char *ctags_x)	/* virtually const 
 		strbuf_reset(gtop->sb);
 		strbuf_puts(gtop->sb, s_fid);
 		strbuf_putc(gtop->sb, ' ');
-		strbuf_puts(gtop->sb, tag);
+		strbuf_puts(gtop->sb, ptable.part[PART_TAG].start);
 		strbuf_putc(gtop->sb, ' ');
 		strbuf_puts(gtop->sb, ptable.part[PART_LNO].start);
 		strbuf_putc(gtop->sb, ' ');
