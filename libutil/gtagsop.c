@@ -44,6 +44,7 @@
 #include "format.h"
 #include "gparam.h"
 #include "gtagsop.h"
+#include "gtagsop5.h"
 #include "locatestring.h"
 #include "makepath.h"
 #include "path.h"
@@ -257,6 +258,8 @@ gtags_open(const char *dbpath, const char *root, int db, int mode, int flags)
 			die("cannot make %s.", dbname(db));
 		die("%s not found.", dbname(db));
 	}
+	if (gtop->mode == GTAGS_CREATE && flags & GTAGS_FORMAT5)
+		return gtags_open5(gtop, dbpath, root);
 	/*
 	 * decide format version.
 	 */
@@ -303,7 +306,7 @@ gtags_open(const char *dbpath, const char *root, int db, int mode, int flags)
 			gtop->format_version = atoi(p);
 		}
 		if (gtop->format_version > support_version)
-			die("GTAGS seems new format. Please install the latest GLOBAL.");
+			return gtags_open5(gtop, dbpath, root);
 		if (gtop->format_version > 1) {
 			if (dbop_get(gtop->dbop, COMPACTKEY) != NULL)
 				gtop->format |= GTAGS_COMPACT;
@@ -348,6 +351,10 @@ gtags_open(const char *dbpath, const char *root, int db, int mode, int flags)
 void
 gtags_put(GTOP *gtop, const char *tag, const char *ctags_x)	/* virtually const */
 {
+	if (gtop->format_version > support_version) {
+		gtags_put5(gtop, tag, ctags_x);
+		return;
+	}
 	/*
 	 * Standard format.
 	 */
@@ -522,6 +529,10 @@ gtags_delete(GTOP *gtop, IDSET *deleteset)
 	SPLIT ptable;
 	int fid;
 
+	if (gtop->format_version > support_version) {
+		gtags_delete5(gtop, deleteset);
+		return;
+	}
 	for (tagline = dbop_first(gtop->dbop, NULL, NULL, 0); tagline; tagline = dbop_next(gtop->dbop)) {
 		/*
 		 * Extract path from the tag line.
@@ -583,6 +594,8 @@ gtags_first(GTOP *gtop, const char *pattern, int flags)
 	const char *key, *tagline;
 	int regflags = 0;
 
+	if (gtop->format_version > support_version)
+		return gtags_first5(gtop, pattern, flags);
 	gtop->flags = flags;
 	if (flags & GTOP_PREFIX && pattern != NULL)
 		dbflags |= DBOP_PREFIX;
@@ -664,6 +677,9 @@ const char *
 gtags_next(GTOP *gtop)
 {
 	const char *tagline;
+
+	if (gtop->format_version > support_version)
+		return gtags_next5(gtop);
 	/*
 	 * Standard format (or only key)
 	 */
@@ -704,6 +720,10 @@ gtags_next(GTOP *gtop)
 void
 gtags_close(GTOP *gtop)
 {
+	if (gtop->format_version > support_version) {
+		gtags_close5(gtop);
+		return;
+	}
 	if (gtop->pool) {
 		if (gtop->prev_path[0])
 			flush_pool(gtop);

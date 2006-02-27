@@ -814,14 +814,16 @@ createtags(const char *dbpath, const char *root, int db)
 	 * non: STANDARD format
 	 * -c:  COMPACT format + PATHINDEX option
 	 * -cc: STANDARD format + PATHINDEX option
-	 * Ths -cc is undocumented.
-	 * In the future, it may become the standard format of GLOBAL.
+	 * -ccc: TEST format for version 5.0
+	 * Ths -cc and -ccc is undocumented.
 	 */
 	flags = 0;
 	if (cflag) {
 		flags |= GTAGS_PATHINDEX;
 		if (cflag == 1)
 			flags |= GTAGS_COMPACT;
+		if (cflag >= 3)
+			flags = GTAGS_FORMAT5;
 	}
 	if (vflag > 1)
 		fprintf(stderr, " using tag command '%s <path>'.\n", strbuf_value(comline));

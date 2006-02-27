@@ -48,6 +48,7 @@
 #define GTAGS_STANDARD		0	/* standard format */
 #define GTAGS_COMPACT		1	/* compact format */
 #define GTAGS_PATHINDEX		2	/* use path index */
+#define GTAGS_FORMAT5		4	/* test format for version 5 */
 /* gtags_add() */
 #define GTAGS_UNIQUE		1	/* compress duplicate lines */
 #define GTAGS_EXTRACTMETHOD	2	/* extract method from class definition */

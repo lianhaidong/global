@@ -81,6 +81,20 @@
  */
 #define PART_PATH_COMP  1
 #define PART_LNO_COMP   2
+/*
+ * Standard5 format
+ * PART_FID5 PART_TAG5 PART_LNO5 PART_LINE5
+ * +----------------------------------------------------
+ * |100 main 227 main(int argc, argv **char)
+ *
+ * Compact5 format
+ * PART_FID5 PART_TAG5 PART_LNO5
+ * +----------------------------------------------------
+ * |100 main 227,230,245,260
+ */
+#define PART_FID5 0
+#define PART_TAG5 1
+#define PART_LNO5 2
 
 /*
  * Path name type
