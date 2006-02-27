@@ -130,7 +130,7 @@ GNU GLOBAL has following features:
 @item support external search engine (grep and id-utils).
 @item generate hypertext of source code.
 @item tag files are independent of machine architecture.
-@item plugged-in parser is available to treat new language.
+@item plug-in parser is available to treat new language.
 @item compact format is available to save disk space.
 @item support incremental updating of tag files.
 @item support customizing with gtags.conf.
@@ -2030,10 +2030,10 @@ You can customize GLOBAL using configuration file.
 
 @example
 
-    # cp gtags.conf /etc/gtags.conf         # system wide configuration file.
+    # cp gtags.conf /etc/gtags.conf         # system wide config file.
     # vi /etc/gtags.conf
 
-    $ cp gtags.conf $HOME/.globalrc         # personal configuration file.
+    $ cp gtags.conf $HOME/.globalrc         # personal config file.
     $ vi $HOME/.globalrc
 
 @end example
@@ -2048,7 +2048,7 @@ About the capabilities, please see each command manual. @xref{Reference}.
 @node   Plugin
 @section How to plug in a parser.
 
-You can write new parser and use as a plugged-in parser.
+You can write new parser and use as a plug-in parser.
 
 Copy @file{gtags.conf} to @file{/etc/gtags.conf} or @file{$HOME/.globalrc}.
 
@@ -2086,7 +2086,7 @@ Or if you would like to use exuberant ctags (included by Vim editor),
 these parsers don't support the @samp{-r} option and @samp{-s} option like gtags-parser(1) does.
 @opindex -r
 @opindex -s
-All plugged-in parsers must print tag information to standard output
+All plug-in parsers must print tag information to standard output
 in the same style as @code{ctags -x}, ie.:
 
 @example
