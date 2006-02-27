@@ -784,6 +784,7 @@ pathlist(const char *pattern, const char *dbpath)
 
 	if (pattern) {
 		int flags = 0;
+		char edit[IDENTLEN+1];
 
 		if (!Gflag)
 			flags |= REG_EXTENDED;
@@ -792,6 +793,13 @@ pathlist(const char *pattern, const char *dbpath)
 #ifdef _WIN32
 		flags |= REG_ICASE;
 #endif /* _WIN32 */
+		/*
+		 * We assume '^aaa' as '^/aaa'.
+		 */
+		if (*pattern == '^' && *(pattern + 1) != '/') {
+			snprintf(edit, sizeof(edit), "^/%s", pattern + 1);
+			pattern = edit;
+		}
 		if (regcomp(&preg, pattern, flags) != 0)
 			die("invalid regular expression.");
 	}
