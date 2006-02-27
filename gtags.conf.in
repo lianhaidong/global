@@ -57,32 +57,6 @@ gtags:\
 	:GRTAGS=gtags-parser -dtr %s:\
 	:GSYMS=gtags-parser -dts %s:
 #
-# [Emacs's ctags]
-#
-# This ctags is distributed as a part of Emacs editor.
-#
-# supported suffixes by etags.
-#
-#      lisp: l,el,lsp,lisp,cl,clisp
-#    scheme: sm,scm,scheme,t,sch,ss,SM,SCM
-# assembly: s,a,sa,asm,src,def,ins,inc
-#       C++: C,H,cpp,cxx,hxx,hpp,cc
-#        C*: cs,hs
-#    c,yacc: c,h,y
-#  pl,p,pas: pascal
-#   fortran: f,for
-#
-# [Installation]
-# % cd <emacs source directory>/lib-src
-# % make ctags
-# # cp ctags /usr/local/bin/ctags-emacs
-#
-ctags-emacs|ctags based on etags|GNU Emacs ctags:\
-	:tc=common:\
-	:suffixes=el,s,a,sa,asm,C,H,cpp,cxx,hxx,hpp,cc,c,h,y:\
-	:extractmethod:\
-	:GTAGS=/usr/local/bin/ctags-emacs -x -d -T -w %s:
-#
 # [Exuberant Ctags]
 #
 # This ctags is distributed as a part of Vim editor.
@@ -96,10 +70,9 @@ ctags-exuberant|Exuberant Ctags|ctags by Darren Hiebert:\
 	:tc=common:\
 	:suffixes=s,a,sa,asm,C,H,cpp,cxx,hxx,hpp,cc,c,h,y:\
 	:extractmethod:\
-	:GTAGS=/usr/local/bin/ctags-exuberant -xu %s | perl -ne '\
+	:GTAGS=/usr/local/bin/ctags-exuberant -xu --format=1 %s | perl -ne '\
 		if (/^operator \\S+\\s+function\\s/) { s/^operator //; }\
-		($name, $type, $no, $path, $line) = split(/[ \\t]+/, $_, 5);\
-		printf(STDOUT "%-16s %4d %-16s %s", $name, $no, $path, $line);':
+		print;':
 #---------------------------------------------------------------------
 # Configuration for htags(1)
 # Let's paint hypertext with your favorite colors!
