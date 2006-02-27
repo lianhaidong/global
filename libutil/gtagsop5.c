@@ -144,7 +144,7 @@ gtags_open5(GTOP *gtop, const char *dbpath, const char *root)
 		dbmode = 2;
 		break;
 	default:
-		break;
+		assert(0);
 	}
 	if (gpath_open(dbpath, dbmode) < 0) {
 		if (dbmode == 1)
