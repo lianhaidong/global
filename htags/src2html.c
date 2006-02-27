@@ -761,10 +761,10 @@ src2html(const char *src, const char *html, int notsource)
 			const char *dir, *file, *suffix, *key, *title;
 
 			fputs(header_begin, out);
-			if (incref->count > 1) {
+			if (incref->ref_count > 1) {
 				char s_count[32];
 
-				snprintf(s_count, sizeof(s_count), "%d", incref->count);
+				snprintf(s_count, sizeof(s_count), "%d", incref->ref_count);
 				snprintf(s_id, sizeof(s_id), "%d", incref->id);
 				dir = upperdir(INCREFS);
 				file = s_id;
@@ -772,7 +772,7 @@ src2html(const char *src, const char *html, int notsource)
 				key = NULL;
 				title = tooltip('I', -1, s_count);
 			} else {
-				const char *p = strbuf_value(incref->contents);
+				const char *p = strbuf_value(incref->ref_contents);
 				const char *lno = strmake(p, " ");
 				const char *filename;
 

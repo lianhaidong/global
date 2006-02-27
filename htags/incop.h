@@ -24,11 +24,16 @@
 #include "strbuf.h"
 
 struct data {
-        SLIST_ENTRY(data) next;
-        char name[MAXPATHLEN];
+#if defined(_WIN32) || defined(__DJGPP__)
+	char name[MAXPATHLEN];
+#else
+	char *name;
+#endif
         int id;
         int count;
+        int ref_count;
         STRBUF *contents;
+        STRBUF *ref_contents;
 };
 
 void init_inc(void);
@@ -36,9 +41,7 @@ void put_inc(const char *, const char *, int);
 struct data *get_inc(const char *);
 struct data *first_inc(void);
 struct data *next_inc(void);
-void put_included(const char *, const char *);
+void put_included(struct data *, const char *);
 struct data *get_included(const char *);
-struct data *first_included(void);
-struct data *next_included(void);
 
 #endif /* ! _INCOP_H */

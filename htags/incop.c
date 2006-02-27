@@ -20,118 +20,35 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
+#include <ctype.h>
 #ifdef STDC_HEADERS
 #include <stdlib.h>
 #endif
-#include "queue.h"
 #include "global.h"
 #include "incop.h"
 
 #if defined(_WIN32) || defined(__DJGPP__)
-# define STRCMP stricmp
+static const char *
+strtolower(const char *s)
+{
+	static char lower[MAXPATHLEN];
+	char *t = lower, *end = lower + sizeof(lower);
+
+	do {
+		if (t == end)
+			die("name is too long.");
+	} while ((*t++ = tolower((unsigned char)*s++)) != '\0');
+
+	return lower;
+}
+#define HASH_KEY(name)	strtolower(name)
 #else
-# define STRCMP strcmp
+#define HASH_KEY(name)	(name)
 #endif
-
-/*----------------------------------------------------------------------*/
-/* Pool									*/
-/*----------------------------------------------------------------------*/
-SLIST_HEAD(pool, data);
-
-/*
- * open_pool: open new string pool.
- */
-static struct pool *
-open_pool(void)
-{
-	struct pool *head = (struct pool *)malloc(sizeof(struct pool));
-
-	if (!head)
-		die("short of memory.");
-	SLIST_INIT(head);
-
-	return head;
-}
-/*
- * put_pool: put string into the pool.
- *
- *	i)	head	pool header
- *	i)	name	string name
- *	i)	contents string contents
- *	i)	id	string id
- */
-static void
-put_pool(struct pool *head, const char *name, const char *contents, int id)
-{
-	struct data *data;
-
-	if (strlen(name) > MAXPATHLEN)
-		die("name is too long.");
-	SLIST_FOREACH(data, head, next) {
-		if (!STRCMP(data->name, name))
-			break;
-	}
-	if (!data) {
-		data = (struct data *)malloc(sizeof(struct data));
-		if (!data)
-			die("short of memory.");
-		strlimcpy(data->name, name, sizeof(data->name));
-		data->id = id;
-		data->contents = strbuf_open(0);
-		data->count = 0;
-		SLIST_INSERT_HEAD(head, data, next);
-	}
-	strbuf_puts0(data->contents, contents);
-	data->count++;
-}
-/*
- * get_pool: get string pool.
- *
- *	i)	name	name of string pool
- *	r)		descriptor
- */
-static struct data *
-get_pool(struct pool *head, const char *name)
-{
-	struct data *data;
-
-	SLIST_FOREACH(data, head, next) {
-		if (!STRCMP(data->name, name))
-			break;
-	}
-	return data;
-}
-/*
- * first_data: get the first data in the pool.
- *
- *	r)		descriptor
- */
-static struct data *
-first_data(struct pool *head)
-{
-	return SLIST_FIRST(head);
-}
-/*
- * next_data: get the next data in the pool.
- *
- *	r)		descriptor
- */
-static struct data *
-next_data(struct data *data)
-{
-	return SLIST_NEXT(data, next);
-}
-/*
- * Terminate function is not needed.
- */
 /*----------------------------------------------------------------------*/
 /* Include path list							*/
 /*----------------------------------------------------------------------*/
-static struct pool* head_inc;
-static struct data *cur_inc;
-
-static struct pool* head_included;
-static struct data *cur_included;
+static STRHASH *head_inc;
 
 /*
  * init_inc: initialize include file list.
@@ -139,8 +56,7 @@ static struct data *cur_included;
 void
 init_inc(void)
 {
-	head_inc = open_pool();
-	head_included = open_pool();
+	head_inc = strhash_open(1024, NULL);
 }
 /*
  * put_inc: put include file.
@@ -152,7 +68,29 @@ init_inc(void)
 void
 put_inc(const char *file, const char *path, int id)
 {
-	put_pool(head_inc, file, path, id);
+	struct sh_entry *entry;
+	struct data *data;
+
+	entry = strhash_assign(head_inc, HASH_KEY(file), 1);
+	data = entry->value;
+	if (data == NULL) {
+		data = (struct data *)malloc(sizeof(struct data));
+		if (!data)
+			die("short of memory.");
+#if defined(_WIN32) || defined(__DJGPP__)
+		strlimcpy(data->name, file, sizeof(data->name));
+#else
+		data->name = entry->name;
+#endif
+		data->id = id;
+		data->contents = strbuf_open(0);
+		data->ref_contents = NULL;
+		data->count = 0;
+		data->ref_count = 0;
+		entry->value = data;
+	}
+	strbuf_puts0(data->contents, path);
+	data->count++;
 }
 /*
  * get_inc: get include file.
@@ -163,7 +101,9 @@ put_inc(const char *file, const char *path, int id)
 struct data *
 get_inc(const char *name)
 {
-	return get_pool(head_inc, name);
+	struct sh_entry *entry = strhash_assign(head_inc, HASH_KEY(name), 0);
+
+	return entry ? entry->value : NULL;
 }
 /*
  * first_inc: get the first include file.
@@ -173,7 +113,9 @@ get_inc(const char *name)
 struct data *
 first_inc(void)
 {
-	return cur_inc = first_data(head_inc);
+	struct sh_entry *entry = strhash_first(head_inc);
+
+	return entry ? entry->value : NULL;
 }
 /*
  * next_inc: get the next include file.
@@ -183,21 +125,25 @@ first_inc(void)
 struct data *
 next_inc(void)
 {
-	return cur_inc = next_data(cur_inc);
+	struct sh_entry *entry = strhash_next(head_inc);
+
+	return entry ? entry->value : NULL;
 }
 
 
 /*
- * put_included: put include file.
+ * put_included: put include file reference.
  *
- *	i)	file	file name (the last component of the path)
+ *	i)	data	inc structure
  *	i)	path	path name or command line.
- *	i)	id	path id
  */
 void
-put_included(const char *file, const char *path)
+put_included(struct data *data, const char *path)
 {
-	put_pool(head_included, file, path, 0);
+	if (data->ref_contents == NULL)
+		data->ref_contents = strbuf_open(0);
+	strbuf_puts0(data->ref_contents, path);
+	data->ref_count++;
 }
 /*
  * get_included: get included file.
@@ -208,27 +154,9 @@ put_included(const char *file, const char *path)
 struct data *
 get_included(const char *name)
 {
-	return get_pool(head_included, name);
-}
-/*
- * first_included: get the first included file.
- *
- *	r)		descriptor
- */
-struct data *
-first_included(void)
-{
-	return cur_included = first_data(head_included);
-}
-/*
- * next_included: get the next included file.
- *
- *	r)		descriptor
- */
-struct data *
-next_included(void)
-{
-	return cur_included = next_data(cur_included);
+	struct data *data = get_inc(name);
+
+	return (data && data->ref_count) ? data : NULL;
 }
 /*
  * Terminate function is not needed.

@@ -873,7 +873,7 @@ makeincludeindex(void)
 		    && strcmp(lang, "php") == 0)
 			is_php = 1;
 		last = extract_lastname(ptable.part[PART_LINE].start, is_php);
-		if (last == NULL || get_inc(last) == NULL)
+		if (last == NULL || (inc = get_inc(last)) == NULL)
 			continue;
 		recover(&ptable);
 		/*
@@ -891,7 +891,7 @@ makeincludeindex(void)
 				*q++ = *p;
 			*q = '\0';
 		}
-		put_included(last, buf);
+		put_included(inc, buf);
 	}
 	if (pclose(PIPE) != 0)
 		die("terminated abnormally.");
@@ -899,7 +899,6 @@ makeincludeindex(void)
 	for (inc = first_inc(); inc; inc = next_inc()) {
 		const char *last = inc->name;
 		int no = inc->id;
-		struct data *data;
 		FILE *INCLUDE;
 
 		if (inc->count > 1) {
@@ -931,21 +930,20 @@ makeincludeindex(void)
 			 */
 			strbuf_reset(inc->contents);
 		}
-		data = get_included(last);
-		if (!data)
+		if (!inc->ref_count)
 			continue;
-		if (data->count == 1) {
+		if (inc->ref_count == 1) {
 			SPLIT ptable;
 			char buf[1024];
 
-			if (split(strbuf_value(data->contents), 4, &ptable) < 4) {
+			if (split(strbuf_value(inc->ref_contents), 4, &ptable) < 4) {
 				recover(&ptable);
 				die("too small number of parts in makefileindex().");
 			}
 			snprintf(buf, sizeof(buf), "%s %s", ptable.part[PART_LNO].start, ptable.part[PART_PATH].start);
 			recover(&ptable);
-			strbuf_reset(data->contents);
-			strbuf_puts(data->contents, buf);
+			strbuf_reset(inc->ref_contents);
+			strbuf_puts(inc->ref_contents, buf);
 		} else {
 			char path[MAXPATHLEN];
 
@@ -955,8 +953,8 @@ makeincludeindex(void)
 			fputs_nl(body_begin, INCLUDE);
 			fputs_nl(gen_list_begin(), INCLUDE);
 			{
-				const char *line = strbuf_value(data->contents);
-				int count = data->count;
+				const char *line = strbuf_value(inc->ref_contents);
+				int count = inc->ref_count;
 
 				for (; count; line += strlen(line) + 1, count--)
 					fputs_nl(gen_list_body(upperdir(SRCS), line), INCLUDE);
@@ -970,8 +968,7 @@ makeincludeindex(void)
 			 * inc->path == NULL means that information already
 			 * written to file.
 			 */
-			strbuf_reset(data->contents);
-			data->id = no;
+			strbuf_reset(inc->ref_contents);
 		}
 	}
 	strbuf_close(input);
