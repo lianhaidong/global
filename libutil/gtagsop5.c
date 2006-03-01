@@ -93,17 +93,7 @@ gtags_open5(GTOP *gtop, const char *dbpath, const char *root)
 	int dbmode;
 
 	gtop->format_version = 4;
-	switch (gtop->db) {
-	case GTAGS:
-		gtop->format = GTAGS_STANDARD;
-		break;
-	case GRTAGS:
-	case GSYMS:
-		gtop->format = GTAGS_COMPACT;
-		break;
-	default:
-		break;
-	}
+	gtop->format = GTAGS_STANDARD;
 	if (gtop->mode == GTAGS_CREATE) {
 		char buf[128];
 		/*
@@ -112,6 +102,10 @@ gtags_open5(GTOP *gtop, const char *dbpath, const char *root)
 		 */
 		snprintf(buf, sizeof(buf), "%s %d", VERSIONKEY, gtop->format_version);
 		dbop_put(gtop->dbop, VERSIONKEY, buf);
+		if (gtop->db == GRTAGS || gtop->db == GSYMS) {
+			gtop->format |= GTAGS_COMPACT;
+			dbop_put(gtop->dbop, COMPACTKEY, COMPACTKEY);
+		}
 	} else {
 		/*
 		 * recognize format version of GTAGS. 'format version record'
@@ -130,6 +124,8 @@ gtags_open5(GTOP *gtop, const char *dbpath, const char *root)
 			die("GTAGS seems new format. Please install the latest GLOBAL.");
 		else if (gtop->format_version < support_version)
 			die("GTAGS seems older format. Please remake tag files.");
+		if (dbop_get(gtop->dbop, COMPACTKEY) != NULL)
+			gtop->format |= GTAGS_COMPACT;
 	}
 	switch (gtop->mode) {
 	case GTAGS_READ:
@@ -153,7 +149,7 @@ gtags_open5(GTOP *gtop, const char *dbpath, const char *root)
 	/*
 	 * Stuff for compact format.
 	 */
-	if (gtop->format == GTAGS_COMPACT) {
+	if (gtop->format & GTAGS_COMPACT) {
 		assert(root != NULL);
 		strlimcpy(gtop->root, root, sizeof(gtop->root));
 		if (gtop->mode == GTAGS_READ)
@@ -185,19 +181,7 @@ gtags_put5(GTOP *gtop, const char *tag, const char *ctags_x)	/* virtually const 
 		recover(&ptable);
 		die("illegal tag format.\n'%s'", ctags_x);
 	}
-	if (gtop->format == GTAGS_STANDARD) {
-		const char *s_fid = gpath_path2fid(ptable.part[PART_PATH].start, NULL);
-
-		strbuf_reset(gtop->sb);
-		strbuf_puts(gtop->sb, s_fid);
-		strbuf_putc(gtop->sb, ' ');
-		strbuf_puts(gtop->sb, ptable.part[PART_TAG].start);
-		strbuf_putc(gtop->sb, ' ');
-		strbuf_puts(gtop->sb, ptable.part[PART_LNO].start);
-		strbuf_putc(gtop->sb, ' ');
-		strbuf_puts(gtop->sb, ptable.part[PART_LINE].start);
-		dbop_put(gtop->dbop, tag, strbuf_value(gtop->sb));
-	} else if (gtop->format == GTAGS_COMPACT) {
+	if (gtop->format & GTAGS_COMPACT) {
 		int *lno;
 		struct sh_entry *entry;
 		/*
@@ -231,7 +215,17 @@ gtags_put5(GTOP *gtop, const char *tag, const char *ctags_x)	/* virtually const 
 		lno = varray_append((VARRAY *)entry->value);
 		*lno = atoi(ptable.part[PART_LNO].start);
 	} else {
-		die("unknown format.");
+		const char *s_fid = gpath_path2fid(ptable.part[PART_PATH].start, NULL);
+
+		strbuf_reset(gtop->sb);
+		strbuf_puts(gtop->sb, s_fid);
+		strbuf_putc(gtop->sb, ' ');
+		strbuf_puts(gtop->sb, ptable.part[PART_TAG].start);
+		strbuf_putc(gtop->sb, ' ');
+		strbuf_puts(gtop->sb, ptable.part[PART_LNO].start);
+		strbuf_putc(gtop->sb, ' ');
+		strbuf_puts(gtop->sb, ptable.part[PART_LINE].start);
+		dbop_put(gtop->dbop, tag, strbuf_value(gtop->sb));
 	}
 	recover(&ptable);
 }
@@ -351,7 +345,7 @@ gtags_next5(GTOP *gtop)
 {
 	const char *tagline;
 
-	if (gtop->format == GTAGS_COMPACT && gtop->lnop != NULL)
+	if (gtop->format & GTAGS_COMPACT && gtop->lnop != NULL)
 		return genrecord_compact(gtop);
 	tagline = dbop_next(gtop->dbop);
 	if (tagline == NULL || gtop->flags & GTOP_KEY)
@@ -496,31 +490,9 @@ genrecord(GTOP *gtop, const char *tagline)
 	if (path == NULL)
 		die("GPATH is corrupted.(file id '%s' not found)", ptable.part[PART_FID5].start);
 	/*
-	 * Standard format
-	 */
-	if (gtop->format == GTAGS_STANDARD) {
-		const char *src;
-
-		/*
-		 * Seek to the start point of source line.
-		 */
-		for (src = ptable.part[PART_LNO5].start; *src && !isspace(*src); src++)
-			;
-		if (*src != ' ')
-			die("illegal standard format.");
-		src++;
-		snprintf(output, sizeof(output), "%-16s %4d %-16s %s",
-			ptable.part[PART_TAG5].start,
-			atoi(ptable.part[PART_LNO5].start),
-			path,
-			src);
-		recover(&ptable);
-		return output;
-	}
-	/*
 	 * Compact format
 	 */
-	else if (gtop->format == GTAGS_COMPACT) {
+	if (gtop->format & GTAGS_COMPACT) {
 		/*
 		 * Copy elements.
 		 */
@@ -544,8 +516,28 @@ genrecord(GTOP *gtop, const char *tagline)
 			gtop->lno = 0;
 		}
 		return genrecord_compact(gtop);
-	} else {
-		die("unknown format.");
+	}
+	/*
+	 * Standard format
+	 */
+	else {
+		const char *src;
+
+		/*
+		 * Seek to the start point of source line.
+		 */
+		for (src = ptable.part[PART_LNO5].start; *src && !isspace(*src); src++)
+			;
+		if (*src != ' ')
+			die("illegal standard format.");
+		src++;
+		snprintf(output, sizeof(output), "%-16s %4d %-16s %s",
+			ptable.part[PART_TAG5].start,
+			atoi(ptable.part[PART_LNO5].start),
+			path,
+			src);
+		recover(&ptable);
+		return output;
 	}
 }
 /*
