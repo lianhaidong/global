@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2002, 2005
+ * Copyright (c) 1997, 1998, 1999, 2000, 2002, 2005, 2006
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -230,6 +230,23 @@ strbuf_nputs(STRBUF *sb, const char *s, int len)
 			__strbuf_expandbuf(sb, len);
 		while (len-- > 0)
 			*sb->curp++ = *s++;
+	}
+}
+/*
+ * strbuf_nputc: Put characters with length
+ *
+ *	i)	sb	statically defined string buffer
+ *	i)	c	character
+ *	i)	len	length of string
+ */
+void
+strbuf_nputc(STRBUF *sb, int c, int len)
+{
+	if (!sb->alloc_failed && len > 0) {
+		if (sb->curp + len > sb->endp)
+			__strbuf_expandbuf(sb, len);
+		while (len-- > 0)
+			*sb->curp++ = c;
 	}
 }
 /*
