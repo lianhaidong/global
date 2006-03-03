@@ -70,9 +70,10 @@ ctags-exuberant|Exuberant Ctags|ctags by Darren Hiebert:\
 	:tc=common:\
 	:suffixes=s,a,sa,asm,C,H,cpp,cxx,hxx,hpp,cc,c,h,y:\
 	:extractmethod:\
-	:GTAGS=/usr/local/bin/ctags-exuberant -xu --format=1 %s | perl -ne '\
+	:GTAGS=/usr/local/bin/ctags-exuberant -xu %s | perl -ne '\
 		if (/^operator \\S+\\s+function\\s/) { s/^operator //; }\
-		print;':
+		($name, $type, $no, $path, $line) = split(/[ \\t]+/, $_, 5);\
+		printf(STDOUT "%-16s %4d %-16s %s", $name, $no, $path, $line);':
 #---------------------------------------------------------------------
 # Configuration for htags(1)
 # Let's paint hypertext with your favorite colors!
