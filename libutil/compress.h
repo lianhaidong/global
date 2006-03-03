@@ -33,7 +33,6 @@
 
 void abbrev_open(const char *);
 void abbrev_close();
-void abbrev_setname(const char *);
 void abbrev_dump();
 char *compress(const char *text, const char *name);
 char *uncompress(const char *text, const char *name);

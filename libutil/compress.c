@@ -86,7 +86,6 @@ abbrev_open(const char *abbrev)
 	int i, limit;
 	struct abbrmap *ab;
 	char *p;
-	int c;
 
 	/*
 	 * abbrev string: "ddefine ttypedef"
