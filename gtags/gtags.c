@@ -824,6 +824,8 @@ createtags(const char *dbpath, const char *root, int db)
 			flags |= GTAGS_COMPACT;
 		if (cflag >= 3)
 			flags |= GTAGS_FORMAT5;
+		if (cflag >= 4)
+			flags |= GTAGS_COMPRESS;
 	}
 	if (vflag > 1)
 		fprintf(stderr, " using tag command '%s <path>'.\n", strbuf_value(comline));

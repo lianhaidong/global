@@ -33,6 +33,7 @@
 #define VERSIONKEY	" __.VERSION"
 #define COMPACTKEY	" __.COMPACT"
 #define PATHINDEXKEY	" __.PATHINDEX"
+#define COMPRESSKEY	" __.COMPRESS"
 
 #define GPATH		0
 #define GTAGS		1
@@ -49,6 +50,7 @@
 #define GTAGS_COMPACT		1	/* compact format */
 #define GTAGS_PATHINDEX		2	/* use path index */
 #define GTAGS_FORMAT5		4	/* test format for version 5 */
+#define GTAGS_COMPRESS		8	/* use compression */
 /* gtags_add() */
 #define GTAGS_UNIQUE		1	/* compress duplicate lines */
 #define GTAGS_EXTRACTMETHOD	2	/* extract method from class definition */

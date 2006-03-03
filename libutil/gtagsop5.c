@@ -39,6 +39,7 @@
 
 #include "char.h"
 #include "conf.h"
+#include "compress.h"
 #include "dbop.h"
 #include "die.h"
 #include "format.h"
@@ -53,7 +54,6 @@
 #include "strbuf.h"
 #include "strhash.h"
 #include "strlimcpy.h"
-#include "strmake.h"
 #include "varray.h"
 
 #define HASHBUCKETS	256
@@ -94,17 +94,24 @@ gtags_open5(GTOP *gtop, const char *dbpath, const char *root)
 
 	gtop->format_version = 4;
 	gtop->format = GTAGS_STANDARD;
+	if (gtop->db == GRTAGS || gtop->db == GSYMS)
+		gtop->format |= GTAGS_COMPACT;
+	if (gtop->db == GTAGS && gtop->openflags & GTAGS_COMPRESS)
+		gtop->format |= GTAGS_COMPRESS;
 	if (gtop->mode == GTAGS_CREATE) {
-		char buf[128];
+		char buf[1024];
 		/*
 		 * Don't write format information in the tag file.
 		 * dbop_put(gtop->dbop, COMPACTKEY, COMPACTKEY);
 		 */
 		snprintf(buf, sizeof(buf), "%s %d", VERSIONKEY, gtop->format_version);
 		dbop_put(gtop->dbop, VERSIONKEY, buf);
-		if (gtop->db == GRTAGS || gtop->db == GSYMS) {
-			gtop->format |= GTAGS_COMPACT;
+		if (gtop->format & GTAGS_COMPACT)
 			dbop_put(gtop->dbop, COMPACTKEY, COMPACTKEY);
+		if (gtop->format & GTAGS_COMPRESS) {
+			snprintf(buf, sizeof(buf), "%s %s", COMPRESSKEY, DEFAULT_ABBREVIATION);
+			dbop_put(gtop->dbop, COMPRESSKEY, buf);
+			abbrev_open(DEFAULT_ABBREVIATION);
 		}
 	} else {
 		/*
@@ -126,6 +133,12 @@ gtags_open5(GTOP *gtop, const char *dbpath, const char *root)
 			die("GTAGS seems older format. Please remake tag files.");
 		if (dbop_get(gtop->dbop, COMPACTKEY) != NULL)
 			gtop->format |= GTAGS_COMPACT;
+		if ((p = dbop_get(gtop->dbop, COMPRESSKEY)) != NULL) {
+			for (p += strlen(COMPRESSKEY); *p && isspace((unsigned char)*p); p++)
+				;
+			abbrev_open(p);
+			gtop->format |= GTAGS_COMPRESS;
+		}
 	}
 	switch (gtop->mode) {
 	case GTAGS_READ:
@@ -224,7 +237,9 @@ gtags_put5(GTOP *gtop, const char *tag, const char *ctags_x)	/* virtually const 
 		strbuf_putc(gtop->sb, ' ');
 		strbuf_puts(gtop->sb, ptable.part[PART_LNO].start);
 		strbuf_putc(gtop->sb, ' ');
-		strbuf_puts(gtop->sb, ptable.part[PART_LINE].start);
+		strbuf_puts(gtop->sb, gtop->format & GTAGS_COMPRESS ?
+			compress(ptable.part[PART_LINE].start, ptable.part[PART_TAG].start) :
+			ptable.part[PART_LINE].start);
 		dbop_put(gtop->dbop, tag, strbuf_value(gtop->sb));
 	}
 	recover(&ptable);
@@ -360,6 +375,8 @@ gtags_next5(GTOP *gtop)
 void
 gtags_close5(GTOP *gtop)
 {
+	if (gtop->format & GTAGS_COMPRESS)
+		abbrev_close();
 	if (gtop->pool) {
 		if (gtop->prev_path[0])
 			flush_pool(gtop);
@@ -535,7 +552,9 @@ genrecord(GTOP *gtop, const char *tagline)
 			ptable.part[PART_TAG5].start,
 			atoi(ptable.part[PART_LNO5].start),
 			path,
-			src);
+			gtop->format & GTAGS_COMPRESS ?
+				uncompress(src, ptable.part[PART_TAG5].start) :
+				src);
 		recover(&ptable);
 		return output;
 	}
