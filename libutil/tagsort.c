@@ -40,17 +40,16 @@
 /*
  * Internal sort filter.
  *
- * 1. ctags [-x] format
+ * 1. ctags-x format
  *
  * This internal filter is equivalent with
  * FORMAT_CTAGS_X: 'sort -k 1,1 -k 3,3 -k 2,2n [-u]'
- * FORMAT_CTAGS:   'sort -k 1,1 -k 2,2 -k 3,3n [-u]'
  *
  * - Requirement -
- * (1) input must be ctags [-x] format.
+ * (1) input must be ctags-x format.
  * (2) input must be sorted in alphabetical order by tag name.
  *
- * 2. path name only format
+ * 2. path format
  *
  * This filter is equivalent with
  * 'sort -u'.
@@ -106,34 +105,26 @@ put_lines(int unique, char *lines, struct dup_entry *entries, int entry_count, v
 	int i;
 	char last_path[MAXPATHLEN+1];
 	int last_lineno;
-	int splits, part_lno, part_path;
 	/*
-	 * ctags -x format.
+	 * Parse and sort ctags -x format records.
 	 *
 	 * PART_TAG     PART_LNO PART_PATH      PART_LINE
 	 * +----------------------------------------------
 	 * |main             227 src/main       main()
-	 *
-	 */
-	splits = 4;
-	part_lno = PART_LNO;
-	part_path = PART_PATH;
-	/*
-	 * Parse and sort ctags [-x] format records.
 	 */
 	for (i = 0; i < entry_count; i++) {
 		struct dup_entry *e = &entries[i];
 		char *ctags_x = lines + e->offset;
 		SPLIT ptable;
 
-		if (split(ctags_x, splits, &ptable) < splits) {
+		if (split(ctags_x, 4, &ptable) < 4) {
 			recover(&ptable);
 			die("too small number of parts.\n'%s'", ctags_x);
 		}
-		e->lineno = atoi(ptable.part[part_lno].start);
-		e->path = ptable.part[part_path].start;
-		e->savec = ptable.part[part_path].savec;
-		e->pathlen = ptable.part[part_path].end - ptable.part[part_path].start;
+		e->lineno = atoi(ptable.part[PART_LNO].start);
+		e->path = ptable.part[PART_PATH].start;
+		e->savec = ptable.part[PART_PATH].savec;
+		e->pathlen = ptable.part[PART_PATH].end - ptable.part[PART_PATH].start;
 		recover(&ptable);
 		if (e->savec)
 			e->path[e->pathlen] = '\0';

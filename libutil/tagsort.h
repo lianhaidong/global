@@ -39,7 +39,7 @@ typedef struct {
 	 */
 	DBOP *dbop;
 	/*
-	 * for FORMAT_CTAGS/FORMAT_CTAGS_X
+	 * for FORMAT_CTAGS_X
 	 */
 	STRBUF *sb;
 	VARRAY *vb;
