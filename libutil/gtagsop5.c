@@ -83,6 +83,7 @@ static int support_version = 4;	/* acceptable format version   */
  *	i)	gtop->mode	GTAGS_READ: read only
  *			GTAGS_CREATE: create tag
  *			GTAGS_MODIFY: modify tag
+ *	i)	gtop->openflags	GTAGS_COMPRESS
  *	r)		GTOP structure
  *
  * when error occurred, gtagopen doesn't return.
