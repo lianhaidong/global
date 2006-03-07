@@ -257,7 +257,7 @@ uncompress(const char *in, const char *name)
 				strbuf_puts(sb, name);
 				break;
 			case '{':	/* } */
-				for (p++; *p && isdigit(*p); p++)
+				for (p++; *p && isdigit((unsigned char)*p); p++)
 					spaces = spaces * 10 + *p - '0';
 				break;
 			case '0':
