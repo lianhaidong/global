@@ -196,7 +196,7 @@ main(int argc, char **argv)
 				else if (!strcmp(optarg, "path"))
 					nofilter |= PATH_FILTER;
 			} else {
-				nofilter = BOTH_FILTER;;
+				nofilter = BOTH_FILTER;
 			}
 			break;
 		case 'g':

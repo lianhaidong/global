@@ -108,7 +108,7 @@ abbrev_open(const char *abbrev)
 		for (; *p && *p != ' '; p++)
 			;
 		if (*p == ' ')
-			*p++ = '\0';;
+			*p++ = '\0';
 		ab->length = strlen(ab->name);
 		if (ab->c < 'a' || ab->c > 'z')
 			die("Abbrev character must be a lower alphabetic character. (%s)", abbrev);
@@ -135,7 +135,7 @@ void
 abbrev_dump()
 {
 	struct abbrmap *ab;
-	int i, limit = sizeof(ab2name) / sizeof(struct abbrmap);;
+	int i, limit = sizeof(ab2name) / sizeof(struct abbrmap);
 
 	printf("ab2name: %d entries\n", limit);
 	for (i = 0; i < limit; i++) {
