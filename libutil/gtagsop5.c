@@ -305,7 +305,8 @@ gtags_first5(GTOP *gtop, const char *pattern, int flags)
 		regflags |= REG_EXTENDED;
 	if (flags & GTOP_IGNORECASE)
 		regflags |= REG_ICASE;
-
+	if (gtop->format & GTAGS_COMPACT)
+		gtop->fp = NULL;
 	/*
 	 * Get key and compiled regular expression for dbop_xxxx().
 	 */
@@ -376,6 +377,8 @@ gtags_next5(GTOP *gtop)
 void
 gtags_close5(GTOP *gtop)
 {
+	if (gtop->format & GTAGS_COMPACT && gtop->fp != NULL)
+		fclose(gtop->fp);
 	if (gtop->format & GTAGS_COMPRESS)
 		abbrev_close();
 	if (gtop->pool) {
@@ -530,7 +533,12 @@ genrecord(GTOP *gtop, const char *tagline)
 					"%s/%s", gtop->root, &gtop->path[2]);
 			else
 				snprintf(srcpath, sizeof(srcpath), "%s", &gtop->path[2]);
+			/* close file if already opened. */
+			if (gtop->fp != NULL)
+				fclose(gtop->fp);
 			gtop->fp = fopen(srcpath, "r");
+			if (gtop->fp == NULL)
+				warning("source file '%s' is not available.\n", srcpath);
 			gtop->lno = 0;
 		}
 		return genrecord_compact(gtop);
@@ -597,12 +605,5 @@ genrecord_compact(GTOP *gtop)
 	}
 	snprintf(output, sizeof(output), "%-16s %4d %-16s %s",
 		gtop->tag, lno, gtop->path, src);
-	/*
-	 * End of record.
-	 */
-	if (gtop->lnop == NULL && gtop->fp != NULL) {
-		fclose(gtop->fp);
-		gtop->fp = NULL;
-	}
 	return output;
 }
