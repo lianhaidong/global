@@ -82,7 +82,6 @@ int Tflag;				/* [option]		*/
 int uflag;				/* command		*/
 int vflag;				/* [option]		*/
 int xflag;				/* [option]		*/
-int result;				/* [option]		*/
 int show_version;
 int show_help;
 int show_filter;			/* undocumented command */
