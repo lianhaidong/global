@@ -397,7 +397,7 @@ strbuf_fgets(STRBUF *sb, FILE *ip, int flags)
 	if (flags & STRBUF_NOCRLF) {
 		if (*(sb->curp - 1) == '\n')
 			*(--sb->curp) = 0;
-		if (*(sb->curp - 1) == '\r')
+		if (sb->curp > sb->sbuf && *(sb->curp - 1) == '\r')
 			*(--sb->curp) = 0;
 	}
 	return sb->sbuf;
