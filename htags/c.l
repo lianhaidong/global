@@ -64,7 +64,7 @@ YACC_IDENTIFIER	({ALPHA}|\.)({ALPHANUM}|\.)*
 
 %start	C C_COMMENT CPP_COMMENT SHELL_COMMENT STRING LITERAL PREPROCESSOR_LINE
 %start	YACC_DECLARATIONS YACC_RULES YACC_PROLOGUE BRACED_CODE
-%option 8bit noyywrap noyy_top_state stack prefix="c_"
+%option 8bit noyywrap noyy_top_state stack never-interactive prefix="c_"
 %%
  /* Backslash-newline */
 \\\n		DEFAULT_BACKSLASH_NEWLINE_ACTION

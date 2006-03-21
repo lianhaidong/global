@@ -60,7 +60,7 @@ ALPHANUM	[a-zA-Z_\x80-\xff0-9]
 WORD		{ALPHA}{ALPHANUM}*
 
 %start	ASM C_COMMENT CPP_COMMENT SHELL_COMMENT STRING LITERAL PREPROCESSOR_LINE
-%option 8bit noyywrap noyy_top_state stack prefix="asm_"
+%option 8bit noyywrap noyy_top_state stack never-interactive prefix="asm_"
 %%
  /* Backslash-newline */
 \\\n		DEFAULT_BACKSLASH_NEWLINE_ACTION

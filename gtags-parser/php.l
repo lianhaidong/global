@@ -122,7 +122,7 @@ ALPHA		[a-zA-Z_\x80-\xff]
 ALPHANUM	[a-zA-Z_\x80-\xff0-9]
 WORD		{ALPHA}{ALPHANUM}*
 %start	PHP STRING LITERAL HEREDOCUMENT
-%option 8bit caseless noyywrap nounput yylineno prefix="php_"
+%option 8bit caseless noyywrap nounput yylineno never-interactive prefix="php_"
 %%
 \n			{
 				ECHO;

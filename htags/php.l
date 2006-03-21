@@ -67,7 +67,7 @@ ALPHANUM	[a-zA-Z_\x80-\xff0-9]
 WORD		{ALPHA}{ALPHANUM}*
 
 %start	PHP C_COMMENT CPP_COMMENT SHELL_COMMENT STRING LITERAL HEREDOCUMENT PREPROCESSOR_LINE
-%option 8bit noyywrap noyy_top_state stack prefix="php_"
+%option 8bit noyywrap noyy_top_state stack never-interactive prefix="php_"
 %%
  /* Start PHP */
 <INITIAL>"<?="		{ put_string(LEXTEXT); BEGIN PHP; }

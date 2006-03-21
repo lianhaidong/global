@@ -75,7 +75,7 @@ WORD		{ALPHA}{ALPHANUM}*
 %x C_COMMENT CPP_COMMENT STRING LITERAL
 %s PREPROCESSOR_LINE
 
-%option 8bit yylineno stack noyywrap noyy_top_state prefix="asm_"
+%option 8bit yylineno stack noyywrap noyy_top_state never-interactive prefix="asm_"
 
 %%
 
