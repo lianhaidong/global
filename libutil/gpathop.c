@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2005
+ * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2005, 2006
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -59,10 +59,8 @@ static int created;
  * [History of format version]
  *
  * GLOBAL-4.8.7		no idea about format version.
- * GLOBAL-4.8.8(maybe)	understand format version.
+ * GLOBAL-5.0		understand format version.
  *			support format version 2.
- *			The invoking gtags -i (incremental updating) brings
- *			GPATH to version 2.
  *
  * - Format version 1
  *
@@ -83,6 +81,8 @@ static int created;
  *      ./aaa.c\0       11\0
  *      ./README\0      12\0o\0         <=== 'o' means other files.
  */
+static int support_version = 2;	/* acceptable format version   */
+static int create_version = 2;	/* format version of newly created tag file */
 /*
  * get_flag: get flag value
  */
@@ -143,14 +143,25 @@ gpath_open(const char *dbpath, int mode)
 	dbop = dbop_open(makepath(dbpath, dbname(GPATH), NULL), mode, 0644, 0);
 	if (dbop == NULL)
 		return -1;
-	if (mode == 1)
+	if (mode == 1) {
+		char buf[1024];
+
+		snprintf(buf, sizeof(buf), "%s %d", VERSIONKEY, create_version);
+		dbop_put(dbop, VERSIONKEY, buf);
 		_nextkey = 1;
-	else {
+		
+	} else {
+		int format_version;
 		const char *path = dbop_get(dbop, NEXTKEY);
 
 		if (path == NULL)
 			die("nextkey not found in GPATH.");
 		_nextkey = atoi(path);
+		format_version = get_version(dbop);
+		if (format_version > support_version)
+			die("GPATH seems new format. Please install the latest GLOBAL.");
+		else if (format_version < support_version)
+                        die("GPATH seems older format. Please remake tag files."); 
 	}
 	return 0;
 }
@@ -325,6 +336,10 @@ gfind_open(const char *dbpath, const char *local, int other)
 	gfind->other = other;
 	gfind->type = GPATH_SOURCE;
 	gfind->version = get_version(gfind->dbop);
+	if (gfind->version > support_version)
+		die("GPATH seems new format. Please install the latest GLOBAL.");
+	else if (gfind->version < support_version)
+		die("GPATH seems older format. Please remake tag files."); 
 	return gfind;
 }
 /*
