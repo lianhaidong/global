@@ -129,9 +129,9 @@ gtags_open5(GTOP *gtop, const char *dbpath, const char *root)
 			gtop->format_version = atoi(p);
 		}
 		if (gtop->format_version > support_version)
-			die("GTAGS seems new format. Please install the latest GLOBAL.");
+			die("%s seems new format. Please install the latest GLOBAL.", dbname(gtop->db));
 		else if (gtop->format_version < support_version)
-			die("GTAGS seems older format. Please remake tag files.");
+			die("%s seems older format. Please remake tag files.", dbname(gtop->db));
 		if (dbop_get(gtop->dbop, COMPACTKEY) != NULL)
 			gtop->format |= GTAGS_COMPACT;
 		if ((p = dbop_get(gtop->dbop, COMPRESSKEY)) != NULL) {
