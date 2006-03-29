@@ -26,7 +26,7 @@
 @HEADER	HTAGS,1,April 2005,GNU Project
 @NAME	htags - generate hypertext from source code.
 @SYNOPSIS
-	@name{htags} [-acDfFgnovwx][-d @arg{dbpath}][-m @arg{name}][-S @arg{cgidir}][-t @arg{title}][@arg{htmldir}]
+	@name{htags} [-acDfFgnosvwx][-d @arg{dbpath}][-m @arg{name}][-S @arg{cgidir}][-t @arg{title}][@arg{htmldir}]
 @DESCRIPTION
 	@name{Htags} makes hypertext of C, C++, Yacc, Java, PHP and Assembly source code.
 
