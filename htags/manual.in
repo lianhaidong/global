@@ -101,6 +101,9 @@
 		binary files.
 	@item{@option{--statistics}}
 		Print statistics information.
+	@item{@option{-s}, @option{--symbol}}
+		Make anchors not only for functions but also other symbols.
+		@file{GSYMS} tag file needed.
 	@item{@option{-S}, @option{--secure-cgi} @arg{cgidir}}
 		Write CGI programs into the @arg{cgidir} to realize
 		a centralised CGI program.

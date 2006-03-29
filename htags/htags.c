@@ -103,6 +103,7 @@ int show_help;				/* --help command		*/
 int show_version;			/* --version command		*/
 int caution;				/* --caution option		*/
 int dynamic;				/* --dynamic(-D) option		*/
+int symbol;				/* --symbol(-s) option          */
 int statistics;				/* --statistics option		*/
 
 int copy_files;				/* 1: copy tag files		*/
@@ -218,10 +219,6 @@ static struct option const long_options[] = {
         {"main-func", required_argument, NULL, 'm'},
         {"line-number", no_argument, NULL, 'n'},
         {"other", no_argument, NULL, 'o'},
-	/*
-	 * Though the -s(--symbol) was removed, this code
-	 * is left for compatibility.
-	 */
         {"symbol", no_argument, NULL, 's'},
         {"secure-cgi", required_argument, NULL, 'S'},
         {"title", required_argument, NULL, 't'},
@@ -1497,10 +1494,7 @@ main(int argc, char **argv)
 			other_files = 1;
                         break;
                 case 's':
-			/*
-			 * Though the -s(--symbol) was removed, this code
-			 * is left for compatibility.
-			 */
+			symbol = 1;
                         break;
                 case 'S':
 			Sflag++;
@@ -1650,6 +1644,10 @@ main(int argc, char **argv)
 		}
 		if (!gtags_exist[GPATH] || !gtags_exist[GTAGS])
 			die("GPATH and/or GTAGS not found. Htags needs them at least.");
+		if (!symbol)
+			gtags_exist[GSYMS] = 0;
+		else if (!gtags_exist[GSYMS])
+			die("-s(--symbol) option needs GSYMS tag file.");
 	}
 	/*
 	 * make dbpath absolute.
@@ -1749,6 +1747,8 @@ main(int argc, char **argv)
 			if (dynamic)
 				if (!strcmp(p, DEFS) || !strcmp(p, REFS) || !strcmp(p, SYMS))
 					continue;
+			if (!symbol && !strcmp(p, SYMS))
+				continue;
 			path = makepath(distpath, p, NULL);
 			if (!test("d", path))
 				if (mkdir(path, mode))
