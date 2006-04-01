@@ -64,7 +64,6 @@ void createtags(const char *, const char *, int);
 int printconf(const char *);
 void set_base_directory(const char *, const char *);
 
-int cflag;					/* compact format */
 int iflag;					/* incremental update */
 int Iflag;					/* make  id-utils index */
 int qflag;					/* quiet mode */
@@ -195,9 +194,6 @@ main(int argc, char **argv)
 				set_env(name, value);
 				gtagsconf = gtagslabel = 0;
 			}
-			break;
-		case 'c':
-			cflag++;
 			break;
 		case 'f':
 			file_list = optarg;
@@ -364,8 +360,6 @@ main(int argc, char **argv)
 	if (getconfb("extractmethod"))
 		extractmethod = 1;
 	strbuf_reset(sb);
-	if (cflag == 0 && getconfs("format", sb) && !strcmp(strbuf_value(sb), "compact"))
-		cflag++;
 	/*
 	 * Pass the following information to gtags-parser(1)
 	 * using environment variable.
@@ -393,7 +387,7 @@ main(int argc, char **argv)
 		 * Version check. If existing tag files are old enough
 		 * gtagsopen() abort with error message.
 		 */
-		GTOP *gtop = gtags_open(dbpath, cwd, GTAGS, GTAGS_MODIFY, 0);
+		GTOP *gtop = gtags_open(dbpath, cwd, GTAGS, GTAGS_MODIFY);
 		gtags_close(gtop);
 		/*
 		 * GPATH is needed for incremental updating.
@@ -694,7 +688,7 @@ updatetags(const char *dbpath, const char *root, IDSET *deleteset, STRBUF *addli
 	 */
 	if (!getconfs(dbname(db), comline))
 		die("cannot get tag command. (%s)", dbname(db));
-	gtop = gtags_open(dbpath, root, db, GTAGS_MODIFY, 0);
+	gtop = gtags_open(dbpath, root, db, GTAGS_MODIFY);
 	if (vflag) {
 		char fid[32];
 		const char *path;
@@ -808,28 +802,7 @@ createtags(const char *dbpath, const char *root, int db)
 	 */
 	if (db == GRTAGS && !test("f", makepath(dbpath, dbname(GTAGS), NULL)))
 		die("GTAGS needed to create GRTAGS.");
-	/*
-	 * Compact format:
-	 *
-	 * non: STANDARD format
-	 * -c:  COMPACT format + PATHINDEX option
-	 * -cc: STANDARD format + PATHINDEX option
-	 * -ccc: TEST format for version 5.0
-	 * Ths -cc and -ccc is undocumented.
-	 */
-	flags = 0;
-	if (cflag) {
-		flags |= GTAGS_PATHINDEX;
-		if (cflag == 1)
-			flags |= GTAGS_COMPACT;
-		if (cflag >= 3)
-			flags |= GTAGS_FORMAT5;
-		if (cflag >= 4)
-			flags |= GTAGS_COMPRESS;
-	}
-	if (vflag > 1)
-		fprintf(stderr, " using tag command '%s <path>'.\n", strbuf_value(comline));
-	gtop = gtags_open(dbpath, root, db, GTAGS_CREATE, flags);
+	gtop = gtags_open(dbpath, root, db, GTAGS_CREATE);
 	/*
 	 * Set flags.
 	 */

@@ -50,8 +50,6 @@
 @OPTIONS
 	The following options are available:
 	@begin_itemize
-	@item{@option{-c}, @option{--compact}}
-		Make tag files with compact format.
 	@item{@option{--config} @arg{name}}
 		Show the value of config variable @arg{name}.
 		If @arg{name} is not specified then show whole of config entry.
@@ -143,9 +141,6 @@
 		As a special exception, @name{gtags} collect values from multiple @code{suffixes} variables.
 		This variable is obsoleted. If the langmap variable is defined
 		@name{gtags} no longer refers this.
-	@item{@code{format}(standard|compact)}
-		Format of tag files. The default is @code{standard}.
-		Compact format is same to @option{-c}(@option{--compact}).
 	@item{@code{icase_path}(boolean)}
 		Ignore case distinctions in the path.
 		Suffixes check are affected by this capability.

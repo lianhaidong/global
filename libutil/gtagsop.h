@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2005
+ * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2005, 2006
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -46,11 +46,8 @@
 #define GTAGS_MODIFY	2
 
 /* gtags_open() */
-#define GTAGS_STANDARD		0	/* standard format */
-#define GTAGS_COMPACT		1	/* compact format */
-#define GTAGS_PATHINDEX		2	/* use path index */
-#define GTAGS_FORMAT5		4	/* test format for version 5 */
-#define GTAGS_COMPRESS		8	/* use compression */
+#define GTAGS_COMPACT		1	/* compact option */
+#define GTAGS_COMPRESS		2	/* compression option */
 /* gtags_add() */
 #define GTAGS_UNIQUE		1	/* compress duplicate lines */
 #define GTAGS_EXTRACTMETHOD	2	/* extract method from class definition */
@@ -66,7 +63,7 @@
 typedef struct {
 	DBOP *dbop;			/* descripter of DBOP */
 	int format_version;		/* format version */
-	int format;			/* GTAGS_STANDARD, GTAGS_COMPACT */
+	int format;			/* GTAGS_COMPACT, GTAGS_COMPRESS */
 	int mode;			/* mode */
 	int db;				/* 0:GTAGS, 1:GRTAGS, 2:GSYMS */
 	int openflags;			/* flags value of gtags_open() */
@@ -89,8 +86,7 @@ typedef struct {
 } GTOP;
 
 const char *dbname(int);
-void formatcheck(const char *);
-GTOP *gtags_open(const char *, const char *, int, int, int);
+GTOP *gtags_open(const char *, const char *, int, int);
 void gtags_put(GTOP *, const char *, const char *);
 void gtags_delete(GTOP *, IDSET *);
 const char *gtags_first(GTOP *, const char *, int);
