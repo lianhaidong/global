@@ -41,8 +41,7 @@ default:\
 #---------------------------------------------------------------------
 common:\
 	:skip=@DEFAULTSKIP@:\
-	:langmap=@DEFAULTLANGMAP_QUOTED@:\
-	:format=standard:
+	:langmap=@DEFAULTLANGMAP_QUOTED@:
 #
 # [gtags-parser]
 #
