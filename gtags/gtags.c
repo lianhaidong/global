@@ -110,7 +110,6 @@ help(void)
 }
 
 static struct option const long_options[] = {
-	{"compact", no_argument, NULL, 'c'},
 	{"file", required_argument, NULL, 'f'},
 	{"idutils", no_argument, NULL, 'I'},
 	{"incremental", no_argument, NULL, 'i'},
@@ -158,7 +157,7 @@ main(int argc, char **argv)
 	int optchar;
 	int option_index = 0;
 
-	while ((optchar = getopt_long(argc, argv, "cf:iIn:oqvwse", long_options, &option_index)) != EOF) {
+	while ((optchar = getopt_long(argc, argv, "f:iIn:oqvwse", long_options, &option_index)) != EOF) {
 		switch (optchar) {
 		case 0:
 			p = long_options[option_index].name;
