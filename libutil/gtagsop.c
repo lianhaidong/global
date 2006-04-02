@@ -139,7 +139,7 @@ gtags_open(const char *dbpath, const char *root, int db, int mode)
 	gtop->mode = mode;
 	gtop->format_version = 4;
 	/*
-	 * Decode format.
+	 * Decide format.
 	 */
 	gtop->format = 0;
 	if (gtop->db == GTAGS)
