@@ -32,7 +32,6 @@
 
 #define VERSIONKEY	" __.VERSION"
 #define COMPACTKEY	" __.COMPACT"
-#define PATHINDEXKEY	" __.PATHINDEX"
 #define COMPRESSKEY	" __.COMPRESS"
 
 #define GPATH		0
