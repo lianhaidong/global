@@ -786,7 +786,6 @@ void
 createtags(const char *dbpath, const char *root, int db)
 {
 	GTOP *gtop;
-	int flags;
 	XARGS *xp;
 	char *ctags_x;
 	STRBUF *comline = strbuf_open(0);
