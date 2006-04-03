@@ -35,7 +35,6 @@
  *
  * (3) ctags format (FORMAT_CTAGS)
  *
- * PART_TAG     PART_CTAGS_PATH    PART_CTAGS_LNO
  * +----------------------------------------------
  * |main        ./src/main         227
  *
@@ -64,37 +63,24 @@
 #define PART_PATH 2
 #define PART_LINE 3
 /*
- * FORMAT_CTAGS
- */
-#define PART_CTAGS_PATH 1
-#define PART_CTAGS_LNO  2
-/*
- * Compact format
- * PART_TAG  PART_PATH_COMP  PART_LNO_COMP
- * +----------------------------------------------------
- * |main     ./src/main      227
+ * Tag format:
  *
- * Compact format with pathindex option
- * PART_TAG  PART_PATH_COMP  PART_LNO_COMP
- * +----------------------------------------------------
- * |main     100             227
- */
-#define PART_PATH_COMP  1
-#define PART_LNO_COMP   2
-/*
- * Standard5 format
- * PART_FID5 PART_TAG5 PART_LNO5 PART_LINE5
+ * PART_FID4 PART_TAG4 PART_LNO4 PART_LINE4
  * +----------------------------------------------------
  * |100 main 227 main(int argc, argv **char)
  *
- * Compact5 format
- * PART_FID5 PART_TAG5 PART_LNO5
+ * with compact option
+ *
+ * PART_FID4 PART_TAG4 PART_LNO4
  * +----------------------------------------------------
  * |100 main 227,230,245,260
+ *
+ * The '4' of PART_XXX4 means format version 4.
  */
-#define PART_FID5 0
-#define PART_TAG5 1
-#define PART_LNO5 2
+#define PART_FID4  0
+#define PART_TAG4  1
+#define PART_LNO4  2
+#define PART_LINE4 3
 
 /*
  * Path name type

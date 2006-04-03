@@ -548,16 +548,7 @@ genrecord(GTOP *gtop, const char *tagline)
 
 	/*
 	 * Extract tag name and the path.
-	 *
-	 * Standard5 format
-	 * PART_FID5 PART_TAG5 PART_LNO5 PART_LINE5
-	 * +----------------------------------------------------
-	 * |100 main 227 main(int argc, argv **char)
-	 *
-	 * Compact5 format
-	 * PART_FID5 PART_TAG5 PART_LNO5
-	 * +----------------------------------------------------
-	 * |100 main 227,230,245,260
+	 * (See libutil/format.h for the detail.)
 	 */
 	split((char *)tagline, 3, &ptable);
 	if (ptable.npart < 3) {
@@ -565,9 +556,9 @@ genrecord(GTOP *gtop, const char *tagline)
 		die("illegal tag format.'%s'\n", tagline);
 	}
 	/* Convert from file id into the path name. */
-	path = gpath_fid2path(ptable.part[PART_FID5].start, NULL);
+	path = gpath_fid2path(ptable.part[PART_FID4].start, NULL);
 	if (path == NULL)
-		die("GPATH is corrupted.(file id '%s' not found)", ptable.part[PART_FID5].start);
+		die("GPATH is corrupted.(file id '%s' not found)", ptable.part[PART_FID4].start);
 	/*
 	 * Compact format
 	 */
@@ -576,9 +567,9 @@ genrecord(GTOP *gtop, const char *tagline)
 		 * Copy elements.
 		 */
 		gtop->line = (char *)tagline;
-		strlimcpy(gtop->tag, ptable.part[PART_TAG5].start, sizeof(gtop->tag));
+		strlimcpy(gtop->tag, ptable.part[PART_TAG4].start, sizeof(gtop->tag));
 		strlimcpy(gtop->path, path, sizeof(gtop->path));
-		gtop->lnop = ptable.part[PART_LNO5].start;
+		gtop->lnop = ptable.part[PART_LNO4].start;
 		recover(&ptable);
 		/*
 		 * Open source file.
@@ -610,17 +601,17 @@ genrecord(GTOP *gtop, const char *tagline)
 		/*
 		 * Seek to the start point of source line.
 		 */
-		for (src = ptable.part[PART_LNO5].start; *src && !isspace(*src); src++)
+		for (src = ptable.part[PART_LNO4].start; *src && !isspace(*src); src++)
 			;
 		if (*src != ' ')
 			die("illegal standard format.");
 		src++;
 		snprintf(output, sizeof(output), "%-16s %4d %-16s %s",
-			ptable.part[PART_TAG5].start,
-			atoi(ptable.part[PART_LNO5].start),
+			ptable.part[PART_TAG4].start,
+			atoi(ptable.part[PART_LNO4].start),
 			path,
 			gtop->format & GTAGS_COMPRESS ?
-				uncompress(src, ptable.part[PART_TAG5].start) :
+				uncompress(src, ptable.part[PART_TAG4].start) :
 				src);
 		recover(&ptable);
 		return output;
