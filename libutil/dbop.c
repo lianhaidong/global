@@ -26,6 +26,7 @@
 #include <sys/stat.h>
 
 #include <assert.h>
+#include <ctype.h>
 #include <fcntl.h>
 #ifdef STDC_HEADERS
 #include <stdlib.h>
