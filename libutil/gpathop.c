@@ -84,40 +84,6 @@ static int created;
 static int support_version = 2;	/* acceptable format version   */
 static int create_version = 2;	/* format version of newly created tag file */
 /*
- * get_flag: get flag value
- */
-static const char *
-get_flag(DBOP *dbop)
-{
-	int size;
-	const char *dat = dbop_lastdat(dbop, &size);
-	const char *flag = "";
-	/*
-	 * Dat format is like follows.
-	 * dat 'xxxxxxx\0ffff\0'
-	 *      (data)   (flag)
-	 */
-	if (dat) {
-		int i = strlen(dat) + 1;
-		if (size > i)
-			flag = dat + i;
-	}
-	return flag;
-}
-/*
- * get_version: get format version
- */
-static int
-get_version(DBOP *dbop)
-{
-	const char *p;
-	int format_version = 1;			/* default format version */
-
-	if ((p = dbop_get(dbop, VERSIONKEY)) != NULL)
-		format_version = atoi(p);
-	return format_version;
-}
-/*
  * gpath_open: open gpath tag file
  *
  *	i)	dbpath	GTAGSDBPATH
@@ -144,10 +110,7 @@ gpath_open(const char *dbpath, int mode)
 	if (dbop == NULL)
 		return -1;
 	if (mode == 1) {
-		char buf[1024];
-
-		snprintf(buf, sizeof(buf), "%s %d", VERSIONKEY, create_version);
-		dbop_put(dbop, VERSIONKEY, buf);
+		dbop_putversion(dbop, create_version);
 		_nextkey = 1;
 		
 	} else {
@@ -157,7 +120,7 @@ gpath_open(const char *dbpath, int mode)
 		if (path == NULL)
 			die("nextkey not found in GPATH.");
 		_nextkey = atoi(path);
-		format_version = get_version(dbop);
+		format_version = dbop_getversion(dbop);
 		if (format_version > support_version)
 			die("GPATH seems new format. Please install the latest GLOBAL.");
 		else if (format_version < support_version)
@@ -220,7 +183,7 @@ gpath_path2fid(const char *path, int *type)
 	const char *fid = dbop_get(dbop, path);
 	assert(opened > 0);
 	if (fid && type) {
-		const char *flag = get_flag(dbop);
+		const char *flag = dbop_getflag(dbop);
 		*type = (*flag == 'o') ? GPATH_OTHER : GPATH_SOURCE;
 			
 	}
@@ -241,7 +204,7 @@ gpath_fid2path(const char *fid, int *type)
 	const char *path = dbop_get(dbop, fid);
 	assert(opened > 0);
 	if (path && type) {
-		const char *flag = get_flag(dbop);
+		const char *flag = dbop_getflag(dbop);
 		*type = (*flag == 'o') ? GPATH_OTHER : GPATH_SOURCE;
 	}
 	return path;
@@ -293,7 +256,6 @@ gpath_close(void)
 	if (_mode == 1 || _mode == 2) {
 		snprintf(fid, sizeof(fid), "%d", _nextkey);
 		dbop_update(dbop, NEXTKEY, fid);
-		dbop_update(dbop, VERSIONKEY, "2");
 	}
 	dbop_close(dbop);
 	if (_mode == 1)
@@ -335,7 +297,7 @@ gfind_open(const char *dbpath, const char *local, int other)
 	gfind->eod = 0;
 	gfind->other = other;
 	gfind->type = GPATH_SOURCE;
-	gfind->version = get_version(gfind->dbop);
+	gfind->version = dbop_getversion(gfind->dbop);
 	if (gfind->version > support_version)
 		die("GPATH seems new format. Please install the latest GLOBAL.");
 	else if (gfind->version < support_version)
@@ -371,7 +333,7 @@ gfind_read(GFIND *gfind)
 		 * if gfind->other == 0, return only source files.
 		 * *flag == 'o' means 'other files' like README.
 		 */
-		flag = get_flag(gfind->dbop);
+		flag = dbop_getflag(gfind->dbop);
 		gfind->type = (*flag == 'o') ? GPATH_OTHER : GPATH_SOURCE;
 		if (gfind->other || gfind->type == GPATH_SOURCE)
 			break;

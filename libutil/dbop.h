@@ -32,6 +32,7 @@
 #include "strbuf.h"
 
 #define DBOP_PAGESIZE	8192
+#define VERSIONKEY	" __.VERSION"
 
 typedef	struct {
 	/*
@@ -74,6 +75,9 @@ void dbop_update(DBOP *, const char *, const char *);
 const char *dbop_first(DBOP *, const char *, regex_t *, int);
 const char *dbop_next(DBOP *);
 const char *dbop_lastdat(DBOP *, int *);
+const char *dbop_getflag(DBOP *);
+int dbop_getversion(DBOP *);
+void dbop_putversion(DBOP *, int);
 void dbop_close(DBOP *);
 
 #endif /* _DBOP_H_ */

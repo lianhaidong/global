@@ -169,16 +169,16 @@ gtags_open(const char *dbpath, const char *root, int db, int mode)
 		die("%s not found.", dbname(db));
 	}
 	if (gtop->mode == GTAGS_CREATE) {
-		char buf[1024];
 		/*
 		 * Don't write format information in the tag file.
 		 * dbop_put(gtop->dbop, COMPACTKEY, COMPACTKEY);
 		 */
-		snprintf(buf, sizeof(buf), "%s %d", VERSIONKEY, gtop->format_version);
-		dbop_put(gtop->dbop, VERSIONKEY, buf);
+		dbop_putversion(gtop->dbop, gtop->format_version); 
 		if (gtop->format & GTAGS_COMPACT)
 			dbop_put(gtop->dbop, COMPACTKEY, COMPACTKEY);
 		if (gtop->format & GTAGS_COMPRESS) {
+			char buf[1024];
+
 			snprintf(buf, sizeof(buf), "%s %s", COMPRESSKEY, DEFAULT_ABBREVIATION);
 			dbop_put(gtop->dbop, COMPRESSKEY, buf);
 			abbrev_open(DEFAULT_ABBREVIATION);
@@ -192,12 +192,7 @@ gtags_open(const char *dbpath, const char *root, int db, int mode)
 		 */
 		const char *p;
 
-		gtop->format_version = 1;
-		if ((p = dbop_get(gtop->dbop, VERSIONKEY)) != NULL) {
-			for (p += strlen(VERSIONKEY); *p && isspace((unsigned char)*p); p++)
-				;
-			gtop->format_version = atoi(p);
-		}
+		gtop->format_version = dbop_getversion(gtop->dbop);
 		if (gtop->format_version > support_version)
 			die("%s seems new format. Please install the latest GLOBAL.", dbname(gtop->db));
 		else if (gtop->format_version < support_version)

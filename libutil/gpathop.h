@@ -27,7 +27,6 @@
 #include "dbop.h"
 
 #define NEXTKEY		" __.NEXTKEY"
-#define VERSIONKEY	" __.VERSION"
 
 /*
  * File type

@@ -395,6 +395,54 @@ dbop_lastdat(DBOP *dbop, int *size)
 	return dbop->lastdat;
 }
 /*
+ * get_flag: get flag value
+ */
+const char *
+dbop_getflag(DBOP *dbop)
+{
+	int size;
+	const char *dat = dbop_lastdat(dbop, &size);
+	const char *flag = "";
+	/*
+	 * Dat format is like follows.
+	 * dat 'xxxxxxx\0ffff\0'
+	 *      (data)   (flag)
+	 */
+	if (dat) {
+		int i = strlen(dat) + 1;
+		if (size > i)
+			flag = dat + i;
+	}
+	return flag;
+}
+/*
+ * dbop_getversion: get format version
+ */
+int
+dbop_getversion(DBOP *dbop)
+{
+	const char *p;
+	int format_version = 1;			/* default format version */
+
+	if ((p = dbop_get(dbop, VERSIONKEY)) != NULL) {
+		for (p += strlen(VERSIONKEY); *p && isspace((unsigned char)*p); p++)
+			;
+		format_version = atoi(p);
+	}
+	return format_version;
+}
+/*
+ * dbop_putversion: put format version
+ */
+void
+dbop_putversion(DBOP *dbop, int version)
+{
+	char buf[1024];
+
+	snprintf(buf, sizeof(buf), "%s %d", VERSIONKEY, version);
+	dbop_put(dbop, VERSIONKEY, buf);
+}
+/*
  * dbop_close: close db
  * 
  *	i)	dbop	dbop descripter
