@@ -417,15 +417,45 @@ dbop_getflag(DBOP *dbop)
 	return flag;
 }
 /*
+ * dbop_getoption: get option
+ */
+const char *
+dbop_getoption(DBOP *dbop, const char *key)
+{
+	static char buf[1024];
+	const char *p;
+
+	if ((p = dbop_get(dbop, key)) == NULL)
+		return NULL;
+	for (p += strlen(key); *p && isspace((unsigned char)*p); p++)
+		;
+	strlimcpy(buf, p, sizeof(buf));
+	return buf;
+}
+/*
+ * dbop_putoption: put option
+ */
+void
+dbop_putoption(DBOP *dbop, const char *key, const char *string)
+{
+	char buf[1024];
+
+	if (string)
+		snprintf(buf, sizeof(buf), "%s %s", key, string);
+	else
+		snprintf(buf, sizeof(buf), "%s", key);
+	dbop_put(dbop, key, buf);
+}
+/*
  * dbop_getversion: get format version
  */
 int
 dbop_getversion(DBOP *dbop)
 {
-	const char *p;
 	int format_version = 1;			/* default format version */
+	const char *p;
 
-	if ((p = dbop_get(dbop, VERSIONKEY)) != NULL) {
+	if ((p = dbop_getoption(dbop, VERSIONKEY)) != NULL) {
 		for (p += strlen(VERSIONKEY); *p && isspace((unsigned char)*p); p++)
 			;
 		format_version = atoi(p);
@@ -438,10 +468,10 @@ dbop_getversion(DBOP *dbop)
 void
 dbop_putversion(DBOP *dbop, int version)
 {
-	char buf[1024];
+	char number[32];
 
-	snprintf(buf, sizeof(buf), "%s %d", VERSIONKEY, version);
-	dbop_put(dbop, VERSIONKEY, buf);
+	snprintf(number, sizeof(number), "%d", version);
+	dbop_putoption(dbop, VERSIONKEY, number);
 }
 /*
  * dbop_close: close db

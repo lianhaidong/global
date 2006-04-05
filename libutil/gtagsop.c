@@ -175,12 +175,9 @@ gtags_open(const char *dbpath, const char *root, int db, int mode)
 		 */
 		dbop_putversion(gtop->dbop, gtop->format_version); 
 		if (gtop->format & GTAGS_COMPACT)
-			dbop_put(gtop->dbop, COMPACTKEY, COMPACTKEY);
+			dbop_putoption(gtop->dbop, COMPACTKEY, NULL);
 		if (gtop->format & GTAGS_COMPRESS) {
-			char buf[1024];
-
-			snprintf(buf, sizeof(buf), "%s %s", COMPRESSKEY, DEFAULT_ABBREVIATION);
-			dbop_put(gtop->dbop, COMPRESSKEY, buf);
+			dbop_putoption(gtop->dbop, COMPRESSKEY, DEFAULT_ABBREVIATION);
 			abbrev_open(DEFAULT_ABBREVIATION);
 		}
 	} else {
@@ -198,11 +195,9 @@ gtags_open(const char *dbpath, const char *root, int db, int mode)
 		else if (gtop->format_version < support_version)
 			die("%s seems older format. Please remake tag files.", dbname(gtop->db));
 		gtop->format = 0;
-		if (dbop_get(gtop->dbop, COMPACTKEY) != NULL)
+		if (dbop_getoption(gtop->dbop, COMPACTKEY) != NULL)
 			gtop->format |= GTAGS_COMPACT;
-		if ((p = dbop_get(gtop->dbop, COMPRESSKEY)) != NULL) {
-			for (p += strlen(COMPRESSKEY); *p && isspace((unsigned char)*p); p++)
-				;
+		if ((p = dbop_getoption(gtop->dbop, COMPRESSKEY)) != NULL) {
 			abbrev_open(p);
 			gtop->format |= GTAGS_COMPRESS;
 		}

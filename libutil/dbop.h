@@ -76,6 +76,8 @@ const char *dbop_first(DBOP *, const char *, regex_t *, int);
 const char *dbop_next(DBOP *);
 const char *dbop_lastdat(DBOP *, int *);
 const char *dbop_getflag(DBOP *);
+const char *dbop_getoption(DBOP *, const char *);
+void dbop_putoption(DBOP *, const char *, const char *);
 int dbop_getversion(DBOP *);
 void dbop_putversion(DBOP *, int);
 void dbop_close(DBOP *);
