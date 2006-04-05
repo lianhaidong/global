@@ -427,6 +427,8 @@ dbop_getoption(DBOP *dbop, const char *key)
 
 	if ((p = dbop_get(dbop, key)) == NULL)
 		return NULL;
+	if (dbop->lastsize <= strlen(key))
+		die("illegal format (dbop_getoption).");
 	for (p += strlen(key); *p && isspace((unsigned char)*p); p++)
 		;
 	strlimcpy(buf, p, sizeof(buf));
@@ -455,11 +457,8 @@ dbop_getversion(DBOP *dbop)
 	int format_version = 1;			/* default format version */
 	const char *p;
 
-	if ((p = dbop_getoption(dbop, VERSIONKEY)) != NULL) {
-		for (p += strlen(VERSIONKEY); *p && isspace((unsigned char)*p); p++)
-			;
+	if ((p = dbop_getoption(dbop, VERSIONKEY)) != NULL)
 		format_version = atoi(p);
-	}
 	return format_version;
 }
 /*
