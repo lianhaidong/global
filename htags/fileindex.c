@@ -848,7 +848,7 @@ makeincludeindex(void)
 	char *ctags_x;
 	struct data *inc;
 	char *target = (Fflag) ? "mains" : "_top";
-	const char *command = "global -gnx \"^[ \\t]*(#[ \\t]*(import|include)|include[ \\t]*\\()\"";
+	char command[MAXFILLEN];
 
 	/*
 	 * Pick up include pattern.
@@ -856,6 +856,7 @@ makeincludeindex(void)
 	 * C: #include "xxx.h"
 	 * PHP: include("xxx.inc.php");
 	 */
+	snprintf(command, sizeof(command), "%s -gnx \"^[ \\t]*(#[ \\t]*(import|include)|include[ \\t]*\\()\"", global_path);
 	if ((PIPE = popen(command, "r")) == NULL)
 		die("cannot fork.");
 	strbuf_reset(input);

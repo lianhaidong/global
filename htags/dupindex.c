@@ -119,9 +119,7 @@ makedupindex(void)
 		 * construct command line.
 		 */
 		strbuf_reset(command);
-		strbuf_puts(command, "global -x");
-		strbuf_puts(command, option);
-		strbuf_puts(command, " --nofilter=path");
+		strbuf_sprintf(command, "%s -x%s --nofilter=path", global_path, option);
 		/*
 		 * Optimization when the --dynamic option is specified.
 		 */
