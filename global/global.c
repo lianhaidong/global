@@ -727,13 +727,8 @@ grep(const char *pattern, const char *dbpath)
 		die("invalid regular expression.");
 	filter_open();
 	count = 0;
-	/*
-	 * The older version (4.8.7 or former) of GPATH doesn't have files
-	 * other than source file. The oflag requires new version of GPATH.
-	 */
+
 	gp = gfind_open(dbpath, localprefix, oflag);
-	if (gp->version < 2 && oflag)
-		die("GPATH is old format. Please remake it by invoking gtags(1).");
 	while ((path = gfind_read(gp)) != NULL) {
 		if (!(fp = fopen(path, "r")))
 			die("'%s' not found. Please remake tag files by invoking gtags(1).", path);
@@ -806,13 +801,8 @@ pathlist(const char *pattern, const char *dbpath)
 		localprefix = "./";
 	filter_open();
 	count = 0;
-	/*
-	 * The older version (4.8.7 or former) of GPATH doesn't have files
-	 * other than source file. The oflag requires new version of GPATH.
-	 */
+
 	gp = gfind_open(dbpath, localprefix, oflag);
-	if (gp->version < 2 && oflag)
-		die("GPATH is old format. Please remake it by invoking gtags(1).");
 	while ((path = gfind_read(gp)) != NULL) {
 		/*
 		 * skip localprefix because end-user doesn't see it.
