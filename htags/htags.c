@@ -1637,17 +1637,24 @@ main(int argc, char **argv)
 	{
 		int i;
 		char *path;
+		GTOP *gtop;
 
 		for (i = GPATH; i < GTAGLIM; i++) {
 			path = makepath(dbpath, dbname(i), NULL);
 			gtags_exist[i] = test("fr", path);
 		}
 		if (!gtags_exist[GPATH] || !gtags_exist[GTAGS])
-			die("GPATH and/or GTAGS not found. Htags needs them at least.");
+			die("GPATH and/or GTAGS not found. Please reexecute htags with the -g option.");
 		if (!symbol)
 			gtags_exist[GSYMS] = 0;
 		else if (!gtags_exist[GSYMS])
-			die("-s(--symbol) option needs GSYMS tag file.");
+			die("the -s(--symbol) option needs GSYMS. Please reexecute htags with the -g option.");
+		/*
+		 * version check.
+		 * Do nothing, but the version of tag file will be checked.
+		 */
+		gtop = gtags_open(dbpath, cwdpath, GTAGS, GTAGS_READ);
+		gtags_close(gtop);
 	}
 	/*
 	 * make dbpath absolute.
