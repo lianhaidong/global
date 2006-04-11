@@ -1926,7 +1926,7 @@ main(int argc, char **argv)
 	end_all_time = time(NULL);
 	message("[%s] Done.", now());
 	T_all = end_all_time - start_all_time;
-	if (vflag && cgi && (cflag || fflag)) {
+	if (vflag && cgi && (cflag || fflag || dynamic)) {
 		message("\n[Information]\n");
 		if (cflag) {
 			message(" Your system may need to be setup to decompress *.%s files.", gzipped_suffix);
@@ -1935,10 +1935,14 @@ main(int argc, char **argv)
 			message(" gzipped files. (Please see 'HTML/.htaccess')\n");
 		}
 		if (fflag || dynamic) {
-			const char *path = (*action == '/') ? makepath("DOCUMENT_ROOT", action, NULL) : makepath("HTML", action, NULL);
+			const char *format = " You need to setup http server so that %s is executed as a CGI script.";
 
-			message(" You need to setup http server so that %s", path);
-			message(" is executed as a CGI script. (DOCUMENT_ROOT means WWW server's data root.)\n");
+			if (*action == '/') {
+				message(format, makepath("DOCUMENT_ROOT", action, NULL));
+				message(" (DOCUMENT_ROOT means WWW server's data root.)");
+			} else {
+				message(format, makepath("HTML", action, NULL));
+			}
 		}
 		message(" Good luck!\n");
 	}
