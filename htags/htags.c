@@ -802,25 +802,6 @@ copyfile(const char *from, const char *to)
 	close(ip);
 }
 /*
- * duplicate file.
- * By default, htags uses link system call without making a copy.
- */
-static void
-duplicatefile(const char *file, const char *from, const char *to)
-{
-	char from_path[MAXPATHLEN];
-	char to_path[MAXPATHLEN];
-
-	snprintf(from_path, sizeof(from_path), "%s/%s", from, file);
-	snprintf(to_path, sizeof(to_path), "%s/%s", to, file);
-        if (copy_files) {
-                copyfile(from_path, to_path);
-	} else {
-                if (link(from_path, to_path) < 0)
-                        copyfile(from_path, to_path);
-	}
-}
-/*
  * makecommonpart: make a common part for mains.html and index.html
  *
  *	i)	title
@@ -1787,21 +1768,6 @@ main(int argc, char **argv)
 		makebless("bless.sh");
 		if (chmod(makepath(distpath, "bless.sh", NULL), 0640) < 0)
 			die("cannot chmod bless script.");
-		/*
-		 * replace G*** tag files.
-		 */
-		for (i = GPATH; i < GTAGLIM; i++) {
-			const char *name = dbname(i);
-
-			if (test("f", makepath(dbpath, name, NULL))) {
-				char path[MAXPATHLEN];
-
-				snprintf(path, sizeof(path), "%s/cgi-bin/%s", distpath, name);
-				unlink(path);
-				snprintf(path, sizeof(path), "%s/cgi-bin", distpath);
-				duplicatefile(name, dbpath, path);
-			}
-		}
 	} else {
 		message("[%s] (1) making CGI program ...(skipped)", now());
 	}

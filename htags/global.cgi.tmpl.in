@@ -89,28 +89,36 @@ if ($form{'id'}) {
 		exit 0;
 	}
 }
-if ($flag eq 'g' || $flag eq 'I') {
-	if (($flag eq 'g' && ! -f "../../GTAGS")
-	 || ($flag eq 'I' && ! -f "../../ID")) {
-		print "@error_begin@Error@error_end@\n";
-		print "@message_begin@Couldn't execute command. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a>@message_end@\n";
-		print "@body_end@\n";
-		print "@page_end@\n";
-		exit 0;
-	}
-	chdir("../..");
-	if ($?) {	
-		print "@error_begin@Error@error_end@\n";
-		print "@message_begin@Couldn't change directory for $form{'type'} search. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a>@message_end@\n";
-		print "@body_end@\n";
-		print "@page_end@\n";
-		exit 0;
-	}
-} else {
-	if (-f "../../GTAGS" &&
-	(($flag eq '') || ($flag eq 'r' && -f "../../GRTAGS") || $flag eq 's' && -f "../../GSYMS")) {
-		chdir("../..");
-	}
+chdir("../..");
+if ($?) {	
+	print "@error_begin@Error@error_end@\n";
+	print "@message_begin@Couldn't change directory for $form{'type'} search. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a>@message_end@\n";
+	print "@body_end@\n";
+	print "@page_end@\n";
+	exit 0;
+}
+#
+# Sanity check
+# GTAGS and GPATH is indispensable file.
+#
+$missed = '';
+if (! -f 'GTAGS') {
+	$missed = 'GTAGS';
+} elsif (! -f 'GPATH') {
+	$missed = 'GPATH';
+} elsif ($flag eq 'r' && ! -f 'GRTAGS') {
+	$missed = 'GRTAGS';
+} elsif ($flag eq 's' && ! -f 'GSYMS') {
+	$missed = 'GSYMS';
+} elsif ($flag eq 'I' && ! -f 'ID') {
+	$missed = 'ID';
+}
+if ($missed) {
+	print "@error_begin@Error@error_end@\n";
+	print "@message_begin@Tag file ($missed) not found. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a>@message_end@\n";
+	print "@body_end@\n";
+	print "@page_end@\n";
+	exit 0;
 }
 local(%ctab) = ('&', '&amp;', '<', '&lt;', '>', '&gt;');
 #
