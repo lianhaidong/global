@@ -1753,8 +1753,6 @@ main(int argc, char **argv)
 	 * (1) make CGI program
 	 */
 	if (cgi && (fflag || dynamic)) {
-		int i;
-
 		if (cgidir) {
 			message("[%s] (1) making CGI program ...", now());
 			makeprogram(cgidir, "global.cgi");
