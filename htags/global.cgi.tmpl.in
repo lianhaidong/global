@@ -165,6 +165,7 @@ print "@verbatim_end@\n";
 if ($cnt == 0) {
 	print "@message_begin@Pattern not found. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a>@message_end@\n";
 }
+print "@hr@\n";
 print "@body_end@\n";
 print "@page_end@\n";
 exit 0;
