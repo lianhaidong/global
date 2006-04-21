@@ -30,8 +30,8 @@
 #include "version.h"
 
 const char *copy = "\
-Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005\n\
-	Tama Communications Corporation\n\
+Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005,\n\
+	2006 Tama Communications Corporation\n\
 GNU GLOBAL comes with NO WARRANTY, to the extent permitted by law.\n\
 You may redistribute copies of GNU GLOBAL under the terms of the\n\
 GNU General Public License. For more information about these matters,\n\

@@ -4,7 +4,7 @@ ___________________________________
 |  |   |  |  |  |  |     |     |  |
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005
+ Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2006
 	Tama Communications Corporation
 
  This file is free software; as a special exception the author gives
@@ -19,6 +19,69 @@ ___________________________________
 
 GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
+
+Version 5.0 - April 21 2006, by Shigio YAMAGUCHI
+
+[INCOMPATIBLE CHANGES]
+* Moved to new tag format. (GTAGS, GRTAGS, GSYMS, GPATH)
+  The purpose is as follows:
+  o Allows path name including blanks, at least in tag files.
+    (GLOBAL still doesn't support path name which contains blanks.)
+  o Decrease disk space used.
+  o Make tag format simpler.
+  o Realize stable performance.
+
+  Hereafter, older tag format is not supported.
+  Compact format was progressively canceled with the adoption of
+  the new tag format. The -c(--compact) option of gtags(1) was removed.
+
+  The following error messages are displayed in a wrong combination:
+  - older global and new tag file
+    $ global -x main
+    GTAGS seems new format. Please install the latest GLOBAL.
+  - new global and older tag file
+    $ global -x main
+    GTAGS seems older format. Please remake tag files.
+
+  Known problem:
+  - older global and new tag file
+    Global(1) with the -g or -P command will always work as if invoked
+    with the -o option. There is no way to avoid this problem.
+
+New requirement:
+* Added new requirement of plug-in parser
+  Plug-in parser must process arguments in the order they are given
+  in the command line. In each file, any order is acceptable.
+  Exuberant Ctags with the -xu option meets this requirement.
+  (See global.info for the detail.)
+
+Removed options:
+* gtags(1): The -c(--compact) option was removed.
+  Compact format was progressively canceled with the adoption of the new
+  tag format.
+* gtags(1): The -o(--omit-gsyms) option was removed.
+  This option was necessary in the past to use the program in a incompetent
+  machine with a small hard disk. Since most recent machines has powerful
+  CPU and mass hard disk. This options might already be unnecessary.
+* htags(1): The --style-sheet option was removed.
+  This is a really halfway option, and now nobody might need it because
+  the --xhtml option became available.
+
+[OTHER CHANGES]
+New options:
+* global: Added --result=<format> option. Grep format is newly supported.
+
+  <format>: path,ctags,ctags-x,grep
+        
+  conventional option | newly added option
+  --------------------+---------------------
+  (none)              | --result=path
+  -t                  | --result=ctags
+  -x                  | --result=ctags-x
+                      | --result=grep
+        
+  The -t and -x option are given to priority more than the --result
+  option.
 
 Version 4.8.7 - September 30 2005, by Shigio YAMAGUCHI
 
