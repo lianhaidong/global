@@ -85,8 +85,8 @@ April 21 2006, Shigio YAMAGUCHI
 	  Replaced external sort filter (gnusort) with internal one
 	  (tagsort module). Gnusort was removed. As a result, GLOBAL
 	  became free from dependence on external commands.
-	* Included GLIB files obstack.c, obstack.h, hash-string.c and
-	  hash-string.
+	* Included GLIBC files obstack.c, obstack.h, hash-string.c and
+	  hash-string.h.
 
 	Internal options:
 	* Removed two hidden options, --find and --other from gtags(1),
