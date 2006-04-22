@@ -61,20 +61,7 @@ A2. GLOBAL cannot recognize 'func()', because M(a) seems to be a function
 	|...
 
 ----------------------------------------------------------------------------
-Q3. I have set up 'gtags.conf' to use emacs's ctags command with GLOBAL
-    but I cannot use htags.
-
-	$ gtags
-	$ htags
-	htags: GTAGS and GRTAGS not found. Please make them.
-	$ ls G*
-	GPATH   GTAGS
-
-A3. Since Emacs's ctags cannot locate function referencies, gtags(1) cannot
-    make GRTAGS tag file with it. With the result that htags(1) doesn't
-    work because it requires both GTAGS and GRTAGS.
-    Besides, you cannot use the -r(--reference) option of global(1).
-
+Q3. Deleted.
 ----------------------------------------------------------------------------
 Q4. Deleted.
 ----------------------------------------------------------------------------
