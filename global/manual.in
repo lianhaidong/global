@@ -23,7 +23,7 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	GLOBAL,1,February 2006,GNU Project
+@HEADER	GLOBAL,1,April 2006,GNU Project
 @NAME	global - print the locations of specified object.
 @SYNOPSIS
 	@name{global} [-aGilnqrstTvx][-e] @arg{pattern}
@@ -110,7 +110,7 @@
 		By default, print object definitions.
 		With the @option{-p} option, print the root directory of source tree.
 	@item{@option{--result} @arg{format}}
-		@arg{format} may be 'path', `ctags', `ctags-x', or `grep'.
+		@arg{format} may be 'path', `ctags', `ctags-x', `grep' or 'cscope'.
 		The @option{--result=ctags} and @option{--result=ctags-x} are
 		equivalent to the @option{-t} and @option{-x} respectively.
 		The @option{-t} and @option{-x} are given to priority
