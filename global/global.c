@@ -270,6 +270,8 @@ main(int argc, char **argv)
 				format = FORMAT_PATH;
 			else if (!strcmp(optarg, "grep"))
 				format = FORMAT_GREP;
+			else if (!strcmp(optarg, "cscope"))
+				format = FORMAT_CSCOPE;
 			else
 				die_with_code(2, "unknown format type for the --result option.");
 			break;

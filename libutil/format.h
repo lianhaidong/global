@@ -25,35 +25,40 @@
  *
  * PART_TAG     PART_LNO PART_PATH      PART_LINE
  * +----------------------------------------------
- * |main             227 ./src/main     main()
+ * |main             227 ./src/main.c   main()
  *
  * (2) ctags -x + file id format (FORMAT_CTAGS_XID)
  *
  * 0    PART_TAG+1 PART_LNO+1 PART_PATH+1   PART_LINE+1
  * +----------------------------------------------
- * |110	main             227 ./src/main     main()
+ * |110	main             227 ./src/main.c   main()
  *
  * (3) ctags format (FORMAT_CTAGS)
  *
  * +----------------------------------------------
- * |main        ./src/main         227
+ * |main        ./src/main.c       227
  *
  * (4) path name format (FORMAT_PATH)
  *
  * +----------------------------------------------
- * |./src/main
+ * |./src/main.c
  *
  * (5) grep format (FORMAT_GREP)
  *
  * +----------------------------------------------
- * |./src/main:227:main()
+ * |./src/main.c:227:main()
  *
+ * (6) cscope line mode format (FORMAT_CSCOPE)
+ *
+ * +----------------------------------------------
+ * |./src/main.c main 227 main()
  */
 #define FORMAT_CTAGS		1
 #define FORMAT_CTAGS_X		2
 #define FORMAT_CTAGS_XID	3
 #define FORMAT_PATH		4
 #define FORMAT_GREP		5
+#define FORMAT_CSCOPE		6
 
 /*
  * FORMAT_CTAGS_X

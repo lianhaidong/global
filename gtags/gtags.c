@@ -178,6 +178,8 @@ main(int argc, char **argv)
 					format = FORMAT_PATH;
 				else if (!strcmp("grep", optarg))
 					format = FORMAT_GREP;
+				else if (!strcmp("cscope", optarg))
+					format = FORMAT_CSCOPE;
 				else
 					format = FORMAT_CTAGS_X;
 			} else if (gtagsconf || gtagslabel) {

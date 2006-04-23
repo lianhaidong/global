@@ -129,6 +129,9 @@ makesortfilter(int format, int unique, int passthru)
 	case FORMAT_GREP:		/* grep format */
 		strbuf_puts(sortfilter, " --format=grep");
 		break;
+	case FORMAT_CSCOPE:		/* cscope line mode format */
+		strbuf_puts(sortfilter, " --format=cscope");
+		break;
 	default:
 		break;
 	}
@@ -172,6 +175,9 @@ makepathfilter(int format, int type, const char *root, const char *cwd, const ch
 		break;
 	case FORMAT_GREP:		/* grep format */
 		strbuf_puts(pathfilter, " --format=grep");
+		break;
+	case FORMAT_CSCOPE:		/* cscope line mode format */
+		strbuf_puts(pathfilter, " --format=cscope");
 		break;
 	default:
 		break;
