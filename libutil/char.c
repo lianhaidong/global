@@ -83,7 +83,8 @@ quote_string(const char *s)
 
 	strbuf_clear(sb);
 	for (; *s; s++) {
-		strbuf_putc(sb, '\\');
+		if (!isalnum(*s))
+			strbuf_putc(sb, '\\');
 		strbuf_putc(sb, *s);
 	}
 	return strbuf_value(sb);
