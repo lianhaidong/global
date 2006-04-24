@@ -21,6 +21,7 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+#include <ctype.h>
 
 #include "char.h"
 #include "strbuf.h"
@@ -83,7 +84,7 @@ quote_string(const char *s)
 
 	strbuf_clear(sb);
 	for (; *s; s++) {
-		if (!isalnum(*s))
+		if (!isalnum((unsigned char)*s))
 			strbuf_putc(sb, '\\');
 		strbuf_putc(sb, *s);
 	}
