@@ -410,6 +410,10 @@ tmp()
 	char path[1024];
 
 	envtmp = getenv("TMPDIR");
+#ifdef _WIN32
+	if (envtmp == NULL)
+		envtmp = getenv("TMP");
+#endif
 	if (envtmp && strlen(envtmp) + strlen("/bt.XXXXXX") >= sizeof(path))
 		return -1;
 	(void)snprintf(path, sizeof(path),
