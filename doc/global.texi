@@ -2170,7 +2170,7 @@ Instead, you can use incremental updating facility (@samp{-u} option).
 @c ***************************************************************************
 @node Reference
 @chapter Command References
-@include reference.txi
+@include reference.texi
 
 @c ***************************************************************************
 @c FDL
@@ -2182,7 +2182,7 @@ Instead, you can use incremental updating facility (@samp{-u} option).
 * GNU Free Documentation License::      License for copying this manual.
 @end menu
 
-@include fdl.txi
+@include fdl.texi
 
 @node Index
 @unnumbered Option Index
