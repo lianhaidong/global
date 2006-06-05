@@ -95,9 +95,17 @@ exec_line_limit(int length)
 	limit -= length + 80;
 
 	limit -= env_size();
+#endif
+#if !defined(ARG_MAX) && defined(_WIN32)
+	/*
+	 * The limit lenght of the command line of cmd.exe is 2047
+	 * characters on Windows 2000 or 8191 characters on Windows XP
+	 * and later. The 80 below is for safety.
+	 */
+	limit = 2047 - length - 80;
+#endif
 	if (limit < 0)
 		limit = 0;
-#endif
 	return limit;
 }
 /*
