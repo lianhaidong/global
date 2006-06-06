@@ -428,14 +428,17 @@ main(int argc, char **argv)
 	 */
 	if (fflag || gflag || Pflag || (nofilter & SORT_FILTER))
 		passthru = 1;
-	if (tflag) { 			/* ctags format */
-		format = FORMAT_CTAGS;
-	} else if (xflag) {		/* print details */
-		format = FORMAT_CTAGS_X;
-	} else if (format == 0) {	/* print just a file name */
-		format = FORMAT_PATH;
-		unique = 1;
+	if (format == 0) {
+		if (tflag) { 			/* ctags format */
+			format = FORMAT_CTAGS;
+		} else if (xflag) {		/* print details */
+			format = FORMAT_CTAGS_X;
+		} else {			/* print just a file name */
+			format = FORMAT_PATH;
+		}
 	}
+	if (format == FORMAT_PATH)
+		unique = 1;
 	/*
 	 * setup sort filter.
 	 */
