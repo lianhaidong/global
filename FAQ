@@ -4,7 +4,7 @@ ___________________________________
 |  |   |  |  |  |  |     |     |  |
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Copyright (c) 2000, 2003, 2004, 2005
+ Copyright (c) 2000, 2003, 2004, 2005, 2006
 	Tama Communications Corporation
 
  This file is free software; as a special exception the author gives
@@ -26,6 +26,11 @@ A1. No, it doesn't. GNU GLOBAL supports only UNIX(POSIX) environment.
     But some outsite projects develop DOS and Windows 32 version of it.
     Please see:
            http://www.gnu.org/software/global/download.html
+
+    Though GLOBAL doesn't supports DOS and Windows 32 environment,
+    we accept the code for it if the following requirements are met:
+    o It works in Windows 32 environment.
+    o It doesn't influence UNIX environment.
 
 ----------------------------------------------------------------------------
 Q2. GLOBAL skips some functions.
