@@ -190,6 +190,7 @@ AC_OUTPUT([Makefile
 	libdb/Makefile
 	global/Makefile
 	gozilla/Makefile
+	gtags-cscope/Makefile
 	libglibc/Makefile
 	doc/Makefile
 ])

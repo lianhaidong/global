@@ -1,0 +1,6 @@
+.deps
+Makefile
+Makefile.in
+const.h
+gtags-cscope
+gtags-cscope.1
