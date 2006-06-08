@@ -49,7 +49,7 @@ static void help(void);
 static void check_dbpath(void);
 static void get_global_path(void);
 int main(int, char **);
-static char *getline(void);
+static char *get_line(void);
 static void update(void);
 static void command_help(void);
 static void command_loop(void);
@@ -161,7 +161,7 @@ main(int argc, char **argv)
 	return 0;
 }
 char *
-getline()
+get_line()
 {
 	STATIC_STRBUF(sb);
 	char *p;
@@ -221,7 +221,7 @@ command_loop()
 	char *line, *opt = "";
 
 	print_case_distinction();
-	while ((line = getline()) != NULL) {
+	while ((line = get_line()) != NULL) {
 		switch (com = *line++) {	
 		/*
 		 * Control command
