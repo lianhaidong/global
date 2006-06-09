@@ -103,7 +103,6 @@ check_dbpath()
 void
 get_global_path()
 {
-	char command[MAXFILLEN];
 	const char *p;
 
 	if (!(p = usable("global")))
@@ -164,7 +163,6 @@ char *
 get_line()
 {
 	STATIC_STRBUF(sb);
-	char *p;
 
 	/* Prompt */
 	fputs(">> ", stdout);
@@ -213,12 +211,11 @@ command_help()
 	fprintf(stdout, "q: Quit the session\n");
 	fprintf(stdout, "h: Show help\n");
 }
-FILE *log;
 void
 command_loop()
 {
 	int com = 0;
-	char *line, *opt = "";
+	char *line;
 
 	print_case_distinction();
 	while ((line = get_line()) != NULL) {
