@@ -28,8 +28,8 @@ A1. No, it doesn't. GNU GLOBAL supports only UNIX(POSIX) environment.
            http://www.gnu.org/software/global/download.html
 
     Though GLOBAL doesn't supports DOS and Windows 32 environment,
-    we accept the code for it if the following requirements are met:
-    o It works in Windows 32 environment.
+    we accept the code for them if the following requirements are met:
+    o It works in DOS and(or) Windows 32 environment.
     o It doesn't influence UNIX environment.
 
 ----------------------------------------------------------------------------
