@@ -20,6 +20,20 @@ ___________________________________
 GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 5.1 - June 10 2006, by Shigio YAMAGUCHI
+
+[INCOMPATIBLE CHANGES]
+* Changed the priority about the --result option to make the format
+  specification easy. The --result option is given to priority more
+  than the -t and -x option. (This option appeared in version 5.0.)
+
+[OTHER CHANGES]
+* Added new program 'gtags-cscope'.
+  Gtags-cscope is a pseudo cscope which implements the line-oriented
+  interface. You can use this command for various clients instead of
+  true cscope.
+* Added new format 'cscope' to the argument of --result=<format>.
+
 Version 5.0 - April 21 2006, by Shigio YAMAGUCHI
 
 [INCOMPATIBLE CHANGES]

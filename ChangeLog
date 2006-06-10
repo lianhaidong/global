@@ -19,6 +19,10 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+June 10 2006, Shigio YAMAGUCHI
+
+	* Recovered original texinfo file names (.txi -> .texi).
+
 April 21 2006, Shigio YAMAGUCHI
 
 	Change in tag format:
