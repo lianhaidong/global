@@ -125,7 +125,6 @@ extern int ncol;
 extern int tabs;
 extern int full_path;
 extern int map_file;
-extern const char *icon_list;
 extern const char *icon_suffix;
 extern const char *icon_spec;
 extern const char *prolog_script;
