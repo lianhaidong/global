@@ -87,4 +87,32 @@ o GNU C Library by Free Software Foundation, Inc.
 	libglibc/hash-string.c
 	libglibc/hash-string.h
 
+o Icon files by Apache Software Foundation.
+  Derived from Apache-1.3.1 package.
+
+				[apache_1.3.1/icons/]
+	icons/back.png		back.gif
+	icons/c.png		c.gif
+	icons/dir.png		dir.gif
+	icons/help.png		unknown.gif
+	icons/text.png		text.gif
+
+o Icon files by GNOME Foundation.
+  Derived from GNOME-1.4 package. Some files are slightly modified.
+
+				[gnome-1.4/gnome-libs-1.2.13/libgnomeui/pixmaps/]
+	icons/bottom.png	stock_bottom.png
+	icons/first.png		stock_first.png
+	icons/index.png		stock_home.png
+	icons/last.png		stock_last.png
+	icons/left.png		stock_left_arrow.png
+	icons/right.png		stock_right_arrow.png
+	icons/top.png		stock_top.png
+	icons/n_bottom.png	stock_bottom.png
+	icons/n_first.png	stock_first.png
+	icons/n_last.png	stock_last.png
+	icons/n_left.png	stock_left_arrow.png
+	icons/n_right.png	stock_right_arrow.png
+	icons/n_top.png		stock_top.png
+
 they are considered a separate package, not part of GLOBAL proper.

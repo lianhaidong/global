@@ -193,4 +193,5 @@ AC_OUTPUT([Makefile
 	gtags-cscope/Makefile
 	libglibc/Makefile
 	doc/Makefile
+	icons/Makefile
 ])

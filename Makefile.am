@@ -14,7 +14,7 @@ SUBDIRS = libglibc libutil
 if !USE_DB185_COMPAT
         SUBDIRS += libdb
 endif
-SUBDIRS += gtags-parser global gozilla gtags htags gtags-cscope doc
+SUBDIRS += gtags-parser global gozilla gtags htags gtags-cscope doc icons
 
 EXTRA_DIST = FAQ LICENSE \
 	gtags.conf gtags.el nvi-1.79-gtags.diff reconf.sh globash.rc \

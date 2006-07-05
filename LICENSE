@@ -106,3 +106,37 @@ DB library:
      LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
      OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
      SUCH DAMAGE.
+
+Icon files by Apache Software Foundation.
+
+     [apache_1.3.1/icons/README]
+
+     Public Domain Icons
+
+     These icons were originally made for Mosaic for X and have been
+     included in the NCSA httpd and Apache server distributions in the
+     past. They are in the public domain and may be freely included in any
+     application. The originals were done by Kevin Hughes (kevinh@eit.com).
+
+     Many thanks to Andy Polyakov for tuning the icon colors and adding a
+     few new images. If you'd like to contribute additions or ideas to
+     this set, please let me know.
+
+     The distribution site for these icons is at:
+
+          http://www.eit.com/goodies/www.icons/
+
+     Kevin Hughes
+     September 11, 1995
+
+Icon files by GNOME Foundation.
+
+     [gnome-1.4/gnome-libs-1.2.13/README]
+
+     *
+     * Licensing
+     *
+     
+        The GNOME libraries (libgnome, libgnomeui, gtk-xmhtml, zvt, vfs)
+     are released under the terms of the LGPL license, read the file
+     COPYING.LIB for more information.
