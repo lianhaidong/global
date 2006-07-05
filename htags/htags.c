@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
- *	Tama Communications Corporation
+ * Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005,
+ *      2006 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -91,8 +91,9 @@ int aflag;				/* --alphabet(-a) option	*/
 int cflag;				/* --compact(-c) option		*/
 int fflag;				/* --form(-f) option		*/
 int Fflag;				/* --frame(-F) option		*/
-int nflag;				/* --line-number(-n) option	*/
 int gflag;				/* --gtags(-g) option		*/
+int Iflag;				/* --icon(-I) option		*/
+int nflag;				/* --line-number(-n) option	*/
 int Sflag;				/* --secure-cgi(-S) option	*/
 int qflag;
 int vflag;				/* --verbose(-v) option		*/
@@ -180,6 +181,26 @@ const char *dir_icon  = "dir";
 const char *c_icon = "c";
 const char *file_icon = "text";
 
+const char *icon_files[] = {
+	"first",
+	"last",
+	"left",
+	"right",
+	"top",
+	"bottom",
+	"n_first",
+	"n_last",
+	"n_left",
+	"n_right",
+	"n_top",
+	"n_bottom",
+	"index",
+	"help",
+	"back",
+	"dir",
+	"c",
+	"text"
+};
 /*
  * Configuration parameters.
  */
@@ -187,7 +208,6 @@ int ncol = 4;				/* columns of line number	*/
 int tabs = 8;				/* tab skip			*/
 int full_path = 0;			/* file index format		*/
 int map_file = 1;			/* 1: create MAP file		*/
-const char *icon_list = NULL;		/* use icon list		*/
 const char *icon_suffix = "png";	/* icon suffix (jpg, png etc)	*/
 const char *icon_spec = "border='0' align='top'";/* parameter in IMG tag*/
 const char *prolog_script = NULL;	/* include script at first	*/
@@ -216,6 +236,8 @@ static struct option const long_options[] = {
         {"form", no_argument, NULL, 'f'},
         {"frame", no_argument, NULL, 'F'},
         {"gtags", no_argument, NULL, 'g'},
+        {"func-header", no_argument, NULL, 'h'},
+        {"icon", no_argument, NULL, 'I'},
         {"main-func", required_argument, NULL, 'm'},
         {"line-number", no_argument, NULL, 'n'},
         {"other", no_argument, NULL, 'o'},
@@ -478,7 +500,7 @@ makerebuild(const char *file)
 static void
 makehelp(const char *file)
 {
-	const char **label = icon_list ? anchor_comment : anchor_label;
+	const char **label = Iflag ? anchor_comment : anchor_label;
 	const char **icons = anchor_icons;
 	const char **msg   = anchor_msg;
 	int n, last = 7;
@@ -492,11 +514,11 @@ makehelp(const char *file)
 	fputs(header_begin, op);
 	fputs("Usage of Links", op);
 	fputs_nl(header_end, op);
-	if (!icon_list)
+	if (!Iflag)
 		fputs(verbatim_begin, op);
 	fputs("/* ", op);
 	for (n = 0; n <= last; n++) {
-		if (icon_list) {
+		if (Iflag) {
 			fputs(gen_image(CURRENT, icons[n], label[n]), op);
 			if (n < last)
 				fputc(' ', op);
@@ -507,14 +529,14 @@ makehelp(const char *file)
 	if (show_position)
 		fprintf(op, "[+line file]");
 	fputs(" */", op);
-	if (!icon_list)
+	if (!Iflag)
 		fputs_nl(verbatim_end, op);
 	else
 		fputc('\n', op);
 	fputs_nl(define_list_begin, op);
 	for (n = 0; n <= last; n++) {
 		fputs(define_term_begin, op);
-		if (icon_list) {
+		if (Iflag) {
 			fputs(gen_image(CURRENT, icons[n], label[n]), op);
 		} else {
 			fprintf(op, "[%s]", label[n]);
@@ -1040,13 +1062,6 @@ configuration(int argc, char **argv)
 	if (getconfb("no_map_file"))
 		no_map_file = 1;
 	strbuf_reset(sb);
-	if (getconfs("icon_list", sb)) {
-		p = strdup(strbuf_value(sb));
-		if (p == NULL)
-			die("short of memory.");
-		icon_list = p;
-	}
-	strbuf_reset(sb);
 	if (getconfs("icon_spec", sb)) {
 		p = strdup(strbuf_value(sb));
 		if (p == NULL)
@@ -1421,7 +1436,7 @@ main(int argc, char **argv)
 	if (htags_options)
 		argv = append_options(&argc, argv);
 
-	while ((optchar = getopt_long(argc, argv, "acd:DfFgm:noqsS:t:vwx", long_options, &option_index)) != EOF) {
+	while ((optchar = getopt_long(argc, argv, "acd:DfFghIm:noqsS:t:vwx", long_options, &option_index)) != EOF) {
 		switch (optchar) {
                 case 0:
                 case 1:
@@ -1462,14 +1477,21 @@ main(int argc, char **argv)
                 case 'F':
                         Fflag++;
                         break;
+                case 'g':
+                        gflag++;
+                        break;
+                case 'h':
+			if (definition_header == NO_HEADER)
+				definition_header = AFTER_HEADER;
+                        break;
+                case 'I':
+                        Iflag++;
+                        break;
                 case 'm':
 			main_func = optarg;
                         break;
                 case 'n':
                         nflag++;
-                        break;
-                case 'g':
-                        gflag++;
                         break;
                 case 'o':
 			other_files = 1;
@@ -1576,8 +1598,6 @@ main(int argc, char **argv)
 	}
 	if (dynamic && Sflag)
 		die("Current implementation doesn't allow both -D(--dynamic) and the -S(--secure-cgi).");
-	if (icon_list && !test("f", icon_list))
-		die("icon_list '%s' not found.", icon_list);
 	/*
 	 * decide directory in which we make hypertext.
 	 */
@@ -1748,6 +1768,12 @@ main(int argc, char **argv)
 				if (mkdir(path, mode) < 0)
 					die("cannot make cgi-bin directory.");
 		}
+		if (Iflag) {
+			path = makepath(distpath, "icons", NULL);
+			if (!test("d", path))
+				if (mkdir(path, mode) < 0)
+					die("cannot make icons directory.");
+		}
 	}
 	/*
 	 * (1) make CGI program
@@ -1910,11 +1936,17 @@ main(int argc, char **argv)
 		}
 		message(" Good luck!\n");
 	}
-	/* This is not supported. */
-	if (icon_list && test("f", icon_list)) {
-		char command[MAXFILLEN];
-		snprintf(command, sizeof(command), "tar xzf %s -C %s", icon_list, distpath);
-		system(command);
+	if (Iflag) {
+		char src[MAXPATHLEN], dst[MAXPATHLEN];
+		int i, count = sizeof(icon_files) / sizeof(char *);
+
+		for (i = 0; i < count; i++) {
+			snprintf(src, sizeof(src), "%s/gtags/icons/%s.%s", datadir, icon_files[i], icon_suffix);
+			snprintf(dst, sizeof(dst), "%s/icons/%s.%s", distpath, icon_files[i], icon_suffix);
+			if (!test("f", src))
+				die("Icon file '%s' not found.", src);
+			copyfile(src, dst);
+		}
 	}
 	/*
 	 * Print statistics information.

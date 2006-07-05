@@ -1,6 +1,6 @@
 #
 # Copyright (c} 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005
-#	Tama Communications Corporation
+#	2006 Tama Communications Corporation
 #
 # This file is part of GNU GLOBAL.
 #
@@ -23,10 +23,10 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	HTAGS,1,April 2005,GNU Project
+@HEADER	HTAGS,1,July 2006,GNU Project
 @NAME	htags - generate hypertext from source code.
 @SYNOPSIS
-	@name{htags} [-acDfFgnosvwx][-d @arg{dbpath}][-m @arg{name}][-S @arg{cgidir}][-t @arg{title}][@arg{htmldir}]
+	@name{htags} [-acDfFghInosvwx][-d @arg{dbpath}][-m @arg{name}][-S @arg{cgidir}][-t @arg{title}][@arg{htmldir}]
 @DESCRIPTION
 	@name{Htags} makes hypertext of C, C++, Yacc, Java, PHP and Assembly source code.
 
@@ -80,6 +80,11 @@
 	@item{@option{-g}, @option{--gtags}}
 		Execute @xref{gtags,1} before creating hypertext.
 		The @option{-v}, @option{-w} and @arg{dbpath} are passed to @name{gtags}.
+	@item{@option{-h}, @option{--func-header}}
+		Insert function header for each function.
+		By default, @name{htags} doesn't generates it.
+	@item{@option{-I}, @option{--icon}}
+		Use icons instead of text for some links.
 	@item{@option{--gtagsconf} @arg{file}}
 		Load user's configuration from @arg{file}.
 	@item{@option{--gtagslabel} @arg{label}}
@@ -263,7 +268,7 @@
 	@item{@code{show_position}(boolean)}
 		Show position per function definition. The default is false.
 	@item{@code{definition_header}(no|before|right|after)}
-		Position of link header. The default is 'no'.
+		Position of function header. The default is 'no'.
 	@item{@code{other_files}(boolean)}
 		File index includes not only source files but also other files. The default is false.
 	@item{@code{enable_grep}(boolean)}

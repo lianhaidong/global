@@ -82,7 +82,7 @@ makedefineindex(const char *file, int total, STRBUF *defines)
 	fputs_nl(header_end, DEFINES);
 	if (!aflag && !Fflag) {
 		fputs(gen_href_begin_with_title(NULL, indexlink, normal_suffix, NULL, index_string), DEFINES);
-		if (icon_list)
+		if (Iflag)
 			fputs(gen_image(CURRENT, back_icon, ".."), DEFINES);
 		else
 			fputs("[..]", DEFINES);
@@ -123,7 +123,7 @@ makedefineindex(const char *file, int total, STRBUF *defines)
 				else
 					fputs_nl(br, ALPHA);
 				fputs(gen_href_begin_with_title(NULL, indexlink, normal_suffix, NULL, index_string), ALPHA);
-				if (icon_list)
+				if (Iflag)
 					fputs(gen_image(PARENT, back_icon, ".."), ALPHA);
 				else
 					fputs("[..]", ALPHA);
@@ -185,7 +185,7 @@ makedefineindex(const char *file, int total, STRBUF *defines)
 			fputs_nl(body_begin, ALPHA);
 			fprintf(ALPHA, "%s[%s]%s\n", header_begin, alpha, header_end);
 			fputs(gen_href_begin_with_title(NULL, indexlink, normal_suffix, NULL, index_string), ALPHA);
-			if (icon_list)
+			if (Iflag)
 				fputs(gen_image(PARENT, back_icon, ".."), ALPHA);
 			else
 				fputs("[..]", ALPHA);
@@ -281,7 +281,7 @@ makedefineindex(const char *file, int total, STRBUF *defines)
 		else
 			fputs_nl(br, ALPHA);
 		fputs(gen_href_begin_with_title(NULL, indexlink, normal_suffix, NULL, index_string), ALPHA);
-		if (icon_list)
+		if (Iflag)
 			fputs(gen_image(PARENT, back_icon, ".."), ALPHA);
 		else
 			fputs("[..]", ALPHA);
@@ -297,7 +297,7 @@ makedefineindex(const char *file, int total, STRBUF *defines)
 		fputs_nl(list_end, DEFINES);
 	if (!aflag && !Fflag) {
 		fputs(gen_href_begin_with_title(NULL, "mains", normal_suffix, NULL, index_string), DEFINES);
-		if (icon_list)
+		if (Iflag)
 			fputs(gen_image(CURRENT, back_icon, ".."), DEFINES);
 		else
 			fputs("[..]", DEFINES);

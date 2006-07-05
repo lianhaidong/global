@@ -265,7 +265,7 @@ const char *
 link_format(int ref[A_SIZE])
 {
 	STATIC_STRBUF(sb);
-	const char **label = icon_list ? anchor_comment : anchor_label;
+	const char **label = Iflag ? anchor_comment : anchor_label;
 	const char **icons = anchor_icons;
 	int i;
 
@@ -286,7 +286,7 @@ link_format(int ref[A_SIZE])
 				snprintf(tmp, sizeof(tmp), "%d", ref[i]);
 			strbuf_puts(sb, gen_href_begin(NULL, NULL, NULL, key));
 		}
-		if (icon_list) {
+		if (Iflag) {
 			char tmp[MAXPATHLEN];
 			snprintf(tmp, sizeof(tmp), "%s%s", (i != A_INDEX && i != A_HELP && ref[i] == 0) ? "n_" : "", icons[i]);
 			strbuf_puts(sb, gen_image(PARENT, tmp, label[i]));

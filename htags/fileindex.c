@@ -654,7 +654,7 @@ makefileindex(const char *file, STRBUF *files)
 				else
 					fputs_nl(list_end, STDOUT);
 				fputs(gen_href_begin_with_title(NULL, parent, suffix, NULL, "Parent Directory"), STDOUT);
-				if (icon_list)
+				if (Iflag)
 					fputs(gen_image(PARENT, back_icon, ".."), STDOUT);
 				else
 					fputs("[..]", STDOUT);
@@ -688,7 +688,7 @@ makefileindex(const char *file, STRBUF *files)
 					strbuf_puts(sb, item_begin);
 				snprintf(tmp, sizeof(tmp), "%s/", path);
 				strbuf_puts(sb, gen_href_begin_with_title(count_stack(dirstack) == 1 ? "files" : NULL, path2fid(path), HTML, NULL, tmp));
-				if (icon_list) {
+				if (Iflag) {
 					strbuf_puts(sb, gen_image(count_stack(dirstack) == 1 ? CURRENT : PARENT, dir_icon, tmp));
 					strbuf_puts(sb, quote_space);
 				}
@@ -730,7 +730,7 @@ makefileindex(const char *file, STRBUF *files)
 				}
 				fputs_nl(header_end, STDOUT);
 				fputs(gen_href_begin_with_title(NULL, parent, suffix, NULL, "Parent Directory"), STDOUT);
-				if (icon_list)
+				if (Iflag)
 					fputs(gen_image(PARENT, back_icon, ".."), STDOUT);
 				else
 					fputs("[..]", STDOUT);
@@ -755,7 +755,7 @@ makefileindex(const char *file, STRBUF *files)
 		if (!no_order_list)
 			strbuf_puts(sb, item_begin);
 		strbuf_puts(sb, gen_href_begin_with_title_target(count_stack(dirstack) ? upperdir(SRCS) : SRCS, path2fid(_), HTML, NULL, _, target));
-		if (icon_list) {
+		if (Iflag) {
 			const char *lang, *suffix, *text_icon;
 
 			if ((suffix = locatestring(_, ".", MATCH_LAST)) != NULL
@@ -810,7 +810,7 @@ makefileindex(const char *file, STRBUF *files)
 		else
 			fputs_nl(list_end, STDOUT);
 		fputs(gen_href_begin_with_title(NULL, parent, suffix, NULL, "Parent Directory"), STDOUT);
-		if (icon_list)
+		if (Iflag)
 			fputs(gen_image(PARENT, back_icon, ".."), STDOUT);
 		else
 			fputs("[..]", STDOUT);
