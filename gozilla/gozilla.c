@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2002, 2003, 2004
+ * Copyright (c) 1997, 1998, 1999, 2000, 2002, 2003, 2004, 2006
  *	Tama Communications Corporation
  *
  * This program is free software; you can redistribute it and/or modify
@@ -49,10 +49,7 @@ void getURL(const char *, STRBUF *);
 int isprotocol(const char *);
 int issource(const char *);
 int convertpath(const char *, const char *, const char *, STRBUF *);
-#if !defined(_WIN32) && !defined(__DJGPP__)
-void sendbrowser(const char *, const char *);
-#endif
-
+void show_page_by_url(const char *, const char *);
 #ifndef isblank
 #define isblank(c)	((c) == ' ' || (c) == '\t')
 #endif
@@ -236,50 +233,10 @@ main(int argc, char **argv)
 			fprintf(stdout, "using browser '%s'.\n", browser);
 		exit(0);
 	}
-#ifdef _WIN32
-	if (ShellExecute(NULL, NULL, browser, strbuf_value(URL), NULL, SW_SHOWNORMAL) <= (HINSTANCE)32)
-		die("Cannot load %s (error = 0x%04x).", browser, GetLastError());
-#else
-#ifndef __DJGPP__
 	/*
-	 * send a command to browser.
+	 * Show URL's page.
 	 */
-	if (locatestring(browser, "mozilla", MATCH_AT_LAST)
-		|| locatestring(browser, "netscape", MATCH_AT_LAST)
-		|| locatestring(browser, "netscape-remote", MATCH_AT_LAST))
-	{
-		sendbrowser(browser, strbuf_value(URL));
-	}
-	/*
-	 * execute generic browser.
-	 */
-	else
-#endif /* !__DJGPP__ */
-	{
-		char com[MAXFILLEN+1];
-
-#ifdef __DJGPP__
-		char *path;
-		/*
-		 * assume a Windows browser if it's not on the path.
-		 */
-		if (!(path = usable(browser)))
-		{
-			/*
-			 * START is an internal command in XP, external in 9X.
-			 */
-			if (!(path = usable("start")))
-				path = "cmd /c start";
-			snprintf(com, sizeof(com), "%s %s \"%s\"", path, browser, strbuf_value(URL));
-		}
-		else
-			snprintf(com, sizeof(com), "%s \"%s\"", path, strbuf_value(URL));
-#else
-		snprintf(com, sizeof(com), "%s \"%s\"", browser, strbuf_value(URL));
-#endif /* !__DJGPP__ */
-		system(com);
-	}
-#endif /* _WIN32 */
+	show_page_by_url(browser, strbuf_value(URL));
 	exit(0);
 }
 
@@ -555,29 +512,69 @@ convertpath(const char *dbpath, const char *htmldir, const char *path, STRBUF *s
 	}
 	return -1;
 }
-#if !defined(_WIN32) && !defined(__DJGPP__)
 /*
- * sendbrowser: send message to mozilla.
+ * show_page_by_url: show page by url
  *
- *	i)	browser {mozilla|netscape}
+ *	i)	browser browser name
  *	i)	url	URL
- *
  */
+#if defined(_WIN32)
+/* Windows32 version */
 void
-sendbrowser(const char *browser, const char *url)
+show_page_by_url(const char *browser, const char *url)
 {
-	int pid;
-	char com[1024], *path;
-
-	if (!(path = usable(browser)))
-		die("%s not found in your path.", browser);
-	snprintf(com, sizeof(com), "openURL(%s)", url);
-	if ((pid = fork()) < 0) {
-		die("cannot load mozilla (fork).");
-	} else if (pid == 0) {
-		(void)close(1);
-		execlp(path, browser, "-remote", com, NULL);
-		die("cannot load %s (execlp).", browser);
-	}
+	if (ShellExecute(NULL, NULL, browser, url, NULL, SW_SHOWNORMAL) <= (HINSTANCE)32)
+		die("Cannot load %s (error = 0x%04x).", browser, GetLastError());
 }
-#endif /* !_WIN32 and !__DJGPP__ */
+#elif defined(__DJGPP__)
+/* DJGPP version */
+void
+show_page_by_url(const char *browser, const char *url)
+{
+	char com[MAXFILLEN+1];
+	char *path;
+
+	/*
+	 * assume a Windows browser if it's not on the path.
+	 */
+	if (!(path = usable(browser))) {
+		/*
+		 * START is an internal command in XP, external in 9X.
+		 */
+		if (!(path = usable("start")))
+			path = "cmd /c start";
+		snprintf(com, sizeof(com), "%s %s \"%s\"", path, browser, url);
+	} else {
+		snprintf(com, sizeof(com), "%s \"%s\"", path, url);
+	}
+	system(com);
+}
+#else
+/* UNIX version */
+void
+show_page_by_url(const char *browser, const char *url)
+{
+	char com[1024];
+
+	/*
+	 * Browsers which have openURL() command.
+	 */
+	if (locatestring(browser, "mozilla", MATCH_AT_LAST) ||
+	    locatestring(browser, "netscape", MATCH_AT_LAST) ||
+	    locatestring(browser, "netscape-remote", MATCH_AT_LAST))
+	{
+		char *path;
+
+		if (!(path = usable(browser)))
+			die("%s not found in your path.", browser);
+		snprintf(com, sizeof(com), "%s -remote \"openURL(%s)\"", path, url);
+	}
+	/*
+	 * Generic browser.
+	 */
+	else {
+		snprintf(com, sizeof(com), "%s \"%s\"", browser, url);
+	}
+	system(com);
+}
+#endif
