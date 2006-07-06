@@ -87,7 +87,7 @@ o GNU C Library by Free Software Foundation, Inc.
 	libglibc/hash-string.c
 	libglibc/hash-string.h
 
-o Icon files by Apache Software Foundation.
+o Icon files by Kevin Hughes.
   Derived from Apache-1.3.1 package.
 
 				[apache_1.3.1/icons/]
