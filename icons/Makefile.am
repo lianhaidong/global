@@ -12,7 +12,8 @@
 #
 EXTRA_DIST = index.png c.png text.png dir.png back.png help.png \
 	first.png last.png left.png right.png top.png bottom.png \
-	n_first.png n_last.png n_left.png n_right.png n_top.png n_bottom.png
+	n_first.png n_last.png n_left.png n_right.png n_top.png n_bottom.png \
+	pglobe.png
 
 iconsdir = ${datadir}/gtags/icons
 icons_DATA = ${EXTRA_DIST}
