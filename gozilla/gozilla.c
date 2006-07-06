@@ -205,7 +205,7 @@ main(int argc, char **argv)
 	if (!browser && getenv("BROWSER"))
 		browser = getenv("BROWSER");
 	if (!browser)
-		browser = "mozilla";
+		browser = "firefox";
 	if (definition == NULL) {
 		if (argc == 0)
 			usage();

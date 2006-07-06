@@ -1,5 +1,5 @@
 #
-# Copyright (c) 1996, 1997, 1998, 1999, 2000, 2002
+# Copyright (c) 1996, 1997, 1998, 1999, 2000, 2002, 2006
 #	Tama Communications Corporation
 #
 # This file is part of GNU GLOBAL.
@@ -23,18 +23,19 @@
 #       o man format reference manual.
 #       o texinfo format reference manual.
 #
-@HEADER GOZILLA,1,May 2004,GNU Project
+@HEADER GOZILLA,1,July 2006,GNU Project
 @NAME   gozilla - force mozilla to display specified source file.
 @SYNOPSIS
 	@name{gozilla} [-b browser][-p][+no] file
 	@name{gozilla} [-b browser][-p] -d name
 @DESCRIPTION
 	@name{Gozilla} force mozilla to display specified source
-	file as a hypertext.
+	file as a hypertext. @name{Gozilla} can be used with other
+	browsers like firefox and epiphany.
 
-	In advance of using this command, [1] you must execute @xref{gtags,1}
+	In advance of using this command, you must execute @xref{gtags,1}
 	and @xref{htags,1} at the root directory of the source tree
-	to make tag files, and [2] execute mozilla in you computer.
+	to make tag files.
 	Then you can execute gozilla at anywhere in the source tree.
 
 	First form:@br
@@ -43,7 +44,10 @@
 	Second form:@br
 	You can specify definition name directly. Definition name must exist 
 	in @file{GTAGS} tag file.
-	
+
+	Some browsers require you to load it before executing @name{gozilla}.
+	Whether or not @name{gozilla} waits for exiting of browser depends
+	on browser.
 @OPTIONS
 	The following options are available:
 	@begin_itemize
@@ -52,9 +56,7 @@
 		function reference is exist.  If you execute @xref{htags,1}
 		with @option{-l} option, you can specify any line.
 	@item{@option{-b} @arg{browser}}
-		browser to use. By default, it is assumed mozilla.
-		If you specify another browser, @name{gozilla} waits for
-		exiting of the browser.
+		browser to use. By default, it is assumed @name{firefox}.
 	@item{@option{-p}}
 		just print generated target URL.
 	@item{@arg{file}}
@@ -87,14 +89,18 @@
 		The directory on which gtags database exist.
 		This value is ignored when @var{GTAGSROOT} is not defined.
 	@item{@var{BROWSER}}
-		browser to use. By default, it is assumed mozilla.
+		browser to use. By default, it is assumed firefox.
 	@end_itemize
 @EXAMPLES
 	$ gtags
 	$ htags
-	$ mozilla &
+	$ firefox &
 	$ global -x main
 	main              82 ctags.c          main(argc, argv)
+	$ gozilla +82 ctags.c
+
+	$ setenv BROWSER 'epiphany --new-tab'
+	$ epiphany &
 	$ gozilla +82 ctags.c
 @DIAGNOSTICS
 	@name{Gozilla} exits with a non 0 value if an error occurred, 0 otherwise.
@@ -102,6 +108,8 @@
 	@xref{global,1},
 	@xref{gtags,1},
 	@xref{htags,1},
+	@xref{firefox,1},
+	@xref{epiphany,1},
 	@xref{mozilla,1}.
 
 	GNU GLOBAL source code tag system@br
@@ -111,9 +119,6 @@
 @BUGS
 	@name{Gozilla} can treat not only source file but also normal file,
 	directory, HTML file and even URL, because it is omnivorous.
-
-	I don't know whether or not @name{gozilla} works well in Windows32
-	environment.
 @AUTHORS
 	Tama Communications Corporation.
 @HISTORY
