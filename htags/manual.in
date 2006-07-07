@@ -137,16 +137,8 @@
 @EXAMPLES
 	$ cd /usr/src/sys
 	# gtags -v
-	# htags -fFnvat 'Welcom to FreeBSD kernel source tour!'
-	$ lynx HTML/index.html
-
-	$ htags -v --gtags
-	$ awk '$1 == "main" {print $2}' HTML/MAP
-	D/348.html
-	$ lynx HTML/D/348.html
-
-	$ cd global
-	$ htags -gv --cvsweb=http://cvs.savannah.gnu.org/viewcvs/global/ --cvsweb-cvsroot=global
+	# htags -FsanohIvt 'Welcom to FreeBSD kernel source tour!'
+	$ firefox HTML/index.html
 
 @FILES
 	@begin_itemize
