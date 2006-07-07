@@ -41,7 +41,9 @@ const char *gozillarc = ".gozillarc";
 #ifdef __DJGPP__
 const char *dos_gozillarc = "_gozillarc";
 #endif
+STRHASH *sh;
 
+static void load_alias(void);
 static const char *alias(const char *);
 int main(int, char **);
 void getdefinitionURL(const char *, STRBUF *);
@@ -78,10 +80,7 @@ help(void)
 }
 
 /*
- * alias: get alias value.
- *
- *	i)	alias_name	alias name
- *	r)			its value
+ * load_alias: load alias value.
  *
  * [$HOME/.gozillarc]
  * +-----------------------
@@ -89,15 +88,17 @@ help(void)
  * |f = file:/usr/share/xxx.html
  * |www	http://www.xxx.yyy/
  */
-static const char *
-alias(const char *alias_name)
+static void
+load_alias(void)
 {
 	FILE *ip;
 	STRBUF *sb = strbuf_open(0);
 	char *p;
 	const char *alias = NULL;
 	int flag = STRBUF_NOCRLF;
+	struct sh_entry *ent;
 
+	sh = strhash_open(10, free);
 	if (!(p = get_home_directory()))
 		goto end;
 	if (!test("r", makepath(p, gozillarc, NULL)))
@@ -126,26 +127,37 @@ alias(const char *alias_name)
 		while (*p && isalnum(*p))	/* get name */
 			p++;
 		*p++ = 0;
-		if (!strcmp(alias_name, name)) {
-			while (*p && isblank(*p))	/* skip spaces */
+		while (*p && isblank(*p))	/* skip spaces */
+			p++;
+		if (*p == '=' || *p == ':') {
+			p++;
+			while (*p && isblank(*p))/* skip spaces */
 				p++;
-			if (*p == '=' || *p == ':') {
-				p++;
-				while (*p && isblank(*p))/* skip spaces */
-					p++;
-			}
-			value = p;
-			while (*p && !isblank(*p))	/* get value */
-				p++;
-			*p = 0;
-			alias = strmake(value, "");
-			break;
 		}
+		value = p;
+		while (*p && !isblank(*p))	/* get value */
+			p++;
+		*p = 0;
+		ent = strhash_assign(sh, name, 1);
+		if (ent->value)
+			(void)free(ent->value);
+		ent->value = check_strdup(value);
 	}
 	fclose(ip);
 end:
 	strbuf_close(sb);
-	return alias;
+}
+/*
+ * alias: get alias value.
+ *
+ *	i)	alias_name	alias name
+ *	r)			its value
+ */
+static const char *
+alias(const char *alias_name)
+{
+	struct sh_entry *ent = strhash_assign(sh, alias_name, 0);
+	return ent ? ent->value : NULL;
 }
 
 int
@@ -202,6 +214,11 @@ main(int argc, char **argv)
 	}
 	if (show_version)
 		version(progname, vflag);
+	/*
+	 * Load aliases from .gozillarc.
+	 */
+	load_alias();
+
 	if (!browser && getenv("BROWSER"))
 		browser = getenv("BROWSER");
 	if (!browser)
