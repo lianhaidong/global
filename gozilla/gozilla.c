@@ -94,7 +94,6 @@ load_alias(void)
 	FILE *ip;
 	STRBUF *sb = strbuf_open(0);
 	char *p;
-	const char *alias = NULL;
 	int flag = STRBUF_NOCRLF;
 	struct sh_entry *ent;
 
