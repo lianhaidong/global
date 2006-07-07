@@ -219,10 +219,19 @@ main(int argc, char **argv)
 	 */
 	load_alias();
 
+	/*
+	 * Decide browser.
+	 */
 	if (!browser && getenv("BROWSER"))
 		browser = getenv("BROWSER");
+	if (!browser && alias("BROWSER"))
+		browser = alias("BROWSER");
 	if (!browser)
 		browser = "firefox";
+
+	/*
+	 * Replace alias name.
+	 */
 	if (definition == NULL) {
 		if (argc == 0)
 			usage();
