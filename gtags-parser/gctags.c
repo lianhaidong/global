@@ -252,14 +252,11 @@ main(int argc, char **argv)
 		for (tablesize = 0; (p = strbuf_fgets(ib, ip, STRBUF_NOCRLF)) != NULL; tablesize++)
 			strbuf_puts0(sb, p);
 		fclose(ip);
-		if ((words = (struct words *)malloc(sizeof(struct words) * tablesize)) == NULL)
-			die("short of memory.");
+		words = (struct words *)check_malloc(sizeof(struct words) * tablesize);
 		/*
 		 * Don't free *p.
 		 */
-		p = (char *)malloc(strbuf_getlen(sb) + 1);
-		if (p == NULL)
-			die("short of memory.");
+		p = (char *)check_malloc(strbuf_getlen(sb) + 1);
 		memcpy(p, strbuf_value(sb), strbuf_getlen(sb) + 1);
 		for (i = 0; i < tablesize; i++) {
 			words[i].name = p;

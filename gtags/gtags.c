@@ -369,12 +369,8 @@ main(int argc, char **argv)
 	 * o DBPATH
 	 */
 	strbuf_reset(sb);
-	if (getconfs("langmap", sb)) {
-		const char *p = strdup(strbuf_value(sb));
-		if (p == NULL)
-			die("short of memory.");
-		langmap = p;
-	}
+	if (getconfs("langmap", sb))
+		langmap = check_strdup(strbuf_value(sb));
 	set_env("GTAGSLANGMAP", langmap);
 	set_env("GTAGSDBPATH", dbpath);
 

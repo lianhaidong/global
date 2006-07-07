@@ -23,6 +23,8 @@
 #ifdef STDC_HEADERS
 #include <stdlib.h>
 #endif
+
+#include "checkalloc.h"
 #include "die.h"
 #include "htags.h"
 #include "assoc.h"
@@ -73,11 +75,9 @@ get_tmpfile(int uniq)
 ASSOC *
 assoc_open(int c)
 {
-	ASSOC *assoc = (ASSOC *)malloc(sizeof(ASSOC));
+	ASSOC *assoc = (ASSOC *)check_malloc(sizeof(ASSOC));
 	const char *tmpfile = get_tmpfile(c);
 
-	if (!assoc)
-		die("short of memory.");
 	assoc->dbop = dbop_open(tmpfile, 1, 0600, DBOP_REMOVE);
 
 	if (assoc->dbop == NULL)

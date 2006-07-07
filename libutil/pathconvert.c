@@ -27,6 +27,7 @@
 #endif
 
 #include "abs2rel.h"
+#include "checkalloc.h"
 #include "die.h"
 #include "format.h"
 #include "gparam.h"
@@ -38,16 +39,6 @@
 /*
  * Path filter for the output of global(1).
  */
-/*
- * check_malloc: memory allocator
- */
-static void *check_malloc(int size)
-{
-        void *p = (void *)malloc(size);
-        if (p == NULL)
-                die("short of memory.");
-        return p;
-}
 static void
 put_pathname(CONVERT *cv, const char *path)
 {

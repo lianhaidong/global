@@ -49,6 +49,7 @@
 #include "regex.h"
 
 #include "char.h"
+#include "checkalloc.h"
 #include "conf.h"
 #include "die.h"
 #include "find.h"
@@ -134,9 +135,7 @@ prepare_source(void)
 	strbuf_reset(sb);
 	if (!getconfs("suffixes", sb))
 		die("cannot get suffixes data.");
-	sufflist = strdup(strbuf_value(sb));
-	if (!sufflist)
-		die("short of memory.");
+	sufflist = check_strdup(strbuf_value(sb));
 	trim(sufflist);
 	{
 		const char *suffp;
@@ -216,9 +215,7 @@ prepare_skip(void)
 		strbuf_close(reg);
 		return;
 	}
-	skiplist = strdup(strbuf_value(reg));
-	if (!skiplist)
-		die("short of memory.");
+	skiplist = check_strdup(strbuf_value(reg));
 	trim(skiplist);
 	strbuf_reset(reg);
 	/*

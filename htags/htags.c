@@ -40,6 +40,7 @@
 #include <sys/param.h>
 #include <time.h>
 
+#include "checkalloc.h"
 #include "getopt.h"
 #include "regex.h"
 #include "global.h"
@@ -1029,19 +1030,11 @@ configuration(int argc, char **argv)
 			tabs = n;
 	}
 	strbuf_reset(sb);
-	if (getconfs("gzipped_suffix", sb)) {
-		p = strdup(strbuf_value(sb));
-		if (p == NULL)
-			die("short of memory.");
-		gzipped_suffix = p;
-	}
+	if (getconfs("gzipped_suffix", sb))
+		gzipped_suffix = check_strdup(strbuf_value(sb));
 	strbuf_reset(sb);
-	if (getconfs("normal_suffix", sb)) {
-		p = strdup(strbuf_value(sb));
-		if (p == NULL)
-			die("short of memory.");
-		normal_suffix = p;
-	}
+	if (getconfs("normal_suffix", sb))
+		normal_suffix = check_strdup(strbuf_value(sb));
 	strbuf_reset(sb);
 	if (getconfs("definition_header", sb)) {
 		p = strbuf_value(sb);
@@ -1071,42 +1064,24 @@ configuration(int argc, char **argv)
 	if (getconfb("no_map_file"))
 		no_map_file = 1;
 	strbuf_reset(sb);
-	if (getconfs("icon_spec", sb)) {
-		p = strdup(strbuf_value(sb));
-		if (p == NULL)
-			die("short of memory.");
-		icon_spec = p;
-	}
+	if (getconfs("icon_spec", sb))
+		icon_spec = check_strdup(strbuf_value(sb));
 	strbuf_reset(sb);
-	if (getconfs("icon_suffix", sb)) {
-		p = strdup(strbuf_value(sb));
-		if (p == NULL)
-			die("short of memory.");
-		icon_suffix = p;
-	}
+	if (getconfs("icon_suffix", sb))
+		icon_suffix = check_strdup(strbuf_value(sb));
 	strbuf_reset(sb);
-	if (getconfs("prolog_script", sb)) {
-		p = strdup(strbuf_value(sb));
-		if (p == NULL)
-			die("short of memory.");
-		prolog_script = p;
-	}
+	if (getconfs("prolog_script", sb))
+		prolog_script = check_strdup(strbuf_value(sb));
 	strbuf_reset(sb);
-	if (getconfs("epilog_script", sb)) {
-		p = strdup(strbuf_value(sb));
-		if (p == NULL)
-			die("short of memory.");
-		epilog_script = p;
-	}
+	if (getconfs("epilog_script", sb))
+		epilog_script = check_strdup(strbuf_value(sb));
 	if (getconfb("show_position"))
 		show_position = 1;
 	if (getconfb("colorize_warned_line"))
 		colorize_warned_line = 1;
 	strbuf_reset(sb);
 	if (getconfs("script_alias", sb)) {
-		p = strdup(strbuf_value(sb));
-		if (p == NULL)
-			die("short of memory.");
+		p = check_strdup(strbuf_value(sb));
 		/* remove the last '/' */
 		q = p + strlen(p) - 1;
 		if (*q == '/')
@@ -1117,14 +1092,10 @@ configuration(int argc, char **argv)
 		dynamic = 1;
 	strbuf_reset(sb);
 	if (getconfs("body_begin", sb)) {
-		p = strdup(strbuf_value(sb));
-		if (p == NULL)
-			die("short of memory.");
+		p = check_strdup(strbuf_value(sb));
 		strbuf_reset(sb);
 		if (getconfs("body_end", sb)) {
-			q = strdup(strbuf_value(sb));
-			if (q == NULL)
-				die("short of memory.");
+			q = check_strdup(strbuf_value(sb));
 			body_begin = p;
 			body_end = q;
 		} else {
@@ -1133,14 +1104,10 @@ configuration(int argc, char **argv)
 	}
 	strbuf_reset(sb);
 	if (getconfs("table_begin", sb)) {
-		p = strdup(strbuf_value(sb));
-		if (p == NULL)
-			die("short of memory.");
+		p = check_strdup(strbuf_value(sb));
 		strbuf_reset(sb);
 		if (getconfs("table_end", sb)) {
-			q = strdup(strbuf_value(sb));
-			if (q == NULL)
-				die("short of memory.");
+			q = check_strdup(strbuf_value(sb));
 			table_begin = p;
 			table_end = q;
 		} else {
@@ -1149,14 +1116,10 @@ configuration(int argc, char **argv)
 	}
 	strbuf_reset(sb);
 	if (getconfs("title_begin", sb)) {
-		p = strdup(strbuf_value(sb));
-		if (p == NULL)
-			die("short of memory.");
+		p = check_strdup(strbuf_value(sb));
 		strbuf_reset(sb);
 		if (getconfs("title_end", sb)) {
-			q = strdup(strbuf_value(sb));
-			if (q == NULL)
-				die("short of memory.");
+			q = check_strdup(strbuf_value(sb));
 			title_begin = p;
 			title_end = q;
 		} else {
@@ -1165,14 +1128,10 @@ configuration(int argc, char **argv)
 	}
 	strbuf_reset(sb);
 	if (getconfs("comment_begin", sb)) {
-		p = strdup(strbuf_value(sb));
-		if (p == NULL)
-			die("short of memory.");
+		p = check_strdup(strbuf_value(sb));
 		strbuf_reset(sb);
 		if (getconfs("comment_end", sb)) {
-			q = strdup(strbuf_value(sb));
-			if (q == NULL)
-				die("short of memory.");
+			q = check_strdup(strbuf_value(sb));
 			comment_begin = p;
 			comment_end = q;
 		} else {
@@ -1181,14 +1140,10 @@ configuration(int argc, char **argv)
 	}
 	strbuf_reset(sb);
 	if (getconfs("sharp_begin", sb)) {
-		p = strdup(strbuf_value(sb));
-		if (p == NULL)
-			die("short of memory.");
+		p = check_strdup(strbuf_value(sb));
 		strbuf_reset(sb);
 		if (getconfs("sharp_end", sb)) {
-			q = strdup(strbuf_value(sb));
-			if (q == NULL)
-				die("short of memory.");
+			q = check_strdup(strbuf_value(sb));
 			sharp_begin = p;
 			sharp_end = q;
 		} else {
@@ -1197,14 +1152,10 @@ configuration(int argc, char **argv)
 	}
 	strbuf_reset(sb);
 	if (getconfs("brace_begin", sb)) {
-		p = strdup(strbuf_value(sb));
-		if (p == NULL)
-			die("short of memory.");
+		p = check_strdup(strbuf_value(sb));
 		strbuf_reset(sb);
 		if (getconfs("brace_end", sb)) {
-			q = strdup(strbuf_value(sb));
-			if (q == NULL)
-				die("short of memory.");
+			q = check_strdup(strbuf_value(sb));
 			brace_begin = p;
 			brace_end = q;
 		} else {
@@ -1213,14 +1164,10 @@ configuration(int argc, char **argv)
 	}
 	strbuf_reset(sb);
 	if (getconfs("reserved_begin", sb)) {
-		p = strdup(strbuf_value(sb));
-		if (p == NULL)
-			die("short of memory.");
+		p = check_strdup(strbuf_value(sb));
 		strbuf_reset(sb);
 		if (getconfs("reserved_end", sb)) {
-			q = strdup(strbuf_value(sb));
-			if (q == NULL)
-				die("short of memory.");
+			q = check_strdup(strbuf_value(sb));
 			reserved_begin = p;
 			reserved_end = q;
 		} else {
@@ -1229,14 +1176,10 @@ configuration(int argc, char **argv)
 	}
 	strbuf_reset(sb);
 	if (getconfs("position_begin", sb)) {
-		p = strdup(strbuf_value(sb));
-		if (p == NULL)
-			die("short of memory.");
+		p = check_strdup(strbuf_value(sb));
 		strbuf_reset(sb);
 		if (getconfs("position_end", sb)) {
-			q = strdup(strbuf_value(sb));
-			if (q == NULL)
-				die("short of memory.");
+			q = check_strdup(strbuf_value(sb));
 			position_begin = p;
 			position_end = q;
 		} else {
@@ -1245,14 +1188,10 @@ configuration(int argc, char **argv)
 	}
 	strbuf_reset(sb);
 	if (getconfs("warned_line_begin", sb)) {
-		p = strdup(strbuf_value(sb));
-		if (p == NULL)
-			die("short of memory.");
+		p = check_strdup(strbuf_value(sb));
 		strbuf_reset(sb);
 		if (getconfs("warned_line_end", sb)) {
-			q = strdup(strbuf_value(sb));
-			if (q == NULL)
-				die("short of memory.");
+			q = check_strdup(strbuf_value(sb));
 			warned_line_begin = p;
 			warned_line_end = q;
 		} else {
@@ -1260,34 +1199,18 @@ configuration(int argc, char **argv)
 		}
 	}
 	strbuf_reset(sb);
-	if (getconfs("include_file_suffixes", sb)) {
-		p = strdup(strbuf_value(sb));
-		if (p == NULL)
-			die("short of memory.");
-		include_file_suffixes = p;
-	}
+	if (getconfs("include_file_suffixes", sb))
+		include_file_suffixes = check_strdup(strbuf_value(sb));
 	strbuf_reset(sb);
-	if (getconfs("langmap", sb)) {
-		p = strdup(strbuf_value(sb));
-		if (p == NULL)
-			die("short of memory.");
-		langmap = p;
-	}
+	if (getconfs("langmap", sb))
+		langmap = check_strdup(strbuf_value(sb));
 	strbuf_reset(sb);
-	if (getconfs("xhtml_version", sb)) {
-		p = strdup(strbuf_value(sb));
-		if (p == NULL)
-			die("short of memory.");
-		xhtml_version = p;
-	}
+	if (getconfs("xhtml_version", sb))
+		xhtml_version = check_strdup(strbuf_value(sb));
 	/* insert htags_options into the head of ARGSV array. */
 	strbuf_reset(sb);
-	if (getconfs("htags_options", sb)) {
-		p = strdup(strbuf_value(sb));
-		if (p == NULL)
-			die("short of memory.");
-		htags_options = p;
-	}
+	if (getconfs("htags_options", sb))
+		htags_options = check_strdup(strbuf_value(sb));
 	strbuf_close(sb);
 }
 /*
@@ -1366,7 +1289,7 @@ append_options(int *argc, char **argv)
 {
 
 	STRBUF *sb = strbuf_open(0);
-	const char *p, *opt = strdup(htags_options);
+	const char *p, *opt = check_strdup(htags_options);
 	int count = 1;
 	int quote = 0;
 	const char **newargv;
@@ -1398,9 +1321,7 @@ append_options(int *argc, char **argv)
 			strbuf_putc(sb, *p);
 		}
 	}
-	newargv = (const char **)malloc(sizeof(char *) * (*argc + count + 1));
-	if (!newargv)
-		die("Short of memory.");
+	newargv = (const char **)check_malloc(sizeof(char *) * (*argc + count + 1));
 	newargv[i++] = argv[0];
 	p = strbuf_value(sb);
 	while (count--) {

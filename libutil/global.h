@@ -25,6 +25,7 @@
 #include "gparam.h"
 #include "abs2rel.h"
 #include "char.h"
+#include "checkalloc.h"
 #include "conf.h"
 #include "date.h"
 #include "dbop.h"

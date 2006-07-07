@@ -32,6 +32,7 @@
 #include <strings.h>
 #endif
 
+#include "checkalloc.h"
 #include "die.h"
 #include "dbop.h"
 #include "gtagsop.h"
@@ -290,9 +291,7 @@ gfind_open(const char *dbpath, const char *local, int other)
 	if (gfind->dbop == NULL)
 		die("GPATH not found.");
 	gfind->path = NULL;
-	gfind->prefix = strdup(local ? local : "./");
-	if (gfind->prefix == NULL)
-		die("short of memory.");
+	gfind->prefix = check_strdup(local ? local : "./");
 	gfind->first = 1;
 	gfind->eod = 0;
 	gfind->other = other;

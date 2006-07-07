@@ -28,6 +28,7 @@
 #include <limits.h>
 #endif
 
+#include "checkalloc.h"
 #include "die.h"
 #include "env.h"
 #include "find.h"
@@ -255,10 +256,8 @@ xargs_open_generic(const char *command, int max_args)
 
 	if ((xp  = malloc(sizeof(XARGS))) == NULL)
 		die("Short of memory.");
-	xp->command = strdup(command);
+	xp->command = check_strdup(command);
 	xp->type = 0;
-	if (xp->command == NULL)
-		die("Short of memory.");
 	xp->pipe = NULL;
 	xp->result = strbuf_open(0);
 	xp->end_of_arg = 0;

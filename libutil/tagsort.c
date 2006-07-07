@@ -28,6 +28,7 @@
 #endif
 #include <sys/param.h>
 
+#include "checkalloc.h"
 #include "die.h"
 #include "gparam.h"
 #include "dbop.h"
@@ -162,16 +163,6 @@ put_lines(int unique, char *lines, struct dup_entry *entries, int entry_count, v
 			output(p);
 		}
 	}
-}
-/*
- * check_malloc: memory allocator
- */
-static void *check_malloc(int size)
-{
-	void *p = (void *)malloc(size);
-	if (p == NULL)
-		die("short of memory.");
-	return p;
 }
 /*
  * tagsort_open: open sort filter

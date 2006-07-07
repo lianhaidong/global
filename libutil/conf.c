@@ -33,6 +33,7 @@
 #include <strings.h>
 #endif
 
+#include "checkalloc.h"
 #include "gparam.h"
 #include "conf.h"
 #include "die.h"
@@ -142,10 +143,7 @@ readrecord(const char *label)
 			if (!strcmp(label, candidate)) {
 				if (!(p = locatestring(p, ":", MATCH_FIRST)))
 					die("invalid config file format (line %d).", count);
-				p = strdup(p);
-				if (!p)
-					die("short of memory.");
-				return p;
+				return check_strdup(p);
 			}
 			/*
 			 * locate next candidate.
@@ -251,17 +249,13 @@ openconf(void)
 	if (!(config = configpath())) {
 		if (vflag)
 			fprintf(stderr, " Using default configuration.\n");
-		confline = strdup("");
-		if (!confline)
-			die("short of memory.");
+		confline = check_strdup("");
 	}
 	/*
 	 * if it is not an absolute path then assumed config value itself.
 	 */
 	else if (!isabspath(config)) {
-		confline = strdup(config);
-		if (!confline)
-			die("short of memory.");
+		confline = check_strdup(config);
 		if (!locatestring(confline, ":", MATCH_FIRST))
 			die("GTAGSCONF must be absolute path name.");
 	}
@@ -287,9 +281,7 @@ openconf(void)
 		ib = strbuf_open(MAXBUFLEN);
 		sb = strbuf_open(0);
 		includelabel(sb, label, 0);
-		confline = strdup(strbuf_value(sb));
-		if (!confline)
-			die("short of memory.");
+		confline = check_strdup(strbuf_value(sb));
 		strbuf_close(ib);
 		strbuf_close(sb);
 		fclose(fp);
@@ -353,9 +345,7 @@ openconf(void)
 	}
 	strbuf_unputc(sb, ':');
 	strbuf_putc(sb, ':');
-	confline = strdup(strbuf_value(sb));
-	if (!confline)
-		die("short of memory.");
+	confline = check_strdup(strbuf_value(sb));
 	strbuf_close(sb);
 	trim(confline);
 	return;

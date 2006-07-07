@@ -366,9 +366,7 @@ main(int argc, char **argv)
 	gtags = usable("gtags");
 	if (!gtags)
 		die("gtags command not found.");
-	gtags = strdup(gtags);
-	if (!gtags)
-		die("short of memory.");
+	gtags = check_strdup(gtags);
 	/*
 	 * incremental update of tag files.
 	 */
@@ -409,9 +407,7 @@ main(int argc, char **argv)
 		if (*p)
 			strbuf_puts(sb, p);
 		strbuf_putc(sb, '/');
-		localprefix = strdup(strbuf_value(sb));
-		if (!localprefix)
-			die("short of memory.");
+		localprefix = check_strdup(strbuf_value(sb));
 		strbuf_close(sb);
 	} else {
 		localprefix = NULL;

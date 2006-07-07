@@ -32,6 +32,7 @@
 #else
 #include <strings.h>
 #endif
+#include "checkalloc.h"
 #include "regex.h"
 #include "queue.h"
 #include "global.h"
@@ -78,10 +79,8 @@ static SLIST_HEAD(, file) file_q;
 static FILE *
 open_file_queue(const char *path)
 {
-	struct file *file = (struct file *)malloc(sizeof(struct file));
+	struct file *file = (struct file *)check_malloc(sizeof(struct file));
 
-	if (!file)
-		die("short of memory.");
 	if (strlen(path) > MAXPATHLEN)
 		die("path name too long.");
 	strlimcpy(file->path, path, sizeof(file->path));
@@ -237,9 +236,7 @@ static dump_stack(struct dirstack *sp, const char *label)
 static struct dirstack *
 make_stack(const char *name)
 {
-	struct dirstack *sp = (struct dirstack *)malloc(sizeof(struct dirstack));
-	if (!sp)
-		die("short of memory.");
+	struct dirstack *sp = (struct dirstack *)check_malloc(sizeof(struct dirstack));
 	strlimcpy(sp->name, name, TOTAL_STRING_SIZE); 
 	sp->start = sp->last = sp->buf;
 	sp->leaved = TOTAL_STRING_SIZE;

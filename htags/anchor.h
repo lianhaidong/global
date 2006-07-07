@@ -20,6 +20,7 @@
 #ifndef _ANCHOR_H_
 #define _ANCHOR_H_
 
+#include "checkalloc.h"
 /*
  * Anchor table.
  *
@@ -46,9 +47,7 @@ struct anchor {
 		strlimcpy((a)->tag, tag, sizeof((a)->tag));		\
 		(a)->reserve = NULL;					\
 	} else {							\
-		(a)->reserve = strdup(tag);				\
-		if ((a)->reserve == NULL)				\
-			die("short of memory.");			\
+		(a)->reserve = check_strdup(tag);			\
 		(a)->tag[0] = '\0';					\
 	}								\
 } while (0)

@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "checkalloc.h"
 #include "die.h"
 #include "strhash.h"
 #include "hash-string.h"
@@ -71,16 +72,6 @@ strhash_close(hash);				// free resources.
 
 */
 
-/*
- * check_malloc: memory allocator
- */
-static void *check_malloc(int size)
-{
-        void *p = (void *)malloc(size);
-        if (p == NULL)
-		die("short of memory.");
-        return p;
-}
 #define obstack_chunk_alloc check_malloc
 #define obstack_chunk_free free
 

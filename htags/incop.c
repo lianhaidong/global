@@ -74,9 +74,7 @@ put_inc(const char *file, const char *path, int id)
 	entry = strhash_assign(head_inc, HASH_KEY(file), 1);
 	data = entry->value;
 	if (data == NULL) {
-		data = (struct data *)malloc(sizeof(struct data));
-		if (!data)
-			die("short of memory.");
+		data = (struct data *)check_malloc(sizeof(struct data));
 #if defined(_WIN32) || defined(__DJGPP__)
 		strlimcpy(data->name, file, sizeof(data->name));
 #else
