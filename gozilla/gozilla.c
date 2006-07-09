@@ -226,7 +226,7 @@ main(int argc, char **argv)
 	if (!browser && alias("BROWSER"))
 		browser = alias("BROWSER");
 	if (!browser)
-		browser = "firefox";
+		browser = "mozilla";
 
 	/*
 	 * Replace alias name.

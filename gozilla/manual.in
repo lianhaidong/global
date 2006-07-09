@@ -56,7 +56,7 @@
 		function reference is exist.  If you execute @xref{htags,1}
 		with @option{-l} option, you can specify any line.
 	@item{@option{-b} @arg{browser}}
-		browser to use. By default, it is assumed @name{firefox}.
+		browser to use. By default, it is assumed @name{mozilla}.
 	@item{@option{-p}}
 		just print generated target URL.
 	@item{@arg{file}}
@@ -89,15 +89,18 @@
 		The directory on which gtags database exist.
 		This value is ignored when @var{GTAGSROOT} is not defined.
 	@item{@var{BROWSER}}
-		browser to use. By default, it is assumed firefox.
+		browser to use. By default, it is assumed mozilla.
 	@end_itemize
 @EXAMPLES
 	$ gtags
 	$ htags
-	$ firefox &
 	$ global -x main
 	main              82 ctags.c          main(argc, argv)
+	$ mozilla &
 	$ gozilla +82 ctags.c
+
+	$ firefox &
+	$ gozilla -b firefox +82 ctags.c
 
 	$ setenv BROWSER 'epiphany --new-tab'
 	$ epiphany &
