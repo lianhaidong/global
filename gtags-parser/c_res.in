@@ -109,6 +109,7 @@ while			word
 %prec			yacc
 %printer		yacc
 %pure_parser,%pure-parser	yacc
+%require		yacc
 %right			yacc
 %skeleton		yacc
 %start			yacc
