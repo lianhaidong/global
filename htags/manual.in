@@ -135,9 +135,8 @@
 		The default is the current directory.
 	@end_itemize
 @EXAMPLES
-	$ cd /usr/src/sys
-	# gtags -v
-	# htags -FsanohIvt 'Welcom to FreeBSD kernel source tour!'
+	$ gtags -v
+	$ htags -FsanohIvt 'Welcom to XXX source tour!'
 	$ firefox HTML/index.html
 
 @FILES
@@ -156,7 +155,7 @@
 		Index file for hypertext.
 	@item{@file{HTML/MAP}}
 		Mapping file for converting tag into path of hypertext.
-		External system utilize this file. See EXAMPLES.
+		External system utilize this file.
 	@item{@file{HTML/FILEMAP}}
 		Mapping file for converting file name into path of hypertext.
 		External system utilize this file.
