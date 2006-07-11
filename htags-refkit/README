@@ -67,9 +67,8 @@ This file includes a path->URL mapping table like follows:
 	|gnusort/error.h S/5.html
 	|...
 
-This kit offers the API to convert the path name into the URL using
-the mapping table. Of course, you can use the table directly, but it
-might be annoyed.
+This kit offers APIs to convert path name into URL using the mapping table.
+Of course, you can use the table directly, but it might be annoyed.
 
 [Application example]
 
