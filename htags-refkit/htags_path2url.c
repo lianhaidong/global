@@ -268,7 +268,7 @@ htags_path2url(const char *path, int line, char *url, int size)
 #ifdef TEST
 
 /*
- * Usage: htags_path2url <html directory> <path name> [<line number>]
+ * Usage: htags_path2url filemap path [line]
  *
  * $ htags_path2url HTML/FILEMAP i386/i386/identcpu.c 120
  * i386/i386/identcpu.c, line 120 => S/1238.html#L120
@@ -283,7 +283,7 @@ main(int argc, char **argv)
 	int ret;
 
 	if (argc < 3) {
-		fprintf(stderr, "Usage: path2url HTML path [line]\n");
+		fprintf(stderr, "Usage: htags_path2url filemap path [line]\n");
 		exit(1);
 	}
 	html = argv[1];
