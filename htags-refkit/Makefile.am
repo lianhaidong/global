@@ -10,10 +10,7 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
-icons_DATA = index.png c.png text.png dir.png back.png help.png \
-	first.png last.png left.png right.png top.png bottom.png \
-	n_first.png n_last.png n_left.png n_right.png n_top.png n_bottom.png \
-	pglobe.png
-iconsdir = ${datadir}/gtags/icons
+EXTRA_DIST = README htags_path2url.c
 
-EXTRA_DIST = ${icons_DATA}
+htags_path2url: htags_path2url.c
+	${CC} -g -DTEST htags_path2url.c -o htags_path2url

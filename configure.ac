@@ -191,6 +191,7 @@ AC_OUTPUT([Makefile
 	global/Makefile
 	gozilla/Makefile
 	gtags-cscope/Makefile
+	htags-refkit/Makefile
 	libglibc/Makefile
 	doc/Makefile
 	icons/Makefile

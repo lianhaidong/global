@@ -27,6 +27,8 @@ htags_DEPENDENCIES = $(LDADD)
 
 man_MANS = htags.1
 
-EXTRA_DIST = $(man_MANS) manual.in \
-		const.h global.cgi.tmpl.in bless.sh.tmpl style.css \
-		c.l cpp.l java.l php.l asm.l
+gtagsdir = ${datadir}/gtags
+gtags_DATA = global.cgi.tmpl bless.sh.tmpl style.css
+
+EXTRA_DIST = $(man_MANS) ${gtags_DATA} manual.in global.cgi.tmpl.in \
+	const.h c.l cpp.l java.l php.l asm.l
