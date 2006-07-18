@@ -55,6 +55,11 @@ void show_page_by_url(const char *, const char *);
 #ifndef isblank
 #define isblank(c)	((c) == ' ' || (c) == '\t')
 #endif
+
+char cwd[MAXPATHLEN+1];
+char root[MAXPATHLEN+1];
+char dbpath[MAXPATHLEN+1];
+
 int bflag;
 int pflag;
 int qflag;
@@ -159,6 +164,29 @@ alias(const char *alias_name)
 	return ent ? ent->value : NULL;
 }
 
+/*
+ * locate_HTMLdir: locate HTML directory made by htags(1).
+ *
+ *	r)		HTML directory
+ */
+static const char *
+locate_HTMLdir(void)
+{
+	static char htmldir[MAXPATHLEN+1];
+
+	if (test("d", makepath(dbpath, "HTML", NULL)))
+		strlimcpy(htmldir, makepath(dbpath, "HTML", NULL), sizeof(htmldir));
+	else if (test("d", makepath(root, "HTML", NULL)))
+		strlimcpy(htmldir, makepath(root, "HTML", NULL), sizeof(htmldir));
+	else if (test("d", makepath(root, "html/HTML", NULL)))
+		/* Doxygen makes HTML in doxygen's html directory. */
+		strlimcpy(htmldir, makepath(root, "html/HTML", NULL), sizeof(htmldir));
+	else
+		die("hypertext not found. See htags(1).");
+	if (vflag)
+		fprintf(stdout, "HTML directory '%s'.\n", htmldir);
+	return (const char *)htmldir;
+}
 int
 main(int argc, char **argv)
 {
@@ -246,12 +274,15 @@ main(int argc, char **argv)
 	/*
 	 * Get URL.
 	 */
-	if (definition)
-		getdefinitionURL(definition, URL);
-	else if (isprotocol(strbuf_value(arg)))
+	if (!definition && isprotocol(strbuf_value(arg))) {
 		strbuf_puts(URL, strbuf_value(arg));
-	else
-		getURL(strbuf_value(arg), URL);
+	} else {
+		getdbpath(cwd, root, dbpath, 0);
+		if (definition)
+			getdefinitionURL(definition, URL);
+		else
+			getURL(strbuf_value(arg), URL);
+	}
 	if (pflag) {
 		fprintf(stdout, "%s\n", strbuf_value(URL));
 		if (vflag)
@@ -274,27 +305,13 @@ main(int argc, char **argv)
 void
 getdefinitionURL(const char *arg, STRBUF *URL)
 {
-	char cwd[MAXPATHLEN+1];
-	char root[MAXPATHLEN+1];
-	char dbpath[MAXPATHLEN+1];
-	char htmldir[MAXPATHLEN+1];
 	char *path, *p;
 	STRBUF *sb = NULL;
 	DBOP *dbop = NULL;
 	SPLIT ptable;
 	int status = -1;
+	const char *htmldir = locate_HTMLdir();
 
-	/*
-	 * get current, root and dbpath directory.
-	 * if GTAGS not found, getdbpath doesn't return.
-	 */
-	getdbpath(cwd, root, dbpath, 0);
-	if (test("d", makepath(dbpath, "HTML", NULL)))
-		strlimcpy(htmldir, makepath(dbpath, "HTML", NULL), sizeof(htmldir));
-	else if (test("d", makepath(root, "HTML", NULL)))
-		strlimcpy(htmldir, makepath(root, "HTML", NULL), sizeof(htmldir));
-	else
-		die("hypertext not found. See htags(1).");
 	path = makepath(htmldir, "MAP.db", NULL);
 	if (test("f", path))
 		dbop = dbop_open(path, 0, 0, 0);
@@ -354,10 +371,6 @@ getdefinitionURL(const char *arg, STRBUF *URL)
 void
 getURL(const char *arg, STRBUF *URL)
 {
-	char cwd[MAXPATHLEN+1];
-	char root[MAXPATHLEN+1];
-	char dbpath[MAXPATHLEN+1];
-	char htmldir[MAXPATHLEN+1];
 	char *abspath, *p;
 	char buf[MAXPATHLEN+1];
 
@@ -369,17 +382,8 @@ getURL(const char *arg, STRBUF *URL)
 		die("realpath(3) is not compatible with BSD version.");
 	if (issource(abspath)) {
 		STRBUF *sb = strbuf_open(0);
-		/*
-		 * get current, root and dbpath directory.
-		 * if GTAGS not found, getdbpath doesn't return.
-		 */
-		getdbpath(cwd, root, dbpath, 0);
-		if (test("d", makepath(dbpath, "HTML", NULL)))
-			strlimcpy(htmldir, makepath(dbpath, "HTML", NULL), sizeof(htmldir));
-		else if (test("d", makepath(root, "HTML", NULL)))
-			strlimcpy(htmldir, makepath(root, "HTML", NULL), sizeof(htmldir));
-		else
-			die("hypertext not found. See htags(1).");
+		const char *htmldir = locate_HTMLdir();
+
 		/*
 		 * convert path into hypertext.
 		 */
