@@ -59,15 +59,13 @@ static void search(int, const char *);
 int show_version;
 int show_help;
 int vflag;
-int qflag;
 
 #define NA	-1
 
 static void
 usage(void)
 {
-	if (!qflag)
-		fputs(usage_const, stderr);
+	fputs(usage_const, stderr);
 	exit(2);
 }
 static void
@@ -80,7 +78,6 @@ help(void)
 
 static struct option const long_options[] = {
 	{"ignore-case", no_argument, NULL, 'C'},
-	{"quiet", no_argument, NULL, 'q'},
 	{"verbose", no_argument, NULL, 'v'},
 	{"version", no_argument, &show_version, 1},
 	{"help", no_argument, &show_help, 1},
@@ -124,19 +121,14 @@ main(int argc, char **argv)
 		case 'C':
 			ignore_case = 1;
 			break;
-		case 'q':
-			qflag++;
-			break;
 		case 'v':
 			vflag++;
 			break;
 		default:
-			usage();
+			/* usage(); */
 			break;
 		}
 	}
-	if (qflag)
-		vflag = 0;
 	if (show_help)
 		help();
 	argc -= optind;
@@ -227,8 +219,6 @@ command_loop()
 			ignore_case ^= 1;
 			print_case_distinction();
 			break;
-		case 'q':		/* q: quit */
-			return;
 		case 'r':		/* r: update tag file */
 			update();
 			break;
