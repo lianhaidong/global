@@ -264,9 +264,7 @@ prepare_skip(void)
 	}
 	if (list_count > 0) {
 		int i;
-		listarray = (char **)malloc(sizeof(char *) * list_count);
-		if (listarray == NULL)
-			die("short of memory.");
+		listarray = (char **)check_malloc(sizeof(char *) * list_count);
 		p = strbuf_value(list);
 #ifdef DEBUG
 		if (debug)

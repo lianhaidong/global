@@ -34,7 +34,7 @@
  * check_malloc: memory allocator
  */
 void *
-check_malloc(int size)
+check_malloc(size_t size)
 {
 	void *p = (void *)malloc(size);
 	if (p == NULL)
@@ -42,6 +42,28 @@ check_malloc(int size)
 	return p;
 }
 
+/*
+ * check_calloc: memory allocator
+ */
+void *
+check_calloc(size_t number, size_t size)
+{
+	void *p = (void *)calloc(number, size);
+	if (p == NULL)
+		die("short of memory.");
+	return p;
+}
+/*
+ * check_realloc: memory allocator
+ */
+void *
+check_realloc(void *area, size_t size)
+{
+	void *p = (void *)realloc(area, size);
+	if (p == NULL)
+		die("short of memory.");
+	return p;
+}
 /*
  * check_strdup: allocate memory and copy string to it.
  *

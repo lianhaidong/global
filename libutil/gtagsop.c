@@ -38,6 +38,7 @@
 #endif
 
 #include "char.h"
+#include "checkalloc.h"
 #include "conf.h"
 #include "compress.h"
 #include "dbop.h"
@@ -133,8 +134,7 @@ gtags_open(const char *dbpath, const char *root, int db, int mode)
 	GTOP *gtop;
 	int dbmode;
 
-	if ((gtop = (GTOP *)calloc(sizeof(GTOP), 1)) == NULL)
-		die("short of memory.");
+	gtop = (GTOP *)check_calloc(sizeof(GTOP), 1);
 	gtop->db = db;
 	gtop->mode = mode;
 	gtop->format_version = 4;

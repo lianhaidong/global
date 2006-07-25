@@ -41,6 +41,7 @@
 #endif
 
 #include "char.h"
+#include "checkalloc.h"
 #include "dbop.h"
 #include "die.h"
 #include "locatestring.h"
@@ -110,8 +111,7 @@ dbop_open(const char *path, int mode, int perm, int flags)
 	db = dbopen(path, rw, 0600, DB_BTREE, &info);
 	if (!db)
 		return NULL;
-	if (!(dbop = (DBOP *)malloc(sizeof(DBOP))))
-		die("short of memory.");
+	dbop = (DBOP *)check_malloc(sizeof(DBOP));
 	if (path == NULL)
 		dbop->dbname[0] = '\0';
 	else

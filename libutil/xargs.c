@@ -254,8 +254,7 @@ xargs_open_generic(const char *command, int max_args)
 {
 	XARGS *xp;
 
-	if ((xp  = malloc(sizeof(XARGS))) == NULL)
-		die("Short of memory.");
+	xp  = check_malloc(sizeof(XARGS));
 	xp->command = check_strdup(command);
 	xp->type = 0;
 	xp->pipe = NULL;

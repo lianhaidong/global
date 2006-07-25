@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #endif
 #include <stdio.h>
+#include "checkalloc.h"
 #include "die.h"
 #include "varray.h"
 
@@ -86,10 +87,8 @@ static int debug = 0;
 VARRAY *
 varray_open(int size, int expand)
 {
-	VARRAY *vb = (VARRAY *)malloc(sizeof(VARRAY));
+	VARRAY *vb = (VARRAY *)check_malloc(sizeof(VARRAY));
 
-	if (vb == NULL)
-		die("short of memory.");
 	if (size < 1)
 		die("varray_open: size < 1.");
 	if (expand < 0)
@@ -139,11 +138,9 @@ varray_assign(VARRAY *vb, int index, int force)
 		 * Therefore, we cannot use realloc(NULL, ...).
 		 */
 		if (vb->vbuf == NULL)
-			vb->vbuf = (char *)malloc(vb->size * vb->alloced);
+			vb->vbuf = (char *)check_malloc(vb->size * vb->alloced);
 		else
-			vb->vbuf = (char *)realloc(vb->vbuf, vb->size * vb->alloced);
-		if (vb->vbuf == NULL)
-			die("short of memory.");
+			vb->vbuf = (char *)check_realloc(vb->vbuf, vb->size * vb->alloced);
 		if (debug)
 			fprintf(stderr, "Expanded: from %d to %d.\n", old_alloced, vb->alloced);
 	}

@@ -283,10 +283,8 @@ gpath_close(void)
 GFIND *
 gfind_open(const char *dbpath, const char *local, int other)
 {
-	GFIND *gfind = (GFIND *)malloc(sizeof(GFIND));
+	GFIND *gfind = (GFIND *)check_malloc(sizeof(GFIND));
 
-	if (gfind == NULL)
-		die("short of memory.");
 	gfind->dbop = dbop_open(makepath(dbpath, dbname(GPATH), NULL), 0, 0, 0);
 	if (gfind->dbop == NULL)
 		die("GPATH not found.");

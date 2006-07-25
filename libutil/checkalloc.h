@@ -20,8 +20,11 @@
 
 #ifndef _CHECKALLOC_H
 #define _CHECKALLOC_H
+#include <stdlib.h>
 
-void *check_malloc(int);
+void *check_malloc(size_t);
+void *check_calloc(size_t, size_t);
+void *check_realloc(void *, size_t);
 char *check_strdup(const char *);
 
 #endif /* _CHECKALLOC_H */

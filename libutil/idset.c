@@ -25,6 +25,7 @@
 #ifdef HAVE_LIMITS_H
 #include <limits.h>
 #endif
+#include "checkalloc.h"
 #include "die.h"
 #include "idset.h"
 
@@ -59,13 +60,9 @@ idset_close(idset)		[]
 IDSET *
 idset_open(unsigned int size)
 {
-	IDSET *idset = malloc(sizeof(IDSET));
+	IDSET *idset = (IDSET *)check_malloc(sizeof(IDSET));
 
-	if (idset == NULL)
-		die("short of memory.");
-	idset->set = (unsigned char *)calloc((size + CHAR_BIT - 1) / CHAR_BIT, 1);
-	if (idset->set == NULL)
-		die("short of memory.");
+	idset->set = (unsigned char *)check_calloc((size + CHAR_BIT - 1) / CHAR_BIT, 1);
 	idset->max = 0;
 	idset->size = size;
 	return idset;

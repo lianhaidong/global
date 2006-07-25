@@ -32,6 +32,7 @@
 #include <strings.h>
 #endif
 
+#include "checkalloc.h"
 #include "die.h"
 #include "strbuf.h"
 
@@ -129,12 +130,7 @@ __strbuf_expandbuf(STRBUF *sb, int length)
 
 	if (sb->alloc_failed)
 		return;
-	newbuf = (char *)realloc(sb->sbuf, newsize + 1);
-	if (newbuf == NULL) {
-		(*strbuf_alloc_failed_handler)();
-		sb->alloc_failed = 1;
-		return;
-	}
+	newbuf = (char *)check_realloc(sb->sbuf, newsize + 1);
 	sb->sbufsize = newsize;
 	sb->sbuf = newbuf;
 
@@ -151,18 +147,10 @@ __strbuf_expandbuf(STRBUF *sb, int length)
 STRBUF *
 strbuf_open(int init)
 {
-	STRBUF *sb = (STRBUF *)calloc(sizeof(STRBUF), 1);
+	STRBUF *sb = (STRBUF *)check_calloc(sizeof(STRBUF), 1);
 
-	if (sb == NULL) {
-		(*strbuf_alloc_failed_handler)();
-		return NULL;
-	}
 	sb->sbufsize = (init > 0) ? init : INITIALSIZE;
-	if (!(sb->sbuf = (char *)malloc(sb->sbufsize + 1))) {
-		(*strbuf_alloc_failed_handler)();
-		(void)free(sb);
-		return NULL;
-	}
+	sb->sbuf = (char *)check_malloc(sb->sbufsize + 1);
 	sb->curp = sb->sbuf;
 	sb->endp = sb->sbuf + sb->sbufsize;
 
@@ -205,10 +193,7 @@ strbuf_clear(STRBUF *sb)
 		die("NULL string buffer. (strbuf_clear)");
 	if (strbuf_empty(sb)) {
 		sb->sbufsize = INITIALSIZE;
-		if (!(sb->sbuf = (char *)malloc(sb->sbufsize + 1))) {
-			(*strbuf_alloc_failed_handler)();
-			return;
-		}
+		sb->sbuf = (char *)check_malloc(sb->sbufsize + 1);
 		sb->curp = sb->sbuf;
 		sb->endp = sb->sbuf + sb->sbufsize;
 	} else {

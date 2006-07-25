@@ -33,8 +33,8 @@
 #include <strings.h>
 #endif
 
-#include "checkalloc.h"
 #include "gparam.h"
+#include "checkalloc.h"
 #include "conf.h"
 #include "die.h"
 #include "env.h"
