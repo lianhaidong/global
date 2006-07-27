@@ -37,7 +37,7 @@
  *	r)		result string
  *
  * Usage:
- *	strmake("aaa:bbb", ":/=")	=> "aaaa"
+ *	strmake("aaa:bbb", ":/=")	=> "aaa"
  *
  * Note: The result string area is function local. So, following call
  *	 to this function may destroy the area.
