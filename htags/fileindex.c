@@ -32,436 +32,99 @@
 #else
 #include <strings.h>
 #endif
-#include "checkalloc.h"
-#include "regex.h"
-#include "queue.h"
+
 #include "global.h"
 #include "incop.h"
 #include "htags.h"
 #include "path2url.h"
 #include "common.h"
-#include "test.h"
 
 /*----------------------------------------------------------------------*/
-/* File queue								*/
+/* File procedures							*/
 /*----------------------------------------------------------------------*/
+static FILE *open_file(const char *);
+static void close_file(FILE *);
 /*
- * Usage:
- *
- * FILE *op;
- *
- * open_file_queue("a");
- * open_file_queue("b");
- * op = select_file_queue("a");
- * fputs("xxxxx", op);		-- write to file 'a'
- * op = select_file_queue("b");
- * fputs("xxxxx", op);		-- write to file 'b'
- * close_file_queue("a");
- * close_file_queue("b");
-*/
-struct file {
-	SLIST_ENTRY(file) ptr;
-	char path[MAXPATHLEN];
-	FILE *op;
-	int compress;
-};
-
-static SLIST_HEAD(, file) file_q;
-
-/*
- * open_file_queue: open file and return file pointer.
+ * open_file: open file and return file pointer.
  *
  *	i)	path	path name or command line.
  *	r)		file pointer
- *
- * You can get file pointer any time using select_file_queue() with path.
  */
 static FILE *
-open_file_queue(const char *path)
+open_file(const char *path)
 {
-	struct file *file = (struct file *)check_malloc(sizeof(struct file));
+	FILE *op;
 
-	if (strlen(path) > MAXPATHLEN)
-		die("path name too long.");
-	strlimcpy(file->path, path, sizeof(file->path));
 	if (cflag) {
 		char command[MAXFILLEN];
 
 		snprintf(command, sizeof(command), "gzip -c >%s", path);
-		file->op = popen(command, "w");
-		if (file->op == NULL)
+		op = popen(command, "w");
+		if (op == NULL)
 			die("cannot execute command '%s'.", command);
-		file->compress = 1;
 	} else {
-		file->op = fopen(path, "w");
-		if (file->op == NULL)
+		op = fopen(path, "w");
+		if (op == NULL)
 			die("cannot create file '%s'.", path);
-		file->compress = 0;
 	}
-	SLIST_INSERT_HEAD(&file_q, file, ptr);
-	return file->op;
+	return op;
 }
 /*
- * select_file_queue: return file pointer for path.
+ * close_file: close file
  *
- *	i)	path	path name
- *	r)		file pointer
- *			NULL: path not found.
- */
-static FILE *
-select_file_queue(const char *path)
-{
-	struct file *file;
-
-	SLIST_FOREACH(file, &file_q, ptr) {
-		if (!strcmp(file->path, path))
-			return file->op;
-	}
-	die("cannot select no existent file.");
-}
-/*
- * close_file_queue: close file
- *
- *	i)	path	path name
+ *	i)	op	file descripter
  */
 static void
-close_file_queue(const char *path)
+close_file(FILE *op)
 {
-	struct file *file;
-
-	SLIST_FOREACH(file, &file_q, ptr) {
-		if (!strcmp(file->path, path))
-			break;
-	}
-	if (file == NULL)
-		die("cannot close no existent file.");
-	if (file->compress) {
-		if (pclose(file->op) != 0) {
-			char command[MAXFILLEN];
-			snprintf(command, sizeof(command), "gzip -c >%s", file->path);
-			die("command '%s' failed.", command);
-		}
+	if (cflag) {
+		if (pclose(op) != 0)
+			die("gzip command failed.");
 	} else
-		fclose(file->op);
-	SLIST_REMOVE(&file_q, file, file, ptr);
-	free(file);
+		fclose(op);
 }
 /*----------------------------------------------------------------------*/
-/* Directory stack							*/
+/* Find list procedures							*/
 /*----------------------------------------------------------------------*/
+static const char *getpath(void);
+static void ungetpath(void);
+static GFIND *gp;
+static int retry;
 /*
- * Usage:
+ * get a path from input stream.
  *
- * struct dirstack *sp = make_stack("stack1");
- * set_stack(sp, "aaa/bbb/ccc");
- *
- *	sp = ("aaa" "bbb" "ccc")
- *
- * push_stack(sp, "ddd");
- *
- *      sp = ("aaa" "bbb" "ccc" "ddd")
- *
- * char *s = top_stack(sp);
- *
- *	sp = ("aaa" "bbb" "ccc" "ddd")
- *	s = "ddd"
- *
- * char *s = pop_stack(sp);
- *
- *      sp = ("aaa" "bbb" "ccc")
- *	s = "ddd"
- *
- * char *s = shift_stack(sp);
- *
- *      sp = ("bbb" "ccc")
- *	s = "aaa"
- *
- * char *s = join_stack(sp);
- *
- *      sp = ("bbb" "ccc")
- *	s = "bbb/ccc"
- *
- * delete_stack(sp);
+ * Each path name must start with "./".
  */
-static int trace = 0;
-
-#define TOTAL_STRING_SIZE       2048
-
-struct dirstack {
-        char name[32];
-        char buf[TOTAL_STRING_SIZE];
-        char join[TOTAL_STRING_SIZE];
-        char shift[TOTAL_STRING_SIZE];
-        char *start;
-        char *last;
-        int leaved;
-        int count;
-};
-
-#define count_stack(sp) ((sp)->count)
-#define bottom_stack(sp) ((sp)->start)
-
-void
-settrace(void)
+static const char *
+getpath()
 {
-	trace = 1;
-}
-/*
- * dump_stack: print stack list to stderr.
- *
- *	i)	sp	stack descriptor
- */
-void
-static dump_stack(struct dirstack *sp, const char *label)
-{
-	char *start = sp->start;
-	char *last = sp->last - 1;
-	const char *p;
+	static const char *buff;
 
-	fprintf(stderr, "%s(%s): ", label, sp->name);
-	for (p = sp->buf; p < last; p++) {
-		if (p == start)
-			fputs("[", stderr);
-		fputc((*p == 0) ? ' ' : *p, stderr);
+	if (!retry) {
+		/* skip README or ChangeLog unless the -o option specified. */
+		do {
+			buff = gfind_read(gp);
+		} while (buff && gp->type == GPATH_OTHER && !other_files);
 	}
-	if (start == sp->last)
-		fputs("[", stderr);
-	fputs_nl("]", stderr);
+	retry = 0;
+	return buff;
 }
 /*
- * make_stack: make new stack.
- *
- *	r)		stack descriptor
- */
-static struct dirstack *
-make_stack(const char *name)
-{
-	struct dirstack *sp = (struct dirstack *)check_malloc(sizeof(struct dirstack));
-	strlimcpy(sp->name, name, TOTAL_STRING_SIZE); 
-	sp->start = sp->last = sp->buf;
-	sp->leaved = TOTAL_STRING_SIZE;
-	sp->count = 0;
-	return sp;
-}
-/*
- * set_stack: set path with splitting by '/'.
- *
- *	i)	sp	stack descriptor
- *	i)	path	path name
- *
- * path = 'aaa/bbb/ccc';
- *
- *	sp->buf
- *	+---------------------------+
- *	|aaa\0bbb\0ccc\0            |
- *	+---------------------------+
- *	^               ^
- * 	sp->start       sp->last
- *
- *
+ * push back a path name.
  */
 static void
-set_stack(struct dirstack *sp, const char *path)
+ungetpath()
 {
-	int length = strlen(path) + 1;
-	char *p;
-
-	if (length > TOTAL_STRING_SIZE)
-		die("path name too long.");
-	sp->start = sp->buf;
-	sp->last = sp->buf + length;
-	sp->leaved = TOTAL_STRING_SIZE - length;
-	if (sp->leaved < 0)
-		abort();
-	sp->count = 1;
-	strlimcpy(sp->buf, path, TOTAL_STRING_SIZE);
-	/*
-	 * Split path by sep char.
-	 */
-	for (p = sp->buf; *p; p++) {
-		if (*p == sep) {
-			*p = '\0';
-			sp->count++;
-		}
-	}
-	if (trace)
-		dump_stack(sp, "set_stack");
-}
-/*
- * push_stack: push new string on the stack.
- *
- *	i)	sp	stack descriptor
- *	i)	s	string
- */
-static void
-push_stack(struct dirstack *sp, const char *s)
-{
-	int length = strlen(s) + 1;
-
-	if (sp->leaved < length) {
-		fprintf(stderr, "s = %s, leaved = %d, length = %d, bufsize = %d\n",
-			s, sp->leaved, length, (int)(sp->last - sp->buf));
-		dump_stack(sp, "abort in push_stack");
-		abort();
-	}
-	strlimcpy(sp->last, s, length);
-	sp->last += length;
-	sp->leaved -= length;
-	if (sp->leaved < 0)
-		abort();
-	sp->count++;
-	if (trace)
-		dump_stack(sp, "push_stack");
-}
-/*
- * top_stack: return the top value of the stack.
- *
- *	i)	sp	stack descriptor
- *	r)		string
- */
-static const char *
-top_stack(struct dirstack *sp)
-{
-	char *start = sp->start;
-	char *last = sp->last;
-
-	if (start > last)
-		die("internal error in top_stack(1).");
-	if (start == last)
-		return NULL;
-	last--;
-	if (*last)
-		die("internal error in top_stack(2).");
-	if (start == last)
-		return last;	/* return NULL string */
-	for (last--; start < last && *last != 0; last--)
-		;
-	if (start < last)
-		last++;
-	return last;
-}
-/*
- * next_stack: return the next value of the stack.
- *
- *	i)	sp	stack descriptor
- *	i)	cur	current value
- *	r)		string
- */
-static const char *
-next_stack(struct dirstack *sp, const char *cur)
-{
-	char *last = sp->last;
-
-	if (cur >= last)
-		return NULL;
-	for (; cur < last && *cur != 0; cur++)
-		;
-	cur++;
-	if (cur >= last)
-		return NULL;
-	return cur;
-}
-/*
- * pop_stack: return the top of the stack and discard it.
- *
- *	i)	sp	stack descriptor
- *	r)		string
- */
-static const char *
-pop_stack(struct dirstack *sp)
-{
-	char *last = (char *)top_stack(sp);
-	int length = strlen(last) + 1;
-
-	if (!last)
-		return NULL;
-	sp->count--;
-	sp->last = last;
-	sp->leaved += length;
-	if (trace)
-		dump_stack(sp, "pop_stack");
-	return last;
-}
-/*
- * shift_stack: return the bottom of the stack and discard it.
- *
- *	i)	sp	stack descriptor
- *	r)		string
- */
-static const char *
-shift_stack(struct dirstack *sp)
-{
-	char *start = sp->start;
-	char *last = sp->last;
-	int length = strlen(start) + 1;
-
-	if (start == last)
-		return NULL;
-	sp->start += length;
-	sp->count--;
-	if (sp->count == 0) {
-		strlimcpy(sp->shift, start, TOTAL_STRING_SIZE); 
-		start = sp->shift;
-		sp->start = sp->last = sp->buf;
-		sp->leaved = TOTAL_STRING_SIZE;
-	}
-	if (trace)
-		dump_stack(sp, "shift_stack");
-	return start;
-}
-/*
- * copy_stack: make duplicate stack.
- *
- *	i)	to	stack descriptor
- *	i)	from	stack descriptor
- */
-static void
-copy_stack(struct dirstack *to, struct dirstack *from)
-{
-	char *start = from->start;
-	char *last = from->last;
-	char *p = to->buf;
-
-	to->start = to->buf;
-	to->last = to->start + (last - start);
-	to->leaved = from->leaved;
-	to->count = from->count;
-	while (start < last)
-		*p++ = *start++;
-}
-/*
- * join_stack: join each unit and make a path.
- *
- *	i)	sp	stack descriptor
- *	r)		path name
- */
-static const char *
-join_stack(struct dirstack *sp)
-{
-	char *start = sp->start;
-	char *last = sp->last - 1;
-	char *p = sp->join;
-
-	for (; start < last; start++)
-		*p++ = (*start) ? *start : sep;
-	*p = 0;
-	if (trace)
-		dump_stack(sp, "join_stack");
-	return (char *)sp->join;
-}
-/*
- * delete_stack: delete stack.
- *
- *	i)	sp	stack descriptor
- */
-static void
-delete_stack(struct dirstack *sp)
-{
-	free(sp);
+	retry = 1;
 }
 /*----------------------------------------------------------------------*/
-/* Main procedure							*/
+/* Path name operation procedures					*/
 /*----------------------------------------------------------------------*/
+static const char *extract_lastname(const char *, int);
+static const char *lastpart(const char *);
+static const char *dirpart(const char *, char *);
+static const char *localpath(const char *, char *);
+static const char *appendslash(const char *);
 /*
  * extract_lastname: extract the last name of include line.
  *
@@ -550,34 +213,421 @@ extract_lastname(const char *image, int is_php)
 	return NULL;
 }
 /*
+ * get the last part of the path.
+ *
+ *	i)	path	path name
+ *	r)		last part
+ * Ex.
+ * lastpart("a/b")	=> "b"
+ * lastpart("a")	=> "a"
+ */
+static const char *
+lastpart(const char *path)
+{
+	const char *p = strrchr(path, '/');
+
+	return p ? p + 1 : path;
+}
+/*
+ * get the directory part of the path.
+ *
+ *	i)	path	path name
+ *	o)	result	result buffer
+ *	r)		directory part
+ * Ex.
+ * dirpart("a/b/c")	=> "a/b"
+ */
+static const char *
+dirpart(const char *path, char *result)
+{
+	char *p = result;
+	const char *q = path, *limit = strrchr(path, '/');
+
+	while (q < limit)
+		*p++ = *q++; 
+	*p = '\0';
+	return result;
+}
+/*
+ * get the local path name if the path is under the dir.
+ *
+ *	i)	path	path name
+ *	i)	dir	directory name
+ *	r)		local path name
+ *
+ * Ex.
+ * localpath("a/b/c", "a/b")	=> "c"
+ * localpath("a/b/c/d", "a/b")	=> "c/d"
+ * localpath("a/b/c", "a/d")	=> NULL
+ */
+static const char *
+localpath(const char *path, char *dir)
+{
+	int length = strlen(dir);
+
+	if (!strncmp(path, dir, length) && *(path + length) == '/')
+		return path + length + 1;
+	return NULL;
+}
+/*
+ * append '/' after the path name
+ *
+ *	i)	path	path name
+ *	r)		appended path name
+ *
+ * Ex.
+ * appendslash("a")	=> "a/"
+ */
+static const char *
+appendslash(const char *path)
+{
+	STATIC_STRBUF(sb);
+
+	strbuf_clear(sb);
+	strbuf_puts(sb, path);
+	strbuf_putc(sb, '/');
+	return strbuf_value(sb);
+}
+/*
+ * remove './' at the head of the path name
+ *
+ *	i)	path	path name
+ *	r)		removed path name
+ *
+ * Ex.
+ * removedotslash("./a") => "a"
+ */
+static const char *
+removedotslash(const char *path)
+{
+	return (*path == '.' && *(path + 1) == '/') ? path + 2 : path;
+}
+
+/*----------------------------------------------------------------------*/
+/* Generating file index						*/
+/*----------------------------------------------------------------------*/
+static void print_tree(int, char *);
+static void print_directory_header(FILE *, int, const char *);
+static void print_directory_footer(FILE *, int, const char *);
+static const char *print_file_name(int, const char *);
+static const char *print_directory_name(int, const char *);
+
+FILE *FILEMAP;
+STRBUF *files;
+const char *indexlink;
+regex_t is_include_file;
+int count;
+
+/*
+ * print tree from the specified directory. (recursively called)
+ *
+ *	i)	level	directory nest level
+ *	io)	basedir	current base directory
+ *
+ * This function read find style records, and print tree structure.
+ */
+/*
+ * File list of the top level directory (when level == 0) is not written
+ * to a file directly. Instead, it is written to string buffer, because
+ * it appears in some places.
+ */
+#define PUT(s)	if (level == 0)					\
+			 strbuf_puts(files, s);			\
+		 else						\
+			 fputs(s, op);
+
+static void
+print_tree(int level, char *basedir)
+{
+	const char *path;
+	FILE *op = NULL;
+
+	if (level > 0) {
+		char name[MAXPATHLEN+1];
+
+		snprintf(name, sizeof(name), "%s/files/%s.%s", distpath, path2fid(basedir), HTML);
+		op = open_file(name);
+		print_directory_header(op, level, basedir);
+	}
+	while ((path = getpath()) != NULL) {
+		const char *p, *local = localpath(path, basedir);
+
+		/*
+		 * Path is outside of basedir.
+		 */
+		if (local == NULL) {
+			ungetpath();	/* read again by upper level print_tree(). */
+			break;
+		}
+		/*
+		 * Path is inside of basedir.
+		 */
+		else {
+			char *slash = strchr(local, '/');
+			
+			/*
+			 * Print directory.
+			 */
+			if (slash) {
+				int baselen = strlen(basedir);
+				char *q, *last = basedir + baselen;
+
+				if (baselen + 1 + (slash - local)  > MAXPATHLEN) {
+					fprintf(stderr, "Too long path name.\n");
+					exit(1);
+				}
+				/*
+				 * Append new directory to the basedir.
+				 */
+				p = local;
+				q = last;
+				*q++ = '/';
+				while (p < slash)
+					*q++ = *p++;
+				*q = '\0';
+				PUT(print_directory_name(level, basedir));
+				/*
+				 * print tree for this directory.
+				 */
+				ungetpath();	/* read again by lower level print_tree(). */
+				print_tree(level + 1, basedir);
+				/*
+				 * Shrink the basedir.
+				 */
+				*last = '\0';
+			}
+			/*
+			 * Print file.
+			 */
+			else {
+				PUT(print_file_name(level, path));
+			}
+		}
+	}
+	if (level > 0) {
+		print_directory_footer(op, level, basedir);
+		close_file(op);
+	}
+	file_count++;
+}
+/*
+ * print directory header.
+ *
+ *	i)	op	file index
+ *	i)	level	1,2...
+ *	i)	dir	directory name
+ */
+static void
+print_directory_header(FILE *op, int level, const char *dir)
+{
+	STATIC_STRBUF(sb);
+
+	if (level == 0)
+		die("print_directory_header: internal error.");
+	strbuf_clear(sb);
+	strbuf_puts(sb, removedotslash(dir));
+	strbuf_putc(sb, '/');
+	fputs_nl(gen_page_begin(strbuf_value(sb), SUBDIR), op);
+	fputs_nl(body_begin, op);
+	fprintf(op, "%s%sroot%s/", header_begin, gen_href_begin(NULL, indexlink, normal_suffix, NULL), gen_href_end());
+	{
+		char path[MAXPATHLEN+1];
+		char *p, *q;
+
+		strlimcpy(path, dir, sizeof(path));
+		for (p = path + 1; p != NULL; p = strchr(p, '/')) {
+			int save = 0;
+
+			q = ++p;
+			while (*q && *q != '/')
+				q++;
+			save = *q;
+			if (*q == '/')
+				*q = '\0';
+			if (save == '/')
+				fputs(gen_href_begin(NULL, path2fid(path), HTML, NULL), op);
+			fputs(p, op);
+			if (save == '/')
+				fputs(gen_href_end(), op);
+			*q = save;
+			fputc('/', op);
+		}
+	}
+	fputs_nl(header_end, op);
+	{
+		char parentdir[MAXPATHLEN+1];
+		const char *suffix, *parent;
+
+		(void)dirpart(dir, parentdir);
+		if (level == 1) {
+			parent = indexlink;
+			suffix = normal_suffix;
+		} else {
+			parent = path2fid(parentdir);
+			suffix = HTML;
+		}
+		fputs(gen_href_begin_with_title(NULL, parent, suffix, NULL, "Parent Directory"), op);
+	}
+	if (Iflag)
+		fputs(gen_image(PARENT, back_icon, ".."), op);
+	else
+		fputs("[..]", op);
+	fputs_nl(gen_href_end(), op);
+	if (!no_order_list)
+		fputs_nl(list_begin, op);
+	else
+		fprintf(op, "%s%s\n", br, br);
+}
+/*
+ * print directory footer.
+ *
+ *	i)	op	file index
+ *	i)	level	1,2...
+ *	i)	dir	directory name
+ */
+static void
+print_directory_footer(FILE *op, int level, const char *dir)
+{
+	const char *parent, *suffix;
+	char parentdir[MAXPATHLEN+1];
+
+	if (level == 0)
+		die("print_directory_footer: internal error.");
+	(void)dirpart(dir, parentdir);
+	if (level == 1) {
+		parent = indexlink;
+		suffix = normal_suffix;
+	} else {
+		parent = path2fid(parentdir);
+		suffix = HTML;
+	}
+	if (no_order_list)
+		fputs_nl(br, op);
+	else
+		fputs_nl(list_end, op);
+	fputs(gen_href_begin_with_title(NULL, parent, suffix, NULL, "Parent Directory"), op);
+	if (Iflag)
+		fputs(gen_image(PARENT, back_icon, ".."), op);
+	else
+		fputs("[..]", op);
+	fputs_nl(gen_href_end(), op);
+	fputs_nl(body_end, op);
+	fputs_nl(gen_page_end(), op);
+}
+/*
+ * print file name.
+ *
+ *	i)	level	0,1,2...
+ *	i)	path	path of the file
+ */
+static const char *
+print_file_name(int level, const char *path)
+{
+	STATIC_STRBUF(sb);
+	char *target = (Fflag) ? "mains" : "_top";
+
+	message(" [%d] adding %s", ++count, removedotslash(path));
+	/*
+	 * We assume the file which has one of the following suffixes
+	 * as a candidate of include file.
+	 *
+	 * C: .h
+	 * C++: .hxx, .hpp, .H
+	 * PHP: .inc.php
+	 */
+	if (regexec(&is_include_file, path, 0, 0, 0) == 0)
+		put_inc(lastpart(path), path, count);
+	strbuf_clear(sb);
+	if (!no_order_list)
+		strbuf_puts(sb, item_begin);
+	strbuf_puts(sb, gen_href_begin_with_title_target(level == 0 ? SRCS: upperdir(SRCS),
+			path2fid(path), HTML, NULL, removedotslash(path), target));
+	if (Iflag) {
+		const char *lang, *suffix, *text_icon;
+
+		if ((suffix = locatestring(path, ".", MATCH_LAST)) != NULL
+		    && (lang = decide_lang(suffix)) != NULL
+		    && (strcmp(lang, "c") == 0 || strcmp(lang, "cpp") == 0
+		       || strcmp(lang, "yacc") == 0))
+			text_icon = c_icon;
+		else
+			text_icon = file_icon;
+		strbuf_puts(sb, gen_image(level == 0 ? CURRENT : PARENT, text_icon, removedotslash(path)));
+		strbuf_puts(sb, quote_space);
+	}
+	strbuf_puts(sb, full_path ? removedotslash(path) : lastpart(path));
+	strbuf_puts(sb, gen_href_end());
+	if (!no_order_list)
+		strbuf_puts(sb, item_end);
+	else
+		strbuf_puts(sb, br);
+	strbuf_putc(sb, '\n');
+	if (map_file)
+		fprintf(FILEMAP, "%s\t%s/%s.%s\n", removedotslash(path), SRCS, path2fid(path), HTML);
+	return (const char *)strbuf_value(sb);
+}
+/*
+ * print directory name.
+ *
+ *	i)	level	0,1,2...
+ *	i)	path	path of the directory
+ */
+static const char *
+print_directory_name(int level, const char *path)
+{
+	STATIC_STRBUF(sb);
+
+	path = removedotslash(path);
+	strbuf_clear(sb);
+	if (!no_order_list)
+		strbuf_puts(sb, item_begin);
+	strbuf_puts(sb, gen_href_begin_with_title(level == 0 ? "files" : NULL,
+			path2fid(path), HTML, NULL, appendslash(path)));
+	if (Iflag) {
+		strbuf_puts(sb, gen_image(level == 0 ? CURRENT : PARENT, dir_icon, appendslash(path)));
+		strbuf_puts(sb, quote_space);
+	}
+	strbuf_sprintf(sb, "%s/%s", lastpart(path), gen_href_end());
+	if (!no_order_list)
+		strbuf_puts(sb, item_end);
+	else
+		strbuf_puts(sb, br);
+	strbuf_putc(sb, '\n');
+	return (const char *)strbuf_value(sb);
+}
+/*
  * makefileindex: make file index.
  *
- *	i)	file
- *	o)	files
+ *	i)	file		output file name
+ *	o)	files		top level file index
  */
 int
-makefileindex(const char *file, STRBUF *files)
+makefileindex(const char *file, STRBUF *a_files)
 {
-	FILE *FILEMAP, *FILES, *STDOUT, *op = NULL;
-	GFIND *gp;
-	const char *_;
-	int count = 0;
-	const char *indexlink = (Fflag) ? "../files" : "../mains";
-	STRBUF *sb = strbuf_open(0);
-	const char *target = (Fflag) ? "mains" : "_top";
-	struct dirstack *dirstack = make_stack("dirstack");
-	struct dirstack *fdstack = make_stack("fdstack");
-	struct dirstack *push = make_stack("push");
-	struct dirstack *pop = make_stack("pop");
+	STATIC_STRBUF(sb);
+	FILE *filesop;
+	int flags = REG_EXTENDED;
+	/*
+	 * Basedir is a directory to which we are paying attention on each
+	 * occasion. It starts with ".", grows and shrink according to the
+	 * procgress of processing. It isn't copied each every recursive call
+	 * not to increase use of the stack.
+	 */
+	char basedir[MAXPATHLEN+1];
+
+	/*
+	 * Initialize data.
+	 */
+	indexlink = (Fflag) ? "../files" : "../mains";
+	count = 0;
+
+	gp = gfind_open(dbpath, NULL, other_files);
 	/*
 	 * for collecting include files.
 	 */
-	int flags = REG_EXTENDED;
-	regex_t is_include_file;
-
 	if (w32)
 		flags |= REG_ICASE;
-	strbuf_reset(sb);
+	strbuf_clear(sb);
 	strbuf_puts(sb, "\\.(");
 	{
 		const char *p = include_file_suffixes;
@@ -596,247 +646,49 @@ makefileindex(const char *file, STRBUF *files)
 		die("cannot compile regular expression '%s'.", strbuf_value(sb));
 
 	/*
-	 * preparations.
+	 * Write to files.html.
 	 */
-	if ((FILES = fopen(makepath(distpath, file, NULL), "w")) == NULL)
+	if ((filesop = fopen(makepath(distpath, file, NULL), "w")) == NULL)
 		die("cannot open file '%s'.", file);
-
-	fputs_nl(gen_page_begin(title_file_index, TOPDIR), FILES);
-	fputs_nl(body_begin, FILES);
-	fputs(header_begin, FILES);
-	fputs(gen_href_begin(NULL, "files", normal_suffix, NULL), FILES);
-	fputs(title_file_index, FILES);
-	fputs(gen_href_end(), FILES);
-	fputs_nl(header_end, FILES);
+	fputs_nl(gen_page_begin(title_file_index, TOPDIR), filesop);
+	fputs_nl(body_begin, filesop);
+	fputs(header_begin, filesop);
+	fputs(gen_href_begin(NULL, "files", normal_suffix, NULL), filesop);
+	fputs(title_file_index, filesop);
+	fputs(gen_href_end(), filesop);
+	fputs_nl(header_end, filesop);
 	if (!no_order_list)
-		fputs_nl(list_begin, FILES);
-	STDOUT = FILES;
-
+		fputs_nl(list_begin, filesop);
 	FILEMAP = NULL;
 	if (map_file) {
 		if (!(FILEMAP = fopen(makepath(distpath, "FILEMAP", NULL), "w")))
                         die("cannot open '%s'.", makepath(distpath, "FILEMAP", NULL));
 	}
-	gp = gfind_open(dbpath, NULL, other_files);
-	while ((_ = gfind_read(gp)) != NULL) {
-		char fname[MAXPATHLEN];
+	/*
+	 * print whole directory tree.
+	 */
+	files = a_files;
+	strcpy(basedir, ".");
+	print_tree(0, basedir);
 
-		/* It seems like README or ChangeLog. */
-		if (gp->type == GPATH_OTHER && !other_files)
-			continue;
-		_ += 2;			/* remove './' */
-		count++;
-		message(" [%d] adding %s", count, _);
-		set_stack(push, _);	
-		strlimcpy(fname, pop_stack(push), sizeof(fname));
-		copy_stack(pop, dirstack);
-		while (count_stack(push) && count_stack(pop) && !strcmp(bottom_stack(push), bottom_stack(pop))) {
-			(void)shift_stack(push);
-			(void)shift_stack(pop);
-		}
-		if (count_stack(push) || count_stack(pop)) {
-			const char *parent, *path, *suffix;
-
-			while (count_stack(pop)) {
-				(void)pop_stack(dirstack);
-				if (count_stack(dirstack)) {
-					parent = path2fid(join_stack(dirstack));
-					suffix = HTML;
-				} else {
-					parent = indexlink;
-					suffix = normal_suffix;
-				}
-				if (no_order_list)
-					fputs_nl(br, STDOUT);
-				else
-					fputs_nl(list_end, STDOUT);
-				fputs(gen_href_begin_with_title(NULL, parent, suffix, NULL, "Parent Directory"), STDOUT);
-				if (Iflag)
-					fputs(gen_image(PARENT, back_icon, ".."), STDOUT);
-				else
-					fputs("[..]", STDOUT);
-				fputs_nl(gen_href_end(), STDOUT);
-				fputs_nl(body_end, STDOUT);
-				fputs_nl(gen_page_end(), STDOUT);
-				path = pop_stack(fdstack);	
-				close_file_queue(path);
-				file_count++;
-				if (count_stack(fdstack))
-					STDOUT = select_file_queue(top_stack(fdstack));
-				pop_stack(pop);
-			}
-			while (count_stack(push)) {
-				char parent[MAXPATHLEN], cur[MAXPATHLEN], tmp[MAXPATHLEN];
-				const char *last;
-				if (count_stack(dirstack)) {
-					strlimcpy(parent, path2fid(join_stack(dirstack)), sizeof(parent));
-					suffix = HTML;
-				} else {
-					strlimcpy(parent, indexlink, sizeof(parent));
-					suffix = normal_suffix;
-				}
-				push_stack(dirstack, shift_stack(push));
-				path = join_stack(dirstack);
-				snprintf(cur, sizeof(cur), "%s/files/%s.%s", distpath, path2fid(path), HTML);
-				last = (full_path) ? path : top_stack(dirstack);
-
-				strbuf_reset(sb);
-				if (!no_order_list)
-					strbuf_puts(sb, item_begin);
-				snprintf(tmp, sizeof(tmp), "%s/", path);
-				strbuf_puts(sb, gen_href_begin_with_title(count_stack(dirstack) == 1 ? "files" : NULL, path2fid(path), HTML, NULL, tmp));
-				if (Iflag) {
-					strbuf_puts(sb, gen_image(count_stack(dirstack) == 1 ? CURRENT : PARENT, dir_icon, tmp));
-					strbuf_puts(sb, quote_space);
-				}
-				strbuf_sprintf(sb, "%s/%s", last, gen_href_end());
-				if (!no_order_list)
-					strbuf_puts(sb, item_end);
-				else
-					strbuf_puts(sb, br);
-				strbuf_putc(sb, '\n');
-				if (count_stack(dirstack) == 1)
-					strbuf_puts(files, strbuf_value(sb));
-				else
-					fputs(strbuf_value(sb), STDOUT);
-				op = open_file_queue(cur);
-				STDOUT = op;
-				push_stack(fdstack, cur);
-				strbuf_reset(sb);
-				strbuf_puts(sb, path);
-				strbuf_putc(sb, '/');
-				fputs_nl(gen_page_begin(strbuf_value(sb), SUBDIR), STDOUT);
-				fputs_nl(body_begin, STDOUT);
-				fprintf(STDOUT, "%s%sroot%s/", header_begin, gen_href_begin(NULL, indexlink, normal_suffix, NULL), gen_href_end());
-				{
-					struct dirstack *p = make_stack("tmp");
-					const char *s;
-					int anchor;
-
-					for (s = bottom_stack(dirstack); s; s = next_stack(dirstack, s)) {
-						push_stack(p, s);
-						anchor = count_stack(p) < count_stack(dirstack) ? 1 : 0;
-						if (anchor)
-							fputs(gen_href_begin(NULL, path2fid(join_stack(p)), HTML, NULL), STDOUT);
-						fputs(s, STDOUT);
-						if (anchor)
-							fputs(gen_href_end(), STDOUT);
-						fputc('/', STDOUT);
-					}
-					delete_stack(p);
-				}
-				fputs_nl(header_end, STDOUT);
-				fputs(gen_href_begin_with_title(NULL, parent, suffix, NULL, "Parent Directory"), STDOUT);
-				if (Iflag)
-					fputs(gen_image(PARENT, back_icon, ".."), STDOUT);
-				else
-					fputs("[..]", STDOUT);
-				fputs_nl(gen_href_end(), STDOUT);
-				if (!no_order_list)
-					fputs_nl(list_begin, STDOUT);
-				else
-					fprintf(STDOUT, "%s%s\n", br, br);
-			}
-		}
-		/*
-                 * We assume the file which has one of the following suffixes
-                 * as a candidate of include file.
-                 *
-                 * C: .h
-                 * C++: .hxx, .hpp, .H
-                 * PHP: .inc.php
-		 */
-		if (regexec(&is_include_file, _, 0, 0, 0) == 0)
-			put_inc(fname, _, count);
-		strbuf_reset(sb);
-		if (!no_order_list)
-			strbuf_puts(sb, item_begin);
-		strbuf_puts(sb, gen_href_begin_with_title_target(count_stack(dirstack) ? upperdir(SRCS) : SRCS, path2fid(_), HTML, NULL, _, target));
-		if (Iflag) {
-			const char *lang, *suffix, *text_icon;
-
-			if ((suffix = locatestring(_, ".", MATCH_LAST)) != NULL
-			    && (lang = decide_lang(suffix)) != NULL
-			    && (strcmp(lang, "c") == 0 || strcmp(lang, "cpp") == 0
-			       || strcmp(lang, "yacc") == 0))
-				text_icon = c_icon;
-			else
-				text_icon = file_icon;
-			strbuf_puts(sb, gen_image(count_stack(dirstack) == 0 ? CURRENT : PARENT, text_icon, _));
-			strbuf_puts(sb, quote_space);
-		}
-		if (full_path) {
-			strbuf_puts(sb, _);
-		} else {
-			const char *last = locatestring(_, "/", MATCH_LAST);
-			if (last)
-				last++;
-			else
-				last = _;
-			strbuf_puts(sb, last);
-		}
-		strbuf_puts(sb, gen_href_end());
-		if (!no_order_list)
-			strbuf_puts(sb, item_end);
-		else
-			strbuf_puts(sb, br);
-		strbuf_putc(sb, '\n');
-		if (map_file)
-			fprintf(FILEMAP, "%s\t%s/%s.%s\n", _, SRCS, path2fid(_), HTML);
-		if (count_stack(dirstack) == 0)
-			strbuf_puts(files, strbuf_value(sb));
-		else
-			fputs(strbuf_value(sb), STDOUT);
-	}
-	gfind_close(gp);
 	if (map_file)
 		fclose(FILEMAP);
-	while (count_stack(dirstack) > 0) {
-		const char *parent, *suffix;
+	gfind_close(gp);
 
-		pop_stack(dirstack);
-		if (count_stack(dirstack) > 0) {
-			parent = path2fid(join_stack(dirstack));
-			suffix = HTML;
-		} else {
-			parent = indexlink;
-			suffix = normal_suffix;
-		}
-		if (no_order_list)
-			fputs_nl(br, STDOUT);
-		else
-			fputs_nl(list_end, STDOUT);
-		fputs(gen_href_begin_with_title(NULL, parent, suffix, NULL, "Parent Directory"), STDOUT);
-		if (Iflag)
-			fputs(gen_image(PARENT, back_icon, ".."), STDOUT);
-		else
-			fputs("[..]", STDOUT);
-		fputs_nl(gen_href_end(), STDOUT);
-		fputs_nl(body_end, STDOUT);
-		fputs_nl(gen_page_end(), STDOUT);
-		close_file_queue(pop_stack(fdstack));
-		file_count++;
-		if (count_stack(fdstack) > 0)
-			STDOUT = select_file_queue(top_stack(fdstack));
-	}
-	fputs(strbuf_value(files), FILES);
+	fputs(strbuf_value(files), filesop);
 	if (no_order_list)
-		fputs_nl(br, FILES);
+		fputs_nl(br, filesop);
 	else
-		fputs_nl(list_end, FILES);
-	fputs_nl(body_end, FILES);
-	fputs_nl(gen_page_end(), FILES);
-	fclose(FILES);
+		fputs_nl(list_end, filesop);
+	fputs_nl(body_end, filesop);
+	fputs_nl(gen_page_end(), filesop);
+	fclose(filesop);
 	file_count++;
-
-	delete_stack(dirstack);
-	delete_stack(fdstack);
-	delete_stack(push);
-	delete_stack(pop);
-
-	strbuf_close(sb);
 	return count;
 }
+/*----------------------------------------------------------------------*/
+/* Main body of generating include file index				*/
+/*----------------------------------------------------------------------*/
 void
 makeincludeindex(void)
 {
@@ -904,7 +756,7 @@ makeincludeindex(void)
 			char path[MAXPATHLEN];
 
 			snprintf(path, sizeof(path), "%s/%s/%d.%s", distpath, INCS, no, HTML);
-			INCLUDE = open_file_queue(path);
+			INCLUDE = open_file(path);
 			fputs_nl(gen_page_begin(last, SUBDIR), INCLUDE);
 			fputs_nl(body_begin, INCLUDE);
 			fputs_nl(verbatim_begin, INCLUDE);
@@ -914,14 +766,14 @@ makeincludeindex(void)
 
 				for (; count; filename += strlen(filename) + 1, count--) {
 					fputs(gen_href_begin_with_title_target(upperdir(SRCS), path2fid(filename), HTML, NULL, NULL, target), INCLUDE);
-					fputs(filename, INCLUDE);
+					fputs(removedotslash(filename), INCLUDE);
 					fputs_nl(gen_href_end(), INCLUDE);
 				}
 			}
 			fputs_nl(verbatim_end, INCLUDE);
 			fputs_nl(body_end, INCLUDE);
 			fputs_nl(gen_page_end(), INCLUDE);
-			close_file_queue(path);
+			close_file(INCLUDE);
 			file_count++;
 			/*
 			 * inc->path == NULL means that information already
@@ -947,7 +799,7 @@ makeincludeindex(void)
 			char path[MAXPATHLEN];
 
 			snprintf(path, sizeof(path), "%s/%s/%d.%s", distpath, INCREFS, no, HTML);
-			INCLUDE = open_file_queue(path);
+			INCLUDE = open_file(path);
 			fputs_nl(gen_page_begin(last, SUBDIR), INCLUDE);
 			fputs_nl(body_begin, INCLUDE);
 			fputs_nl(gen_list_begin(), INCLUDE);
@@ -961,7 +813,7 @@ makeincludeindex(void)
 			fputs_nl(gen_list_end(), INCLUDE);
 			fputs_nl(body_end, INCLUDE);
 			fputs_nl(gen_page_end(), INCLUDE);
-			close_file_queue(path);
+			close_file(INCLUDE);
 			file_count++;
 			/*
 			 * inc->path == NULL means that information already
