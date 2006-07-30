@@ -610,8 +610,8 @@ makefileindex(const char *file, STRBUF *a_files)
 	/*
 	 * Basedir is a directory to which we are paying attention on each
 	 * occasion. It starts with ".", grows and shrink according to the
-	 * procgress of processing. It isn't copied each every recursive call
-	 * not to increase use of the stack.
+	 * progress of processing. It isn't copied each every recursive call
+	 * not to waste the stack.
 	 */
 	char basedir[MAXPATHLEN+1];
 
