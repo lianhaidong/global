@@ -331,10 +331,12 @@ int count;
  * to a file directly. Instead, it is written to string buffer, because
  * it appears in some places.
  */
-#define PUT(s)	if (level == 0)					\
+#define PUT(s) do {						\
+		if (level == 0)					\
 			 strbuf_puts(files, s);			\
 		 else						\
-			 fputs(s, op);
+			 fputs(s, op);				\
+} while (0)
 
 static void
 print_tree(int level, char *basedir)
