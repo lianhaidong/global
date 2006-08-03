@@ -84,7 +84,7 @@ htags:\
 	:title_begin=<h1><font color='#cc0000'>:title_end=</font></h1>:\
 	:comment_begin=<i><font color='green'>:comment_end=</font></i>:\
 	:sharp_begin=<font color='darkred'>:sharp_end=</font>:\
-	:brace_begin=<font color='blue'>:brace_end=</font>:\
+	:brace_begin=<font color='red'>:brace_end=</font>:\
 	:warned_line_begin=<span style='background-color\:yellow'>:warned_line_end=</span>:\
 	:reserved_begin=<b>:reserved_end=</b>:script_alias=/cgi-bin/:\
 	:ncol#4:tabs#8:normal_suffix=html:gzipped_suffix=ghtml:\

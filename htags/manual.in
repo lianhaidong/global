@@ -222,7 +222,7 @@
 	@item{@code{sharp_end}(string)}
 		End tag for 'define'. The default is '</font>'.
 	@item{@code{brace_begin}(string)}
-		Begin tag for brace. The default is '<font color=blue>'.
+		Begin tag for brace. The default is '<font color=red>'.
 	@item{@code{brace_end}(string)}
 		End tag for brace. The default is '</font>'.
 	@item{@code{reserved_begin}(string)}
