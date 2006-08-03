@@ -29,7 +29,7 @@ table.flist	{ border-spacing: 2px; }
 em		{ font-style: normal; }
 em.comment	{ color: green; font-style: italic; }
 em.sharp	{ color: #8b0000; }
-em.brace	{ color: blue; }
+em.brace	{ color: red; }
 em.position	{ color: gray; font-style: italic; }
 em.warned	{ background-color: yellow; }
 em.string	{ text-decoration: underline; }

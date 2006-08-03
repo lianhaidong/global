@@ -88,7 +88,7 @@ const char *comment_begin	= "<i><font color='green'>";
 const char *comment_end		= "</font></i>";
 const char *sharp_begin		= "<font color='darkred'>";
 const char *sharp_end		= "</font>";
-const char *brace_begin		= "<font color='blue'>";
+const char *brace_begin		= "<font color='red'>";
 const char *brace_end		= "</font>";
 const char *verbatim_begin	= "<pre>";
 const char *verbatim_end	= "</pre>";
