@@ -123,6 +123,7 @@ extern const char *file_icon;
 
 extern int ncol;
 extern int tabs;
+extern int flist_fields;
 extern int full_path;
 extern int map_file;
 extern const char *icon_suffix;
@@ -131,6 +132,7 @@ extern const char *prolog_script;
 extern const char *epilog_script;
 extern int show_position;
 extern int table_list;
+extern int table_flist;
 extern int colorize_warned_line;
 extern const char *script_alias;
 extern const char *gzipped_suffix;

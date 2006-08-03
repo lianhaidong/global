@@ -26,7 +26,7 @@
 @HEADER	HTAGS,1,July 2006,GNU Project
 @NAME	htags - generate hypertext from source code.
 @SYNOPSIS
-	@name{htags} [-acDfFghInosvwx][-d @arg{dbpath}][-m @arg{name}][-S @arg{cgidir}][-t @arg{title}][@arg{htmldir}]
+	@name{htags} [-acDfFghInosTvwx][-d @arg{dbpath}][-m @arg{name}][-S @arg{cgidir}][-t @arg{title}][@arg{dir}]
 @DESCRIPTION
 	@name{Htags} makes hypertext of C, C++, Yacc, Java, PHP and Assembly source code.
 
@@ -118,6 +118,9 @@
 	@item{@option{-t}, @option{--title} @arg{title}}
 		The @arg{title} of this hypertext. The default is the last
 		component of the current directory.
+	@item{@option{-T}, @option{--table-flist} [@arg{fields}]}
+		Generate file list using <table> tag.
+		The @arg{fields} is used for field number in a line. The default is 5.
 	@item{@option{-v}, @option{--verbose}}
 		Verbose mode.
 	@item{@option{-w}, @option{--warning}}
@@ -130,7 +133,7 @@
 		else if config variable
 		@code{xhtml_version} is set to @code{1.1} then generate
 		XHTML-1.1 else XHTML 1.0 Transitional.
-	@item{@arg{htmldir}}
+	@item{@arg{dir}}
 		The directory in which hypertext is generated.
 		The default is the current directory.
 	@end_itemize
@@ -243,11 +246,15 @@
 		Columns of line number. The default is 4.
 	@item{@code{tabs}(number)}
 		Tab stop. The default is 8.
+	@item{@code{flist_fields}(number)}
+		Field number of file index. The default is 5.
 	@item{@code{full_path}(boolean)}
 		List file names with full path in file index.
 		By default, list just the last component of a path.
 	@item{@code{table_list}(boolean)}
-		List tags using table tag. The default is false.
+		List tags using <table> tag. The default is false.
+	@item{@code{table_flist}(boolean)}
+		Use <table> tag for file index. The default is false.
 	@item{@code{normal_suffix}(string)}
 		Suffix for normal html file. The default is 'html'.
 	@item{@code{no_map_file}(boolean)}

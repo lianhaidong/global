@@ -25,6 +25,7 @@ th, td		{ white-space: nowrap; }
 .code		{ text-align: left; }
 th.file		{ text-align: center; }
 td.file		{ text-align: left; }
+table.flist	{ border-spacing: 2px; }
 em		{ font-style: normal; }
 em.comment	{ color: green; font-style: italic; }
 em.sharp	{ color: #8b0000; }

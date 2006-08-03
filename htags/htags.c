@@ -208,6 +208,7 @@ const char *icon_files[] = {
  */
 int ncol = 4;				/* columns of line number	*/
 int tabs = 8;				/* tab skip			*/
+int flist_fields = 5;			/* fields number of file list	*/
 int full_path = 0;			/* file index format		*/
 int map_file = 1;			/* 1: create MAP file		*/
 const char *icon_suffix = "png";	/* icon suffix (jpg, png etc)	*/
@@ -216,6 +217,7 @@ const char *prolog_script = NULL;	/* include script at first	*/
 const char *epilog_script = NULL;	/* include script at last	*/
 int show_position = 0;			/* show current position	*/
 int table_list = 0;			/* tag list using table tag	*/
+int table_flist = 0;			/* file list using table tag	*/
 int colorize_warned_line = 0;		/* colorize warned line		*/
 const char *script_alias = "/cgi-bin";	/* script alias of WWW server	*/
 const char *gzipped_suffix = "ghtml";	/* suffix of gzipped html file	*/
@@ -245,6 +247,7 @@ static struct option const long_options[] = {
         {"other", no_argument, NULL, 'o'},
         {"symbol", no_argument, NULL, 's'},
         {"secure-cgi", required_argument, NULL, 'S'},
+        {"table-flist", optional_argument, NULL, 'T'},
         {"title", required_argument, NULL, 't'},
         {"verbose", no_argument, NULL, 'v'},
         {"warning", no_argument, NULL, 'w'},
@@ -917,14 +920,17 @@ makecommonpart(const char *title, const char *defines, const char *files)
 		strbuf_puts(sb, header_begin);
 		strbuf_puts(sb, title_file_index);
 		strbuf_puts_nl(sb, header_end);
-		if (!no_order_list)
+		if (table_flist)
+			strbuf_puts_nl(sb, flist_begin);
+		else if (!no_order_list)
 			strbuf_puts_nl(sb, list_begin);
 		strbuf_puts(sb, files);
-		if (!no_order_list) {
+		if (table_flist)
+			strbuf_puts_nl(sb, flist_end);
+		else if (!no_order_list)
 			strbuf_puts_nl(sb, list_end);
-		} else {
+		else
 			strbuf_puts_nl(sb, br);
-		}
 		strbuf_puts_nl(sb, hr);
 	}
 	strbuf_close(ib);
@@ -1029,6 +1035,12 @@ configuration(int argc, char **argv)
 		else
 			tabs = n;
 	}
+	if (getconfn("flist_fields", &n)) {
+		if (n < 1)
+			warning("parameter 'flist_fields' ignored becase the value (=%d) is too large or too small.", n);
+		else
+			flist_fields = n;
+	}
 	strbuf_reset(sb);
 	if (getconfs("gzipped_suffix", sb))
 		gzipped_suffix = check_strdup(strbuf_value(sb));
@@ -1057,6 +1069,8 @@ configuration(int argc, char **argv)
 		full_path = 1;
 	if (getconfb("table_list"))
 		table_list = 1;
+	if (getconfb("table_flist"))
+		table_flist = 1;
 	if (getconfb("no_order_list"))
 		no_order_list = 1;
 	if (getconfb("copy_files"))
@@ -1366,7 +1380,7 @@ main(int argc, char **argv)
 	if (htags_options)
 		argv = append_options(&argc, argv);
 
-	while ((optchar = getopt_long(argc, argv, "acd:DfFghIm:noqsS:t:vwx", long_options, &option_index)) != EOF) {
+	while ((optchar = getopt_long(argc, argv, "acd:DfFghIm:noqsS:t:Tvwx", long_options, &option_index)) != EOF) {
 		switch (optchar) {
                 case 0:
                 case 1:
@@ -1432,6 +1446,11 @@ main(int argc, char **argv)
                 case 'S':
 			Sflag++;
 			cgidir = optarg;
+                        break;
+                case 'T':
+			table_flist = 1;
+			if (optarg && atoi(optarg) > 0)
+				flist_fields = atoi(optarg);
                         break;
                 case 't':
 			title = optarg;

@@ -341,6 +341,7 @@ print_tree(int level, char *basedir)
 {
 	const char *path;
 	FILE *op = NULL;
+	int flist_items = 0;
 
 	if (level > 0) {
 		char name[MAXPATHLEN+1];
@@ -364,7 +365,9 @@ print_tree(int level, char *basedir)
 		 */
 		else {
 			char *slash = strchr(local, '/');
-			
+
+			if (table_flist && flist_items++ % flist_fields == 0)
+				PUT(fline_begin);
 			/*
 			 * Print directory.
 			 */
@@ -402,6 +405,8 @@ print_tree(int level, char *basedir)
 			else {
 				PUT(print_file_name(level, path));
 			}
+			if (table_flist && flist_items % flist_fields == 0)
+				PUT(fline_end);
 		}
 	}
 	if (level > 0) {
@@ -473,10 +478,14 @@ print_directory_header(FILE *op, int level, const char *dir)
 	else
 		fputs("[..]", op);
 	fputs_nl(gen_href_end(), op);
-	if (!no_order_list)
+	if (table_flist)
+		fputs_nl(flist_begin, op);
+	else if (!no_order_list)
 		fputs_nl(list_begin, op);
-	else
-		fprintf(op, "%s%s\n", br, br);
+	else {
+		fputs(br, op);
+		fputs_nl(br, op);
+	}
 }
 /*
  * print directory footer.
@@ -501,10 +510,12 @@ print_directory_footer(FILE *op, int level, const char *dir)
 		parent = path2fid(parentdir);
 		suffix = HTML;
 	}
-	if (no_order_list)
-		fputs_nl(br, op);
-	else
+	if (table_flist)
+		fputs_nl(flist_end, op);
+	else if (!no_order_list)
 		fputs_nl(list_end, op);
+	else
+		fputs_nl(br, op);
 	fputs(gen_href_begin_with_title(NULL, parent, suffix, NULL, "Parent Directory"), op);
 	if (Iflag)
 		fputs(gen_image(PARENT, back_icon, ".."), op);
@@ -538,7 +549,9 @@ print_file_name(int level, const char *path)
 	if (regexec(&is_include_file, path, 0, 0, 0) == 0)
 		put_inc(lastpart(path), path, count);
 	strbuf_clear(sb);
-	if (!no_order_list)
+	if (table_flist)
+		strbuf_puts(sb, fitem_begin);
+	else if (!no_order_list)
 		strbuf_puts(sb, item_begin);
 	strbuf_puts(sb, gen_href_begin_with_title_target(level == 0 ? SRCS: upperdir(SRCS),
 			path2fid(path), HTML, NULL, removedotslash(path), target));
@@ -557,7 +570,9 @@ print_file_name(int level, const char *path)
 	}
 	strbuf_puts(sb, full_path ? removedotslash(path) : lastpart(path));
 	strbuf_puts(sb, gen_href_end());
-	if (!no_order_list)
+	if (table_flist)
+		strbuf_puts(sb, fitem_end);
+	else if (!no_order_list)
 		strbuf_puts(sb, item_end);
 	else
 		strbuf_puts(sb, br);
@@ -579,7 +594,9 @@ print_directory_name(int level, const char *path)
 
 	path = removedotslash(path);
 	strbuf_clear(sb);
-	if (!no_order_list)
+	if (table_flist)
+		strbuf_puts(sb, fitem_begin);
+	else if (!no_order_list)
 		strbuf_puts(sb, item_begin);
 	strbuf_puts(sb, gen_href_begin_with_title(level == 0 ? "files" : NULL,
 			path2fid(path), HTML, NULL, appendslash(path)));
@@ -588,7 +605,9 @@ print_directory_name(int level, const char *path)
 		strbuf_puts(sb, quote_space);
 	}
 	strbuf_sprintf(sb, "%s/%s", lastpart(path), gen_href_end());
-	if (!no_order_list)
+	if (table_flist)
+		strbuf_puts(sb, fitem_end);
+	else if (!no_order_list)
 		strbuf_puts(sb, item_end);
 	else
 		strbuf_puts(sb, br);
@@ -657,8 +676,11 @@ makefileindex(const char *file, STRBUF *a_files)
 	fputs(title_file_index, filesop);
 	fputs(gen_href_end(), filesop);
 	fputs_nl(header_end, filesop);
-	if (!no_order_list)
+	if (table_flist) {
+		fputs_nl(flist_begin, filesop);
+	} else if (!no_order_list) {
 		fputs_nl(list_begin, filesop);
+	}
 	FILEMAP = NULL;
 	if (map_file) {
 		if (!(FILEMAP = fopen(makepath(distpath, "FILEMAP", NULL), "w")))
@@ -676,10 +698,12 @@ makefileindex(const char *file, STRBUF *a_files)
 	gfind_close(gp);
 
 	fputs(strbuf_value(files), filesop);
-	if (no_order_list)
-		fputs_nl(br, filesop);
-	else
+	if (table_flist)
+		fputs_nl(flist_end, filesop);
+	else if (!no_order_list)
 		fputs_nl(list_end, filesop);
+	else
+		fputs_nl(br, filesop);
 	fputs_nl(body_end, filesop);
 	fputs_nl(gen_page_end(), filesop);
 	fclose(filesop);
