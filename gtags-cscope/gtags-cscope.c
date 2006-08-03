@@ -44,7 +44,7 @@
 #include "global.h"
 #include "const.h"
 
-static void usage(void);
+/* static void usage(void); */
 static void help(void);
 static void check_dbpath(void);
 static void get_global_path(void);
@@ -62,12 +62,14 @@ int vflag;
 
 #define NA	-1
 
+/*
 static void
 usage(void)
 {
 	fputs(usage_const, stderr);
 	exit(2);
 }
+*/
 static void
 help(void)
 {
