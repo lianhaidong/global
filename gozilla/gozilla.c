@@ -49,7 +49,6 @@ int main(int, char **);
 void getdefinitionURL(const char *, STRBUF *);
 void getURL(const char *, STRBUF *);
 int isprotocol(const char *);
-int issource(const char *);
 int convertpath(const char *, const char *, const char *, STRBUF *);
 void show_page_by_url(const char *, const char *);
 #ifndef isblank
@@ -363,33 +362,30 @@ getdefinitionURL(const char *arg, STRBUF *URL)
 		strbuf_close(sb);
 }
 /*
- * getURL: get specified URL.
+ * getURL: get URL of the specified file.
  *
- *	i)	arg	definition name
+ *	i)	file	file name
  *	o)	URL	URL begin with 'file:'
  */
 void
-getURL(const char *arg, STRBUF *URL)
+getURL(const char *file, STRBUF *URL)
 {
 	char *abspath, *p;
 	char buf[MAXPATHLEN+1];
+	STRBUF *sb = strbuf_open(0);
+	const char *htmldir = locate_HTMLdir();
 
-	if (!test("f", arg) && !test("d", NULL))
-		die("path '%s' not found.", arg);
-	if (!(abspath = realpath(arg, buf)))
-		die("cannot make absolute path name. realpath(%s) failed.", arg);
+	if (!test("f", file) && !test("d", file))
+		die("path '%s' not found.", file);
+	if (!(abspath = realpath(file, buf)))
+		die("cannot make absolute path name. realpath(%s) failed.", file);
 	if (!isabspath(abspath))
 		die("realpath(3) is not compatible with BSD version.");
-	if (issource(abspath)) {
-		STRBUF *sb = strbuf_open(0);
-		const char *htmldir = locate_HTMLdir();
-
-		/*
-		 * convert path into hypertext.
-		 */
-		p = abspath + strlen(root);
-		if (convertpath(dbpath, htmldir, p, sb) == -1)
-			die("cannot find the hypertext.");
+	/*
+	 * convert path into hypertext.
+	 */
+	p = abspath + strlen(root);
+	if (convertpath(dbpath, htmldir, p, sb) == 0) {
 		p = strbuf_value(sb);
 		/*
 		 * Make URL.
@@ -441,39 +437,6 @@ isprotocol(const char *url)
 	if (*p++ == ':' && *p++ == '/' && *p == '/')
 		return 1;
 	return 0;
-}
-/*
- * issource: return 1 if path is a source file.
- *
- *	i)	path	path
- *	r)		1: source file, 0: not source file
- */
-int
-issource(const char *path)
-{
-	STRBUF *sb = strbuf_open(0);
-	char *p;
-	char suff[MAXPATHLEN+1];
-	int retval = 0;
-
-	if (!getconfs("suffixes", sb)) {
-		strbuf_close(sb);
-		return 0;
-	}
-	suff[0] = '.';
-	for (p = strbuf_value(sb); p; ) {
-		char *unit = p;
-		if ((p = locatestring(p, ",", MATCH_FIRST)) != NULL)
-			*p++ = 0;
-		strlimcpy(&suff[1], unit, sizeof(suff) - 1);
-		if (locatestring(path, suff, MATCH_AT_LAST)) {
-			retval = 1;
-			break;
-		}
-	}
-	strbuf_close(sb);
-	return retval;
-
 }
 /*
  * convertpath: convert source file into hypertext path.
