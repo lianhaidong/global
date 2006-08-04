@@ -306,7 +306,7 @@ removedotslash(const char *path)
 /*----------------------------------------------------------------------*/
 /* Generating file index						*/
 /*----------------------------------------------------------------------*/
-static int print_tree(int, char *);
+static int print_basedir(int, char *);
 static void print_directory_header(FILE *, int, const char *);
 static void print_directory_footer(FILE *, int, const char *);
 static const char *print_file_name(int, const char *);
@@ -316,7 +316,7 @@ FILE *FILEMAP;
 STRBUF *files;
 const char *indexlink;
 regex_t is_include_file;
-int count;
+int src_count;
 
 /*
  * print tree from the specified directory. (recursively called)
@@ -339,7 +339,7 @@ int count;
 } while (0)
 
 static int
-print_tree(int level, char *basedir)
+print_basedir(int level, char *basedir)
 {
 	const char *path;
 	FILE *op = NULL;
@@ -360,7 +360,7 @@ print_tree(int level, char *basedir)
 		 * Path is outside of basedir.
 		 */
 		if (local == NULL) {
-			ungetpath();	/* read again by upper level print_tree(). */
+			ungetpath();	/* read again by upper level print_basedir(). */
 			break;
 		}
 		/*
@@ -395,8 +395,8 @@ print_tree(int level, char *basedir)
 				/*
 				 * print tree for this directory.
 				 */
-				ungetpath();	/* read again by lower level print_tree(). */
-				subcount = print_tree(level + 1, basedir);
+				ungetpath();	/* read again by lower level print_basedir(). */
+				subcount = print_basedir(level + 1, basedir);
 				PUT(print_directory_name(level, basedir, subcount));
 				count += subcount;
 				/*
@@ -421,7 +421,7 @@ print_tree(int level, char *basedir)
 		print_directory_footer(op, level, basedir);
 		close_file(op);
 	}
-	file_count++;
+	html_count++;
 	return count;
 }
 /*
@@ -548,7 +548,7 @@ print_file_name(int level, const char *path)
 	int size = filesize(path);
 	char tips[80];
 
-	message(" [%d] adding %s", ++count, removedotslash(path));
+	message(" [%d] adding %s", ++src_count, removedotslash(path));
 	/*
 	 * We assume the file which has one of the following suffixes
 	 * as a candidate of include file.
@@ -558,7 +558,7 @@ print_file_name(int level, const char *path)
 	 * PHP: .inc.php
 	 */
 	if (regexec(&is_include_file, path, 0, 0, 0) == 0)
-		put_inc(lastpart(path), path, count);
+		put_inc(lastpart(path), path, src_count);
 	strbuf_clear(sb);
 	if (table_flist)
 		strbuf_puts(sb, fitem_begin);
@@ -657,7 +657,7 @@ makefileindex(const char *file, STRBUF *a_files)
 	 * Initialize data.
 	 */
 	indexlink = (Fflag) ? "../files" : "../mains";
-	count = 0;
+	src_count = 0;
 
 	gp = gfind_open(dbpath, NULL, other_files);
 	/*
@@ -710,7 +710,7 @@ makefileindex(const char *file, STRBUF *a_files)
 	 */
 	files = a_files;
 	strcpy(basedir, ".");
-	(void)print_tree(0, basedir);
+	(void)print_basedir(0, basedir);
 
 	if (map_file)
 		fclose(FILEMAP);
@@ -726,8 +726,8 @@ makefileindex(const char *file, STRBUF *a_files)
 	fputs_nl(body_end, filesop);
 	fputs_nl(gen_page_end(), filesop);
 	fclose(filesop);
-	file_count++;
-	return count;
+	html_count++;
+	return src_count;
 }
 /*----------------------------------------------------------------------*/
 /* Main body of generating include file index				*/
@@ -817,7 +817,7 @@ makeincludeindex(void)
 			fputs_nl(body_end, INCLUDE);
 			fputs_nl(gen_page_end(), INCLUDE);
 			close_file(INCLUDE);
-			file_count++;
+			html_count++;
 			/*
 			 * inc->path == NULL means that information already
 			 * written to file.
@@ -857,7 +857,7 @@ makeincludeindex(void)
 			fputs_nl(body_end, INCLUDE);
 			fputs_nl(gen_page_end(), INCLUDE);
 			close_file(INCLUDE);
-			file_count++;
+			html_count++;
 			/*
 			 * inc->path == NULL means that information already
 			 * written to file.

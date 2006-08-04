@@ -135,7 +135,7 @@ makedefineindex(const char *file, int total, STRBUF *defines)
 						die("terminated abnormally.");
 				} else
 					fclose(ALPHA);
-				file_count++;
+				html_count++;
 			}
 			/*
 			 * setup index char (for example, 'a' of '[a]').
@@ -289,7 +289,7 @@ makedefineindex(const char *file, int total, STRBUF *defines)
 		fputs_nl(body_end, ALPHA);
 		fputs_nl(gen_page_end(), ALPHA);
 		fclose(ALPHA);
-		file_count++;
+		html_count++;
 
 		fputs(strbuf_value(defines), DEFINES);
 	}
@@ -306,7 +306,7 @@ makedefineindex(const char *file, int total, STRBUF *defines)
 	fputs_nl(body_end, DEFINES);
 	fputs_nl(gen_page_end(), DEFINES);
 	fclose(DEFINES);
-	file_count++;
+	html_count++;
 	if (map_file)
 		fclose(MAP);
 	strbuf_close(sb);

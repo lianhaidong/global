@@ -68,7 +68,7 @@ void makeincludeindex();
  */
 int w32 = W32;				/* Windows32 environment	*/
 const char *www = "http://www.gnu.org/software/global/";
-int file_count = 0;
+int html_count = 0;
 int sep = '/';
 const char *save_config;
 const char *save_argv;
@@ -436,7 +436,7 @@ generate_file(const char *dist, const char *file)
 	fclose(ip);
 	strbuf_close(sb);
 	regfree(&preg);
-	file_count++;
+	html_count++;
 }
 
 /*
@@ -563,7 +563,7 @@ makehelp(const char *file)
 	fputs_nl(body_end, op);
 	fputs_nl(gen_page_end(), op);
 	fclose(op);
-	file_count++;
+	html_count++;
 }
 /*
  * makesearchpart: make search part
@@ -677,7 +677,7 @@ makeindex(const char *file, const char *title, const char *index)
 		fputs_nl(gen_page_end(), op);
 	}
 	fclose(op);
-	file_count++;
+	html_count++;
 }
 /*
  * makemainindex: make main index
@@ -703,7 +703,7 @@ makemainindex(const char *file, const char *index)
 	fputs_nl(body_end, op);
 	fputs_nl(gen_page_end(), op);
 	fclose(op);
-	file_count++;
+	html_count++;
 }
 /*
  * makesearchindex: make search html
@@ -724,7 +724,7 @@ makesearchindex(const char *file)
 	fputs_nl(body_end, op);
 	fputs_nl(gen_page_end(), op);
 	fclose(op);
-	file_count++;
+	html_count++;
 }
 /*
  * makehtaccess: make .htaccess skeleton file.
@@ -869,7 +869,7 @@ makecommonpart(const char *title, const char *defines, const char *files)
 	if (caution) {
 		strbuf_puts_nl(sb, caution_begin);
 		strbuf_sprintf(sb, "<font size='+2' color='red'>CAUTION</font>%s\n", br);
-		strbuf_sprintf(sb, "This hypertext consist of %d files.\n", file_count);
+		strbuf_sprintf(sb, "This hypertext consist of %d files.\n", html_count);
 		strbuf_puts_nl(sb, "Please don't download whole hypertext using hypertext copy tools.");
 		strbuf_puts_nl(sb, "Our network cannot afford such traffic.");
 		strbuf_puts_nl(sb, "Instead, you can generate same thing in your computer using");
@@ -1808,7 +1808,7 @@ main(int argc, char **argv)
 		end_time = time(NULL);
 		message("Total %d files.", file_total);
 		T_makefileindex = end_time - start_time;
-		file_count += file_total;
+		html_count += file_total;
 		/*
 		 * [#] make include file index.
 		 */

@@ -151,7 +151,7 @@ makedupindex(void)
 						fputs_nl(body_end, op);
 						fputs_nl(gen_page_end(), op);
 						close_dup_file(op);
-						file_count++;
+						html_count++;
 					}
 					writing = 0;
 					/*
@@ -208,7 +208,7 @@ makedupindex(void)
 				fputs_nl(body_end, op);
 				fputs_nl(gen_page_end(), op);
 				close_dup_file(op);
-				file_count++;
+				html_count++;
 			}
 			/*
 			 * cache record: " <file id> <entry number>"
