@@ -605,7 +605,10 @@ print_directory_name(int level, const char *path, int count)
 	STATIC_STRBUF(sb);
 	char tips[80];
 
-	snprintf(tips, sizeof(tips), "%d files", count);
+	if (count > 1)
+		snprintf(tips, sizeof(tips), "%d files", count);
+	else
+		snprintf(tips, sizeof(tips), "%d file", count);
 	path = removedotslash(path);
 	strbuf_clear(sb);
 	if (table_flist)
