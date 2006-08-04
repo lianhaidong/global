@@ -843,6 +843,7 @@ makecommonpart(const char *title, const char *defines, const char *files)
 	STRBUF *sb = strbuf_open(0);
 	STRBUF *ib = strbuf_open(0);
 	char buf[MAXFILLEN];
+	const char *tips = "Go to the GLOBAL project page.";
 	const char *_;
 
 	strbuf_puts(sb, title_begin);
@@ -852,13 +853,13 @@ makecommonpart(const char *title, const char *defines, const char *files)
 	strbuf_sprintf(sb, "Last updated %s%s\n", now(), br);
 	if (Iflag) {
 		snprintf(buf, sizeof(buf), "Powered by GLOBAL-%s.", get_version());
-		strbuf_puts(sb, gen_href_begin_with_title_target(NULL, www, NULL, NULL, buf,"_top"));
+		strbuf_puts(sb, gen_href_begin_with_title_target(NULL, www, NULL, NULL, tips,"_top"));
 		strbuf_puts(sb, gen_image(CURRENT, "pglobe", buf));
 		strbuf_puts(sb, gen_href_end());
 		strbuf_puts(sb, br);
 	} else {
 		strbuf_sprintf(sb, "Powered by %sGLOBAL-%s%s.%s\n",
-			gen_href_begin_with_title_target(NULL, www, NULL, NULL, "Go to the GLOBAL project page.", "_top"),
+			gen_href_begin_with_title_target(NULL, www, NULL, NULL, tips, "_top"),
 			get_version(),
 			gen_href_end(),
 			br);
