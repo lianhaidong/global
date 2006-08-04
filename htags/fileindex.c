@@ -306,11 +306,11 @@ removedotslash(const char *path)
 /*----------------------------------------------------------------------*/
 /* Generating file index						*/
 /*----------------------------------------------------------------------*/
-static void print_tree(int, char *);
+static int print_tree(int, char *);
 static void print_directory_header(FILE *, int, const char *);
 static void print_directory_footer(FILE *, int, const char *);
 static const char *print_file_name(int, const char *);
-static const char *print_directory_name(int, const char *);
+static const char *print_directory_name(int, const char *, int);
 
 FILE *FILEMAP;
 STRBUF *files;
@@ -338,12 +338,13 @@ int count;
 			 fputs(s, op);				\
 } while (0)
 
-static void
+static int
 print_tree(int level, char *basedir)
 {
 	const char *path;
 	FILE *op = NULL;
 	int flist_items = 0;
+	int count = 0;
 
 	if (level > 0) {
 		char name[MAXPATHLEN+1];
@@ -376,6 +377,7 @@ print_tree(int level, char *basedir)
 			if (slash) {
 				int baselen = strlen(basedir);
 				char *q, *last = basedir + baselen;
+				int subcount;
 
 				if (baselen + 1 + (slash - local)  > MAXPATHLEN) {
 					fprintf(stderr, "Too long path name.\n");
@@ -390,12 +392,13 @@ print_tree(int level, char *basedir)
 				while (p < slash)
 					*q++ = *p++;
 				*q = '\0';
-				PUT(print_directory_name(level, basedir));
 				/*
 				 * print tree for this directory.
 				 */
 				ungetpath();	/* read again by lower level print_tree(). */
-				print_tree(level + 1, basedir);
+				subcount = print_tree(level + 1, basedir);
+				PUT(print_directory_name(level, basedir, subcount));
+				count += subcount;
 				/*
 				 * Shrink the basedir.
 				 */
@@ -406,6 +409,7 @@ print_tree(int level, char *basedir)
 			 */
 			else {
 				PUT(print_file_name(level, path));
+				count++;
 			}
 			if (table_flist && flist_items % flist_fields == 0)
 				PUT(fline_end);
@@ -416,6 +420,7 @@ print_tree(int level, char *basedir)
 		close_file(op);
 	}
 	file_count++;
+	return count;
 }
 /*
  * print directory header.
@@ -538,6 +543,8 @@ print_file_name(int level, const char *path)
 {
 	STATIC_STRBUF(sb);
 	char *target = (Fflag) ? "mains" : "_top";
+	int size = filesize(path);
+	char tips[80];
 
 	message(" [%d] adding %s", ++count, removedotslash(path));
 	/*
@@ -555,8 +562,10 @@ print_file_name(int level, const char *path)
 		strbuf_puts(sb, fitem_begin);
 	else if (!no_order_list)
 		strbuf_puts(sb, item_begin);
+	if (size >= 0)
+		snprintf(tips, sizeof(tips), "%d bytes", size);
 	strbuf_puts(sb, gen_href_begin_with_title_target(level == 0 ? SRCS: upperdir(SRCS),
-			path2fid(path), HTML, NULL, removedotslash(path), target));
+			path2fid(path), HTML, NULL, size >= 0 ? tips : NULL, target));
 	if (Iflag) {
 		const char *lang, *suffix, *text_icon;
 
@@ -588,12 +597,15 @@ print_file_name(int level, const char *path)
  *
  *	i)	level	0,1,2...
  *	i)	path	path of the directory
+ *	i)	count	number of files in this directory
  */
 static const char *
-print_directory_name(int level, const char *path)
+print_directory_name(int level, const char *path, int count)
 {
 	STATIC_STRBUF(sb);
+	char tips[80];
 
+	snprintf(tips, sizeof(tips), "%d files", count);
 	path = removedotslash(path);
 	strbuf_clear(sb);
 	if (table_flist)
@@ -601,7 +613,7 @@ print_directory_name(int level, const char *path)
 	else if (!no_order_list)
 		strbuf_puts(sb, item_begin);
 	strbuf_puts(sb, gen_href_begin_with_title(level == 0 ? "files" : NULL,
-			path2fid(path), HTML, NULL, appendslash(path)));
+			path2fid(path), HTML, NULL, tips));
 	if (Iflag) {
 		strbuf_puts(sb, gen_image(level == 0 ? CURRENT : PARENT, dir_icon, appendslash(path)));
 		strbuf_puts(sb, quote_space);
@@ -693,7 +705,7 @@ makefileindex(const char *file, STRBUF *a_files)
 	 */
 	files = a_files;
 	strcpy(basedir, ".");
-	print_tree(0, basedir);
+	(void)print_tree(0, basedir);
 
 	if (map_file)
 		fclose(FILEMAP);

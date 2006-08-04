@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000
+ * Copyright (c) 1997, 1998, 1999, 2000, 2006
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -146,4 +146,20 @@ test(const char *flags, const char *path)
 		}
 	}
 	return 1;
+}
+/*
+ * filesize: get file size in bytes.
+ *
+ *	i)	path	path of file
+ *	r)		!= -1: file size
+ *			== -1: file not found
+ */
+int
+filesize(const char *path)
+{
+	struct stat sb;
+
+	if (stat(path, &sb) < 0)
+		return -1;
+	return sb.st_size;
 }

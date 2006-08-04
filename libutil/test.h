@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000
+ * Copyright (c) 1997, 1998, 1999, 2000, 2006
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -23,5 +23,7 @@
 #define _TEST_H_
 
 int test(const char *, const char *);
+int filesize(const char *);
+
 
 #endif /* ! _TEST_H_ */
