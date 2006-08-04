@@ -108,7 +108,7 @@ makedefineindex(const char *file, int total, STRBUF *defines)
 		tag = _;
 		message(" [%d/%d] adding %s", count, total, tag);
 		if (aflag && (alpha[0] == '\0' || !locatestring(tag, alpha, MATCH_AT_FIRST))) {
-			const char *msg = (alpha_count == 1) ? "definition is contained." : "definitions are contained.";
+			const char *msg = (alpha_count == 1) ? "definition" : "definitions";
 			int c;
 
 			if (alpha[0]) {
@@ -270,7 +270,7 @@ makedefineindex(const char *file, int total, STRBUF *defines)
 		die("'%s' failed.", command);
 	if (aflag && alpha[0]) {
 		char tmp[128];
-		const char *msg = (alpha_count == 1) ? "definition is contained." : "definitions are contained.";
+		const char *msg = (alpha_count == 1) ? "definition" : "definitions";
 
 		snprintf(tmp, sizeof(tmp), "%d %s", alpha_count, msg);
 		strbuf_puts(defines, gen_href_begin_with_title("defines", alpha_f, HTML, NULL, tmp));
