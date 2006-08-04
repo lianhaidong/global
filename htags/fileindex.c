@@ -415,6 +415,8 @@ print_tree(int level, char *basedir)
 				PUT(fline_end);
 		}
 	}
+	if (flist_items % flist_fields != 0)
+		PUT(fline_end);
 	if (level > 0) {
 		print_directory_footer(op, level, basedir);
 		close_file(op);
