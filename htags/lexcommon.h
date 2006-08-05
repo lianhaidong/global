@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004 Tama Communications Corporation
+ * Copyright (c) 2004, 2005 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -25,12 +25,12 @@
 /*
  * Definition of LEXTEXT, LEXLENG, LEXIN and LEXRESTART.
  *
- * These symbol are the substitutions of yytext, yyleng, yyin and yyrestart.
- * You should write code using them.
- * How to include this file. For example, in c.l:
+ * These symbols are substitutions of yytext, yyleng, yyin and yyrestart.
+ * You should write lex code using them.
+ * The usage of this file is, for instance, in c.l:
  *
- * #define lex_symbol_generation_rule(x) c_ ## x
- * #include "lexcommon.h"
+ *	#define lex_symbol_generation_rule(x) c_ ## x
+ *	#include "lexcommon.h"
  */
 #ifndef lex_symbol_generation_rule
 ERROR: lex_symbol_generation_rule(x) macro not defined.
