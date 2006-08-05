@@ -125,6 +125,8 @@ static const char *lastpart(const char *);
 static const char *dirpart(const char *, char *);
 static const char *localpath(const char *, char *);
 static const char *appendslash(const char *);
+static const char *insert_comma(unsigned int);
+
 /*
  * extract_lastname: extract the last name of include line.
  *
@@ -302,7 +304,45 @@ removedotslash(const char *path)
 {
 	return (*path == '.' && *(path + 1) == '/') ? path + 2 : path;
 }
+/*
+ * insert_comma: insert comma to the number.
+ *
+ *	i)	n	number
+ *	r)		edited string
+ *
+ * Ex.
+ * 10000 => 10,000
+ */
+static const char *
+insert_comma(unsigned int n)
+{
+#define RESULTSIZE 15
+#define INTERVAL 3
+	static char result[RESULTSIZE];
+	int i = RESULTSIZE;
+	int digit, count = 0;
 
+	if (n == 0)
+		return (const char *)"0";
+	if (n > 1000000000)
+		goto giveup;
+	result[--i] = '\0';
+	for (; n > 0; n = n / 10) {
+		/*
+		 * Buffer overflow. This is not important even if occurring.
+		 */
+		if (i <= 0)
+			goto giveup;
+		if (count && count % INTERVAL == 0)
+			result[--i] = ',';
+		result[--i] = n % 10 + '0';
+		count++;
+	}
+	return (const char *)&result[i];
+giveup:
+	snprintf(result, sizeof(result), "*****");
+	return (const char *)result;
+}
 /*----------------------------------------------------------------------*/
 /* Generating file index						*/
 /*----------------------------------------------------------------------*/
@@ -564,10 +604,12 @@ print_file_name(int level, const char *path)
 		strbuf_puts(sb, fitem_begin);
 	else if (!no_order_list)
 		strbuf_puts(sb, item_begin);
-	if (size >= 0)
-		snprintf(tips, sizeof(tips), "%d bytes", size);
+	if (size > 1)
+		snprintf(tips, sizeof(tips), "%s bytes", insert_comma(size));
+	else
+		snprintf(tips, sizeof(tips), "%s byte", insert_comma(size));
 	strbuf_puts(sb, gen_href_begin_with_title_target(level == 0 ? SRCS: upperdir(SRCS),
-			path2fid(path), HTML, NULL, size >= 0 ? tips : NULL, target));
+			path2fid(path), HTML, NULL, tips, target));
 	if (Iflag) {
 		const char *lang, *suffix, *text_icon;
 
