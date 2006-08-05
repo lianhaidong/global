@@ -346,7 +346,7 @@ giveup:
 /*----------------------------------------------------------------------*/
 /* Generating file index						*/
 /*----------------------------------------------------------------------*/
-static int print_basedir(int, char *);
+static int print_directory(int, char *);
 static void print_directory_header(FILE *, int, const char *);
 static void print_directory_footer(FILE *, int, const char *);
 static const char *print_file_name(int, const char *);
@@ -359,12 +359,12 @@ regex_t is_include_file;
 int src_count;
 
 /*
- * print tree from the specified directory. (recursively called)
+ * print contents of one directory and the descendant. (recursively called)
  *
  *	i)	level	directory nest level
- *	io)	basedir	current base directory
+ *	io)	basedir	current directory
  *
- * This function read find style records, and print tree structure.
+ * This function read find style records, and print directory tree.
  */
 /*
  * File list of the top level directory (when level == 0) is not written
@@ -379,7 +379,7 @@ int src_count;
 } while (0)
 
 static int
-print_basedir(int level, char *basedir)
+print_directory(int level, char *basedir)
 {
 	const char *path;
 	FILE *op = NULL;
@@ -400,7 +400,7 @@ print_basedir(int level, char *basedir)
 		 * Path is outside of basedir.
 		 */
 		if (local == NULL) {
-			ungetpath();	/* read again by upper level print_basedir(). */
+			ungetpath();	/* read again by upper level print_directory(). */
 			break;
 		}
 		/*
@@ -435,8 +435,8 @@ print_basedir(int level, char *basedir)
 				/*
 				 * print tree for this directory.
 				 */
-				ungetpath();	/* read again by lower level print_basedir(). */
-				subcount = print_basedir(level + 1, basedir);
+				ungetpath();	/* read again by lower level print_directory(). */
+				subcount = print_directory(level + 1, basedir);
 				PUT(print_directory_name(level, basedir, subcount));
 				count += subcount;
 				/*
@@ -752,7 +752,7 @@ makefileindex(const char *file, STRBUF *a_files)
 	 */
 	files = a_files;
 	strcpy(basedir, ".");
-	(void)print_basedir(0, basedir);
+	(void)print_directory(0, basedir);
 
 	if (map_file)
 		fclose(FILEMAP);
