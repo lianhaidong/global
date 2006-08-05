@@ -320,7 +320,7 @@ insert_comma(unsigned int n)
 #define INTERVAL 3
 	static char result[RESULTSIZE];
 	int i = RESULTSIZE;
-	int digit, count = 0;
+	int count = 0;
 
 	if (n == 0)
 		return (const char *)"0";
