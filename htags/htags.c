@@ -1704,15 +1704,15 @@ main(int argc, char **argv)
 			die("cannot make directory '%s'.", distpath);
 	make_directory_in_distpath("files");
 	make_directory_in_distpath("defines");
+	make_directory_in_distpath(SRCS);
+	make_directory_in_distpath(INCS);
+	make_directory_in_distpath(INCREFS);
 	if (!dynamic) {
 		make_directory_in_distpath(DEFS);
 		make_directory_in_distpath(REFS);
-		make_directory_in_distpath(SRCS);
+		if (symbol)
+			make_directory_in_distpath(SYMS);
 	}
-	make_directory_in_distpath(INCS);
-	make_directory_in_distpath(INCREFS);
-	if (symbol)
-		make_directory_in_distpath(SYMS);
 	if (cgi && (fflag || cflag || dynamic))
 		make_directory_in_distpath("cgi-bin");
 	if (Iflag)
