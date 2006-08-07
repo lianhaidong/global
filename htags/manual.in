@@ -269,12 +269,10 @@
 		Position of function header. The default is 'no'.
 	@item{@code{other_files}(boolean)}
 		File index includes not only source files but also other files. The default is false.
-	@item{@code{enable_grep}(boolean)}
-		Enable grep search using CGI program. The default is false.
-		When this function is enabled, you cannot move hypertext from source directory.
+	@item{@code{disable_grep}(boolean)}
+		Disable grep in search form(-f,--form). The default is false.
 	@item{@code{enable_idutils}(boolean)}
-		Enable id-utils search using CGI program. The default is false.
-		When this function is enabled, you cannot move hypertext from source directory.
+		Enable id-utils in search form(-f,--form). The default is false.
 	@item{@code{include_file_suffixes}(comma separated list)}
 		Suffixes of include file. The default is 'h,hxx,hpp,H,inc.php'.
 	@item{@code{langmap}(comma separated list)}

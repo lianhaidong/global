@@ -112,7 +112,7 @@ int copy_files;				/* 1: copy tag files		*/
 int no_map_file;			/* 1: doesn't make map file	*/
 int no_order_list;			/* 1: doesn't use order list	*/
 int other_files;			/* 1: list other files		*/
-int enable_grep;			/* 1: enable grep		*/
+int enable_grep = 1;			/* 1: enable grep		*/
 int enable_idutils;			/* 1: enable idutils		*/
 int enable_xhtml;			/* 1: enable XHTML		*/
 
@@ -620,7 +620,6 @@ makesearchpart(const char *action, const char *id, const char *target)
 	}
 	strbuf_puts(sb, gen_input_radio("type", "path", 0, "Look for path name which matches to the specified pattern."));
 	strbuf_puts(sb, target ? "Path" : "Path name");
-	strbuf_puts_nl(sb, br);
 	if (enable_grep) {
 		strbuf_puts(sb, gen_input_radio("type", "grep", 0, "Retrieve lines which matches to the specified pattern."));
 		strbuf_puts_nl(sb, target ? "Grep" : "Grep pattern");
@@ -629,11 +628,19 @@ makesearchpart(const char *action, const char *id, const char *target)
 		strbuf_puts(sb, gen_input_radio("type", "idutils", 0, "Retrieve lines which matches to the specified pattern using idutils(1)."));
 		strbuf_puts_nl(sb, target ? "Id" : "Id pattern");
 	}
+	strbuf_puts_nl(sb, br);
 	strbuf_puts(sb, gen_input_checkbox("icase", "1", "Ignore case distinctions in the pattern."));
 	strbuf_puts_nl(sb, target ? "Icase" : "Ignore case");
 	if (other_files) {
 		strbuf_puts(sb, gen_input_checkbox("other", "1", "Files other than the source code are also retrieved."));
 		strbuf_puts_nl(sb, target ? "Other" : "Other files");
+	}
+	if (other_files && !target) {
+		strbuf_puts_nl(sb, br);
+		strbuf_puts(sb, "('Other files' is effective only to 'Path name'");
+		if (enable_grep)
+			strbuf_puts(sb, "and 'Grep pattern'");
+		strbuf_puts_nl(sb, ".)");
 	}
 	strbuf_puts_nl(sb, gen_form_end());
 	return strbuf_value(sb);
@@ -1074,8 +1081,8 @@ configuration(int argc, char **argv)
 	}
 	if (getconfb("other_files"))
 		other_files = 1;
-	if (getconfb("enable_grep"))
-		enable_grep = 1;
+	if (getconfb("disable_grep"))
+		enable_grep = 0;
 	if (getconfb("enable_idutils"))
 		enable_idutils = 1;
 	if (getconfb("full_path"))
