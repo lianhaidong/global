@@ -1378,7 +1378,7 @@ append_options(int *argc, char **argv)
 int
 main(int argc, char **argv)
 {
-	const char *path, *av = NULL;
+	const char *av = NULL;
 	int func_total, file_total;
         char arg_dbpath[MAXPATHLEN];
 	const char *index = NULL;
@@ -1395,7 +1395,7 @@ main(int argc, char **argv)
 	save_environment(argc, argv);
 
 	/*
- 	 * insert htags_options at the head of argv.
+	 * insert htags_options at the head of argv.
 	 */
 	if (htags_options)
 		argv = append_options(&argc, argv);
