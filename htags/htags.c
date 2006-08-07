@@ -326,6 +326,18 @@ signal_setup(void)
 }
 
 /*
+ * make directory in the dist directory.
+ */
+static void
+make_directory_in_distpath(const char *name)
+{
+	const char *path = makepath(distpath, name, NULL);
+
+	if (!test("d", path))
+		if (mkdir(path, 0775))
+			die("cannot make directory '%s'.", path);
+}
+/*
  * generate_file: generate file with replacing macro.
  *
  *	i)	dist	directory where the file should be created
@@ -1687,44 +1699,24 @@ main(int argc, char **argv)
 	 * (0) make directories
 	 */
 	message("[%s] (0) making directories ...", now());
-	{
-		int mode = 0775;
-		char *dirs[] = {"files", "defines", SRCS, DEFS, REFS, INCS, INCREFS, SYMS};
-
-		int i, lim = sizeof(dirs) / sizeof(char *);
-
-		if (!test("d", distpath)) {
-			if (mkdir(distpath, 0777) < 0)
-				die("cannot make directory '%s'.", distpath);
-		}
-		for (i = 0; i < lim; i++) {
-			char *p = dirs[i];
-			/*
-			 * dynamic mode doesn't require these directories.
-			 */
-			if (dynamic)
-				if (!strcmp(p, DEFS) || !strcmp(p, REFS) || !strcmp(p, SYMS))
-					continue;
-			if (!symbol && !strcmp(p, SYMS))
-				continue;
-			path = makepath(distpath, p, NULL);
-			if (!test("d", path))
-				if (mkdir(path, mode))
-					die("cannot make '%s' directory.", p);
-		}
-		if (cgi && (fflag || cflag || dynamic)) {
-			path = makepath(distpath, "cgi-bin", NULL);
-			if (!test("d", path))
-				if (mkdir(path, mode) < 0)
-					die("cannot make cgi-bin directory.");
-		}
-		if (Iflag) {
-			path = makepath(distpath, "icons", NULL);
-			if (!test("d", path))
-				if (mkdir(path, mode) < 0)
-					die("cannot make icons directory.");
-		}
+	if (!test("d", distpath))
+		if (mkdir(distpath, 0777) < 0)
+			die("cannot make directory '%s'.", distpath);
+	make_directory_in_distpath("files");
+	make_directory_in_distpath("defines");
+	if (!dynamic) {
+		make_directory_in_distpath(DEFS);
+		make_directory_in_distpath(REFS);
+		make_directory_in_distpath(SRCS);
 	}
+	make_directory_in_distpath(INCS);
+	make_directory_in_distpath(INCREFS);
+	if (symbol)
+		make_directory_in_distpath(SYMS);
+	if (cgi && (fflag || cflag || dynamic))
+		make_directory_in_distpath("cgi-bin");
+	if (Iflag)
+		make_directory_in_distpath("icons");
 	/*
 	 * (1) make CGI program
 	 */
