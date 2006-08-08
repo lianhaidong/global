@@ -20,6 +20,24 @@ ___________________________________
 GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 5.2 - August 8 2006, by Shigio YAMAGUCHI
+
+* htags: Added new options:
+  - -h(--func-header) option.
+  - -I(--icon) option.
+  - -T(table-flist[=fields]) option.
+  Suggested options:
+	$ htags -vsanohIT
+* htags: Changed the default color of braces from blue to red to make them stand out.
+* htags: Always enable 'Grep pattern' form when the -f(--form) option specified.
+  Removed config variable 'enable_grep' since it became meaningless. Instead, added
+  a new variable 'disable_grep'.
+* htags: Removed config variable 'enable_grep' since it is meaningless.
+  Instead, added a new variable 'disable_grep'.
+* htags: Added more profitable tips in file browser.
+  - File        size of bytes
+  - Directory   number of files in the directory.
+
 Version 5.1 - June 10 2006, by Shigio YAMAGUCHI
 
 [INCOMPATIBLE CHANGES]

@@ -19,6 +19,13 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+August 8 2006, Shigio YAMAGUCHI
+
+	* htags/fileindex.c: Rewritten using recursive call instead of stack structures.
+	* gozilla.c: Fixed getURL() according to new GPATH.
+	* Replaced malloc(), realloc() and stdup() with check_xxxx() functions.
+	* Added icon files (icons/*png).
+
 June 10 2006, Shigio YAMAGUCHI
 
 	* Recovered original texinfo file names (.txi -> .texi).
