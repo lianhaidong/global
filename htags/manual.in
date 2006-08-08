@@ -139,7 +139,7 @@
 	@end_itemize
 @EXAMPLES
 	$ gtags -v
-	$ htags -FsanohIvt 'Welcom to XXX source tour!'
+	$ htags -FsanohITvt 'Welcom to XXX source tour!'
 	$ firefox HTML/index.html
 
 @FILES
