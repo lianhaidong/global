@@ -32,8 +32,6 @@ Version 5.2 - August 8 2006, by Shigio YAMAGUCHI
 * htags: Always enable 'Grep pattern' form when the -f(--form) option specified.
   Removed config variable 'enable_grep' since it became meaningless. Instead, added
   a new variable 'disable_grep'.
-* htags: Removed config variable 'enable_grep' since it is meaningless.
-  Instead, added a new variable 'disable_grep'.
 * htags: Added more profitable tips in file browser.
   - File        size of bytes
   - Directory   number of files in the directory.
