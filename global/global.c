@@ -72,6 +72,7 @@ int Iflag;				/* command		*/
 int lflag;				/* [option]		*/
 int nflag;				/* [option]		*/
 int oflag;				/* [option]		*/
+int Oflag;				/* [option]		*/
 int pflag;				/* command		*/
 int Pflag;				/* command		*/
 int qflag;				/* [option]		*/
@@ -123,6 +124,7 @@ static struct option const long_options[] = {
 	{"ignore-case", no_argument, NULL, 'i'},
 	{"idutils", no_argument, NULL, 'I'},
 	{"other", no_argument, NULL, 'o'},
+	{"only-other", no_argument, NULL, 'O'},
 	{"print-dbpath", no_argument, NULL, 'p'},
 	{"path", no_argument, NULL, 'P'},
 	{"quiet", no_argument, NULL, 'q'},
@@ -165,7 +167,7 @@ main(int argc, char **argv)
 	char root[MAXPATHLEN+1];		/* root of source tree	*/
 	char dbpath[MAXPATHLEN+1];		/* dbpath directory	*/
 
-	while ((optchar = getopt_long(argc, argv, "ace:ifgGIlnopPqrstTuvx", long_options, &option_index)) != EOF) {
+	while ((optchar = getopt_long(argc, argv, "ace:ifgGIlnoOpPqrstTuvx", long_options, &option_index)) != EOF) {
 		switch (optchar) {
 		case 0:
 			break;
@@ -214,6 +216,9 @@ main(int argc, char **argv)
 			break;
 		case 'o':
 			oflag++;
+			break;
+		case 'O':
+			Oflag++;
 			break;
 		case 'p':
 			pflag++;
@@ -713,6 +718,7 @@ grep(const char *pattern, const char *dbpath)
 	const char *buffer;
 	int linenum, count;
 	int flags = 0;
+	int target = GPATH_SOURCE;
 	regex_t	preg;
 
 	/*
@@ -720,6 +726,10 @@ grep(const char *pattern, const char *dbpath)
 	 */
 	encode(edit, sizeof(edit), pattern);
 
+	if (oflag)
+		target = GPATH_BOTH;
+	if (Oflag)
+		target = GPATH_OTHER;
 	if (!Gflag)
 		flags |= REG_EXTENDED;
 	if (iflag)
@@ -729,7 +739,7 @@ grep(const char *pattern, const char *dbpath)
 	filter_open();
 	count = 0;
 
-	gp = gfind_open(dbpath, localprefix, oflag);
+	gp = gfind_open(dbpath, localprefix, target);
 	while ((path = gfind_read(gp)) != NULL) {
 		if (!(fp = fopen(path, "r")))
 			die("'%s' not found. Please remake tag files by invoking gtags(1).", path);
@@ -776,7 +786,12 @@ pathlist(const char *pattern, const char *dbpath)
 	const char *path, *p;
 	regex_t preg;
 	int count;
+	int target = GPATH_SOURCE;
 
+	if (oflag)
+		target = GPATH_BOTH;
+	if (Oflag)
+		target = GPATH_OTHER;
 	if (pattern) {
 		int flags = 0;
 		char edit[IDENTLEN+1];
@@ -803,7 +818,7 @@ pathlist(const char *pattern, const char *dbpath)
 	filter_open();
 	count = 0;
 
-	gp = gfind_open(dbpath, localprefix, oflag);
+	gp = gfind_open(dbpath, localprefix, target);
 	while ((path = gfind_read(gp)) != NULL) {
 		/*
 		 * skip localprefix because end-user doesn't see it.

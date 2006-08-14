@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2005
+ * Copyright (c) 1997, 1998, 1999, 2000, 2005, 2006
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -31,14 +31,15 @@
 /*
  * File type
  */
-#define GPATH_SOURCE	0
-#define GPATH_OTHER	1
+#define GPATH_SOURCE	1
+#define GPATH_OTHER	2
+#define GPATH_BOTH	3
 
 typedef struct {
 	/* set by gfind_open() */
 	DBOP *dbop;
 	const char *prefix;
-	int other;
+	int target;
 	int version;
 	/* set by gfind_open() and gfind_read() */
 	int first;

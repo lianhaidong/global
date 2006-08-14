@@ -277,11 +277,13 @@ gpath_close(void)
  *	i)	dbpath	dbpath
  *	i)	local	local prefix
  *			if NULL specified, it assumes "./";
- *	i)	other	treat files other than source file.
+ *	i)	target	GPATH_SOURCE: only source file
+ *			GPATH_OTHER: only other file
+ *			GPATH_BOTH: source file + other file
  *	r)		GFIND structure
  */
 GFIND *
-gfind_open(const char *dbpath, const char *local, int other)
+gfind_open(const char *dbpath, const char *local, int target)
 {
 	GFIND *gfind = (GFIND *)check_malloc(sizeof(GFIND));
 
@@ -292,7 +294,7 @@ gfind_open(const char *dbpath, const char *local, int other)
 	gfind->prefix = check_strdup(local ? local : "./");
 	gfind->first = 1;
 	gfind->eod = 0;
-	gfind->other = other;
+	gfind->target = target;
 	gfind->type = GPATH_SOURCE;
 	gfind->version = dbop_getversion(gfind->dbop);
 	if (gfind->version > support_version)
@@ -327,12 +329,12 @@ gfind_read(GFIND *gfind)
 			break;
 		}
 		/*
-		 * if gfind->other == 0, return only source files.
+		 * if gfind->target == 0, return only source files.
 		 * *flag == 'o' means 'other files' like README.
 		 */
 		flag = dbop_getflag(gfind->dbop);
 		gfind->type = (*flag == 'o') ? GPATH_OTHER : GPATH_SOURCE;
-		if (gfind->other || gfind->type == GPATH_SOURCE)
+		if (gfind->type & gfind->target)
 			break;
 	}
 	return gfind->path;
