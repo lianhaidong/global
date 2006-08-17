@@ -832,10 +832,13 @@ copyfile(const char *from, const char *to)
 	int ip, op, size;
 	char buf[8192];
 
-	ip = open(from, O_RDONLY);
+#ifndef O_BINARY
+#define O_BINARY 0
+#endif
+	ip = open(from, O_RDONLY|O_BINARY);
 	if (ip < 0)
 		die("cannot open input file '%s'.", from);
-	op = open(to, O_WRONLY|O_CREAT|O_TRUNC, 0775);
+	op = open(to, O_WRONLY|O_CREAT|O_TRUNC|O_BINARY, 0775);
 	if (op < 0)
 		die("cannot create output file '%s'.", to);
 	while ((size = read(ip, buf, sizeof(buf))) != 0) {
