@@ -183,7 +183,7 @@ getdbpath(char *cwd, char *root, char *dbpath, int verbose)
 		}
 	} else {
 		if (verbose && getenv("GTAGSDBPATH"))
-			fprintf(stderr, "warning: GTAGSDBPATH is ignored becase GTAGSROOT is not set.\n");
+			fprintf(stderr, "warning: GTAGSDBPATH is ignored because GTAGSROOT is not set.\n");
 		/*
 		 * start from current directory to '/' directory.
 		 */

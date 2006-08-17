@@ -45,7 +45,7 @@ snprintf (char *s, size_t maxlen, const char *format, ...)
   done = vsprintf (s, format, arg);
   if (strlen(s) >= maxlen) {
     fprintf(stderr, "This program exit because vsprintf(3) destroy memory.\n");
-    fprintf(stderr, "You shoule install snprintf(3) instead.\n");
+    fprintf(stderr, "You should install snprintf(3) instead.\n");
     exit(1);
   }
   va_end (arg);

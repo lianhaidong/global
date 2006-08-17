@@ -1045,19 +1045,19 @@ configuration(int argc, char **argv)
 	strlimcpy(datadir, strbuf_value(sb), sizeof(datadir));
 	if (getconfn("ncol", &n)) {
 		if (n < 1 || n > 10)
-			warning("parameter 'ncol' ignored becase the value (=%d) is too large or too small.", n);
+			warning("parameter 'ncol' ignored because the value (=%d) is too large or too small.", n);
 		else
 			ncol = n;
 	}
 	if (getconfn("tabs", &n)) {
 		if (n < 1 || n > 32)
-			warning("parameter 'tabs' ignored becase the value (=%d) is too large or too small.", n);
+			warning("parameter 'tabs' ignored because the value (=%d) is too large or too small.", n);
 		else
 			tabs = n;
 	}
 	if (getconfn("flist_fields", &n)) {
 		if (n < 1)
-			warning("parameter 'flist_fields' ignored becase the value (=%d) is too large or too small.", n);
+			warning("parameter 'flist_fields' ignored because the value (=%d) is too large or too small.", n);
 		else
 			flist_fields = n;
 	}
