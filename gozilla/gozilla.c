@@ -28,6 +28,14 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <shellapi.h>
+/*
+ * Don't remove the following code which seems meaningless.
+ * Since WIN32 has another SLIST_ENTRY, we removed the definition
+ * so as not to cause the conflict.
+ */
+#ifdef SLIST_ENTRY
+#undef SLIST_ENTRY
+#endif
 #endif
 
 #include "global.h"
@@ -50,6 +58,7 @@ void getdefinitionURL(const char *, STRBUF *);
 void getURL(const char *, STRBUF *);
 int isprotocol(const char *);
 int convertpath(const char *, const char *, const char *, STRBUF *);
+void makefileurl(const char *, int, STRBUF *);
 void show_page_by_url(const char *, const char *);
 #ifndef isblank
 #define isblank(c)	((c) == ' ' || (c) == '\t')
@@ -348,15 +357,9 @@ getdefinitionURL(const char *arg, STRBUF *URL)
 		die("definition %s not found.", arg);
 	strbuf_reset(URL);
 	/*
-	 * Make URL.
-	 *
-	 * c:/dir/a.html => file://c|/dir/a.html
+	 * convert path into URL.
 	 */
-#if _WIN32 || __DJGPP__
-	if (htmldir[1] == ':')
-		htmldir[1] = '|';
-#endif
-	strbuf_sprintf(URL, "file://%s/%s", htmldir, ptable.part[1].start);
+	makefileurl(makepath(htmldir, ptable.part[1].start, NULL), 0, URL);
 	recover(&ptable);
 	if (sb != NULL)
 		strbuf_close(sb);
@@ -382,36 +385,14 @@ getURL(const char *file, STRBUF *URL)
 	if (!isabspath(abspath))
 		die("realpath(3) is not compatible with BSD version.");
 	/*
-	 * convert path into hypertext.
+	 * convert path into URL.
 	 */
 	p = abspath + strlen(root);
-	if (convertpath(dbpath, htmldir, p, sb) == 0) {
-		p = strbuf_value(sb);
-		/*
-		 * Make URL.
-		 *
-		 * c:/dir/a.html => file://c|/dir/a.html
-		 */
-#if _WIN32 || __DJGPP__
-		if (p[1] == ':')
-			p[1] = '|';
-#endif
-		strbuf_sprintf(URL, "file://%s", p);
-		if (linenumber)
-			strbuf_sprintf(URL, "#L%d", linenumber);
-		strbuf_close(sb);
-	} else {
-		/*
-		 * Make URL.
-		 *
-		 * c:/dir/a.html => file://c|/dir/a.html
-		 */
-#if _WIN32 || __DJGPP__
-		if (abspath[1] == ':')
-			abspath[1] = '|';
-#endif
-		strbuf_sprintf(URL, "file://%s", abspath);
-	}
+	if (convertpath(dbpath, htmldir, p, sb) == 0)
+		makefileurl(strbuf_value(sb), linenumber, URL);
+	else
+		makefileurl(abspath, 0, URL);
+	strbuf_close(sb);
 }
 /*
  * isprotocol: return 1 if url has a procotol.
@@ -503,6 +484,39 @@ convertpath(const char *dbpath, const char *htmldir, const char *path, STRBUF *s
 		strbuf_setlen(sb, tag);
 	}
 	return -1;
+}
+/*
+ * makefileurl: make url which start with 'file:'.
+ *
+ *	i)	path	path name (absolute)
+ *	i)	line	!=0: line number
+ *	o)	url	URL
+ *
+ * makefileurl('/dir/a.html', 10)   => 'file:///dir/a.html#L10'
+ *
+ * (Windows32 environment)
+ * makefileurl('c:/dir/a.html', 10) => 'file://c|/dir/a.html#L10'
+ */
+void
+makefileurl(const char *path, int line, STRBUF *url)
+{
+	strbuf_puts(url, "file://");
+#if _WIN32 || __DJGPP__
+	/*
+	 * copy drive name. (c: -> c|)
+	 */
+	if (*path)
+		strbuf_putc(url, *path++);
+	if (*path == ':')
+		strbuf_putc(url, '|');
+		path++;
+	}
+#endif
+	strbuf_puts(url, path);
+	if (line) {
+		strbuf_puts(url, "#L");
+		strbuf_putn(url, line);
+	}
 }
 /*
  * show_page_by_url: show page by url
