@@ -505,11 +505,10 @@ makefileurl(const char *path, int line, STRBUF *url)
 	/*
 	 * copy drive name. (c: -> c|)
 	 */
-	if (*path)
-		strbuf_putc(url, *path++);
-	if (*path == ':')
+	if (isalpha(*path) && *(path+1) == ':') {
+		strbuf_putc(url, *path);
 		strbuf_putc(url, '|');
-		path++;
+		path += 2;
 	}
 #endif
 	strbuf_puts(url, path);
