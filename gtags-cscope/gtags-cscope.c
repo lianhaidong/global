@@ -188,6 +188,28 @@ print_case_distinction()
 		fprintf(stderr, "gscope: %s\n", msg);
 	}
 }
+/*
+ * get pattern which match to #include lines.
+ *
+ *	i)	arg	include file name
+ *	r)		pattern which match to #include lines
+ */
+char *
+include_pattern(const char *arg)
+{
+#if defined(_WIN32)
+#define INCLUDE "^[ \t]*#[ \t]*include[ \t].*[\\\"\"</\\]%s[\\\"\">]"
+#elif defined(__DJGPP__)
+#define INCLUDE "^[ \t]*#[ \t]*include[ \t].*[\"</\\]%s[\">]"
+#else
+#define INCLUDE "^[ \t]*#[ \t]*include[ \t].*[\"</]%s[\">]"
+#endif
+	STATIC_STRBUF(pat);
+
+	strbuf_clear(pat);
+	strbuf_sprintf(pat, INCLUDE, quote_string(arg));
+	return strbuf_value(pat);
+}
 static void
 command_help()
 {
@@ -221,6 +243,8 @@ command_loop()
 			ignore_case ^= 1;
 			print_case_distinction();
 			break;
+		case 'q':		/* q: quit the program */
+			return;
 		case 'r':		/* r: update tag file */
 			update();
 			break;
@@ -259,6 +283,11 @@ command_loop()
 static int
 execute_command(STRBUF *sb, const int com, const int opt, const char *arg)
 {
+#ifdef _WIN32
+#define QUOTE '"'
+#else
+#define QUOTE '\''
+#endif
 	STATIC_STRBUF(command);
 	STATIC_STRBUF(ib);
 	FILE *ip;
@@ -276,9 +305,9 @@ execute_command(STRBUF *sb, const int com, const int opt, const char *arg)
 			strbuf_putc(command, 'i');
 	}
 	strbuf_putc(command, ' ');
-	strbuf_putc(command, '\'');
+	strbuf_putc(command, QUOTE);
 	strbuf_puts(command, arg);
-	strbuf_putc(command, '\'');
+	strbuf_putc(command, QUOTE);
 	if (!(ip = popen(strbuf_value(command), "r")))
 		die("cannot execute '%s'.", strbuf_value(command));
 	if (vflag)
@@ -370,8 +399,7 @@ search(int com, const char *arg)
 		break;
 	case '8':		/* Find files #including this file */
 		opt = 'g';
-		snprintf(buf, sizeof(buf), "^[ \t]*#[ \t]*include[ \t].*[\"</]%s[\">]", quote_string(arg));
-		arg = buf;
+		arg = include_pattern(arg);
 		break;
 	}
 	/*
