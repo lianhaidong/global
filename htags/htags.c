@@ -409,7 +409,7 @@ generate_file(const char *dist, const char *file)
 		die("cannot create file '%s'.", file);
 	strbuf_reset(sb);
 	/*
-	 * Read templete file and evaluate macros.
+	 * Read template file and evaluate macros.
 	 */
 	while ((_ = strbuf_fgets(sb, ip, STRBUF_NOCRLF)) != NULL) {
 		const char *p;

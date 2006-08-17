@@ -192,7 +192,7 @@
 	@item{@code{datadir}(string)}
 		Shared data directory. The default is '/usr/local/share' but
 		you can change the value using configure script.
-		@name{Htags} lookup templete files in the 'gtags' directory
+		@name{Htags} lookup template files in the 'gtags' directory
 		in this data directory.
 	@item{@code{htags_options}(string)}
 		Default options for @name{htags}. This value is inserted into

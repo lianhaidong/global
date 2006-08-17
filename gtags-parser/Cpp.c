@@ -339,7 +339,7 @@ Cpp(const char *file)
 					}
 				}
 				if (c == EOF && wflag)
-					warning("templete <...> isn't closed. [+%d %s].", lineno, curfile);
+					warning("template <...> isn't closed. [+%d %s].", lineno, curfile);
 			}
 			break;
 		case CPP_OPERATOR:
