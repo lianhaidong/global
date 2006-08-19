@@ -788,7 +788,7 @@ makehtml(int total)
 	 * Create anchor stream for anchor_load().
 	 */
 	anchor_stream = tmpfile();
-	gp = gfind_open(dbpath, NULL, other_files);
+	gp = gfind_open(dbpath, NULL, other_files ? GPATH_BOTH : GPATH_SOURCE);
 	while ((path = gfind_read(gp)) != NULL) {
 		if (gp->type == GPATH_OTHER)
 			fputc(' ', anchor_stream);
@@ -803,7 +803,7 @@ makehtml(int total)
 	/*
 	 * For each path in GPATH, convert the path into HTML file.
 	 */
-	gp = gfind_open(dbpath, NULL, other_files);
+	gp = gfind_open(dbpath, NULL, other_files ? GPATH_BOTH : GPATH_SOURCE);
 	while ((path = gfind_read(gp)) != NULL) {
 		char html[MAXPATHLEN];
 

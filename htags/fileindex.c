@@ -701,7 +701,7 @@ makefileindex(const char *file, STRBUF *a_files)
 	indexlink = (Fflag) ? "../files" : "../mains";
 	src_count = 0;
 
-	gp = gfind_open(dbpath, NULL, other_files);
+	gp = gfind_open(dbpath, NULL, other_files ? GPATH_BOTH : GPATH_SOURCE);
 	/*
 	 * for collecting include files.
 	 */
