@@ -56,7 +56,7 @@ void src2html(const char *, const char *, int);
 int makedupindex(void);
 int makedefineindex(const char *, int, STRBUF *);
 int makefileindex(const char *, STRBUF *);
-void makeincludeindex();
+void makeincludeindex(void);
 
 #if defined(_WIN32) && !defined(__CYGWIN__)
 #define mkdir(path,mode) mkdir(path)

@@ -279,8 +279,7 @@ WORD		{ALPHA}{ALPHANUM}*
  * php: read PHP file and pickup tag entries.
  */
 void
-php(file)
-	const char *file;
+php(const char *file)
 {
 	int token;
 	int target = (sflag) ? SYM : (rflag) ? REF : DEF;

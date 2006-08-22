@@ -122,7 +122,7 @@ abbrev_open(const char *abbrev)
  * free allocated memory.
  */
 void
-abbrev_close()
+abbrev_close(void)
 {
 	if (name2ab)
 		varray_close(name2ab);
@@ -132,7 +132,7 @@ abbrev_close()
  * for debugging.
  */
 void
-abbrev_dump()
+abbrev_dump(void)
 {
 	struct abbrmap *ab;
 	int i, limit = sizeof(ab2name) / sizeof(struct abbrmap);

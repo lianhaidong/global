@@ -32,8 +32,8 @@
 #define DEFAULT_ABBREVIATION	"ddefine ttypedef"
 
 void abbrev_open(const char *);
-void abbrev_close();
-void abbrev_dump();
+void abbrev_close(void);
+void abbrev_dump(void);
 char *compress(const char *text, const char *name);
 char *uncompress(const char *text, const char *name);
 

@@ -147,8 +147,7 @@ line:	ASM_ENTRY '(' ASM_SYMBOL ')' error '\n'
 %%
 
 void
-assembler(file)
-const char *file;
+assembler(const char *file)
 {
 	/* symbol search doesn't supported. */
 	if (sflag)
@@ -169,8 +168,7 @@ const char *file;
 }
 
 static void
-yyerror(s)
-const char *s;
+yyerror(const char *s)
 {
 
 }

@@ -87,7 +87,7 @@ extern int nofilter;
 /* External filter							*/
 /*----------------------------------------------------------------------*/
 static const char *
-get_gtags()
+get_gtags(void)
 {
 	char *gtags = usable("gtags");
 
@@ -213,7 +213,7 @@ makefilter(STRBUF *sb)
  * getsortfilter: get sort filter string
  */
 const char *
-getsortfilter()
+getsortfilter(void)
 {
 	return strbuf_value(sortfilter);
 }
@@ -221,7 +221,7 @@ getsortfilter()
  * getpathfilter: get sort filter string
  */
 const char *
-getpathfilter()
+getpathfilter(void)
 {
 	return strbuf_value(pathfilter);
 }
@@ -330,7 +330,7 @@ filter_put(const char *s)
  * filter_close: close output filter.
  */
 void
-filter_close()
+filter_close(void)
 {
 	/*
 	 * You must call tagsort_close() first, because some records may

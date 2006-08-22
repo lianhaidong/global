@@ -112,8 +112,6 @@ strincmp(const char *string, const char *pattern, size_t len)
  *
  * This function is made to avoid compatibility problems.
  */
-int	(*cmpfunc)(char *, char*, int);
-
 char *
 locatestring(const char *string, const char *pattern, int flag)
 {
@@ -121,7 +119,7 @@ locatestring(const char *string, const char *pattern, int flag)
 	int plen = strlen(pattern);
 	const char *p = NULL;
 	int slen;
-	int (*cmpfunc) ();
+	int (*cmpfunc) (const char *, const char*, size_t);
 #ifdef DEBUG
 	FILE *dbg = stderr;
 	const char *pre = string;

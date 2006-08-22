@@ -96,7 +96,7 @@ static int retry;
  * Each path name must start with "./".
  */
 static const char *
-getpath()
+getpath(void)
 {
 	static const char *buff;
 
@@ -113,7 +113,7 @@ getpath()
  * push back a path name.
  */
 static void
-ungetpath()
+ungetpath(void)
 {
 	retry = 1;
 }

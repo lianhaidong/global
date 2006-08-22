@@ -91,7 +91,7 @@ char global_path[MAXFILLEN];
 int ignore_case;
 
 void
-check_dbpath()
+check_dbpath(void)
 {
 	char cwd[MAXPATHLEN+1];
 	char root[MAXPATHLEN+1];
@@ -100,7 +100,7 @@ check_dbpath()
 	getdbpath(cwd, root, dbpath, vflag);
 }
 void
-get_global_path()
+get_global_path(void)
 {
 	const char *p;
 
@@ -154,7 +154,7 @@ main(int argc, char **argv)
 	return 0;
 }
 char *
-get_line()
+get_line(void)
 {
 	STATIC_STRBUF(sb);
 
@@ -166,7 +166,7 @@ get_line()
 	return strbuf_value(sb);
 }
 void
-update()
+update(void)
 {
 	STATIC_STRBUF(command);
 
@@ -179,7 +179,7 @@ update()
 	system(strbuf_value(command));
 }
 void
-print_case_distinction()
+print_case_distinction(void)
 {
 	if (vflag) {
 		const char *msg = ignore_case ? 
@@ -211,7 +211,7 @@ include_pattern(const char *arg)
 	return strbuf_value(pat);
 }
 static void
-command_help()
+command_help(void)
 {
 	fprintf(stdout, "0<arg>: Find this C symbol\n");
 	fprintf(stdout, "1<arg>: Find this definition\n");
@@ -228,7 +228,7 @@ command_help()
 	fprintf(stdout, "h: Show help\n");
 }
 void
-command_loop()
+command_loop(void)
 {
 	int com = 0;
 	char *line;

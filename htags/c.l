@@ -229,8 +229,7 @@ YACC_IDENTIFIER	({ALPHA}|\.)({ALPHANUM}|\.)*
 
 %%
 void
-c_parser_init(ip)
-	FILE *ip;
+c_parser_init(FILE *ip)
 {
 	newline_terminate_string = 1;
 	DEFAULT_BEGIN_OF_FILE_ACTION
@@ -238,8 +237,7 @@ c_parser_init(ip)
 }
 
 void
-yacc_parser_init(ip)
-	FILE *ip;
+yacc_parser_init(FILE *ip)
 {
 	newline_terminate_string = 1;
 	DEFAULT_BEGIN_OF_FILE_ACTION

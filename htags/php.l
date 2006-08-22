@@ -226,8 +226,7 @@ WORD		{ALPHA}{ALPHANUM}*
 
 %%
 void
-php_parser_init(ip)
-	FILE *ip;
+php_parser_init(FILE *ip)
 {
 	DEFAULT_BEGIN_OF_FILE_ACTION
 }

@@ -32,7 +32,7 @@
 static int quiet;
 static int verbose;
 static int debug;
-static void (*exit_proc)();
+static void (*exit_proc)(void);
 
 void
 setquiet(void)
@@ -50,8 +50,7 @@ setdebug(void)
 	debug = 1;
 }
 void
-sethandler(proc)
-	void (*proc)();
+sethandler(void (*proc)(void))
 {
 	exit_proc = proc;
 }

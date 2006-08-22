@@ -45,7 +45,7 @@ extern	const char *progname;
 void setquiet(void);
 void setverbose(void);
 void setdebug(void);
-void sethandler(void (*proc)());
+void sethandler(void (*proc)(void));
 void die(const char *s, ...)
 	__attribute__ ((__noreturn__, __format__ (__printf__, 1, 2)));
 void die_with_code(int n, const char *s, ...)
