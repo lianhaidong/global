@@ -634,6 +634,28 @@ put_end_of_line(int lineno)
 	last_lineno = lineno;
 }
 /*
+ * Encode URL.
+ *
+ *	o)	sb	encoded URL
+ *	i)	url	URL
+ */
+void
+encode(STRBUF *sb, const char *url)
+{
+	int c;
+
+	while ((c = (unsigned char)*url++) != '\0') {
+		if (c == ' ')
+			strbuf_putc(sb, '+');
+		else if (isalnum(c)
+			|| c == '/' || c == '*' || c == '-'
+			|| c == '.' || c == '@' ||  c == '_')
+			strbuf_putc(sb, c);
+		else
+			strbuf_sprintf(sb, "%%%02x", c);
+	}
+}
+/*
  *
  * src2html: convert source code into HTML
  *
@@ -670,18 +692,10 @@ src2html(const char *src, const char *html, int notsource)
         fputs(fill_anchor(indexlink, src), out);
 	if (cvsweb_url) {
 		STATIC_STRBUF(sb);
-		const char *p;
 
 		strbuf_clear(sb);
 		strbuf_puts(sb, cvsweb_url);
-		for (p = src; *p; p++) {
-			int c = (unsigned char)*p;
-
-			if (c == '/' || isalnum(c))
-				strbuf_putc(sb, c);
-			else
-				strbuf_sprintf(sb, "%%%02x", c);
-		}
+		encode(sb, src);
 		if (cvsweb_cvsroot)
 			strbuf_sprintf(sb, "?cvsroot=%s", cvsweb_cvsroot);
 		fputs(quote_space, out);
