@@ -639,20 +639,50 @@ put_end_of_line(int lineno)
  *	o)	sb	encoded URL
  *	i)	url	URL
  */
-void
-encode(STRBUF *sb, const char *url)
+#define X0(x) \
+x"0",x"1",x"2",x"3",x"4",x"5",x"6",x"7",x"8",x"9",x"a",x"b",x"c",x"d",x"e",x"f"
+#define X1(x) \
+X0(x"0"),X0(x"1"),X0(x"2"),X0(x"3"),X0(x"4"),X0(x"5"),X0(x"6"),X0(x"7"),\
+X0(x"8"),X0(x"9"),X0(x"a"),X0(x"b"),X0(x"c"),X0(x"d"),X0(x"e"),X0(x"f")
+static char enctab[256][4] = { X1("%") };
+static void
+init_enctab(void)
 {
 	int c;
 
+	for (c = 'A'; c <= 'Z'; c++)
+		enctab[c][0] = '\0';
+	for (c = 'a'; c <= 'z'; c++)
+		enctab[c][0] = '\0';
+	for (c = '0'; c <= '9'; c++)
+		enctab[c][0] = '\0';
+	enctab['/'][0] = '\0';
+	enctab['-'][0] = '\0';
+	enctab['_'][0] = '\0';
+	enctab['.'][0] = '\0';
+	enctab['!'][0] = '\0';
+	enctab['~'][0] = '\0';
+	enctab['*'][0] = '\0';
+	enctab['\''][0] = '\0';
+	enctab['('][0] = '\0';
+	enctab[')'][0] = '\0';
+}
+static void
+encode(STRBUF *sb, const char *url)
+{
+	int c;
+	static int init;
+
+	if (!init) {
+		init_enctab();
+		init = 1;
+	}
+
 	while ((c = (unsigned char)*url++) != '\0') {
-		if (c == ' ')
-			strbuf_putc(sb, '+');
-		else if (isalnum(c)
-			|| c == '/' || c == '*' || c == '-'
-			|| c == '.' || c == '@' ||  c == '_')
+		if (enctab[c][0] == '\0')
 			strbuf_putc(sb, c);
 		else
-			strbuf_sprintf(sb, "%%%02x", c);
+			strbuf_puts(sb, enctab[c]);
 	}
 }
 /*
@@ -696,8 +726,10 @@ src2html(const char *src, const char *html, int notsource)
 		strbuf_clear(sb);
 		strbuf_puts(sb, cvsweb_url);
 		encode(sb, src);
-		if (cvsweb_cvsroot)
-			strbuf_sprintf(sb, "?cvsroot=%s", cvsweb_cvsroot);
+		if (cvsweb_cvsroot) {
+			strbuf_puts(sb, "?cvsroot=");
+			strbuf_puts(sb, cvsweb_cvsroot);
+		}
 		fputs(quote_space, out);
 		fputs(gen_href_begin_simple(strbuf_value(sb)), out);
 		fputs(cvslink_begin, out);
