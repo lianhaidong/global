@@ -22,6 +22,11 @@
 #include <config.h>
 #endif
 #include <stdio.h>
+#ifdef HAVE_STRING_H
+#include <string.h>
+#else
+#include <strings.h>
+#endif
 #include <time.h>
 #include "die.h"
 #include "strlimcpy.h"
@@ -46,10 +51,10 @@ now(void)
 	FILE *ip;
 
 	strlimcpy(buf, "unkown time", sizeof(buf));
-	if (ip = popen("date", "r")) {
+	if ((ip = popen("date", "r")) != NULL) {
 		if (fgets(buf, sizeof(buf), ip))
 			buf[strlen(buf) - 1] = 0;
-		fclose(ip);
+		pclose(ip);
 	}
 #endif
 	return buf;
