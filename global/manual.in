@@ -40,8 +40,8 @@
 	@name{Global} can treat a source tree, that is, a directory that
 	has subdirectories and source files.
 	You can get the relative path of objects from anywhere within the tree.
-	@name{Global} can locate not only function definitions but also
-	function references and other symbols.
+	@name{Global} can locate not only object definitions but also object
+	references and other symbols.
 	Duplicate entries are allowed.
 
 	In advance of using this command, you must execute @xref{gtags,1}
@@ -55,11 +55,11 @@
 		Extended regular expressions which are the same as those
 		accepted by @xref{egrep,1} are available.
 	@item{@option{-c}, @option{--completion} [@arg{prefix}]}
-		Print candidate function names which start with specified
+		Print candidate definition names which start with specified
 		@arg{prefix}. @arg{Prefix} is not specified,
-		print all function names.
+		print all definition names.
 	@item{@option{-f}, @option{--file} @arg{files}}
-		Print all function definitions in the @arg{files}.
+		Print all tags in the @arg{files}.
 		This option implies -x option.
 	@item{@option{-g}, @option{--grep}}
 		Print all lines which match to the @arg{pattern}.
@@ -120,8 +120,7 @@
 		The @option{-t} and @option{-x} are given to priority
 		more than the @option{--result} option.
 	@item{@option{-s}, @option{--symbol}}
-		Print the locations of specified symbol other than function names.
-		You need @file{GSYMS} tags file. See @xref{gtags,1}.
+		Print the locations of specified symbol other than definitions.
 	@item{@option{-t}, @option{--tags}}
 		Print with standard ctags format.
 	@item{@option{-T}, @option{--through}}
@@ -167,9 +166,9 @@
 @FILES
 	@begin_itemize
 	@item{@file{GTAGS}}
-		Tag file for function definitions.
+		Tag file for object definitions.
 	@item{@file{GRTAGS}}
-		Tag file for function references.
+		Tag file for object references.
 	@item{@file{GSYMS}}
 		Tag file for other symbols.
 	@item{@file{GPATH}}
