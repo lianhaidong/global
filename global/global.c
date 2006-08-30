@@ -427,7 +427,7 @@ main(int argc, char **argv)
 	 * The -t and -x option are given to priority more than
 	 * the --result option.
 	 */
-	if (fflag || gflag || Pflag || (nofilter & SORT_FILTER))
+	if (fflag || gflag || Pflag || Iflag || (nofilter & SORT_FILTER))
 		passthru = 1;
 	if (format == 0) {
 		if (tflag) { 			/* ctags format */
