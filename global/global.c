@@ -1055,7 +1055,7 @@ tagsearch(const char *pattern, const char *cwd, const char *root, const char *db
 	/*
 	 * search in library path.
 	 */
-	if (getenv("GTAGSLIBPATH") && (count == 0 || Tflag) && !lflag && !rflag) {
+	if (db == GTAGS && getenv("GTAGSLIBPATH") && (count == 0 || Tflag) && !lflag) {
 		STRBUF *sb = strbuf_open(0);
 		char *libdir, *nextp = NULL;
 
