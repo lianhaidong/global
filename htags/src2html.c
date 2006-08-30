@@ -639,33 +639,28 @@ put_end_of_line(int lineno)
  *	o)	sb	encoded URL
  *	i)	url	URL
  */
-#define X0(x) \
-x"0",x"1",x"2",x"3",x"4",x"5",x"6",x"7",x"8",x"9",x"a",x"b",x"c",x"d",x"e",x"f"
-#define X1(x) \
-X0(x"0"),X0(x"1"),X0(x"2"),X0(x"3"),X0(x"4"),X0(x"5"),X0(x"6"),X0(x"7"),\
-X0(x"8"),X0(x"9"),X0(x"a"),X0(x"b"),X0(x"c"),X0(x"d"),X0(x"e"),X0(x"f")
-static char enctab[256][4] = { X1("%") };
+static unsigned char urlchar[256];
 static void
-init_enctab(void)
+init_urlchar(void)
 {
 	int c;
 
 	for (c = 'A'; c <= 'Z'; c++)
-		enctab[c][0] = '\0';
+		urlchar[c] = 1;
 	for (c = 'a'; c <= 'z'; c++)
-		enctab[c][0] = '\0';
+		urlchar[c] = 1;
 	for (c = '0'; c <= '9'; c++)
-		enctab[c][0] = '\0';
-	enctab['/'][0] = '\0';
-	enctab['-'][0] = '\0';
-	enctab['_'][0] = '\0';
-	enctab['.'][0] = '\0';
-	enctab['!'][0] = '\0';
-	enctab['~'][0] = '\0';
-	enctab['*'][0] = '\0';
-	enctab['\''][0] = '\0';
-	enctab['('][0] = '\0';
-	enctab[')'][0] = '\0';
+		urlchar[c] = 1;
+	urlchar['/'] = 1;
+	urlchar['-'] = 1;
+	urlchar['_'] = 1;
+	urlchar['.'] = 1;
+	urlchar['!'] = 1;
+	urlchar['~'] = 1;
+	urlchar['*'] = 1;
+	urlchar['\''] = 1;
+	urlchar['('] = 1;
+	urlchar[')'] = 1;
 }
 static void
 encode(STRBUF *sb, const char *url)
@@ -674,15 +669,18 @@ encode(STRBUF *sb, const char *url)
 	static int init;
 
 	if (!init) {
-		init_enctab();
+		init_urlchar();
 		init = 1;
 	}
 
 	while ((c = (unsigned char)*url++) != '\0') {
-		if (enctab[c][0] == '\0')
+		if (urlchar[c]) {
 			strbuf_putc(sb, c);
-		else
-			strbuf_puts(sb, enctab[c]);
+		} else {
+			strbuf_putc(sb, '%');
+			strbuf_putc(sb, "0123456789abcdef"[c >> 4]);
+			strbuf_putc(sb, "0123456789abcdef"[c & 0x0f]);
+		}
 	}
 }
 /*
