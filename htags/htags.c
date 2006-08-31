@@ -121,6 +121,7 @@ const char *id_value;
 const char *cgidir;
 const char *main_func = "main";
 const char *cvsweb_url;
+int use_cvs_module;
 const char *cvsweb_cvsroot;
 const char *gtagslabel;
 const char *title;
@@ -1570,6 +1571,8 @@ main(int argc, char **argv)
 	}
 	if (dynamic && Sflag)
 		die("Current implementation doesn't allow both -D(--dynamic) and the -S(--secure-cgi).");
+	if (cvsweb_url && test("d", "CVS"))
+		use_cvs_module = 1;
 	/*
 	 * decide directory in which we make hypertext.
 	 */

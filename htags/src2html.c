@@ -684,6 +684,49 @@ encode(STRBUF *sb, const char *url)
 	}
 }
 /*
+ * get_cvs_module: return CVS module of source file.
+ *
+ *	i)	file		source path
+ *	o)	basename	If basename is not NULL, store pointer to
+ *				the last component of source path.
+ *	r)		!=NULL : relative path from repository top
+ *			==NULL : CVS/Repository is not readable.
+ */
+static const char *
+get_cvs_module(const char *file, const char **basename)
+{
+	const char *p;
+	STATIC_STRBUF(dir);
+	static char prev_dir[MAXPATHLEN+1];
+	STATIC_STRBUF(module);
+	FILE *ip;
+
+	strbuf_clear(dir);
+	p = locatestring(file, "/", MATCH_LAST);
+	if (p != NULL) {
+		strbuf_nputs(dir, file, p - file);
+		p++;
+	} else {
+		strbuf_putc(dir, '.');
+		p = file;
+	}
+	if (basename != NULL)
+		*basename = p;
+	if (strcmp(strbuf_value(dir), prev_dir) != 0) {
+		strlimcpy(prev_dir, strbuf_value(dir), sizeof(prev_dir));
+		strbuf_clear(module);
+		strbuf_puts(dir, "/CVS/Repository");
+		ip = fopen(strbuf_value(dir), "r");
+		if (ip != NULL) {
+			strbuf_fgets(module, ip, STRBUF_NOCRLF);
+			fclose(ip);
+		}
+	}
+	if (strbuf_getlen(module) > 0)
+		return strbuf_value(module);
+	return NULL;
+}
+/*
  *
  * src2html: convert source code into HTML
  *
@@ -720,10 +763,18 @@ src2html(const char *src, const char *html, int notsource)
         fputs(fill_anchor(indexlink, src), out);
 	if (cvsweb_url) {
 		STATIC_STRBUF(sb);
+		const char *module, *basename;
 
 		strbuf_clear(sb);
 		strbuf_puts(sb, cvsweb_url);
-		encode(sb, src);
+		if (use_cvs_module
+		 && (module = get_cvs_module(src, &basename)) != NULL) {
+			encode(sb, module);
+			strbuf_putc(sb, '/');
+			encode(sb, basename);
+		} else {
+			encode(sb, src);
+		}
 		if (cvsweb_cvsroot) {
 			strbuf_puts(sb, "?cvsroot=");
 			strbuf_puts(sb, cvsweb_cvsroot);

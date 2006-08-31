@@ -100,6 +100,7 @@ extern const char *id_value;
 extern const char *cgidir;
 extern const char *main_func;
 extern const char *cvsweb_url;
+extern int use_cvs_module;
 extern const char *cvsweb_cvsroot;
 extern const char *gtagslabel;
 extern const char *title;
