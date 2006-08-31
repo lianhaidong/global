@@ -21,9 +21,9 @@ dnl You should have received a copy of the GNU General Public License
 dnl along with this program; if not, write to the Free Software
 dnl Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.
 dnl
-AC_INIT(GNU GLOBAL, 5.2)
+AC_INIT([GNU GLOBAL],[5.2])
 AC_CONFIG_SRCDIR(global/global.c)
-AM_CONFIG_HEADER(config.h:config-h.in)
+AC_CONFIG_HEADERS([config.h:config-h.in])
 AC_PREREQ(2.59)
 AM_INIT_AUTOMAKE([1.9.3 gnu])
 
@@ -61,7 +61,7 @@ dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 AC_TYPE_OFF_T
 AC_TYPE_SIZE_T
-AC_STRUCT_ST_BLKSIZE
+AC_CHECK_MEMBERS([struct stat.st_blksize])
 AC_C_BIGENDIAN
 AC_CHECK_TYPE([int8_t],,[AC_DEFINE_UNQUOTED([int8_t], [signed char],
 		[Define to `signed char' if <sys/types.h> does not define.])])
@@ -179,7 +179,7 @@ dnl
 DEFAULTLANGMAP_QUOTED=`echo $DEFAULTLANGMAP | sed 's/:/\\\\:/g'`
 AC_SUBST(DEFAULTLANGMAP_QUOTED)
 
-AC_OUTPUT([Makefile
+AC_CONFIG_FILES([Makefile
 	gtags.conf
 	libutil/langmap.h
 	htags/global.cgi.tmpl
@@ -196,3 +196,4 @@ AC_OUTPUT([Makefile
 	doc/Makefile
 	icons/Makefile
 ])
+AC_OUTPUT
