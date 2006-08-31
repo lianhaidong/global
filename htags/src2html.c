@@ -37,6 +37,11 @@
 #include "path2url.h"
 #include "htags.h"
 
+#ifdef HAVE_PUTC_UNLOCKED
+#undef putc
+#define putc	putc_unlocked
+#endif
+
 /*----------------------------------------------------------------------*/
 /* Parser switch							*/
 /*----------------------------------------------------------------------*/
@@ -727,6 +732,40 @@ get_cvs_module(const char *file, const char **basename)
 	return NULL;
 }
 /*
+ * detab_quoting: convert tabs into spaces and print with HTML quoting
+ *
+ *	i)	op	FILE *
+ *	i)	buf	string including tabs
+ */
+static void
+detab_quoting(FILE *op, const char *buf)
+{
+	int dst, spaces;
+	int c;
+
+	dst = 0;
+	while ((c = *buf++) != '\0') {
+		if (c == '\t') {
+			spaces = tabs - dst % tabs;
+			dst += spaces;
+			do {
+				putc(' ', op);
+			} while (--spaces);
+		} else {
+			if (c == '&')
+				fputs(quote_amp, op);
+			else if (c == '<')
+				fputs(quote_little, op);
+			else if (c == '>')
+				fputs(quote_great, op);
+			else
+				putc(c, op);
+			dst++;
+		}
+	}
+	putc('\n', op);
+}
+/*
  *
  * src2html: convert source code into HTML
  *
@@ -807,29 +846,8 @@ src2html(const char *src, const char *html, int notsource)
 		fputs_nl(verbatim_begin, out);
 		last_lineno = 0;
 		while ((_ = strbuf_fgets(sb, in, STRBUF_NOCRLF)) != NULL) {
-			int dst = 0;
-
 			fputs(gen_name_number(++last_lineno), out);
-			for (; *_; _++) {
-				int c = *_;
-
-				if (c == '\t') {
-					do {
-						putc(' ', out);
-					} while (++dst % tabs);
-				} else {
-					if (c == '&')
-						fputs(quote_amp, out);
-					else if (c == '<')
-						fputs(quote_little, out);
-					else if (c == '>')
-						fputs(quote_great, out);
-					else
-						fputc(c, out);
-					dst++;
-				}
-			}
-			fputc('\n', out);
+			detab_quoting(out, _);
 		}
 		fputs_nl(verbatim_end, out);
 		strbuf_close(sb);
