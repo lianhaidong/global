@@ -552,20 +552,20 @@ incremental(const char *dbpath, const char *root)
 	limit = gpath_nextkey();
 	for (i = 1; i < limit; i++) {
 		char fid[32];
-		int other;
+		int type;
 
 		snprintf(fid, sizeof(fid), "%d", i);
 		/*
 		 * This is a hole of GPATH. The hole increases if the deletion
 		 * and the addition are repeated.
 		 */
-		if ((path = gpath_fid2path(fid, &other)) == NULL)
+		if ((path = gpath_fid2path(fid, &type)) == NULL)
 			continue;
 		/*
 		 * The file which does not exist in the findset is treated
 		 * assuming that it does not exist in the file system.
 		 */
-		if (other) {
+		if (type == GPATH_OTHER) {
 			if (!idset_contains(findset, i) || !test("f", path) || test("b", path))
 				strbuf_puts0(deletelist, path);
 		} else {
