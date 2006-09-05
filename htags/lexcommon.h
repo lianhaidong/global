@@ -157,18 +157,18 @@ static int left_spaces;
  */
 extern void echoc(int);
 extern void echos(const char *s);
-extern char *generate_guide(int);
+extern const char *generate_guide(int);
 extern void put_anchor(char *, int, int);
-extern void put_include_anchor(struct data *, char *);
-extern void put_reserved_word(char *);
-extern void put_macro(char *);
-extern void unknown_preprocessing_directive(char *, int);
+extern void put_include_anchor(struct data *, const char *);
+extern void put_reserved_word(const char *);
+extern void put_macro(const char *);
+extern void unknown_preprocessing_directive(const char *, int);
 extern void unexpected_eof(int);
-extern void unknown_yacc_directive(char *, int);
-extern void missing_left(char *, int);
+extern void unknown_yacc_directive(const char *, int);
+extern void missing_left(const char *, int);
 extern void put_char(int);
-extern void put_string(char *);
-extern void put_brace(char *);
+extern void put_string(const char *);
+extern void put_brace(const char *);
 extern void put_begin_of_line(int);
 extern void put_end_of_line(int);
 
