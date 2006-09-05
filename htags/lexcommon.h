@@ -63,30 +63,8 @@ static int dest_column;
 static int left_spaces;
 
 #define YY_INPUT(buf, result, max_size) do {				\
-	int n = 0;							\
-	while (n < max_size) {						\
-		int c;							\
-		if (left_spaces > 0) {					\
-			left_spaces--;					\
-			c = ' ';					\
-		} else {						\
-			c = getc(LEXIN);				\
-			if (c == EOF) {					\
-				if (ferror(LEXIN))			\
-					die("read error.");		\
-				break;					\
-			}						\
-			if (c == '\t') {				\
-				left_spaces = tabs - dest_column % tabs;\
-				continue;				\
-			}						\
-		}							\
-		buf[n++] = c;						\
-		dest_column++;						\
-		if (c == '\n')						\
-			dest_column = 0;				\
-	}								\
-	result = n;							\
+	result = read_file_detabing(buf, max_size, LEXIN,		\
+			&dest_column, &left_spaces);			\
 } while (0)
 
 #define LINENO lexcommon_lineno
@@ -156,7 +134,8 @@ static int left_spaces;
  * Output routine.
  */
 extern void echoc(int);
-extern void echos(const char *s);
+extern void echos(const char *);
+extern size_t read_file_detabing(char *, size_t, FILE *, int *, int *);
 extern const char *generate_guide(int);
 extern void put_anchor(char *, int, int);
 extern void put_include_anchor(struct data *, const char *);

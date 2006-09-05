@@ -41,6 +41,10 @@
 #undef putc
 #define putc	putc_unlocked
 #endif
+#ifdef HAVE_GETC_UNLOCKED
+#undef getc
+#define getc	getc_unlocked
+#endif
 
 /*----------------------------------------------------------------------*/
 /* Parser switch							*/
@@ -210,6 +214,60 @@ void
 echos(const char *s)
 {
         strbuf_puts(outbuf, s);
+}
+/*
+ * Read file converting tabs into spaces.
+ */
+size_t
+read_file_detabing(char *buf, size_t size, FILE *ip,
+	int *dest_saved, int *spaces_saved)
+{
+	char *p;
+	int c, dest, spaces;
+
+	if (size == 0)
+		return 0;
+	p = buf;
+	dest = *dest_saved;
+	spaces = *spaces_saved;
+	if (spaces > 0)
+		goto put_spaces;
+	for (;;) {
+		c = getc(ip);
+		if (c == EOF) {
+			if (ferror(ip))
+				die("read error.");
+			break;
+		}
+		if (c == '\t') {
+			spaces = tabs - dest % tabs;
+put_spaces:
+			if (spaces < size) {
+				size -= spaces;
+				dest += spaces;
+				do {
+					*p++ = ' ';
+				} while (--spaces);
+			} else {
+				spaces -= size;
+				dest += size;
+				do {
+					*p++ = ' ';
+				} while (--size);
+				break;
+			}
+		} else {
+			*p++ = c;
+			dest++;
+			if (c == '\n')
+				dest = 0;
+			if (--size == 0)
+				break;
+		}
+	}
+	*dest_saved = dest;
+	*spaces_saved = spaces;
+	return p - buf;
 }
 
 /*----------------------------------------------------------------------*/
