@@ -65,7 +65,6 @@ int sflag;			/* -s: collect symbols */
 int tflag;			/* -t: treat typedefs, structs, unions, and enums. */
 int wflag;			/* -w: warning message */
 int vflag;			/* -v: verbose mode */
-int do_check;
 int show_version;
 int show_help;
 int debug;
@@ -136,7 +135,6 @@ help(void)
 }
 static struct option const long_options[] = {
 	{"begin-block", no_argument, NULL, 'b'},
-	{"check", no_argument, &do_check, 1},
 	{"define", no_argument, NULL, 'd'},
 	{"end-block", no_argument, NULL, 'e'},
 	{"no-tags", no_argument, NULL, 'n'},
@@ -206,10 +204,6 @@ main(int argc, char **argv)
 		version(NULL, vflag);
 	else if (show_help)
 		help();
-	else if (do_check) {
-		fprintf(stdout, "Part of GLOBAL\n");
-		exit(0);
-	}
 	/*
 	 * If langmap is not passed as argument, environment variable
 	 * GTAGSLANGMAP should be checked. Gtags(1) call gtags-parser
