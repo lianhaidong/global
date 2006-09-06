@@ -53,7 +53,7 @@ for p in `echo $prog`; do
 	done
 	case $found in
 	0)	echo "*** Program '$p' not found."
-		echo "Please install automake and autoconf."
+		echo "Please install `echo $p | sed 's/autoreconf/automake and autoconf/'`."
 		exit 1;;
 	esac
 done
