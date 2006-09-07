@@ -112,6 +112,7 @@ Q10. Does GLOBAL support multi-byte code set?
      Which character code set is supported?
 
 A10. GLOBAL doesn't support multi-byte character code set yet.
+     GLOBAL supports only ASCII and ASCII supersets.
 
 ----------------------------------------------------------------------------
 Q11. Can GLOBAL running on a UNIX machine treat source files
