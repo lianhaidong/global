@@ -702,42 +702,13 @@ put_end_of_line(int lineno)
  *	o)	sb	encoded URL
  *	i)	url	URL
  */
-static unsigned char urlchar[256];
-static void
-init_urlchar(void)
-{
-	int c;
-
-	for (c = 'A'; c <= 'Z'; c++)
-		urlchar[c] = 1;
-	for (c = 'a'; c <= 'z'; c++)
-		urlchar[c] = 1;
-	for (c = '0'; c <= '9'; c++)
-		urlchar[c] = 1;
-	urlchar['/'] = 1;
-	urlchar['-'] = 1;
-	urlchar['_'] = 1;
-	urlchar['.'] = 1;
-	urlchar['!'] = 1;
-	urlchar['~'] = 1;
-	urlchar['*'] = 1;
-	urlchar['\''] = 1;
-	urlchar['('] = 1;
-	urlchar[')'] = 1;
-}
 static void
 encode(STRBUF *sb, const char *url)
 {
 	int c;
-	static int init;
-
-	if (!init) {
-		init_urlchar();
-		init = 1;
-	}
 
 	while ((c = (unsigned char)*url++) != '\0') {
-		if (urlchar[c]) {
+		if (isurlchar(c)) {
 			strbuf_putc(sb, c);
 		} else {
 			strbuf_putc(sb, '%');

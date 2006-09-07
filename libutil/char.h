@@ -21,7 +21,18 @@
 #ifndef _CHAR_H_
 #define _CHAR_H_
 
-int isregexchar(int);
+extern const unsigned char chartype[256];
+
+#define REGEXCHAR		1
+#define URLCHAR			2
+#define test_chartype(c, t)	(chartype[(unsigned char)(c)] & (t))
+
+/* test whether or not regular expression char. */
+#define isregexchar(c)		test_chartype(c, REGEXCHAR)
+
+/* test whether can be included in URL without escaping. */
+#define isurlchar(c)		test_chartype(c, URLCHAR)
+
 int isregex(const char *);
 const char *quote_string(const char *);
 

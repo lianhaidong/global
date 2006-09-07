@@ -26,34 +26,25 @@
 #include "char.h"
 #include "strbuf.h"
 
-static char regexchar[256];
-static int init;
-
-#define ISREGEXCHAR(c)  (regexchar[(unsigned char)(c)])
-
-/* initialize for isregex() */
-static void
-initialize(void)
-{
-	regexchar['^'] = regexchar['$'] = regexchar['{'] =
-	regexchar['}'] = regexchar['('] = regexchar[')'] =
-	regexchar['.'] = regexchar['*'] = regexchar['+'] =
-	regexchar['['] = regexchar[']'] = regexchar['?'] =
-	regexchar['\\'] = init = 1;
-}
-/*
- * isregexchar: test whether or not regular expression char.
- *
- *	i)	c	char
- *	r)		1: is regex, 0: not regex
- */
-int
-isregexchar(int c)
-{
-	if (!init)
-		initialize();
-	return ISREGEXCHAR(c);
-}
+#define R	REGEXCHAR
+#define U	URLCHAR
+#define RU	REGEXCHAR | URLCHAR
+const unsigned char chartype[256] = {
+#if '\n' == 0x0a && ' ' == 0x20 && '0' == 0x30 \
+  && 'A' == 0x41 && 'a' == 0x61 && '!' == 0x21
+	/* ASCII */
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, U, 0, 0, R, 0, 0, U,RU,RU,RU, R, 0, U,RU, U,	/*  !"#$%&'()*+,-./ */
+	U, U, U, U, U, U, U, U, U, U, 0, 0, 0, 0, 0, R,	/* 0123456789:;<=>? */
+	0, U, U, U, U, U, U, U, U, U, U, U, U, U, U, U,	/* @ABCDEFGHIJKLMNO */
+	U, U, U, U, U, U, U, U, U, U, U, R, R, R, R, U,	/* PQRSTUVWXYZ[\]^_ */
+	0, U, U, U, U, U, U, U, U, U, U, U, U, U, U, U,	/* `abcdefghijklmno */
+	U, U, U, U, U, U, U, U, U, U, U, R, 0, R, U,	/* pqrstuvwxyz{|}~ */
+#else
+#error "Unsupported character encoding."
+#endif
+};
 /*
  * isregex: test whether or not regular expression
  *
@@ -65,10 +56,8 @@ isregex(const char *s)
 {
 	int c;
 
-	if (!init)
-		initialize();
 	while ((c = *s++) != '\0')
-		if (ISREGEXCHAR(c))
+		if (isregexchar(c))
 			return 1;
 	return 0;
 }
