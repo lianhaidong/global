@@ -223,7 +223,7 @@ read_file_detabing(char *buf, size_t size, FILE *ip,
 	int *dest_saved, int *spaces_saved)
 {
 	char *p;
-	int c, dest, spaces;
+	int c, dest, spaces, n;
 
 	if (size == 0)
 		return 0;
@@ -232,7 +232,7 @@ read_file_detabing(char *buf, size_t size, FILE *ip,
 	spaces = *spaces_saved;
 	if (spaces > 0)
 		goto put_spaces;
-	for (;;) {
+	do {
 		c = getc(ip);
 		if (c == EOF) {
 			if (ferror(ip))
@@ -242,29 +242,21 @@ read_file_detabing(char *buf, size_t size, FILE *ip,
 		if (c == '\t') {
 			spaces = tabs - dest % tabs;
 put_spaces:
-			if (spaces < size) {
-				size -= spaces;
-				dest += spaces;
-				do {
-					*p++ = ' ';
-				} while (--spaces);
-			} else {
-				spaces -= size;
-				dest += size;
-				do {
-					*p++ = ' ';
-				} while (--size);
-				break;
-			}
+			n = (spaces < size) ? spaces : size;
+			dest += n;
+			size -= n;
+			spaces -= n;
+			do {
+				*p++ = ' ';
+			} while (--n);
 		} else {
 			*p++ = c;
 			dest++;
 			if (c == '\n')
 				dest = 0;
-			if (--size == 0)
-				break;
+			size--;
 		}
-	}
+	} while (size > 0);
 	*dest_saved = dest;
 	*spaces_saved = spaces;
 	return p - buf;
