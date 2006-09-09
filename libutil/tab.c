@@ -27,6 +27,20 @@
 #include "die.h"
 #include "tab.h"
 
+/*
+ * Puct and getc are very slow on some platforms including GNU/Linux.
+ * Because GLOBAL does not have multi-threaded program,
+ * they can be replaced with non thread safe version.
+ */
+#ifdef HAVE_PUTC_UNLOCKED
+#undef putc
+#define putc	putc_unlocked
+#endif
+#ifdef HAVE_GETC_UNLOCKED
+#undef getc
+#define getc	getc_unlocked
+#endif
+
 static int tabs = 8;
 
 #define TABPOS(i)	((i)%tabs == 0)

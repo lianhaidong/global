@@ -37,15 +37,6 @@
 #include "path2url.h"
 #include "htags.h"
 
-#ifdef HAVE_PUTC_UNLOCKED
-#undef putc
-#define putc	putc_unlocked
-#endif
-#ifdef HAVE_GETC_UNLOCKED
-#undef getc
-#define getc	getc_unlocked
-#endif
-
 /*----------------------------------------------------------------------*/
 /* Parser switch							*/
 /*----------------------------------------------------------------------*/
