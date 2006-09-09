@@ -21,6 +21,7 @@
 #define _LEXCOMMON_H
 
 #include "incop.h"
+#include "tab.h"
 
 /*
  * Definition of LEXTEXT, LEXLENG, LEXIN and LEXRESTART.
@@ -57,7 +58,7 @@ static int begin_line;
 static int newline_terminate_string = 0;
 
 /*
- * Convert tabs to spaces.
+ * Variables for converting tabs to spaces.
  */
 static int dest_column;
 static int left_spaces;
@@ -135,7 +136,6 @@ static int left_spaces;
  */
 extern void echoc(int);
 extern void echos(const char *);
-extern size_t read_file_detabing(char *, size_t, FILE *, int *, int *);
 extern const char *generate_guide(int);
 extern void put_anchor(char *, int, int);
 extern void put_include_anchor(struct data *, const char *);

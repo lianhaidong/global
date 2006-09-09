@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1996, 1997, 1998, 1999, 2000
+ * Copyright (c) 1996, 1997, 1998, 1999, 2000, 2006
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -22,8 +22,11 @@
 #ifndef _TAB_H_
 #define _TAB_H_
 
+#include <stdio.h>
+
 void settabs(int);
 void detab(FILE *, const char *);
 void entab(char *);
+size_t read_file_detabing(char *, size_t, FILE *, int *, int *);
 
 #endif /* ! _TAB_H_ */

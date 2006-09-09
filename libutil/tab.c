@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1996, 1997, 1998, 1999, 2000
+ * Copyright (c) 1996, 1997, 1998, 1999, 2000, 2006
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -104,4 +104,59 @@ entab(char *buf)
 		while (blanks--)
 			buf[dst++] = ' ';
 	buf[dst] = 0;
+}
+/*
+ * Read file converting tabs into spaces.
+ *
+ *	o)	buf	
+ *	i)	size	size of 'buf'
+ *	i)	ip	input file
+ *	o)	dest_saved	current column in 'buf'
+ *	o)	spaces_saved	left spaces
+ *	r)		size of data
+ *
+ * Dest_saved and spaces_saved are control variables.
+ * You must initialize them with 0 when the input file is opened.
+ */
+size_t
+read_file_detabing(char *buf, size_t size, FILE *ip, int *dest_saved, int *spaces_saved)
+{
+	char *p;
+	int c, dest, spaces, n;
+
+	if (size == 0)
+		return 0;
+	p = buf;
+	dest = *dest_saved;
+	spaces = *spaces_saved;
+	if (spaces > 0)
+		goto put_spaces;
+	do {
+		c = getc(ip);
+		if (c == EOF) {
+			if (ferror(ip))
+				die("read error.");
+			break;
+		}
+		if (c == '\t') {
+			spaces = tabs - dest % tabs;
+put_spaces:
+			n = (spaces < size) ? spaces : size;
+			dest += n;
+			size -= n;
+			spaces -= n;
+			do {
+				*p++ = ' ';
+			} while (--n);
+		} else {
+			*p++ = c;
+			dest++;
+			if (c == '\n')
+				dest = 0;
+			size--;
+		}
+	} while (size > 0);
+	*dest_saved = dest;
+	*spaces_saved = spaces;
+	return p - buf;
 }
