@@ -1510,6 +1510,7 @@ main(int argc, char **argv)
 
 	if (debug)
 		setdebug();
+	settabs(tabs);					/* setup tab skip */
         if (qflag) {
                 setquiet();
 		vflag = 0;
