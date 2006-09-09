@@ -160,3 +160,35 @@ put_spaces:
 	*spaces_saved = spaces;
 	return p - buf;
 }
+/*
+ * detab_replacing: convert tabs into spaces and print with replacing.
+ *
+ *	i)	op	FILE *
+ *	i)	buf	string including tabs
+ *	i)	replace	replacing function
+ */
+void
+detab_replacing(FILE *op, const char *buf, const char *(*replace)(int c))
+{
+	int dst, spaces;
+	int c;
+
+	dst = 0;
+	while ((c = *buf++) != '\0') {
+		if (c == '\t') {
+			spaces = tabs - dst % tabs;
+			dst += spaces;
+			do {
+				putc(' ', op);
+			} while (--spaces);
+		} else {
+			const char *s = replace(c);
+			if (s)
+				fputs(s, op);
+			else
+				putc(c, op);
+			dst++;
+		}
+	}
+	putc('\n', op);
+}

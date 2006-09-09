@@ -219,6 +219,20 @@ echos(const char *s)
 /* HTML output								*/
 /*----------------------------------------------------------------------*/
 /*
+ * Quote character with HTML's way.
+ */
+static const char *
+HTML_quoting(int c)
+{
+	if (c == '<')
+		return quote_little;
+	else if (c == '>')
+		return quote_great;
+	else if (c == '&')
+		return quote_amp;
+	return NULL;
+}
+/*
  * fill_anchor: fill anchor into file name
  *
  *       i)      $root   root or index page
@@ -547,13 +561,11 @@ missing_left(const char *word, int lineno)
 void
 put_char(int c)
 {
-        if (c == '<')
-		strbuf_puts(outbuf, quote_little);
-        else if (c == '>')
-		strbuf_puts(outbuf, quote_great);
-        else if (c == '&')
-		strbuf_puts(outbuf, quote_amp);
-        else
+	const char *quoted = HTML_quoting(c);
+
+	if (quoted)
+		strbuf_puts(outbuf, quoted);
+	else
 		strbuf_putc(outbuf, c);
 }
 /*
@@ -706,40 +718,6 @@ get_cvs_module(const char *file, const char **basename)
 	return NULL;
 }
 /*
- * detab_quoting: convert tabs into spaces and print with HTML quoting
- *
- *	i)	op	FILE *
- *	i)	buf	string including tabs
- */
-static void
-detab_quoting(FILE *op, const char *buf)
-{
-	int dst, spaces;
-	int c;
-
-	dst = 0;
-	while ((c = *buf++) != '\0') {
-		if (c == '\t') {
-			spaces = tabs - dst % tabs;
-			dst += spaces;
-			do {
-				putc(' ', op);
-			} while (--spaces);
-		} else {
-			if (c == '&')
-				fputs(quote_amp, op);
-			else if (c == '<')
-				fputs(quote_little, op);
-			else if (c == '>')
-				fputs(quote_great, op);
-			else
-				putc(c, op);
-			dst++;
-		}
-	}
-	putc('\n', op);
-}
-/*
  *
  * src2html: convert source code into HTML
  *
@@ -821,7 +799,7 @@ src2html(const char *src, const char *html, int notsource)
 		last_lineno = 0;
 		while ((_ = strbuf_fgets(sb, in, STRBUF_NOCRLF)) != NULL) {
 			fputs(gen_name_number(++last_lineno), out);
-			detab_quoting(out, _);
+			detab_replacing(out, _, HTML_quoting);
 		}
 		fputs_nl(verbatim_end, out);
 		strbuf_close(sb);
