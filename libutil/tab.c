@@ -24,6 +24,7 @@
 #endif
 #include <stdio.h>
 
+#include "die.h"
 #include "tab.h"
 
 static int tabs = 8;
