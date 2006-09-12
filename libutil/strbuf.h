@@ -43,8 +43,6 @@
 # endif
 #endif
 
-/* #define STRBUF_LINK */
-
 #define INITIALSIZE 80
 #define EXPANDSIZE 80
 
@@ -53,10 +51,6 @@
 #define STRBUF_NOCRLF	2
 
 typedef struct _strbuf {
-#ifdef STRBUF_LINK
-	struct _strbuf *next;
-	struct _strbuf *prev;
-#endif
 	char *name;
 	char *sbuf;
 	char *endp;
@@ -135,10 +129,5 @@ void strbuf_sprintf(STRBUF *sb, const char *s, ...)
 	__attribute__ ((__format__ (__printf__, 2, 3)));
 STRBUF *strbuf_open_tempbuf(void);
 void strbuf_release_tempbuf(STRBUF *);
-#ifdef STRBUF_LINK
-void strbuf_setname(STRBUF *, const char *);
-STRBUF *strbuf_getbuf(const char *);
-void strbuf_closeall(void);
-#endif
 
 #endif /* ! _STRBUF_H */

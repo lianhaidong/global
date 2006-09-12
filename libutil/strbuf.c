@@ -87,34 +87,6 @@ print_and_abort(void)
 	die("short of memory.");
 }
 
-#ifdef STRBUF_LINK
-STRBUF	top;
-/*
- * strbuf_dump: dump string buffers
- */
-void
-strbuf_dump(const char *msg)
-{
-	STRBUF *sb;
-	int i = 0;
-	long total = 0, used = 0;
-
-	fprintf(stderr, "[%s/%s]\n", progname, msg);
-	for (sb = top.next; sb && sb != &top; sb = sb->next) {
-		char *p = strbuf_value(sb);
-		char *end = p + strbuf_getlen(sb);
-
-		*sb->curp = 0;
-		fprintf(stderr, "(%d)\tsize=%d used=%d ", ++i, sb->sbufsize, strbuf_getlen(sb));
-		total += sb->sbufsize;
-		used += strbuf_getlen(sb);
-		for (; p < end; p += strlen(p) + 1)
-			fprintf(stderr, "[%s]", p);
-		fputc('\n', stderr);
-	}
-	fprintf(stderr, "Total %ld bytes, used %ld bytes\n", total, used);
-}
-#endif
 /*
  * __strbuf_expandbuf: expand buffer so that afford to the length data at least.
  *
@@ -154,17 +126,6 @@ strbuf_open(int init)
 	sb->curp = sb->sbuf;
 	sb->endp = sb->sbuf + sb->sbufsize;
 
-#ifdef STRBUF_LINK
-	if (top.next == NULL) {
-		top.next = top.prev = sb;
-		sb->next = sb->prev = &top;
-	} else {
-		sb->next = &top;
-		sb->prev = top.prev;
-		top.prev->next = sb;
-		top.prev = sb;
-	}
-#endif
 	return sb;
 }
 /*
@@ -471,10 +432,6 @@ strbuf_sprintf(STRBUF *sb, const char *s, ...)
 void
 strbuf_close(STRBUF *sb)
 {
-#ifdef STRBUF_LINK
-	sb->prev->next = sb->next;
-	sb->next->prev = sb->prev;
-#endif
 	if (sb->name)
 		(void)free(sb->name);
 	(void)free(sb->sbuf);
@@ -509,50 +466,3 @@ strbuf_release_tempbuf(STRBUF *sb)
 {
 	used = 0;
 }
-#ifdef STRBUF_LINK
-/*
- * strbuf_setname: set name to specified string buffer.
- *
- *	i)	sb	STRBUF structure
- *	i)	name	name
- */
-void
-strbuf_setname(STRBUF  *sb, const char *name)
-{
-	char *p = strdup(name);
-	if (p == NULL) {
-		(*strbuf_alloc_failed_handler)();
-		sb->alloc_failed = 1;
-		return;
-	}
-	if (sb->name)
-		(void)free(sb->name);
-	sb->name = p;
-}
-/*
- * strbuf_getbuf: get named buffer
- *
- *	i)	name	name of buffer
- *	r)		STRBUF structure
- */
-STRBUF *
-strbuf_getbuf(const char *name)
-{
-	STRBUF *sb;
-
-	for (sb = top.next; sb && sb != &top; sb = sb->next)
-		if (sb->name && !strcmp(name, sb->name))
-			return sb;
-	return NULL;
-}
-/*
- * strbuf_closeall: close all string buffer.
- */
-void
-strbuf_closeall(void)
-{
-	while (top.next != &top)
-		strbuf_close(top.next);
-	top.next = top.prev = NULL;
-}
-#endif /* STRBUF_LINK */
