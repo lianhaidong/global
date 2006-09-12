@@ -188,7 +188,6 @@ strhash_next(STRHASH *sh)
 void
 strhash_reset(STRHASH *sh)
 {
-	struct sh_entry *entry;
 	int i;
 
 	/*
