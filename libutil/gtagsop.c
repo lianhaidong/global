@@ -100,6 +100,18 @@ static const char *genrecord_compact(GTOP *);
  * GLOBAL-5.0 -		support format version only 4.
  *                      if (format > 4 || format < 4)
  *			then print error message.
+ *
+ * In GLOBAL-5.0, we threw away the compatibility with the past formats.
+ * Though we could continue the support for older formats, it seemed
+ * not to be worthy. Because keeping maintaining the all formats hinders
+ * new optimization and the function addition in the future.
+ * Instead, the following error messages are displayed in a wrong usage.
+ *       [older global and new tag file]
+ *       $ global -x main
+ *       GTAGS seems new format. Please install the latest GLOBAL.
+ *       [new global and older tag file]
+ *       $ global -x main
+ *       GTAGS seems older format. Please remake tag files.
  */
 static int support_version = 4;	/* acceptable format version   */
 static const char *tagslist[] = {"GPATH", "GTAGS", "GRTAGS", "GSYMS"};
