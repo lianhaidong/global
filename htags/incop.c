@@ -56,7 +56,7 @@ static STRHASH *head_inc;
 void
 init_inc(void)
 {
-	head_inc = strhash_open(1024, NULL);
+	head_inc = strhash_open(1024);
 }
 /*
  * put_inc: put include file.

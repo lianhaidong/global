@@ -35,7 +35,6 @@ typedef struct {
 	int buckets;			/* number of buckets		*/
 	struct sh_head *htab;		/* hash buckets			*/
 	struct obstack pool;		/* memory pool for obstack	*/
-	void (*freefunc)(void *);
 	/*
 	 * iterator
 	 */
@@ -43,8 +42,9 @@ typedef struct {
 	int cur_bucket;
 } STRHASH;
 
-STRHASH *strhash_open(int, void (*)(void *));
+STRHASH *strhash_open(int);
 struct sh_entry *strhash_assign(STRHASH *, const char *, int);
+char * strhash_strdup(STRHASH *, const char *, int);
 struct sh_entry *strhash_first(STRHASH *);
 struct sh_entry *strhash_next(STRHASH *);
 void strhash_reset(STRHASH *);

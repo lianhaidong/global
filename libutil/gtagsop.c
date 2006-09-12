@@ -218,7 +218,7 @@ gtags_open(const char *dbpath, const char *root, int db, int mode)
 			gtop->ib = strbuf_open(MAXBUFLEN);
 		else {
 			gtop->sb = strbuf_open(0);
-			gtop->pool = strhash_open(HASHBUCKETS, NULL);
+			gtop->pool = strhash_open(HASHBUCKETS);
 		}
 	} else if (gtop->mode != GTAGS_READ)
 		gtop->sb = strbuf_open(0);

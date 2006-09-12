@@ -35,7 +35,7 @@
 
 String Hash (associative array): usage and memory status
 
-hash = strhash_open(10, free);			// allocate hash buckets.
+hash = strhash_open(10);			// allocate hash buckets.
 
 entry = strhash_assign(hash, "name1", 0);	// get entry for the name.
 
@@ -79,11 +79,10 @@ strhash_close(hash);				// free resources.
  * strhash_open: open string hash table.
  *
  *	i)	buckets	 size of bucket table
- *	i)	freefunc free function for sh->value
  *	r)	sh	STRHASH structure
  */
 STRHASH *
-strhash_open(int buckets, void (*freefunc)(void *))
+strhash_open(int buckets)
 {
 	STRHASH *sh = (STRHASH *)check_malloc(sizeof(STRHASH));
 	int i;
@@ -91,7 +90,6 @@ strhash_open(int buckets, void (*freefunc)(void *))
 	sh->htab = (struct sh_head *)check_malloc(sizeof(struct sh_head) * buckets);
 	for (i = 0; i < buckets; i++)
 		SLIST_INIT(&sh->htab[i]);
-	sh->freefunc = freefunc;
 	sh->buckets = buckets;
 	obstack_init(&sh->pool);
 	return sh;
@@ -130,6 +128,22 @@ strhash_assign(STRHASH *sh, const char *name, int force)
 		SLIST_INSERT_HEAD(head, entry, ptr);
 	}
 	return entry;
+}
+/*
+ * strhash_strdup: allocate memory and copy string.
+ *
+ *	i)	sh	STRHASH structure
+ *	i)	string	string
+ *	i)	size	size of string
+ *	r)		allocated string
+ *
+ */
+char *
+strhash_strdup(STRHASH *sh, const char *string, int size)
+{
+	if (size == 0)
+		size = strlen(string);
+	return obstack_copy0(&sh->pool, string, size);
 }
 /*
  * strhash_first: get first entry
@@ -178,13 +192,6 @@ strhash_reset(STRHASH *sh)
 	int i;
 
 	/*
-	 * Free user memory if freefunc is specified.
-	 */
-	if (sh->freefunc)
-		for (entry = strhash_first(sh); entry; entry = strhash_next(sh))
-			if (entry->value)
-				sh->freefunc(entry->value);
-	/*
 	 * Free and reinitialize entries for each bucket.
 	 */
 	for (i = 0; i < sh->buckets; i++) {
@@ -201,7 +208,6 @@ strhash_reset(STRHASH *sh)
 void
 strhash_close(STRHASH *sh)
 {
-	strhash_reset(sh);
 	obstack_free(&sh->pool, NULL);
 	free(sh->htab);
 	free(sh);

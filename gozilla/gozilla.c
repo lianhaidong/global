@@ -110,7 +110,7 @@ load_alias(void)
 	int flag = STRBUF_NOCRLF;
 	struct sh_entry *ent;
 
-	sh = strhash_open(10, free);
+	sh = strhash_open(10);
 	if (!(p = get_home_directory()))
 		goto end;
 	if (!test("r", makepath(p, gozillarc, NULL)))
