@@ -95,7 +95,7 @@ Silas S. Brown		proofreading about manuals.
 Sven Verdoolaege	support for gtags.pl(nvi-1.81.5).
 Steve Kirkendall	two commands of Elvis for external tag system.
 Takao Yamashita		advice about assembly parsing.
-Takeshi Hojo		idea about -c option of gtags(1).
+Takeshi Hojo		idea about compact format of gtags(1).
 Tero Saarni		bug report about long line problem of htags(1).
 Thomas Gerigk		bug report about skip variable in gtags.conf.
 Thomas Klausner		report about groff's command error of *.1.
