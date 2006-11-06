@@ -138,12 +138,12 @@
 		Verbose mode.
 	@item{@option{-w}, @option{--warning}}
 		Print warning messages.
-	@item{@option{-x}, @option{--xhtml}}
+	@item{@option{-x}, @option{--xhtml} [@arg{version}]}
 		Generate XHTML hypertext instead of HTML.
 		If the @option{--frame} option is specified then
 		generate XHTML-1.0 Frameset for index.html
 		and generate XHTML-1.0 Transitional for other files,
-		else if config variable
+		else if @arg{version} is @code{1.1} or config variable
 		@code{xhtml_version} is set to @code{1.1} then generate
 		XHTML-1.1 else XHTML 1.0 Transitional.
 	@item{@arg{dir}}

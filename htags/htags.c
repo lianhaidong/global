@@ -255,7 +255,7 @@ static struct option const long_options[] = {
         {"title", required_argument, NULL, 't'},
         {"verbose", no_argument, NULL, 'v'},
         {"warning", no_argument, NULL, 'w'},
-        {"xhtml", no_argument, NULL, 'x'},
+        {"xhtml", optional_argument, &enable_xhtml, 1},
 
         /* long name only */
         {"action", required_argument, NULL, 1},
@@ -1448,6 +1448,17 @@ main(int argc, char **argv)
 					tabs = n;
 			} else if (!strcmp("table-list", long_options[option_index].name))
 				table_list = 1;	
+			else if (!strcmp("xhtml", long_options[option_index].name)) {
+				enable_xhtml = 1;
+				if (optarg) {
+					if (!strcmp("1.0", optarg))
+						xhtml_version = optarg;
+					else if (!strcmp("1.1", optarg))
+						xhtml_version = optarg;
+					else
+						die("The option value of --xhtml must be '1.0' or '1.1'.");
+				}
+			}
                         break;
                 case 'a':
                         aflag++;
