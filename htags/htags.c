@@ -244,11 +244,14 @@ static struct option const long_options[] = {
         {"func-header", no_argument, NULL, 'h'},
         {"icon", no_argument, NULL, 'I'},
         {"main-func", required_argument, NULL, 'm'},
+        {"ncol", required_argument, NULL, 1},
         {"line-number", no_argument, NULL, 'n'},
         {"other", no_argument, NULL, 'o'},
         {"symbol", no_argument, NULL, 's'},
         {"secure-cgi", required_argument, NULL, 'S'},
         {"table-flist", optional_argument, NULL, 'T'},
+        {"table-list", no_argument, NULL, 1},
+        {"tabs", required_argument, NULL, 1},
         {"title", required_argument, NULL, 't'},
         {"verbose", no_argument, NULL, 'v'},
         {"warning", no_argument, NULL, 'w'},
@@ -260,6 +263,8 @@ static struct option const long_options[] = {
         {"cvsweb-cvsroot", required_argument, NULL, 1},
         {"caution", no_argument, &caution, 1},
         {"debug", no_argument, &debug, 1},
+        {"disable-grep", no_argument, NULL, 1},
+        {"full-path", no_argument, NULL, 1},
         {"gtagsconf", required_argument, NULL, 1},
         {"gtagslabel", required_argument, NULL, 1},
         {"id", required_argument, NULL, 1},
@@ -1388,6 +1393,7 @@ main(int argc, char **argv)
 	const char *index = NULL;
 	int optchar;
         int option_index = 0;
+	int n;		/* work variable for numeric argument */
 	time_t start_time, end_time, start_all_time, end_all_time,
 		T_makedupindex, T_makedefineindex, T_makefileindex,
 		T_makeincludeindex, T_makehtml, T_all;
@@ -1418,14 +1424,30 @@ main(int argc, char **argv)
                                 cvsweb_url = optarg;
 			else if (!strcmp("cvsweb-cvsroot", long_options[option_index].name))
                                 cvsweb_cvsroot = optarg;
+			else if (!strcmp("disable-grep", long_options[option_index].name))
+				enable_grep = 0;
+			else if (!strcmp("full-path", long_options[option_index].name))
+				full_path = 1;
 			else if (!strcmp("gtagsconf", long_options[option_index].name))
 				;	/*  --gtagsconf is estimated only once. */
 			else if (!strcmp("gtagslabel", long_options[option_index].name))
 				;	/* --gtagslabel is estimated only once. */
+			else if (!strcmp("ncol", long_options[option_index].name)) {
+				if (!isdigit(*optarg))
+					die("--ncol option requires numeric value.");
+				if ((n = atoi(optarg)) > 0)
+					ncol = n;
 			else if (!strcmp("insert-header", long_options[option_index].name))
 				insert_header = optarg;
 			else if (!strcmp("insert-footer", long_options[option_index].name))
 				insert_footer = optarg;
+			} else if (!strcmp("tabs", long_options[option_index].name)) {
+				if (!isdigit(*optarg))
+					die("--tabs option requires numeric value.");
+				if ((n = atoi(optarg)) > 0)
+					tabs = n;
+			} else if (!strcmp("table-list", long_options[option_index].name))
+				table_list = 1;	
                         break;
                 case 'a':
                         aflag++;

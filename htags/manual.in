@@ -23,7 +23,7 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	HTAGS,1,July 2006,GNU Project
+@HEADER	HTAGS,1,November 2006,GNU Project
 @NAME	htags - generate hypertext from source code.
 @SYNOPSIS
 	@name{htags} [-acDfFghInosTvwx][-d @arg{dbpath}][-m @arg{name}][-S @arg{cgidir}][-t @arg{title}][@arg{dir}]
@@ -79,6 +79,9 @@
 		the hypertext from the source directroy.
 	@item{@option{-F}, @option{--frame}}
 		Use frame for each part of the contents.
+	@item{@option{--full-path}}
+		List file names with full path in file index.
+		By default, list just the last component of a path.
 	@item{@option{-g}, @option{--gtags}}
 		Execute @xref{gtags,1} before creating hypertext.
 		The @option{-v}, @option{-w} and @arg{dbpath} are passed to @name{gtags}.
@@ -87,6 +90,8 @@
 		By default, @name{htags} doesn't generates it.
 	@item{@option{-I}, @option{--icon}}
 		Use icons instead of text for some links.
+	@item{@option{--disable-grep}}
+		Disable grep in search form(-f,--form).
 	@item{@option{--gtagsconf} @arg{file}}
 		Load user's configuration from @arg{file}.
 	@item{@option{--gtagslabel} @arg{label}}
@@ -103,6 +108,8 @@
 	@item{@option{--no-map-file}}
 		Doesn't generate @file{MAP} and @file{FILEMAP} file.
 		By default, @name{htags} generates them.
+	@item{@option{--ncol @arg{number}}}
+		Columns of line number. The default is 4.
 	@item{@option{-o}, @option{--other}}
 		Pick up not only source files but also other files except for
 		binary files.
@@ -123,6 +130,10 @@
 	@item{@option{-T}, @option{--table-flist} [@arg{fields}]}
 		Generate file list using <table> tag.
 		The @arg{fields} is used for field number in a line. The default is 5.
+	@item{@option{--table-list}}
+		List tags using <table> tag.
+	@item{@option{--tabs @arg{number}}}
+		Tab stop. The default is 8.
 	@item{@option{-v}, @option{--verbose}}
 		Verbose mode.
 	@item{@option{-w}, @option{--warning}}
