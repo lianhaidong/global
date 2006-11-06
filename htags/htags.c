@@ -109,7 +109,6 @@ int symbol;				/* --symbol(-s) option          */
 int statistics;				/* --statistics option		*/
 
 int copy_files;				/* 1: copy tag files		*/
-int no_map_file;			/* 1: doesn't make map file	*/
 int no_order_list;			/* 1: doesn't use order list	*/
 int other_files;			/* 1: list other files		*/
 int enable_grep = 1;			/* 1: enable grep		*/
@@ -234,47 +233,66 @@ const char *include_file_suffixes = "h,hxx,hpp,H,inc.php";
 static const char *langmap = DEFAULTLANGMAP;
 
 static struct option const long_options[] = {
+	/*
+	 * These options have long name and short name.
+	 * We throw them to the processing of short options.
+	 */
         {"alphabet", no_argument, NULL, 'a'},
         {"compact", no_argument, NULL, 'c'},
-        {"dynamic", no_argument, NULL, 'D'},
         {"dbpath", required_argument, NULL, 'd'},
+        {"dynamic", no_argument, NULL, 'D'},
         {"form", no_argument, NULL, 'f'},
         {"frame", no_argument, NULL, 'F'},
-        {"gtags", no_argument, NULL, 'g'},
         {"func-header", no_argument, NULL, 'h'},
+        {"gtags", no_argument, NULL, 'g'},
         {"icon", no_argument, NULL, 'I'},
-        {"main-func", required_argument, NULL, 'm'},
-        {"ncol", required_argument, NULL, 1},
         {"line-number", no_argument, NULL, 'n'},
+        {"main-func", required_argument, NULL, 'm'},
         {"other", no_argument, NULL, 'o'},
-        {"symbol", no_argument, NULL, 's'},
         {"secure-cgi", required_argument, NULL, 'S'},
+        {"symbol", no_argument, NULL, 's'},
         {"table-flist", optional_argument, NULL, 'T'},
-        {"table-list", no_argument, NULL, 1},
-        {"tabs", required_argument, NULL, 1},
         {"title", required_argument, NULL, 't'},
         {"verbose", no_argument, NULL, 'v'},
         {"warning", no_argument, NULL, 'w'},
-        {"xhtml", optional_argument, &enable_xhtml, 1},
+        {"xhtml", optional_argument, NULL, 'x'},
 
-        /* long name only */
-        {"action", required_argument, NULL, 1},
-        {"cvsweb", required_argument, NULL, 1},
-        {"cvsweb-cvsroot", required_argument, NULL, 1},
+        /*
+	 * The following are long name only.
+	 */
+	/* flag value */
         {"caution", no_argument, &caution, 1},
         {"debug", no_argument, &debug, 1},
-        {"disable-grep", no_argument, NULL, 1},
-        {"full-path", no_argument, NULL, 1},
-        {"gtagsconf", required_argument, NULL, 1},
-        {"gtagslabel", required_argument, NULL, 1},
-        {"id", required_argument, NULL, 1},
-        {"nocgi", no_argument, NULL, 1},
-        {"no-map-file", no_argument, &no_map_file, 1},
-        {"insert-header", required_argument, NULL, 1},
-        {"insert-footer", required_argument, NULL, 1},
+        {"disable-grep", no_argument, &enable_grep, 0},
+        {"full-path", no_argument, &full_path, 1},
+        {"nocgi", no_argument, &cgi, 0},
+        {"no-map-file", no_argument, &map_file, 0},
         {"statistics", no_argument, &statistics, 1},
+        {"table-list", no_argument, &table_list, 1},
         {"version", no_argument, &show_version, 1},
         {"help", no_argument, &show_help, 1},
+
+	/* accept value */
+#define OPT_ACTION		128
+#define OPT_CVSWEB		129
+#define OPT_CVSWEB_CVSROOT	130
+#define OPT_GTAGSCONF		131
+#define OPT_GTAGSLABEL		132
+#define OPT_NCOL		133
+#define OPT_ID			134
+#define OPT_INSERT_FOOTER	135
+#define OPT_INSERT_HEADER	136
+#define OPT_TABS		137
+        {"action", required_argument, NULL, OPT_ACTION},
+        {"cvsweb", required_argument, NULL, OPT_CVSWEB},
+        {"cvsweb-cvsroot", required_argument, NULL, OPT_CVSWEB_CVSROOT},
+        {"gtagsconf", required_argument, NULL, OPT_GTAGSCONF},
+        {"gtagslabel", required_argument, NULL, OPT_GTAGSLABEL},
+        {"ncol", required_argument, NULL, OPT_NCOL},
+        {"id", required_argument, NULL, OPT_ID},
+        {"insert-footer", required_argument, NULL, OPT_INSERT_FOOTER},
+        {"insert-header", required_argument, NULL, OPT_INSERT_HEADER},
+        {"tabs", required_argument, NULL, OPT_TABS},
         { 0 }
 };
 
@@ -1105,7 +1123,7 @@ configuration(int argc, char **argv)
 	if (getconfb("copy_files"))
 		copy_files = 1;
 	if (getconfb("no_map_file"))
-		no_map_file = 1;
+		map_file = 0;
 	strbuf_reset(sb);
 	if (getconfs("icon_spec", sb))
 		icon_spec = check_strdup(strbuf_value(sb));
@@ -1412,53 +1430,41 @@ main(int argc, char **argv)
 
 	while ((optchar = getopt_long(argc, argv, "acd:DfFghIm:noqsS:t:Tvwx", long_options, &option_index)) != EOF) {
 		switch (optchar) {
-                case 0:
-                case 1:
-			if (!strcmp("action", long_options[option_index].name))
-                                action_value = optarg;
-			else if (!strcmp("nocgi", long_options[option_index].name))
-                                cgi = 0;
-			else if (!strcmp("id", long_options[option_index].name))
-                                id_value = optarg;
-			else if (!strcmp("cvsweb", long_options[option_index].name))
-                                cvsweb_url = optarg;
-			else if (!strcmp("cvsweb-cvsroot", long_options[option_index].name))
-                                cvsweb_cvsroot = optarg;
-			else if (!strcmp("disable-grep", long_options[option_index].name))
-				enable_grep = 0;
-			else if (!strcmp("full-path", long_options[option_index].name))
-				full_path = 1;
-			else if (!strcmp("gtagsconf", long_options[option_index].name))
-				;	/*  --gtagsconf is estimated only once. */
-			else if (!strcmp("gtagslabel", long_options[option_index].name))
-				;	/* --gtagslabel is estimated only once. */
-			else if (!strcmp("ncol", long_options[option_index].name)) {
-				if (!isdigit(*optarg))
-					die("--ncol option requires numeric value.");
-				if ((n = atoi(optarg)) > 0)
-					ncol = n;
-			else if (!strcmp("insert-header", long_options[option_index].name))
-				insert_header = optarg;
-			else if (!strcmp("insert-footer", long_options[option_index].name))
-				insert_footer = optarg;
-			} else if (!strcmp("tabs", long_options[option_index].name)) {
-				if (!isdigit(*optarg))
-					die("--tabs option requires numeric value.");
-				if ((n = atoi(optarg)) > 0)
-					tabs = n;
-			} else if (!strcmp("table-list", long_options[option_index].name))
-				table_list = 1;	
-			else if (!strcmp("xhtml", long_options[option_index].name)) {
-				enable_xhtml = 1;
-				if (optarg) {
-					if (!strcmp("1.0", optarg))
-						xhtml_version = optarg;
-					else if (!strcmp("1.1", optarg))
-						xhtml_version = optarg;
-					else
-						die("The option value of --xhtml must be '1.0' or '1.1'.");
-				}
-			}
+		case 0:
+			/* already flags set */
+			break;
+		case OPT_ACTION:
+			action_value = optarg;
+			break;
+		case OPT_CVSWEB:
+			cvsweb_url = optarg;
+			break;
+		case OPT_CVSWEB_CVSROOT:
+			cvsweb_cvsroot = optarg;
+			break;
+		case OPT_GTAGSCONF:	/* --gtagsconf is estimated only once. */
+		case OPT_GTAGSLABEL:	/* --gtagslabel is estimated only once. */
+			break;
+		case OPT_NCOL:
+			if (atoi(optarg) > 0)
+				ncol = atoi(optarg);
+			else
+				die("--ncol option requires numeric value.");
+			break;
+		case OPT_ID:
+			id_value = optarg;
+			break;
+		case OPT_INSERT_FOOTER:
+			insert_footer = optarg;
+			break;
+		case OPT_INSERT_HEADER:
+			insert_header = optarg;
+			break;
+		case OPT_TABS:
+			if (atoi(optarg) > 0)
+				tabs = atoi(optarg);
+			else
+				die("--tabs option requires numeric value.");
                         break;
                 case 'a':
                         aflag++;
@@ -1506,8 +1512,12 @@ main(int argc, char **argv)
                         break;
                 case 'T':
 			table_flist = 1;
-			if (optarg && atoi(optarg) > 0)
-				flist_fields = atoi(optarg);
+			if (optarg) {
+				if (atoi(optarg) > 0)
+					flist_fields = atoi(optarg);
+				else
+					die("The option value of the --table-flist must be numeric.");
+			}
                         break;
                 case 't':
 			title = optarg;
@@ -1524,6 +1534,12 @@ main(int argc, char **argv)
                         break;
 		case 'x':
 			enable_xhtml = 1;
+			if (optarg) {
+				if (!strcmp("1.0", optarg) || !strcmp("1.1", optarg))
+					xhtml_version = optarg;
+				else
+					die("The option value of the --xhtml must be '1.0' or '1.1'.");
+			}
                         break;
                 default:
                         usage();
@@ -1534,8 +1550,6 @@ main(int argc, char **argv)
 		die("page header file '%s' not found.", insert_header);
 	if (insert_footer && !test("fr", insert_footer))
 		die("page footer file '%s' not found.", insert_footer);
-	if (no_map_file)
-		map_file = 0;
         argc -= optind;
         argv += optind;
         if (!av)

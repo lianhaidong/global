@@ -88,7 +88,6 @@ extern int dynamic;
 extern int symbol;
 extern int statistics;
 
-extern int no_map_file;
 extern int no_order_list;
 extern int other_files;
 extern int enable_grep;
