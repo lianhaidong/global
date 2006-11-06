@@ -73,10 +73,10 @@ int max_args;
 int show_version;
 int show_help;
 int show_config;
-int gtagsconf;
-int gtagslabel;
+char *gtagsconf;
+char *gtagslabel;
 int debug;
-const char *info_string;
+const char *config_name;
 const char *file_list;
 
 /*
@@ -110,30 +110,43 @@ help(void)
 }
 
 static struct option const long_options[] = {
+	/*
+	 * These options have long name and short name.
+	 * We throw them to the processing of short options.
+	 *
+	 * Though the -o(--omit-gsyms) was removed, this code
+	 * is left for compatibility.
+	 */
 	{"file", required_argument, NULL, 'f'},
 	{"idutils", no_argument, NULL, 'I'},
 	{"incremental", no_argument, NULL, 'i'},
 	{"max-args", required_argument, NULL, 'n'},
-	/*
-	 * Though the -o(--omit-gsyms) was removed, this code
-	 * is left for compatibility.
-	 */
-	{"omit-gsyms", no_argument, NULL, 'o'},
+	{"omit-gsyms", no_argument, NULL, 'o'},		/* removed */
 	{"quiet", no_argument, NULL, 'q'},
 	{"verbose", no_argument, NULL, 'v'},
 	{"warning", no_argument, NULL, 'w'},
 
-	/* long name only */
-	{"config", optional_argument, &show_config, 1},
-	{"format", required_argument, NULL, 0},
+	/*
+	 * The following are long name only.
+	 */
+	/* flag value */
 	{"debug", no_argument, &debug, 1},
-	{"gtagsconf", required_argument, &gtagsconf, 1},
-	{"gtagslabel", required_argument, &gtagslabel, 1},
-	{"path", required_argument, &do_path, 1},
 	{"sort", no_argument, &do_sort, 1},
 	{"unique", no_argument, &unique, 1},
 	{"version", no_argument, &show_version, 1},
 	{"help", no_argument, &show_help, 1},
+
+	/* accept value */
+#define OPT_CONFIG		128
+#define OPT_FORMAT		129
+#define OPT_GTAGSCONF		130
+#define OPT_GTAGSLABEL		131
+#define OPT_PATH		132
+	{"config", optional_argument, NULL, OPT_CONFIG},
+	{"format", required_argument, NULL, OPT_CONFIG},
+	{"gtagsconf", required_argument, NULL, OPT_GTAGSCONF},
+	{"gtagslabel", required_argument, NULL, OPT_GTAGSLABEL},
+	{"path", required_argument, NULL, OPT_PATH},
 	{ 0 }
 };
 
@@ -160,41 +173,43 @@ main(int argc, char **argv)
 	while ((optchar = getopt_long(argc, argv, "f:iIn:oqvwse", long_options, &option_index)) != EOF) {
 		switch (optchar) {
 		case 0:
-			p = long_options[option_index].name;
-			if (!strcmp(p, "config")) {
-				if (optarg)
-					info_string = optarg;
-			} else if (!strcmp(p, "path")) {
-				if (!strcmp("absolute", optarg))
-					convert_type = PATH_ABSOLUTE;
-				else if (!strcmp("relative", optarg))
-					convert_type = PATH_RELATIVE;
-				else if (!strcmp("through", optarg))
-					convert_type = PATH_THROUGH;
-			} else if (!strcmp(p, "format")) {
-				if (!strcmp("ctags", optarg))
-					format = FORMAT_CTAGS;
-				else if (!strcmp("path", optarg))
-					format = FORMAT_PATH;
-				else if (!strcmp("grep", optarg))
-					format = FORMAT_GREP;
-				else if (!strcmp("cscope", optarg))
-					format = FORMAT_CSCOPE;
-				else
-					format = FORMAT_CTAGS_X;
-			} else if (gtagsconf || gtagslabel) {
-				char value[MAXPATHLEN+1];
-				const char *name = (gtagsconf) ? "GTAGSCONF" : "GTAGSLABEL";
-
-				if (gtagsconf) {
-					if (realpath(optarg, value) == NULL)
-						die("%s not found.", optarg);
-				} else {
-					strlimcpy(value, optarg, sizeof(value));
-				}
-				set_env(name, value);
-				gtagsconf = gtagslabel = 0;
-			}
+			/* already flags set */
+			break;
+		case OPT_CONFIG:
+			show_config = 1;
+			if (optarg)
+				config_name = optarg;
+			break;
+		case OPT_FORMAT:
+			if (!strcmp("ctags", optarg))
+				format = FORMAT_CTAGS;
+			else if (!strcmp("path", optarg))
+				format = FORMAT_PATH;
+			else if (!strcmp("grep", optarg))
+				format = FORMAT_GREP;
+			else if (!strcmp("cscope", optarg))
+				format = FORMAT_CSCOPE;
+			else if (!strcmp("ctags-x", optarg))
+				format = FORMAT_CTAGS_X;
+			else
+				die("Unknown format type.");
+			break;
+		case OPT_GTAGSCONF:
+			gtagsconf = optarg;
+			break;
+		case OPT_GTAGSLABEL:
+			gtagslabel = optarg;
+			break;
+		case OPT_PATH:
+			do_path = 1;
+			if (!strcmp("absolute", optarg))
+				convert_type = PATH_ABSOLUTE;
+			else if (!strcmp("relative", optarg))
+				convert_type = PATH_RELATIVE;
+			else if (!strcmp("through", optarg))
+				convert_type = PATH_THROUGH;
+			else
+				die("Unknown path type.");
 			break;
 		case 'f':
 			file_list = optarg;
@@ -226,14 +241,19 @@ main(int argc, char **argv)
 		case 'v':
 			vflag++;
 			break;
-		/* for compatibility */
-		case 's':
-		case 'e':
-			break;
 		default:
 			usage();
 			break;
 		}
+	}
+	if (gtagsconf) {
+		char path[MAXPATHLEN+1];
+
+		if (realpath(gtagsconf, path) == NULL)
+			die("%s not found.", optarg);
+		set_env("GTAGSCONF", path);
+		if (gtagslabel)
+			set_env("GTAGSLABEL", gtagslabel);
 	}
 	if (qflag)
 		vflag = 0;
@@ -246,13 +266,10 @@ main(int argc, char **argv)
         argv += optind;
 
 	if (show_config) {
-		if (!info_string && argc)
-			info_string = argv[0];
-		if (info_string) {
-			printconf(info_string);
-		} else {
+		if (config_name)
+			printconf(config_name);
+		else
 			fprintf(stdout, "%s\n", getconfline());
-		}
 		exit(0);
 	} else if (do_sort) {
 		/*
