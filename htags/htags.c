@@ -243,10 +243,10 @@ static struct option const long_options[] = {
         {"dynamic", no_argument, NULL, 'D'},
         {"form", no_argument, NULL, 'f'},
         {"frame", no_argument, NULL, 'F'},
-        {"func-header", no_argument, NULL, 'h'},
+        {"func-header", optional_argument, NULL, 'h'},
         {"gtags", no_argument, NULL, 'g'},
         {"icon", no_argument, NULL, 'I'},
-        {"line-number", no_argument, NULL, 'n'},
+        {"line-number", optional_argument, NULL, 'n'},
         {"main-func", required_argument, NULL, 'm'},
         {"other", no_argument, NULL, 'o'},
         {"secure-cgi", required_argument, NULL, 'S'},
@@ -1445,12 +1445,6 @@ main(int argc, char **argv)
 		case OPT_GTAGSCONF:	/* --gtagsconf is estimated only once. */
 		case OPT_GTAGSLABEL:	/* --gtagslabel is estimated only once. */
 			break;
-		case OPT_NCOL:
-			if (atoi(optarg) > 0)
-				ncol = atoi(optarg);
-			else
-				die("--ncol option requires numeric value.");
-			break;
 		case OPT_ID:
 			id_value = optarg;
 			break;
@@ -1488,8 +1482,17 @@ main(int argc, char **argv)
                         gflag++;
                         break;
                 case 'h':
-			if (definition_header == NO_HEADER)
-				definition_header = AFTER_HEADER;
+			definition_header = AFTER_HEADER;
+			if (optarg) {
+				if (!strcmp(optarg, "before"))
+					definition_header = BEFORE_HEADER;
+				else if (!strcmp(optarg, "right"))
+					definition_header = RIGHT_HEADER;
+				else if (!strcmp(optarg, "after"))
+					definition_header = AFTER_HEADER;
+				else
+					die("The option value of --func-header must be one of 'before', 'right' and 'after'.");
+			}
                         break;
                 case 'I':
                         Iflag++;
@@ -1499,6 +1502,12 @@ main(int argc, char **argv)
                         break;
                 case 'n':
                         nflag++;
+			if (optarg) {
+				if (atoi(optarg) > 0)
+					ncol = atoi(optarg);
+				else
+					die("The option value of --line-number must be numeric.");
+			}
                         break;
                 case 'o':
 			other_files = 1;
