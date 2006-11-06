@@ -143,7 +143,7 @@ static struct option const long_options[] = {
 #define OPT_GTAGSLABEL		131
 #define OPT_PATH		132
 	{"config", optional_argument, NULL, OPT_CONFIG},
-	{"format", required_argument, NULL, OPT_CONFIG},
+	{"format", required_argument, NULL, OPT_FORMAT},
 	{"gtagsconf", required_argument, NULL, OPT_GTAGSCONF},
 	{"gtagslabel", required_argument, NULL, OPT_GTAGSLABEL},
 	{"path", required_argument, NULL, OPT_PATH},
