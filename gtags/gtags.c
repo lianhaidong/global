@@ -165,7 +165,6 @@ main(int argc, char **argv)
 	char dbpath[MAXPATHLEN+1];
 	char cwd[MAXPATHLEN+1];
 	STRBUF *sb = strbuf_open(0);
-	const char *p;
 	int db;
 	int optchar;
 	int option_index = 0;

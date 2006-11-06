@@ -1411,7 +1411,6 @@ main(int argc, char **argv)
 	const char *index = NULL;
 	int optchar;
         int option_index = 0;
-	int n;		/* work variable for numeric argument */
 	time_t start_time, end_time, start_all_time, end_all_time,
 		T_makedupindex, T_makedefineindex, T_makefileindex,
 		T_makeincludeindex, T_makehtml, T_all;
