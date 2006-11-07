@@ -505,6 +505,21 @@ find_read_traverse(void)
 				if (skipthisfile(path))
 					continue;
 				/*
+				 * Skip the following:
+				 * o directory
+				 * o file which does not exist
+				 * o dead symbolic link
+				 */
+				if (!test("f", path)) {
+					if (!qflag) {
+						if (test("d", path))
+							fprintf(stderr, "'%s' is a directory.\n", path);
+						else
+							fprintf(stderr, "'%s' not found.\n", path);
+					}
+					continue;
+				}
+				/*
 				 * GLOBAL cannot treat path which includes blanks.
 				 * It will be improved in the future.
 				 */
@@ -588,6 +603,12 @@ find_read_filelist(void)
 			/* skip empty line.  */
 			continue;
 		}
+		/*
+		 * Skip the following:
+		 * o directory
+		 * o file which does not exist
+		 * o dead symbolic link
+		 */
 		if (!test("f", path)) {
 			if (!qflag) {
 				if (test("d", path))
