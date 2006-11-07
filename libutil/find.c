@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2005
+ * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2005, 2006
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -362,12 +362,12 @@ getdirs(const char *dir, STRBUF *sb)
 			continue;
 #ifdef HAVE_LSTAT
 		if (lstat(makepath(dir, dp->d_name, NULL), &st) < 0) {
-			fprintf(stderr, "cannot lstat '%s'. (Ignored)\n", dp->d_name);
+			warning("cannot lstat '%s'. (Ignored)", dp->d_name);
 			continue;
 		}
 #else
 		if (stat(makepath(dir, dp->d_name, NULL), &st) < 0) {
-			fprintf(stderr, "cannot stat '%s'. (Ignored)\n", dp->d_name);
+			warning("cannot stat '%s'. (Ignored)", dp->d_name);
 			continue;
 		}
 #endif
@@ -513,9 +513,9 @@ find_read_traverse(void)
 				if (!test("f", path)) {
 					if (!qflag) {
 						if (test("d", path))
-							fprintf(stderr, "'%s' is a directory.\n", path);
+							warning("'%s' is a directory. (Ignored)", path);
 						else
-							fprintf(stderr, "'%s' not found.\n", path);
+							warning("'%s' not found. (Ignored)", path);
 					}
 					continue;
 				}
@@ -525,7 +525,7 @@ find_read_traverse(void)
 				 */
 				if (locatestring(path, " ", MATCH_FIRST)) {
 					if (!qflag)
-						warning("'%s' ignored, because it includes blank in the path.", &path[2]);
+						warning("'%s' ignored, because it includes blank.", &path[2]);
 					continue;
 				}
 				/*
@@ -550,7 +550,7 @@ find_read_traverse(void)
 				strcat(dirp, "/");
 				strcat(dirp, unit);
 				if (getdirs(dir, sb) < 0) {
-					fprintf(stderr, "cannot open directory '%s'. (Ignored)\n", dir);
+					warning("cannot open directory '%s'. (Ignored)", dir);
 					strbuf_close(sb);
 					*(curp->dirp) = 0;
 					continue;
@@ -612,15 +612,15 @@ find_read_filelist(void)
 		if (!test("f", path)) {
 			if (!qflag) {
 				if (test("d", path))
-					fprintf(stderr, "'%s' is a directory.\n", path);
+					warning("'%s' is a directory. (Ignored)", path);
 				else
-					fprintf(stderr, "'%s' not found.\n", path);
+					warning("'%s' not found. (Ignored)", path);
 			}
 			continue;
 		}
 		if (realpath(path, buf) == NULL) {
 			if (!qflag)
-				fprintf(stderr, "realpath(\"%s\", buf) failed.\n", path);
+				warning("realpath(\"%s\", buf) failed.", path);
 			continue;
 		}
 		if (!isabspath(buf))
@@ -633,7 +633,7 @@ find_read_filelist(void)
 		path = locatestring(buf, rootdir, MATCH_AT_FIRST);
 		if (path == NULL) {
 			if (!qflag)
-				fprintf(stderr, "'%s' is out of source tree.\n", buf);
+				warning("'%s' is out of source tree.", buf);
 			continue;
 		}
 		path -= 2;
@@ -644,7 +644,7 @@ find_read_filelist(void)
 		 */
 		if (locatestring(path, " ", MATCH_LAST)) {
 			if (!qflag)
-				fprintf(stderr, "'%s' ignored, because it includes blank.\n", path + 2);
+				warning("'%s' ignored, because it includes blank.", path + 2);
 			continue;
 		}
 		if (skipthisfile(path))
