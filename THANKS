@@ -101,6 +101,7 @@ Tero Saarni		bug report about long line problem of htags(1).
 Thomas Gerigk		bug report about skip variable in gtags.conf.
 Thomas Klausner		report about groff's command error of *.1.
 Tim Vanderhoek		GLOBAL tag support on more(1).
+Tobias Polzin		suggestion about correct treatment of CVS repository in htags.
 Tomohiko Morioka	advice about deciding emacs version.
 Tom Tromey		GTAGS target in automake.
 Toshiyasu Kojima	advice about deciding emacs version.
