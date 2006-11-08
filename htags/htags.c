@@ -663,7 +663,7 @@ makesearchpart(const char *action, const char *id, const char *target)
 		strbuf_puts_nl(sb, br);
 		strbuf_puts(sb, "('Other files' is effective only to 'Path name'");
 		if (enable_grep)
-			strbuf_puts(sb, "and 'Grep pattern'");
+			strbuf_puts(sb, " and 'Grep pattern'");
 		strbuf_puts_nl(sb, ".)");
 	}
 	strbuf_puts_nl(sb, gen_form_end());
