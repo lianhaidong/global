@@ -1,7 +1,7 @@
 ;;; gtags.el --- gtags facility for Emacs
 
 ;;
-;; Copyright (c) 1997, 1998, 1999, 2000 Tama Communications Corporation
+;; Copyright (c) 1997, 1998, 1999, 2000, 2006 Tama Communications Corporation
 ;;
 ;; This file is part of GNU GLOBAL.
 ;;
@@ -22,7 +22,7 @@
 
 ;; GLOBAL home page is at: http://www.gnu.org/software/global/
 ;; Author: Tama Communications Corporation
-;; Version: 2.0
+;; Version: 2.1
 ;; Keywords: tools
 
 ;; Gtags-mode is implemented as a minor mode so that it can work with any
@@ -53,8 +53,6 @@
   "Stack for tag browsing.")
 (defvar gtags-point-stack nil
   "Stack for tag browsing.")
-(defvar gtags-complete-list nil
-  "Gtags complete list.")
 (defvar gtags-history-list nil
   "Gtags history list.")
 (defconst gtags-symbol-regexp "[A-Za-z_][A-Za-z_0-9]*"
@@ -83,7 +81,6 @@
 ; (setq gtags-mode-hook
 ;   '(lambda ()
 ;         (define-key gtags-mode-map "\eh" 'gtags-display-browser)
-;         (define-key gtags-mode-map "\ec" 'gtags-make-complete-list)
 ;         (define-key gtags-mode-map "\C-]" 'gtags-find-tag-from-here)
 ;         (define-key gtags-mode-map "\C-t" 'gtags-pop-stack)
 ;         (define-key gtags-mode-map "\el" 'gtags-find-file)
@@ -92,6 +89,7 @@
 ;         (define-key gtags-mode-map "\es" 'gtags-find-symbol)
 ;         (define-key gtags-mode-map "\er" 'gtags-find-rtag)
 ;         (define-key gtags-mode-map "\et" 'gtags-find-tag)
+;         (define-key gtags-mode-map "\ev" 'gtags-visit-rootdir)
 ; ))
 
 (if (not gtags-running-xemacs) nil
@@ -191,6 +189,37 @@
          ((looking-at "ENTRY\\|ALTENTRY")
 	  (if (bolp) t nil)))))))
 
+;; completsion function for completing-read.
+(defun gtags-completing-gtags (string predicate code)
+  (gtags-completing 'gtags string predicate code))
+(defun gtags-completing-gsyms (string predicate code)
+  (gtags-completing 'gsyms string predicate code))
+;; common part of completing-XXXX
+;;   flag: 'gtags or 'gsyms
+(defun gtags-completing (flag string predicate code)
+  (let ((option "-c")
+        (complete-list (make-vector 63 0))
+        (prev-buffer (current-buffer)))
+    ; build completion list
+    (set-buffer (generate-new-buffer "*Completions*"))
+    (if (eq flag 'gsyms)
+        (setq option (concat option "s")))
+    (call-process "global" nil t nil option string)
+    (goto-char (point-min))
+    (while (looking-at gtags-symbol-regexp)
+      (intern (gtags-match-string 0) complete-list)
+      (forward-line))
+    (kill-buffer (current-buffer))
+    ; recover current buffer
+    (set-buffer prev-buffer)
+    ; execute completion
+    (cond ((eq code nil)
+           (try-completion string complete-list predicate))
+          ((eq code t)
+           (all-completions string complete-list predicate))
+          ((eq code 'lambda)
+           (if (intern-soft string complete-list) t nil)))))
+
 ;;
 ;; interactive command
 ;;
@@ -223,7 +252,7 @@
     (if tagname
       (setq prompt (concat "Find tag: (default " tagname ") "))
      (setq prompt "Find tag: "))
-    (setq input (completing-read prompt gtags-complete-list
+    (setq input (completing-read prompt 'gtags-completing-gtags
                   nil nil nil gtags-history-list))
     (if (not (equal "" input))
       (setq tagname input))
@@ -238,7 +267,7 @@
    (if tagname
      (setq prompt (concat "Find tag (reference): (default " tagname ") "))
     (setq prompt "Find tag (reference): "))
-   (setq input (completing-read prompt gtags-complete-list
+   (setq input (completing-read prompt 'gtags-completing-gtags
                  nil nil nil gtags-history-list))
    (if (not (equal "" input))
      (setq tagname input))
@@ -253,7 +282,7 @@
     (if tagname
         (setq prompt (concat "Find symbol: (default " tagname ") "))
       (setq prompt "Find symbol: "))
-    (setq input (completing-read prompt gtags-complete-list
+    (setq input (completing-read prompt 'gtags-completing-gsyms
                   nil nil nil gtags-history-list))
     (if (not (equal "" input)) (setq tagname input))
     (gtags-push-context)
@@ -319,7 +348,7 @@
       (if (equal (point-min) (point))
           (setq lno 1)
         (setq lno (count-lines (point-min) (point)))))
-    (call-process "gozilla"  nil t nil (concat "+" (number-to-string lno)) buffer-file-name))))
+    (call-process "gozilla"  nil nil nil (concat "+" (number-to-string lno)) buffer-file-name))))
 
 (defun gtags-find-tag-by-event (event)
   "Get the expression as a tagname around here and move there."
@@ -385,7 +414,7 @@
     (if tagname
         (setq prompt (concat "Find pattern: (default " tagname ") "))
       (setq prompt "Find pattern: "))
-    (setq input (completing-read prompt gtags-complete-list
+    (setq input (completing-read prompt 'gtags-completing-gtags
                  nil nil nil gtags-history-list))
     (if (not (equal "" input)) (setq tagname input))
     (gtags-push-context)
@@ -393,8 +422,10 @@
 
 ;; goto tag's point
 (defun gtags-goto-tag (tagname flag)
-  (let (save prefix buffer lines)
+  (let (option save prefix buffer lines)
     (setq save (current-buffer))
+    ; Use always ctags-x format.
+    (setq option (concat "-x" flag))
     (cond
      ((equal flag "P")
       (setq prefix "(P)"))
@@ -410,8 +441,15 @@
     ;; load tag
     (setq buffer (generate-new-buffer (generate-new-buffer-name (concat "*GTAGS SELECT* " prefix tagname))))
     (set-buffer buffer)
+    ;
+    ; If project directory is specified, 'Gtags Select Mode' print paths using
+    ; the relative path name from the project directory else absolute path name.
+    ;
+    (if gtags-rootdir
+        (cd gtags-rootdir)
+        (setq option (concat option "a"))) 
     (message "Searching %s ..." tagname)
-    (if (not (= 0 (call-process "global" nil t nil (concat "-ax" flag) tagname)))
+    (if (not (= 0 (call-process "global" nil t nil option tagname)))
 	(progn (message (buffer-substring (point-min)(1- (point-max))))
                (gtags-pop-context))
       (goto-char (point-min))
@@ -448,33 +486,34 @@
         (gtags-pop-context)
       (setq line (string-to-number (gtags-match-string 1)))
       (setq file (gtags-match-string 2))
-      (if delete (kill-buffer (current-buffer)))
-      ;; move to the context
-      (if gtags-read-only (find-file-read-only file) (find-file file))
+      ;;
+      ;; Why should we load new file before killing current-buffer?
+      ;;
+      ;; If you kill current-buffer before loading new file, current directory
+      ;; will be changed. This might cause loading error, if you use relative
+      ;; path in [GTAGS SELECT MODE], because emacs's buffer has its own
+      ;; current directory.
+      ;; 
+      (let ((prev-buffer (current-buffer)))
+        ;; move to the context
+        (if gtags-read-only (find-file-read-only file) (find-file file))
+        (if delete (kill-buffer prev-buffer)))
       (setq gtags-current-buffer (current-buffer))
       (goto-line line)
       (gtags-mode 1))))
 
-;; make complete list
+;; make complete list (do nothing)
 (defun gtags-make-complete-list ()
   "Make tag name list for completion."
   (interactive)
-  (save-excursion
-    (message "Making completion list ...")
-    (setq gtags-complete-list (make-vector 63 0))
-    (set-buffer (generate-new-buffer "*Completions*"))
-    (call-process "global" nil t nil "-c")
-    (goto-char (point-min))
-    (while (looking-at gtags-symbol-regexp)
-      (intern (gtags-match-string 0) gtags-complete-list)
-      (forward-line))
-    (message "Making completion list ... Done")
-    (kill-buffer (current-buffer))))
+  (message "gtags-make-complete-list: Depricated. You need not call this command any longer."))
 
 ;;;###autoload
 (defun gtags-mode (&optional forces)
   "Toggle Gtags mode, a minor mode for browsing source code using GLOBAL.
 
+Specify the root directory of project.
+	\\[gtags-visit-rootdir]
 Input tag name and move to the definition.
 	\\[gtags-find-tag]
 Input tag name and move to the referenced point.
@@ -495,8 +534,6 @@ Get the expression as a tagname around here and move there.
 	\\[gtags-find-tag-by-event]
 Move to previous point on the stack.
 	\\[gtags-pop-stack]
-Make tag name list for completion.
-	\\[gtags-make-complete-list]
 
 Key definitions:
 \\{gtags-mode-map}

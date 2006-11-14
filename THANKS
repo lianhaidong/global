@@ -70,6 +70,7 @@ Marius Gedminas		bug report and fix patch for htags(1).
 Mark Nudelman		GLOBAL tag support on less(1).
 Marty Leisner		advice about --version option and some bug reports.
 Masahiro Fujiwara	bug report and fix patch for htags(1).
+Masashi YAMAGUCHI	suggestion and patch about how to display path names in gtags.el.
 Masato Yoshida		bug report and fix method about <NOFRAME> tag.
 Mathieu Virbel		bug report and fix patch about dead symbolic link for gtags(1).
 Motonori Iwamuro	bug report and fix method about strbuf_fgets function.
