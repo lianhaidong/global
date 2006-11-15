@@ -717,7 +717,7 @@ ghelp() {
 	echo "	s [pattern]	- locate other symbols."
 	echo "	g [pattern]	- locate pattern using grep(1)."
 	echo "	P [pattern]	- locate file include pattern."
-	echo "	I [pattern]	- locate pattern using id-utils(1)."
+	echo "	I [pattern]	- locate pattern using idutils(1)."
 	echo "	f [file]	- locate function definitions in a file."
 	echo "	(By default, the previous value is used for pattern and file.)"
 	echo "	list		- print tag list."

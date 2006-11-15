@@ -69,7 +69,7 @@
 		Update tag files incrementally. You had better use
 		@xref{global,1} with the -u option.
 	@item{@option{-I}, @option{--idutils}}
-		Make index files for @xref{id-utils,1}.
+		Make index files for @xref{idutils,1}.
 	@item{@option{-n}, @option{--max-args} @arg{number}}
 		Maximum number of arguments for @xref{gtags-parser,1}.
 		By default, gtags invokes the parser with arguments

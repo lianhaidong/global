@@ -357,7 +357,7 @@ main(int argc, char **argv)
 	 */
 	getdbpath(cwd, root, dbpath, (pflag && vflag));
 	if (Iflag && !test("f", makepath(root, "ID", NULL)))
-		die("You must have id-utils's index at the root of source tree.");
+		die("You must have idutils's index at the root of source tree.");
 	/*
 	 * print dbpath or rootdir.
 	 */
@@ -475,7 +475,7 @@ main(int argc, char **argv)
 		exit(0);
 	}
 	/*
-	 * exec lid(id-utils).
+	 * exec lid(idutils).
 	 */
 	if (Iflag) {
 		chdir(root);
@@ -603,7 +603,7 @@ printtag_using(const char *tag, const char *path, int lineno, const char *line)
 	filter_put(strbuf_value(sb));
 }
 /*
- * idutils:  lid(id-utils) pattern
+ * idutils:  lid(idutils) pattern
  *
  *	i)	pattern	POSIX regular expression
  *	i)	dbpath	GTAGS directory
@@ -620,7 +620,7 @@ idutils(const char *pattern, const char *dbpath)
 
 	lid = usable("lid");
 	if (!lid)
-		die("lid(id-utils) not found.");
+		die("lid(idutils) not found.");
 	/*
 	 * convert spaces into %FF format.
 	 */
@@ -640,7 +640,7 @@ idutils(const char *pattern, const char *dbpath)
 	strbuf_putc(ib, ' ');
 	strbuf_puts(ib, quote_string(pattern));
 	if (debug)
-		fprintf(stderr, "id-utils: %s\n", strbuf_value(ib));
+		fprintf(stderr, "idutils: %s\n", strbuf_value(ib));
 	if (!(ip = popen(strbuf_value(ib), "r")))
 		die("cannot execute '%s'.", strbuf_value(ib));
 	filter_open();
@@ -652,7 +652,7 @@ idutils(const char *pattern, const char *dbpath)
 		while (*p && *p != ':')
 			p++;
 		if ((xflag || tflag) && !*p)
-			die("invalid lid(id-utils) output format. '%s'", grep);
+			die("invalid lid(idutils) output format. '%s'", grep);
 		*p++ = 0;
 		if (lflag) {
 			if (!locatestring(path, localprefix + 2, MATCH_AT_FIRST))
@@ -671,11 +671,11 @@ idutils(const char *pattern, const char *dbpath)
 			while (*p && isdigit(*p))
 				p++;
 			if (*p != ':')
-				die("invalid lid(id-utils) output format. '%s'", grep);
+				die("invalid lid(idutils) output format. '%s'", grep);
 			*p++ = 0;
 			linenum = atoi(lno);
 			if (linenum <= 0)
-				die("invalid lid(id-utils) output format. '%s'", grep);
+				die("invalid lid(idutils) output format. '%s'", grep);
 			/*
 			 * print out.
 			 */
@@ -699,7 +699,7 @@ idutils(const char *pattern, const char *dbpath)
 			fprintf(stderr, "%d objects located", count);
 			break;
 		}
-		fprintf(stderr, " (using id-utils index in '%s').\n", dbpath);
+		fprintf(stderr, " (using idutils index in '%s').\n", dbpath);
 	}
 }
 /*

@@ -127,7 +127,7 @@ GNU GLOBAL has following features:
 @item locate also path which includes specified pattern.
 @item search not only in a source tree but also in library paths.
 @item understand POSIX 1003.2 regular expressions.
-@item support external search engine (grep and id-utils).
+@item support external search engine (grep and idutils).
 @item generate hypertext of source code.
 @item tag files are independent of machine architecture.
 @item plug-in parser is available to treat new language.
@@ -867,7 +867,7 @@ In the same way, you can use following command lines.
     # pattern match with grep(1).
     $ global -xg 'lseek(.*)' | less -T-
 
-    # pattern match with id-utils(1).
+    # pattern match with idutils(1).
     $ global -xI func | less -T-
 
     # all objects definitions in *.c.

@@ -287,7 +287,7 @@
 	@item{@code{disable_grep}(boolean)}
 		Disable grep in search form(-f,--form). The default is false.
 	@item{@code{enable_idutils}(boolean)}
-		Enable id-utils in search form(-f,--form). The default is false.
+		Enable idutils in search form(-f,--form). The default is false.
 	@item{@code{include_file_suffixes}(comma separated list)}
 		Suffixes of include file. The default is 'h,hxx,hpp,H,inc.php'.
 	@item{@code{langmap}(comma separated list)}

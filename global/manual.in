@@ -65,8 +65,8 @@
 		Print all lines which match to the @arg{pattern}.
 	@item{@option{-I}, @option{--idutils}}
 		Print all lines which match to the @arg{pattern}.
-		This function use @xref{id-utils,1} as a search engine.
-		To use this command, you need to install @xref{id-utils,1}
+		This function use @xref{idutils,1} as a search engine.
+		To use this command, you need to install @xref{idutils,1}
 		in your system and you must execute @xref{gtags,1}
 		with @option{-I} option.
 	@item{@option{-p}, @option{--print-dbpath}}

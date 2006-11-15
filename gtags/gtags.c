@@ -65,7 +65,7 @@ int printconf(const char *);
 void set_base_directory(const char *, const char *);
 
 int iflag;					/* incremental update */
-int Iflag;					/* make  id-utils index */
+int Iflag;					/* make  idutils index */
 int qflag;					/* quiet mode */
 int wflag;					/* warning message */
 int vflag;					/* verbose mode */
@@ -444,11 +444,11 @@ main(int argc, char **argv)
 		}
 	}
 	/*
-	 * create id-utils index.
+	 * create idutils index.
 	 */
 	if (Iflag) {
 		if (vflag)
-			fprintf(stderr, "[%s] Creating indexes for id-utils.\n", now());
+			fprintf(stderr, "[%s] Creating indexes for idutils.\n", now());
 		strbuf_reset(sb);
 		strbuf_puts(sb, "mkid");
 		if (vflag)

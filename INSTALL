@@ -30,11 +30,11 @@ o If you want to format man files then nroff is needed.
    Additionally, if you set up man(1) on your system then you can use man
    command to read GLOBAL's online manuals.
 
-o If you want to use the -I option of global(1) then id-utils(1) is needed.
+o If you want to use the -I option of global(1) then idutils(1) is needed.
 
-   You can get id-utils at:
+   You can get idutils at:
 
-	ftp://ftp.gnu.org/pub/gnu/id-utils/
+	ftp://ftp.gnu.org/pub/gnu/idutils/
   
 o If you want to use --form(-f) or --dynamic option of htags(1) then
   PERL version 4 or later is needed.
