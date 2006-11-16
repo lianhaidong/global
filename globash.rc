@@ -371,7 +371,7 @@ __gtags_edit_marked_file()
 	if [ -s $MARKER ] && __gtags_is_num $1; then
 		local com filter
 
-		filter=`global --filter -x`
+		filter=`global --filter=path -x`
 		case $filter in
 		'')	echo "Cannot get internal filter."
 			return 1;;
@@ -403,7 +403,7 @@ mark()
 		if [ -s $MARKER ]; then
 			local com filter
 
-			filter=`global --filter -x`
+			filter=`global --filter=path -x`
 			case $filter in
 			'')	echo "Cannot get internal filter."
 				return 1;;
