@@ -25,6 +25,11 @@ environments. It supports C, C++, Yacc, Java, PHP4 and assembler source code.
 	BSD system - FreeBSD, NetBSD, OpenBSD, MacOSX, etc.
 	Besides, various POSIX compatible systems.
 
+	[Note]  Though GNU GLOBAL supports only UNIX(POSIX) environment,
+		some outsite projects develop DOS or Windows 32 version of it.
+		Please see:
+			http://www.gnu.org/software/global/download.html
+
 * Installation
 
 	Please see 'INSTALL'.
