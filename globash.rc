@@ -24,6 +24,9 @@
   version=0.1
 # Usage:
 # $ bash --rcfile <this file>
+#	or
+# $ source <this file>
+#
 # [/usr/src/sys] ghelp<RET>
 #
 bash_minorversion=$(echo ${BASH_VERSINFO[1]} | sed 's/[^0-9]//')
