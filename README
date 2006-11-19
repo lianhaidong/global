@@ -19,7 +19,7 @@ ___________________________________
 GNU GLOBAL is a source code tag system that works the same way across diverse
 environments. It supports C, C++, Yacc, Java, PHP4 and assembler source code.
 
-* Support OS
+* Supported OS
 
 	GNU system - Debian, Fedora, Suse, etc.
 	BSD system - FreeBSD, NetBSD, OpenBSD, MacOSX, etc.
@@ -30,7 +30,7 @@ environments. It supports C, C++, Yacc, Java, PHP4 and assembler source code.
 		Please see:
 			http://www.gnu.org/software/global/download.html
 
-* Installation
+* How to install
 
 	Please see 'INSTALL'.
 

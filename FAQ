@@ -118,7 +118,7 @@ A10. GLOBAL doesn't support multi-byte character code set yet.
 Q11. Can GLOBAL running on a UNIX machine treat source files
      which include DOS/Windows style new-line code? And vice versa? 
 
-A11. GLOBAL support only the native text format.
+A11. GLOBAL supports only native text format of POSIX.
      Besides, please go by the own responsibility.
 
 ----------------------------------------------------------------------------

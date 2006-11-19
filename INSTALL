@@ -4,7 +4,7 @@ ___________________________________
 |  |   |  |  |  |  |     |     |  |
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Copyright (c) 2000, 2002, 2003, 2004 Tama Communications Corporation
+ Copyright (c) 2000, 2002, 2003, 2004, 2006 Tama Communications Corporation
 
  This file is free software; as a special exception the author gives
  unlimited permission to copy and/or distribute it, with or without
@@ -25,19 +25,14 @@ Installation of GNU GLOBAL.
 
 1. Preparation.
 
-o If you want to format man files then nroff is needed.
-
-   Additionally, if you set up man(1) on your system then you can use man
-   command to read GLOBAL's online manuals.
-
 o If you want to use the -I option of global(1) then idutils(1) is needed.
 
    You can get idutils at:
 
 	ftp://ftp.gnu.org/pub/gnu/idutils/
   
-o If you want to use --form(-f) or --dynamic option of htags(1) then
-  PERL version 4 or later is needed.
+o If you want to use the --form(-f) or --dynamic(-D) option of htags(1) then
+  Perl version 4 or later is needed.
 
    If you don't have it, you can fetch it from this site.
 
@@ -106,10 +101,8 @@ o Emacs
 	XEmacs:
 		http://www.xemacs.org
 
-   If one of above systems is already install, gtags.el is installed by
-   default installation of GLOBAL. If it doesn't work then you can place
-   gtags.el in a directory (for example "~/lisp") and write $HOME/.emacs
-   like this.
+   Please copy gtags.el file to emacs lisp library directory or place it in
+   a directory (for example "~/lisp") and write $HOME/.emacs like this.
 
 	+-----------------------------------------------
 	|(setq load-path (cons "~/lisp" load-path))
@@ -121,5 +114,15 @@ o Elvis
 	http://elvis.vi-editor.org/
 
    You need not any patch for it.
+
+o Vim
+
+   You can get them at:
+
+	http://www.vim.org/
+
+   Please copy gtags.vim file to your plugin directory.
+
+	$ cp /usr/local/share/gtags/gtags.vim $HOME/.vim/plugin
 
 Good luck!
