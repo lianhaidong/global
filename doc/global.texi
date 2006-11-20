@@ -84,7 +84,7 @@ This manual documents version @value{VERSION} of the GNU GLOBAL source code tag 
 
 GNU GLOBAL is a source code tag system that works the same way
 across diverse environments.
-You can locate a specified object in the source files and move there easily.
+You can locate specified object in source files and move there easily.
 It is useful for hacking a large project containing many subdirectories,
 many @code{#ifdef} and many @code{main()} functions.
 
@@ -95,8 +95,6 @@ independence of any editor.
 
 GNU GLOBAL can treat a source tree containing subdirectories as a project.
 It is similar to CVS.
-You can get the relative path of your object from anywhere in the source tree.
-
 You need not specify where the tag file is.
 Instead, global(1) will locate the tag file by itself.
 If tag file isn't found in the current directory, global(1) search parent
@@ -121,7 +119,7 @@ GNU GLOBAL has following features:
 	@item Web browser
 	@item Doxygen documentation system
 	@end itemize
-@item find the locations of a specified object quickly.
+@item find the locations of specified object quickly.
 @item locate not only object definitions but also object references.
 @item allows duplicate objects.
 @item locate also path which includes specified pattern.
@@ -130,7 +128,7 @@ GNU GLOBAL has following features:
 @item support external search engine (grep and idutils).
 @item generate hypertext of source code.
 @item tag files are independent of machine architecture.
-@item plug-in parser is available to treat new language.
+@item plugin parser is available to treat new language.
 @item support incremental updating of tag files.
 @item support customizing with gtags.conf.
 @item generate completion list for completing input method.
@@ -513,7 +511,7 @@ In tcsh:
 
 @end example
 
-@item You can edit all files that include a specified object by typing
+@item You can edit all files that include specified object by typing
 one command, for example:
 
 @example
@@ -2046,7 +2044,7 @@ About the capabilities, please see each command manual. @xref{Reference}.
 @node   Plugin
 @section Plug-in parser.
 
-You can write new parser and use as a plug-in parser.
+You can write new parser and use as a plugin parser.
 
 @subsection How to plug in a parser.
 
@@ -2072,7 +2070,7 @@ these parsers don't support the @samp{-r} option and @samp{-s} option like gtags
 @opindex -r
 @opindex -s
 
-@subsection Requirement of plug-in parser.
+@subsection Requirement of plugin parser.
 
 Plug-in parser must print tag information to standard output
 in the same style as @code{ctags -x}, ie.:
@@ -2096,7 +2094,7 @@ in the argument. In each file, any order is acceptable.
 @itemize @bullet
 @item Good example
 
-The following @code{good-prog} does correct operation as a plug-in parser.
+The following @code{good-prog} does correct operation as a plugin parser.
 
 @example
         $ good-prog a.c b.c        @r{<= order: a.c -> b.c}
@@ -2112,7 +2110,7 @@ The following @code{good-prog} does correct operation as a plug-in parser.
 
 @item Bad example
 
-The following @code{bad-prog} does wrong operation as a plug-in parser.
+The following @code{bad-prog} does wrong operation as a plugin parser.
 
 @example
         $ bad-prog a.c b.c        @r{<= order: a.c -> b.c}
