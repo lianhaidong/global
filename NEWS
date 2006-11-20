@@ -20,6 +20,51 @@ ___________________________________
 GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 5.3 - November 20 2006, by Shigio YAMAGUCHI
+
+[INCOMPATIBLE CHANGES]
+* global: Changed not to locate other symbols (-s) in GTAGSLIBPATH.
+  This is the original specification of GLOBAL.
+* global: Stop sorting when the -I(--idutils) option specified.
+  The output of gid(idutils) is sorted by the suitable way. Though the order is
+  slightly differ from global(1), it need not be sorted again.
+
+[OTHER CHANGES]
+* global:  Added new option -O(--only-other).
+* htags: Added some new options and new arguments which are synonyms of config variable.
+  This decreases dependence on configration file.
+
+  new option              | config variable
+  ------------------------+-------------------------
+  --disable-grep          | disable_grep
+  --table-list            | table_list
+  --tabs=<n>              | tabs
+  --full-path             | full_path
+
+  new argument            | config variable
+  ------------------------+-------------------------
+  --line-number [columns] | ncol
+  --func-header [position]| definition_header
+  --xhtml [version]       | xhtml_version
+
+	(*=default)
+	position: before, right, *after
+	version: *1.0, 1.1
+
+* htags: Changed to use each 'CVS/Repository' file to generate URLs if it is available.
+* htags: Added '.gitignore' to the default skip file list.
+
+* gtags.el:
+  - Shorten path names in [GTAGS SELECT MODE]:
+    If project directory is specified using 'gtags-visit-rootdir', gtags.el print path
+    using the relative path name from the project directory, else print absolute path name.
+  - Support dynamic completing-read of tag name.
+    gtags-make-complete-list is depricated. You can enjoy tag name completetion without
+    invoking this command.
+
+[BUG FIXED]
+* gtags: gtags had exited when it encountered dead symbolic link.
+
 Version 5.2 - August 8 2006, by Shigio YAMAGUCHI
 
 * htags: Added new options:

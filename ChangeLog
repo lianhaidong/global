@@ -19,6 +19,13 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+November 20 2006, Shigio YAMAGUCHI
+
+	* gtags.el:
+	  - gtags-make-complete-list is depricated.
+	    Added gtags-completing-gtags, gtags-completing-gsyms and gtags-completing.
+	  - Throw away the output of gozilla in 'gtags-display-browser'.
+
 August 8 2006, Shigio YAMAGUCHI
 
 	* htags/fileindex.c: Rewritten using recursive call instead of stack structures.
