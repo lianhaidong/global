@@ -59,7 +59,7 @@ Version 5.3 - November 20 2006, by Shigio YAMAGUCHI
     If project directory is specified using 'gtags-visit-rootdir', gtags.el print path
     using the relative path name from the project directory, else print absolute path name.
   - Support dynamic completing-read of tag name.
-    gtags-make-complete-list is depricated. You can enjoy tag name completetion without
+    gtags-make-complete-list is deprecated. You can enjoy tag name completetion without
     invoking this command.
 
 [BUG FIXED]

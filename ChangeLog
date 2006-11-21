@@ -22,7 +22,7 @@ ChangeLog about GNU GLOBAL
 November 20 2006, Shigio YAMAGUCHI
 
 	* gtags.el:
-	  - gtags-make-complete-list is depricated.
+	  - gtags-make-complete-list is deprecated.
 	    Added gtags-completing-gtags, gtags-completing-gsyms and gtags-completing.
 	  - Throw away the output of gozilla in 'gtags-display-browser'.
 

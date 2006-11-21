@@ -506,7 +506,7 @@
 (defun gtags-make-complete-list ()
   "Make tag name list for completion."
   (interactive)
-  (message "gtags-make-complete-list: Depricated. You need not call this command any longer."))
+  (message "gtags-make-complete-list: Deprecated. You need not call this command any longer."))
 
 ;;;###autoload
 (defun gtags-mode (&optional forces)
