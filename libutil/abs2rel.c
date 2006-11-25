@@ -33,6 +33,138 @@
 #include "abs2rel.h"
 
 /*
+
+NAME
+     abs2rel - make a relative path name from an absolute path
+
+SYNOPSIS
+     char *
+     abs2rel(const char *path, const char *base, char *result, size_t size)
+
+DESCRIPTION
+     The abs2rel() function makes a relative path name from an absolute path
+     name path based on a directory base and copies the resulting path name
+     into the memory referenced by result.  The result argument must refer to
+     a buffer capable of storing at least size characters.
+
+     The resulting path name may include symbolic links.  The abs2rel() func-
+     tion doesn't check whether or not any path exists.
+
+RETURN VALUES
+     The abs2rel() function returns relative path name on success.  If an er-
+     ror occurs, it returns NULL.
+
+ERRORS
+     The abs2rel() function may fail and set the external variable errno to
+     indicate the error.
+
+     [EINVAL]           The base directory isn't an absolute path name or the
+                        size argument is zero.
+
+     [ERANGE]           The size argument is greater than zero but smaller
+                        than the length of the pathname plus 1.
+
+EXAMPLE
+         char result[MAXPATHLEN];
+         char *path = abs2rel("/usr/src/sys", "/usr/local/lib", result, MAX-
+     PATHLEN);
+
+     yields:
+
+         path == "../../src/sys"
+
+     Similarly,
+
+         path1 = abs2rel("/usr/src/sys", "/usr", result, MAXPATHLEN);
+         path2 = abs2rel("/usr/src/sys", "/usr/src/sys", result, MAXPATHLEN);
+
+     yields:
+
+         path1 == "src/sys"
+         path2 == "."
+
+
+BUGS
+     If the base directory includes symbolic links, the abs2rel() function
+     produces the wrong path.  For example, if '/sys' is a symbolic link to
+     '/usr/src/sys',
+
+         char *path = abs2rel("/usr/local/lib", "/sys", result, MAXPATHLEN);
+
+     yields:
+
+         path == "../usr/local/lib"         -- It's wrong!!
+
+     You should convert the base directory into a real path in advance.
+
+         path = abs2rel("/sys/kern", realpath("/sys", resolvedname), result,
+     MAXPATHLEN);
+
+     yields:
+
+         path == "../../../sys/kern"        -- It's correct but ...
+
+     That is correct, but a little redundant. If you wish get the simple an-
+     swer 'kern', do the following.
+
+         path = abs2rel(realpath("/sys/kern", r1), realpath("/sys", r2),
+                                             result, MAXPATHLEN);
+
+     The realpath() function assures correct result, but don't forget that
+     realpath() requires that all but the last component of the path exist.
+
+-------------------------------------------------------------------------------
+NAME
+     rel2abs - make an absolute path name from a relative path
+
+SYNOPSIS
+     char *
+     rel2abs(const char *path, const char *base, char *result, size_t size)
+
+DESCRIPTION
+     The rel2abs() function makes an absolute path name from a relative path
+     name path based on a directory base and copies the resulting path name
+     into the memory referenced by result.  The result argument must refer to
+     a buffer capable of storing at least size character
+
+     The resulting path name may include symbolic links.  abs2rel() doesn't
+     check whether or not any path exists.
+
+RETURN VALUES
+     The rel2abs() function returns absolute path name on success.  If an er-
+     ror occurs, it returns NULL.
+
+ERRORS
+     The rel2abs() function may fail and set the external variable errno to
+     indicate the error.
+
+     [EINVAL]           The base directory isn't an absolute path name or the
+                        size argument is zero.
+
+     [ERANGE]           The size argument is greater than zero but smaller
+                        than the length of the pathname plus 1
+
+EXAMPLE
+         char result[MAXPATHLEN];
+         char *path = rel2abs("../../src/sys", "/usr/local/lib", result, MAX-
+     PATHLEN);
+
+     yields:
+
+         path == "/usr/src/sys"
+
+     Similarly,
+
+         path1 = rel2abs("src/sys", "/usr", result, MAXPATHLEN);
+         path2 = rel2abs(".", "/usr/src/sys", result, MAXPATHLEN);
+
+     yields:
+
+         path1 == "/usr/src/sys"
+         path2 == "/usr/src/sys"
+
+*/
+/*
  * abs2rel: convert an absolute path name into relative.
  *
  *	i)	path	absolute path
@@ -106,6 +238,107 @@ abs2rel(const char *path, const char *base, char *result, const int size)
 		strcpy(rp, branch + 1);
 	} else
 		*--rp = 0;
+finish:
+	return result;
+erange:
+	errno = ERANGE;
+	return (NULL);
+}
+/*
+ * rel2abs: convert an relative path name into absolute.
+ *
+ *	i)	path	relative path
+ *	i)	base	base directory (must be absolute path)
+ *	o)	result	result buffer
+ *	i)	size	size of result buffer
+ *	r)		!= NULL: absolute path
+ *			== NULL: error
+ */
+char *
+rel2abs(const char *path, const char *base, char *result, const int size)
+{
+	const char *pp, *bp;
+	/*
+	 * endp points the last position which is safe in the result buffer.
+	 */
+	const char *endp = result + size - 1;
+	char *rp;
+	int length;
+
+	if (*path == '/') {
+		if (strlen(path) >= size)
+			goto erange;
+		strcpy(result, path);
+		goto finish;
+	} else if (*base != '/' || !size) {
+		errno = EINVAL;
+		return (NULL);
+	} else if (size == 1)
+		goto erange;
+
+	length = strlen(base);
+
+	if (!strcmp(path, ".") || !strcmp(path, "./")) {
+		if (length >= size)
+			goto erange;
+		strcpy(result, base);
+		/*
+		 * rp points the last char.
+		 */
+		rp = result + length - 1;
+		/*
+		 * remove the last '/'.
+		 */
+		if (*rp == '/') {
+			if (length > 1)
+				*rp = 0;
+		} else
+			rp++;
+		/* rp point NULL char */
+		if (*++path == '/') {
+			/*
+			 * Append '/' to the tail of path name.
+			 */
+			*rp++ = '/';
+			if (rp > endp)
+				goto erange;
+			*rp = 0;
+		}
+		goto finish;
+	}
+	bp = base + length;
+	if (*(bp - 1) == '/')
+		--bp;
+	/*
+	 * up to root.
+	 */
+	for (pp = path; *pp && *pp == '.'; ) {
+		if (!strncmp(pp, "../", 3)) {
+			pp += 3;
+			while (bp > base && *--bp != '/')
+				;
+		} else if (!strncmp(pp, "./", 2)) {
+			pp += 2;
+		} else if (!strncmp(pp, "..\0", 3)) {
+			pp += 2;
+			while (bp > base && *--bp != '/')
+				;
+		} else
+			break;
+	}
+	/*
+	 * down to leaf.
+	 */
+	length = bp - base;
+	if (length >= size)
+		goto erange;
+	strncpy(result, base, length);
+	rp = result + length;
+	if (*pp || *(pp - 1) == '/' || length == 0)
+		*rp++ = '/';
+	if (rp + strlen(pp) > endp)
+		goto erange;
+	strcpy(rp, pp);
 finish:
 	return result;
 erange:

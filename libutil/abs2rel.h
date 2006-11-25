@@ -22,5 +22,6 @@
 #define _RELATIVE_H_
 
 char *abs2rel(const char *, const char *, char *, const int);
+char *rel2abs(const char *, const char *, char *, const int);
 
 #endif /* ! _RELATIVE_H_ */
