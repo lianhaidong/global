@@ -98,7 +98,7 @@ get_gtags(void)
 /*
  * make_external_sortfilter: make external sort filter
  */
-static void
+void
 makesortfilter(int format, int unique, int passthru)
 {
 	if (sortfilter == NULL)
@@ -141,7 +141,7 @@ makesortfilter(int format, int unique, int passthru)
 /*
  * makepathfilter: make external path filter
  */
-static void
+void
 makepathfilter(int format, int type, const char *root, const char *cwd, const char *dbpath)
 {
 	if (pathfilter == NULL)
@@ -231,7 +231,6 @@ getpathfilter(void)
 void
 setup_sortfilter(int a_format, int a_unique, int a_passthru)
 {
-	makesortfilter(a_format, a_unique, a_passthru);
 	format = a_format;
 	unique = a_unique;
 	passthru = a_passthru;
@@ -242,7 +241,6 @@ setup_sortfilter(int a_format, int a_unique, int a_passthru)
 void
 setup_pathfilter(int a_format, int a_type, const char *a_root, const char *a_cwd, const char *a_dbpath)
 {
-	makepathfilter(a_format, a_type, a_root, a_cwd, a_dbpath);
 	format = a_format;
 	type = a_type;
 	strlimcpy(root, a_root, sizeof(root));

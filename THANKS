@@ -29,6 +29,7 @@ Andy Zhou		bug report about gtags-parser overlook 'extern' prefixed function.
 Bakken, Luke		bug fix method about stat() in htags(1).
 Bert Gijsbers		investigation about mandoc macro and a bug report.
 Bob Bentley		bug report about bless.sh and gtags.
+Bvk chaitanya		bug report about global (it cannot find gtags).
 Christoph Conrad	bug report and advice about S.u.S.E Linux 5.1.
 Daisuke Kawahara	bug report about redifinition in gtags.el.
 Dan Fandrich		port to Windows 32 environment.

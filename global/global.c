@@ -89,7 +89,6 @@ int show_filter;			/* undocumented command */
 int nofilter;
 int nosource;				/* undocumented command */
 int debug;
-const char *gtags;
 int unique;
 int format;
 int passthru;
@@ -366,18 +365,14 @@ main(int argc, char **argv)
 		exit(0);
 	}
 	/*
-	 * get gtags's path.
-	 */
-	gtags = usable("gtags");
-	if (!gtags)
-		die("gtags command not found.");
-	gtags = check_strdup(gtags);
-	/*
 	 * incremental update of tag files.
 	 */
 	if (uflag) {
 		STRBUF	*sb = strbuf_open(0);
+		char *gtags = usable("gtags");
 
+		if (!gtags)
+			die("gtags command not found.");
 		if (chdir(root) < 0)
 			die("cannot change directory to '%s'.", root);
 		strbuf_puts(sb, gtags);
@@ -453,6 +448,9 @@ main(int argc, char **argv)
 	 */
 	if (show_filter) {
 		STRBUF  *sb;
+
+		makesortfilter(format, unique, passthru);
+		makepathfilter(format, aflag ? PATH_ABSOLUTE : PATH_RELATIVE, root, cwd, dbpath);
 
 		switch (show_filter) {
 		case SORT_FILTER:
