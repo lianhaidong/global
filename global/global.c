@@ -861,6 +861,8 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 {
 	char rootdir[MAXPATHLEN+1];
 	char buf[MAXPATHLEN+1], *path;
+	const char *basename;
+	STATIC_STRBUF(dir);
 	int count = 0;
 	STRBUF *comline = strbuf_open(0);
 	STRBUF *path_list = strbuf_open(MAXPATHLEN);
@@ -909,11 +911,26 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 		/*
 		 * convert path into relative from root directory of source tree.
 		 */
-		path = realpath(av, buf);
+		strbuf_clear(dir);
+		basename = locatestring(av, "/", MATCH_LAST);
+		if (basename != NULL) {
+			strbuf_nputs(dir, av, basename - av);
+			basename++;
+		} else {
+			strbuf_putc(dir, '.');
+			basename = av;
+		}
+		/*
+		 * Expand symlink only in directory part.
+		 */
+		path = realpath(strbuf_value(dir), buf);
 		if (path == NULL)
-			die("realpath(%s, buf) failed. (errno=%d).", av, errno);
+			die("realpath(%s, buf) failed. (errno=%d).", strbuf_value(dir), errno);
 		if (!isabspath(path))
 			die("realpath(3) is not compatible with BSD version.");
+		if (strcmp(path, "/") != 0)
+			strcat(path, "/");
+		strcat(path, basename);
 		/*
 		 * Remove the root part of path and insert './'.
 		 *      rootdir  /a/b/
