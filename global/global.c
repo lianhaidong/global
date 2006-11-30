@@ -419,8 +419,7 @@ main(int argc, char **argv)
 	unique = sflag ? 1 : 0;
 	/*
 	 * decide format.
-	 * The -t and -x option are given to priority more than
-	 * the --result option.
+	 * The --result option is given to priority more than the -t and -x option.
 	 */
 	if (fflag || gflag || Pflag || Iflag || (nofilter & SORT_FILTER))
 		passthru = 1;
