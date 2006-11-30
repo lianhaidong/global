@@ -241,10 +241,7 @@ gtags_open(const char *dbpath, const char *root, int db, int mode)
  *
  *	i)	gtop	descripter of GTOP
  *	i)	tag	tag name
- *	i)	ctags_x	ctags -x image
- *
- * NOTE: If format is GTAGS_COMPACT or GTAGS_PATHINDEX
- *       then this function is destructive.
+ *	i)	ctags_x	tag line (ctags -x format)
  */
 void
 gtags_put(GTOP *gtop, const char *tag, const char *ctags_x)	/* virtually const */
@@ -291,6 +288,8 @@ gtags_put(GTOP *gtop, const char *tag, const char *ctags_x)	/* virtually const *
 	} else {
 		const char *s_fid = gpath_path2fid(ptable.part[PART_PATH].start, NULL);
 
+		if (s_fid == NULL)
+			die("GPATH is corrupted.('%s' not found)", ptable.part[PART_PATH].start);
 		strbuf_reset(gtop->sb);
 		strbuf_puts(gtop->sb, s_fid);
 		strbuf_putc(gtop->sb, ' ');
