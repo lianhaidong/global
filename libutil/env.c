@@ -48,15 +48,7 @@ extern char **environ;
 void
 set_env(const char *var, const char *val)
 {
-#ifdef HAVE_PUTENV
-	STRBUF *sb = strbuf_open(0);
-
-	strbuf_sprintf(sb, "%s=%s", var, val);
-	putenv(strbuf_value(sb));
-	/* Don't free memory. putenv(3) require it. */
-#else
 	setenv(var, val, 1);
-#endif
 }
 /*
  * get_home_directory: get environment dependent home directory.

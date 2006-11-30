@@ -73,8 +73,7 @@ check_realloc(void *area, size_t size)
 char *
 check_strdup(const char *string)
 {
-	char *p = strdup(string);
-	if (p == NULL)
-		die("short of memory.");
+	char *p = check_malloc(strlen(string) + 1);
+	strcpy(p, string);
 	return p;
 }

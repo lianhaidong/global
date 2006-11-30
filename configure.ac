@@ -97,9 +97,9 @@ AC_FUNC_ALLOCA
 AC_FUNC_MEMCMP
 AC_TYPE_SIGNAL
 AC_FUNC_STRFTIME
-AC_CHECK_FUNCS(getcwd putenv strdup lstat snprintf utimes)
+AC_CHECK_FUNCS(getcwd lstat snprintf)
 AC_CHECK_FUNCS(index rindex bzero bcmp bcopy strchr strrchr memset memcmp memmove)
-AC_CHECK_FUNCS(pread pwrite putc_unlocked getc_unlocked)
+AC_CHECK_FUNCS(putc_unlocked getc_unlocked)
 AG_DJGPP
 
 INCLUDES='-I$(top_srcdir)/libutil -I$(top_srcdir)/libdb -I$(top_srcdir)/libglibc -I../libutil'
