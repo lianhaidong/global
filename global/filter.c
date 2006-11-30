@@ -45,8 +45,6 @@
  * |global(write)|->|sort filter|->|path filter|->[stdout]
  * +=============+  +===========+  +===========+
  *
- * If macro EXTERNAL_FILTER is defined, this architecture will be selected.
- *
  * (2) Internal filter (DEFAULT)
  *
  * New architecture (GLOBAL-5.0 -)
@@ -248,51 +246,6 @@ setup_pathfilter(int a_format, int a_type, const char *a_root, const char *a_cwd
 	strlimcpy(dbpath, a_dbpath, sizeof(dbpath));
 }
 
-#ifdef EXTERNAL_FILTER
-/*
- * filter_open: open output filter.
- *
- *	gi)	pathfilter
- *	gi)	sortfilter
- *	r)		tagsort structure
- */
-void
-filter_open(void)
-{
-	STRBUF *sb = strbuf_open(0);
-
-	op = stdout;
-	makefilter(sb);
-	if (strbuf_getlen(sb) > 0) {
-		op = popen(strbuf_value(sb), "w");
-		if (op == NULL)
-			die("cannot open output filter. '%s'", strbuf_value(sb));
-	}
-	strbuf_close(sb);
-}
-void
-filter_put(const char *s)
-{
-	fputs(s, op);
-	fputc('\n', op);
-}
-/*
- * filter_close: close output filter.
- *
- *	i)	ts	tagsort structure
- */
-void
-filter_close(void)
-{
-	if (op != stdout)
-		if (pclose(op) != 0)
-			die("terminated abnormally.");
-}
-#else
-
-/*----------------------------------------------------------------------*/
-/* Internal filter							*/
-/*----------------------------------------------------------------------*/
 TAGSORT *ts;
 CONVERT *cv;
 
@@ -319,6 +272,9 @@ filter_open(void)
 	cv = convert_open(type, format, root, cwd, dbpath, stdout);
 	ts = tagsort_open(output, format, unique, passthru);
 }
+/*
+ * filter_put: put tag record to the output stream.
+ */
 void
 filter_put(const char *s)
 {
@@ -339,4 +295,3 @@ filter_close(void)
 	ts = NULL;
 	cv = NULL;
 }
-#endif /* EXTERNAL_FILTER */
