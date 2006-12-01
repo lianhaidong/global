@@ -41,19 +41,11 @@
 /*
  * Internal sort filter.
  *
- * 1. ctags-x format
- *
- * This internal filter is equivalent with
- * FORMAT_CTAGS_X: 'sort -k 1,1 -k 3,3 -k 2,2n [-u]'
+ * This internal filter is equivalent with 'sort -k 1,1 -k 3,3 -k 2,2n [-u]'.
  *
  * - Requirement -
  * (1) input must be ctags-x format.
  * (2) input must be sorted in alphabetical order by tag name.
- *
- * 2. path format
- *
- * This filter is equivalent with
- * 'sort -u'.
  *
  * Usage:
  *
@@ -169,8 +161,6 @@ put_lines(int unique, char *lines, struct dup_entry *entries, int entry_count, v
  *
  *	i)	output	output function
  *	i)	format	tag format
- *			FORMAT_PATH: path name
- *			other: all format is FORMAT_CTAGS_X here.
  *	i)	unique	1: make the output unique.
  *	i)	passthru 1: pass through
  *	r)		tagsort structure
@@ -181,18 +171,9 @@ tagsort_open(void (*output)(const char *), int format, int unique, int passthru)
 	TAGSORT *ts = (TAGSORT *)check_malloc(sizeof(TAGSORT));
 
 	if (!passthru) {
-		switch (format) {
-		case FORMAT_PATH:
-			ts->dbop = dbop_open(NULL, 1, 0600, 0);
-			if (!ts->dbop)
-				die("cannot make temporary file in tagsort_open().");
-			break;
-		default:
-			ts->sb = strbuf_open(MAXBUFLEN);
-			ts->vb = varray_open(sizeof(struct dup_entry), 200);
-			ts->prev[0] = '\0';
-			break;
-		}
+		ts->sb = strbuf_open(MAXBUFLEN);
+		ts->vb = varray_open(sizeof(struct dup_entry), 200);
+		ts->prev[0] = '\0';
 	}
 	ts->output = output;
 	ts->format = format;
@@ -221,44 +202,37 @@ tagsort_put(TAGSORT *ts, const char *line)	/* virtually const */
 		ts->output(line);
 		return;
 	}
-	switch (ts->format) {
-	case FORMAT_PATH:
-		dbop_put(ts->dbop, line, "");
-		break;
-	default:
-		/*
-		 * extract the tag name.
-		 */
-		if (split((char *)line, 2, &ptable) < 2) {
-			recover(&ptable);
-			die("too small number of parts.\n'%s'", line);
-		}
-		/*
-		 * collect the records with the same tag, sort and write
-		 * using put_lines().
-		 */
-		tag = ptable.part[PART_TAG].start;
-		if (strcmp(ts->prev, tag) != 0) {
-			if (ts->prev[0] != '\0') {
-				if (ts->vb->length == 1) {
-					ts->output(strbuf_value(ts->sb));
-				} else
-					put_lines(ts->unique,
-						strbuf_value(ts->sb),
-						varray_assign(ts->vb, 0, 0),
-						ts->vb->length,
-						ts->output);
-			}
-			strlimcpy(ts->prev, tag, sizeof(ts->prev));
-			strbuf_reset(ts->sb);
-			varray_reset(ts->vb);
-		}
-		entry = varray_append(ts->vb);
-		entry->offset = strbuf_getlen(ts->sb);
+	/*
+	 * extract the tag name.
+	 */
+	if (split((char *)line, 2, &ptable) < 2) {
 		recover(&ptable);
-		strbuf_puts0(ts->sb, line);
-		break;
+		die("too small number of parts.\n'%s'", line);
 	}
+	/*
+	 * collect the records with the same tag, sort and write
+	 * using put_lines().
+	 */
+	tag = ptable.part[PART_TAG].start;
+	if (strcmp(ts->prev, tag) != 0) {
+		if (ts->prev[0] != '\0') {
+			if (ts->vb->length == 1) {
+				ts->output(strbuf_value(ts->sb));
+			} else
+				put_lines(ts->unique,
+					strbuf_value(ts->sb),
+					varray_assign(ts->vb, 0, 0),
+					ts->vb->length,
+					ts->output);
+		}
+		strlimcpy(ts->prev, tag, sizeof(ts->prev));
+		strbuf_reset(ts->sb);
+		varray_reset(ts->vb);
+	}
+	entry = varray_append(ts->vb);
+	entry->offset = strbuf_getlen(ts->sb);
+	recover(&ptable);
+	strbuf_puts0(ts->sb, line);
 }
 /*
  * tagsort_close: close sort filter
@@ -271,30 +245,18 @@ tagsort_close(TAGSORT *ts)
 	const char *path;
 
 	if (!ts->passthru) {
-		switch (ts->format) {
-		case FORMAT_PATH:
-			for (path = dbop_first(ts->dbop, NULL, NULL, DBOP_KEY);
-			     path != NULL;
-			     path = dbop_next(ts->dbop)) {
-				ts->output(path);
-			}
-			dbop_close(ts->dbop);
-			break;
-		default:
-			if (ts->prev[0] != '\0') {
-				if (ts->vb->length == 1) {
-					ts->output(strbuf_value(ts->sb));
-				} else
-					put_lines(ts->unique,
-						strbuf_value(ts->sb),
-						varray_assign(ts->vb, 0, 0),
-						ts->vb->length,
-						ts->output);
-			}
-			strbuf_close(ts->sb);
-			varray_close(ts->vb);
-			break;
+		if (ts->prev[0] != '\0') {
+			if (ts->vb->length == 1) {
+				ts->output(strbuf_value(ts->sb));
+			} else
+				put_lines(ts->unique,
+					strbuf_value(ts->sb),
+					varray_assign(ts->vb, 0, 0),
+					ts->vb->length,
+					ts->output);
 		}
+		strbuf_close(ts->sb);
+		varray_close(ts->vb);
 	}
 	(void)free(ts);
 }

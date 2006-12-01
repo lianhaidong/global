@@ -57,6 +57,7 @@
 #define GTOP_NOREGEX		8	/* don't use regular expression */
 #define GTOP_IGNORECASE		16	/* ignore case distinction */
 #define GTOP_BASICREGEX		32	/* use basic regular expression */
+#define GTOP_PATH		64	/* read path part */
 
 typedef struct {
 	DBOP *dbop;			/* descripter of DBOP */
@@ -67,6 +68,12 @@ typedef struct {
 	int openflags;			/* flags value of gtags_open() */
 	int flags;			/* flags */
 	char root[MAXPATHLEN+1];	/* root directory of source tree */
+	/*
+	 * Path name only.
+	 */
+	int path_count;
+	int path_index;
+	char **path_array;
 	/*
 	 * Stuff for compact format
 	 */
@@ -80,7 +87,8 @@ typedef struct {
 	FILE *fp;			/* descriptor of 'path' */
 	const char *lnop;		/* current line number */
 	int lno;			/* integer value of 'lnop' */
-	STRHASH *pool;			/* record pool for compact format */
+	/* used for compact format and path name only read */
+	STRHASH *pool;
 } GTOP;
 
 const char *dbname(int);

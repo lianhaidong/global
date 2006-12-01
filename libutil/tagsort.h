@@ -34,13 +34,6 @@ typedef struct {
 	int unique;				/* 1: unique */
 	int passthru;				/* 1: pass through */
 	void (*output)(const char *);		/* output function */
-	/*
-	 * for FORMAT_PATH
-	 */
-	DBOP *dbop;
-	/*
-	 * for FORMAT_CTAGS_X
-	 */
 	STRBUF *sb;
 	VARRAY *vb;
 	char prev[IDENTLEN];

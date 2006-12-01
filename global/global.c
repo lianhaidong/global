@@ -421,8 +421,6 @@ main(int argc, char **argv)
 	 * decide format.
 	 * The --result option is given to priority more than the -t and -x option.
 	 */
-	if (fflag || gflag || Pflag || Iflag || (nofilter & SORT_FILTER))
-		passthru = 1;
 	if (format == 0) {
 		if (tflag) { 			/* ctags format */
 			format = FORMAT_CTAGS;
@@ -432,8 +430,12 @@ main(int argc, char **argv)
 			format = FORMAT_PATH;
 		}
 	}
-	if (format == FORMAT_PATH)
-		unique = 1;
+	/*
+	 * These processing doesn't use sort filter.
+	 * Instead, they should do the job for their expense.
+	 */
+	if (format == FORMAT_PATH || fflag || gflag || Pflag || Iflag || (nofilter & SORT_FILTER))
+		passthru = 1;
 	/*
 	 * setup sort filter.
 	 */
@@ -1001,7 +1003,6 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 int
 search(const char *pattern, const char *root, const char *cwd, const char *dbpath, int db)
 {
-	const char *ctags_x;
 	int count = 0;
 	GTOP *gtop;
 	int flags = 0;
@@ -1029,16 +1030,31 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 	}
 	if (Gflag)
 		flags |= GTOP_BASICREGEX;
-	for (ctags_x = gtags_first(gtop, pattern, flags); ctags_x; ctags_x = gtags_next(gtop)) {
-		if (lflag) {
-			const char *q;
-			/* locate start point of a path */
-			q = locatestring(ctags_x, "./", MATCH_FIRST);
-			if (!locatestring(q, localprefix, MATCH_AT_FIRST))
-				continue;
+	if (format == FORMAT_PATH) {
+		const char *path;
+
+		flags |= GTOP_PATH;
+		for (path = gtags_first(gtop, pattern, flags); path; path = gtags_next(gtop)) {
+			if (lflag) {
+				if (!locatestring(path, localprefix, MATCH_AT_FIRST))
+					continue;
+			}
+			printtag_using(NULL, path, 0, NULL);
+			count++;
 		}
-		printtag(ctags_x);
-		count++;
+	} else {
+		const char *ctags_x, *q;
+
+		for (ctags_x = gtags_first(gtop, pattern, flags); ctags_x; ctags_x = gtags_next(gtop)) {
+			if (lflag) {
+				/* locate start point of a path */
+				q = locatestring(ctags_x, "./", MATCH_FIRST);
+				if (!locatestring(q, localprefix, MATCH_AT_FIRST))
+					continue;
+			}
+			printtag(ctags_x);
+			count++;
+		}
 	}
 	filter_close();
 	if (sb)

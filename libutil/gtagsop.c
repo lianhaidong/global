@@ -58,6 +58,7 @@
 
 #define HASHBUCKETS	256
 
+static int compare_path(const void *, const void *);
 static int compare_lno(const void *, const void *);
 static void flush_pool(GTOP *);
 static const char *genrecord(GTOP *, const char *);
@@ -329,6 +330,15 @@ gtags_delete(GTOP *gtop, IDSET *deleteset)
 	}
 }
 /*
+ * compare_path: compare function for sorting path names.
+ */
+static int
+compare_path(const void *s1, const void *s2)
+{
+	return strcmp(*(char **)s1, *(char **)s2);
+}
+
+/*
  * gtags_first: return first record
  *
  *	i)	gtop	GTOP structure
@@ -337,6 +347,7 @@ gtags_delete(GTOP *gtop, IDSET *deleteset)
  *		o may be NULL
  *	i)	flags	GTOP_PREFIX	prefix read
  *			GTOP_KEY	read key only
+ *			GTOP_PATH	read path only
  *			GTOP_NOSOURCE	don't read source file(compact format)
  *			GTOP_NOREGEX	don't use regular expression.
  *			GTOP_IGNORECASE	ignore case distinction.
@@ -353,6 +364,16 @@ gtags_first(GTOP *gtop, const char *pattern, int flags)
 	regex_t *preg = &reg;
 	const char *key = NULL;
 	const char *tagline;
+
+	/* Settlement for last time if any */
+	if (gtop->pool) {
+		strhash_close(gtop->pool);
+		gtop->pool = NULL;
+	}
+	if (gtop->path_array) {
+		free(gtop->path_array);
+		gtop->path_array = NULL;
+	}
 
 	gtop->flags = flags;
 	if (flags & GTOP_PREFIX && pattern != NULL)
@@ -402,12 +423,70 @@ gtags_first(GTOP *gtop, const char *pattern, int flags)
 		preg = NULL;
 	}
 	/*
-	 * Read first record.
+	 * If GTOP_PATH is set, at first, we collect all path names in a pool and
+	 * sort them. gtags_first() and gtags_next() returns one of the pool.
 	 */
-	tagline = dbop_first(gtop->dbop, key, preg, dbflags);
-	if (tagline == NULL || gtop->flags & GTOP_KEY)
-		return tagline;
-	return genrecord(gtop, tagline);
+	if (gtop->flags & GTOP_PATH) {
+		struct sh_entry *entry;
+		char *p;
+		const char *cp;
+		unsigned long i;
+
+		gtop->pool = strhash_open(HASHBUCKETS);
+		/*
+		 * Pool path names.
+		 *
+		 * fid		path name
+		 * +--------------------------
+		 * |100		./aaa/a.c
+		 * |105		./aaa/b.c
+		 *  ...
+		 */
+		for (tagline = dbop_first(gtop->dbop, key, preg, dbflags);
+		     tagline != NULL;
+		     tagline = dbop_next(gtop->dbop))
+		{
+			/* extract file id */
+			p = locatestring(tagline, " ", MATCH_FIRST);
+			if (p == NULL)
+				die("Illegal tag record. '%s'\n", tagline);
+			*p = '\0';
+			entry = strhash_assign(gtop->pool, tagline, 1);
+			/* new entry: get path name and set. */
+			if (entry->value == NULL) {
+				cp = gpath_fid2path(tagline, NULL);
+				if (cp == NULL)
+					die("GPATH is corrupted.(file id '%s' not found)", tagline);
+				entry->value = strhash_strdup(gtop->pool, cp, 0);
+			}
+		}
+		/*
+		 * Sort path names.
+		 *
+		 * fid		path name	path_array (sort)
+		 * +--------------------------	+---+
+		 * |100		./aaa/a.c <-------* |
+		 * |105		./aaa/b.c <-------* |
+		 *  ...				...
+		 */
+		gtop->path_array = (char **)check_malloc(gtop->pool->entries * sizeof(char *));
+		i = 0;
+		for (entry = strhash_first(gtop->pool); entry != NULL; entry = strhash_next(gtop->pool))
+			gtop->path_array[i++] = entry->value;
+		if (i != gtop->pool->entries)
+			die("Something is wrong. 'i = %d, entries = %d'" , i, gtop->pool->entries);
+		qsort(gtop->path_array, gtop->pool->entries, sizeof(char *), compare_path);
+		gtop->path_count = gtop->pool->entries;
+		gtop->path_index = 0;
+
+		return (gtop->path_index < gtop->path_count)
+			 ? gtop->path_array[gtop->path_index++] : NULL;
+	} else {
+		tagline = dbop_first(gtop->dbop, key, preg, dbflags);
+		if (tagline == NULL || gtop->flags & GTOP_KEY)
+			return tagline;
+		return genrecord(gtop, tagline);
+	}
 }
 /*
  * gtags_next: return followed record
@@ -421,12 +500,17 @@ gtags_next(GTOP *gtop)
 {
 	const char *tagline;
 
-	if (gtop->format & GTAGS_COMPACT && gtop->lnop != NULL)
-		return genrecord_compact(gtop);
-	tagline = dbop_next(gtop->dbop);
-	if (tagline == NULL || gtop->flags & GTOP_KEY)
-		return tagline;
-	return genrecord(gtop, tagline);
+	if (gtop->flags & GTOP_PATH) {
+		return (gtop->path_index < gtop->path_count)
+			 ? gtop->path_array[gtop->path_index++] : NULL;
+	} else {
+		if (gtop->format & GTAGS_COMPACT && gtop->lnop != NULL)
+			return genrecord_compact(gtop);
+		tagline = dbop_next(gtop->dbop);
+		if (tagline == NULL || gtop->flags & GTOP_KEY)
+			return tagline;
+		return genrecord(gtop, tagline);
+	}
 }
 /*
  * gtags_close: close tag file
@@ -441,10 +525,12 @@ gtags_close(GTOP *gtop)
 	if (gtop->format & GTAGS_COMPRESS)
 		abbrev_close();
 	if (gtop->pool) {
-		if (gtop->prev_path[0])
+		if (gtop->format & GTAGS_COMPACT && gtop->prev_path[0])
 			flush_pool(gtop);
 		strhash_close(gtop->pool);
 	}
+	if (gtop->path_array)
+		free(gtop->path_array);
 	if (gtop->sb)
 		strbuf_close(gtop->sb);
 	if (gtop->ib)
