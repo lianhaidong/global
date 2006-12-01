@@ -242,8 +242,6 @@ tagsort_put(TAGSORT *ts, const char *line)	/* virtually const */
 void
 tagsort_close(TAGSORT *ts)
 {
-	const char *path;
-
 	if (!ts->passthru) {
 		if (ts->prev[0] != '\0') {
 			if (ts->vb->length == 1) {
