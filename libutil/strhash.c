@@ -93,6 +93,7 @@ strhash_open(int buckets)
 	sh->buckets = buckets;
 	obstack_init(&sh->pool);
 	sh->first_object = obstack_alloc(&sh->pool, 1);		/* used for resetting */
+	sh->entries = 0;
 	return sh;
 }
 /*
@@ -127,6 +128,7 @@ strhash_assign(STRHASH *sh, const char *name, int force)
 		entry->name = obstack_copy0(&sh->pool, name, strlen(name));
 		entry->value = NULL;
 		SLIST_INSERT_HEAD(head, entry, ptr);
+		sh->entries++;
 	}
 	return entry;
 }
@@ -201,6 +203,7 @@ strhash_reset(STRHASH *sh)
 	 * Free all memory in sh->pool but leave it valid for further allocation.
 	 */
 	obstack_free(&sh->pool, sh->first_object);
+	sh->entries = 0;
 }
 /*
  * strhash_close: close hash array.
