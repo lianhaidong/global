@@ -474,7 +474,7 @@ gtags_first(GTOP *gtop, const char *pattern, int flags)
 		for (entry = strhash_first(gtop->pool); entry != NULL; entry = strhash_next(gtop->pool))
 			gtop->path_array[i++] = entry->value;
 		if (i != gtop->pool->entries)
-			die("Something is wrong. 'i = %d, entries = %d'" , i, gtop->pool->entries);
+			die("Something is wrong. 'i = %lu, entries = %lu'" , i, gtop->pool->entries);
 		qsort(gtop->path_array, gtop->pool->entries, sizeof(char *), compare_path);
 		gtop->path_count = gtop->pool->entries;
 		gtop->path_index = 0;
