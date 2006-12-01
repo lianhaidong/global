@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Tama Communications Corporation
+ * Copyright (c) 2005, 2006 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -49,7 +49,7 @@ entry = strhash_assign(hash, "name1", 1);	// allocate entry for the name.
 						+-------------+
 // strhash_xxx() doesn't affect entry->value. So, you can use it freely.
 
-entry->value = strdup("NAME1");
+entry->value = strhash_strdup("NAME1");
 						entry
 						+-------------+
 						|name: "name1"|
@@ -92,6 +92,7 @@ strhash_open(int buckets)
 		SLIST_INIT(&sh->htab[i]);
 	sh->buckets = buckets;
 	obstack_init(&sh->pool);
+	sh->first_object = obstack_alloc(&sh->pool, 1);		/* used for resetting */
 	return sh;
 }
 /*
@@ -196,8 +197,10 @@ strhash_reset(STRHASH *sh)
 	for (i = 0; i < sh->buckets; i++) {
 		SLIST_INIT(&sh->htab[i]);
 	}
-	obstack_free(&sh->pool, NULL);
-	obstack_init(&sh->pool);
+	/*
+	 * Free all memory in sh->pool but leave it valid for further allocation.
+	 */
+	obstack_free(&sh->pool, sh->first_object);
 }
 /*
  * strhash_close: close hash array.

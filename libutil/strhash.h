@@ -35,6 +35,7 @@ typedef struct {
 	int buckets;			/* number of buckets		*/
 	struct sh_head *htab;		/* hash buckets			*/
 	struct obstack pool;		/* memory pool for obstack	*/
+	char *first_object;		/* first object	(for reset)	*/
 	/*
 	 * iterator
 	 */
