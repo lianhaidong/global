@@ -539,27 +539,14 @@ completion(const char *dbpath, const char *root, const char *prefix)
 /*
  * printtag: print a tag's line
  *
- *	i)	ctags_x	ctags -x format record
+ *	i)	tagline	tag record
+ *
+ * Tagline is assumed to be ctags-x or path format.
  */
 void
-printtag(const char *ctags_x)		/* virtually const */
+printtag(const char *tagline)
 {
-	SPLIT ptable;
-
-	switch (format) {
-	case FORMAT_PATH:
-		split((char *)ctags_x, 4, &ptable);
-		printtag_using(
-			NULL,					/* tag */
-			ptable.part[PART_PATH].start,		/* path */
-			0,					/* line no */
-			NULL);
-		recover(&ptable);
-		break;
-	default:
-		filter_put(ctags_x);
-		break;
-	}
+	filter_put(tagline);
 }
 /*
  * printtag_using: print a tag's line with arguments
@@ -587,18 +574,7 @@ printtag_using(const char *tag, const char *path, int lineno, const char *line)
 			;
 		path = edit;
 	}
-	/*
-	 * The other format than FORMAT_PATH is always written as FORMAT_CTAGS_X.
-	 * Format conversion will be done in the following process.
-	 */
-	switch (format) {
-	case FORMAT_PATH:
-		strbuf_puts(sb, path);
-		break;
-	default:
-		strbuf_sprintf(sb, "%-16s %4d %-16s %s", tag, lineno, path, line);
-		break;
-	}
+	strbuf_sprintf(sb, "%-16s %4d %-16s %s", tag, lineno, path, line);
 	filter_put(strbuf_value(sb));
 }
 /*
@@ -660,7 +636,7 @@ idutils(const char *pattern, const char *dbpath)
 		count++;
 		switch (format) {
 		case FORMAT_PATH:
-			printtag_using(NULL, path, 0, NULL);
+			printtag(path);
 			break;
 		default:
 			/* extract line number */
@@ -747,9 +723,12 @@ grep(const char *pattern, const char *dbpath)
 			linenum++;
 			if (regexec(&preg, buffer, 0, 0, 0) == 0) {
 				count++;
-				printtag_using(edit, path, linenum, buffer);
-				if (format == FORMAT_PATH)
+				if (format == FORMAT_PATH) {
+					printtag(path);
 					break;
+				} else {
+					printtag_using(edit, path, linenum, buffer);
+				}
 			}
 		}
 		fclose(fp);
@@ -825,7 +804,10 @@ pathlist(const char *pattern, const char *dbpath)
 		p = path + strlen(localprefix) - 1;
 		if (pattern && regexec(&preg, p, 0, 0, 0) != 0)
 			continue;
-		printtag_using("path", path, 1, " ");
+		if (format == FORMAT_PATH)
+			printtag(path);
+		else
+			printtag_using("path", path, 1, " ");
 		count++;
 	}
 	gfind_close(gp);
@@ -870,6 +852,8 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 	XARGS *xp;
 	char *ctags_x;
 
+	if (format == FORMAT_PATH)
+		die("Something wrong. FORMAT_PATH in parsefile().");
 	snprintf(rootdir, sizeof(rootdir), "%s/", root);
 	/*
 	 * teach parser where is dbpath.
@@ -1039,7 +1023,7 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 				if (!locatestring(path, localprefix, MATCH_AT_FIRST))
 					continue;
 			}
-			printtag_using(NULL, path, 0, NULL);
+			printtag(path);
 			count++;
 		}
 	} else {
