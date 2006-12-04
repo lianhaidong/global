@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Tama Communications Corporation
+ * Copyright (c) 2005, 2006 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -24,11 +24,14 @@ typedef struct {
 	int size;
 	int max;
 	unsigned char *set;
+	int lastid;		/* used by idset_first() and idset_next() */
 } IDSET;
 
 IDSET *idset_open(unsigned int);
 void idset_add(IDSET *, unsigned int);
 int idset_contains(IDSET *, unsigned int);
+int idset_first(IDSET *);
+int idset_next(IDSET *);
 int idset_count(IDSET *);
 void idset_close(IDSET *);
 

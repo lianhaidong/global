@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Tama Communications Corporation
+ * Copyright (c) 2005, 2006 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -63,7 +63,7 @@ idset_open(unsigned int size)
 	IDSET *idset = (IDSET *)check_malloc(sizeof(IDSET));
 
 	idset->set = (unsigned char *)check_calloc((size + CHAR_BIT - 1) / CHAR_BIT, 1);
-	idset->max = 0;
+	idset->max = -1;
 	idset->size = size;
 	return idset;
 }
@@ -79,8 +79,8 @@ idset_add(IDSET *idset, unsigned int id)
 	if (id >= idset->size)
 		die("idset_add: id is out of range.");
 	idset->set[id / CHAR_BIT] |= 1 << (id % CHAR_BIT);
-	if (id >= idset->max)
-		idset->max = id + 1;
+	if (id > idset->max)
+		idset->max = id;
 }
 /*
  * Whether or not idset includes specified id.
@@ -92,11 +92,69 @@ idset_add(IDSET *idset, unsigned int id)
 int
 idset_contains(IDSET *idset, unsigned int id)
 {
-	return (id >= idset->max) ? 0 :
+	return (id > idset->max) ? 0 :
 			(idset->set[id / CHAR_BIT] & (1 << (id % CHAR_BIT)));
 }
 /*
- * Return bits of idset.
+ * Get first id.
+ *
+ *      i)      idset   idset structure
+ *      r)              id (-1: end of id)
+ *
+ */
+int
+idset_first(IDSET *idset)
+{
+	int i, limit = idset->max / CHAR_BIT + 1;
+	int index0 = 0;
+
+	if (idset->max == -1)
+		return -1;
+	for (i = index0; i < limit && idset->set[i] == 0; i++)
+		;
+	if (i >= limit)
+		return -1;
+	index0 = i;
+	for (i = 0; i < CHAR_BIT; i++)
+		if ((1 << i) & idset->set[index0])
+			return idset->lastid = index0 * CHAR_BIT + i;
+	die("idset_first: internal error.");
+}
+/*
+ * Get next id.
+ *
+ *      i)      idset   idset structure
+ *      r)              id (-1: end of id)
+ *
+ */
+int
+idset_next(IDSET *idset)
+{
+	int i, limit = idset->max / CHAR_BIT + 1;
+	int index0, index1;
+
+	if (idset->max == -1)
+		return -1;
+	if (idset->lastid >= idset->max)
+		return -1;
+	index0 = idset->lastid / CHAR_BIT;
+	index1 = idset->lastid % CHAR_BIT;
+	for (i = ++index1; i < CHAR_BIT; i++)
+		if ((1 << i) & idset->set[index0])
+			return idset->lastid = index0 * CHAR_BIT + i;
+	index0++;
+	for (i = index0; i < limit && idset->set[i] == 0; i++)
+		;
+	if (i >= limit)
+		return -1;
+	index0 = i;
+	for (i = 0; i < CHAR_BIT; i++)
+		if ((1 << i) & idset->set[index0])
+			return idset->lastid = index0 * CHAR_BIT + i;
+	die("idset_next: internal error.");
+}
+/*
+ * Return the number of bits.
  *
  *	i)	idset	idset structure
  *	r)		number of bits
@@ -106,9 +164,8 @@ idset_count(IDSET *idset)
 {
 	int id, count = 0;
 
-	for (id = 0; id < idset->max; id++)
-		if (idset->set[id / CHAR_BIT] & (1 << (id % CHAR_BIT)))
-			count++;
+	for (id = idset_first(idset); id != -1; id = idset_next(idset))
+		count++;
 	return count;
 }
 /*
