@@ -595,7 +595,7 @@ incremental(const char *dbpath, const char *root)
 	/*
 	 * execute updating.
 	 */
-	if (deleteset->max + strbuf_getlen(addlist)) {
+	if (deleteset->max >= 0 || strbuf_getlen(addlist) > 0) {
 		int db;
 
 		for (db = GTAGS; db < GTAGLIM; db++) {
@@ -705,17 +705,15 @@ updatetags(const char *dbpath, const char *root, IDSET *deleteset, STRBUF *addli
 		int i;
 
 		seqno = 1;
-		for (i = 0; i < deleteset->max; i++) {
-			if (idset_contains(deleteset, i)) {
-				snprintf(fid, sizeof(fid), "%d", i);
-				path = gpath_fid2path(fid, NULL);
-				if (path == NULL)
-					die("GPATH is corrupted.");
-				fprintf(stderr, " [%d/%d] deleting tags of %s\n", seqno++, total, path + 2);
-			}
+		for (i = idset_first(deleteset); i != -1; i = idset_next(deleteset)) {
+			snprintf(fid, sizeof(fid), "%d", i);
+			path = gpath_fid2path(fid, NULL);
+			if (path == NULL)
+				die("GPATH is corrupted.");
+			fprintf(stderr, " [%d/%d] deleting tags of %s\n", seqno++, total, path + 2);
 		}
 	}
-	if (deleteset->max > 0)
+	if (deleteset->max >= 0)
 		gtags_delete(gtop, deleteset);
 	gtop->flags = 0;
 	if (extractmethod)
