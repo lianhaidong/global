@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 1999, 2000, 2004
+ * Copyright (c) 1998, 1999, 2000, 2004, 2006
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -115,4 +115,35 @@ strtrim(const char *p, int flag, int *len)
 	if (len)
 		*len = strbuf_getlen(sb);
 	return strbuf_value(sb);
+}
+/*
+ * strcmp with terminate character.
+ *
+ *	i)	s1	string1
+ *	i)	s2	string2
+ *	i)	term	terminate character
+ *	r)		==0: equal, !=0: not equal
+ *
+ * Usage:
+ *	strcmp_withterm("aaa", "aaa", ':')		=> 0
+ *	strcmp_withterm("aaa:bbb", "aaa", ':')		=> 0
+ *	strcmp_withterm("aaa:bbb", "aaa:ccc", ':')	=> 0
+ *	strcmp_withterm("aaa/bbb", "aaa/ccc", ':')	=> -1
+ */
+int
+strcmp_withterm(const char *s1, const char *s2, int term)
+{
+	unsigned int c1, c2;
+
+	do {
+		c1 = *s1++;
+		c2 = *s2++;
+		/* replace terminate character with NULL */
+		if (c1 == term)
+			c1 = '\0';
+		if (c2 == term)
+			c2 = '\0';
+	} while (c1 == c2 && c1 != '\0');
+
+	return c1 - c2;
 }
