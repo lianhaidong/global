@@ -29,7 +29,7 @@
 #include "die.h"
 #include "strhash.h"
 #include "hash-string.h"
-#include "obstack.h"
+#include "pool.h"
 
 /*
 
@@ -91,8 +91,7 @@ strhash_open(int buckets)
 	for (i = 0; i < buckets; i++)
 		SLIST_INIT(&sh->htab[i]);
 	sh->buckets = buckets;
-	obstack_init(&sh->pool);
-	sh->first_object = obstack_alloc(&sh->pool, 1);		/* used for resetting */
+	sh->pool = pool_open();
 	sh->entries = 0;
 	return sh;
 }
@@ -124,8 +123,8 @@ strhash_assign(STRHASH *sh, const char *name, int force)
 	 * If not found, allocate an entry.
 	 */
 	if (entry == NULL && force) {
-		entry = obstack_alloc(&sh->pool, sizeof(struct sh_entry));
-		entry->name = obstack_copy0(&sh->pool, name, strlen(name));
+		entry = pool_malloc(sh->pool, sizeof(struct sh_entry));
+		entry->name = pool_strdup(sh->pool, name, 0);
 		entry->value = NULL;
 		SLIST_INSERT_HEAD(head, entry, ptr);
 		sh->entries++;
@@ -144,9 +143,7 @@ strhash_assign(STRHASH *sh, const char *name, int force)
 char *
 strhash_strdup(STRHASH *sh, const char *string, int size)
 {
-	if (size == 0)
-		size = strlen(string);
-	return obstack_copy0(&sh->pool, string, size);
+	return pool_strdup(sh->pool, string, size);
 }
 /*
  * strhash_first: get first entry
@@ -202,7 +199,7 @@ strhash_reset(STRHASH *sh)
 	/*
 	 * Free all memory in sh->pool but leave it valid for further allocation.
 	 */
-	obstack_free(&sh->pool, sh->first_object);
+	pool_reset(sh->pool);
 	sh->entries = 0;
 }
 /*
@@ -213,7 +210,7 @@ strhash_reset(STRHASH *sh)
 void
 strhash_close(STRHASH *sh)
 {
-	obstack_free(&sh->pool, NULL);
+	pool_close(sh->pool);
 	free(sh->htab);
 	free(sh);
 }

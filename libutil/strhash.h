@@ -20,7 +20,7 @@
 #ifndef _STRHASH_H
 #define _STRHASH_H
 
-#include "obstack.h"
+#include "pool.h"
 #include "queue.h"
 
 struct sh_entry {
@@ -34,8 +34,7 @@ SLIST_HEAD(sh_head, sh_entry);
 typedef struct {
 	int buckets;			/* number of buckets		*/
 	struct sh_head *htab;		/* hash buckets			*/
-	struct obstack pool;		/* memory pool for obstack	*/
-	char *first_object;		/* first object	(for reset)	*/
+	POOL *pool;			/* memory pool			*/
 	unsigned long entries;		/* number of entries		*/
 	/*
 	 * iterator
