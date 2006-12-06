@@ -518,7 +518,6 @@ main(int argc, char **argv)
 void
 completion(const char *dbpath, const char *root, const char *prefix)
 {
-	const char *p;
 	int flags = GTOP_KEY;
 	GTOP *gtop;
 	GTP *gtp;
