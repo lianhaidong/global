@@ -54,6 +54,7 @@
 #include "strbuf.h"
 #include "strhash.h"
 #include "strlimcpy.h"
+#include "strmake.h"
 #include "varray.h"
 
 #define HASHBUCKETS	256
