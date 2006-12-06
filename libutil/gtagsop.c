@@ -123,7 +123,49 @@ seekto(const char *string, int n)
 	return p;
 }
 /*
- * The concept of format version.
+ * Tag format
+ *
+ * [Specification of format version 4]
+ * 
+ * Standard format (for GTAGS)
+ * 
+ *         <file id> <tag name> <line number> <line image>
+ * 
+ *                 * Separator is single blank.
+ * 
+ *         [example]
+ *         +------------------------------------
+ *         |110 func 10 int func(int a)
+ *         |110 func 30 func(int a1, int a2)
+ * 
+ * With compact option (for GRTAGS, GSYMS)
+ * 
+ *         <file id> <tag name> <line number>,...
+ * 
+ *                 * Separator is single blank.
+ * 
+ *         [example]
+ *         +------------------------------------
+ *         |110 func 10,30
+ * 
+ *         Line numbers are sorted in a line.
+ * 
+ * [Description]
+ * 
+ * o Standard format is applied to GTAGS, and compact format is applied
+ *   to GRTAGS and GSYMS by default.
+ * o Above two formats are same to the first line number. So, we can use
+ *   common function to sort them.
+ * o Separator is single blank.
+ *   This decrease disk space used a little, and make it easy to parse
+ *   tag record.
+ * o Use file id instead of path name.
+ *   This allows blanks in path name at least in tag files.
+ * o Put file id at the head of tag record.
+ *   We can access file id without string processing.
+ *   This is advantageous for deleting tag record when incremental updating.
+ * 
+ * [Concept of format version]
  *
  * Since GLOBAL's tag files are machine independent, they can be distributed
  * apart from GLOBAL itself. For example, if some network file system available,
@@ -138,13 +180,6 @@ seekto(const char *string, int n)
  *    is larger than its acceptable version number then global give up work
  *    any more and display error message.
  * 3. If version number is not found then it assumes version 1.
- *
- * [Format version 4 (the latest version)]
- *
- * Tag format:
- *	<file id> <tag name> <line number> <line image>
- * Tag format with COMPACT option:
- *	<file id> <tag name> <line number>[,...]
  *
  * [History of format version]
  *
