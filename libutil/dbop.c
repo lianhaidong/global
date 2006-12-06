@@ -111,7 +111,7 @@ dbop_open(const char *path, int mode, int perm, int flags)
 	db = dbopen(path, rw, 0600, DB_BTREE, &info);
 	if (!db)
 		return NULL;
-	dbop = (DBOP *)check_malloc(sizeof(DBOP));
+	dbop = (DBOP *)check_calloc(sizeof(DBOP), 1);
 	if (path == NULL)
 		dbop->dbname[0] = '\0';
 	else
