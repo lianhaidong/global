@@ -1024,9 +1024,10 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 	for (gtp = gtags_first(gtop, pattern, flags); gtp; gtp = gtags_next(gtop)) {
 		if (lflag && !locatestring(gtp->name, localprefix, MATCH_AT_FIRST))
 			continue;
-		if (format == FORMAT_PATH)
+		if (format == FORMAT_PATH) {
 			printtag(gtp->name);
-		else if (gtop->format &  GTAGS_COMPACT) {
+			count++;
+		} else if (gtop->format &  GTAGS_COMPACT) {
 			int last_lineno = 0;
 			/*
 			 *                    a          b
@@ -1076,6 +1077,7 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 					}
 				}
 				printtag_using(tagname, gtp->name, lno, src);
+				count++;
 			}
 		} else {
 			/*
@@ -1099,8 +1101,8 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 			if (gtop->format & GTAGS_COMPRESS)
 				image = (char *)uncompress(image, tagname);
 			printtag_using(tagname, gtp->name, gtp->lineno, image);
+			count++;
 		}
-		count++;
 	}
 	filter_close();
 	if (sb)
