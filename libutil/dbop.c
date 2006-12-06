@@ -351,6 +351,10 @@ dbop_next(DBOP *dbop)
 	DBT key, dat;
 	int status;
 
+	if (dbop->unread) {
+		dbop->unread = 0;
+		return dbop->lastdat;
+	}
 	while ((status = (*db->seq)(db, &key, &dat, R_NEXT)) == RET_SUCCESS) {
 		assert(dat.data != NULL);
 		/* skip meta records */
@@ -381,6 +385,18 @@ dbop_next(DBOP *dbop)
 	if (status == RET_ERROR)
 		die("dbop_next failed.");
 	return NULL;
+}
+/*
+ * dbop_unread: unread record to read again.
+ * 
+ *	i)	dbop	dbop descripter
+ *
+ * Dbop_next will read this record later.
+ */
+void
+dbop_unread(DBOP *dbop)
+{
+	dbop->unread = 1;
 }
 /*
  * dbop_lastdat: get last data

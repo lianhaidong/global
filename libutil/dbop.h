@@ -43,7 +43,9 @@ typedef	struct {
 	int ioflags;			/* flags of xxxx_first() */
 	char *lastdat;			/* the data of last located record */
 	int lastsize;			/* the size of the lastdat */
+	char *lastkey;			/* the key of last located record */
 	regex_t	*preg;			/* compiled regular expression */
+	int unread;			/* leave record to read again */
 	/*
 	 * (2) DB185 PART
 	 */
@@ -74,6 +76,7 @@ void dbop_delete(DBOP *, const char *);
 void dbop_update(DBOP *, const char *, const char *);
 const char *dbop_first(DBOP *, const char *, regex_t *, int);
 const char *dbop_next(DBOP *);
+void dbop_unread(DBOP *);
 const char *dbop_lastdat(DBOP *, int *);
 const char *dbop_getflag(DBOP *);
 const char *dbop_getoption(DBOP *, const char *);
