@@ -59,11 +59,68 @@
 #define HASHBUCKETS	256
 
 static int compare_path(const void *, const void *);
-static int compare_lno(const void *, const void *);
+static int compare_lineno(const void *, const void *);
+static int compare_tags(const void *, const void *);
+static const char *seekto(const char *, int);
 static void flush_pool(GTOP *);
-static const char *genrecord(GTOP *, const char *);
-static const char *genrecord_compact(GTOP *);
+static void segment_read(GTOP *);
 
+/*
+ * compare_path: compare function for sorting path names.
+ */
+static int
+compare_path(const void *s1, const void *s2)
+{
+	return strcmp(*(char **)s1, *(char **)s2);
+}
+/*
+ * compare_lineno: compare function for sorting line number.
+ */
+static int
+compare_lineno(const void *s1, const void *s2)
+{
+	return *(const int *)s1 - *(const int *)s2;
+}
+/*
+ * compare_tags: compare function for sorting GTPs.
+ */
+static int
+compare_tags(const void *v1, const void *v2)
+{
+	const GTP *e1 = v1, *e2 = v2;
+	int ret;
+
+	if ((ret = strcmp(e1->name, e2->name)) != 0)
+		return ret;
+	return e1->lineno - e2->lineno;
+}
+/*
+ * seekto: seek to the specified item of tag record.
+ *
+ * Usage:
+ *           0         1          2
+ * tagline = <file id> <tag name> <line number>
+ *
+ * <file id>     = seekto(tagline, SEEKTO_FILEID);
+ * <tag name>    = seekto(tagline, SEEKTO_TAGNAME);
+ * <line number> = seekto(tagline, SEEKTO_LINENO);
+ */
+#define SEEKTO_FILEID	0
+#define SEEKTO_TAGNAME	1
+#define SEEKTO_LINENO	2
+
+static const char *
+seekto(const char *string, int n)
+{
+	const char *p = string;
+	while (n--) {
+		p = strchr(p, ' ');
+		if (p == NULL)
+			return NULL;
+		p++;
+	}
+	return p;
+}
 /*
  * The concept of format version.
  *
@@ -221,20 +278,16 @@ gtags_open(const char *dbpath, const char *root, int db, int mode)
 		else
 			die("GPATH not found.");
 	}
+	gtop->sb = strbuf_open(0);	/* This buffer is used for working area. */
 	/*
 	 * Stuff for compact format.
 	 */
 	if (gtop->format & GTAGS_COMPACT) {
 		assert(root != NULL);
 		strlimcpy(gtop->root, root, sizeof(gtop->root));
-		if (gtop->mode == GTAGS_READ)
-			gtop->ib = strbuf_open(MAXBUFLEN);
-		else {
-			gtop->sb = strbuf_open(0);
+		if (gtop->mode != GTAGS_READ)
 			gtop->pool = strhash_open(HASHBUCKETS);
-		}
-	} else if (gtop->mode != GTAGS_READ)
-		gtop->sb = strbuf_open(0);
+	}
 	return gtop;
 }
 /*
@@ -330,15 +383,6 @@ gtags_delete(GTOP *gtop, IDSET *deleteset)
 	}
 }
 /*
- * compare_path: compare function for sorting path names.
- */
-static int
-compare_path(const void *s1, const void *s2)
-{
-	return strcmp(*(char **)s1, *(char **)s2);
-}
-
-/*
  * gtags_first: return first record
  *
  *	i)	gtop	GTOP structure
@@ -348,13 +392,13 @@ compare_path(const void *s1, const void *s2)
  *	i)	flags	GTOP_PREFIX	prefix read
  *			GTOP_KEY	read key only
  *			GTOP_PATH	read path only
- *			GTOP_NOSOURCE	don't read source file(compact format)
  *			GTOP_NOREGEX	don't use regular expression.
  *			GTOP_IGNORECASE	ignore case distinction.
  *			GTOP_BASICREGEX	use basic regular expression.
+ *			GTOP_NOSORT	don't sort
  *	r)		record
  */
-const char *
+GTP *
 gtags_first(GTOP *gtop, const char *pattern, int flags)
 {
 	int dbflags = 0;
@@ -475,17 +519,46 @@ gtags_first(GTOP *gtop, const char *pattern, int flags)
 			gtop->path_array[i++] = entry->value;
 		if (i != gtop->pool->entries)
 			die("Something is wrong. 'i = %lu, entries = %lu'" , i, gtop->pool->entries);
-		qsort(gtop->path_array, gtop->pool->entries, sizeof(char *), compare_path);
+		if (!(gtop->flags & GTOP_NOSORT))
+			qsort(gtop->path_array, gtop->pool->entries, sizeof(char *), compare_path);
 		gtop->path_count = gtop->pool->entries;
 		gtop->path_index = 0;
 
-		return (gtop->path_index < gtop->path_count)
-			 ? gtop->path_array[gtop->path_index++] : NULL;
+		if (gtop->path_index >= gtop->path_count)
+			return NULL;
+		gtop->gtp.name = gtop->path_array[gtop->path_index++];
+		return &gtop->gtp;
+	} else if (gtop->flags & GTOP_KEY) {
+		return ((gtop->gtp.name = dbop_first(gtop->dbop, key, preg, dbflags)) == NULL)
+			? NULL : &gtop->gtp;
 	} else {
+		strbuf_reset(gtop->sb);
+		if (gtop->vb == NULL)
+			gtop->vb = varray_open(sizeof(GTP), 200);
+		else
+			varray_reset(gtop->vb);
+		if (gtop->spool == NULL)
+			gtop->spool = pool_open();
+		else
+			pool_reset(gtop->spool);
+		if (gtop->hash == NULL)
+			gtop->hash = strhash_open(256);
+		else
+			strhash_reset(gtop->hash);
 		tagline = dbop_first(gtop->dbop, key, preg, dbflags);
-		if (tagline == NULL || gtop->flags & GTOP_KEY)
-			return tagline;
-		return genrecord(gtop, tagline);
+		if (tagline == NULL)
+			return NULL;
+		/*
+		 * Dbop_next() wil read the same record again.
+		 * Prev_tagname is valid then.
+		 */
+		gtop->prev_tagname = seekto(tagline, SEEKTO_TAGNAME);
+		dbop_unread(gtop->dbop);
+		/*
+		 * Read and sort segment of tags.
+		 */
+		segment_read(gtop);
+		return  &gtop->gtp_array[gtop->gtp_index++];
 	}
 }
 /*
@@ -495,21 +568,29 @@ gtags_first(GTOP *gtop, const char *pattern, int flags)
  *	r)		record
  *			NULL end of tag
  */
-const char *
+GTP *
 gtags_next(GTOP *gtop)
 {
-	const char *tagline;
-
 	if (gtop->flags & GTOP_PATH) {
-		return (gtop->path_index < gtop->path_count)
-			 ? gtop->path_array[gtop->path_index++] : NULL;
+		if (gtop->path_index >= gtop->path_count)
+			return NULL;
+		gtop->gtp.name = gtop->path_array[gtop->path_index++];
+		return &gtop->gtp;
+	} else if (gtop->flags & GTOP_KEY) {
+		return ((gtop->gtp.name = dbop_next(gtop->dbop)) == NULL)
+			? NULL : &gtop->gtp;
 	} else {
-		if (gtop->format & GTAGS_COMPACT && gtop->lnop != NULL)
-			return genrecord_compact(gtop);
-		tagline = dbop_next(gtop->dbop);
-		if (tagline == NULL || gtop->flags & GTOP_KEY)
-			return tagline;
-		return genrecord(gtop, tagline);
+
+		if (gtop->gtp_index >= gtop->gtp_count) {
+			varray_reset(gtop->vb);
+			pool_reset(gtop->spool);
+			strbuf_reset(gtop->sb);
+			/* strhash_reset(gtop->hash); */
+			segment_read(gtop);
+		}
+		if (gtop->gtp_index >= gtop->gtp_count)
+			return NULL;
+		return &gtop->gtp_array[gtop->gtp_index++];
 	}
 }
 /*
@@ -529,23 +610,19 @@ gtags_close(GTOP *gtop)
 			flush_pool(gtop);
 		strhash_close(gtop->pool);
 	}
+	if (gtop->spool)
+		pool_close(gtop->spool);
 	if (gtop->path_array)
 		free(gtop->path_array);
 	if (gtop->sb)
 		strbuf_close(gtop->sb);
-	if (gtop->ib)
-		strbuf_close(gtop->ib);
+	if (gtop->vb)
+		varray_close(gtop->vb);
+	if (gtop->hash)
+		strhash_close(gtop->hash);
 	gpath_close();
 	dbop_close(gtop->dbop);
 	free(gtop);
-}
-/*
- * compare_lno: compare function for sorting line number.
- */
-static int
-compare_lno(const void *s1, const void *s2)
-{
-	return *(const int *)s1 - *(const int *)s2;
 }
 /*
  * flush_pool: flush the pool and write is as compact format.
@@ -586,7 +663,7 @@ flush_pool(GTOP *gtop)
 				key = entry->name;
 		}
 		/* Sort line number table */
-		qsort(lno_array, vb->length, sizeof(int), compare_lno); 
+		qsort(lno_array, vb->length, sizeof(int), compare_lineno); 
 
 		strbuf_reset(gtop->sb);
 		strbuf_puts(gtop->sb, s_fid);
@@ -619,127 +696,58 @@ flush_pool(GTOP *gtop)
 		varray_close(vb);
 	}
 }
-static char output[MAXBUFLEN+1];
 /*
- * genrecord: generate tag record
+ * Read segment of tag record and sort it.
  *
  *	i)	gtop	GTOP structure
- *	i)	tagline	tag line
- *	r)		tag record
  */
-static const char *
-genrecord(GTOP *gtop, const char *tagline)
+void
+segment_read(GTOP *gtop)
 {
-	SPLIT ptable;
-	const char *path;
-
+	const char *tagline, *fid, *path, *tagname, *lineno;
+	GTP *gtp;
+	struct sh_entry *sh;
 	/*
-	 * Extract tag name and the path.
-	 * (See libutil/format.h for the detail.)
+	 * Save tag lines.
 	 */
-	split((char *)tagline, 3, &ptable);
-	if (ptable.npart < 3) {
-		recover(&ptable);
-		die("illegal tag format.'%s'\n", tagline);
-	}
-	/* Convert from file id into the path name. */
-	path = gpath_fid2path(ptable.part[PART_FID4].start, NULL);
-	if (path == NULL)
-		die("GPATH is corrupted.(file id '%s' not found)", ptable.part[PART_FID4].start);
-	/*
-	 * Compact format
-	 */
-	if (gtop->format & GTAGS_COMPACT) {
+	while ((tagline = dbop_next(gtop->dbop)) != NULL) {
 		/*
-		 * Copy elements.
+		 * get tag name and line number.
+		 *
+		 * tagline = <file id> <tag name> <line number>
 		 */
-		gtop->line = (char *)tagline;
-		strlimcpy(gtop->tag, ptable.part[PART_TAG4].start, sizeof(gtop->tag));
-		strlimcpy(gtop->path, path, sizeof(gtop->path));
-		gtop->lnop = ptable.part[PART_LNO4].start;
-		recover(&ptable);
-		/*
-		 * Open source file.
-		 */
-		if (!(gtop->flags & GTOP_NOSOURCE)) {
-			char srcpath[MAXPATHLEN+1];
-
-			if (gtop->root)
-				snprintf(srcpath, sizeof(srcpath),
-					"%s/%s", gtop->root, &gtop->path[2]);
-			else
-				snprintf(srcpath, sizeof(srcpath), "%s", &gtop->path[2]);
-			/* close file if already opened. */
-			if (gtop->fp != NULL)
-				fclose(gtop->fp);
-			gtop->fp = fopen(srcpath, "r");
-			if (gtop->fp == NULL)
-				warning("source file '%s' is not available.\n", srcpath);
-			gtop->lno = 0;
+		tagname = seekto(tagline, SEEKTO_TAGNAME);
+		if (strcmp_withterm(gtop->prev_tagname, tagname, ' ') != 0) {
+			/*
+			 * Dbop_next() wil read the same record again.
+			 * Prev_tagname is valid then.
+			 */
+			gtop->prev_tagname = tagname;
+			dbop_unread(gtop->dbop);
+			break;
 		}
-		return genrecord_compact(gtop);
+		gtp = varray_append(gtop->vb);
+		gtp->tagline = pool_strdup(gtop->spool, tagline, 0);
+		/*
+		 * convert fid into path name with hashing.
+		 */
+		fid = (const char *)strmake(tagline, " ");
+		path = gpath_fid2path(fid, NULL);
+		if (path == NULL)
+			die("gtags_first: path not found. (fid=%s)", fid);
+		sh = strhash_assign(gtop->hash, path, 1);
+		gtp->name = sh->name;
+		lineno = seekto(gtp->tagline, SEEKTO_LINENO);
+		if (lineno == NULL)
+			die("illegal tag record.\n%s", tagline);
+		gtp->lineno = atoi(lineno);
 	}
 	/*
-	 * Standard format
+	 * Sort tag lines.
 	 */
-	else {
-		const char *src;
-
-		/*
-		 * Seek to the start point of source line.
-		 */
-		for (src = ptable.part[PART_LNO4].start; *src && !isspace(*src); src++)
-			;
-		if (*src != ' ')
-			die("illegal standard format.");
-		src++;
-		snprintf(output, sizeof(output), "%-16s %4d %-16s %s",
-			ptable.part[PART_TAG4].start,
-			atoi(ptable.part[PART_LNO4].start),
-			path,
-			gtop->format & GTAGS_COMPRESS ?
-				uncompress(src, ptable.part[PART_TAG4].start) :
-				src);
-		recover(&ptable);
-		return output;
-	}
-}
-/*
- * genrecord_compact: generate tag record from compact format
- *
- *	i)	gtop	GTOP structure
- *	r)		tag record
- */
-static const char *
-genrecord_compact(GTOP *gtop)
-{
-	const char *lnop = gtop->lnop;
-	const char *src = "";
-	int lno = 0;
-
-	/* Sanity check */
-	if (lnop == NULL || *lnop < '0' || *lnop > '9')
-		die("illegal compact format.");
-	/* get line number */
-	for (; *lnop >= '0' && *lnop <= '9'; lnop++)
-		lno = lno * 10 + *lnop - '0';
-	/*
-	 * The ',' is a mark that the following line number exists.
-	 */
-	gtop->lnop = (*lnop == ',') ? lnop + 1 : NULL;
-	if (gtop->fp) {
-		/*
-		 * If it is duplicate line, return the previous line.
-		 */
-		if (gtop->lno == lno)
-			return output;
-		while (gtop->lno < lno) {
-			if (!(src = strbuf_fgets(gtop->ib, gtop->fp, STRBUF_NOCRLF)))
-				die("unexpected end of file. '%s'", gtop->path);
-			gtop->lno++;
-		}
-	}
-	snprintf(output, sizeof(output), "%-16s %4d %-16s %s",
-		gtop->tag, lno, gtop->path, src);
-	return output;
+	gtop->gtp_array = varray_assign(gtop->vb, 0, 0);
+	gtop->gtp_count = gtop->vb->length;
+	gtop->gtp_index = 0;
+	if (!(gtop->flags & GTOP_NOSORT))
+		qsort(gtop->gtp_array, gtop->gtp_count, sizeof(GTP), compare_tags);
 }

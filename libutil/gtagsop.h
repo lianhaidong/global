@@ -29,6 +29,7 @@
 #include "idset.h"
 #include "strbuf.h"
 #include "strhash.h"
+#include "varray.h"
 
 #define COMPACTKEY	" __.COMPACT"
 #define COMPRESSKEY	" __.COMPRESS"
@@ -52,12 +53,21 @@
 #define GTAGS_DEBUG		65536	/* print information for debug */
 /* gtags_first() */
 #define GTOP_KEY		1	/* read key part */
-#define GTOP_PREFIX		2	/* prefixed read */
-#define GTOP_NOSOURCE		4	/* don't read source file */
+#define GTOP_PATH		2	/* read path part */
+#define GTOP_PREFIX		4	/* prefixed read */
 #define GTOP_NOREGEX		8	/* don't use regular expression */
 #define GTOP_IGNORECASE		16	/* ignore case distinction */
 #define GTOP_BASICREGEX		32	/* use basic regular expression */
-#define GTOP_PATH		64	/* read path part */
+#define GTOP_NOSORT		64	/* don't sort */
+
+/*
+ * This entry corresponds to one raw record.
+ */
+typedef struct {
+	const char *tagline;
+	const char *name;		/* used for tag name or path name */
+	int lineno;
+} GTP;
 
 typedef struct {
 	DBOP *dbop;			/* descripter of DBOP */
@@ -75,28 +85,36 @@ typedef struct {
 	int path_index;
 	char **path_array;
 	/*
+	 * Stuff for sort
+	 */
+	int gtp_count;
+	int gtp_index;
+	GTP *gtp_array;
+	GTP gtp;
+	POOL *spool;
+	VARRAY *vb;
+	const char *prev_tagname;
+	STRHASH *hash;
+	/*
 	 * Stuff for compact format
 	 */
-	int opened;			/* whether or not file opened */
-	char *line;			/* current record */
-	char tag[IDENTLEN+1];		/* current tag */
-	char path[MAXPATHLEN+1];	/* current path */
 	char prev_path[MAXPATHLEN+1];	/* previous path */
-	STRBUF *sb;			/* string buffer */
+#if 0
 	STRBUF *ib;			/* input buffer */
+#endif
+	STRBUF *sb;			/* string buffer */
 	FILE *fp;			/* descriptor of 'path' */
-	const char *lnop;		/* current line number */
-	int lno;			/* integer value of 'lnop' */
 	/* used for compact format and path name only read */
 	STRHASH *pool;
+
 } GTOP;
 
 const char *dbname(int);
 GTOP *gtags_open(const char *, const char *, int, int);
 void gtags_put(GTOP *, const char *, const char *);
 void gtags_delete(GTOP *, IDSET *);
-const char *gtags_first(GTOP *, const char *, int);
-const char *gtags_next(GTOP *);
+GTP *gtags_first(GTOP *, const char *, int);
+GTP *gtags_next(GTOP *);
 void gtags_close(GTOP *);
 
 #endif /* ! _GTOP_H_ */

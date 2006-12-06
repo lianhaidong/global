@@ -521,6 +521,7 @@ completion(const char *dbpath, const char *root, const char *prefix)
 	const char *p;
 	int flags = GTOP_KEY;
 	GTOP *gtop;
+	GTP *gtp;
 	int db;
 
 	flags |= GTOP_NOREGEX;
@@ -530,8 +531,8 @@ completion(const char *dbpath, const char *root, const char *prefix)
 		flags |= GTOP_PREFIX;
 	db = (sflag) ? GSYMS : GTAGS;
 	gtop = gtags_open(dbpath, root, db, GTAGS_READ);
-	for (p = gtags_first(gtop, prefix, flags); p; p = gtags_next(gtop)) {
-		fputs(p, stdout);
+	for (gtp = gtags_first(gtop, prefix, flags); gtp; gtp = gtags_next(gtop)) {
+		fputs(gtp->name, stdout);
 		fputc('\n', stdout);
 	}
 	gtags_close(gtop);
@@ -989,9 +990,13 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 {
 	int count = 0;
 	GTOP *gtop;
+	GTP *gtp;
 	int flags = 0;
 	STRBUF *sb = NULL;
+	char path[MAXPATHLEN+1];
+	FILE *fp = NULL;
 
+	path[0] = '\0';
 	/*
 	 * open tag file.
 	 */
@@ -1000,8 +1005,8 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 	/*
 	 * search through tag file.
 	 */
-	if (nosource)
-		flags |= GTOP_NOSOURCE;
+	if (nofilter & SORT_FILTER)
+		flags |= GTOP_NOSORT;
 	if (iflag) {
 		if (!isregex(pattern)) {
 			sb = strbuf_open(0);
@@ -1014,35 +1019,94 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 	}
 	if (Gflag)
 		flags |= GTOP_BASICREGEX;
-	if (format == FORMAT_PATH) {
-		const char *path;
-
+	if (format == FORMAT_PATH)
 		flags |= GTOP_PATH;
-		for (path = gtags_first(gtop, pattern, flags); path; path = gtags_next(gtop)) {
-			if (lflag) {
-				if (!locatestring(path, localprefix, MATCH_AT_FIRST))
-					continue;
-			}
-			printtag(path);
-			count++;
-		}
-	} else {
-		const char *ctags_x, *q;
+	for (gtp = gtags_first(gtop, pattern, flags); gtp; gtp = gtags_next(gtop)) {
+		if (lflag && !locatestring(gtp->name, localprefix, MATCH_AT_FIRST))
+			continue;
+		if (format == FORMAT_PATH)
+			printtag(gtp->name);
+		else if (gtop->format &  GTAGS_COMPACT) {
+			int last_lineno = 0;
+			/*
+			 *                    a          b
+			 * tagline = <file id> <tag name> <line no>,...
+			 */
+			STRBUF *sb = strbuf_open(0);
+			char *p = (char *)gtp->tagline;
+			const char *tagname;
+			const char *lnop;
+			const char *src = "";
+			int lineno = 0;
 
-		for (ctags_x = gtags_first(gtop, pattern, flags); ctags_x; ctags_x = gtags_next(gtop)) {
-			if (lflag) {
-				/* locate start point of a path */
-				q = locatestring(ctags_x, "./", MATCH_FIRST);
-				if (!locatestring(q, localprefix, MATCH_AT_FIRST))
-					continue;
+			while (*p != ' ')
+				p++;
+			*p++ = '\0';			/* a */
+			tagname = p;
+			while (*p != ' ')
+				p++;
+			*p++ = '\0';			/* b */
+			lnop = p;
+			if (!nosource && strcmp(gtp->name, path)) {
+				if (path[0] != '\0')
+					fclose(fp);
+				snprintf(path, sizeof(path), "%s/%s", gtop->root, gtp->name);
+				fp = fopen(path, "r");
+				if (fp == NULL)
+					warning("source file '%s' is not available.", path);
+				lineno = 0;
 			}
-			printtag(ctags_x);
-			count++;
+			while (*lnop) {
+				int lno = 0;
+
+				if (*lnop < '0' || *lnop > '9')
+					die("illegal compact format.");
+				for (; *lnop >= '0' && *lnop <= '9'; lnop++)
+					lno = lno * 10 + *lnop - '0';
+				if (*lnop == ',')
+					lnop++;
+				if (last_lineno == lno && unique)
+					continue;
+				last_lineno = lno;
+				if (fp) {
+					while (lineno < lno) {
+						if (!(src = strbuf_fgets(sb, fp, STRBUF_NOCRLF)))
+							die("unexpected end of file. '%s'", gtp->name);
+						lineno++;
+					}
+				}
+				printtag_using(tagname, gtp->name, lno, src);
+			}
+		} else {
+			/*
+			 *                    a          b         c
+			 * tagline = <file id> <tag name> <line no> <line image>
+			 */
+			char *p = (char *)gtp->tagline;
+			const char *tagname, *image;
+
+			while (*p != ' ')
+				p++;
+			*p++ = '\0';			/* a */
+			tagname = p;
+			while (*p != ' ')
+				p++;
+			*p++ = '\0';			/* b */
+			while (*p != ' ')
+				p++;
+			*p++ = '\0';			/* c */
+			image = p;
+			if (gtop->format & GTAGS_COMPRESS)
+				image = (char *)uncompress(image, tagname);
+			printtag_using(tagname, gtp->name, gtp->lineno, image);
 		}
+		count++;
 	}
 	filter_close();
 	if (sb)
 		strbuf_close(sb);
+	if (fp)
+		fclose(fp);
 	gtags_close(gtop);
 	return count;
 }

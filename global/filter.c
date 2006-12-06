@@ -36,27 +36,30 @@
 /*
  * Output filter
  *
- * (1) External filter
- *
- * Old architecture (- GLOBAL-4.7.8)
+ * (1) Old architecture (- GLOBAL-4.7.8)
  *
  * process1          process2       process3
  * +=============+  +===========+  +===========+
  * |global(write)|->|sort filter|->|path filter|->[stdout]
  * +=============+  +===========+  +===========+
  *
- * (2) Internal filter (DEFAULT)
- *
- * New architecture (GLOBAL-5.0 -)
+ * (2) Recent architecture (GLOBAL-5.0 - 5.3)
  *
  * 1 process
- * +============================================+
- * |global(write) ->[sort filter]->[path filter]|->[stdout]
- * +============================================+
+ * +===========================================+
+ * |global(write)->[sort filter]->[path filter]|->[stdout]
+ * +===========================================+
  *
- * This it the default architecture.
- * Function with_pathfilter() plays the role of the pipe between
- * the sort filter and path filter.
+ * (3) Current architecture (GLOBAL-5.4 -)
+ *
+ * 1 process
+ * +===========================================+
+ * |[sort filter]->global(write)->[path filter]|->[stdout]
+ * +===========================================+
+ *
+ * Sort filter is implemented in gtagsop module (libutil/gtagsop.c).
+ * Path filter is implemented in pathconvert module (libutil/pathconvert.c).
+ * Old tagsort module (libutil/tagsort.c) will be removed in near future.
  */
 /*
  * data for internal filter
@@ -246,7 +249,6 @@ setup_pathfilter(int a_format, int a_type, const char *a_root, const char *a_cwd
 	strlimcpy(dbpath, a_dbpath, sizeof(dbpath));
 }
 
-TAGSORT *ts;
 CONVERT *cv;
 
 void
@@ -260,17 +262,16 @@ without_pathfilter(const char *s)
 	fputs(s, stdout);
 	fputc('\n', stdout);
 }
+void (*output)(const char *);
 /*
  * filter_open: open output filter.
  */
 void
 filter_open(void)
 {
-	void (*output)(const char *) = (nofilter & PATH_FILTER) ?
-				without_pathfilter : with_pathfilter;
+	output = (nofilter & PATH_FILTER) ?  without_pathfilter : with_pathfilter;
 			
 	cv = convert_open(type, format, root, cwd, dbpath, stdout);
-	ts = tagsort_open(output, format, unique, passthru);
 }
 /*
  * filter_put: put tag record to the output stream.
@@ -278,7 +279,7 @@ filter_open(void)
 void
 filter_put(const char *s)
 {
-	tagsort_put(ts, s);
+	output(s);
 }
 /*
  * filter_close: close output filter.
@@ -290,8 +291,6 @@ filter_close(void)
 	 * You must call tagsort_close() first, because some records may
 	 * be left in the sort buffer.
 	 */
-	tagsort_close(ts);
 	convert_close(cv);
-	ts = NULL;
 	cv = NULL;
 }
