@@ -83,7 +83,7 @@ compare_lineno(const void *s1, const void *s2)
 	return *(const int *)s1 - *(const int *)s2;
 }
 /*
- * compare_tags: compare function for sorting GTPs.
+ * compare_tags: compare function for sorting tags.
  */
 static int
 compare_tags(const void *v1, const void *v2)
@@ -556,14 +556,14 @@ gtags_first(GTOP *gtop, const char *pattern, int flags)
 		gtop->prev_tagname = seekto(tagline, SEEKTO_TAGNAME);
 		dbop_unread(gtop->dbop);
 		/*
-		 * Read and sort segment of tags.
+		 * Read a tag segment with sorting.
 		 */
 		segment_read(gtop);
 		return  &gtop->gtp_array[gtop->gtp_index++];
 	}
 }
 /*
- * gtags_next: return followed record
+ * gtags_next: return next record.
  *
  *	i)	gtop	GTOP structure
  *	r)		record
@@ -698,9 +698,22 @@ flush_pool(GTOP *gtop)
 	}
 }
 /*
- * Read segment of tag record and sort it.
+ * Read a tag segment with sorting.
  *
  *	i)	gtop	GTOP structure
+ *	o)	gtop->gtp_array		segment table
+ *	o)	gtop->gtp_count		segment table size
+ *	o)	gtop->gtp_index		segment table index (initial value = 0)
+ *
+ * A segment is a set of tag records which have same tag name.
+ * This function read a segment from tag file, sort it and put it on segment table.
+ * This function can treat both of standard format and compact format.
+ *
+ * Sorting is done by three keys.
+ *	1st key: tag name
+ *	2nd key: file name
+ *	3rd key: line number
+ * Since all records in a segment have same tag name, you need not think about 1st key.
  */
 void
 segment_read(GTOP *gtop)
@@ -730,7 +743,7 @@ segment_read(GTOP *gtop)
 		gtp = varray_append(gtop->vb);
 		gtp->tagline = pool_strdup(gtop->spool, tagline, 0);
 		/*
-		 * convert fid into path name with hashing.
+		 * convert fid into hashed path name to save memory.
 		 */
 		fid = (const char *)strmake(tagline, " ");
 		path = gpath_fid2path(fid, NULL);
