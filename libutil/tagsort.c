@@ -168,7 +168,7 @@ put_lines(int unique, char *lines, struct dup_entry *entries, int entry_count, v
 TAGSORT *
 tagsort_open(void (*output)(const char *), int format, int unique, int passthru)
 {
-	TAGSORT *ts = (TAGSORT *)check_malloc(sizeof(TAGSORT));
+	TAGSORT *ts = (TAGSORT *)check_calloc(sizeof(TAGSORT), 1);
 
 	if (!passthru) {
 		ts->sb = strbuf_open(MAXBUFLEN);

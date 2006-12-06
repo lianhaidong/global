@@ -285,7 +285,7 @@ gpath_close(void)
 GFIND *
 gfind_open(const char *dbpath, const char *local, int target)
 {
-	GFIND *gfind = (GFIND *)check_malloc(sizeof(GFIND));
+	GFIND *gfind = (GFIND *)check_calloc(sizeof(GFIND), 1);
 
 	gfind->dbop = dbop_open(makepath(dbpath, dbname(GPATH), NULL), 0, 0, 0);
 	if (gfind->dbop == NULL)

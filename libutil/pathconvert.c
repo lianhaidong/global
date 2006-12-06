@@ -96,7 +96,7 @@ put_pathname(CONVERT *cv, const char *path)
 CONVERT *
 convert_open(int type, int format, const char *root, const char *cwd, const char *dbpath, FILE *op)
 {
-	CONVERT *cv = (CONVERT *)check_malloc(sizeof(CONVERT));
+	CONVERT *cv = (CONVERT *)check_calloc(sizeof(CONVERT), 1);
 	/*
 	 * set base directory.
 	 */

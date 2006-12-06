@@ -60,7 +60,7 @@ idset_close(idset)		[]
 IDSET *
 idset_open(unsigned int size)
 {
-	IDSET *idset = (IDSET *)check_malloc(sizeof(IDSET));
+	IDSET *idset = (IDSET *)check_calloc(sizeof(IDSET), 1);
 
 	idset->set = (unsigned char *)check_calloc((size + CHAR_BIT - 1) / CHAR_BIT, 1);
 	idset->max = -1;

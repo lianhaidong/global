@@ -54,7 +54,7 @@ pool_close(pool);					(nothing)
 POOL *
 pool_open()
 {
-	POOL *pool = (POOL *)check_malloc(sizeof(POOL));
+	POOL *pool = (POOL *)check_calloc(sizeof(POOL), 1);
 
 	obstack_init(&pool->obstack);
 	pool->first_object = obstack_alloc(&pool->obstack, 1);

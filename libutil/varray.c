@@ -87,7 +87,7 @@ static int debug = 0;
 VARRAY *
 varray_open(int size, int expand)
 {
-	VARRAY *vb = (VARRAY *)check_malloc(sizeof(VARRAY));
+	VARRAY *vb = (VARRAY *)check_calloc(sizeof(VARRAY), 1);
 
 	if (size < 1)
 		die("varray_open: size < 1.");

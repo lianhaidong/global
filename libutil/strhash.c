@@ -84,10 +84,10 @@ strhash_close(hash);				// free resources.
 STRHASH *
 strhash_open(int buckets)
 {
-	STRHASH *sh = (STRHASH *)check_malloc(sizeof(STRHASH));
+	STRHASH *sh = (STRHASH *)check_calloc(sizeof(STRHASH), 1);
 	int i;
 
-	sh->htab = (struct sh_head *)check_malloc(sizeof(struct sh_head) * buckets);
+	sh->htab = (struct sh_head *)check_calloc(sizeof(struct sh_head), buckets);
 	for (i = 0; i < buckets; i++)
 		SLIST_INIT(&sh->htab[i]);
 	sh->buckets = buckets;
