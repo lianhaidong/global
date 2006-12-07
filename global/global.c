@@ -1093,12 +1093,15 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 			while (*p != ' ')
 				p++;
 			*p++ = '\0';			/* b */
-			while (*p != ' ')
-				p++;
-			*p++ = '\0';			/* c */
-			image = p;
-			if (gtop->format & GTAGS_COMPRESS)
-				image = (char *)uncompress(image, tagname);
+			if (nosource) {
+				image = " ";
+			} else {
+				while (*p != ' ')
+					p++;
+				image = p + 1;		/* c + 1 */
+				if (gtop->format & GTAGS_COMPRESS)
+					image = (char *)uncompress(image, tagname);
+			}
 			printtag_using(tagname, gtp->name, gtp->lineno, image);
 			count++;
 		}
