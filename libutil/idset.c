@@ -66,7 +66,7 @@ I you want to treat 1-20 then you must invoke idset_open() with a argument 21.
         idset_add(idset, 20);           => OK
         idset_add(idset, 21);           => ERROR (idset_add: id is out of range.)
 
-The range of value is from 0 to the maximum value expressible by unsigned integer
+The range of value is from 0 to the maximum value expressible by unsigned integer - 1.
  */
 /*
  * bit mask table
