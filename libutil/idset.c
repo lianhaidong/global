@@ -55,6 +55,18 @@ idset_contains(idset, 2) == true
 idset_contains(idset, 3) == false
 
 idset_close(idset)		[]
+
+Idset's index always start from 0 according to the custom of C language.
+I you want to treat 1-20 then you must invoke idset_open() with a argument 21.
+
+        idset = idset_open(21);
+        idset_add(idset, 0);            => OK
+        idset_add(idset, 1);            => OK
+                ...
+        idset_add(idset, 20);           => OK
+        idset_add(idset, 21);           => ERROR (idset_add: id is out of range.)
+
+The range of value is from 0 to the maximum value expressible by unsigned integer
  */
 /*
  * bit mask table
