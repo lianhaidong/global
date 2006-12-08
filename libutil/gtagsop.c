@@ -512,7 +512,7 @@ gtags_first(GTOP *gtop, const char *pattern, int flags)
 		const char *cp;
 		unsigned long i;
 
-		gtop->pool = strhash_open(HASHBUCKETS);
+		gtop->pool = strhash_open(2048);
 		/*
 		 * Pool path names.
 		 *
