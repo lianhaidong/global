@@ -79,7 +79,7 @@ idset_add(IDSET *idset, unsigned int id)
 	if (id >= idset->size)
 		die("idset_add: id is out of range.");
 	idset->set[id / CHAR_BIT] |= 1 << (id % CHAR_BIT);
-	if (id > idset->max)
+	if (idset->max == -1 || id > idset->max)
 		idset->max = id;
 }
 /*
@@ -92,7 +92,7 @@ idset_add(IDSET *idset, unsigned int id)
 int
 idset_contains(IDSET *idset, unsigned int id)
 {
-	return (id > idset->max) ? 0 :
+	return (idset->max == -1 || id > idset->max) ? 0 :
 			(idset->set[id / CHAR_BIT] & (1 << (id % CHAR_BIT)));
 }
 /*
