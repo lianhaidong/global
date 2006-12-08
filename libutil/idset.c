@@ -76,8 +76,8 @@ idset_open(unsigned int size)
 	for (i = 0; i < INT_BIT; i++)
 		bit[i] = 1 << i;
 	idset->set = (unsigned int *)check_calloc(sizeof(unsigned int), (size + INT_BIT - 1) / INT_BIT);
-	idset->max = -1;
 	idset->size = size;
+	idset->empty = 1;
 	return idset;
 }
 /*
@@ -92,8 +92,9 @@ idset_add(IDSET *idset, unsigned int id)
 	if (id >= idset->size)
 		die("idset_add: id is out of range.");
 	idset->set[id / INT_BIT] |= bit[id % INT_BIT];
-	if (idset->max == -1 || id > idset->max)
+	if (idset->empty || id > idset->max)
 		idset->max = id;
+	idset->empty = 0;
 }
 /*
  * Whether or not idset includes specified id.
@@ -105,7 +106,7 @@ idset_add(IDSET *idset, unsigned int id)
 int
 idset_contains(IDSET *idset, unsigned int id)
 {
-	return (idset->max == -1 || id > idset->max) ? 0 :
+	return (idset->empty || id > idset->max) ? 0 :
 			(idset->set[id / INT_BIT] & bit[id % INT_BIT]);
 }
 /*
@@ -121,7 +122,7 @@ idset_first(IDSET *idset)
 	int i, limit;
 	int index0 = 0;
 
-	if (idset->max == -1)
+	if (idset->empty)
 		return -1;
 	limit = idset->max / INT_BIT + 1;
 	for (i = index0; i < limit && idset->set[i] == 0; i++)
@@ -147,7 +148,7 @@ idset_next(IDSET *idset)
 	int i, limit;
 	int index0, index1;
 
-	if (idset->max == -1)
+	if (idset->empty)
 		return -1;
 	if (idset->lastid >= idset->max)
 		return -1;

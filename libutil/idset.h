@@ -22,9 +22,10 @@
 
 typedef struct {
 	int size;
-	int max;
+	int empty;
+	unsigned int max;
 	unsigned int *set;
-	int lastid;		/* used by idset_first() and idset_next() */
+	unsigned int lastid;		/* used by idset_first() and idset_next() */
 } IDSET;
 
 IDSET *idset_open(unsigned int);
