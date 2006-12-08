@@ -32,6 +32,10 @@
 #ifndef CHAR_BIT
 #define CHAR_BIT 8
 #endif
+#ifdef INT_BIT
+#undef INT_BIT
+#endif
+int INT_BIT;				/* maybe 32 or 64 */
 
 /*
 Idset: usage and memory status
@@ -39,15 +43,13 @@ Idset: usage and memory status
 				idset->set
 				[]
 
-				 00000000  00111111  11112222
-				 01234567  89012345  67890123
-idset = idset_open(21)		[00000000][00000000][00000___](3bytes)
+idset = idset_open(21)		000000000000000000000000________
+				 v
+idset_add(idset, 1)		010000000000000000000000________
 				  v
-idset_add(idset, 1)		[01000000][00000000][00000___]
-				   v
-idset_add(idset, 2)		[01100000][00000000][00000___]
-				                         v
-idset_add(idset, 20)		[01100000][00000000][00001___]
+idset_add(idset, 2)		011000000000000000000000________
+				                       v
+idset_add(idset, 20)		011000000000000000001000________
 
 idset_contains(idset, 2) == true
 idset_contains(idset, 3) == false
@@ -55,14 +57,25 @@ idset_contains(idset, 3) == false
 idset_close(idset)		[]
  */
 /*
+ * bit mask table
+ * Prepare all bit mask for performance.
+ */
+unsigned int *bit;
+
+/*
  * Allocate memory for new idset.
  */
 IDSET *
 idset_open(unsigned int size)
 {
-	IDSET *idset = (IDSET *)check_calloc(sizeof(IDSET), 1);
+	IDSET *idset = (IDSET *)check_malloc(sizeof(IDSET));
+	int i;
 
-	idset->set = (unsigned char *)check_calloc((size + CHAR_BIT - 1) / CHAR_BIT, 1);
+	INT_BIT = sizeof(unsigned int) * CHAR_BIT;
+	bit = (unsigned int *)check_calloc(sizeof(unsigned int), INT_BIT);
+	for (i = 0; i < INT_BIT; i++)
+		bit[i] = 1 << i;
+	idset->set = (unsigned int *)check_calloc(sizeof(unsigned int), (size + INT_BIT - 1) / INT_BIT);
 	idset->max = -1;
 	idset->size = size;
 	return idset;
@@ -78,7 +91,7 @@ idset_add(IDSET *idset, unsigned int id)
 {
 	if (id >= idset->size)
 		die("idset_add: id is out of range.");
-	idset->set[id / CHAR_BIT] |= 1 << (id % CHAR_BIT);
+	idset->set[id / INT_BIT] |= bit[id % INT_BIT];
 	if (idset->max == -1 || id > idset->max)
 		idset->max = id;
 }
@@ -93,7 +106,7 @@ int
 idset_contains(IDSET *idset, unsigned int id)
 {
 	return (idset->max == -1 || id > idset->max) ? 0 :
-			(idset->set[id / CHAR_BIT] & (1 << (id % CHAR_BIT)));
+			(idset->set[id / INT_BIT] & bit[id % INT_BIT]);
 }
 /*
  * Get first id.
@@ -105,19 +118,20 @@ idset_contains(IDSET *idset, unsigned int id)
 int
 idset_first(IDSET *idset)
 {
-	int i, limit = idset->max / CHAR_BIT + 1;
+	int i, limit;
 	int index0 = 0;
 
 	if (idset->max == -1)
 		return -1;
+	limit = idset->max / INT_BIT + 1;
 	for (i = index0; i < limit && idset->set[i] == 0; i++)
 		;
 	if (i >= limit)
 		return -1;
 	index0 = i;
-	for (i = 0; i < CHAR_BIT; i++)
-		if ((1 << i) & idset->set[index0])
-			return idset->lastid = index0 * CHAR_BIT + i;
+	for (i = 0; i < INT_BIT; i++)
+		if (bit[i] & idset->set[index0])
+			return idset->lastid = index0 * INT_BIT + i;
 	die("idset_first: internal error.");
 }
 /*
@@ -130,27 +144,28 @@ idset_first(IDSET *idset)
 int
 idset_next(IDSET *idset)
 {
-	int i, limit = idset->max / CHAR_BIT + 1;
+	int i, limit;
 	int index0, index1;
 
 	if (idset->max == -1)
 		return -1;
 	if (idset->lastid >= idset->max)
 		return -1;
-	index0 = idset->lastid / CHAR_BIT;
-	index1 = idset->lastid % CHAR_BIT;
-	for (i = ++index1; i < CHAR_BIT; i++)
-		if ((1 << i) & idset->set[index0])
-			return idset->lastid = index0 * CHAR_BIT + i;
+	limit = idset->max / INT_BIT + 1;
+	index0 = idset->lastid / INT_BIT;
+	index1 = idset->lastid % INT_BIT;
+	for (i = ++index1; i < INT_BIT; i++)
+		if (bit[i] & idset->set[index0])
+			return idset->lastid = index0 * INT_BIT + i;
 	index0++;
 	for (i = index0; i < limit && idset->set[i] == 0; i++)
 		;
 	if (i >= limit)
 		return -1;
 	index0 = i;
-	for (i = 0; i < CHAR_BIT; i++)
-		if ((1 << i) & idset->set[index0])
-			return idset->lastid = index0 * CHAR_BIT + i;
+	for (i = 0; i < INT_BIT; i++)
+		if (bit[i] & idset->set[index0])
+			return idset->lastid = index0 * INT_BIT + i;
 	die("idset_next: internal error.");
 }
 /*

@@ -23,7 +23,7 @@
 typedef struct {
 	int size;
 	int max;
-	unsigned char *set;
+	unsigned int *set;
 	int lastid;		/* used by idset_first() and idset_next() */
 } IDSET;
 
