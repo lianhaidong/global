@@ -67,6 +67,11 @@ I you want to treat 1-20 then you must invoke idset_open() with a argument 21.
         idset_add(idset, 21);           => ERROR (idset_add: id is out of range.)
 
 The range of value is from 0 to the maximum value expressible by unsigned integer - 1.
+You should define index as an unsigned integer, and use END_OF_ID like follows:
+
+	unsigned int id;
+	for (id = idset_first(set); id != END_OF_ID; id = idset_next(set))
+		-- processing about an id --
  */
 /*
  * bit mask table
@@ -83,14 +88,27 @@ idset_open(unsigned int size)
 	IDSET *idset = (IDSET *)check_malloc(sizeof(IDSET));
 	int i;
 
-	INT_BIT = sizeof(unsigned int) * CHAR_BIT;
-	bit = (unsigned int *)check_calloc(sizeof(unsigned int), INT_BIT);
-	for (i = 0; i < INT_BIT; i++)
-		bit[i] = 1 << i;
+	if (bit == NULL) {
+		INT_BIT = sizeof(unsigned int) * CHAR_BIT;
+		bit = (unsigned int *)check_calloc(sizeof(unsigned int), INT_BIT);
+		for (i = 0; i < INT_BIT; i++)
+			bit[i] = 1 << i;
+	}
 	idset->set = (unsigned int *)check_calloc(sizeof(unsigned int), (size + INT_BIT - 1) / INT_BIT);
 	idset->size = size;
 	idset->empty = 1;
 	return idset;
+}
+/*
+ * Return true if idset is empty.
+ *
+ *	i)	idset	idset structure
+ *	r)		1: empty, 0: not empty
+ */
+int
+idset_empty(IDSET *idset)
+{
+	return idset->empty;
 }
 /*
  * Add id to the idset.
@@ -125,10 +143,10 @@ idset_contains(IDSET *idset, unsigned int id)
  * Get first id.
  *
  *      i)      idset   idset structure
- *      r)              id (-1: end of id)
+ *      r)              id (END_OF_ID: end of id)
  *
  */
-int
+unsigned int
 idset_first(IDSET *idset)
 {
 	int i, limit;
@@ -151,10 +169,10 @@ idset_first(IDSET *idset)
  * Get next id.
  *
  *      i)      idset   idset structure
- *      r)              id (-1: end of id)
+ *      r)              id (END_OF_ID: end of id)
  *
  */
-int
+unsigned int
 idset_next(IDSET *idset)
 {
 	int i, limit;
@@ -187,12 +205,12 @@ idset_next(IDSET *idset)
  *	i)	idset	idset structure
  *	r)		number of bits
  */
-int
+unsigned int
 idset_count(IDSET *idset)
 {
-	int id, count = 0;
+	unsigned int id, count = 0;
 
-	for (id = idset_first(idset); id != -1; id = idset_next(idset))
+	for (id = idset_first(idset); id != END_OF_ID; id = idset_next(idset))
 		count++;
 	return count;
 }

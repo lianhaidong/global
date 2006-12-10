@@ -20,6 +20,8 @@
 #ifndef _IDSET_H_
 #define _IDSET_H_
 
+#define END_OF_ID ((unsigned int)(-1))
+
 typedef struct {
 	int size;
 	int empty;
@@ -29,12 +31,12 @@ typedef struct {
 } IDSET;
 
 IDSET *idset_open(unsigned int);
+int idset_empty(IDSET *);
 void idset_add(IDSET *, unsigned int);
 int idset_contains(IDSET *, unsigned int);
-int idset_first(IDSET *);
-int idset_next(IDSET *);
-int idset_count(IDSET *);
+unsigned int idset_first(IDSET *);
+unsigned int idset_next(IDSET *);
+unsigned idset_count(IDSET *);
 void idset_close(IDSET *);
-#define idset_empty(set)	((set)->empty != 0)
 
 #endif /* ! _IDSET_H_ */

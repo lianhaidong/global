@@ -496,7 +496,7 @@ incremental(const char *dbpath, const char *root)
 	IDSET *deleteset, *findset;
 	int updated = 0;
 	const char *path;
-	int i, limit;
+	unsigned int id, limit;
 
 	if (vflag) {
 		fprintf(stderr, " Tag found in '%s'.\n", dbpath);
@@ -566,11 +566,11 @@ incremental(const char *dbpath, const char *root)
 	 * make delete list.
 	 */
 	limit = gpath_nextkey();
-	for (i = 1; i < limit; i++) {
+	for (id = 1; id < limit; id++) {
 		char fid[32];
 		int type;
 
-		snprintf(fid, sizeof(fid), "%d", i);
+		snprintf(fid, sizeof(fid), "%d", id);
 		/*
 		 * This is a hole of GPATH. The hole increases if the deletion
 		 * and the addition are repeated.
@@ -582,12 +582,12 @@ incremental(const char *dbpath, const char *root)
 		 * assuming that it does not exist in the file system.
 		 */
 		if (type == GPATH_OTHER) {
-			if (!idset_contains(findset, i) || !test("f", path) || test("b", path))
+			if (!idset_contains(findset, id) || !test("f", path) || test("b", path))
 				strbuf_puts0(deletelist, path);
 		} else {
-			if (!idset_contains(findset, i) || !test("f", path)) {
+			if (!idset_contains(findset, id) || !test("f", path)) {
 				strbuf_puts0(deletelist, path);
-				idset_add(deleteset, i);
+				idset_add(deleteset, id);
 			}
 		}
 	}
@@ -595,7 +595,7 @@ incremental(const char *dbpath, const char *root)
 	/*
 	 * execute updating.
 	 */
-	if (idset_empty(deleteset) || strbuf_getlen(addlist) > 0) {
+	if (!idset_empty(deleteset) || strbuf_getlen(addlist) > 0) {
 		int db;
 
 		for (db = GTAGS; db < GTAGLIM; db++) {
@@ -702,18 +702,18 @@ updatetags(const char *dbpath, const char *root, IDSET *deleteset, STRBUF *addli
 		char fid[32];
 		const char *path;
 		int total = idset_count(deleteset);
-		int i;
+		unsigned int id;
 
 		seqno = 1;
-		for (i = idset_first(deleteset); i != -1; i = idset_next(deleteset)) {
-			snprintf(fid, sizeof(fid), "%d", i);
+		for (id = idset_first(deleteset); id != END_OF_ID; id = idset_next(deleteset)) {
+			snprintf(fid, sizeof(fid), "%d", id);
 			path = gpath_fid2path(fid, NULL);
 			if (path == NULL)
 				die("GPATH is corrupted.");
 			fprintf(stderr, " [%d/%d] deleting tags of %s\n", seqno++, total, path + 2);
 		}
 	}
-	if (idset_empty(deleteset))
+	if (!idset_empty(deleteset))
 		gtags_delete(gtop, deleteset);
 	gtop->flags = 0;
 	if (extractmethod)
