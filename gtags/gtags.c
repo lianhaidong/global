@@ -595,7 +595,7 @@ incremental(const char *dbpath, const char *root)
 	/*
 	 * execute updating.
 	 */
-	if (deleteset->max >= 0 || strbuf_getlen(addlist) > 0) {
+	if (idset_empty(deleteset) || strbuf_getlen(addlist) > 0) {
 		int db;
 
 		for (db = GTAGS; db < GTAGLIM; db++) {
@@ -713,7 +713,7 @@ updatetags(const char *dbpath, const char *root, IDSET *deleteset, STRBUF *addli
 			fprintf(stderr, " [%d/%d] deleting tags of %s\n", seqno++, total, path + 2);
 		}
 	}
-	if (deleteset->max >= 0)
+	if (idset_empty(deleteset))
 		gtags_delete(gtop, deleteset);
 	gtop->flags = 0;
 	if (extractmethod)

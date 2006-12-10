@@ -35,5 +35,6 @@ int idset_first(IDSET *);
 int idset_next(IDSET *);
 int idset_count(IDSET *);
 void idset_close(IDSET *);
+#define idset_empty(set)	((set)->empty != 0)
 
 #endif /* ! _IDSET_H_ */
