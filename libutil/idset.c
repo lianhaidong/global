@@ -149,16 +149,16 @@ idset_contains(IDSET *idset, unsigned int id)
 unsigned int
 idset_first(IDSET *idset)
 {
-	int i, limit;
+	unsigned int i, limit;
 	int index0 = 0;
 
 	if (idset->empty)
-		return -1;
+		return END_OF_ID;
 	limit = idset->max / INT_BIT + 1;
 	for (i = index0; i < limit && idset->set[i] == 0; i++)
 		;
 	if (i >= limit)
-		return -1;
+		return END_OF_ID;
 	index0 = i;
 	for (i = 0; i < INT_BIT; i++)
 		if (bit[i] & idset->set[index0])
@@ -175,13 +175,13 @@ idset_first(IDSET *idset)
 unsigned int
 idset_next(IDSET *idset)
 {
-	int i, limit;
+	unsigned int i, limit;
 	int index0, index1;
 
 	if (idset->empty)
-		return -1;
+		return END_OF_ID;
 	if (idset->lastid >= idset->max)
-		return -1;
+		return END_OF_ID;
 	limit = idset->max / INT_BIT + 1;
 	index0 = idset->lastid / INT_BIT;
 	index1 = idset->lastid % INT_BIT;
@@ -192,7 +192,7 @@ idset_next(IDSET *idset)
 	for (i = index0; i < limit && idset->set[i] == 0; i++)
 		;
 	if (i >= limit)
-		return -1;
+		return END_OF_ID;
 	index0 = i;
 	for (i = 0; i < INT_BIT; i++)
 		if (bit[i] & idset->set[index0])
