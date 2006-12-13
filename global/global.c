@@ -610,21 +610,23 @@ idutils(const char *pattern, const char *dbpath)
 	count = 0;
 	while ((grep = strbuf_fgets(ib, ip, STRBUF_NOCRLF)) != NULL) {
 		p = grep;
-		/* extract filename */
+		/* extract path name */
 		path = p;
 		while (*p && *p != ':')
 			p++;
 		if ((xflag || tflag) && !*p)
 			die("invalid lid(idutils) output format. '%s'", grep);
 		*p++ = 0;
+		/* normalize path name */
+		path = makepath(".", path, NULL);
 		if (lflag) {
-			if (!locatestring(path, localprefix + 2, MATCH_AT_FIRST))
+			if (!locatestring(path, localprefix, MATCH_AT_FIRST))
 				continue;
 		}
 		count++;
 		switch (format) {
 		case FORMAT_PATH:
-			printtag(makepath(".", path, NULL));
+			printtag(path);
 			break;
 		default:
 			/* extract line number */
@@ -642,7 +644,7 @@ idutils(const char *pattern, const char *dbpath)
 			/*
 			 * print out.
 			 */
-			printtag_using(edit, makepath(".", path, NULL), linenum, p);
+			printtag_using(edit, path, linenum, p);
 			break;
 		}
 	}
@@ -915,6 +917,7 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 				fprintf(stderr, "'%s' is out of source tree.\n", buf);
 			continue;
 		}
+		/* normalize path name */
 		path -= 2;
 		*path = '.';
 		if (!gpath_path2fid(path, NULL)) {
