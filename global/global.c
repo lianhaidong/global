@@ -560,20 +560,8 @@ void
 printtag_using(const char *tag, const char *path, int lineno, const char *line)
 {
 	STATIC_STRBUF(sb);
-	char edit[MAXPATHLEN];
 
 	strbuf_clear(sb);
-	/*
-	 * normalize path name.
-	 */
-	if (*path != '.') {
-		int i = 0;
-		edit[i++] = '.';
-		edit[i++] = '/';
-		while ((edit[i++] = *path++) != '\0')
-			;
-		path = edit;
-	}
 	strbuf_sprintf(sb, "%-16s %4d %-16s %s", tag, lineno, path, line);
 	filter_put(strbuf_value(sb));
 }
@@ -636,7 +624,7 @@ idutils(const char *pattern, const char *dbpath)
 		count++;
 		switch (format) {
 		case FORMAT_PATH:
-			printtag(path);
+			printtag(makepath(".", path, NULL));
 			break;
 		default:
 			/* extract line number */
@@ -654,7 +642,7 @@ idutils(const char *pattern, const char *dbpath)
 			/*
 			 * print out.
 			 */
-			printtag_using(edit, path, linenum, p);
+			printtag_using(edit, makepath(".", path, NULL), linenum, p);
 			break;
 		}
 	}
