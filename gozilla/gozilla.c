@@ -313,7 +313,8 @@ main(int argc, char **argv)
 void
 getdefinitionURL(const char *arg, STRBUF *URL)
 {
-	char *path, *p;
+	const char *path;
+	char *p;
 	STRBUF *sb = NULL;
 	DBOP *dbop = NULL;
 	SPLIT ptable;

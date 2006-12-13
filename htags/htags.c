@@ -1668,7 +1668,7 @@ main(int argc, char **argv)
 	 */
 	{
 		int i;
-		char *path;
+		const char *path;
 		GTOP *gtop;
 
 		for (i = GPATH; i < GTAGLIM; i++) {
