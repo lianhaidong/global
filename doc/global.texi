@@ -184,6 +184,20 @@ the source tree.
         database of path names
 @end itemize
 
+You should prepare for a lot of disk space use.
+For example, FreeBSD 7.0 kernel source code requires:
+
+@example
+    source code(/usr/src/sys)       123MB
+
+    GPATH                             1MB
+    GTAGS                            24MB
+    GRTAGS                           28MB
+    GSYMS                            32MB
+    -------------------------------------
+    total of tag files               85MB
+@end example
+
 @page
 @c ***************************************************************************
 @node   Basic usage
@@ -1914,21 +1928,20 @@ You can use GLOBAL's facilities from WWW browser.
 @node   Preparation(browser)
 @subsection Preparation.
 
-At first, you must ensure that you have a lot of disk space. Hypertext
-needs a great amount of disk space. For example, the source code
-of FreeBSD kernel needs:
+At first, you must ensure that you have a lot of disk space for hypertext.
+For example, FreeBSD 7.0 kernel source code (123MB) requires the capacity
+of the disk from 600 to 1200MB.
 
 @example
 
-    source code(/usr/src/sys)       14.0MB
-    
-    GTAGS                            1.5MB
-    GRTAGS                           8.0MB
-    GSYMS                           12.0MB
-    HTML/                           55MB(!!!)
-    -------------------------------------------------
-    total                           77MB
+    source code(/usr/src/sys)            123MB
+    GPATH,GTAGS,GRTAGS,GSYMS              86MB
 
+    hypertext (with no option)           645MB
+    hypertext (with -s option)          1168MB
+    hypertext (with -D option)           383MB
+    hypertext (with -s and -D option)    616MB
+   
 @end example
 
 Please invoke gtags(1)(@pxref{gtags}) and htags(1)(@pxref{htags})
@@ -1937,13 +1950,20 @@ in order like this:
 @example
 
     (at your source directory)
-    $ gtags                 # @r{make the tag database(GTAGS,GRTAGS,GSYMS)}
-    $ htags                 # @r{make the hypertext(HTML/)}
+    $ gtags                 # @r{make tag files(GTAGS,GRTAGS,GSYMS)}
+    $ htags                 # @r{make hypertext(HTML/)}
 
 @end example
 
 Then you will find an @file{HTML} subdirectory in the current directory.
+Htags has many options.
 
+@example
+    Suggested option:
+    $ htags -vsanohIT
+@end example
+
+If http server is available then the -D and -f option are also useful.
 
 @c ***************************************************************************
 @node   Usage(browser)
