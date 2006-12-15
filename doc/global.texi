@@ -20,7 +20,7 @@
 @ifinfo
 This file documents the GNU GLOBAL source code tag system.
 
-Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2006
 Tama Communications Corporation
 
 Permission is granted to copy, distribute and/or modify this document
@@ -40,11 +40,12 @@ Free Documentation License".
 @c copyright page
 @page
 @vskip 0pt plus 1filll
-Copyright @copyright{} 2000, 2001, 2002, 2003, 2004, 2005
+Copyright @copyright{} 2000, 2001, 2002, 2003, 2004, 2005, 2006
 Tama Communications Corporation
 @sp 2
-This is the first edition of the GNU GLOBAL documentation,@*
-and is consistent with @value{VERSION}.@*
+This manual is for @acronym{GNU} GLOBAL (version @value{VERSION},
+@value{UPDATED}), a source code tag system that works the same way
+across diverse environments.
 @sp 2
 Published by Tama Communications Corporation @*
 Tama-shi, Tokyo, Japan.@*
@@ -59,6 +60,7 @@ Free Documentation License".
 
 @end titlepage
 
+@ifnottex
 @node Top
 @top GNU GLOBAL source code tag system
 
@@ -73,6 +75,7 @@ This manual documents version @value{VERSION} of the GNU GLOBAL source code tag 
 * Copying This Manual::                 Copying This Manual.
 * Index::                               Option index.
 @end menu
+@end ifnottex
 
 @c ***************************************************************************
 @c Introduction
@@ -184,7 +187,7 @@ the source tree.
         database of path names
 @end itemize
 
-You should prepare for a lot of disk space use.
+You should prepare for considerable disk space for tag files.
 For example, FreeBSD 7.0 kernel source code requires:
 
 @example
@@ -1929,8 +1932,8 @@ You can use GLOBAL's facilities from WWW browser.
 @subsection Preparation.
 
 At first, you must ensure that you have a lot of disk space for hypertext.
-For example, FreeBSD 7.0 kernel source code (123MB) requires the capacity
-of the disk from 600 to 1200MB.
+For example, FreeBSD 7.0 kernel source code (123MB) requires disk space
+from 600 to 1200MB.
 
 @example
 
