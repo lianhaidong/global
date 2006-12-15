@@ -51,6 +51,8 @@ static void get_global_path(void);
 int main(int, char **);
 static char *get_line(void);
 static void update(void);
+static void print_case_distinction(void);
+static char *include_pattern(const char *);
 static void command_help(void);
 static void command_loop(void);
 static int execute_command(STRBUF *, const int, const int, const char *);
@@ -90,7 +92,12 @@ char global_path[MAXFILLEN];
 
 int ignore_case;
 
-void
+/*
+ * Check whether or not GTAGS exist.
+ *
+ * If GTAGS not found, this function abort with a message.
+ */
+static void
 check_dbpath(void)
 {
 	char cwd[MAXPATHLEN+1];
@@ -99,7 +106,10 @@ check_dbpath(void)
 
 	getdbpath(cwd, root, dbpath, vflag);
 }
-void
+/*
+ * Get global(1)'s path.
+ */
+static void
 get_global_path(void)
 {
 	const char *p;
@@ -153,7 +163,12 @@ main(int argc, char **argv)
 	command_loop();
 	return 0;
 }
-char *
+/*
+ * Read line with a prompt.
+ *
+ * This is part of cscope protocol.
+ */
+static char *
 get_line(void)
 {
 	STATIC_STRBUF(sb);
@@ -165,7 +180,10 @@ get_line(void)
 		return NULL;
 	return strbuf_value(sb);
 }
-void
+/*
+ * Update tag files.
+ */
+static void
 update(void)
 {
 	STATIC_STRBUF(command);
@@ -178,7 +196,10 @@ update(void)
 	}
 	system(strbuf_value(command));
 }
-void
+/*
+ * print verbose message about case distinction.
+ */
+static void
 print_case_distinction(void)
 {
 	if (vflag) {
@@ -194,7 +215,7 @@ print_case_distinction(void)
  *	i)	arg	include file name
  *	r)		pattern which match to #include lines
  */
-char *
+static char *
 include_pattern(const char *arg)
 {
 #if defined(_WIN32)
@@ -210,6 +231,9 @@ include_pattern(const char *arg)
 	strbuf_sprintf(pat, INCLUDE, quote_string(arg));
 	return strbuf_value(pat);
 }
+/*
+ * show help message.
+ */
 static void
 command_help(void)
 {
@@ -227,6 +251,11 @@ command_help(void)
 	fprintf(stdout, "q: Quit the session\n");
 	fprintf(stdout, "h: Show help\n");
 }
+/*
+ * command loop.
+ *
+ * This is the main body of gtags-cscope.
+ */
 void
 command_loop(void)
 {
@@ -359,6 +388,21 @@ execute_command(STRBUF *sb, const int com, const int opt, const char *arg)
 		die("terminated abnormally.");
 	return count;
 }
+/*
+ * Execute retrieval command.
+ *
+ *	i)	command		0: Find this C symbol
+ *				1: Find this definition
+ *				2: Find functions called by this function (not supported)
+ *				3: Find functions calling this function
+ *				4: Find this text string
+ *				6: Find this egrep pattern
+ *				7: Find this file
+ *				8: Find files #including this file
+ *	i)	arg		argument
+ *
+ * Unsupported command prints "cscope: 0 lines\n".
+ */
 static void
 search(int com, const char *arg)
 {
