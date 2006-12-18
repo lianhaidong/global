@@ -332,8 +332,6 @@ main(int argc, char **argv)
 			break;
 		}
 	}
-	if (fflag)
-		lflag = 0;
 	if (tflag)
 		xflag = 0;
 	if (nflag > 1)
@@ -566,6 +564,38 @@ printtag_using(const char *tag, const char *path, int lineno, const char *line)
 	filter_put(strbuf_value(sb));
 }
 /*
+ * print number of object.
+ */
+void
+print_count(int number)
+{
+	if (format == FORMAT_PATH) {
+		switch (number) {
+		case 0:
+			fprintf(stderr, "object not found");
+			break;
+		case 1:
+			fprintf(stderr, "1 file located");
+			break;
+		default:
+			fprintf(stderr, "%d files located", number);
+			break;
+		}
+	} else {
+		switch (number) {
+		case 0:
+			fprintf(stderr, "object not found");
+			break;
+		case 1:
+			fprintf(stderr, "1 object located");
+			break;
+		default:
+			fprintf(stderr, "%d objects located", number);
+			break;
+		}
+	}
+}
+/*
  * idutils:  lid(idutils) pattern
  *
  *	i)	pattern	POSIX regular expression
@@ -653,17 +683,7 @@ idutils(const char *pattern, const char *dbpath)
 	filter_close();
 	strbuf_close(ib);
 	if (vflag) {
-		switch (count) {
-		case 0:
-			fprintf(stderr, "object not found");
-			break;
-		case 1:
-			fprintf(stderr, "%d object located", count);
-			break;
-		default:
-			fprintf(stderr, "%d objects located", count);
-			break;
-		}
+		print_count(count);
 		fprintf(stderr, " (using idutils index in '%s').\n", dbpath);
 	}
 }
@@ -706,6 +726,8 @@ grep(const char *pattern, const char *dbpath)
 
 	gp = gfind_open(dbpath, localprefix, target);
 	while ((path = gfind_read(gp)) != NULL) {
+		if (lflag && !locatestring(path, localprefix, MATCH_AT_FIRST))
+			continue;
 		if (!(fp = fopen(path, "r")))
 			die("'%s' not found. Please remake tag files by invoking gtags(1).", path);
 		linenum = 0;
@@ -728,17 +750,7 @@ grep(const char *pattern, const char *dbpath)
 	strbuf_close(ib);
 	regfree(&preg);
 	if (vflag) {
-		switch (count) {
-		case 0:
-			fprintf(stderr, "object not found");
-			break;
-		case 1:
-			fprintf(stderr, "%d object located", count);
-			break;
-		default:
-			fprintf(stderr, "%d objects located", count);
-			break;
-		}
+		print_count(count);
 		fprintf(stderr, " (no index used).\n");
 	}
 }
@@ -788,6 +800,8 @@ pathlist(const char *pattern, const char *dbpath)
 
 	gp = gfind_open(dbpath, localprefix, target);
 	while ((path = gfind_read(gp)) != NULL) {
+		if (lflag && !locatestring(path, localprefix, MATCH_AT_FIRST))
+			continue;
 		/*
 		 * skip localprefix because end-user doesn't see it.
 		 */
@@ -807,13 +821,13 @@ pathlist(const char *pattern, const char *dbpath)
 	if (vflag) {
 		switch (count) {
 		case 0:
-			fprintf(stderr, "path not found");
+			fprintf(stderr, "file not found");
 			break;
 		case 1:
-			fprintf(stderr, "%d path located", count);
+			fprintf(stderr, "%d file located", count);
 			break;
 		default:
-			fprintf(stderr, "%d paths located", count);
+			fprintf(stderr, "%d files located", count);
 			break;
 		}
 		fprintf(stderr, " (using '%s').\n", makepath(dbpath, dbname(GPATH), NULL));
@@ -842,8 +856,6 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 	XARGS *xp;
 	char *ctags_x;
 
-	if (format == FORMAT_PATH)
-		die("Something wrong. FORMAT_PATH in parsefile().");
 	snprintf(rootdir, sizeof(rootdir), "%s/", root);
 	/*
 	 * teach parser where is dbpath.
@@ -925,6 +937,8 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 				fprintf(stderr, "'%s' not found in GPATH.\n", path);
 			continue;
 		}
+		if (lflag && !locatestring(path, localprefix, MATCH_AT_FIRST))
+			continue;
 		/*
 		 * Add a path to the path list.
 		 */
@@ -936,9 +950,27 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 	if (chdir(root) < 0)
 		die("cannot move to '%s' directory.", root);
 	xp = xargs_open_with_strbuf(strbuf_value(comline), 0, path_list);
-	while ((ctags_x = xargs_read(xp)) != NULL) {
-		printtag(ctags_x);
-		count++;
+	if (format == FORMAT_PATH) {
+		SPLIT ptable;
+		char curpath[MAXPATHLEN+1];
+
+		curpath[0] = '\0';
+		while ((ctags_x = xargs_read(xp)) != NULL) {
+			if (split((char *)ctags_x, 4, &ptable) < 4) {
+				recover(&ptable);
+				die("too small number of parts.\n'%s'", ctags_x);
+			}
+			if (strcmp(curpath, ptable.part[PART_PATH].start)) {
+				strlimcpy(curpath, ptable.part[PART_PATH].start, sizeof(curpath));
+				printtag(curpath);
+				count++;
+			}
+		}
+	} else {
+		while ((ctags_x = xargs_read(xp)) != NULL) {
+			printtag(ctags_x);
+			count++;
+		}
 	}
 	xargs_close(xp);
 	if (chdir(cwd) < 0)
@@ -951,17 +983,7 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 	strbuf_close(comline);
 	strbuf_close(path_list);
 	if (vflag) {
-		switch (count) {
-		case 0:
-			fprintf(stderr, "object not found");
-			break;
-		case 1:
-			fprintf(stderr, "%d object located", count);
-			break;
-		default:
-			fprintf(stderr, "%d objects located", count);
-			break;
-		}
+		print_count(count);
 		fprintf(stderr, " (no index used).\n");
 	}
 }
@@ -1164,17 +1186,7 @@ tagsearch(const char *pattern, const char *cwd, const char *root, const char *db
 		strbuf_close(sb);
 	}
 	if (vflag) {
-		switch (total) {
-		case 0:
-			fprintf(stderr, "'%s' not found", pattern);
-			break;
-		case 1:
-			fprintf(stderr, "%d object located", total);
-			break;
-		default:
-			fprintf(stderr, "%d objects located", total);
-			break;
-		}
+		print_count(total);
 		if (!Tflag)
 			fprintf(stderr, " (using '%s')", makepath(dbpath, dbname(db), NULL));
 		fputs(".\n", stderr);
