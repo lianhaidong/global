@@ -1,7 +1,7 @@
 #
 # GloBash --- Global facility for Bash
 #
-# Copyright (c) 2001, 2002, 2004 Tama Communications Corporation
+# Copyright (c) 2001, 2002, 2004, 2006 Tama Communications Corporation
 #
 # This file is part of GNU GLOBAL.
 #
@@ -21,7 +21,7 @@
 #
 # GLOBAL home page is at: http://www.gnu.org/software/global/
 # Author: Tama Communications Corporation
-  version=0.1
+  version=0.2
 # Usage:
 # $ bash --rcfile <this file>
 #	or
@@ -218,6 +218,7 @@ __gtags_pwd() {
 }
 __gtags_prompt() {
 	local cwd=`__gtags_pwd`
+	local dbpath=`global -p 2>/dev/null`
 	local root=`global -pr 2>/dev/null`
 	local ps
 
@@ -250,6 +251,7 @@ __gtags_prompt() {
 		cp /dev/null $MARKER
 	fi
 	PS1="$ps "
+	__gtags_filter="gtags --path=relative $root $cwd $dbpath"
 	__gtags_prev_root=$root
 }
 cd() {
@@ -372,14 +374,7 @@ warp() {
 __gtags_edit_marked_file()
 {
 	if [ -s $MARKER ] && __gtags_is_num $1; then
-		local com filter
-
-		filter=`global --filter=path -x`
-		case $filter in
-		'')	echo "Cannot get internal filter."
-			return 1;;
-		esac
-		com="cat $MARKER | $filter | sed -n '${1}p'"
+		com="cat $MARKER | $__gtags_filter | sed -n '${1}p'"
 		line=$( eval $com )
 		if [ "$line" != "" ]; then
 			set $line
@@ -404,14 +399,7 @@ mark()
 	case $1 in
 	-list|-lis|-li|-l)
 		if [ -s $MARKER ]; then
-			local com filter
-
-			filter=`global --filter=path -x`
-			case $filter in
-			'')	echo "Cannot get internal filter."
-				return 1;;
-			esac
-			com="cat $MARKER | $filter | cat -n"
+			com="cat $MARKER | $__gtags_filter | cat -n"
 			eval $com
 		fi
 		;;
@@ -491,17 +479,10 @@ __gtags_gen_xref()
 }
 __gtags_list_xref()
 {
-	local com filter
-
 	if [ ! -s $XREF ]; then
 		return 1
 	fi
-	filter=`global --filter=path -x`
-	case $filter in
-	'')	echo "Cannot get internal filter."
-		return 1;;
-	esac
-	com="cat $XREF | $filter | cat -n | sed '${__gtags_current}s/^ />/'"
+	com="cat $XREF | $__gtags_filter | cat -n | sed '${__gtags_current}s/^ />/'"
 	if (( __gtags_count > LINES - 1 )); then
 		local pager=${PAGER-more}
 
@@ -637,14 +618,10 @@ __gtags_view_tag() {
 	if [ "${EDITOR}" = "noedit" ]; then
 		return 0
 	fi
-	local filter=`global --filter=path -x`
-	if [ "$filter" != "" ]; then
-		local com="sed -n '${__gtags_current}p' $XREF | $filter"
-		local line=$( eval $com )
-
-		set $line
-		${EDITOR-vi} +$2 $3
-	fi
+	local com="sed -n '${__gtags_current}p' $XREF | $__gtags_filter"
+	local line=$( eval $com )
+	set $line
+	${EDITOR-vi} +$2 $3
 	return 0
 }
 first()	{
@@ -699,7 +676,7 @@ ghelp() {
 	echo
 	echo "GloBash --- Global facility for Bash"
 	echo
-	echo "Copyright (c) 2001, 2002 Tama Communications Corporation"
+	echo "Copyright (c) 2001, 2002, 2004, 2006 Tama Communications Corporation"
 	echo "GLOBAL WWW: http://www.gnu.org/software/global/"
 	echo
 	echo "Prompt:"
