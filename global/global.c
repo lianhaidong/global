@@ -49,9 +49,9 @@ static void usage(void);
 static void help(void);
 static void setcom(int);
 int main(int, char **);
+void completion(const char *, const char *, const char *);
 void printtag(CONVERT *, const char *);
 void printtag_using(CONVERT *, const char *, const char *, int, const char *);
-void completion(const char *, const char *, const char *);
 void idutils(const char *, const char *);
 void grep(const char *, const char *);
 void pathlist(const char *, const char *);
@@ -108,8 +108,7 @@ help(void)
 	exit(0);
 }
 
-#define SHOW_FILTER	128
-#define RESULT		129
+#define RESULT		128
 #define SORT_FILTER     1
 #define PATH_FILTER     2
 #define BOTH_FILTER     (SORT_FILTER|PATH_FILTER)
@@ -143,7 +142,6 @@ static struct option const long_options[] = {
 	{"debug", no_argument, &debug, 1},
 	{"version", no_argument, &show_version, 1},
 	{"help", no_argument, &show_help, 1},
-	{"filter", optional_argument, NULL, SHOW_FILTER},
 	{"result", required_argument, NULL, RESULT},
 	{"nosource", no_argument, &nosource, 1},
 	{ 0 }
@@ -462,33 +460,6 @@ main(int argc, char **argv)
 	return 0;
 }
 /*
- * Output filter
- *
- * (1) Old architecture (- GLOBAL-4.7.8)
- *
- * process1          process2       process3
- * +=============+  +===========+  +===========+
- * |global(write)|->|sort filter|->|path filter|->[stdout]
- * +=============+  +===========+  +===========+
- *
- * (2) Recent architecture (GLOBAL-5.0 - 5.3)
- *
- * 1 process
- * +===========================================+
- * |global(write)->[sort filter]->[path filter]|->[stdout]
- * +===========================================+
- *
- * (3) Current architecture (GLOBAL-5.4 -)
- *
- * 1 process
- * +===========================================+
- * |[sort filter]->global(write)->[path filter]|->[stdout]
- * +===========================================+
- *
- * Sort filter is implemented in gtagsop module (libutil/gtagsop.c).
- * Path filter is implemented in pathconvert module (libutil/pathconvert.c).
- */
-/*
  * completion: print completion list of specified prefix
  *
  *	i)	dbpath	dbpath directory
@@ -516,6 +487,33 @@ completion(const char *dbpath, const char *root, const char *prefix)
 	}
 	gtags_close(gtop);
 }
+/*
+ * Output filter
+ *
+ * (1) Old architecture (- GLOBAL-4.7.8)
+ *
+ * process1          process2       process3
+ * +=============+  +===========+  +===========+
+ * |global(write)|->|sort filter|->|path filter|->[stdout]
+ * +=============+  +===========+  +===========+
+ *
+ * (2) Recent architecture (GLOBAL-5.0 - 5.3)
+ *
+ * 1 process
+ * +===========================================+
+ * |global(write)->[sort filter]->[path filter]|->[stdout]
+ * +===========================================+
+ *
+ * (3) Current architecture (GLOBAL-5.4 -)
+ *
+ * 1 process
+ * +===========================================+
+ * |[sort filter]->global(write)->[path filter]|->[stdout]
+ * +===========================================+
+ *
+ * Sort filter is implemented in gtagsop module (libutil/gtagsop.c).
+ * Path filter is implemented in pathconvert module (libutil/pathconvert.c).
+ */
 /*
  * printtag: print a tag's line
  *
