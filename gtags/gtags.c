@@ -84,12 +84,6 @@ const char *file_list;
  */
 int do_path;
 int convert_type = PATH_RELATIVE;
-int format = FORMAT_PATH;
-/*
- * Sort filter
- */
-int do_sort;
-int unique;
 
 int extractmethod;
 int total;
@@ -131,19 +125,15 @@ static struct option const long_options[] = {
 	 */
 	/* flag value */
 	{"debug", no_argument, &debug, 1},
-	{"sort", no_argument, &do_sort, 1},
-	{"unique", no_argument, &unique, 1},
 	{"version", no_argument, &show_version, 1},
 	{"help", no_argument, &show_help, 1},
 
 	/* accept value */
 #define OPT_CONFIG		128
-#define OPT_FORMAT		129
-#define OPT_GTAGSCONF		130
-#define OPT_GTAGSLABEL		131
-#define OPT_PATH		132
+#define OPT_GTAGSCONF		129
+#define OPT_GTAGSLABEL		130
+#define OPT_PATH		131
 	{"config", optional_argument, NULL, OPT_CONFIG},
-	{"format", required_argument, NULL, OPT_FORMAT},
 	{"gtagsconf", required_argument, NULL, OPT_GTAGSCONF},
 	{"gtagslabel", required_argument, NULL, OPT_GTAGSLABEL},
 	{"path", required_argument, NULL, OPT_PATH},
@@ -178,20 +168,6 @@ main(int argc, char **argv)
 			show_config = 1;
 			if (optarg)
 				config_name = optarg;
-			break;
-		case OPT_FORMAT:
-			if (!strcmp("ctags", optarg))
-				format = FORMAT_CTAGS;
-			else if (!strcmp("path", optarg))
-				format = FORMAT_PATH;
-			else if (!strcmp("grep", optarg))
-				format = FORMAT_GREP;
-			else if (!strcmp("cscope", optarg))
-				format = FORMAT_CSCOPE;
-			else if (!strcmp("ctags-x", optarg))
-				format = FORMAT_CTAGS_X;
-			else
-				die("Unknown format type.");
 			break;
 		case OPT_GTAGSCONF:
 			gtagsconf = optarg;
@@ -270,26 +246,6 @@ main(int argc, char **argv)
 		else
 			fprintf(stdout, "%s\n", getconfline());
 		exit(0);
-	} else if (do_sort) {
-		/*
-		 * This is the main body of sort filter.
-		 *
-		 * - Requirement -
-		 * 1. input must be one of these format:
-		 *    0: ctags -x format
-		 *    1: ctags format
-		 *    2: path name
-		 * 2. input must be sorted in alphabetical order by tag name
-		 *    if it is ctags [-x] format.
-		 */
-		STRBUF *ib = strbuf_open(MAXBUFLEN);
-		TAGSORT *ts = tagsort_open(output, format, unique, 0);
-
-		while (strbuf_fgets(ib, stdin, STRBUF_NOCRLF) != NULL)
-			tagsort_put(ts, strbuf_value(ib));
-		tagsort_close(ts);
-		strbuf_close(ib);
-		exit(0);
 	} else if (do_path) {
 		/*
 		 * This is the main body of path filter.
@@ -311,7 +267,7 @@ main(int argc, char **argv)
 		 * main      22 /prj/xxx/libc/func.c   main(argc, argv)\n
 		 */
 		STRBUF *ib = strbuf_open(MAXBUFLEN);
-		CONVERT *cv = convert_open(convert_type, format, argv[0], argv[1], argv[2], stdout);
+		CONVERT *cv = convert_open(convert_type, FORMAT_CTAGS_X, argv[0], argv[1], argv[2], stdout);
 		char *ctags_x;
 
 		if (argc < 3)

@@ -12,9 +12,7 @@
 #
 bin_PROGRAMS= global
 
-global_SOURCES = global.c filter.c
-
-noinst_HEADERS = filter.h
+global_SOURCES = global.c
 
 INCLUDES = @INCLUDES@
 
