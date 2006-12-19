@@ -726,7 +726,7 @@ ghelp() {
 	echo "Commands:"
 	echo
 	echo " - Tag search command:"
-	echo "  (-l: use less(1) instead of tag stack.)
+	echo "  (-l: use less(1) instead of tag stack.)"
 	echo "	x [-l][pattern]	- locate function definitions."
 	echo "	r [-l][pattern]	- locate function references."
 	echo "	s [-l][pattern]	- locate other symbols."
