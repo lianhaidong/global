@@ -36,6 +36,7 @@ GNU GLOBAL comes with NO WARRANTY, to the extent permitted by law.\n\
 You may redistribute copies of GNU GLOBAL under the terms of the\n\
 GNU General Public License. For more information about these matters,\n\
 see the files named COPYING.\n\
+See also: http://www.gnu.org/software/global/\n\
 ";
 /*
  * get_version: get version string.
