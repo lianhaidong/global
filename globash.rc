@@ -48,6 +48,12 @@ if [ -n "$HOME_ETC" ]; then
 else
         GHOME=$HOME/.globash
 fi
+#
+# Less-370 or later can treat GLOBAL as tag system if environment variable
+# LESSGLOBALTAGS is set.
+#
+export LESSGLOBALTAGS=global
+
 if [ ! -d $GHOME ]; then
 	echo
 	echo "GloBash --- Global facility for Bash"
@@ -496,24 +502,48 @@ __gtags_list_xref()
 	return 0
 }
 __gtags_locate_tag() {
-	case "$2$__gtags_lasttag" in
-	'')	echo "tag not specified."
+	local command less tag
+	command=$1
+	case $command in
+	x|r|s|g|I|P)	;;
+	*)	echo "Unknown command '$command'."
 		return 1;;
 	esac
-	__gtags_push_stack
-	__gtags_current=1
-	__gtags_gen_xref $1 $2
-	__gtags_list_xref
+	shift
+	if [ "$1" = "-l" ]; then
+		less=1
+		shift
+	fi
+	tag=$1
+	if [ "$tag" = "" ]; then
+		if [ "$__gtags_lasttag" = "" ]; then
+			echo "tag not specified."
+			return 1
+		fi
+		tag=$__gtags_lasttag
+	fi
+	if [ "$less" = "1" ]; then
+		global -x$command $tag | less -T-
+	else
+		__gtags_push_stack
+		__gtags_current=1
+		__gtags_gen_xref $command $tag
+		__gtags_list_xref
+	fi
 }
-x() { __gtags_locate_tag x $1; }
-r() { __gtags_locate_tag r $1; }
-s() { __gtags_locate_tag s $1; }
-g() { __gtags_locate_tag g $1; }
-I() { __gtags_locate_tag I $1; }
-P() { __gtags_locate_tag P $1; }
+x() { __gtags_locate_tag x $*; }
+r() { __gtags_locate_tag r $*; }
+s() { __gtags_locate_tag s $*; }
+g() { __gtags_locate_tag g $*; }
+I() { __gtags_locate_tag I $*; }
+P() { __gtags_locate_tag P $*; }
 f() {
-	local absolute
+	local less absolute
 
+	if [ "$1" = "-l" ]; then
+		less=1
+		shift
+	fi
 	if [ "$1" = "" ]; then
 		if [ "$__gtags_prev_file" = "" ]; then
 			echo "file not specified."
@@ -527,20 +557,24 @@ f() {
 		echo "file not found."
 		return 1
 	fi
-	__gtags_prev_file=$absolute
-	__gtags_push_stack
-	__gtags_current=1
-	__gtags_gen_xref f $absolute
-	__gtags_list_xref
+	if [ "$less" = "1" ]; then
+		global -xf $absolute | less -T-
+	else
+		__gtags_prev_file=$absolute
+		__gtags_push_stack
+		__gtags_current=1
+		__gtags_gen_xref f $absolute
+		__gtags_list_xref
+	fi
 }
 list() {
 	__gtags_list_xref
 }
 tags() {
 	if [ -s $XREF ]; then
-		cat <( cat $XREF | sed -n "${__gtags_current}p" ) $STACK | cat -n | sed '1s/^ />/'
+		cat <( cat $XREF | sed -n "${__gtags_current}p" ) $STACK | $__gtags_filter | cat -n | sed '1s/^ />/'
 	elif [ -s $STACK ]; then
-		echo | cat - $STACK | cat -n | sed '1s/^ />/'
+		echo | cat - $STACK | $__gtags_filter | cat -n | sed '1s/^ />/'
 	fi
 }
 pop()
@@ -692,13 +726,14 @@ ghelp() {
 	echo "Commands:"
 	echo
 	echo " - Tag search command:"
-	echo "	x [pattern]	- locate function definitions."
-	echo "	r [pattern]	- locate function references."
-	echo "	s [pattern]	- locate other symbols."
-	echo "	g [pattern]	- locate pattern using grep(1)."
-	echo "	P [pattern]	- locate file include pattern."
-	echo "	I [pattern]	- locate pattern using idutils(1)."
-	echo "	f [file]	- locate function definitions in a file."
+	echo "  (-l: use less(1) instead of tag stack.)
+	echo "	x [-l][pattern]	- locate function definitions."
+	echo "	r [-l][pattern]	- locate function references."
+	echo "	s [-l][pattern]	- locate other symbols."
+	echo "	g [-l][pattern]	- locate pattern using grep(1)."
+	echo "	P [-l][pattern]	- locate file include pattern."
+	echo "	I [-l][pattern]	- locate pattern using idutils(1)."
+	echo "	f [-l][file]	- locate function definitions in a file."
 	echo "	(By default, the previous value is used for pattern and file.)"
 	echo "	list		- print tag list."
 	echo "	tags		- print tag stack."
