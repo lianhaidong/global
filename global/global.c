@@ -710,8 +710,6 @@ grep(const char *pattern, const char *dbpath)
 
 	gp = gfind_open(dbpath, localprefix, target);
 	while ((path = gfind_read(gp)) != NULL) {
-		if (lflag && !locatestring(path, localprefix, MATCH_AT_FIRST))
-			continue;
 		if (!(fp = fopen(path, "r")))
 			die("'%s' not found. Please remake tag files by invoking gtags(1).", path);
 		linenum = 0;
@@ -785,8 +783,6 @@ pathlist(const char *pattern, const char *dbpath)
 
 	gp = gfind_open(dbpath, localprefix, target);
 	while ((path = gfind_read(gp)) != NULL) {
-		if (lflag && !locatestring(path, localprefix, MATCH_AT_FIRST))
-			continue;
 		/*
 		 * skip localprefix because end-user doesn't see it.
 		 */
