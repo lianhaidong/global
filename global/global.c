@@ -1044,12 +1044,15 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 			*p++ = '\0';			/* b */
 			lnop = p;
 			if (!nosource && strcmp(gtp->name, path)) {
-				if (path[0] != '\0')
+				if (path[0] != '\0' && fp != NULL)
 					fclose(fp);
 				snprintf(path, sizeof(path), "%s/%s", gtop->root, gtp->name);
 				fp = fopen(path, "r");
+				/*
+				 * It is too annoying.
 				if (fp == NULL)
 					warning("source file '%s' is not available.", path);
+				*/
 				lineno = 0;
 			}
 			while (*lnop) {
