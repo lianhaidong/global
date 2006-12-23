@@ -48,6 +48,7 @@ makedefineindex(const char *file, int total, STRBUF *defines)
 {
 	int count = 0;
 	int alpha_count = 0;
+	FILEOP *fileop_MAP, *fileop_DEFINES, *fileop_ALPHA;
 	FILE *MAP = NULL;
 	FILE *DEFINES, *STDOUT, *TAGS, *ALPHA = NULL;
 	STRBUF *sb = strbuf_open(0);
@@ -66,11 +67,11 @@ makedefineindex(const char *file, int total, STRBUF *defines)
 		indexlink = "../mains";
 
 	if (map_file) {
-		if (!(MAP = fopen(makepath(distpath, "MAP", NULL), "w")))
-			die("cannot open '%s'.", makepath(distpath, "MAP", NULL));
+		fileop_MAP = open_output_file(makepath(distpath, "MAP", NULL), 0);
+		MAP = get_descripter(fileop_MAP);
 	}
-	if (!(DEFINES = fopen(makepath(distpath, file, NULL), "w")))
-		die("cannot make function index '%s'.", file);
+	fileop_DEFINES = open_output_file(makepath(distpath, file, NULL), 0);
+	DEFINES = get_descripter(fileop_DEFINES);
 	fputs_nl(gen_page_begin(title_define_index, TOPDIR), DEFINES);
 	fputs_nl(body_begin, DEFINES);
 	fputs(header_begin, DEFINES);
@@ -130,11 +131,7 @@ makedefineindex(const char *file, int total, STRBUF *defines)
 				fputs_nl(gen_href_end(), ALPHA);
 				fputs_nl(body_end, ALPHA);
 				fputs_nl(gen_page_end(), ALPHA);
-				if (cflag) {
-					if (pclose(ALPHA) != 0)
-						die("terminated abnormally.");
-				} else
-					fclose(ALPHA);
+				close_file(fileop_ALPHA);
 				html_count++;
 			}
 			/*
@@ -171,15 +168,9 @@ makedefineindex(const char *file, int total, STRBUF *defines)
 				alpha[1] = '\0';
 				snprintf(alpha_f, sizeof(alpha_f), "%03d", c);
 			}
-			if (cflag) {
-				snprintf(buf, sizeof(buf), "gzip -c >%s/defines/%s.%s", distpath, alpha_f, HTML);
-				ALPHA = popen(buf, "w");
-			} else {
-				snprintf(buf, sizeof(buf), "%s/defines/%s.%s", distpath, alpha_f, HTML);
-				ALPHA = fopen(buf, "w");
-			}
-			if (!ALPHA)
-				die("cannot make alphabetical function index.");
+			snprintf(buf, sizeof(buf), "%s/defines/%s.%s", distpath, alpha_f, HTML);
+			fileop_ALPHA = open_output_file(buf, cflag);
+			ALPHA = get_descripter(fileop_ALPHA);
 			snprintf(buf, sizeof(buf), "[%s]", alpha);
 			fputs_nl(gen_page_begin(buf, SUBDIR), ALPHA);
 			fputs_nl(body_begin, ALPHA);
@@ -288,7 +279,7 @@ makedefineindex(const char *file, int total, STRBUF *defines)
 		fputs_nl(gen_href_end(), ALPHA);
 		fputs_nl(body_end, ALPHA);
 		fputs_nl(gen_page_end(), ALPHA);
-		fclose(ALPHA);
+		close_file(fileop_ALPHA);
 		html_count++;
 
 		fputs(strbuf_value(defines), DEFINES);
@@ -305,10 +296,10 @@ makedefineindex(const char *file, int total, STRBUF *defines)
 	}
 	fputs_nl(body_end, DEFINES);
 	fputs_nl(gen_page_end(), DEFINES);
-	fclose(DEFINES);
+	close_file(fileop_DEFINES);
 	html_count++;
 	if (map_file)
-		fclose(MAP);
+		close_file(fileop_MAP);
 	strbuf_close(sb);
 	strbuf_close(url);
 	return count;

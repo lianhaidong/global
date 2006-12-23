@@ -115,6 +115,8 @@ get_lang_entry(const char *lang)
 /*
  * Input/Output descriptor.
  */
+static FILEOP *fileop_out;
+static FILEOP *fileop_in;
 static FILE *out;
 static FILE *in;
 
@@ -123,69 +125,6 @@ static const char *curpfile;
 static int warned;
 static int last_lineno;
 
-/*
- * Open source file.
- *
- *	i)	file	source file name
- *	r)		file pointer
- */
-static FILE *
-open_input_file(const char *file)
-{
-	FILE *ip;
-
-	ip = fopen(file, "r");
-	if (!ip)
-		die("cannot open file '%s'.", file);
-	curpfile = file;
-	warned = 0;
-	return ip;
-}
-/*
- * Close source file.
- */
-static void
-close_input_file(FILE *ip)
-{
-	fclose(ip);
-}
-/*
- * Open HTML file.
- *
- *	i)	file	HTML file name
- *	r)		file pointer
- */
-static FILE *
-open_output_file(const char *file)
-{
-	char command[MAXFILLEN];
-	FILE *op;
-
-	if (cflag) {
-		snprintf(command, sizeof(command), "gzip -c >%s", file);
-		op = popen(command, "w");
-		if (!op)
-			die("cannot execute '%s'.", command);
-	} else {
-		op = fopen(file, "w");
-		if (!op)
-			die("cannot create file '%s'.", file);
-	}
-	strbuf_clear(outbuf);
-	return op;
-}
-/*
- * Close HTML file.
- */
-static void
-close_output_file(FILE *op)
-{
-	if (cflag) {
-		if (pclose(op) != 0)
-			die("command 'gzip -c' failed.");
-	} else
-		fclose(op);
-}
 /*
  * Put a character to HTML as is.
  *
@@ -600,7 +539,7 @@ put_begin_of_line(int lineno)
                         guide = NULL;
         }
         if (guide && definition_header == BEFORE_HEADER) {
-                fputs_nl(guide, out);
+		fputs_nl(guide, out);
                 guide = NULL;
         }
 }
@@ -629,7 +568,7 @@ put_end_of_line(int lineno)
 	if (warned)
 		fputs(warned_line_end, out);
 	if (guide == NULL)
-        	fputc('\n', out);
+		fputc('\n', out);
 	else {
 		if (definition_header == RIGHT_HEADER)
 			fputs(guide, out);
@@ -726,8 +665,14 @@ src2html(const char *src, const char *html, int notsource)
 	 */
 	snprintf(lineno_format, sizeof(lineno_format), "%%%dd ", ncol);
 
-	in  = open_input_file(src);
-	out = open_output_file(html);
+	fileop_in  = open_input_file(src);
+	in = get_descripter(fileop_in);
+        curpfile = src;
+        warned = 0;
+
+	fileop_out = open_output_file(html, cflag);
+	out = get_descripter(fileop_out);
+	strbuf_clear(outbuf);
 
 	if (Fflag)
 		snprintf(indexlink, sizeof(indexlink), "../files.%s", normal_suffix);
@@ -742,7 +687,7 @@ src2html(const char *src, const char *html, int notsource)
 		fputs(gen_insert_header(SUBDIR), out);
 	fputs(gen_name_string("TOP"), out);
 	fputs(header_begin, out);
-        fputs(fill_anchor(indexlink, src), out);
+	fputs(fill_anchor(indexlink, src), out);
 	if (cvsweb_url) {
 		STATIC_STRBUF(sb);
 		const char *module, *basename;
@@ -925,6 +870,6 @@ src2html(const char *src, const char *html, int notsource)
 	fputs_nl(gen_page_end(), out);
 	if (!notsource)
 		anchor_unload();
-	close_output_file(out);
-	close_input_file(in);
+	close_file(fileop_out);
+	close_file(fileop_in);
 }

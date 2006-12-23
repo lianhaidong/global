@@ -40,50 +40,6 @@
 #include "common.h"
 
 /*----------------------------------------------------------------------*/
-/* File procedures							*/
-/*----------------------------------------------------------------------*/
-static FILE *open_file(const char *);
-static void close_file(FILE *);
-/*
- * open_file: open file and return file pointer.
- *
- *	i)	path	path name or command line.
- *	r)		file pointer
- */
-static FILE *
-open_file(const char *path)
-{
-	FILE *op;
-
-	if (cflag) {
-		char command[MAXFILLEN];
-
-		snprintf(command, sizeof(command), "gzip -c >%s", path);
-		op = popen(command, "w");
-		if (op == NULL)
-			die("cannot execute command '%s'.", command);
-	} else {
-		op = fopen(path, "w");
-		if (op == NULL)
-			die("cannot create file '%s'.", path);
-	}
-	return op;
-}
-/*
- * close_file: close file
- *
- *	i)	op	file descripter
- */
-static void
-close_file(FILE *op)
-{
-	if (cflag) {
-		if (pclose(op) != 0)
-			die("gzip command failed.");
-	} else
-		fclose(op);
-}
-/*----------------------------------------------------------------------*/
 /* Find list procedures							*/
 /*----------------------------------------------------------------------*/
 static const char *getpath(void);
@@ -382,6 +338,7 @@ static int
 print_directory(int level, char *basedir)
 {
 	const char *path;
+	FILEOP *fileop;
 	FILE *op = NULL;
 	int flist_items = 0;
 	int count = 0;
@@ -390,7 +347,8 @@ print_directory(int level, char *basedir)
 		char name[MAXPATHLEN+1];
 
 		snprintf(name, sizeof(name), "%s/files/%s.%s", distpath, path2fid(basedir), HTML);
-		op = open_file(name);
+		fileop = open_output_file(name, cflag);
+		op = get_descripter(fileop);
 		print_directory_header(op, level, basedir);
 	}
 	while ((path = getpath()) != NULL) {
@@ -459,7 +417,7 @@ print_directory(int level, char *basedir)
 		PUT(fline_end);
 	if (level > 0) {
 		print_directory_footer(op, level, basedir);
-		close_file(op);
+		close_file(fileop);
 	}
 	html_count++;
 	return count;
@@ -483,7 +441,10 @@ print_directory_header(FILE *op, int level, const char *dir)
 	strbuf_putc(sb, '/');
 	fputs_nl(gen_page_begin(strbuf_value(sb), SUBDIR), op);
 	fputs_nl(body_begin, op);
-	fprintf(op, "%s%sroot%s/", header_begin, gen_href_begin(NULL, indexlink, normal_suffix, NULL), gen_href_end());
+
+	strbuf_clear(sb);
+ 	strbuf_sprintf(sb, "%s%sroot%s/", header_begin, gen_href_begin(NULL, indexlink, normal_suffix, NULL), gen_href_end());
+	fputs(strbuf_value(sb), op);
 	{
 		char path[MAXPATHLEN+1];
 		char *p, *q;
@@ -835,13 +796,15 @@ makeincludeindex(void)
 	for (inc = first_inc(); inc; inc = next_inc()) {
 		const char *last = inc->name;
 		int no = inc->id;
+		FILEOP *fileop_INCLUDE;
 		FILE *INCLUDE;
 
 		if (inc->count > 1) {
 			char path[MAXPATHLEN];
 
 			snprintf(path, sizeof(path), "%s/%s/%d.%s", distpath, INCS, no, HTML);
-			INCLUDE = open_file(path);
+			fileop_INCLUDE = open_output_file(path, cflag);
+			INCLUDE = get_descripter(fileop_INCLUDE);
 			fputs_nl(gen_page_begin(last, SUBDIR), INCLUDE);
 			fputs_nl(body_begin, INCLUDE);
 			fputs_nl(verbatim_begin, INCLUDE);
@@ -858,7 +821,7 @@ makeincludeindex(void)
 			fputs_nl(verbatim_end, INCLUDE);
 			fputs_nl(body_end, INCLUDE);
 			fputs_nl(gen_page_end(), INCLUDE);
-			close_file(INCLUDE);
+			close_file(fileop_INCLUDE);
 			html_count++;
 			/*
 			 * inc->path == NULL means that information already
@@ -884,7 +847,8 @@ makeincludeindex(void)
 			char path[MAXPATHLEN];
 
 			snprintf(path, sizeof(path), "%s/%s/%d.%s", distpath, INCREFS, no, HTML);
-			INCLUDE = open_file(path);
+			fileop_INCLUDE = open_output_file(path, cflag);
+			INCLUDE = get_descripter(fileop_INCLUDE);
 			fputs_nl(gen_page_begin(last, SUBDIR), INCLUDE);
 			fputs_nl(body_begin, INCLUDE);
 			fputs_nl(gen_list_begin(), INCLUDE);
@@ -898,7 +862,7 @@ makeincludeindex(void)
 			fputs_nl(gen_list_end(), INCLUDE);
 			fputs_nl(body_end, INCLUDE);
 			fputs_nl(gen_page_end(), INCLUDE);
-			close_file(INCLUDE);
+			close_file(fileop_INCLUDE);
 			html_count++;
 			/*
 			 * inc->path == NULL means that information already

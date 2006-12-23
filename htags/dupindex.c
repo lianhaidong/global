@@ -41,48 +41,6 @@ static const char *dirs[]    = {NULL, DEFS,         REFS,        SYMS};
 static const char *kinds[]   = {NULL, "definition", "reference", "symbol"};
 static const char *options[] = {NULL, "",           "r",         "s"};
 
-static char command[MAXFILLEN];
-
-/*
- * Open duplicate object index file.
- *
- *	i)	db	tag type(GTAGS, GRTAGS, GSYMS)
- *	r)	op	file pointer
- */
-static FILE *
-open_dup_file(int db, int count)
-{
-	char path[MAXPATHLEN];
-	FILE *op;
-
-	snprintf(path, sizeof(path), "%s/%s/%d.%s", distpath, dirs[db], count, HTML);
-	if (cflag) {
-		snprintf(command, sizeof(command), "gzip -c >%s", path);
-		op = popen(command, "w");
-		if (op == NULL)
-			die("cannot execute command '%s'.", command);
-	} else {
-		op = fopen(path, "w");
-		if (op == NULL)
-			die("cannot create file '%s'.", path);
-	}
-	return op;
-}
-/*
- * Close duplicate object index file.
- *
- *	i)	op	file pointer
- */
-static void
-close_dup_file(FILE *op)
-{
-	if (cflag) {
-		if (pclose(op) != 0)
-			die("'%s' failed.", command);
-	} else {
-		fclose(op);
-	}
-}
 /*
  * Make duplicate object index.
  *
@@ -99,6 +57,7 @@ makedupindex(void)
 	char srcdir[MAXPATHLEN];
 	int db;
 	char buf[1024];
+	FILEOP *fileop;
 	FILE *op = NULL;
 	FILE *ip = NULL;
 
@@ -150,7 +109,7 @@ makedupindex(void)
 						fputs_nl(gen_list_end(), op);
 						fputs_nl(body_end, op);
 						fputs_nl(gen_page_end(), op);
-						close_dup_file(op);
+						close_file(fileop);
 						html_count++;
 					}
 					writing = 0;
@@ -182,7 +141,11 @@ makedupindex(void)
 				/* duplicate entry */
 				if (first_line[0]) {
 					if (!dynamic) {
-						op = open_dup_file(db, count);
+						char path[MAXPATHLEN+1];
+
+						snprintf(path, sizeof(path), "%s/%s/%d.%s", distpath, dirs[db], count, HTML);
+						fileop = open_output_file(path, cflag);
+						op = get_descripter(fileop);
 						fputs_nl(gen_page_begin(tag, SUBDIR), op);
 						fputs_nl(body_begin, op);
 						fputs_nl(gen_list_begin(), op);
@@ -207,7 +170,7 @@ makedupindex(void)
 				fputs_nl(gen_list_end(), op);
 				fputs_nl(body_end, op);
 				fputs_nl(gen_page_end(), op);
-				close_dup_file(op);
+				close_file(fileop);
 				html_count++;
 			}
 			/*
