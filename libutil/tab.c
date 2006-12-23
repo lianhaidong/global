@@ -43,7 +43,6 @@
 
 static int tabs = 8;
 
-#define TABPOS(i)	((i)%tabs == 0)
 /*
  * settabs: set default tab stop
  *
@@ -92,7 +91,7 @@ read_file_detabing(char *buf, size_t size, FILE *ip, int *dest_saved, int *space
 	spaces = *spaces_saved;
 	if (spaces > 0)
 		PUTSPACES;
-	do {
+	while (size > 0) {
 		c = getc(ip);
 		if (c == EOF) {
 			if (ferror(ip))
@@ -109,7 +108,7 @@ read_file_detabing(char *buf, size_t size, FILE *ip, int *dest_saved, int *space
 				dest = 0;
 			size--;
 		}
-	} while (size > 0);
+	}
 	*dest_saved = dest;
 	*spaces_saved = spaces;
 	return p - buf;
