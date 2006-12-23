@@ -25,8 +25,6 @@
 #include <stdio.h>
 
 void settabs(int);
-void detab(FILE *, const char *);
-void entab(char *);
 size_t read_file_detabing(char *, size_t, FILE *, int *, int *);
 void detab_replacing(FILE *op, const char *buf, const char *(*replace)(int c));
 
