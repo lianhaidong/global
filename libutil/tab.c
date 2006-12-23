@@ -133,11 +133,21 @@ entab(char *buf)
  * Dest_saved and spaces_saved are control variables.
  * You must initialize them with 0 when the input file is opened.
  */
+#define PUTSPACES \
+	do {									\
+		int n = (spaces < size) ? spaces : size;			\
+		dest += n;							\
+		size -= n;							\
+		spaces -= n;							\
+		do {								\
+			*p++ = ' ';						\
+		} while (--n);							\
+	} while (0)
 size_t
 read_file_detabing(char *buf, size_t size, FILE *ip, int *dest_saved, int *spaces_saved)
 {
 	char *p;
-	int c, dest, spaces, n;
+	int c, dest, spaces;
 
 	if (size == 0)
 		return 0;
@@ -145,7 +155,7 @@ read_file_detabing(char *buf, size_t size, FILE *ip, int *dest_saved, int *space
 	dest = *dest_saved;
 	spaces = *spaces_saved;
 	if (spaces > 0)
-		goto put_spaces;
+		PUTSPACES;
 	do {
 		c = getc(ip);
 		if (c == EOF) {
@@ -155,14 +165,7 @@ read_file_detabing(char *buf, size_t size, FILE *ip, int *dest_saved, int *space
 		}
 		if (c == '\t') {
 			spaces = tabs - dest % tabs;
-put_spaces:
-			n = (spaces < size) ? spaces : size;
-			dest += n;
-			size -= n;
-			spaces -= n;
-			do {
-				*p++ = ' ';
-			} while (--n);
+			PUTSPACES;
 		} else {
 			*p++ = c;
 			dest++;
