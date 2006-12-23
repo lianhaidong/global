@@ -988,10 +988,13 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 	GTP *gtp;
 	int flags = 0;
 	STRBUF *sb = NULL;
-	char path[MAXPATHLEN+1];
+	char curpath[MAXPATHLEN+1], curtag[128];
 	FILE *fp = NULL;
+	const char *src = "";
+	int lineno, last_lineno;
 
-	path[0] = '\0';
+	lineno = last_lineno = 0;
+	curpath[0] = curtag[0] = '\0';
 	/*
 	 * open tag file.
 	 */
@@ -1023,7 +1026,6 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 			printtag(cv, gtp->name);
 			count++;
 		} else if (gtop->format &  GTAGS_COMPACT) {
-			int last_lineno = 0;
 			/*
 			 *                    a          b
 			 * tagline = <file id> <tag name> <line no>,...
@@ -1032,8 +1034,6 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 			char *p = (char *)gtp->tagline;
 			const char *tagname;
 			const char *lnop;
-			const char *src = "";
-			int lineno = 0;
 
 			while (*p != ' ')
 				p++;
@@ -1043,18 +1043,31 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 				p++;
 			*p++ = '\0';			/* b */
 			lnop = p;
-			if (!nosource && strcmp(gtp->name, path)) {
-				if (path[0] != '\0' && fp != NULL)
-					fclose(fp);
-				snprintf(path, sizeof(path), "%s/%s", gtop->root, gtp->name);
-				fp = fopen(path, "r");
-				/*
-				 * It is too annoying.
-				if (fp == NULL)
-					warning("source file '%s' is not available.", path);
-				*/
-				lineno = 0;
+			/*
+			 * Reopen or rewind source file.
+			 */
+			if (!nosource) {
+				if (strcmp(gtp->name, curpath)) {
+					if (curpath[0] != '\0' && fp != NULL)
+						fclose(fp);
+					strlimcpy(curtag, tagname, sizeof(curtag));
+					strlimcpy(curpath, gtp->name, sizeof(curpath));
+					fp = fopen(curpath, "r");
+					if (fp == NULL)
+						warning("source file '%s' is not available.", curpath);
+					last_lineno = lineno = 0;
+				} else if (strcmp(tagname, curtag)) {
+					strlimcpy(curtag, tagname, sizeof(curtag));
+					if (atoi(lnop) < last_lineno && fp != NULL) {
+						rewind(fp);
+						lineno = 0;
+					}
+					last_lineno = 0;
+				}
 			}
+			/*
+			 * Generate records and write them.
+			 */
 			while (*lnop) {
 				int lno = 0;
 
@@ -1064,18 +1077,19 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 					lno = lno * 10 + *lnop - '0';
 				if (*lnop == ',')
 					lnop++;
-				if (last_lineno == lno && db == GSYMS)
+				if (last_lineno == lno && db == GSYMS) {
 					continue;
-				last_lineno = lno;
-				if (fp) {
+				}
+				if (last_lineno != lno && fp) {
 					while (lineno < lno) {
 						if (!(src = strbuf_fgets(sb, fp, STRBUF_NOCRLF)))
-							die("unexpected end of file. '%s'", gtp->name);
+							die("unexpected end of file. '%s: %d/%d'", gtp->name, lineno, lno);
 						lineno++;
 					}
 				}
 				printtag_using(cv, tagname, gtp->name, lno, src);
 				count++;
+				last_lineno = lno;
 			}
 		} else {
 			/*
