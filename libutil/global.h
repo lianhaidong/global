@@ -33,6 +33,7 @@
 #include "defined.h"
 #include "die.h"
 #include "env.h"
+#include "fileop.h"
 #include "find.h"
 #include "format.h"
 #include "getdbpath.h"
