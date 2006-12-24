@@ -338,7 +338,7 @@ static int
 print_directory(int level, char *basedir)
 {
 	const char *path;
-	FILEOP *fileop;
+	FILEOP *fileop = NULL;
 	FILE *op = NULL;
 	int flist_items = 0;
 	int count = 0;

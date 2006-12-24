@@ -57,7 +57,7 @@ makedupindex(void)
 	char srcdir[MAXPATHLEN];
 	int db;
 	char buf[1024];
-	FILEOP *fileop;
+	FILEOP *fileop = NULL;
 	FILE *op = NULL;
 	FILE *ip = NULL;
 

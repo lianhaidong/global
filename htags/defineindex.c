@@ -48,7 +48,7 @@ makedefineindex(const char *file, int total, STRBUF *defines)
 {
 	int count = 0;
 	int alpha_count = 0;
-	FILEOP *fileop_MAP, *fileop_DEFINES, *fileop_ALPHA;
+	FILEOP *fileop_MAP = NULL, *fileop_DEFINES, *fileop_ALPHA = NULL;
 	FILE *MAP = NULL;
 	FILE *DEFINES, *STDOUT, *TAGS, *ALPHA = NULL;
 	STRBUF *sb = strbuf_open(0);
