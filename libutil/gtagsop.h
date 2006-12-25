@@ -47,9 +47,7 @@
 /* gtags_open() */
 #define GTAGS_COMPACT		1	/* compact option */
 #define GTAGS_COMPRESS		2	/* compression option */
-/* gtags_add() */
-#define GTAGS_UNIQUE		1	/* compress duplicate lines */
-#define GTAGS_EXTRACTMETHOD	2	/* extract method from class definition */
+#define GTAGS_EXTRACTMETHOD	3	/* extract method from class definition */
 #define GTAGS_DEBUG		65536	/* print information for debug */
 /* gtags_first() */
 #define GTOP_KEY		1	/* read key part */

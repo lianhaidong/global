@@ -714,7 +714,7 @@ flush_pool(GTOP *gtop)
 			for (i = 0; i < vb->length; i++) {
 				int n = lno_array[i];
 
-				if ((gtop->flags & GTAGS_UNIQUE) && n == last)
+				if (n == last)
 					continue;
 				if (strbuf_getlen(gtop->sb) > savelen)
 					strbuf_putc(gtop->sb, ',');
