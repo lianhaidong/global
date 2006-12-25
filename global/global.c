@@ -1052,7 +1052,11 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 						fclose(fp);
 					strlimcpy(curtag, tagname, sizeof(curtag));
 					strlimcpy(curpath, gtp->name, sizeof(curpath));
-					fp = fopen(curpath, "r");
+					/*
+					 * Use absolute path name to support GTAGSROOT
+					 * environment variable.
+					 */
+					fp = fopen(makepath(root, curpath, NULL), "r");
 					if (fp == NULL)
 						warning("source file '%s' is not available.", curpath);
 					last_lineno = lineno = 0;
