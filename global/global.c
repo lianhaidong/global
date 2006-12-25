@@ -1081,9 +1081,8 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 					lno = lno * 10 + *lnop - '0';
 				if (*lnop == ',')
 					lnop++;
-				if (last_lineno == lno && db == GSYMS) {
+				if (last_lineno == lno)
 					continue;
-				}
 				if (last_lineno != lno && fp) {
 					while (lineno < lno) {
 						if (!(src = strbuf_fgets(sb, fp, STRBUF_NOCRLF)))

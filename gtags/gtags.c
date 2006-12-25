@@ -672,6 +672,7 @@ updatetags(const char *dbpath, const char *root, IDSET *deleteset, STRBUF *addli
 	if (!idset_empty(deleteset))
 		gtags_delete(gtop, deleteset);
 	gtop->flags = 0;
+	gtop->flags |= GTAGS_UNIQUE;
 	if (extractmethod)
 		gtop->flags |= GTAGS_EXTRACTMETHOD;
 	if (debug)
@@ -769,6 +770,7 @@ createtags(const char *dbpath, const char *root, int db)
 	 * Set flags.
 	 */
 	gtop->flags = 0;
+	gtop->flags |= GTAGS_UNIQUE;
 	if (extractmethod)
 		gtop->flags |= GTAGS_EXTRACTMETHOD;
 	if (debug)
