@@ -379,22 +379,26 @@ main(int argc, char **argv)
 	}
 	/*
 	 * make local prefix.
+	 * local prefix must starts with './' and ends with '/'.
 	 */
 	if (lflag) {
-		char	*p = cwd + strlen(root);
-		STRBUF	*sb = strbuf_open(0);
-		/*
-		 * getdbpath() assure follows.
-		 * cwd != "/" and cwd includes root.
-		 */
+		STRBUF *sb = strbuf_open(0);
+
 		strbuf_putc(sb, '.');
-		if (*p)
+		if (strcmp(root, cwd) != 0) {
+			char *p = cwd + strlen(root);
+			if (*p != '/')
+				strbuf_putc(sb, '/');
 			strbuf_puts(sb, p);
+		}
 		strbuf_putc(sb, '/');
 		localprefix = check_strdup(strbuf_value(sb));
 		strbuf_close(sb);
-	} else {
-		localprefix = NULL;
+#ifdef DEBUG
+		fprintf(stderr, "root=%s\n", root);
+		fprintf(stderr, "cwd=%s\n", cwd);
+		fprintf(stderr, "localprefix=%s\n", localprefix);
+#endif
 	}
 	/*
 	 * decide tag type.

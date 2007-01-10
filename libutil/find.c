@@ -452,7 +452,13 @@ find_open_filelist(const char *filename, const char *root)
 		if (ip == NULL)
 			die("cannot open '%s'.", filename);
 	}
-	snprintf(rootdir, sizeof(rootdir), "%s/", root);
+	/*
+	 * rootdir always ends with '/'.
+	 */
+	if (!strcmp(root, "/"))
+		strcpy(rootdir, root);
+	else
+		snprintf(rootdir, sizeof(rootdir), "%s/", root);
 
 	/*
 	 * prepare regular expressions.
