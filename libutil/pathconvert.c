@@ -261,13 +261,9 @@ convert_put_using(CONVERT *cv, const char *tag, const char *path, int lineno, co
 		fputc(' ', cv->op);
 		/* PASS THROUGH */
 	case FORMAT_CTAGS_X:
-		die("convert_put_using() doesn't support ctags-x format.");
-		/*
-		fputs(convert_pathname(cv, path), cv->op);
-		fputc(' ', cv->op);
-		fputs(rest, cv->op);
+		fprintf(cv->op, "%-16s %4d %-16s %s",
+			tag, lineno, convert_pathname(cv, path), rest);
 		break;
-		*/
 	case FORMAT_GREP:
 		fputs(convert_pathname(cv, path), cv->op);
 		fputc(':', cv->op);
