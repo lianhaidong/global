@@ -1,6 +1,6 @@
 #
 # Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005
-#	Tama Communications Corporation
+#	2007 Tama Communications Corporation
 #
 # This file is part of GNU GLOBAL.
 #
@@ -23,7 +23,7 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	GTAGS,1,Aug 2005,GNU Project
+@HEADER	GTAGS,1,January 2007,GNU Project
 @NAME	gtags - create tag files for global.
 @SYNOPSIS
 	@name{gtags} [-iIqvw][-f @arg{file}][-n @arg{number}][@arg{dbpath}]
@@ -50,7 +50,7 @@
 @OPTIONS
 	The following options are available:
 	@begin_itemize
-	@item{@option{--config} @arg{name}}
+	@item{@option{--config}[=@arg{name}]}
 		Show the value of config variable @arg{name}.
 		If @arg{name} is not specified then show whole of config entry.
 	@item{@option{-f}, @option{--file} @arg{file}}

@@ -1,6 +1,6 @@
 #
 # Copyright (c} 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005
-#	2006 Tama Communications Corporation
+#	2006, 2007 Tama Communications Corporation
 #
 # This file is part of GNU GLOBAL.
 #
@@ -23,7 +23,7 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	HTAGS,1,November 2006,GNU Project
+@HEADER	HTAGS,1,January 2007,GNU Project
 @NAME	htags - generate hypertext from source code.
 @SYNOPSIS
 	@name{htags} [-acDfFghInosTvwx][-d @arg{dbpath}][-m @arg{name}][-S @arg{cgidir}][-t @arg{title}][@arg{dir}]
@@ -85,7 +85,7 @@
 	@item{@option{-g}, @option{--gtags}}
 		Execute @xref{gtags,1} before creating hypertext.
 		The @option{-v}, @option{-w} and @arg{dbpath} are passed to @name{gtags}.
-	@item{@option{-h}, @option{--func-header} [@arg{position}]}
+	@item{@option{-h}, @option{--func-header}[=@arg{position}]}
 		Insert function header for each function.
 		By default, @name{htags} doesn't generates it.
 		You can specify the position using @arg{position} argument,
@@ -106,7 +106,7 @@
 		Insert custom footer derived from @arg{file} before </body> tag.
 	@item{@option{-m}, @option{--main-func} @arg{name}}
 		Specify the main function name. The default is @code{main}.
-	@item{@option{-n}, @option{--line-number} [@arg{columns}]}
+	@item{@option{-n}, @option{--line-number}[=@arg{columns}]}
 		Print line numbers. By default, doesn't print them.
 		The default value of @arg{columns} is 4.
 	@item{@option{--no-map-file}}
@@ -129,7 +129,7 @@
 	@item{@option{-t}, @option{--title} @arg{title}}
 		The @arg{title} of this hypertext. The default is the last
 		component of the current directory.
-	@item{@option{-T}, @option{--table-flist} [@arg{fields}]}
+	@item{@option{-T}, @option{--table-flist}[=@arg{fields}]}
 		Generate file list using <table> tag.
 		The @arg{fields} is used for field number in a line. The default is 5.
 	@item{@option{--table-list}}
@@ -140,7 +140,7 @@
 		Verbose mode.
 	@item{@option{-w}, @option{--warning}}
 		Print warning messages.
-	@item{@option{-x}, @option{--xhtml} [@arg{version}]}
+	@item{@option{-x}, @option{--xhtml}[=@arg{version}]}
 		Generate XHTML hypertext instead of HTML.
 		If the @option{--frame} option is specified then
 		generate XHTML-1.0 Frameset for index.html
