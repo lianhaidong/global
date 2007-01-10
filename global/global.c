@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005, 2006
- *	Tama Communications Corporation
+ * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005, 2006,
+ *	2007 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -482,7 +482,7 @@ completion(const char *dbpath, const char *root, const char *prefix)
 	db = (sflag) ? GSYMS : GTAGS;
 	gtop = gtags_open(dbpath, root, db, GTAGS_READ);
 	for (gtp = gtags_first(gtop, prefix, flags); gtp; gtp = gtags_next(gtop)) {
-		fputs(gtp->name, stdout);
+		fputs(gtp->tag, stdout);
 		fputc('\n', stdout);
 	}
 	gtags_close(gtop);
@@ -979,6 +979,13 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
  *	i)	db		GTAGS,GRTAGS,GSYMS
  *	r)			count of output lines
  */
+/* get next number and seek to the next character */
+#define GET_NEXT_NUMBER(p) do {                                                 \
+                if (!isnumber(*p))                                              \
+                        p++;                                                    \
+                for (n = 0; isnumber(*p); p++)                                  \
+                        n = n * 10 + (*p - '0');                                \
+        } while (0)
 int
 search(const char *pattern, const char *root, const char *cwd, const char *dbpath, int db)
 {
@@ -988,7 +995,7 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 	GTP *gtp;
 	int flags = 0;
 	STRBUF *sb = NULL;
-	char curpath[MAXPATHLEN+1], curtag[128];
+	char curpath[MAXPATHLEN+1], curtag[IDENTLEN+1];
 	FILE *fp = NULL;
 	const char *src = "";
 	int lineno, last_lineno;
@@ -1020,10 +1027,10 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 	if (format == FORMAT_PATH)
 		flags |= GTOP_PATH;
 	for (gtp = gtags_first(gtop, pattern, flags); gtp; gtp = gtags_next(gtop)) {
-		if (lflag && !locatestring(gtp->name, localprefix, MATCH_AT_FIRST))
+		if (lflag && !locatestring(gtp->path, localprefix, MATCH_AT_FIRST))
 			continue;
 		if (format == FORMAT_PATH) {
-			printtag(cv, gtp->name);
+			printtag(cv, gtp->path);
 			count++;
 		} else if (gtop->format &  GTAGS_COMPACT) {
 			/*
@@ -1033,7 +1040,6 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 			STRBUF *sb = strbuf_open(0);
 			char *p = (char *)gtp->tagline;
 			const char *tagname;
-			const char *lnop;
 
 			while (*p != ' ')
 				p++;
@@ -1042,16 +1048,15 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 			while (*p != ' ')
 				p++;
 			*p++ = '\0';			/* b */
-			lnop = p;
 			/*
 			 * Reopen or rewind source file.
 			 */
 			if (!nosource) {
-				if (strcmp(gtp->name, curpath)) {
+				if (strcmp(gtp->path, curpath) != 0) {
 					if (curpath[0] != '\0' && fp != NULL)
 						fclose(fp);
 					strlimcpy(curtag, tagname, sizeof(curtag));
-					strlimcpy(curpath, gtp->name, sizeof(curpath));
+					strlimcpy(curpath, gtp->path, sizeof(curpath));
 					/*
 					 * Use absolute path name to support GTAGSROOT
 					 * environment variable.
@@ -1060,9 +1065,9 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 					if (fp == NULL)
 						warning("source file '%s' is not available.", curpath);
 					last_lineno = lineno = 0;
-				} else if (strcmp(tagname, curtag)) {
-					strlimcpy(curtag, tagname, sizeof(curtag));
-					if (atoi(lnop) < last_lineno && fp != NULL) {
+				} else if (strcmp(gtp->tag, curtag) != 0) {
+					strlimcpy(curtag, gtp->tag, sizeof(curtag));
+					if (atoi(p) < last_lineno && fp != NULL) {
 						rewind(fp);
 						lineno = 0;
 					}
@@ -1070,29 +1075,70 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 				}
 			}
 			/*
-			 * Generate records and write them.
+			 * Unfold compact format.
+			 *
+			 * If GTAGS_COMPLINE flag is set, each line number is expressed as
+			 * the difference from the previous line number except for the head.
+			 * Please see flush_pool() in libutil/gtagsop.c for the details.
 			 */
-			while (*lnop) {
-				int lno = 0;
+			if (!isnumber(*p))
+				die("illegal compact format.");
+			if (gtop->format & GTAGS_COMPLINE) {
+				int n, last = 0, cont = 0;
 
-				if (*lnop < '0' || *lnop > '9')
-					die("illegal compact format.");
-				for (; *lnop >= '0' && *lnop <= '9'; lnop++)
-					lno = lno * 10 + *lnop - '0';
-				if (*lnop == ',')
-					lnop++;
-				if (last_lineno == lno)
-					continue;
-				if (last_lineno != lno && fp) {
-					while (lineno < lno) {
-						if (!(src = strbuf_fgets(sb, fp, STRBUF_NOCRLF)))
-							die("unexpected end of file. '%s: %d/%d'", gtp->name, lineno, lno);
-						lineno++;
+				while (*p || cont > 0) {
+					if (cont > 0) {
+						n = last + 1;
+						if (n > cont) {
+							cont = 0;
+							continue;
+						}
+					} else if (isnumber(*p)) {
+						GET_NEXT_NUMBER(p);
+					}  else if (*p == '-') {
+						GET_NEXT_NUMBER(p);
+						cont = n + last;
+						n = last + 1;
+					} else if (*p == ',') {
+						GET_NEXT_NUMBER(p);
+						n += last;
 					}
+					if (last_lineno != n && fp) {
+						while (lineno < n) {
+							if (!(src = strbuf_fgets(sb, fp, STRBUF_NOCRLF)))
+								die("unexpected end of file. '%s: %d/%d'", gtp->path, lineno, n);
+							lineno++;
+						}
+					}
+					if (gtop->format & GTAGS_COMPNAME)
+						tagname = (char *)uncompress(tagname, gtp->tag);
+					printtag_using(cv, tagname, gtp->path, n, src);
+					count++;
+					last_lineno = last = n;
 				}
-				printtag_using(cv, tagname, gtp->name, lno, src);
-				count++;
-				last_lineno = lno;
+			} else {
+				while (*p) {
+					int n;
+
+					for (n = 0; isnumber(*p); p++)
+						n = n * 10 + *p - '0';
+					if (*p == ',')
+						p++;
+					if (last_lineno == n)
+						continue;
+					if (last_lineno != n && fp) {
+						while (lineno < n) {
+							if (!(src = strbuf_fgets(sb, fp, STRBUF_NOCRLF)))
+								die("unexpected end of file. '%s: %d/%d'", gtp->path, lineno, n);
+							lineno++;
+						}
+					}
+					if (gtop->format & GTAGS_COMPNAME)
+						tagname = (char *)uncompress(tagname, gtp->tag);
+					printtag_using(cv, tagname, gtp->path, n, src);
+					count++;
+					last_lineno = n;
+				}
 			}
 		} else {
 			/*
@@ -1100,6 +1146,7 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 			 * tagline = <file id> <tag name> <line no> <line image>
 			 */
 			char *p = (char *)gtp->tagline;
+			char namebuf[IDENTLEN+1];
 			const char *tagname, *image;
 
 			while (*p != ' ')
@@ -1109,6 +1156,10 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 			while (*p != ' ')
 				p++;
 			*p++ = '\0';			/* b */
+			if (gtop->format & GTAGS_COMPNAME) {
+				strlimcpy(namebuf, (char *)uncompress(tagname, gtp->tag), sizeof(namebuf));
+				tagname = namebuf;
+			}
 			if (nosource) {
 				image = " ";
 			} else {
@@ -1116,9 +1167,9 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 					p++;
 				image = p + 1;		/* c + 1 */
 				if (gtop->format & GTAGS_COMPRESS)
-					image = (char *)uncompress(image, tagname);
+					image = (char *)uncompress(image, gtp->tag);
 			}
-			printtag_using(cv, tagname, gtp->name, gtp->lineno, image);
+			printtag_using(cv, tagname, gtp->path, gtp->lineno, image);
 			count++;
 		}
 	}

@@ -320,6 +320,8 @@ dbop_first(DBOP *dbop, const char *name, regex_t *preg, int flags)
 	}
 	dbop->lastdat = (char *)dat.data;
 	dbop->lastsize = dat.size;
+	dbop->lastkey = (char *)key.data;
+	dbop->lastkeysize = key.size;
 	switch (status) {
 	case RET_SUCCESS:
 		break;
@@ -371,6 +373,8 @@ dbop_next(DBOP *dbop)
 		}
 		dbop->lastdat	= (char *)dat.data;
 		dbop->lastsize	= dat.size;
+		dbop->lastkey = (char *)key.data;
+		dbop->lastkeysize = key.size;
 		if (flags & DBOP_PREFIX) {
 			if (strncmp((char *)key.data, dbop->key, dbop->keylen))
 				return NULL;

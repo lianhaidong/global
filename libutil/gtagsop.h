@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2005, 2006
+ * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2005, 2006, 2007
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -33,6 +33,8 @@
 
 #define COMPACTKEY	" __.COMPACT"
 #define COMPRESSKEY	" __.COMPRESS"
+#define COMPLINEKEY	" __.COMPLINE"
+#define COMPNAMEKEY	" __.COMPNAME"
 
 #define GPATH		0
 #define GTAGS		1
@@ -47,7 +49,9 @@
 /* gtags_open() */
 #define GTAGS_COMPACT		1	/* compact option */
 #define GTAGS_COMPRESS		2	/* compression option */
-#define GTAGS_EXTRACTMETHOD	3	/* extract method from class definition */
+#define GTAGS_COMPLINE		4	/* compression option for line number */
+#define GTAGS_COMPNAME		8	/* compression option for line number */
+#define GTAGS_EXTRACTMETHOD	16	/* extract method from class definition */
 #define GTAGS_DEBUG		65536	/* print information for debug */
 /* gtags_first() */
 #define GTOP_KEY		1	/* read key part */
@@ -63,7 +67,8 @@
  */
 typedef struct {
 	const char *tagline;
-	const char *name;		/* used for tag name or path name */
+	const char *path;
+	const char *tag;
 	int lineno;
 } GTP;
 
@@ -77,33 +82,29 @@ typedef struct {
 	int flags;			/* flags */
 	char root[MAXPATHLEN+1];	/* root directory of source tree */
 	/*
-	 * Path name only.
+	 * Stuff for GTOP_PATH.
 	 */
 	int path_count;
 	int path_index;
 	char **path_array;
 	/*
-	 * Stuff for sort
+	 * Stuff for segment_read().
 	 */
 	int gtp_count;
 	int gtp_index;
 	GTP *gtp_array;
 	GTP gtp;
-	POOL *spool;
+	POOL *segment_pool;
 	VARRAY *vb;
-	const char *prev_tagname;
-	STRHASH *hash;
+	char cur_tagname[IDENTLEN+1];	/* current tag name */
 	/*
 	 * Stuff for compact format
 	 */
-	char prev_path[MAXPATHLEN+1];	/* previous path */
-#if 0
-	STRBUF *ib;			/* input buffer */
-#endif
+	char cur_path[MAXPATHLEN+1];	/* current path */
 	STRBUF *sb;			/* string buffer */
 	FILE *fp;			/* descriptor of 'path' */
 	/* used for compact format and path name only read */
-	STRHASH *pool;
+	STRHASH *path_hash;
 
 } GTOP;
 

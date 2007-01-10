@@ -67,25 +67,6 @@
 #define PART_LNO  1
 #define PART_PATH 2
 #define PART_LINE 3
-/*
- * Tag format:
- *
- * PART_FID4 PART_TAG4 PART_LNO4 PART_LINE4
- * +----------------------------------------------------
- * |100 main 227 main(int argc, argv **char)
- *
- * with compact option
- *
- * PART_FID4 PART_TAG4 PART_LNO4
- * +----------------------------------------------------
- * |100 main 227,230,245,260
- *
- * The '4' of PART_XXX4 means format version 4.
- */
-#define PART_FID4  0
-#define PART_TAG4  1
-#define PART_LNO4  2
-#define PART_LINE4 3
 
 /*
  * Path name type

@@ -44,6 +44,7 @@ typedef	struct {
 	char *lastdat;			/* the data of last located record */
 	int lastsize;			/* the size of the lastdat */
 	char *lastkey;			/* the key of last located record */
+	int lastkeysize;		/* the size of the key */
 	regex_t	*preg;			/* compiled regular expression */
 	int unread;			/* leave record to read again */
 	/*
