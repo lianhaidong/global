@@ -285,7 +285,7 @@ gtags_open(const char *dbpath, const char *root, int db, int mode)
 	gtop = (GTOP *)check_calloc(sizeof(GTOP), 1);
 	gtop->db = db;
 	gtop->mode = mode;
-	gtop->format_version = 5;
+	gtop->format_version = 4;
 	/*
 	 * Open tag file allowing duplicate records.
 	 */
@@ -315,14 +315,17 @@ gtags_open(const char *dbpath, const char *root, int db, int mode)
 		gtop->format = 0;
 		if (gtop->db == GTAGS)
 			gtop->format |= GTAGS_COMPRESS;
-		if (enable_compname)
+		if (enable_compname) {
 			gtop->format |= GTAGS_COMPNAME;
+			gtop->format_version = 5;
+		}
 		if (gtop->db == GRTAGS || gtop->db == GSYMS) {
 			gtop->format |= GTAGS_COMPACT;
-			if (enable_compline)
+			if (enable_compline) {
 				gtop->format |= GTAGS_COMPLINE;
+				gtop->format_version = 5;
+			}
 		}
-		dbop_putversion(gtop->dbop, gtop->format_version); 
 		if (gtop->format & GTAGS_COMPACT)
 			dbop_putoption(gtop->dbop, COMPACTKEY, NULL);
 		if (gtop->format & GTAGS_COMPRESS) {
@@ -333,6 +336,7 @@ gtags_open(const char *dbpath, const char *root, int db, int mode)
 			dbop_putoption(gtop->dbop, COMPLINEKEY, NULL);
 		if (gtop->format & GTAGS_COMPNAME)
 			dbop_putoption(gtop->dbop, COMPNAMEKEY, NULL);
+		dbop_putversion(gtop->dbop, gtop->format_version); 
 	} else {
 		/*
 		 * recognize format version of GTAGS. 'format version record'
