@@ -970,9 +970,9 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
  */
 /* get next number and seek to the next character */
 #define GET_NEXT_NUMBER(p) do {                                                 \
-                if (!isnumber(*p))                                              \
+                if (!isdigit(*p))                                              \
                         p++;                                                    \
-                for (n = 0; isnumber(*p); p++)                                  \
+                for (n = 0; isdigit(*p); p++)                                  \
                         n = n * 10 + (*p - '0');                                \
         } while (0)
 int
@@ -1071,7 +1071,7 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 			 * the difference from the previous line number except for the head.
 			 * Please see flush_pool() in libutil/gtagsop.c for the details.
 			 */
-			if (!isnumber(*p))
+			if (!isdigit(*p))
 				die("illegal compact format.");
 			if (gtop->format & GTAGS_COMPLINE) {
 				int last = 0, cont = 0;
@@ -1083,7 +1083,7 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 							cont = 0;
 							continue;
 						}
-					} else if (isnumber(*p)) {
+					} else if (isdigit(*p)) {
 						GET_NEXT_NUMBER(p);
 					}  else if (*p == '-') {
 						GET_NEXT_NUMBER(p);
@@ -1108,7 +1108,7 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 				}
 			} else {
 				while (*p) {
-					for (n = 0; isnumber(*p); p++)
+					for (n = 0; isdigit(*p); p++)
 						n = n * 10 + *p - '0';
 					if (*p == ',')
 						p++;
