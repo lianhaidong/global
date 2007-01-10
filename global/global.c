@@ -50,8 +50,6 @@ static void help(void);
 static void setcom(int);
 int main(int, char **);
 void completion(const char *, const char *, const char *);
-void printtag(CONVERT *, const char *);
-void printtag_using(CONVERT *, const char *, const char *, int, const char *);
 void idutils(const char *, const char *);
 void grep(const char *, const char *);
 void pathlist(const char *, const char *);
@@ -515,19 +513,6 @@ completion(const char *dbpath, const char *root, const char *prefix)
  * Path filter is implemented in pathconvert module (libutil/pathconvert.c).
  */
 /*
- * printtag: print a tag's line
- *
- *	i)	cv	convert structure
- *	i)	tagline	tag record
- *
- * Tagline is assumed to be ctags-x or path format.
- */
-void
-printtag(CONVERT *cv, const char *tagline)
-{
-	convert_put(cv, tagline);
-}
-/*
  * printtag_using: print a tag's line with arguments
  *
  *	i)	cv	convert structure
@@ -639,7 +624,7 @@ idutils(const char *pattern, const char *dbpath)
 		count++;
 		switch (format) {
 		case FORMAT_PATH:
-			printtag(cv, path);
+			convert_put(cv, path);
 			break;
 		default:
 			/* extract line number */
@@ -657,7 +642,7 @@ idutils(const char *pattern, const char *dbpath)
 			/*
 			 * print out.
 			 */
-			printtag_using(cv, edit, path, linenum, p);
+			convert_put_using(cv, edit, path, linenum, p);
 			break;
 		}
 	}
@@ -718,10 +703,10 @@ grep(const char *pattern, const char *dbpath)
 			if (regexec(&preg, buffer, 0, 0, 0) == 0) {
 				count++;
 				if (format == FORMAT_PATH) {
-					printtag(cv, path);
+					convert_put(cv, path);
 					break;
 				} else {
-					printtag_using(cv, edit, path, linenum, buffer);
+					convert_put_using(cv, edit, path, linenum, buffer);
 				}
 			}
 		}
@@ -790,9 +775,9 @@ pathlist(const char *pattern, const char *dbpath)
 		if (pattern && regexec(&preg, p, 0, 0, 0) != 0)
 			continue;
 		if (format == FORMAT_PATH)
-			printtag(cv, path);
+			convert_put(cv, path);
 		else
-			printtag_using(cv, "path", path, 1, " ");
+			convert_put_using(cv, "path", path, 1, " ");
 		count++;
 	}
 	gfind_close(gp);
@@ -944,13 +929,13 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 			}
 			if (strcmp(curpath, ptable.part[PART_PATH].start)) {
 				strlimcpy(curpath, ptable.part[PART_PATH].start, sizeof(curpath));
-				printtag(cv, curpath);
+				convert_put(cv, curpath);
 				count++;
 			}
 		}
 	} else {
 		while ((ctags_x = xargs_read(xp)) != NULL) {
-			printtag(cv, ctags_x);
+			convert_put(cv, ctags_x);
 			count++;
 		}
 	}
@@ -1030,9 +1015,9 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 		if (lflag && !locatestring(gtp->path, localprefix, MATCH_AT_FIRST))
 			continue;
 		if (format == FORMAT_PATH) {
-			printtag(cv, gtp->path);
+			convert_put(cv, gtp->path);
 			count++;
-		} else if (gtop->format &  GTAGS_COMPACT) {
+		} else if (gtop->format & GTAGS_COMPACT) {
 			/*
 			 *                    a          b
 			 * tagline = <file id> <tag name> <line no>,...
@@ -1040,6 +1025,7 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 			STRBUF *sb = strbuf_open(0);
 			char *p = (char *)gtp->tagline;
 			const char *tagname;
+			int n;
 
 			while (*p != ' ')
 				p++;
@@ -1084,7 +1070,7 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 			if (!isnumber(*p))
 				die("illegal compact format.");
 			if (gtop->format & GTAGS_COMPLINE) {
-				int n, last = 0, cont = 0;
+				int last = 0, cont = 0;
 
 				while (*p || cont > 0) {
 					if (cont > 0) {
@@ -1118,8 +1104,6 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 				}
 			} else {
 				while (*p) {
-					int n;
-
 					for (n = 0; isnumber(*p); p++)
 						n = n * 10 + *p - '0';
 					if (*p == ',')

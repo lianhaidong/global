@@ -36,6 +36,7 @@ typedef struct {
 
 CONVERT *convert_open(int, int, const char *, const char *, const char *, FILE *);
 void convert_put(CONVERT *cv, const char *line);
+void convert_put_using(CONVERT *, const char *, const char *, int, const char *);
 void convert_close(CONVERT *cv);
 
 #endif /* ! _PATHCONVERT_H_ */

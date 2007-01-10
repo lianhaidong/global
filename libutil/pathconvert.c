@@ -39,19 +39,17 @@
 /*
  * Path filter for the output of global(1).
  */
-static void
-put_pathname(CONVERT *cv, const char *path)
+static const char *
+convert_pathname(CONVERT *cv, const char *path)
 {
-	char buf[MAXPATHLEN+1];
+	static char buf[MAXPATHLEN+1];
 	const char *a, *b;
 
 	/*
 	 * print without conversion.
 	 */
-	if (cv->type == PATH_THROUGH) {
-		(void)fputs(path, cv->op);
-		return;
-	}
+	if (cv->type == PATH_THROUGH)
+		return path;
 	/*
 	 * make absolute path name.
 	 * 'path + 1' means skipping "." at the head.
@@ -63,7 +61,7 @@ put_pathname(CONVERT *cv, const char *path)
 	 */
 	switch (cv->type) {
 	case PATH_ABSOLUTE:
-		(void)fputs(strbuf_value(cv->abspath), cv->op);
+		path = strbuf_value(cv->abspath);
 		break;
 	case PATH_RELATIVE:
 		a = strbuf_value(cv->abspath);
@@ -76,12 +74,13 @@ put_pathname(CONVERT *cv, const char *path)
 #endif
 		if (!abs2rel(a, b, buf, sizeof(buf)))
 			die("abs2rel failed. (path=%s, base=%s).", a, b);
-		(void)fputs(buf, cv->op);
+		path = buf;
 		break;
 	default:
 		die("unknown path type.");
 		break;
 	}
+	return (const char *)path;
 }
 /*
  * convert_open: open convert filter
@@ -184,12 +183,12 @@ convert_put(CONVERT *cv, const char *tagline)
 	}
 	switch (cv->format) {
 	case FORMAT_PATH:
-		put_pathname(cv, path);
+		fputs(convert_pathname(cv, path), cv->op);
 		break;
 	case FORMAT_CTAGS:
 		fputs(tag, cv->op);
 		fputc('\t', cv->op);
-		put_pathname(cv, path);
+		fputs(convert_pathname(cv, path), cv->op);
 		fputc('\t', cv->op);
 		fputs(lineno, cv->op);
 		break;
@@ -207,23 +206,81 @@ convert_put(CONVERT *cv, const char *tagline)
 		/*
 		 * print path name and the rest.
 		 */
-		put_pathname(cv, path);
+		fputs(convert_pathname(cv, path), cv->op);
 		fputc(' ', cv->op);
 		fputs(rest, cv->op);
 		break;
 	case FORMAT_GREP:
-		put_pathname(cv, path);
+		fputs(convert_pathname(cv, path), cv->op);
 		fputc(':', cv->op);
 		fputs(lineno, cv->op);
 		fputc(':', cv->op);
 		fputs(rest, cv->op);
 		break;
 	case FORMAT_CSCOPE:
-		put_pathname(cv, path);
+		fputs(convert_pathname(cv, path), cv->op);
 		fputc(' ', cv->op);
 		fputs(tag, cv->op);
 		fputc(' ', cv->op);
 		fputs(lineno, cv->op);
+		fputc(' ', cv->op);
+		for (; *rest && isspace(*rest); rest++)
+			;
+		fputs(rest, cv->op);
+		break;
+	default:
+		die("unknown format type.");
+	}
+	(void)fputc('\n', cv->op);
+}
+/*
+ * convert_put_using: convert path into relative or absolute and print.
+ *
+ *	i)	cv	CONVERT structure
+ *      i)      tag     tag name
+ *      i)      path    path name
+ *      i)      lineno  line number
+ *      i)      line    line image
+ */
+void
+convert_put_using(CONVERT *cv, const char *tag, const char *path, int lineno, const char *rest)
+{
+	switch (cv->format) {
+	case FORMAT_PATH:
+		fputs(convert_pathname(cv, path), cv->op);
+		break;
+	case FORMAT_CTAGS:
+		fputs(tag, cv->op);
+		fputc('\t', cv->op);
+		fputs(convert_pathname(cv, path), cv->op);
+		fputc('\t', cv->op);
+		fputs(rest, cv->op);
+		break;
+	case FORMAT_CTAGS_XID:
+		fputs(gpath_path2fid(path, NULL), cv->op);
+		fputc(' ', cv->op);
+		/* PASS THROUGH */
+	case FORMAT_CTAGS_X:
+		die("convert_put_using() doesn't support ctags-x format.");
+		/*
+		fputs(convert_pathname(cv, path), cv->op);
+		fputc(' ', cv->op);
+		fputs(rest, cv->op);
+		break;
+		*/
+	case FORMAT_GREP:
+		fputs(convert_pathname(cv, path), cv->op);
+		fputc(':', cv->op);
+		fprintf(cv->op, "%d", lineno);
+		fputc(':', cv->op);
+		fputs(rest, cv->op);
+		break;
+	case FORMAT_CSCOPE:
+		fputs(convert_pathname(cv, path), cv->op);
+		fputc(' ', cv->op);
+		fputs(tag, cv->op);
+		fputc(' ', cv->op);
+		fprintf(cv->op, "%d", lineno);
 		fputc(' ', cv->op);
 		for (; *rest && isspace(*rest); rest++)
 			;
