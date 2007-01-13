@@ -868,7 +868,7 @@ flush_pool(GTOP *gtop)
 void
 segment_read(GTOP *gtop)
 {
-	const char *tagline, *fid, *path, *tagname, *lineno;
+	const char *tagline, *fid, *path, *lineno;
 	GTP *gtp;
 	struct sh_entry *sh;
 

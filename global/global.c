@@ -1029,7 +1029,7 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 			STRBUF *sb = strbuf_open(0);
 			char *p = (char *)gtp->tagline;
 			const char *tagname;
-			int n;
+			int n = 0;
 
 			while (*p != ' ')
 				p++;
