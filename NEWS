@@ -4,7 +4,7 @@ ___________________________________
 |  |   |  |  |  |  |     |     |  |
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2006
+ Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007
 	Tama Communications Corporation
 
  This file is free software; as a special exception the author gives
@@ -19,6 +19,28 @@ ___________________________________
 
 GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
+
+Version 5.4 - January 29 2007, by Shigio YAMAGUCHI
+
+[INCOMPATIBLE CHANGES]
+* Further compression of tag file (format version 5).
+  Though new global can read older tag file since version-5.0, older
+  global cannot read new format. It might say like follows:
+	"GTAGS seems new format. Please install the latest GLOBAL."
+
+[OTHER CHANGES]
+* global: Improved performance when the -x option is not specified.
+* globash.rc: Added new option -l for tag search command (x,r,s,g,P,I,f).
+  This option invokes less(1) directly without tag stack.
+* Verbose messages are unified.
+  P option      file not found
+		<n> files located
+  others        object not found
+		path format: <n> files located
+		other format:<n> objects located
+
+[BUG FIXED]
+* Gtags(1) and global(1) didn't work well in the system root directory('/').
 
 Version 5.3 - November 20 2006, by Shigio YAMAGUCHI
 

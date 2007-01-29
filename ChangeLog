@@ -4,7 +4,7 @@ ___________________________________
 |  |   |  |  |  |  |     |     |  |
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2006
+ Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007
 	Tama Communications Corporation
 
  This file is free software; as a special exception the author gives
@@ -18,6 +18,64 @@ ___________________________________
 		----------------------------------
 
 ChangeLog about GNU GLOBAL
+
+January 29 2007, Shigio YAMAGUCHI
+
+	* Further compression of tag file (format version 5).
+	  - Tag name is compressed.
+	  - Each line number might be expressed as difference from the previous
+	    line number except for the head.
+	  	ex: 11,3,2 means '11 14 16'.
+	  - In addition, successive line numbers are expressed as range (n1-n2).
+	  	ex: 11-3 means '11 12 13 14'.
+
+	* global(1): Sort filter was moved from the output filter to the input filter.
+
+	   ( input )     |    ( m a i n )      |      ( o u t p u t )
+	   gtagsop       |      global         |  tagsort   |  pathconvert
+	  ---------------+---------------------+------------+--------------
+	   expand tag +------------+             sort tag     convert path
+				   |                 |
+	       +-------------------------------------+
+	       v                   v
+	   sort tag        expand tag                         convert path
+
+	  Instead, the processing of expanding tag was moved to the main module.
+	  This improves the performance when compact format is used, since
+	  sorting is done before expanding.
+
+	  Recent architecture (GLOBAL-5.0 - 5.3)
+
+	  +===========================================+
+	  |global(write)->[sort filter]->[path filter]|->[stdout]
+	  +===========================================+
+	 
+	  New architecture (GLOBAL-5.4 -)
+	  
+	  +===========================================+
+	  |[sort filter]->global(write)->[path filter]|->[stdout]
+	  +===========================================+
+
+	* Removed some code which call the following method:
+	  putenv utimes
+		They are not natural method today.
+	  pread pwrite
+		They are risky since they are not used so much and are not
+		often so tested.  It was found that the pread and pwrite in cygwin
+		are buggy. Though it is not our business, user is not guilty too.
+	  strdup
+		It is not needed since we use check_strdup() instead.
+	* Added some new modules.
+	  pool - allocate and free memory for temporary use.
+	  fileop - operation for opening and closing file.
+	* Added some new methods.
+	  strmake module - strcmp_withterm()
+	* Removed some modules.
+	  global/filter, libutil/tagsort
+	* idset module:
+	  - Added new functions idset_first(), idset_next() and idset_empty().
+	  - Changed bitmask from char(8 bits) to integer (maybe 32 or 64 bits)
+	    to improve performance.
 
 November 20 2006, Shigio YAMAGUCHI
 
