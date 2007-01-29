@@ -226,9 +226,9 @@ seekto(const char *string, int n)
  * GLOBAL-4.5.1 - 4.8.7 support format version 1, 2 and 3.
  *                      if (format > 3) then print error message.
  * GLOBAL-5.0 -	5.3	support format version only 4.
- *                      if (format > 4 || format < 4)
- *			then print error message.
+ *                      if (format !=  4) then print error message.
  * GLOBAL-5.4 -		support format version 4 and 5
+ *                      if (format > 5 || format < 4) then print error message.
  *
  * In GLOBAL-5.0, we threw away the compatibility with the past formats.
  * Though we could continue the support for older formats, it seemed
@@ -245,12 +245,6 @@ seekto(const char *string, int n)
 static int upper_bound_version = 5;	/* acceptable format version (upper bound) */
 static int lower_bound_version = 4;	/* acceptable format version (lower bound) */
 static const char *tagslist[] = {"GPATH", "GTAGS", "GRTAGS", "GSYMS"};
-/*
- * Enable new compress facility.
- * This variable is for test. In release version, new format might be the default.
- */
-int enable_compname = 0;
-int enable_compline = 0;
 /*
  * dbname: return db name
  *
@@ -313,18 +307,13 @@ gtags_open(const char *dbpath, const char *root, int db, int mode)
 		 * Decide format.
 		 */
 		gtop->format = 0;
+		gtop->format_version = 5;
 		if (gtop->db == GTAGS)
 			gtop->format |= GTAGS_COMPRESS;
-		if (enable_compname) {
-			gtop->format |= GTAGS_COMPNAME;
-			gtop->format_version = 5;
-		}
+		gtop->format |= GTAGS_COMPNAME;
 		if (gtop->db == GRTAGS || gtop->db == GSYMS) {
 			gtop->format |= GTAGS_COMPACT;
-			if (enable_compline) {
-				gtop->format |= GTAGS_COMPLINE;
-				gtop->format_version = 5;
-			}
+			gtop->format |= GTAGS_COMPLINE;
 		}
 		if (gtop->format & GTAGS_COMPACT)
 			dbop_putoption(gtop->dbop, COMPACTKEY, NULL);

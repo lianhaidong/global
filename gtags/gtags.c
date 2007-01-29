@@ -64,8 +64,6 @@ void createtags(const char *, const char *, int);
 int printconf(const char *);
 void set_base_directory(const char *, const char *);
 
-extern int enable_compname;			/* only for test */
-extern int enable_compline;			/* only for test */
 int iflag;					/* incremental update */
 int Iflag;					/* make  idutils index */
 int qflag;					/* quiet mode */
@@ -126,7 +124,6 @@ static struct option const long_options[] = {
 	 * The following are long name only.
 	 */
 	/* flag value */
-	{"compress", optional_argument, NULL, 'c'},
 	{"debug", no_argument, &debug, 1},
 	{"version", no_argument, &show_version, 1},
 	{"help", no_argument, &show_help, 1},
@@ -188,16 +185,6 @@ main(int argc, char **argv)
 				convert_type = PATH_THROUGH;
 			else
 				die("Unknown path type.");
-			break;
-		case 'c':
-			if (optarg) {
-				if (!strcmp(optarg, "name"))
-					enable_compname = 1;
-				else if (!strcmp(optarg, "line"))
-					enable_compline = 1;
-			} else {
-				enable_compname = enable_compline = 1;
-			}
 			break;
 		case 'f':
 			file_list = optarg;

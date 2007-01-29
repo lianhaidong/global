@@ -517,24 +517,6 @@ completion(const char *dbpath, const char *root, const char *prefix)
  * Path filter is implemented in pathconvert module (libutil/pathconvert.c).
  */
 /*
- * printtag_using: print a tag's line with arguments
- *
- *	i)	cv	convert structure
- *	i)	tag	tag name
- *	i)	path	path name
- *	i)	lineno	line number
- *	i)	line	line image
- */
-void
-printtag_using(CONVERT *cv, const char *tag, const char *path, int lineno, const char *line)
-{
-	STATIC_STRBUF(sb);
-
-	strbuf_clear(sb);
-	strbuf_sprintf(sb, "%-16s %4d %-16s %s", tag, lineno, path, line);
-	convert_put(cv, strbuf_value(sb));
-}
-/*
  * print number of object.
  */
 void
@@ -1102,7 +1084,7 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 					}
 					if (gtop->format & GTAGS_COMPNAME)
 						tagname = (char *)uncompress(tagname, gtp->tag);
-					printtag_using(cv, tagname, gtp->path, n, src);
+					convert_put_using(cv, tagname, gtp->path, n, src);
 					count++;
 					last_lineno = last = n;
 				}
@@ -1123,7 +1105,7 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 					}
 					if (gtop->format & GTAGS_COMPNAME)
 						tagname = (char *)uncompress(tagname, gtp->tag);
-					printtag_using(cv, tagname, gtp->path, n, src);
+					convert_put_using(cv, tagname, gtp->path, n, src);
 					count++;
 					last_lineno = n;
 				}
@@ -1157,7 +1139,7 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 				if (gtop->format & GTAGS_COMPRESS)
 					image = (char *)uncompress(image, gtp->tag);
 			}
-			printtag_using(cv, tagname, gtp->path, gtp->lineno, image);
+			convert_put_using(cv, tagname, gtp->path, gtp->lineno, image);
 			count++;
 		}
 	}
