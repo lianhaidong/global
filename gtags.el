@@ -575,4 +575,6 @@ Turning on Gtags-Select mode calls the value of the variable
   (message "[GTAGS SELECT MODE] %d lines" (count-lines (point-min) (point-max)))
   (run-hooks 'gtags-select-mode-hook))
 
+(provide 'gtags)
+
 ;;; gtags.el ends here

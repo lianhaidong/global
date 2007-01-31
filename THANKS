@@ -107,6 +107,7 @@ Tim Vanderhoek		GLOBAL tag support on more(1).
 Tobias Polzin		suggestion about correct treatment of CVS repository in htags.
 Tomohiko Morioka	advice about deciding emacs version.
 Tom Tromey		GTAGS target in automake.
+Tomi Ollila		proposal of adding (provide 'gtags) to gtags.el.
 Toshiyasu Kojima	advice about deciding emacs version.
 Van Trinh		bug report about db(3) and patch information.
 Wolfgang Helbig		bug report about generating wrong path name.
