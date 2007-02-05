@@ -48,7 +48,18 @@ extern char **environ;
 void
 set_env(const char *var, const char *val)
 {
+/*
+ * sparc-sun-solaris2.6 doesn't have setenv(3).
+ */
+#ifdef HAVE_PUTENV
+	STRBUF *sb = strbuf_open(0);
+
+	strbuf_sprintf(sb, "%s=%s", var, val);
+	putenv(strbuf_value(sb));
+	/* Don't free memory. putenv(3) require it. */
+#else
 	setenv(var, val, 1);
+#endif
 }
 /*
  * get_home_directory: get environment dependent home directory.
