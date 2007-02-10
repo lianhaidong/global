@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005,
- *      2006 Tama Communications Corporation
+ *      2006, 2007 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -85,6 +85,16 @@ int gtags_exist[GTAGLIM];
 const char *null_device = NULL_DEVICE;
 const char *tmpdir = "/tmp";
 
+/*
+ * Order of items in the top page (This should be customisable variable in the future).
+ *
+ * 'c': caution
+ * 's': search form
+ * 'm': mains
+ * 'd': definitions
+ * 'f': files
+ */
+char *item_order = "csmdf";
 /*
  * options
  */
@@ -890,7 +900,7 @@ makecommonpart(const char *title, const char *defines, const char *files)
 	STRBUF *ib = strbuf_open(0);
 	char buf[MAXFILLEN];
 	const char *tips = "Go to the GLOBAL project page.";
-	const char *_;
+	const char *_, *item;
 
 	strbuf_puts(sb, title_begin);
 	strbuf_puts(sb, title);
@@ -912,73 +922,93 @@ makecommonpart(const char *title, const char *defines, const char *files)
 	}
 	strbuf_puts_nl(sb, gen_div_end());
 	strbuf_puts_nl(sb, hr);
-	if (caution) {
-		strbuf_puts_nl(sb, caution_begin);
-		strbuf_sprintf(sb, "<font size='+2' color='red'>CAUTION</font>%s\n", br);
-		strbuf_sprintf(sb, "This hypertext consist of %d files.\n", html_count);
-		strbuf_puts_nl(sb, "Please don't download whole hypertext using hypertext copy tools.");
-		strbuf_puts_nl(sb, "Our network cannot afford such traffic.");
-		strbuf_puts_nl(sb, "Instead, you can generate same thing in your computer using");
-		strbuf_puts(sb, gen_href_begin_with_title_target(NULL, www, NULL, NULL, NULL, "_top"));
-		strbuf_puts(sb, "GLOBAL source code tag system");
-		strbuf_puts_nl(sb, gen_href_end());
-		strbuf_puts_nl(sb, "Thank you.");
-		strbuf_puts_nl(sb, caution_end);
-		strbuf_sprintf(sb, "\n%s\n", hr);
-	}
-	if (fflag) {
-		strbuf_puts(sb, makesearchpart(action, id, NULL));
-		strbuf_puts_nl(sb, hr);
-	}
-	strbuf_sprintf(sb, "%sMAINS%s\n", header_begin, header_end);
+	/*
+	 * Print items according to the value of variable 'item_order'.
+	 */
+	for (item = item_order; *item; item++) {
+		switch (*item) {
+		case 'c':
+			if (caution) {
+				strbuf_puts_nl(sb, caution_begin);
+				strbuf_sprintf(sb, "<font size='+2' color='red'>CAUTION</font>%s\n", br);
+				strbuf_sprintf(sb, "This hypertext consist of %d files.\n", html_count);
+				strbuf_puts_nl(sb, "Please don't download whole hypertext using hypertext copy tools.");
+				strbuf_puts_nl(sb, "Our network cannot afford such traffic.");
+				strbuf_puts_nl(sb, "Instead, you can generate same thing in your computer using");
+				strbuf_puts(sb, gen_href_begin_with_title_target(NULL, www, NULL, NULL, NULL, "_top"));
+				strbuf_puts(sb, "GLOBAL source code tag system");
+				strbuf_puts_nl(sb, gen_href_end());
+				strbuf_puts_nl(sb, "Thank you.");
+				strbuf_puts_nl(sb, caution_end);
+				strbuf_sprintf(sb, "\n%s\n", hr);
+			}
+			break;
+		case 's':
+			if (fflag) {
+				strbuf_puts(sb, makesearchpart(action, id, NULL));
+				strbuf_puts_nl(sb, hr);
+			}
+			break;
+		case 'm':
+			strbuf_sprintf(sb, "%sMAINS%s\n", header_begin, header_end);
 
-	snprintf(buf, sizeof(buf), "%s -x --nofilter=path %s", global_path, main_func);
-        ip = popen(buf, "r");
-        if (!ip)
-                die("cannot execute command '%s'.", buf);
-	strbuf_puts_nl(sb, gen_list_begin());
-	while ((_ = strbuf_fgets(ib, ip, STRBUF_NOCRLF)) != NULL) {
-		strbuf_puts_nl(sb, gen_list_body(SRCS, _));
-	}
-	strbuf_puts_nl(sb, gen_list_end());
-	if (pclose(ip) != 0)
-		die("cannot execute command '%s'.", buf);
-	strbuf_puts_nl(sb, hr);
-	if (aflag && !Fflag) {
-		strbuf_puts(sb, header_begin);
-		strbuf_puts(sb, title_define_index);
-		strbuf_puts_nl(sb, header_end);
-		strbuf_puts(sb, defines);
-	} else {
-		strbuf_puts(sb, header_begin);
-		strbuf_puts(sb, gen_href_begin(NULL, "defines", normal_suffix, NULL));
-		strbuf_puts(sb, title_define_index);
-		strbuf_puts(sb, gen_href_end());
-		strbuf_puts_nl(sb, header_end);
-	}
-	strbuf_puts_nl(sb, hr);
-	if (Fflag) {
-		strbuf_puts(sb, header_begin);
-		strbuf_puts(sb, gen_href_begin(NULL, "files", normal_suffix, NULL));
-		strbuf_puts(sb, title_file_index);
-		strbuf_puts(sb, gen_href_end());
-		strbuf_puts_nl(sb, header_end);
-	} else {
-		strbuf_puts(sb, header_begin);
-		strbuf_puts(sb, title_file_index);
-		strbuf_puts_nl(sb, header_end);
-		if (table_flist)
-			strbuf_puts_nl(sb, flist_begin);
-		else if (!no_order_list)
-			strbuf_puts_nl(sb, list_begin);
-		strbuf_puts(sb, files);
-		if (table_flist)
-			strbuf_puts_nl(sb, flist_end);
-		else if (!no_order_list)
-			strbuf_puts_nl(sb, list_end);
-		else
-			strbuf_puts_nl(sb, br);
-		strbuf_puts_nl(sb, hr);
+			snprintf(buf, sizeof(buf), "%s -x --nofilter=path %s", global_path, main_func);
+			ip = popen(buf, "r");
+			if (!ip)
+				die("cannot execute command '%s'.", buf);
+			strbuf_puts_nl(sb, gen_list_begin());
+			while ((_ = strbuf_fgets(ib, ip, STRBUF_NOCRLF)) != NULL) {
+				strbuf_puts_nl(sb, gen_list_body(SRCS, _));
+			}
+			strbuf_puts_nl(sb, gen_list_end());
+			if (pclose(ip) != 0)
+			die("cannot execute command '%s'.", buf);
+			strbuf_puts_nl(sb, hr);
+			break;
+		case 'd':
+			if (aflag && !Fflag) {
+				strbuf_puts(sb, header_begin);
+				strbuf_puts(sb, title_define_index);
+				strbuf_puts_nl(sb, header_end);
+				strbuf_puts(sb, defines);
+			} else {
+				strbuf_puts(sb, header_begin);
+				strbuf_puts(sb, gen_href_begin(NULL, "defines", normal_suffix, NULL));
+				strbuf_puts(sb, title_define_index);
+				strbuf_puts(sb, gen_href_end());
+				strbuf_puts_nl(sb, header_end);
+			}
+			strbuf_puts_nl(sb, hr);
+			break;
+		case 'f':
+			if (Fflag) {
+				strbuf_puts(sb, header_begin);
+				strbuf_puts(sb, gen_href_begin(NULL, "files", normal_suffix, NULL));
+				strbuf_puts(sb, title_file_index);
+				strbuf_puts(sb, gen_href_end());
+				strbuf_puts_nl(sb, header_end);
+			} else {
+				strbuf_puts(sb, header_begin);
+				strbuf_puts(sb, title_file_index);
+				strbuf_puts_nl(sb, header_end);
+				if (table_flist)
+					strbuf_puts_nl(sb, flist_begin);
+				else if (!no_order_list)
+					strbuf_puts_nl(sb, list_begin);
+				strbuf_puts(sb, files);
+				if (table_flist)
+					strbuf_puts_nl(sb, flist_end);
+				else if (!no_order_list)
+					strbuf_puts_nl(sb, list_end);
+				else
+					strbuf_puts_nl(sb, br);
+				strbuf_puts_nl(sb, hr);
+			}
+			break;
+		default:
+			warning("unknown item '%c'. (Ignored)", *item);
+			break;
+		}
 	}
 	strbuf_close(ib);
 
