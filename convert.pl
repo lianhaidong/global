@@ -150,6 +150,8 @@ sub gen {
 			}
 		}
 	}
+	print "See also:\\n\\\n";
+	print "       GNU GLOBAL web site: http://www.gnu.org/software/global/\\n\\\n";
 	print "\";\n";
 }
 #------------------------------------------------------------------
