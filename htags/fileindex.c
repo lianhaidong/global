@@ -751,7 +751,11 @@ makeincludeindex(void)
 	 * C: #include "xxx.h"
 	 * PHP: include("xxx.inc.php");
 	 */
-	snprintf(command, sizeof(command), "%s -gnx \"^[ \\t]*(#[ \\t]*(import|include)|include[ \\t]*\\()\"", global_path);
+	/*
+	 * Unlike Perl regular expression, POSIX regular expression doesn't support C-style escape sequence.
+	 * Therefore, we can not use "\\t" here.
+	 */
+	snprintf(command, sizeof(command), "%s -gnx \"^[ \t]*(#[ \t]*(import|include)|include[ \t]*\\()\"", global_path);
 	if ((PIPE = popen(command, "r")) == NULL)
 		die("cannot fork.");
 	strbuf_reset(input);
