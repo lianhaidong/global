@@ -19,6 +19,12 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+March 10 2007, Shigio YAMAGUCHI
+
+	* gtags.el: Added (provide 'gtags).
+	* libutil/env.c: Use putenv(3) if it is avaiable else use setenv(3).
+	  Some systems don't have setenv(3).
+
 January 29 2007, Shigio YAMAGUCHI
 
 	* Further compression of tag file (format version 5).

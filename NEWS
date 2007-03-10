@@ -20,6 +20,17 @@ ___________________________________
 GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 5.4.1 - March 10 2007, by Shigio YAMAGUCHI
+
+[CHANGES]
+* htags: Added new --item-order option.
+  Specify order of items in the top page. The spec is a string
+  consists of item signs in order. Each sign means as follows:
+  c: caution, s: search form, m: mains, d: definition, f: files.
+  The default is 'csmdf'.
+[BUG FIXED]
+* htags: didn't extract some '#include' correctly.
+
 Version 5.4 - January 29 2007, by Shigio YAMAGUCHI
 
 [INCOMPATIBLE CHANGES]
