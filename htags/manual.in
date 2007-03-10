@@ -23,7 +23,7 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	HTAGS,1,January 2007,GNU Project
+@HEADER	HTAGS,1,March 2007,GNU Project
 @NAME	htags - generate hypertext from source code.
 @SYNOPSIS
 	@name{htags} [-acDfFghInosTvwx][-d @arg{dbpath}][-m @arg{name}][-S @arg{cgidir}][-t @arg{title}][@arg{dir}]
@@ -104,6 +104,13 @@
 		Insert custom header derived from @arg{file} after <body> tag.
 	@item{@option{--insert-footer} @arg{file}}
 		Insert custom footer derived from @arg{file} before </body> tag.
+	@item{@option{--item-order} @arg{spec}}
+		Specify order of items in the top page.
+		The @arg{spec} is a string consists of item signs in order.
+		Each sign means as follows:
+		@name{c}: caution, @name{s}: search form,
+		@name{m}: mains, @name{d}: definition, @name{f}: files.
+		The default is @arg{csmdf}.
 	@item{@option{-m}, @option{--main-func} @arg{name}}
 		Specify the main function name. The default is @code{main}.
 	@item{@option{-n}, @option{--line-number}[=@arg{columns}]}

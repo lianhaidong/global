@@ -292,7 +292,8 @@ static struct option const long_options[] = {
 #define OPT_ID			134
 #define OPT_INSERT_FOOTER	135
 #define OPT_INSERT_HEADER	136
-#define OPT_TABS		137
+#define OPT_ITEM_ORDER		137
+#define OPT_TABS		138
         {"action", required_argument, NULL, OPT_ACTION},
         {"cvsweb", required_argument, NULL, OPT_CVSWEB},
         {"cvsweb-cvsroot", required_argument, NULL, OPT_CVSWEB_CVSROOT},
@@ -302,6 +303,7 @@ static struct option const long_options[] = {
         {"id", required_argument, NULL, OPT_ID},
         {"insert-footer", required_argument, NULL, OPT_INSERT_FOOTER},
         {"insert-header", required_argument, NULL, OPT_INSERT_HEADER},
+        {"item-order", required_argument, NULL, OPT_ITEM_ORDER},
         {"tabs", required_argument, NULL, OPT_TABS},
         { 0 }
 };
@@ -1482,6 +1484,9 @@ main(int argc, char **argv)
 			break;
 		case OPT_INSERT_HEADER:
 			insert_header = optarg;
+			break;
+		case OPT_ITEM_ORDER:
+			item_order = optarg;
 			break;
 		case OPT_TABS:
 			if (atoi(optarg) > 0)
