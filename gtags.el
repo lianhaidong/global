@@ -1,7 +1,7 @@
 ;;; gtags.el --- gtags facility for Emacs
 
 ;;
-;; Copyright (c) 1997, 1998, 1999, 2000, 2006 Tama Communications Corporation
+;; Copyright (c) 1997, 1998, 1999, 2000, 2006, 2007 Tama Communications Corporation
 ;;
 ;; This file is part of GNU GLOBAL.
 ;;
@@ -22,7 +22,7 @@
 
 ;; GLOBAL home page is at: http://www.gnu.org/software/global/
 ;; Author: Tama Communications Corporation
-;; Version: 2.1
+;; Version: 2.2
 ;; Keywords: tools
 
 ;; Gtags-mode is implemented as a minor mode so that it can work with any
@@ -349,6 +349,13 @@
           (setq lno 1)
         (setq lno (count-lines (point-min) (point)))))
     (call-process "gozilla"  nil nil nil (concat "+" (number-to-string lno)) buffer-file-name))))
+
+; Private event-point
+; (If there is no event-point then we use this version.
+(eval-and-compile
+  (if (not (fboundp 'event-point))
+      (defun event-point (event)
+	(posn-point (event-start event)))))
 
 (defun gtags-find-tag-by-event (event)
   "Get the expression as a tagname around here and move there."
