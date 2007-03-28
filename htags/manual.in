@@ -237,7 +237,7 @@
 		Begin tag for comments. The default is '<i><font color=green>'.
 	@item{@code{comment_end}(string)}
 		End tag for comments. The default is '</font></i>'.
-	@item{@code{dynamic}(bool)}
+	@item{@code{dynamic}(boolean)}
 		Generate object list dynamically.
 	@item{@code{sharp_begin}(string)}
 		Begin tag for 'define'. The default is '<font color=darkred>'.
