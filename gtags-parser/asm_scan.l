@@ -138,15 +138,18 @@ WORD		{ALPHA}{ALPHANUM}*
 		}
 	}
 	^[ \t]*\#		{ yy_push_state(PREPROCESSOR_LINE); return ASM_DIRECTIVE; }
-	(call|jsr)	{ return ASM_CALL; }
+	call|jsr	{ return ASM_CALL; }
+	\.macro|macro	{ return ASM_MACRO; }
+	\.equ|equ	{ return ASM_EQU; }
 	^(ENTRY|ALTENTRY|NENTRY|GLOBAL_ENTRY|JSBENTRY|C_SYMBOL_NAME|C_ENTRY) {
 		ADD_SYM(); 
 		return ASM_ENTRY;
 	}
-	(EXT|SYMBOL_NAME|C_LABEL) {
+	EXT|SYMBOL_NAME|C_LABEL {
 		ADD_SYM();
 		return ASM_EXT;
 	}
+	^{WORD}		{ ADD_SYM(); return ASM_LABEL; }
 }
 
 <PREPROCESSOR_LINE>{

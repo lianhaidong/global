@@ -66,10 +66,14 @@ static int target;
 %token ASM_EXT			/* EXT, SYMBOL_NAME, ... */
 %token ASM_SYMBOL_PAREN		/* sym( */
 %token ASM_SYMBOL
+%token ASM_LABEL		/* ^sym */
 
 %token ASM_DEFINE "#define"
 %token ASM_UNDEF "#undef"
 %token ASM_DIRECTIVE		/* #xxx */
+
+%token ASM_MACRO		/* .macro */
+%token ASM_EQU			/* .equ */
 
 %start input
 %name-prefix="asm_"
@@ -138,6 +142,30 @@ line:	ASM_ENTRY '(' ASM_SYMBOL ')' error '\n'
 		{
 			if (target == DEF && dflag)
 				PUT(GET_SYM($2), @2);
+			strbuf_reset(asm_symtable);
+		}
+	| ASM_MACRO ASM_SYMBOL error '\n'
+		{
+			if (target == DEF && dflag)
+				PUT(GET_SYM($2), @2);
+			strbuf_reset(asm_symtable);
+		}
+	| ASM_LABEL ASM_MACRO error '\n'
+		{
+			if (target == DEF && dflag)
+				PUT(GET_SYM($1), @1);
+			strbuf_reset(asm_symtable);
+		}
+	| ASM_EQU ASM_SYMBOL ',' error '\n'
+		{
+			if (target == DEF && dflag)
+				PUT(GET_SYM($2), @2);
+			strbuf_reset(asm_symtable);
+		}
+	| ASM_LABEL ASM_EQU error '\n'
+		{
+			if (target == DEF && dflag)
+				PUT(GET_SYM($1), @1);
 			strbuf_reset(asm_symtable);
 		}
 	| error '\n'
