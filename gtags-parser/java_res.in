@@ -27,6 +27,7 @@ default			word
 do			word
 double			word
 else			word
+enum			word
 extends			word
 false			word
 final			word

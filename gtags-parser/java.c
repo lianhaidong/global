@@ -138,6 +138,7 @@ java(const char *file)
 			break;
 		case JAVA_CLASS:
 		case JAVA_INTERFACE:
+      case JAVA_ENUM:
 			if ((c = nexttoken(interested, java_reserved_word)) == SYMBOL) {
 				strlimcpy(classname, token, sizeof(classname));
 				startclass = 1;
