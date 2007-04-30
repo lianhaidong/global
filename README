@@ -4,7 +4,7 @@ ___________________________________
 |  |   |  |  |  |  |     |     |  |
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Copyright (c) 2000, 2001, 2002, 2003, 2004 Tama Communications Corporation
+ Copyright (c) 2000, 2001, 2002, 2003, 2004, 2007 Tama Communications Corporation
 
  This file is free software; as a special exception the author gives
  unlimited permission to copy and/or distribute it, with or without
@@ -18,6 +18,20 @@ ___________________________________
 
 GNU GLOBAL is a source code tag system that works the same way across diverse
 environments. It supports C, C++, Yacc, Java, PHP4 and assembler source code.
+
+* BOKINware
+
+	GNU GLOBAL is BOKINware. It means that it is free software based on
+	GNU GPL, and is commercial (for-profit) software based on BOKIN model.
+
+	BOKIN Model is a business model to obtain proceeds by widely collecting
+	donations while developing and distributing free software. This model is
+	constructed not to take away consumer's freedom of software, and is similar
+	to the model of FSF except that FSF is not commercial organization.
+
+	Your contribution is put on donors list in DONORS file, and distributed
+	all over the world with GNU GLOBAL itself.
+	Please see the files: DONORS, BOKIN_MODEL and BOKIN_MODEL_FAQ for more details.
 
 * Supported OS
 
@@ -37,6 +51,10 @@ environments. It supports C, C++, Yacc, Java, PHP4 and assembler source code.
 * Documentation
 
 	Please see 'doc/global.texi'(texinfo format) to know how to use GLOBAL.
+	You can see it even on GLOBAL's web site:
+		http://www.gnu.org/software/global/globaldoc_toc.html
+		http://www.gnu.org/software/global/manual/
+
 	The descriptions about new facilities are added to 'NEWS'.  At least,
 	you should read '[INCOMPATIBLE CHANGES]' for each version.
 

@@ -20,6 +20,24 @@ ___________________________________
 Frequentry Asked Questions about GLOBAL.
 
 ----------------------------------------------------------------------------
+Q0. Please explain about BOKINware.
+
+A0. GNU GLOBAL is BOKINware. It means that it is free software
+    based on GNU GPL, and is commercial (for-profit) software
+    based on BOKIN model.
+
+    BOKIN Model is a business model to obtain proceeds by widely
+    collecting donations while developing and distributing
+    free software. This model is constructed not to take away
+    consumer's freedom of software, and is similar to the model
+    of FSF except that FSF is not commercial organization.
+    Your contribution is put on donors list in DONORS file, and
+    distributed all over the world with GNU GLOBAL itself.
+
+    Please see the files: DONORS, BOKIN_MODEL and BOKIN_MODEL_FAQ
+    for more details.
+
+----------------------------------------------------------------------------
 Q1. Does GLOBAL support DOS and Windows 32 environment?
 
 A1. No, it doesn't. GNU GLOBAL supports only UNIX(POSIX) environment.
