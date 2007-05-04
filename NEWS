@@ -17,8 +17,15 @@ ___________________________________
 
 		----------------------------------
 
-GLOBAL NEWS - User visible changes.
+GNU GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
+
+Version 5.5 - May 5 2007, by Shigio YAMAGUCHI
+
+* GNU GLOBAL became a BOKINware.
+
+* gtags-parser: Support of 'enum' (java).
+* gtags.el: Changed to work without event-point function.
 
 Version 5.4.1 - March 10 2007, by Shigio YAMAGUCHI
 

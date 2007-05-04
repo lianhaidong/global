@@ -19,6 +19,10 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+May 5 2007, by Shigio YAMAGUCHI
+
+	* New files: BOKIN_MODEL, BOKIN_MODEL_FAQ, DONORS
+
 March 10 2007, Shigio YAMAGUCHI
 
 	* gtags.el: Added (provide 'gtags).
