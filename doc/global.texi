@@ -73,6 +73,7 @@ This manual documents version @value{VERSION} of the GNU GLOBAL source code tag 
 * Other topics::                        Other topics.
 * Reference::                           Command References.
 * Copying This Manual::                 Copying This Manual.
+* Business Model::                      Business Model for Free Software.
 * Index::                               Option index.
 @end menu
 @end ifnottex
@@ -2204,6 +2205,21 @@ Instead, you can use incremental updating facility (@samp{-u} option).
 @end menu
 
 @include fdl.texi
+
+@c ***************************************************************************
+@c Business Model
+@c ***************************************************************************
+@node Business Model
+@appendix Business Model
+
+@menu
+* The BOKIN Model Definition:: Business Model for Free Software.
+* Frequently Asked Questions:: BOKIN Model Frequently Asked Questions.
+@end menu
+
+@include define.texi
+@page
+@include faq.texi
 
 @node Index
 @unnumbered Option Index
