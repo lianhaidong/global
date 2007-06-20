@@ -93,14 +93,14 @@ dbop_open(const char *path, int mode, int perm, int flags)
 		info.flags |= R_DUP;
 	info.psize = DBOP_PAGESIZE;
 	/*
-	 * accept user's request but needs 0.5MB at least.
-	 * The default value is 5MB.
+	 * Decide cache size. The default value is 5MB.
+	 * See libutil/gparam.h for the details.
 	 */
-	info.cachesize = 5000000;
+	info.cachesize = GTAGSCACHE;
 	if (getenv("GTAGSCACHE") != NULL)
 		info.cachesize = atoi(getenv("GTAGSCACHE"));
-	if (info.cachesize < 500000)
-		info.cachesize = 500000;
+	if (info.cachesize < GTAGSMINCACHE)
+		info.cachesize = GTAGSMINCACHE;
 
 	/*
 	 * if unlink do job normally, those who already open tag file can use
