@@ -965,7 +965,7 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 	GTOP *gtop;
 	GTP *gtp;
 	int flags = 0;
-	STRBUF *sb = NULL;
+	STRBUF *sb = NULL, *ib = NULL;
 	char curpath[MAXPATHLEN+1], curtag[IDENTLEN+1];
 	FILE *fp = NULL;
 	const char *src = "";
@@ -997,6 +997,8 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 		flags |= GTOP_BASICREGEX;
 	if (format == FORMAT_PATH)
 		flags |= GTOP_PATH;
+	if (gtop->format & GTAGS_COMPACT)
+		ib = strbuf_open(0);
 	for (gtp = gtags_first(gtop, pattern, flags); gtp; gtp = gtags_next(gtop)) {
 		if (lflag && !locatestring(gtp->path, localprefix, MATCH_AT_FIRST))
 			continue;
@@ -1008,7 +1010,6 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 			 *                    a          b
 			 * tagline = <file id> <tag name> <line no>,...
 			 */
-			STRBUF *sb = strbuf_open(0);
 			char *p = (char *)gtp->tagline;
 			const char *tagname;
 			int n = 0;
@@ -1077,7 +1078,7 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 					}
 					if (last_lineno != n && fp) {
 						while (lineno < n) {
-							if (!(src = strbuf_fgets(sb, fp, STRBUF_NOCRLF)))
+							if (!(src = strbuf_fgets(ib, fp, STRBUF_NOCRLF)))
 								die("unexpected end of file. '%s: %d/%d'", gtp->path, lineno, n);
 							lineno++;
 						}
@@ -1098,7 +1099,7 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 						continue;
 					if (last_lineno != n && fp) {
 						while (lineno < n) {
-							if (!(src = strbuf_fgets(sb, fp, STRBUF_NOCRLF)))
+							if (!(src = strbuf_fgets(ib, fp, STRBUF_NOCRLF)))
 								die("unexpected end of file. '%s: %d/%d'", gtp->path, lineno, n);
 							lineno++;
 						}
@@ -1146,6 +1147,8 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 	convert_close(cv);
 	if (sb)
 		strbuf_close(sb);
+	if (ib)
+		strbuf_close(ib);
 	if (fp)
 		fclose(fp);
 	gtags_close(gtop);
