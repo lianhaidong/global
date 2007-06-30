@@ -97,9 +97,11 @@ static int create_version = 2;	/* format version of newly created tag file */
 int
 gpath_open(const char *dbpath, int mode)
 {
-	if (opened++ > 0) {
+	if (opened > 0) {
 		if (mode != _mode)
 			die("duplicate open with different mode.");
+		opened++;
+		return 0;
 	}
 	/*
 	 * We create GPATH just first time.
@@ -127,6 +129,7 @@ gpath_open(const char *dbpath, int mode)
 		else if (format_version < support_version)
                         die("GPATH seems older format. Please remake tag files."); 
 	}
+	opened++;
 	return 0;
 }
 /*
@@ -248,6 +251,7 @@ gpath_close(void)
 {
 	char fid[32];
 
+	assert(opened > 0);
 	if (--opened > 0)
 		return;
 	if (_mode == 1 && created) {
