@@ -30,13 +30,12 @@
 #include "version.h"
 
 const char *copy = "\
-Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005,\n\
-	2006, 2007 Tama Communications Corporation\n\
-GNU GLOBAL comes with NO WARRANTY, to the extent permitted by law.\n\
-You may redistribute copies of GNU GLOBAL under the terms of the\n\
-GNU General Public License. For more information about these matters,\n\
-see the files named COPYING.\n\
-See also: http://www.gnu.org/software/global/\n\
+Copyright (c) 2007 Tama Communications Corporation\n\
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n\
+This is free software: you are free to change and redistribute it.\n\
+There is NO WARRANTY, to the extent permitted by law.\n\
+This is also commercial (for-profit) software based on BOKIN model.\n\
+Please see the donation page <http://www.gnu.org/software/global/donation.html>.\n\
 ";
 /*
  * get_version: get version string.
@@ -54,11 +53,9 @@ version(const char *name, const int verbose)
 {
 	if (name == NULL)
 		name = progname;
-	if (verbose) {
-		fprintf(stdout, "%s - %s\n", name, PACKAGE_STRING);
-		fprintf(stdout, "%s", copy);
-	} else {
-		fprintf(stdout, "%s\n", VERSION);
-	}
+	/* always verbose according to the GNU coding standard */
+	/* fprintf(stdout, "%s\n", VERSION); */
+	fprintf(stdout, "%s - %s\n", name, PACKAGE_STRING);
+	fprintf(stdout, "%s", copy);
 	exit(0);
 }
