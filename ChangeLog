@@ -19,6 +19,11 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+July 6 2007, by Shigio YAMAGUCHI
+
+	* Migrated to GPLv3 and LGPLv3.
+	* gtags.conf.in: Migrated to simple all-permissive license.
+
 May 5 2007, by Shigio YAMAGUCHI
 
 	* New files: BOKIN_MODEL, BOKIN_MODEL_FAQ, DONORS

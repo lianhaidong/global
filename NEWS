@@ -20,9 +20,18 @@ ___________________________________
 GNU GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
-Version 5.* - *** * 2007, by Shigio YAMAGUCHI
+Version 5.6 - July 6 2007, by Shigio YAMAGUCHI
 
-* Add support of assembler directive ".macro" and ".equ".
+[INCOMPATIBLE CHANGES]
+* All commands: According to the GNU coding standard, the --version option
+  shows always verbose message without --verbose option.
+
+[CHANGES]
+* Migrated to GNU GPLv3 and GNU LGPLv3.
+* gtags-parser: Added support of assembler directive ".macro" and ".equ".
+
+[BUG FIXED]
+* global(1): Fix memory leak.
 
 Version 5.5 - May 5 2007, by Shigio YAMAGUCHI
 
@@ -39,6 +48,7 @@ Version 5.4.1 - March 10 2007, by Shigio YAMAGUCHI
   consists of item signs in order. Each sign means as follows:
   c: caution, s: search form, m: mains, d: definition, f: files.
   The default is 'csmdf'.
+
 [BUG FIXED]
 * htags: didn't extract some '#include' correctly.
 
