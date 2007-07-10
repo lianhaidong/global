@@ -86,14 +86,11 @@ This manual documents version @value{VERSION} of the GNU GLOBAL source code tag 
 
 @section What is this?
 
-GNU GLOBAL is a source code tag system that works the same way
-across diverse environments.
+GLOBAL is a source code tagging system (like ctags/etags) that is
+compatible with numerous application environments including vi, emacs, less, bash.
 You can locate specified object in source files and move there easily.
 It is useful for hacking a large project containing many subdirectories,
 many @code{#ifdef} and many @code{main()} functions.
-
-It is similar to ctags or etags but is different from them at the point of
-independence of any editor.
 
 @section Concept of project.
 
