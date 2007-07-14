@@ -717,6 +717,7 @@ makefileindex(const char *file, STRBUF *a_files)
 	if (map_file)
 		fclose(FILEMAP);
 	gfind_close(gp);
+	regfree(&is_include_file);
 
 	fputs(strbuf_value(files), filesop);
 	if (table_flist)
@@ -827,10 +828,11 @@ makeincludeindex(void)
 			close_file(fileop_INCLUDE);
 			html_count++;
 			/*
-			 * inc->path == NULL means that information already
+			 * inc->contents == NULL means that information already
 			 * written to file.
 			 */
-			strbuf_reset(inc->contents);
+			strbuf_close(inc->contents);
+			inc->contents = NULL;
 		}
 		if (!inc->ref_count)
 			continue;
@@ -868,10 +870,11 @@ makeincludeindex(void)
 			close_file(fileop_INCLUDE);
 			html_count++;
 			/*
-			 * inc->path == NULL means that information already
+			 * inc->ref_contents == NULL means that information already
 			 * written to file.
 			 */
-			strbuf_reset(inc->ref_contents);
+			strbuf_close(inc->ref_contents);
+			inc->ref_contents = NULL;
 		}
 	}
 	strbuf_close(input);

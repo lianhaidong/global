@@ -100,7 +100,8 @@ open_output_file(const char *path, int compress)
 	}
 	fileop = check_calloc(sizeof(FILEOP), 1);
 	strlimcpy(fileop->path, path, sizeof(fileop->path));
-	strlimcpy(fileop->command, command, sizeof(fileop->command));
+	if (compress)
+		strlimcpy(fileop->command, command, sizeof(fileop->command));
 	fileop->type = FILEOP_OUTPUT;
 	if (compress)
 		fileop->type |= FILEOP_COMPRESS;
