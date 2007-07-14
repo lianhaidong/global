@@ -48,7 +48,7 @@ entry = strhash_assign(hash, "name1", 1);	// allocate entry for the name.
 						+-------------+
 // strhash_xxx() doesn't affect entry->value. So, you can use it freely.
 
-entry->value = strhash_strdup("NAME1");
+entry->value = strhash_strdup(hash, "NAME1", 0);
 						entry
 						+-------------+
 						|name: "name1"|

@@ -51,7 +51,7 @@ pool_close(pool);					(nothing)
  *	r)	pool	POOL structure
  */
 POOL *
-pool_open()
+pool_open(void)
 {
 	POOL *pool = (POOL *)check_calloc(sizeof(POOL), 1);
 

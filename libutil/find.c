@@ -294,7 +294,7 @@ prepare_skip(void)
  *	i)	path	path name (must start with ./)
  *	r)		1: skip, 0: dont skip
  */
-int
+static int
 skipthisfile(const char *path)
 {
 	const char *first, *last;

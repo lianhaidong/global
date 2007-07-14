@@ -779,7 +779,7 @@ src2html(const char *src, const char *html, int notsource)
 
 				p = locatestring(p, " ", MATCH_FIRST);
 				if (p == NULL)
-					die("internal error.(incref->contents)");
+					die("internal error.(incref->ref_contents)");
 				filename = p + 1;
 				if (filename[0] == '.' && filename[1] == '/')
 					filename += 2;

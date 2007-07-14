@@ -46,7 +46,7 @@ static char *curp;
 static char *endp;
 
 /* Offset table */
-VARRAY *vb;
+static VARRAY *vb;
 
 static void linetable_put(int, int);
 /*

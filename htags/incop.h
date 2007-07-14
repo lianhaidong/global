@@ -19,7 +19,6 @@
 #ifndef _INCOP_H
 #define _INCOP_H
 
-#include "queue.h"
 #include "strbuf.h"
 
 struct data {
