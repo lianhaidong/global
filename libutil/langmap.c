@@ -78,12 +78,11 @@ decide_lang(const char *suffix)
 {
 	const char *lang, *list, *tail;
 
-	list = strbuf_value(active_map);
-	tail = list + strbuf_getlen(active_map);
-	lang = list;
+	lang = strbuf_value(active_map);
+	tail = lang + strbuf_getlen(active_map);
 
 	/* check whether or not list includes suffix. */
-	while (list < tail) {
+	while (lang < tail) {
 		list = lang + strlen(lang) + 1;
 		if (match_suffix_list(suffix, list))
 			return lang;
@@ -99,12 +98,14 @@ decide_lang(const char *suffix)
 static int
 match_suffix_list(const char *suffix, const char *list)
 {
+	const char *p;
+
 	while (*list) {
-		if (locatestring(list, suffix, MATCH_AT_FIRST
+		if ((p = locatestring(list, suffix, MATCH_AT_FIRST
 #if defined(_WIN32) || defined(__DJGPP__)
 							     |IGNORE_CASE
 #endif
-									 ))
+			)) != NULL && (*p == '\0' || *p == '.'))
 			return 1;
 		for (list++; *list && *list != '.'; list++)
 			;
