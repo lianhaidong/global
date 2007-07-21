@@ -330,7 +330,7 @@ strbuf_fgets(STRBUF *sb, FILE *ip, int flags)
 			break;
 		}
 		sb->curp += strlen(sb->curp);
-		if (*(sb->curp - 1) == '\n')
+		if (sb->curp > sb->sbuf && *(sb->curp - 1) == '\n')
 			break;
 		else if (feof(ip)) {
 			return sb->sbuf;
