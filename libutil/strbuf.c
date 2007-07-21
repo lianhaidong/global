@@ -163,7 +163,7 @@ strbuf_clear(STRBUF *sb)
 /*
  * strbuf_nputs: Put string with length
  *
- *	i)	sb	statically defined string buffer
+ *	i)	sb	string buffer
  *	i)	s	string
  *	i)	len	length of string
  */
@@ -180,7 +180,7 @@ strbuf_nputs(STRBUF *sb, const char *s, int len)
 /*
  * strbuf_nputc: Put characters with length
  *
- *	i)	sb	statically defined string buffer
+ *	i)	sb	string buffer
  *	i)	c	character
  *	i)	len	length of string
  */
@@ -197,7 +197,7 @@ strbuf_nputc(STRBUF *sb, int c, int len)
 /*
  * strbuf_puts: Put string
  *
- *	i)	sb	statically defined string buffer
+ *	i)	sb	string buffer
  *	i)	s	string
  */
 void
@@ -214,7 +214,7 @@ strbuf_puts(STRBUF *sb, const char *s)
 /*
  * strbuf_puts_nl: Put string with a new line
  *
- *	i)	sb	statically defined string buffer
+ *	i)	sb	string buffer
  *	i)	s	string
  */
 void
@@ -287,7 +287,7 @@ strbuf_value(STRBUF *sb)
 /*
  * strbuf_trim: trim following blanks.
  *
- *	i)	sb	STRBUR structure
+ *	i)	sb	STRBUF structure
  */
 void
 strbuf_trim(STRBUF *sb)
