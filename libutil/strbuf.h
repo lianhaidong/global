@@ -78,7 +78,7 @@ typedef struct _strbuf {
  *              return strbuf_value(sb);
  *      }
  */
-#define STATIC_STRBUF(sb) static STRBUF __##sb, *sb = &__##sb
+#define STATIC_STRBUF(sb) static STRBUF sb[1]
 
 #define strbuf_empty(sb) (sb->sbufsize == 0)
 
