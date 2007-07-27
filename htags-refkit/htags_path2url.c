@@ -13,6 +13,12 @@
 #include <sys/param.h>
 #include <sys/stat.h>
 
+#if defined(_WIN32) || defined(__DJGPP__)
+# define OPENMODE O_BINARY
+#else
+# define OPENMODE 0
+#endif
+
 int htags_load_filemap(const char *);
 void htags_unload_filemap(void);
 int htags_path2url(const char *, int, char *, int);
@@ -83,7 +89,7 @@ load_filemap_contents(const char *file, char **area, int *size)
 
 	/* Load FILEMAP contents */
 	status = -2;
-	if ((fd = open(file, 0)) < 0)
+	if ((fd = open(file, OPENMODE)) < 0)
 		goto err;
 	status = -3;
 	if (fstat(fd, &st) < 0)
