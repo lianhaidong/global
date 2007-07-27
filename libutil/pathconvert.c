@@ -253,7 +253,7 @@ convert_put_using(CONVERT *cv, const char *tag, const char *path, int lineno, co
 		fputc('\t', cv->op);
 		fputs(convert_pathname(cv, path), cv->op);
 		fputc('\t', cv->op);
-		fputs(rest, cv->op);
+		fprintf(cv->op, "%d", lineno);
 		break;
 	case FORMAT_CTAGS_XID:
 		fputs(gpath_path2fid(path, NULL), cv->op);

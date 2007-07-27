@@ -45,6 +45,7 @@ Emile Heyns		advice about writing code for generic UNIX.
 Eric Paire		bug report about gtags-parser's memory violation.
 Frederic Maitre		bug report about global(1) and gtags(1) at the system root directory.
 Gary Kline		advice about the name of parser.
+Geoffrey Robson		bug report about global (-t option didn't work correctly).
 Giuseppe Corbelli	Global.py for glimmer code editor and an advice about vim.
 Hageseter, Trond E.	bug report about gtags-parser.
 Hendrik Visage		bug report about gtags-parser(here document of PHP).
