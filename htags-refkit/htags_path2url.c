@@ -4,7 +4,7 @@
  * This file is placed into the public domain by the author,
  * 2005, 2006 Tama Communications Corporation.
  *
- * Two library function, qsort(3) and bsearch(3), are requried.
+ * Two library function, qsort(3) and bsearch(3), are required.
  */
 #include <fcntl.h>
 #include <stdio.h>
