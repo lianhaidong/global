@@ -224,7 +224,7 @@ main(int argc, char **argv)
 		char path[MAXPATHLEN+1];
 
 		if (realpath(gtagsconf, path) == NULL)
-			die("%s not found.", optarg);
+			die("%s not found.", gtagsconf);
 		set_env("GTAGSCONF", path);
 		if (gtagslabel)
 			set_env("GTAGSLABEL", gtagslabel);
