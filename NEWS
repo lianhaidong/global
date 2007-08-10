@@ -20,6 +20,16 @@ ___________________________________
 GNU GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 5.6.1 - August 11 2007, by Shigio YAMAGUCHI
+
+[CHANGES]
+* gtags.conf: Added '.git/' to the DEFAULTSKIP list.
+
+[BUG FIXED]
+* global: Global(1) with the -t option didn't print correct line number.
+  Gtags.vim also didn't work correctly due to this bug. This bug was
+  introduced in GLOBAL-5.4.
+
 Version 5.6 - July 6 2007, by Shigio YAMAGUCHI
 
 [INCOMPATIBLE CHANGES]
