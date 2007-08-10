@@ -116,8 +116,7 @@
 		@arg{format} may be 'path', `ctags', `ctags-x', `grep' or 'cscope'.
 		The @option{--result=ctags} and @option{--result=ctags-x} are
 		equivalent to the @option{-t} and @option{-x} respectively.
-		The @option{-t} and @option{-x} are given to priority
-		more than the @option{--result} option.
+		The --result option is given to priority more than the -t and -x option.
 	@item{@option{-s}, @option{--symbol}}
 		Print the locations of specified symbol other than definitions.
 	@item{@option{-t}, @option{--tags}}
