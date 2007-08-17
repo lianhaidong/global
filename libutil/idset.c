@@ -31,8 +31,8 @@
 #ifndef CHAR_BIT
 #define CHAR_BIT 8
 #endif
-#undef INT_BIT
-#define INT_BIT	(sizeof(int) * CHAR_BIT)	/* maybe 32 or 64 */
+#undef LONG_BIT
+#define LONG_BIT	(sizeof(long) * CHAR_BIT)	/* maybe 32 or 64 */
 
 /*
 Idset: usage and memory status
@@ -74,7 +74,7 @@ You should define index as an unsigned integer, and use END_OF_ID like follows:
  * bit mask table
  * Prepare all bit mask for performance.
  */
-static unsigned int *bit;
+static unsigned long *bit;
 
 /*
  * Allocate memory for new idset.
@@ -86,13 +86,15 @@ idset_open(unsigned int size)
 	int i;
 
 	if (bit == NULL) {
-		bit = (unsigned int *)check_calloc(sizeof(unsigned int), INT_BIT);
-		for (i = 0; i < INT_BIT; i++)
-			bit[i] = 1 << i;
+		bit = (unsigned long *)check_calloc(sizeof(unsigned long), LONG_BIT);
+		for (i = 0; i < LONG_BIT; i++)
+			bit[i] = 1UL << i;
 	}
-	idset->set = (unsigned int *)check_calloc(sizeof(unsigned int), (size + INT_BIT - 1) / INT_BIT);
+	idset->set = (unsigned long *)check_calloc(sizeof(unsigned long), (size + LONG_BIT - 1) / LONG_BIT);
 	idset->size = size;
-	idset->empty = 1;
+	idset->min = END_OF_ID;
+	idset->max = 0;
+	idset->lastid = END_OF_ID;
 	return idset;
 }
 /*
@@ -104,7 +106,7 @@ idset_open(unsigned int size)
 int
 idset_empty(IDSET *idset)
 {
-	return idset->empty;
+	return idset->min > idset->max;
 }
 /*
  * Add id to the idset.
@@ -117,10 +119,11 @@ idset_add(IDSET *idset, unsigned int id)
 {
 	if (id >= idset->size)
 		die("idset_add: id is out of range.");
-	idset->set[id / INT_BIT] |= bit[id % INT_BIT];
-	if (idset->empty || id > idset->max)
+	idset->set[id / LONG_BIT] |= bit[id % LONG_BIT];
+	if (id > idset->max)
 		idset->max = id;
-	idset->empty = 0;
+	if (id < idset->min)
+		idset->min = id;
 }
 /*
  * Whether or not idset includes specified id.
@@ -132,8 +135,10 @@ idset_add(IDSET *idset, unsigned int id)
 int
 idset_contains(IDSET *idset, unsigned int id)
 {
-	return (idset->empty || id > idset->max) ? 0 :
-			(idset->set[id / INT_BIT] & bit[id % INT_BIT]);
+	/* When idset is empty,
+	   (idset->min <= id && id <= idset->max) is always 0. */
+	return idset->min <= id && id <= idset->max
+		&& (idset->set[id / LONG_BIT] & bit[id % LONG_BIT]);
 }
 /*
  * Get first id.
@@ -145,21 +150,9 @@ idset_contains(IDSET *idset, unsigned int id)
 unsigned int
 idset_first(IDSET *idset)
 {
-	unsigned int i, limit;
-	int index0 = 0;
-
-	if (idset->empty)
-		return END_OF_ID;
-	limit = idset->max / INT_BIT + 1;
-	for (i = index0; i < limit && idset->set[i] == 0; i++)
-		;
-	if (i >= limit)
-		return END_OF_ID;
-	index0 = i;
-	for (i = 0; i < INT_BIT; i++)
-		if (bit[i] & idset->set[index0])
-			return idset->lastid = index0 * INT_BIT + i;
-	die("idset_first: internal error.");
+	/* There is no need to check whether idset is empty
+	   because idset->min is initialized with END_OF_ID. */
+	return idset->lastid = idset->min;
 }
 /*
  * Get next id.
@@ -174,25 +167,23 @@ idset_next(IDSET *idset)
 	unsigned int i, limit;
 	int index0, index1;
 
-	if (idset->empty)
-		return END_OF_ID;
 	if (idset->lastid >= idset->max)
 		return END_OF_ID;
-	limit = idset->max / INT_BIT + 1;
-	index0 = idset->lastid / INT_BIT;
-	index1 = idset->lastid % INT_BIT;
-	for (i = ++index1; i < INT_BIT; i++)
+	limit = idset->max / LONG_BIT + 1;
+	index0 = idset->lastid / LONG_BIT;
+	index1 = idset->lastid % LONG_BIT;
+	for (i = ++index1; i < LONG_BIT; i++)
 		if (bit[i] & idset->set[index0])
-			return idset->lastid = index0 * INT_BIT + i;
+			return idset->lastid = index0 * LONG_BIT + i;
 	index0++;
 	for (i = index0; i < limit && idset->set[i] == 0; i++)
 		;
 	if (i >= limit)
-		return END_OF_ID;
+		die("idset_next: internal error.");
 	index0 = i;
-	for (i = 0; i < INT_BIT; i++)
+	for (i = 0; i < LONG_BIT; i++)
 		if (bit[i] & idset->set[index0])
-			return idset->lastid = index0 * INT_BIT + i;
+			return idset->lastid = index0 * LONG_BIT + i;
 	die("idset_next: internal error.");
 }
 /*

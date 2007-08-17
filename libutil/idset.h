@@ -23,10 +23,10 @@
 
 typedef struct {
 	unsigned int size;
-	int empty;
+	unsigned int min;		/* (min > max) means idset is empty. */
 	unsigned int max;
 	unsigned int lastid;		/* used by idset_first() and idset_next() */
-	unsigned int *set;
+	unsigned long *set;
 } IDSET;
 
 IDSET *idset_open(unsigned int);
@@ -35,7 +35,7 @@ void idset_add(IDSET *, unsigned int);
 int idset_contains(IDSET *, unsigned int);
 unsigned int idset_first(IDSET *);
 unsigned int idset_next(IDSET *);
-unsigned idset_count(IDSET *);
+unsigned int idset_count(IDSET *);
 void idset_close(IDSET *);
 
 #endif /* ! _IDSET_H_ */
