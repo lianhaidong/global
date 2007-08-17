@@ -22,11 +22,11 @@
 #define END_OF_ID ((unsigned int)(-1))
 
 typedef struct {
-	int size;
+	unsigned int size;
 	int empty;
 	unsigned int max;
-	unsigned int *set;
 	unsigned int lastid;		/* used by idset_first() and idset_next() */
+	unsigned int *set;
 } IDSET;
 
 IDSET *idset_open(unsigned int);

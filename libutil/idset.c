@@ -31,10 +31,8 @@
 #ifndef CHAR_BIT
 #define CHAR_BIT 8
 #endif
-#ifdef INT_BIT
 #undef INT_BIT
-#endif
-int INT_BIT;				/* maybe 32 or 64 */
+#define INT_BIT	(sizeof(int) * CHAR_BIT)	/* maybe 32 or 64 */
 
 /*
 Idset: usage and memory status
@@ -42,13 +40,13 @@ Idset: usage and memory status
 				idset->set
 				[]
 
-idset = idset_open(21)		000000000000000000000000________
+idset = idset_open(21)		000000000000000000000___________
 				 v
-idset_add(idset, 1)		010000000000000000000000________
+idset_add(idset, 1)		010000000000000000000___________
 				  v
-idset_add(idset, 2)		011000000000000000000000________
-				                       v
-idset_add(idset, 20)		011000000000000000001000________
+idset_add(idset, 2)		011000000000000000000___________
+				                    v
+idset_add(idset, 20)		011000000000000000001___________
 
 idset_contains(idset, 2) == true
 idset_contains(idset, 3) == false
@@ -76,7 +74,7 @@ You should define index as an unsigned integer, and use END_OF_ID like follows:
  * bit mask table
  * Prepare all bit mask for performance.
  */
-unsigned int *bit;
+static unsigned int *bit;
 
 /*
  * Allocate memory for new idset.
@@ -88,7 +86,6 @@ idset_open(unsigned int size)
 	int i;
 
 	if (bit == NULL) {
-		INT_BIT = sizeof(unsigned int) * CHAR_BIT;
 		bit = (unsigned int *)check_calloc(sizeof(unsigned int), INT_BIT);
 		for (i = 0; i < INT_BIT; i++)
 			bit[i] = 1 << i;
