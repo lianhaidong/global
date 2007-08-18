@@ -148,7 +148,7 @@ idset_contains(IDSET *idset, unsigned int id)
 		return 0;
 	if (id < idset->min || id > idset->max)
 		return 0;
-	return (idset->set[id / LONG_BIT] & bit[id % LONG_BIT]);
+	return (idset->set[id / LONG_BIT] & bit[id % LONG_BIT]) != 0;
 }
 /*
  * Get first id.
