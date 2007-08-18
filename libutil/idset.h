@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2006 Tama Communications Corporation
+ * Copyright (c) 2005, 2006, 2007 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -19,6 +19,9 @@
 #ifndef _IDSET_H_
 #define _IDSET_H_
 
+/*
+ * Any id is not equal to END_OF_ID.
+ */
 #define END_OF_ID ((unsigned int)(-1))
 
 typedef struct {

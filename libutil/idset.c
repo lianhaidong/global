@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2006 Tama Communications Corporation
+ * Copyright (c) 2005, 2006, 2007 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -33,6 +33,11 @@
 #endif
 #undef LONG_BIT
 #define LONG_BIT	(sizeof(long) * CHAR_BIT)	/* maybe 32 or 64 */
+
+/*
+ * idset->min is initialized to END_OF_ID.
+ */
+#define IS_EMPTY(idset)	 ((idset)->min == END_OF_ID ? 1 : 0)
 
 /*
 Idset: usage and memory status
@@ -106,7 +111,7 @@ idset_open(unsigned int size)
 int
 idset_empty(IDSET *idset)
 {
-	return idset->min > idset->max;
+	return IS_EMPTY(idset);
 }
 /*
  * Add id to the idset.
@@ -117,12 +122,16 @@ idset_empty(IDSET *idset)
 void
 idset_add(IDSET *idset, unsigned int id)
 {
+	int empty = IS_EMPTY(idset);
+
 	if (id >= idset->size)
 		die("idset_add: id is out of range.");
 	idset->set[id / LONG_BIT] |= bit[id % LONG_BIT];
-	if (id > idset->max)
+	if (empty)
+		idset->max = idset->min = id;
+	else if (id > idset->max)
 		idset->max = id;
-	if (id < idset->min)
+	else if (id < idset->min)
 		idset->min = id;
 }
 /*
@@ -135,10 +144,11 @@ idset_add(IDSET *idset, unsigned int id)
 int
 idset_contains(IDSET *idset, unsigned int id)
 {
-	/* When idset is empty,
-	   (idset->min <= id && id <= idset->max) is always 0. */
-	return idset->min <= id && id <= idset->max
-		&& (idset->set[id / LONG_BIT] & bit[id % LONG_BIT]);
+	if (IS_EMPTY(idset))
+		return 0;
+	if (id < idset->min || id > idset->max)
+		return 0;
+	return (idset->set[id / LONG_BIT] & bit[id % LONG_BIT]);
 }
 /*
  * Get first id.
@@ -167,6 +177,8 @@ idset_next(IDSET *idset)
 	unsigned int i, limit;
 	int index0, index1;
 
+	if (IS_EMPTY(idset))
+		return END_OF_ID;
 	if (idset->lastid >= idset->max)
 		return END_OF_ID;
 	limit = idset->max / LONG_BIT + 1;
