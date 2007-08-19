@@ -36,6 +36,7 @@
 
 /*
  * idset->min is initialized to END_OF_ID.
+ * (You may use idset->max instead of idset->min.)
  */
 #define IS_EMPTY(idset)	 ((idset)->min == END_OF_ID ? 1 : 0)
 
@@ -97,9 +98,11 @@ idset_open(unsigned int size)
 	}
 	idset->set = (unsigned long *)check_calloc(sizeof(unsigned long), (size + LONG_BIT - 1) / LONG_BIT);
 	idset->size = size;
-	idset->min = END_OF_ID;
-	idset->max = 0;
-	idset->lastid = END_OF_ID;
+	/*
+	 * Initialize all id expressions using invalid value.
+	 * END_OF_ID means 'no value' or 'out of range'.
+	 */
+	idset->min = idset->max = idset->lastid = END_OF_ID;
 	return idset;
 }
 /*
