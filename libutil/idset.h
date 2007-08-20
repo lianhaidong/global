@@ -26,7 +26,7 @@
 
 typedef struct {
 	unsigned int size;
-	unsigned int min;		/* (min > max) means idset is empty. */
+	unsigned int min;
 	unsigned int max;
 	unsigned int lastid;		/* used by idset_first() and idset_next() */
 	unsigned long *set;
