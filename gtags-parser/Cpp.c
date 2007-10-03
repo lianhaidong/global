@@ -190,10 +190,15 @@ Cpp(const char *file)
 			DBG_PRINT(level, "class");
 			if ((c = nexttoken(interested, cpp_reserved_word)) == SYMBOL) {
 				strlimcpy(classname, token, sizeof(classname));
-				if (target == DEF)
-					PUT(token, lineno, sp);
-				if (peekc(0) != ';')
+				/*
+				 * Ignore forward definitions.
+				 * "class name;"
+				 */
+				if (peekc(0) != ';') {
 					startclass = 1;
+					if (target == DEF)
+						PUT(token, lineno, sp);
+				}
 			}
 			break;
 		case '{':  /* } */
