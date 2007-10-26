@@ -250,7 +250,7 @@ pushbacktoken(void)
  *
  *	i)	immediate	0: ignore blank, 1: include blank
  *
- * Peekc() read ahead following blanks but doesn't chage line.
+ * Peekc() read ahead following blanks but doesn't change line.
  */
 int
 peekc(int immediate)
