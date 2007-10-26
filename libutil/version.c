@@ -52,9 +52,15 @@ version(const char *name, const int verbose)
 {
 	if (name == NULL)
 		name = progname;
-	/* always verbose according to the GNU coding standard */
-	/* fprintf(stdout, "%s\n", VERSION); */
-	fprintf(stdout, "%s - %s\n", name, PACKAGE_STRING);
-	fprintf(stdout, "%s", copy);
+	/*
+	 * if the -q option is not specified then always verbose
+	 * according to the GNU coding standard
+	 */
+	if (qflag)
+		fprintf(stdout, "%s\n", VERSION);
+	else {
+		fprintf(stdout, "%s - %s\n", name, PACKAGE_STRING);
+		fprintf(stdout, "%s", copy);
+	}
 	exit(0);
 }

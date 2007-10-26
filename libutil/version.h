@@ -21,6 +21,7 @@
 #define _VERSION_H_
 
 extern const char *progname;
+extern int qflag;
 
 char *get_version(void);
 void version(const char *, const int);
