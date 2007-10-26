@@ -59,6 +59,7 @@ static void search(int, const char *);
 
 int show_version;
 int show_help;
+int qflag;
 int vflag;
 
 #define NA	-1
@@ -81,6 +82,7 @@ help(void)
 
 static struct option const long_options[] = {
 	{"ignore-case", no_argument, NULL, 'C'},
+	{"quiet", no_argument, NULL, 'q'},
 	{"verbose", no_argument, NULL, 'v'},
 	{"version", no_argument, &show_version, 1},
 	{"help", no_argument, &show_help, 1},
@@ -131,6 +133,9 @@ main(int argc, char **argv)
 			break;
 		case 'C':
 			ignore_case = 1;
+			break;
+		case 'q':
+			qflag++;
 			break;
 		case 'v':
 			vflag++;

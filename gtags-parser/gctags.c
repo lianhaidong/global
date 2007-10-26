@@ -59,6 +59,7 @@ int bflag;			/* -b: force level 1 block start */
 int dflag;			/* -d: treat #define with no argument */
 int eflag;			/* -e: force level 1 block end */
 int nflag;			/* -n: doen't print tag */
+int qflag;			/* -q: quiet mode */
 int rflag;			/* -r: function reference */
 int sflag;			/* -s: collect symbols */
 int tflag;			/* -t: treat typedefs, structs, unions, and enums. */
@@ -137,6 +138,7 @@ static struct option const long_options[] = {
 	{"define", no_argument, NULL, 'd'},
 	{"end-block", no_argument, NULL, 'e'},
 	{"no-tags", no_argument, NULL, 'n'},
+	{"quiet", no_argument, NULL, 'q'},
 	{"reference", no_argument, NULL, 'r'},
 	{"symbol", no_argument, NULL, 's'},
 	{"typedef", no_argument, NULL, 't'},
@@ -158,7 +160,7 @@ main(int argc, char **argv)
 	int optchar;
 	int option_index = 0;
 
-	while ((optchar = getopt_long(argc, argv, "bdenrstvw", long_options, &option_index)) != EOF) {
+	while ((optchar = getopt_long(argc, argv, "bdenqrstvw", long_options, &option_index)) != EOF) {
 		switch(optchar) {
 		case 0:
 			p = (char *)long_options[option_index].name;
@@ -176,6 +178,9 @@ main(int argc, char **argv)
 			break;
 		case 'n':
 			nflag++;
+			break;
+		case 'q':
+			qflag++;
 			break;
 		case 'r':
 			rflag++;
