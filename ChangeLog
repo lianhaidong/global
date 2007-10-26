@@ -19,6 +19,13 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+October 26 2007, by Shigio YAMAGUCHI
+
+	* Added file 'DONORS' which includes the list of donations to GNU GLOBAL.
+	* Idset module: Performance improvement of idset module by using "unsigned long"
+	  instead of "unsigned int" for bitmask. This is necessary to use 64 bit processor
+	  effectively.
+
 July 6 2007, by Shigio YAMAGUCHI
 
 	* Migrated to GPLv3 and LGPLv3.
