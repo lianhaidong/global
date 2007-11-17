@@ -50,7 +50,7 @@ Giuseppe Corbelli	Global.py for glimmer code editor and an advice about vim.
 Hageseter, Trond E.	bug report about gtags-parser.
 Hendrik Visage		bug report about gtags-parser(here document of PHP).
 Hideaki Okada		idea about -g option of global(1).
-Hideki Iwamoto		many bug reports and improvements about gtags-parser(1), htags(1).
+Hideki Iwamoto		many bug reports, fixes  and improvements about GLOBAL. See also AUTHORS file.
 Hideki Mori		advice about the name of parser.
 Hidetaka KOIE		bug report and advice about configure.in for Solaris7.
 Hiroshi MIURA		idea about printing file name on browser's status bar.
@@ -90,6 +90,7 @@ Ray Simard		detailed investigation about POSIX dirent(3).
 Richard Stallman	advice about gtags.el and GNU style packaging.
 Rob Fitzgerald		bug fix patch for global(1).
 Ron Lee			Debian package, htmake(1) and many bug reports.
+Rongsong Shen		bug report about the gtags(1)'s trouble.
 Rui Lopes		report about build error in *BSD and revision of term.
 Ruppert Koch		bug report about htags(1).
 Sadaichi Hayashida	idea about generating relative path.
