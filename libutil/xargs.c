@@ -140,13 +140,13 @@ repeat_find_next(void)
 #endif
 #define APPEND_ARGUMENT(p) {\
 	char *path = (p);\
-	length = strlen(path) + 2;\
+	length = strlen(path);\
 	if (*path == ' ') {\
 		if (xp->put_gpath && !test("b", ++path))\
 			gpath_put(path, GPATH_OTHER);\
 		continue;\
 	}\
-	if (strbuf_getlen(comline) + length > limit)\
+	if (strbuf_getlen(comline) + length + 2 > limit)\
 		break;\
 	xp->seqno++;\
 	if (xp->put_gpath)\
