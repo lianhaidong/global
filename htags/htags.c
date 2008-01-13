@@ -514,16 +514,7 @@ makebless(const char *file)
 static void
 makeghtml(const char *cgidir, const char *file)
 {
-	FILE *op;
-
-	op = fopen(makepath(cgidir, file, NULL), "w");
-	if (!op)
-		die("cannot make unzip script.");
-	fputs_nl("#!/bin/sh", op);
-	fputs_nl("echo \"content-type: text/html\"", op);
-	fputs_nl("echo", op);
-	fprintf(op, "gzip -S %s -d -c \"$PATH_TRANSLATED\"\n", HTML);
-        fclose(op);
+	generate_file(cgidir, file);
 }
 /*
  * makerebuild: make rebuild script
