@@ -1,6 +1,31 @@
 #! @PERL@
+#------------------------------------------------------------------
+# YOU ARE COMING TO THE DESTINATION ALMOST. PLEASE DO A LITTLE EFFORT.
 #
-# Copyright (c) 1997, 2004, 2006 Tama Communications Corporation
+# How to setup search form of htags
+# =================================
+#
+# You must setup HTTP server so that this script can be executed
+# as a CGI script. This setup depends on the HTTP server which you
+# are using.
+#
+# If you are using Apache HTTP Server [http://httpd.apache.org/],
+# you may set it up by adding an entry to the configuration file
+# [http.conf] like follows:
+#
+# +-----------------------------------------
+# |...
+# |<Directory /usr/local/apache/htdocs/tour> <= depends your environment
+# |    Options +ExecCGI
+# |    AddHandler cgi-script .cgi
+# |</Directory>
+# |...
+# +-----------------------------------------
+#
+# If you are using other systems, please consult the manuals.
+#------------------------------------------------------------------
+#
+# Copyright (c) 1997, 2004, 2006, 2008 Tama Communications Corporation
 #
 # This file is free software; as a special exception the author gives
 # unlimited permission to copy and/or distribute it, with or without
@@ -10,12 +35,6 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
-#------------------------------------------------------------------
-# SORRY TO HAVE SURPRISED YOU!
-# IF YOU SEE THIS UNREASONABLE FILE WHILE BROUSING, FORGET PLEASE.
-# IF YOU ARE A ADMINISTRATOR OF THIS SITE, PLEASE SETUP HTTP SERVER
-# SO THAT THIS SCRIPT CAN BE EXECUTED AS A CGI COMMAND. THANK YOU.
-#------------------------------------------------------------------
 print "Content-type: text/html\n\n";
 print "@page_begin@\n";
 print "@body_begin@\n";
@@ -169,9 +188,3 @@ print "@hr@\n";
 print "@body_end@\n";
 print "@page_end@\n";
 exit 0;
-#------------------------------------------------------------------
-# SORRY TO HAVE SURPRISED YOU!
-# IF YOU SEE THIS UNREASONABLE FILE WHILE BROUSING, FORGET PLEASE.
-# IF YOU ARE A ADMINISTRATOR OF THIS SITE, PLEASE SETUP HTTP SERVER
-# SO THAT THIS SCRIPT CAN BE EXECUTED AS A CGI COMMAND. THANK YOU.
-#------------------------------------------------------------------
