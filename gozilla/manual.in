@@ -56,20 +56,20 @@
 		with @option{-l} option, you can specify any line.
 	@item{@option{-b} @arg{browser}}
 		browser to use. By default, it is assumed @name{mozilla}.
+	@item{@option{-d} @arg{name}}
+		print function.
+	@item{@option{--help}}
+		Show help.
 	@item{@option{-p}}
 		just print generated target URL.
 	@item{@arg{file}}
 		path of source file or alias name.
-	@item{@option{-d} @arg{name}}
-		print function.
 	@item{@option{-q}, @option{--quiet}}
 		Quiet mode.
 	@item{@option{-v}, @option{--verbose}}
 		Verbose mode.
 	@item{@option{--version}}
 		Show version number.
-	@item{@option{--help}}
-		Show help.
 	@end_itemize
 @FILES
 	@begin_itemize
