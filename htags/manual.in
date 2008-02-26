@@ -45,6 +45,8 @@
 	If you use the default parser, it is not necessary to consider for it.
 
 @OPTIONS
+	If you are new on htags, it is recommended to invoke with the @option{--suggest} option.
+	With the option, @name{htags} use popular options instead of you.@br
 	The following options are available:
 	@begin_itemize
 	@item{@option{-a}, @option{--alphabet}}
@@ -132,6 +134,9 @@
 		@file{GSYMS} tag file needed.
 	@item{@option{--statistics}}
 		Print statistics information.
+	@item{@option{--suggest}}
+		@name{Htags} selects popular options instead of beginners.
+                It is equivalent to '-afghInosTxv --show-position' now.
 	@item{@option{-T}, @option{--table-flist}[=@arg{fields}]}
 		Generate file list using <table> tag.
 		The @arg{fields} is used for field number in a line. The default is 5.
@@ -162,6 +167,8 @@
 	$ gtags -v
 	$ htags -sanohITvt 'Welcom to XXX source tour!'
 	$ firefox HTML/index.html
+
+	$ htags --suggest
 
 @FILES
 	@begin_itemize

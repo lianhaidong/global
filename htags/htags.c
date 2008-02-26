@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005,
- *      2006, 2007 Tama Communications Corporation
+ *      2006, 2007, 2008 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -115,6 +115,7 @@ int show_version;			/* --version command		*/
 int caution;				/* --caution option		*/
 int dynamic;				/* --dynamic(-D) option		*/
 int symbol;				/* --symbol(-s) option          */
+int suggest;				/* --suggest option		*/
 int statistics;				/* --statistics option		*/
 
 int copy_files;				/* 1: copy tag files		*/
@@ -277,6 +278,7 @@ static struct option const long_options[] = {
         {"nocgi", no_argument, &cgi, 0},
         {"no-map-file", no_argument, &map_file, 0},
         {"statistics", no_argument, &statistics, 1},
+        {"suggest", no_argument, &suggest, 1},
         {"table-list", no_argument, &table_list, 1},
         {"version", no_argument, &show_version, 1},
         {"help", no_argument, &show_help, 1},
@@ -1578,6 +1580,30 @@ main(int argc, char **argv)
                         usage();
                         break;
 		}
+	}
+	/*
+	 * Leaving everything to htags.
+	 * Htags selects the most popular options for you.
+	 * Htags likes busy screen but dislikes frameed screen.
+	 * You may want to invoke htags with "htags --leave --frame".
+	 * Htags also make tag files if not found.
+	 */
+	if (suggest) {
+		int gtags_not_found = 0;
+
+		aflag = fflag = Iflag = nflag = vflag = 1;
+		setverbose();
+		definition_header = AFTER_HEADER;
+		other_files = symbol = enable_xhtml = show_position = table_flist = 1;
+		if (arg_dbpath[0]) {
+			if (!test("f", makepath(arg_dbpath, dbname(GTAGS), NULL)))
+				gtags_not_found = 1;
+		} else {
+			if (!test("f", dbname(GTAGS)))
+				gtags_not_found = 1;
+		}
+		if (gtags_not_found)
+			gflag = 1;
 	}
 	if (insert_header && !test("fr", insert_header))
 		die("page header file '%s' not found.", insert_header);
