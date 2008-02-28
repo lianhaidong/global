@@ -825,7 +825,6 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 {
 	CONVERT *cv;
 	char rootdir[MAXPATHLEN+1];
-	STATIC_STRBUF(dir);
 	int count = 0;
 	STRBUF *comline = strbuf_open(0);
 	STRBUF *path_list = strbuf_open(MAXPATHLEN);

@@ -189,7 +189,7 @@ char *
 normalize_pathname(const char *path, char *result, const int size)
 {
 	const char *savep, *p = path;
-	char *final, *q = result;;
+	char *final, *q = result;
 	char *endp = result + size - 1;
 
 	/* accept the first '/' */
@@ -213,7 +213,7 @@ normalize_pathname(const char *path, char *result, const int size)
 	final = q;
 	while (*p) {
 		if (*p == '/') {
-			int head = (p++ == path);
+			p++;
 			do {
 				savep = p;
 				/* skip consecutive '/' */
