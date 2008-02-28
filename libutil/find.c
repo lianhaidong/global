@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2005, 2006
+ * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2005, 2006, 2008
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -359,25 +359,14 @@ getdirs(const char *dir, STRBUF *sb)
 			continue;
 		if (!strcmp(dp->d_name, ".."))
 			continue;
-#ifdef HAVE_LSTAT
-		if (lstat(makepath(dir, dp->d_name, NULL), &st) < 0) {
-			warning("cannot lstat '%s'. (Ignored)", dp->d_name);
-			continue;
-		}
-#else
 		if (stat(makepath(dir, dp->d_name, NULL), &st) < 0) {
 			warning("cannot stat '%s'. (Ignored)", dp->d_name);
 			continue;
 		}
-#endif
 		if (S_ISDIR(st.st_mode))
 			strbuf_putc(sb, 'd');
 		else if (S_ISREG(st.st_mode))
 			strbuf_putc(sb, 'f');
-#ifdef S_ISLNK
-		else if (S_ISLNK(st.st_mode))
-			strbuf_putc(sb, 'l');
-#endif
 		else
 			strbuf_putc(sb, ' ');
 		strbuf_puts(sb, dp->d_name);
@@ -502,7 +491,7 @@ find_read_traverse(void)
 			const char *unit = curp->p + 1;
 
 			curp->p += strlen(curp->p) + 1;
-			if (type == 'f' || type == 'l') {
+			if (type == 'f') {
 				char path[MAXPATHLEN];
 
 				/* makepath() returns unsafe module local area. */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002 Tama Communications Corporation
+ * Copyright (c) 2002, 2008 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -22,5 +22,6 @@
 
 char *abs2rel(const char *, const char *, char *, const int);
 char *rel2abs(const char *, const char *, char *, const int);
+char *normalize_pathname(const char *, char *, const int);
 
 #endif /* ! _RELATIVE_H_ */

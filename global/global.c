@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005, 2006,
- *	2007 Tama Communications Corporation
+ *	2007, 2008 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -794,13 +794,37 @@ pathlist(const char *pattern, const char *dbpath)
  *	i)	dbpath	dbpath
  *	i)	db	type of parse
  */
+char *
+normalize(const char *path, const char *rootdir, char *result, const int size)
+{
+	char *p, abs[MAXPATHLEN+1];
+
+	if (normalize_pathname(path, result, size) == NULL)
+		die("Path name is too long.");
+	if (*path == '/') {
+		if (strlen(result) > MAXPATHLEN)
+			die("path name is too long.");
+		strcpy(abs, result);
+	} else {
+		if (rel2abs(result, cwd, abs, sizeof(abs)) == NULL)
+			die("path name is too long.");
+	}
+	/*
+	 * Remove the root part of path and insert './'.
+	 *      rootdir  /a/b/
+	 *      path     /a/b/c/d.c -> c/d.c -> ./c/d.c
+	 */
+	p = locatestring(abs, rootdir, MATCH_AT_FIRST);
+	if (p == NULL)
+		return NULL;
+	snprintf(result, size, "./%s", p);
+	return result;
+}
 void
 parsefile(int argc, char **argv, const char *cwd, const char *root, const char *dbpath, int db)
 {
 	CONVERT *cv;
 	char rootdir[MAXPATHLEN+1];
-	char buf[MAXPATHLEN+1], *path;
-	const char *basename;
 	STATIC_STRBUF(dir);
 	int count = 0;
 	STRBUF *comline = strbuf_open(0);
@@ -836,57 +860,27 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 	 */
 	for (; argc > 0; argv++, argc--) {
 		const char *av = argv[0];
+		char path[MAXPATHLEN+1];
 
-		if (!test("f", av)) {
-			if (test("d", av)) {
+		/*
+		 * convert path into relative from root directory of source tree.
+		 */
+		if (normalize(av, rootdir, path, sizeof(path)) == NULL)
+			if (!qflag)
+				fprintf(stderr, "'%s' is out of source tree.\n", path);
+		if (!gpath_path2fid(path, NULL)) {
+			if (!qflag)
+				fprintf(stderr, "'%s' not found in GPATH.\n", path);
+			continue;
+		}
+		if (!test("f", makepath(rootdir, path, NULL))) {
+			if (test("d", NULL)) {
 				if (!qflag)
 					fprintf(stderr, "'%s' is a directory.\n", av);
 			} else {
 				if (!qflag)
 					fprintf(stderr, "'%s' not found.\n", av);
 			}
-			continue;
-		}
-		/*
-		 * convert path into relative from root directory of source tree.
-		 */
-		strbuf_clear(dir);
-		basename = locatestring(av, "/", MATCH_LAST);
-		if (basename != NULL) {
-			strbuf_nputs(dir, av, basename - av);
-			basename++;
-		} else {
-			strbuf_putc(dir, '.');
-			basename = av;
-		}
-		/*
-		 * Expand symlink only in directory part.
-		 */
-		path = realpath(strbuf_value(dir), buf);
-		if (path == NULL)
-			die("realpath(%s, buf) failed. (errno=%d).", strbuf_value(dir), errno);
-		if (!isabspath(path))
-			die("realpath(3) is not compatible with BSD version.");
-		if (strcmp(path, "/") != 0)
-			strcat(path, "/");
-		strcat(path, basename);
-		/*
-		 * Remove the root part of path and insert './'.
-		 *      rootdir  /a/b/
-		 *      path     /a/b/c/d.c -> c/d.c -> ./c/d.c
-		 */
-		path = locatestring(path, rootdir, MATCH_AT_FIRST);
-		if (path == NULL) {
-			if (!qflag)
-				fprintf(stderr, "'%s' is out of source tree.\n", buf);
-			continue;
-		}
-		/* normalize path name */
-		path -= 2;
-		*path = '.';
-		if (!gpath_path2fid(path, NULL)) {
-			if (!qflag)
-				fprintf(stderr, "'%s' not found in GPATH.\n", path);
 			continue;
 		}
 		if (lflag && !locatestring(path, localprefix, MATCH_AT_FIRST))
