@@ -47,6 +47,8 @@
 static void usage(void);
 static void help(void);
 static void setcom(int);
+char *normalize(const char *, const char *, char *, const int);
+int decide_tag_by_context(const char *, const char *, const char *);
 int main(int, char **);
 void completion(const char *, const char *, const char *);
 void idutils(const char *, const char *);
@@ -59,6 +61,7 @@ void encode(char *, int, const char *);
 
 const char *localprefix;		/* local prefix		*/
 int aflag;				/* [option]		*/
+int Cflag;				/* [option]		*/
 int cflag;				/* command		*/
 int fflag;				/* command		*/
 int gflag;				/* command		*/
@@ -89,6 +92,8 @@ int type;				/* path conversion type */
 char cwd[MAXPATHLEN+1];			/* current directory	*/
 char root[MAXPATHLEN+1];		/* root of source tree	*/
 char dbpath[MAXPATHLEN+1];		/* dbpath directory	*/
+char *context_file;
+char *context_lineno;
 
 static void
 usage(void)
@@ -112,6 +117,7 @@ help(void)
 
 static struct option const long_options[] = {
 	{"absolute", no_argument, NULL, 'a'},
+	{"context", required_argument, NULL, 'C'},
 	{"completion", no_argument, NULL, 'c'},
 	{"regexp", required_argument, NULL, 'e'},
 	{"file", no_argument, NULL, 'f'},
@@ -153,6 +159,95 @@ setcom(int c)
 	else if (command != c)
 		usage();
 }
+/*
+ * normalize: normalize path name
+ *
+ *	i)	path	path name
+ *	i)	root	root of project
+ *	o)	result	normalized path name
+ *	i)	size	size of the result
+ *	r)		==NULL: error
+ *			!=NULL: result
+ */
+char *
+normalize(const char *path, const char *root, char *result, const int size)
+{
+	char *p, abs[MAXPATHLEN+1];
+
+	if (normalize_pathname(path, result, size) == NULL)
+		die("Path name is too long.");
+	if (*path == '/') {
+		if (strlen(result) > MAXPATHLEN)
+			die("path name is too long.");
+		strcpy(abs, result);
+	} else {
+		if (rel2abs(result, cwd, abs, sizeof(abs)) == NULL)
+			die("path name is too long.");
+	}
+	/*
+	 * Remove the root part of path and insert './'.
+	 *      rootdir  /a/b/
+	 *      path     /a/b/c/d.c -> c/d.c -> ./c/d.c
+	 */
+	p = locatestring(abs, root, MATCH_AT_FIRST);
+	if (p == NULL || *p != '/')
+		return NULL;
+	snprintf(result, size, ".%s", p);
+	return result;
+}
+/*
+ * decide_tag_by_context: decide tag type by context
+ *
+ *	i)	tag	tag name
+ *	i)	file	context file
+ *	i)	lineno	context lineno
+ *	r)		GTAGS, GRTAGS, GSYMS
+ */
+int
+decide_tag_by_context(const char *tag, const char *file, const char *lineno)
+{
+	char path[MAXPATHLEN+1], s_fid[32];
+	const char *tagline, *p;
+	DBOP *dbop;
+	int db = GSYMS;
+
+	if (normalize(file, root, path, sizeof(path)) == NULL)
+		die("path name is too long.");
+	/*
+	 * get file id
+	 */
+	if (gpath_open(dbpath, 0) < 0)
+		die("GPATH not found.");
+	if ((p = gpath_path2fid(path, NULL)) == NULL)
+		die("path name in the context is not found.");
+	strlimcpy(s_fid, p, sizeof(s_fid));
+	gpath_close();
+	/*
+	 * read btree records directly to avoid the overhead.
+	 */
+	dbop = dbop_open(makepath(dbpath, dbname(GTAGS), NULL), 0, 0, 0);
+	tagline = dbop_first(dbop, tag, NULL, 0);
+	if (tagline)
+		db = GTAGS;
+	for (; tagline; tagline = dbop_next(dbop)) {
+		/*
+		 * examine whether the definition record include the context.
+		 */
+		p = locatestring(tagline, s_fid, MATCH_AT_FIRST);
+		if (p != NULL && *p == ' ') {
+			for (p++; *p && *p != ' '; p++)
+				;
+			if (*p++ != ' ')
+				die("Impossible!");
+			if ((p = locatestring(p, lineno, MATCH_AT_FIRST)) != NULL && *p == ' ') {
+				db = GRTAGS;
+				break;
+			}
+		}
+	}
+        dbop_close(dbop);
+	return db;
+}
 int
 main(int argc, char **argv)
 {
@@ -161,12 +256,29 @@ main(int argc, char **argv)
 	int optchar;
 	int option_index = 0;
 
-	while ((optchar = getopt_long(argc, argv, "ace:ifgGIlnoOpPqrstTuvx", long_options, &option_index)) != EOF) {
+	while ((optchar = getopt_long(argc, argv, "aC:ce:ifgGIlnoOpPqrstTuvx", long_options, &option_index)) != EOF) {
 		switch (optchar) {
 		case 0:
 			break;
 		case 'a':
 			aflag++;
+			break;
+		case 'C':
+			{
+			char *p = optarg;
+			const char *usage = "usage: global --context=lineno:path.";
+
+			context_lineno = p;
+			while (*p && isdigit(*p))
+				p++;
+			if (*p != ':')
+				die_with_code(2, usage);
+			*p++ = '\0';
+			if (!*p)
+				die_with_code(2, usage);
+			context_file = p;
+			Cflag++;
+			}
 			break;
 		case 'c':
 			cflag++;
@@ -402,7 +514,13 @@ main(int argc, char **argv)
 	/*
 	 * decide tag type.
 	 */
-	db = (rflag) ? GRTAGS : ((sflag) ? GSYMS : GTAGS);
+	if (Cflag) {
+		if (isregex(av))
+			die_with_code(2, "regular expression is not allowed with the --context option.");
+		db = decide_tag_by_context(av, context_file, context_lineno);
+	} else {
+		db = (rflag) ? GRTAGS : ((sflag) ? GSYMS : GTAGS);
+	}
 	/*
 	 * decide format.
 	 * The --result option is given to priority more than the -t and -x option.
@@ -794,44 +912,16 @@ pathlist(const char *pattern, const char *dbpath)
  *	i)	dbpath	dbpath
  *	i)	db	type of parse
  */
-char *
-normalize(const char *path, const char *rootdir, char *result, const int size)
-{
-	char *p, abs[MAXPATHLEN+1];
-
-	if (normalize_pathname(path, result, size) == NULL)
-		die("Path name is too long.");
-	if (*path == '/') {
-		if (strlen(result) > MAXPATHLEN)
-			die("path name is too long.");
-		strcpy(abs, result);
-	} else {
-		if (rel2abs(result, cwd, abs, sizeof(abs)) == NULL)
-			die("path name is too long.");
-	}
-	/*
-	 * Remove the root part of path and insert './'.
-	 *      rootdir  /a/b/
-	 *      path     /a/b/c/d.c -> c/d.c -> ./c/d.c
-	 */
-	p = locatestring(abs, rootdir, MATCH_AT_FIRST);
-	if (p == NULL)
-		return NULL;
-	snprintf(result, size, "./%s", p);
-	return result;
-}
 void
 parsefile(int argc, char **argv, const char *cwd, const char *root, const char *dbpath, int db)
 {
 	CONVERT *cv;
-	char rootdir[MAXPATHLEN+1];
 	int count = 0;
 	STRBUF *comline = strbuf_open(0);
 	STRBUF *path_list = strbuf_open(MAXPATHLEN);
 	XARGS *xp;
 	char *ctags_x;
 
-	snprintf(rootdir, sizeof(rootdir), "%s/", root);
 	/*
 	 * teach parser where is dbpath.
 	 */
@@ -864,7 +954,7 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 		/*
 		 * convert path into relative from root directory of source tree.
 		 */
-		if (normalize(av, rootdir, path, sizeof(path)) == NULL)
+		if (normalize(av, root, path, sizeof(path)) == NULL)
 			if (!qflag)
 				fprintf(stderr, "'%s' is out of source tree.\n", path);
 		if (!gpath_path2fid(path, NULL)) {
@@ -872,7 +962,7 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 				fprintf(stderr, "'%s' not found in GPATH.\n", path);
 			continue;
 		}
-		if (!test("f", makepath(rootdir, path, NULL))) {
+		if (!test("f", makepath(root, path, NULL))) {
 			if (test("d", NULL)) {
 				if (!qflag)
 					fprintf(stderr, "'%s' is a directory.\n", av);

@@ -1,6 +1,6 @@
 #
 # Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2006
-#	Tama Communications Corporation
+#	2008, Tama Communications Corporation
 #
 # This file is part of GNU GLOBAL.
 #
@@ -85,6 +85,13 @@
 	@begin_itemize
 	@item{@option{-a}, @option{--absolute}}
 		Print absolute path name. By default, print relative path name.
+	@item{@option{-C}, @option{--context} @arg{context}}
+		Decide tag type by the context. The @arg{context} must be 'lineno:path'.
+		If this option is specified then the @option{-s} and the @option{-r}
+		are ignored.
+		Regular expression is not allowed in @arg{pattern} with this option.	
+		This option is assumes use in conversational environments such as
+		editors and IDEs.
 	@item{@option{-e}, @option{--regexp} @arg{pattern}}
 		Use @arg{pattern} as the pattern; useful to protect  patterns
 		beginning with -.
