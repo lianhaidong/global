@@ -1,7 +1,8 @@
 ;;; gtags.el --- gtags facility for Emacs
 
 ;;
-;; Copyright (c) 1997, 1998, 1999, 2000, 2006, 2007 Tama Communications Corporation
+;; Copyright (c) 1997, 1998, 1999, 2000, 2006, 2007, 2008
+;;	Tama Communications Corporation
 ;;
 ;; This file is part of GNU GLOBAL.
 ;;
@@ -21,8 +22,9 @@
 
 ;; GLOBAL home page is at: http://www.gnu.org/software/global/
 ;; Author: Tama Communications Corporation
-;; Version: 2.3
+;; Version: 2.4
 ;; Keywords: tools
+;; Required version: GLOBAL 5.6.3 or later
 
 ;; Gtags-mode is implemented as a minor mode so that it can work with any
 ;; other major modes. Gtags-select mode is implemented as a major mode.
@@ -161,32 +163,15 @@
 (defun gtags-exist-in-stack (buffer)
   (memq buffer gtags-buffer-stack))
 
-;; is it a function?
-(defun gtags-is-function ()
-  (save-excursion
-    (while (and (not (eolp)) (looking-at "[0-9A-Za-z_]"))
-      (forward-char 1))
-    (while (and (not (eolp)) (looking-at "[ \t]"))
-      (forward-char 1))
-    (if (looking-at "(") t nil)))
-
-;; is it a definition?
-(defun gtags-is-definition ()
-  (save-excursion
-    (if (and (string-match "\.java$" buffer-file-name) (looking-at "[^(]+([^)]*)[ \t]*{"))
-	t
-      (if (bolp)
-	  t
-        (forward-word -1)
-        (cond
-         ((looking-at "define")
-	  (forward-char -1)
-	  (while (and (not (bolp)) (looking-at "[ \t]"))
-	    (forward-char -1))
-	  (if (and (bolp) (looking-at "#"))
-	      t nil))
-         ((looking-at "ENTRY\\|ALTENTRY")
-	  (if (bolp) t nil)))))))
+;; get current line number
+(defun gtags-current-lineno ()
+  (if (= 0 (count-lines (point-min) (point-max)))
+      0
+    (save-excursion
+      (end-of-line)
+      (if (equal (point-min) (point))
+          1
+        (count-lines (point-min) (point))))))
 
 ;; completsion function for completing-read.
 (defun gtags-completing-gtags (string predicate code)
@@ -327,27 +312,17 @@
   (interactive)
   (let (tagname flag)
     (setq tagname (gtags-current-token))
-    (if (gtags-is-function)
-        (if (gtags-is-definition) (setq flag "r") (setq flag ""))
-      (setq flag "s"))
     (if (not tagname)
         nil
       (gtags-push-context)
-      (gtags-goto-tag tagname flag))))
+      (gtags-goto-tag tagname "C"))))
 
 ; This function doesn't work with mozilla.
 ; But I will support it in the near future.
 (defun gtags-display-browser ()
   "Display current screen on hypertext browser."
   (interactive)
-  (let (lno)
-    (if (= 0 (count-lines (point-min) (point-max))) nil
-    (save-excursion
-      (end-of-line)
-      (if (equal (point-min) (point))
-          (setq lno 1)
-        (setq lno (count-lines (point-min) (point)))))
-    (call-process "gozilla"  nil nil nil (concat "+" (number-to-string lno)) buffer-file-name))))
+  (call-process "gozilla"  nil nil nil (concat "+" (number-to-string (gtags-current-lineno))) buffer-file-name))
 
 ; Private event-point
 ; (If there is no event-point then we use this version.
@@ -361,15 +336,15 @@
   (interactive "e")
   (let (tagname flag)
     (if (= 0 (count-lines (point-min) (point-max)))
-        (progn (setq tagname "main") (setq flag ""))
-      (if gtags-running-xemacs (goto-char (event-point event))
-       (select-window (posn-window (event-end event)))
+        (progn (setq tagname "main")
+               (setq flag ""))
+      (if gtags-running-xemacs
+          (goto-char (event-point event))
+        (select-window (posn-window (event-end event)))
         (set-buffer (window-buffer (posn-window (event-end event))))
         (goto-char (posn-point (event-end event))))
       (setq tagname (gtags-current-token))
-      (if (gtags-is-function)
-          (if (gtags-is-definition) (setq flag "r") (setq flag ""))
-        (setq flag "s")))
+      (setq flag "C"))
     (if (not tagname)
         nil
       (gtags-push-context)
@@ -428,11 +403,16 @@
 
 ;; goto tag's point
 (defun gtags-goto-tag (tagname flag)
-  (let (option save prefix buffer lines)
+  (let (option context save prefix buffer lines)
     (setq save (current-buffer))
     ; Use always ctags-x format.
-    (setq option (concat "-x" flag))
+    (setq option "-x")
+    (if (equal flag "C")
+        (setq context (concat "--context=" (number-to-string (gtags-current-lineno)) ":" buffer-file-name))
+        (setq option (concat option flag)))
     (cond
+     ((equal flag "C")
+      (setq prefix "(CONTEXT)"))
      ((equal flag "P")
       (setq prefix "(P)"))
      ((equal flag "g")
@@ -455,7 +435,9 @@
         (cd gtags-rootdir)
         (setq option (concat option "a"))) 
     (message "Searching %s ..." tagname)
-    (if (not (= 0 (call-process "global" nil t nil option tagname)))
+    (if (not (= 0 (if (equal flag "C")
+                      (call-process "global" nil t nil option context tagname)
+                      (call-process "global" nil t nil option tagname))))
 	(progn (message (buffer-substring (point-min)(1- (point-max))))
                (gtags-pop-context))
       (goto-char (point-min))
