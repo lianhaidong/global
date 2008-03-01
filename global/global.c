@@ -175,14 +175,14 @@ normalize(const char *path, const char *root, char *result, const int size)
 	char *p, abs[MAXPATHLEN+1];
 
 	if (normalize_pathname(path, result, size) == NULL)
-		die("Path name is too long.");
+		goto toolong;
 	if (*path == '/') {
 		if (strlen(result) > MAXPATHLEN)
-			die("path name is too long.");
+			goto toolong;
 		strcpy(abs, result);
 	} else {
 		if (rel2abs(result, cwd, abs, sizeof(abs)) == NULL)
-			die("path name is too long.");
+			goto toolong;
 	}
 	/*
 	 * Remove the root part of path and insert './'.
@@ -194,6 +194,8 @@ normalize(const char *path, const char *root, char *result, const int size)
 		return NULL;
 	snprintf(result, size, ".%s", p);
 	return result;
+toolong:
+	die("path name is too long.");
 }
 /*
  * decide_tag_by_context: decide tag type by context
@@ -212,7 +214,7 @@ decide_tag_by_context(const char *tag, const char *file, const char *lineno)
 	int db = GSYMS;
 
 	if (normalize(file, root, path, sizeof(path)) == NULL)
-		die("path name is too long.");
+		die("'%s' is out of source tree.", file);
 	/*
 	 * get file id
 	 */
@@ -952,7 +954,7 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 		char path[MAXPATHLEN+1];
 
 		/*
-		 * convert path into relative from root directory of source tree.
+		 * convert the path into relative from the root directory of source tree.
 		 */
 		if (normalize(av, root, path, sizeof(path)) == NULL)
 			if (!qflag)
