@@ -23,11 +23,6 @@ GNU GLOBAL source code tag system is covered by the followings:
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-nvi-1.79-gtags.diff
-
-    This file is placed into the public domain by the author,
-    1998, 2000 Shigio YAMAGUCHI
-
 Htags Hyper-text Reference Kit (htags_path2url.c):
 
     This file is placed into the public domain by the author,

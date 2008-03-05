@@ -18,7 +18,7 @@ SUBDIRS += gtags-parser global gozilla gtags htags htags-refkit gtags-cscope doc
 
 gtagsdir = ${datadir}/gtags
 gtags_DATA = AUTHORS COPYING ChangeLog FAQ INSTALL LICENSE NEWS README THANKS \
-        globash.rc gtags.conf gtags.el gtags.pl gtags.vim nvi-1.79-gtags.diff \
+        globash.rc gtags.conf gtags.el gtags.pl gtags.vim \
 	BOKIN_MODEL BOKIN_MODEL_FAQ DONORS
 
 EXTRA_DIST = ${gtags_DATA} reconf.sh convert.pl

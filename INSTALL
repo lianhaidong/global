@@ -46,24 +46,6 @@ o If you want to use the --form(-f) or --dynamic(-D) option of htags(1) then
 
 3. Using GLOBAL with editors.
 
-o Nvi-1.79
-
-   Please get nvi-1.79 at:
-
-	   http://www.bostic.com/vi/
-
-   and do the followings.
-
-	$ tar xzvf nvi-1.79.tar.gz
-	$ cd nvi-1.79
-	$ patch -p < nvi-1.79-gtags.diff
-	$ cd build
-	$ ./configure
-	$ make
-	# make install
-
-   ('nvi-1.79-gtags.diff' is included in GLOBAL package.)
-
 o Nvi-1.81.5
 
    Please get nvi-1.81.5 at:
