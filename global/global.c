@@ -61,7 +61,6 @@ void encode(char *, int, const char *);
 
 const char *localprefix;		/* local prefix		*/
 int aflag;				/* [option]		*/
-int Cflag;				/* [option]		*/
 int cflag;				/* command		*/
 int fflag;				/* command		*/
 int gflag;				/* command		*/
