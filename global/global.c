@@ -919,6 +919,7 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 {
 	CONVERT *cv;
 	int count = 0;
+	int file_count = 0;
 	STRBUF *comline = strbuf_open(0);
 	STRBUF *path_list = strbuf_open(MAXPATHLEN);
 	XARGS *xp;
@@ -958,10 +959,10 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 		 */
 		if (normalize(av, root, path, sizeof(path)) == NULL)
 			if (!qflag)
-				fprintf(stderr, "'%s' is out of source tree.\n", path);
+				fprintf(stderr, "'%s' is out of source tree.\n", path + 2);
 		if (!gpath_path2fid(path, NULL)) {
 			if (!qflag)
-				fprintf(stderr, "'%s' not found in GPATH.\n", path);
+				fprintf(stderr, "'%s' not found in GPATH.\n", path + 2);
 			continue;
 		}
 		if (!test("f", makepath(root, path, NULL))) {
@@ -980,38 +981,41 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 		 * Add a path to the path list.
 		 */
 		strbuf_puts0(path_list, path);
+		file_count++;
 	}
-	/*
-	 * Execute parser in the root directory of source tree.
-	 */
-	if (chdir(root) < 0)
-		die("cannot move to '%s' directory.", root);
-	xp = xargs_open_with_strbuf(strbuf_value(comline), 0, path_list);
-	if (format == FORMAT_PATH) {
-		SPLIT ptable;
-		char curpath[MAXPATHLEN+1];
+	if (file_count > 0) {
+		/*
+		 * Execute parser in the root directory of source tree.
+		 */
+		if (chdir(root) < 0)
+			die("cannot move to '%s' directory.", root);
+		xp = xargs_open_with_strbuf(strbuf_value(comline), 0, path_list);
+		if (format == FORMAT_PATH) {
+			SPLIT ptable;
+			char curpath[MAXPATHLEN+1];
 
-		curpath[0] = '\0';
-		while ((ctags_x = xargs_read(xp)) != NULL) {
-			if (split((char *)ctags_x, 4, &ptable) < 4) {
-				recover(&ptable);
-				die("too small number of parts.\n'%s'", ctags_x);
+			curpath[0] = '\0';
+			while ((ctags_x = xargs_read(xp)) != NULL) {
+				if (split((char *)ctags_x, 4, &ptable) < 4) {
+					recover(&ptable);
+					die("too small number of parts.\n'%s'", ctags_x);
+				}
+				if (strcmp(curpath, ptable.part[PART_PATH].start)) {
+					strlimcpy(curpath, ptable.part[PART_PATH].start, sizeof(curpath));
+					convert_put(cv, curpath);
+					count++;
+				}
 			}
-			if (strcmp(curpath, ptable.part[PART_PATH].start)) {
-				strlimcpy(curpath, ptable.part[PART_PATH].start, sizeof(curpath));
-				convert_put(cv, curpath);
+		} else {
+			while ((ctags_x = xargs_read(xp)) != NULL) {
+				convert_put(cv, ctags_x);
 				count++;
 			}
 		}
-	} else {
-		while ((ctags_x = xargs_read(xp)) != NULL) {
-			convert_put(cv, ctags_x);
-			count++;
-		}
+		xargs_close(xp);
+		if (chdir(cwd) < 0)
+			die("cannot move to '%s' directory.", cwd);
 	}
-	xargs_close(xp);
-	if (chdir(cwd) < 0)
-		die("cannot move to '%s' directory.", cwd);
 	/*
 	 * Settlement
 	 */
@@ -1019,6 +1023,8 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 	convert_close(cv);
 	strbuf_close(comline);
 	strbuf_close(path_list);
+	if (file_count == 0)
+		die("file not found.");
 	if (vflag) {
 		print_count(count);
 		fprintf(stderr, " (no index used).\n");
