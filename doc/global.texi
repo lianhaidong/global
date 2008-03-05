@@ -20,7 +20,7 @@
 @ifinfo
 This file documents the GNU GLOBAL source code tag system.
 
-Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2006
+Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2008
 Tama Communications Corporation
 
 Permission is granted to copy, distribute and/or modify this document
@@ -40,7 +40,7 @@ Free Documentation License".
 @c copyright page
 @page
 @vskip 0pt plus 1filll
-Copyright @copyright{} 2000, 2001, 2002, 2003, 2004, 2005, 2006
+Copyright @copyright{} 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2008
 Tama Communications Corporation
 @sp 2
 This manual is for @acronym{GNU} GLOBAL (version @value{VERSION},
@@ -1529,13 +1529,13 @@ objects in quickfix window and load the first entry.
 The quickfix windows is like this:
 @example
 
-gctags/gctags.c|119| main
-global/global.c|154| main
-gozilla/gozilla.c|156| main
-gtags/gtags.c|199| main
-libglibc/getopt.c|701| main
-libglibc/getopt1.c|93| main
-[Error List]
+gozilla/gozilla.c|200| main(int argc, char **argv)
+gtags-cscope/gtags-cscope.c|124| main(int argc, char **argv)
+gtags-parser/asm_scan.c|2056| int main()
+gtags-parser/gctags.c|157| main(int argc, char **argv)
+gtags-parser/php.c|2116| int main()
+gtags/gtags.c|152| main(int argc, char **argv)
+[Quickfix List]
 
 @end example
 
@@ -1557,6 +1557,12 @@ You can see the help of quickfix like this:
 
     :h quickfix
 
+@end example
+
+@example
+    Suggested map:
+    map <C-n> :cn<CR>
+    map <C-p> :cp<CR>
 @end example
 
 @item To go to the referenced point of func1, add @samp{-r} option.
@@ -1581,7 +1587,11 @@ vim executes command like @code{global -t -r func1} internally.
 @opindex -g
 @example
 
-    :Gtags -g Copyright
+    :Gtags -g int argc
+
+    :Gtags -g "root"
+
+    :Gtags -ge -C		<- @r{locate '-C'}
 
 @end example
 
@@ -1623,7 +1633,7 @@ If you are editing @file{main.c} itself, you can use '%' instead.
 
     :Gtags func1               <- @r{'nc1' is appended by vim}
 
-@item You can browse project files whose path includes specified pattern.
+@item You can browse the project files whose path include specified pattern.
 @opindex -P
 @example
 
@@ -1633,13 +1643,15 @@ If you are editing @file{main.c} itself, you can use '%' instead.
 
 @end example
 
-@item You can use all options of global(1) except for the -c, -p, -u and
+@item You can use all options of global(1) except for the -c, -n, -p, -q, -u, -v and
 	all long name options. They are sent to global(1) as is.
 	For example,
 
 @example
 
     :Gtags -gi paTtern         <- @r{match to both 'PATTERN' and 'pattern'.}
+
+    :Gtags -POi make           <- @r{match to Makefile but doesn't match to makeit.c.}
 
 @end example
 	About the other options, @xref{global}.
