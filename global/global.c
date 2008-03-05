@@ -111,13 +111,13 @@ help(void)
 }
 
 #define RESULT		128
+#define FROM_HERE	129
 #define SORT_FILTER     1
 #define PATH_FILTER     2
 #define BOTH_FILTER     (SORT_FILTER|PATH_FILTER)
 
 static struct option const long_options[] = {
 	{"absolute", no_argument, NULL, 'a'},
-	{"context", required_argument, NULL, 'C'},
 	{"completion", no_argument, NULL, 'c'},
 	{"regexp", required_argument, NULL, 'e'},
 	{"file", no_argument, NULL, 'f'},
@@ -142,6 +142,7 @@ static struct option const long_options[] = {
 	{"cxref", no_argument, NULL, 'x'},
 
 	/* long name only */
+	{"from-here", required_argument, NULL, FROM_HERE},
 	{"debug", no_argument, &debug, 1},
 	{"version", no_argument, &show_version, 1},
 	{"help", no_argument, &show_help, 1},
@@ -258,29 +259,12 @@ main(int argc, char **argv)
 	int optchar;
 	int option_index = 0;
 
-	while ((optchar = getopt_long(argc, argv, "aC:ce:ifgGIlnoOpPqrstTuvx", long_options, &option_index)) != EOF) {
+	while ((optchar = getopt_long(argc, argv, "ace:ifgGIlnoOpPqrstTuvx", long_options, &option_index)) != EOF) {
 		switch (optchar) {
 		case 0:
 			break;
 		case 'a':
 			aflag++;
-			break;
-		case 'C':
-			{
-			char *p = optarg;
-			const char *usage = "usage: global --context=lineno:path.";
-
-			context_lineno = p;
-			while (*p && isdigit(*p))
-				p++;
-			if (*p != ':')
-				die_with_code(2, usage);
-			*p++ = '\0';
-			if (!*p)
-				die_with_code(2, usage);
-			context_file = p;
-			Cflag++;
-			}
 			break;
 		case 'c':
 			cflag++;
@@ -361,6 +345,22 @@ main(int argc, char **argv)
 			break;
 		case 'x':
 			xflag++;
+			break;
+		case FROM_HERE:
+			{
+			char *p = optarg;
+			const char *usage = "usage: global --from-here=lineno:path.";
+
+			context_lineno = p;
+			while (*p && isdigit(*p))
+				p++;
+			if (*p != ':')
+				die_with_code(2, usage);
+			*p++ = '\0';
+			if (!*p)
+				die_with_code(2, usage);
+			context_file = p;
+			}
 			break;
 		case RESULT:
 			if (!strcmp(optarg, "ctags-x"))
@@ -516,7 +516,7 @@ main(int argc, char **argv)
 	/*
 	 * decide tag type.
 	 */
-	if (Cflag) {
+	if (context_file) {
 		if (isregex(av))
 			die_with_code(2, "regular expression is not allowed with the --context option.");
 		db = decide_tag_by_context(av, context_file, context_lineno);
