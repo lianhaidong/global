@@ -408,7 +408,7 @@
     ; Use always ctags-x format.
     (setq option "-x")
     (if (equal flag "C")
-        (setq context (concat "--context=" (number-to-string (gtags-current-lineno)) ":" buffer-file-name))
+        (setq context (concat "--from-here=" (number-to-string (gtags-current-lineno)) ":" buffer-file-name))
         (setq option (concat option flag)))
     (cond
      ((equal flag "C")
