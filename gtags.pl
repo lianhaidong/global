@@ -1,7 +1,7 @@
 #
 # Gtags.pl --- Global facility for Nvi-1.81
 #
-# Copyright (c) 2001, 2002 Tama Communications Corporation
+# Copyright (c) 2001, 2002, 2008 Tama Communications Corporation
 #
 # This file is part of GNU GLOBAL.
 #
@@ -27,6 +27,7 @@
 #	:perl tag qw(-r main)		global -rx main
 #	:perl tag qw(-sl main)		global -slx main
 #	:perl tag qw(-gi main)		global -gix main
+#	:perl tag ('-go', 'int argc')	global -go 'int argc'
 #	:perl tag qw(-I main)		global -Ix main
 #	:perl tag qw(-P file)		global -Px file
 #	:perl tag qw(-f %)		global -fx <current file>
@@ -53,7 +54,13 @@
 #
 # You need this version of GLOBAL.
 #
-$support_version = 4.3;
+my($supported_version) = '5.6.3';
+#
+# Quote characters
+#
+my($sq) = "'";
+my($dq) = '"';
+my($single_quote_char) = $sq . $dq . $sq . $dq . $sq;
 #
 # command existent check.
 #
@@ -69,40 +76,49 @@ foreach (split(/$pathsep/, $ENV{'PATH'})) {
 #
 # version check of global(1).
 #
-$notfound = '';
+$error = '';
 if ($command) {
     open(TAGS, "$command --version |");
     $_ = <TAGS>;
     chop($_);
     $version = $_;
     close(TAGS);
-    $version =~ s/(\d+\.\d+)(\.\d+)?/\1/;
-    if ($? != 0 || $version < $support_version) {
-        $notfound = "Your global(1) seems to be older version.";
+    my $result = version_supported($version, $supported_version);
+    if ($result < 0) {
+        $error = 'Global(1) not found.';
+    } elsif ($result == 0) {
+        $error = 'Your global(1) seems to be older version.';
     }
-} else {
-    $notfound = "Global(1) not found.";
 }
-if ($notfound) {
-    $notfound .= " You need GLOBAL-${support_version} or the later.";
+if ($error) {
+    $error .= " Required GLOBAL-${supported_version} or later.";
 }
-
 sub main::tag {
-    my $tagq, $tag, $flag;
+    my $tagq, $tag;
+    my $flag = '';
+    my $end = 0;
 
-    if ($notfound) {
-        $curscr->Msg($notfound);
+    if ($error) {
+        $curscr->Msg($error);
 	return;
     }
-    $flag = '';
-    while ($_[0] =~ /^-\w+$/) {
-        if ($_[0] =~ /^-([fgIPilrsTx]+)$/) {
-            $flag .= $1;
-            shift;
-        } else {
-            $curscr->Msg("'$_[0]' not acceptable. Please type ':perl help[ENTER]'.");
-            return;
-        }
+    while ($_[0] =~ /^-/ && $end == 0) {
+	my($option) = $_[0];
+	if ($option !~ /^--/) {			# ignore long option
+	    my($length) = length($option);
+	    my($offset) = 0;
+	    while ($offset < $length) {
+	        my($c) = substr($option, $offset, 1);
+                if ($c !~ /[-cenpquv]/) {
+                    $flag .= $c;
+	        }
+		if ($c eq 'e') {
+		    $end = 1;
+		}
+		$offset++;
+            }
+	}
+        shift;
     }
     if ($flag =~ /r/ && $flag =~ /s/) {
         $curscr->Msg("both of -s and -r are not allowed.");
@@ -116,7 +132,6 @@ sub main::tag {
 	if ($tag =~ /%/) {
             $path = $curscr->GetFileName();
 	    $tag =~ s/%/$path/;
-	} else {
 	}
     } else {
         #
@@ -136,30 +151,36 @@ sub main::tag {
 	    $offset++;
 	}
 	my($subline) = substr($line, $offset);
-        ($tag, $blace) = ($subline =~ /(\w+)\s*(\(?)/);
+        ($tag) = $subline =~ /(\w+)/;
         if (!$tag) {
             $curscr->Msg("tag not found in current position.");
             return;
         }
-        #
-        # decide flag value.
-        #
-	$flag = 's';
-        if ($offset == 0) {
-	    if ($blace) {
-                $flag = 'r';		# maybe function definition.
-	    }
-        } else {
-	    if ($line =~ /^#\s*define\s+(\w+)\(/ && $1 eq $tag) {
-                $flag = 'r';		# maybe macro definition.
-	    } elsif ($line =~ /^(ENTRY|ALTENTRY|NENTRY)\((\w+)\)$/ && $2 eq $tag) {
-                $flag = 'r';		# maybe assember function definition.
-	    } elsif ($blace) {
-                $flag = 'x';		# maybe function reference.
-	    }
-        }
+	#
+	# make global(1) locate tags based on the context.
+	#
+        $flag = ' --from-here=' . $lineno . ':' . $curscr->GetFileName();
     }
-    open(TAGS, "$command -xq$flag '$tag' |");
+    #
+    # quote tag.
+    #
+    my $quoted_tag;
+    $length = length($tag);
+    $offset = 0;
+    while ($offset < $length) {
+        my($c) = substr($tag, $offset, 1);
+        if ($c eq "'") {
+    	$quoted_tag .= $single_quote_char;
+        } else {
+    	$quoted_tag .= $c;
+        }
+        $offset++;
+    }
+    if ($flag !~ /f/) {
+	$flag .= 'e';
+    }
+    $cmd = "$command -xq$flag '$quoted_tag'";
+    open(TAGS, "$cmd |");
     $tagq = undef;
     while(<TAGS>) {
         my ($name, $lno, $path, $rest);
@@ -175,44 +196,78 @@ sub main::tag {
     $status = $status / 256;
     if ($status == 0) {
         if (!$tagq) {
-	    $curscr->Msg("$tag: tag not found.");
+	    if ($flag =~ /f/) {
+		$curscr->Msg("Tag not found in $tag");
+	    } elsif ($flag =~ /P/) {
+		$curscr->Msg("Path which matches to $tag not found.");
+	    } elsif ($flag =~ /g/) {
+		$curscr->Msg("Line which matches to $tag not found.");
+	    } else {
+		$curscr->Msg("Tag which matches to $tag not found.");
+	    }
         } else {
 	    $tagq->Push();
         }
-    } elsif ($status == 1) {
-        $curscr->Msg("Global(1) failed. Please test it out of nvi.");
     } elsif ($status == 2) {
-        $curscr->Msg("Usage error. Please type ':perl help[ENTER]'.");
+        $curscr->Msg("invalid arguments. command line: $cmd");
     } elsif ($status == 3) {
         $curscr->Msg("GTAGS not found.");
     } else {
-        $curscr->Msg("Unknown error.");
+        $curscr->Msg("Global(1) failed. command line: $cmd");
     }
 }
 sub main::gozilla {
-    if ($notfound) {
-        $curscr->Msg($notfound);
+    if ($error) {
+        $curscr->Msg($error);
 	return;
     }
     my($filename) = $curscr->GetFileName();
     my($lineno, $column) = $curscr->GetCursor();
     system("gozilla +$lineno $filename");
 }
-sub main::help {
-    $help = <<END_OF_HELP;
-Commands:
--f files: Print all function definitions in the files.
--g pattern: Print all lines which match to the pattern.
--I pattern: Print all lines which match to the pattern.
--P pattern: Print the path which match to the pattern.
-Options:
--i: ignore case distinctions in pattern.
--l: Print just objects which exist under the current directory.
--r: Print the locations of object references.
--s: Print the locations of specified symbol other than function names.
--T: Go through all the tag files listed in GTAGSLIBPATH.
-END_OF_HELP
-    $curscr->Msg($help);    
+#
+# parse_version: parse a version and return sub-strings as an array.
+#
+#	i)	version number
+#	r)	number array
+#
+sub parse_version {
+    my($v) = @_;
+    my($v1, $v2, $v3);
+
+    if ($v =~ /(\d+)\.(\d+)\.(\d+)$/) {
+	$v1 = $1;
+	$v2 = $2;
+	$v3 = $3;
+    } elsif ($version =~ /(\d+)\.(\d+)$/) {
+	$v1 = $1;
+	$v2 = $2;
+	$v3 = 0;
+    } elsif ($version =~ /(\d+)$/) {
+	$v1 = $1;
+	$v2 = 0;
+	$v3 = 0;
+    } else {
+	return ();	
+    }
+    return ($v1, $v2, $v3);
+}
+#
+# version_supported: check whether supported version or not.
+#
+#	i)	$v	version
+#	i)	$sv	supported version
+#	r)		-1: illegal
+#			1: supported
+#			0: not supported
+#
+sub version_supported {
+    my($v, $sv) = @_;
+    my(@v) = parse_version($v);
+    my(@s) = parse_version($sv);
+
+    return (@v < 3) ? -1 :
+	($v[0] * 1000000 + $v[1] * 1000 + $v[2] >= $s[0] * 1000000 + $s[1] * 1000 + $s[2]) ? 1 : 0;
 }
 
 1;
