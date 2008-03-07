@@ -517,7 +517,7 @@ main(int argc, char **argv)
 	 */
 	if (context_file) {
 		if (isregex(av))
-			die_with_code(2, "regular expression is not allowed with the --context option.");
+			die_with_code(2, "regular expression is not allowed with the --from-here option.");
 		db = decide_tag_by_context(av, context_file, context_lineno);
 	} else {
 		db = (rflag) ? GRTAGS : ((sflag) ? GSYMS : GTAGS);
