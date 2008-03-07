@@ -445,7 +445,6 @@ command! -nargs=* -complete=custom,Candidate Gtags call s:RunGlobal(<q-args>)
 command! -nargs=0 GtagsCursor call s:GtagsCursor()
 command! -nargs=0 Gozilla call s:Gozilla()
 " Suggested map:
-"map <C-]> :GtagsCursor<CR>
 "map <C-g> :Gozilla<CR>
 "map <C-n> :cn<CR>
 "map <C-p> :cp<CR>
