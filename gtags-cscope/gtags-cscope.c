@@ -124,6 +124,8 @@ int
 main(int argc, char **argv)
 {
 	const char *av = NULL;
+	int optchar;
+	int option_index = 0;
 
 	while ((optchar = getopt_long(argc, argv, "bCcdeF:f:hI:i:kLlp:qRs:TUuVv0123456789", long_options, &option_index)) != EOF) {
 		switch (optchar) {
