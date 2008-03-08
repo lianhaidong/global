@@ -566,7 +566,7 @@ one command, for example:
 * Elvis editor::                        Elvis using GLOBAL.
 * Vim editor::                          Vim using GLOBAL.
 * Emacs editor::                        Extended emacs using GLOBAL.
-* Gtags-cscope (feke cscope)::          Gtags-cscope (feke cscope).
+* Gtags-cscope (fake cscope)::          Gtags-cscope (fake cscope).
 * Web browser::                         Hypertext generator.
 * Doxygen documentation system::	Doxygen using GLOBAL.
 @end menu
@@ -1703,10 +1703,10 @@ To return to the previous position, click the right button.
 @end itemize
 
 @c ***************************************************************************
-@c Gtags-cscope (feke cscope)
+@c Gtags-cscope (fake cscope)
 @c ***************************************************************************
-@node Gtags-cscope (feke cscope)
-@section Gtags-cscope (feke cscope)
+@node Gtags-cscope (fake cscope)
+@section Gtags-cscope (fake cscope)
 
 You can use gtags-cscope(1) instead of cscope(1).
 For example, you can deceive vim editor using the following commands:
