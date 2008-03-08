@@ -566,6 +566,7 @@ one command, for example:
 * Elvis editor::                        Elvis using GLOBAL.
 * Vim editor::                          Vim using GLOBAL.
 * Emacs editor::                        Extended emacs using GLOBAL.
+* Gtags-cscope (feke cscope)::          Gtags-cscope (feke cscope).
 * Web browser::                         Hypertext generator.
 * Doxygen documentation system::	Doxygen using GLOBAL.
 @end menu
@@ -1700,6 +1701,27 @@ to a line and click the center button.
 
 To return to the previous position, click the right button.
 @end itemize
+
+@c ***************************************************************************
+@c Gtags-cscope (feke cscope)
+@c ***************************************************************************
+@node Gtags-cscope (feke cscope)
+@section Gtags-cscope (feke cscope)
+
+You can use gtags-cscope(1) instead of cscope(1).
+For example, you can deceive vim editor using the following commands:
+
+@example
+(at the root of the source tree)
+:set csprg=gtags-cscope
+:cs add GTAGS
+@end example
+
+After this, you can use built-in 'cs find' commands in the vim editor.
+Though the deceit is not perfect ('cs find d' is not implemented),
+this method might be more convenient than gtags.vim in the point that
+you can use the tag stack facility of vim,
+
 @c ***************************************************************************
 @c Web browser
 @c ***************************************************************************
