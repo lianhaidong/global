@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006
+ * Copyright (c) 2006, 2008
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -124,10 +124,8 @@ int
 main(int argc, char **argv)
 {
 	const char *av = NULL;
-	int optchar;
-	int option_index = 0;
 
-	while ((optchar = getopt_long(argc, argv, "Cqv", long_options, &option_index)) != EOF) {
+	while ((optchar = getopt_long(argc, argv, "bCcdeF:f:hI:i:kLlp:qRs:TUuVv0123456789", long_options, &option_index)) != EOF) {
 		switch (optchar) {
 		case 0:
 			break;
@@ -141,7 +139,6 @@ main(int argc, char **argv)
 			vflag++;
 			break;
 		default:
-			/* usage(); */
 			break;
 		}
 	}
