@@ -277,6 +277,7 @@ static struct option const long_options[] = {
         {"full-path", no_argument, &full_path, 1},
         {"nocgi", no_argument, &cgi, 0},
         {"no-map-file", no_argument, &map_file, 0},
+        {"show-position", no_argument, &show_position, 1},
         {"statistics", no_argument, &statistics, 1},
         {"suggest", no_argument, &suggest, 1},
         {"table-list", no_argument, &table_list, 1},
