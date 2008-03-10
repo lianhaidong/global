@@ -152,7 +152,6 @@ WORD		{ALPHA}{ALPHANUM}*
 }
 
 <PREPROCESSOR_LINE>{
-	{WORD}/\(	{ ADD_SYM(); return ASM_SYMBOL_PAREN; }
 	\n		{ yy_pop_state(); return '\n'; }
 }
 

@@ -63,7 +63,6 @@ static int target;
 %token ASM_CALL			/* call, jsr */
 %token ASM_ENTRY		/* ENTRY, ALTENTRY, ... */
 %token ASM_EXT			/* EXT, SYMBOL_NAME, ... */
-%token ASM_SYMBOL_PAREN		/* sym( */
 %token ASM_SYMBOL
 %token ASM_LABEL		/* ^sym */
 
@@ -126,12 +125,6 @@ line:	ASM_ENTRY '(' ASM_SYMBOL ')' error '\n'
 			strbuf_reset(asm_symtable);
 		}
 	| "#define" ASM_SYMBOL error '\n'
-		{
-			if (target == DEF)
-				PUT(GET_SYM($2), @2);
-			strbuf_reset(asm_symtable);
-		}
-	| "#define" ASM_SYMBOL_PAREN error '\n'
 		{
 			if (target == DEF)
 				PUT(GET_SYM($2), @2);
