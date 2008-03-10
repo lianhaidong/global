@@ -141,16 +141,11 @@ Cpp(const char *file)
 					}
 				}
 			} else {
-				if (dflag) {
-					if (target == REF) {
-						if (defined(token))
-							PUT(token, lineno, sp);
-					} else if (target == SYM) {
-						if (!defined(token))
-							PUT(token, lineno, sp);
-					}
-				} else {
-					if (target == SYM)
+				if (target == REF) {
+					if (defined(token))
+						PUT(token, lineno, sp);
+				} else if (target == SYM) {
+					if (!defined(token))
 						PUT(token, lineno, sp);
 				}
 			}
@@ -280,13 +275,8 @@ Cpp(const char *file)
 				if (c == '\n')
 					pushbacktoken();
 			}  else {
-				if (dflag) {
-					if (target == DEF)
-						PUT(token, lineno, sp);
-				} else {
-					if (target == SYM)
-						PUT(token, lineno, sp);
-				}
+				if (target == DEF)
+					PUT(token, lineno, sp);
 			}
 			break;
 		case SHARP_IMPORT:
@@ -383,7 +373,7 @@ Cpp(const char *file)
 				warning("Out of function. %8s [+%d %s]", token, lineno, curfile);
 			break;
 		case CPP_TYPEDEF:
-			if (tflag) {
+			{
 				char savetok[MAXTOKEN];
 				int savelineno = 0;
 				int typedef_savelevel = level;
@@ -711,10 +701,10 @@ condition_macro(int cc, int target)
 	while ((cc = nexttoken(NULL, cpp_reserved_word)) != EOF && cc != '\n') {
                 if (cc == SYMBOL && strcmp(token, "defined") != 0) {
 			if (target == REF) {
-				if (dflag && defined(token))
+				if (defined(token))
 		                        PUT(token, lineno, sp);
 			} else if (target == SYM) {
-				if (!dflag || !defined(token))
+				if (!defined(token))
 		                	PUT(token, lineno, sp);
 			}
 		}

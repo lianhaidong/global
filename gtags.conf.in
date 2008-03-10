@@ -46,9 +46,9 @@ common:\
 #
 gtags:\
 	:tc=common:\
-	:GTAGS=gtags-parser -dt %s:\
-	:GRTAGS=gtags-parser -dtr %s:\
-	:GSYMS=gtags-parser -dts %s:
+	:GTAGS=gtags-parser %s:\
+	:GRTAGS=gtags-parser -r %s:\
+	:GSYMS=gtags-parser -s %s:
 #
 # [Exuberant Ctags]
 #

@@ -123,13 +123,13 @@
 	@begin_itemize
 	@item{@code{GTAGS}(string)}
 		If this variable is set, its value is used as the
-		command line of parser for GTAGS. The default is @file{gtags-parser -dt %s}.
+		command line of parser for GTAGS. The default is @file{gtags-parser %s}.
 	@item{@code{GRTAGS}(string)}
 		If this variable is set, its value is used as the
-		command line of parser for GRTAGS. The default is @file{gtags-parser -dtr %s}.
+		command line of parser for GRTAGS. The default is @file{gtags-parser -r %s}.
 	@item{@code{GSYMS}(string)}
 		If this variable is set, its value is used as the
-		command line of parser for GSYMS. The default is @file{gtags-parser -dts %s}.
+		command line of parser for GSYMS. The default is @file{gtags-parser -s %s}.
 	@item{@code{icase_path}(boolean)}
 		Ignore case distinctions in the path.
 		Suffixes check are affected by this capability.

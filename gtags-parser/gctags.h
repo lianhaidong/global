@@ -33,12 +33,10 @@
 #define YACC	1
 
 extern int bflag;
-extern int dflag;
 extern int eflag;
 extern int nflag;
 extern int rflag;
 extern int sflag;
-extern int tflag;
 extern int vflag;
 extern int wflag;
 extern int debug;

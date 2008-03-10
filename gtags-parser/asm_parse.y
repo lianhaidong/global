@@ -127,7 +127,7 @@ line:	ASM_ENTRY '(' ASM_SYMBOL ')' error '\n'
 		}
 	| "#define" ASM_SYMBOL error '\n'
 		{
-			if (target == DEF && dflag)
+			if (target == DEF)
 				PUT(GET_SYM($2), @2);
 			strbuf_reset(asm_symtable);
 		}
@@ -139,31 +139,31 @@ line:	ASM_ENTRY '(' ASM_SYMBOL ')' error '\n'
 		}
 	| "#undef" ASM_SYMBOL error '\n'
 		{
-			if (target == DEF && dflag)
+			if (target == DEF)
 				PUT(GET_SYM($2), @2);
 			strbuf_reset(asm_symtable);
 		}
 	| ASM_MACRO ASM_SYMBOL error '\n'
 		{
-			if (target == DEF && dflag)
+			if (target == DEF)
 				PUT(GET_SYM($2), @2);
 			strbuf_reset(asm_symtable);
 		}
 	| ASM_LABEL ASM_MACRO error '\n'
 		{
-			if (target == DEF && dflag)
+			if (target == DEF)
 				PUT(GET_SYM($1), @1);
 			strbuf_reset(asm_symtable);
 		}
 	| ASM_EQU ASM_SYMBOL ',' error '\n'
 		{
-			if (target == DEF && dflag)
+			if (target == DEF)
 				PUT(GET_SYM($2), @2);
 			strbuf_reset(asm_symtable);
 		}
 	| ASM_LABEL ASM_EQU error '\n'
 		{
-			if (target == DEF && dflag)
+			if (target == DEF)
 				PUT(GET_SYM($1), @1);
 			strbuf_reset(asm_symtable);
 		}

@@ -334,13 +334,13 @@ openconf(void)
 #endif /* _WIN32 */
 		strbuf_puts(sb, ":GTAGS=");
 		strbuf_puts(sb, path);
-		strbuf_puts(sb, " -dt %s");
+		strbuf_puts(sb, " %s");
 		strbuf_puts(sb, ":GRTAGS=");
 		strbuf_puts(sb, path);
-		strbuf_puts(sb, " -dtr %s");
+		strbuf_puts(sb, " -r %s");
 		strbuf_puts(sb, ":GSYMS=");
 		strbuf_puts(sb, path);
-		strbuf_puts(sb, " -dts %s");
+		strbuf_puts(sb, " -s %s");
 	}
 	strbuf_unputc(sb, ':');
 	strbuf_putc(sb, ':');

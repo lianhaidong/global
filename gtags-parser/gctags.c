@@ -56,13 +56,11 @@ static int tablesize;
 static char *langmap;
 
 int bflag;			/* -b: force level 1 block start */
-int dflag;			/* -d: treat #define with no argument */
 int eflag;			/* -e: force level 1 block end */
 int nflag;			/* -n: doen't print tag */
 int qflag;			/* -q: quiet mode */
 int rflag;			/* -r: function reference */
 int sflag;			/* -s: collect symbols */
-int tflag;			/* -t: treat typedefs, structs, unions, and enums. */
 int wflag;			/* -w: warning message */
 int vflag;			/* -v: verbose mode */
 int show_version;
@@ -133,6 +131,10 @@ help(void)
 	fputs(help_const, stdout);
 	exit(0);
 }
+/*
+ * Though the -d(--define) and -t(--typedef) option was removed,
+ * the entries have been left not to bring error messages.
+ */
 static struct option const long_options[] = {
 	{"begin-block", no_argument, NULL, 'b'},
 	{"define", no_argument, NULL, 'd'},
@@ -171,7 +173,6 @@ main(int argc, char **argv)
 			bflag++;
 			break;
 		case 'd':
-			dflag++;
 			break;
 		case 'e':
 			eflag++;
@@ -191,7 +192,6 @@ main(int argc, char **argv)
 			rflag = 0;
 			break;
 		case 't':
-			tflag++;
 			break;
 		case 'v':
 			vflag++;
