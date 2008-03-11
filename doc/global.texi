@@ -1569,6 +1569,11 @@ If you have tag files in /usr/src/sys then please do like this:
     Visit root directory: /usr/src/sys
 
 @end example
+
+Though this is not necessarily indispensable, this makes the display of
+paths of the tag list (see blow) relative from the root directory. By default,
+the display is absolute, that is, relative from the system's root directory.
+
 @end enumerate
 
 
@@ -1626,6 +1631,7 @@ You can select a tag line by using any emacs command and pressing @kbd{RET},
 and you can go to the tag's point. When you want to go to the next or
 the previous tag, you can return to 'GTAGS SELECT MODE' with @code{gtags-pop-stack}
 and reselect.
+If the display of the paths is absolute, please try @code{gtags-visit-rootdir}.
 
 @item @code{gtags-find-tag-from-here} command is available.
 
