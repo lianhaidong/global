@@ -90,7 +90,7 @@ Ray Simard		detailed investigation about POSIX dirent(3).
 Richard Stallman	advice about gtags.el and GNU style packaging.
 Rob Fitzgerald		bug fix patch for global(1).
 Ron Lee			Debian package, htmake(1) and many bug reports.
-Rongsong Shen		bug report about the gtags(1)'s trouble.
+Rongsong Shen		bug report about gtags(1).
 Rui Lopes		report about build error in *BSD and revision of term.
 Ruppert Koch		bug report about htags(1).
 Sadaichi Hayashida	idea about generating relative path.
