@@ -393,6 +393,14 @@ put_anchor(char *name, int type, int lineno)
 			char lno[32];
 			const char *filename;
 
+			/*
+			 * Don't make a link which refers to itself.
+			 * Being used only once means that it is a self link.
+			 */
+			if (db == GSYMS) {
+				strbuf_puts(outbuf, name);
+				return;
+			}
 			strlimcpy(lno, strmake(line, " "), sizeof(lno));
 			filename = strmake(locatestring(line, " ", MATCH_FIRST) + 1, " ")
 						+ 2;	/* remove './' */
