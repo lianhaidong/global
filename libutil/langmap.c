@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002, 2004, 2005
+ * Copyright (c) 2002, 2004, 2005, 2008
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -78,6 +78,13 @@ decide_lang(const char *suffix)
 {
 	const char *lang, *list, *tail;
 
+	/*
+	 * Though '*.h' files are shared by C and C++, GLOBAL treats them
+	 * as C source files by default. If you set an environment variable
+	 * 'GTAGS_FORCECPP' then C++ parser will be invoked.
+	 */
+	if (!strcmp(suffix, ".h") && getenv("GTAGSFORCECPP") != NULL)
+		return "cpp";
 	lang = strbuf_value(active_map);
 	tail = lang + strbuf_getlen(active_map);
 
@@ -93,7 +100,7 @@ decide_lang(const char *suffix)
 }
 
 /*
- * return true if suffix matches with one in suffix list.
+ * return true if the suffix matches with one in the list.
  */
 static int
 match_suffix_list(const char *suffix, const char *list)
@@ -114,7 +121,7 @@ match_suffix_list(const char *suffix, const char *list)
 }
 
 /*
- * make the suffixes value from langmap value.
+ * make suffix value from langmap value.
  */
 void
 make_suffixes(const char *langmap, STRBUF *sb)

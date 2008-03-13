@@ -1,6 +1,6 @@
 #
 # Copyright (c} 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005
-#	2006, 2007 Tama Communications Corporation
+#	2006, 2007, 2008 Tama Communications Corporation
 #
 # This file is part of GNU GLOBAL.
 #
@@ -22,7 +22,7 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	HTAGS,1,March 2007,GNU Project
+@HEADER	HTAGS,1,March 2008,GNU Project
 @NAME	htags - generate hypertext from source code.
 @SYNOPSIS
 	@name{htags} [-acDfFghInosTvwx][-d @arg{dbpath}][-m @arg{name}][-S @arg{cgidir}][-t @arg{title}][@arg{dir}]
@@ -209,6 +209,9 @@
 	@item{@var{GTAGSCACHE}}
 		If this variable is set, its value is used as the size of
 		btree cache. The default is 500000 (bytes).
+        @item{@var{GTAGSFORCECPP}}
+                If this variable is set, each file whoes suffix is 'h' is treated
+                as a C++ source file.
 	@end_itemize
 @CONFIGURATION
 	The following configuration variables affect the execution of @name{htags}:

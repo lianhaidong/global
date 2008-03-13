@@ -1,5 +1,5 @@
 #
-# Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003
+# Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2008
 #	Tama Communications Corporation
 #
 # This file is part of GNU GLOBAL.
@@ -22,7 +22,7 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	GTAGS-PARSER,1,October 2007,GNU Project
+@HEADER	GTAGS-PARSER,1,March 2008,GNU Project
 @NAME	gtags-parser - print cross reference list for gtags.
 @SYNOPSIS
 	@name{gtags-parser} [-bdenqrstvw] @arg{file} ...
@@ -89,6 +89,13 @@
 
 	The @option{-r} and @option{-s} options override each other;
 	the last one specified determines the method used.
+@ENVIRONMENT
+	The following environment variables affect the execution of @name{global}:
+        @begin_itemize
+        @item{@var{GTAGSFORCECPP}}
+                If this variable is set, each file whoes suffix is 'h' is treated
+                as a C++ source file.
+	@end_itemize
 @DIAGNOSTICS
 	@name{Gtags-parser} exits with a non 0 value if an error occurred, 0 otherwise.
 	Duplicate objects are not considered errors.
