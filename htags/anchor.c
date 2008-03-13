@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
- *	Tama Communications Corporation
+ *	2008	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -29,6 +29,9 @@
 #else
 #include <strings.h>
 #endif
+#ifdef HAVE_CTYPE_H
+#include <ctype.h>
+#endif
 #include "global.h"
 #include "anchor.h"
 #include "htags.h"
@@ -47,6 +50,17 @@ static int
 cmp(const void *s1, const void *s2)
 {
 	return ((struct anchor *)s1)->lineno - ((struct anchor *)s2)->lineno;
+}
+static int
+seems_macro(const char *word)
+{
+	for (; *word; word++) {
+		if (*word == '_' || isdigit(*word))
+			continue;
+		if (!isupper(*word))
+			return 0;
+	}
+	return 1;
 }
 /*
  * Pointers (as lineno).
@@ -141,25 +155,30 @@ anchor_load(const char *path)
 				break;
 			}
 			if (db == GTAGS) {
-				char *p;
+				char *p = ptable.part[PART_LINE].start;
 
-				for (p = ptable.part[PART_LINE].start; *p && isspace((unsigned char)*p); p++)
+				type = 'D';
+				for (; *p && isspace((unsigned char)*p); p++)
 					;
 				if (!*p) {
 					recover(&ptable);
 					die("The output of parser is illegal.\n%s", ctags_x);
 				}
-				type = 'D';
-				if (*p == '#') {
-					for (p++; *p && isspace((unsigned char)*p); p++)
-						;
-					if (*p) {
-						if (locatestring(p, "define", MATCH_AT_FIRST) ||
-						    locatestring(p, "undef", MATCH_AT_FIRST))
-							type = 'M';
-					}
-				} else if (locatestring(p, "typedef", MATCH_AT_FIRST))
+				/*
+				 * Function header is applied only to the anchor whoes
+				 * type == 'D'.
+				 */
+				if (*p == '#')
+					type = 'M';
+				else if (/* { */ *p == '}')
 					type = 'T';
+				else if (locatestring(p, "typedef", MATCH_AT_FIRST) ||
+					   locatestring(p, "struct", MATCH_AT_FIRST) ||
+					   locatestring(p, "union", MATCH_AT_FIRST) ||
+					   locatestring(p, "enum", MATCH_AT_FIRST))
+					type = 'T';
+				else if (seems_macro(ptable.part[PART_TAG].start))
+					type = 'M';
 			}  else if (db == GRTAGS)
 				type = 'R';
 			else
