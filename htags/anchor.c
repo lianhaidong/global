@@ -51,17 +51,6 @@ cmp(const void *s1, const void *s2)
 {
 	return ((struct anchor *)s1)->lineno - ((struct anchor *)s2)->lineno;
 }
-static int
-seems_macro(const char *word)
-{
-	for (; *word; word++) {
-		if (*word == '_' || isdigit(*word))
-			continue;
-		if (!isupper(*word))
-			return 0;
-	}
-	return 1;
-}
 /*
  * Pointers (as lineno).
  */
@@ -157,7 +146,6 @@ anchor_load(const char *path)
 			if (db == GTAGS) {
 				char *p = ptable.part[PART_LINE].start;
 
-				type = 'D';
 				for (; *p && isspace((unsigned char)*p); p++)
 					;
 				if (!*p) {
@@ -165,20 +153,22 @@ anchor_load(const char *path)
 					die("The output of parser is illegal.\n%s", ctags_x);
 				}
 				/*
-				 * Function header is applied only to the anchor whoes
-				 * type == 'D'.
+				 * Function header is applied only to the anchor whoes type is 'D'.
+				 * (D: function, M: macro, T: type)
 				 */
+				type = 'T';
 				if (*p == '#')
 					type = 'M';
-				else if (/* { */ *p == '}')
+				else if (locatestring(p, "typedef", MATCH_AT_FIRST))
 					type = 'T';
-				else if (locatestring(p, "typedef", MATCH_AT_FIRST) ||
-					   locatestring(p, "struct", MATCH_AT_FIRST) ||
-					   locatestring(p, "union", MATCH_AT_FIRST) ||
-					   locatestring(p, "enum", MATCH_AT_FIRST))
-					type = 'T';
-				else if (seems_macro(ptable.part[PART_TAG].start))
-					type = 'M';
+				else if ((p = locatestring(p, ptable.part[PART_TAG].start, MATCH_FIRST)) != NULL) {
+					/* skip a tag and the following blanks */
+					p += strlen(ptable.part[PART_TAG].start);
+					for (; *p && isspace((unsigned char)*p); p++)
+						;
+					if (*p == '(')
+						type = 'D';
+				}
 			}  else if (db == GRTAGS)
 				type = 'R';
 			else
