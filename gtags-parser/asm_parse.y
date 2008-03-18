@@ -167,7 +167,7 @@ line:	ASM_ENTRY '(' ASM_SYMBOL ')' error '\n'
 %%
 
 void
-assembler(const char *file)
+assembly(const char *file)
 {
 	/* symbol search doesn't supported. */
 	if (sflag)

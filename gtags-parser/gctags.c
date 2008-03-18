@@ -90,7 +90,7 @@ static struct lang_entry lang_switch[] = {
 	{"cpp",		Cpp},
 	{"java",	java},
 	{"php",		php},
-	{"asm",		assembler}
+	{"asm",		assembly}
 };
 #define DEFAULT_ENTRY &lang_switch[0]
 /*
