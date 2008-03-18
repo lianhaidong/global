@@ -17,7 +17,7 @@ ___________________________________
 		----------------------------------
 
 GNU GLOBAL is a source code tag system that works the same way across diverse
-environments. It supports C, C++, Yacc, Java, PHP4 and assembler source code.
+environments. It supports C, C++, Yacc, Java, PHP4 and assembly source code.
 
 * BOKINware
 
