@@ -22,7 +22,7 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	GLOBAL,1,April 2006,GNU Project
+@HEADER	GLOBAL,1,March 2008,GNU Project
 @NAME	global - print the locations of specified object.
 @SYNOPSIS
 	@name{global} [-aGilnqrstTvx][-e] @arg{pattern}
@@ -37,15 +37,14 @@
 	@name{Global} find the locations of specified object
 	in C, C++, Yacc, Java, PHP and Assembly source files.
 	@name{Global} can treat a source tree, that is, a directory that
-	has subdirectories and source files.
-	You can get the relative path of objects from anywhere within the tree.
+	has subdirectories and source files as a project.
+	You can get the relative path of objects from anywhere within the project.
 	@name{Global} can locate not only object definitions but also object
 	references and other symbols.
-	Duplicate entries are allowed.
 
 	In advance of using this command, you must execute @xref{gtags,1}
-	at the root directory of the source tree to make tag files.
-	Then you can execute at anywhere in the source tree.
+	at the root directory of the project to make tag files.
+	Then you can execute this command at anywhere in the project.
 @COMMANDS
 	The following commands are available:
 	@begin_itemize
@@ -54,25 +53,25 @@
 		Extended regular expressions which are the same as those
 		accepted by @xref{egrep,1} are available.
 	@item{@option{-c}, @option{--completion} [@arg{prefix}]}
-		Print candidate definition names which start with specified
+		Print the candidates of object names which start with the specified
 		@arg{prefix}. @arg{Prefix} is not specified,
-		print all definition names.
+		print all object names.
 	@item{@option{-f}, @option{--file} @arg{files}}
 		Print all tags in the @arg{files}.
-		This option implies -x option.
-	@item{@option{-g}, @option{--grep}}
+		This option implies the -x option.
+	@item{@option{-g}, @option{--grep} @arg{pattern}}
 		Print all lines which match to the @arg{pattern}.
 	@item{@option{--help}}
 		Show help.
-	@item{@option{-I}, @option{--idutils}}
+	@item{@option{-I}, @option{--idutils} @arg{pattern}}
 		Print all lines which match to the @arg{pattern}.
 		This function use @xref{idutils,1} as a search engine.
 		To use this command, you need to install @xref{idutils,1}
 		in your system and you must execute @xref{gtags,1}
-		with @option{-I} option.
+		with the @option{-I} option.
 	@item{@option{-P}, @option{--path} [@arg{pattern}]}
-		Print the path which match to the @arg{pattern}.
-		If no pattern specified, print all.
+		Print the paths which match to the @arg{pattern}.
+		If no pattern specified, print all paths in the project.
 	@item{@option{-p}, @option{--print-dbpath}}
 		Print the location of @file{GTAGS}.
 	@item{@option{-u}, @option{--update}}
@@ -87,18 +86,17 @@
 		Print absolute path name. By default, print relative path name.
 	@item{@option{--from-here} @arg{context}}
 		Decide tag type by the context. The @arg{context} must be 'lineno:path'.
-		If this option is specified then the @option{-s} and the @option{-r}
+		If this option is specified then the @option{-s} and @option{-r}
 		are ignored.
 		Regular expression is not allowed in the @arg{pattern}.
 		This option is assumes use in conversational environments such as
 		editors and IDEs.
 	@item{@option{-e}, @option{--regexp} @arg{pattern}}
 		Use @arg{pattern} as the pattern; useful to protect  patterns
-		beginning with -.
+		beginning with @file{-}.
 	@item{@option{-G}, @option{--basic-regexp}}
 		Interpret @arg{pattern} as a  basic regular expression.
 		The default is extended regular expression.
-		This option is valid for the @option{-g} and @option{-P} command.
 	@item{@option{-i}, @option{--ignore-case}}
 		ignore case distinctions in pattern.
 	@item{@option{-l}, @option{--local}}
@@ -106,7 +104,7 @@
 	@item{@option{-n}, @option{--nofilter}}
 		Suppress sort filter and path conversion filter.
 	@item{@option{-O}, @option{--only-other}}
-		Search pattern only in other files like @file{README}.
+		Search pattern only in other than source files like @file{README}.
 		This option is valid only with @option{-g} or @option{-P} command.
 		This option override the @option{-o} option.
 	@item{@option{-o}, @option{--other}}
@@ -123,7 +121,7 @@
 		@arg{format} may be 'path', `ctags', `ctags-x', `grep' or 'cscope'.
 		The @option{--result=ctags} and @option{--result=ctags-x} are
 		equivalent to the @option{-t} and @option{-x} respectively.
-		The --result option is given to priority more than the -t and -x option.
+		The @option{--result} option is given to priority more than the -t and -x option.
 	@item{@option{-s}, @option{--symbol}}
 		Print the locations of specified symbol other than definitions.
 	@item{@option{-T}, @option{--through}}
@@ -189,14 +187,14 @@
 	The following environment variables affect the execution of @name{global}:
 	@begin_itemize
 	@item{@var{GTAGSROOT}}
-		The directory which is the root of source tree.
+		The directory which is the root of source code.
 	@item{@var{GTAGSDBPATH}}
 		The directory on which gtags database exist.
 		This value is ignored when @var{GTAGSROOT} is not defined.
 	@item{@var{GTAGSLIBPATH}}
 		If this variable is set, it is used as the path to search
 		for library functions. If the specified function is not
-		found in a source tree, @name{global} also search in these paths.
+		found in the source project, @name{global} also search in these paths.
 	@item{@var{GTAGSLABEL}}
 		If this variable is set, its value is used as the label
 		of configuration file. The default is @code{default}.

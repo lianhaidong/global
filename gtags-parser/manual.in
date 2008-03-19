@@ -36,11 +36,11 @@
 	It's same with the output of @xref{ctags,1} with @option{-x} option.
 
 	Depending upon the options provided to @name{gtags-parser},
-	objects will consist of function definitions, function references
+	objects will consist of object definitions, object references
 	and other symbols.
 
 	Files whose names end in @file{.c} or @file{.h} are assumed to be C
-	source files and are searched for C style routine and macro definitions.
+	source files.
 	Files whose names end in @file{.c++} @file{.cc} @file{.cpp}
 	@file{.cxx} @file{.hxx} @file{.hpp} @file{.C} @file{.H} are assumed to be C++
 	source files.
@@ -49,7 +49,7 @@
 	Files whose names end in @file{.php} @file{.php3} @file{.phtml} are
 	assumed to be PHP source files.
 	Files whose names end in @file{.s} or @file{.S} are assumed to be
-	Assembler source files.
+	Assembly source files.
 	Other files are searched for C style definitions.
 
 	Yacc files each have a special tag. @name{yyparse} is the start
@@ -60,23 +60,23 @@
 	The following options are available:
 	@begin_itemize
 	@item{@option{-b}, @option{--begin-block}}
-		Force level 1 block to begin when reach a left brace at the first column.
+		Force level 1 block to begin when reach the left brace at the first column.
 		(C only)
 	@item{@option{-e}, @option{--end-block}}
-		Force level 1 block to end when reach a right brace at the first column.
+		Force level 1 block to end when reach the right brace at the first column.
 		(C only)
 	@item{@option{-n}, @option{--no-tags}}
 		Suppress output of tags. It is useful to use with @option{-w} option.
 	@item{@option{-q}, @option{--quiet}}
 		Quiet mode.
 	@item{@option{-r}, @option{--reference}}
-		Locate function references instead of function definitions.
+		Locate object references instead of object definitions.
 		@file{GTAGS} is needed at the current directory.
 		(C, C++ and Java source only)
-		By default, locate function definitions.
+		By default, locate object definitions.
 	@item{@option{-s}, @option{--symbol}}
-		Collect symbols other than functions.
-		By default, locate function definitions.
+		Collect symbols other than object definitions and references.
+		By default, locate object definitions.
 	@item{@option{-v}, @option{--verbose}}
 		Verbose mode.
 	@item{@option{-w}, @option{--warning}}
@@ -90,7 +90,7 @@
 	The @option{-r} and @option{-s} options override each other;
 	the last one specified determines the method used.
 @ENVIRONMENT
-	The following environment variables affect the execution of @name{global}:
+	The following environment variables affect the execution of @name{gtags-parser}:
         @begin_itemize
         @item{@var{GTAGSFORCECPP}}
                 If this variable is set, each file whoes suffix is 'h' is treated
@@ -109,9 +109,6 @@
 @BUG
 	@name{Gtags-parser} relies on the input being well formed,
 	and any syntactical errors will completely confuse it.
-
-	Assembler support is far from complete.
-	Probably valid only for FreeBSD and Linux kernel source.
 @AUTHOR
 	Tama Communications Corporation.
 @HISTORY
