@@ -237,7 +237,7 @@ __gtags_prompt() {
 	fi
 	# We cannot keep context (except for cookies) across projects.
 	if [ "$__gtags_prev_root" ] && [ "$__gtags_prev_root" != "$root" ]; then
-		msg="You are going to get out of current project."
+		msg="You are going to get out of the current project."
 		yesno="Tag stack and marker will be removed. Sure? ([y]/n) "
 		echo $msg
 		echo -n $yesno
