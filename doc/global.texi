@@ -1494,10 +1494,10 @@ Second, to use global from emacs, you need to load the @file{gtags.el}
 and execute gtags-mode function in it.
 
 @enumerate
-@item Write the call to autoload function to your @file{$HOME/.emacs}, start emacs
-       and execute the gtags-mode function. If you don't put @file{gtags.el}
-       in the standard macro directory, you need to add the directory to
-       @code{load-path}.
+@item Write the call to autoload function to your @file{$HOME/.emacs},
+       start emacs and execute gtags-mode function.
+       If you put @file{gtags.el} in a directory other than the standard
+       macro directory, you need to add it to @code{load-path}.
 
 @example
 
