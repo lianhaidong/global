@@ -4,7 +4,7 @@ ___________________________________
 |  |   |  |  |  |  |     |     |  |
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Copyright (c) 2000, 2003, 2004, 2005, 2006, 2007
+ Copyright (c) 2000, 2003, 2004, 2005, 2006, 2007, 2008
 	Tama Communications Corporation
 
  This file is free software; as a special exception the author gives
@@ -115,12 +115,12 @@ A7. For global(1), you can use GTAGSLIBPATH environment variable.
 	$ global strlen
 	../../../usr/src/lib/libc/string/strlen.c
 
-    For htags(1), you can merge library directories into your source project
-    by copying them.
-    For example:
+    Or, you can take a more straightforward way to do the same thing.
+    In the following example, you treat as if the system library is
+    part of your project. This way is effective also to htags(1).
 
 	$ cd /usr/home/project
-	$ cp -r /usr/src/lib .
+	$ ln -s /usr/src/lib .
 	$ gtags
 	$ htags
 
