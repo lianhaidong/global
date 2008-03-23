@@ -48,6 +48,27 @@
   "Non-nil if Gtags mode is enabled.")
 (make-variable-buffer-local 'gtags-mode)
 
+;;;
+;;; Customizing gtags-mode
+;;;
+(defgroup gtags nil
+  "Minor mode for GLOBAL source code tag system."
+  :group 'tools
+  :prefix "gtags-")
+
+(defcustom gtags-path-style 'root
+  "*Controls the style of path in [GTAGS SELECT MODE]."
+  :type '(choice (const :tag "Relative from the root of the current project" root)
+                 (const :tag "Relative from the current directory" relative)
+                 (const :tag "Absolute" absolute))
+  :group 'gtags)
+
+(defcustom gtags-read-only nil
+  "Gtags read only mode"
+  :type 'boolean
+  :group 'gtags)
+
+;; Variables
 (defvar gtags-current-buffer nil
   "Current buffer.")
 (defvar gtags-buffer-stack nil
@@ -60,8 +81,6 @@
   "Regexp matching tag name.")
 (defconst gtags-definition-regexp "#[ \t]*define[ \t]+\\|ENTRY(\\|ALTENTRY("
   "Regexp matching tag definition name.")
-(defvar gtags-read-only nil
-  "Gtags read only mode")
 (defvar gtags-mode-map (make-sparse-keymap)
   "Keymap used in gtags mode.")
 (defvar gtags-running-xemacs (string-match "XEmacs\\|Lucid" emacs-version)
@@ -204,24 +223,31 @@
           ((eq code 'lambda)
            (if (intern-soft string complete-list) t nil)))))
 
+;; get the path of gtags root directory.
+(defun gtags-get-rootpath ()
+  (let (path buffer)
+    (save-excursion
+      (setq buffer (generate-new-buffer (generate-new-buffer-name "*rootdir*")))
+      (set-buffer buffer)
+      (setq n (call-process "global" nil t nil "-pr"))
+      (if (= n 0)
+        (setq path (file-name-as-directory (buffer-substring (point-min)(1- (point-max))))))
+      (kill-buffer buffer))
+    path))
+
 ;;
 ;; interactive command
 ;;
 (defun gtags-visit-rootdir ()
   "Tell tags commands the root directory of source tree."
   (interactive)
-  (let (buffer input n)
-    (if (equal gtags-rootdir nil)
-      (save-excursion
-        (setq buffer (generate-new-buffer (generate-new-buffer-name "*rootdir*")))
-        (set-buffer buffer)
-        (setq n (call-process "global" nil t nil "-pr"))
-        (if (= n 0)
-          (setq gtags-rootdir (file-name-as-directory (buffer-substring (point-min)(1- (point-max)))))
-         (setq gtags-rootdir default-directory))
-        (kill-buffer buffer)))
-    (setq input (read-file-name "Visit root directory: "
-			gtags-rootdir gtags-rootdir t))
+  (let (path input n)
+    (if gtags-rootdir
+      (setq path gtags-rootdir)
+     (setq path (gtags-get-rootpath))
+     (if (equal path nil)
+       (setq path default-directory)))
+    (setq input (read-file-name "Visit root directory: " path path t))
     (if (equal "" input) nil
       (if (not (file-directory-p input))
         (message "%s is not directory." input)
@@ -428,12 +454,20 @@
     (setq buffer (generate-new-buffer (generate-new-buffer-name (concat "*GTAGS SELECT* " prefix tagname))))
     (set-buffer buffer)
     ;
-    ; If project directory is specified, 'Gtags Select Mode' print paths using
-    ; the relative path name from the project directory else absolute path name.
+    ; Path style is defined in gtags-path-style:
+    ;   root: relative from the root of the project (Default)
+    ;   relative: relative from the current directory
+    ;	absolute: absolute (relative from the system root directory)
     ;
-    (if gtags-rootdir
-        (cd gtags-rootdir)
-        (setq option (concat option "a"))) 
+    (cond
+     ((equal gtags-path-style 'absolute)
+      (setq option (concat option "a")))
+     ((equal gtags-path-style 'root)
+      (let (rootdir)
+        (if gtags-rootdir
+          (setq rootdir gtags-rootdir)
+         (setq rootdir (gtags-get-rootpath)))
+        (if rootdir (cd rootdir)))))
     (message "Searching %s ..." tagname)
     (if (not (= 0 (if (equal flag "C")
                       (call-process "global" nil t nil option context tagname)
