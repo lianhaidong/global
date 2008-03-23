@@ -48,7 +48,7 @@ This manual is for @acronym{GNU} GLOBAL (version @value{VERSION},
 across diverse environments.
 @sp 2
 Published by Tama Communications Corporation @*
-Tama-shi, Tokyo, Japan.@*
+Tama-city, Tokyo, Japan.@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.2
@@ -84,12 +84,13 @@ This manual documents version @value{VERSION} of the GNU GLOBAL source code tag 
 @node Introduction
 @chapter Overview of this tool
 
-@section What is this?
+@section What is GNU GLOBAL?
 
-GLOBAL is a source code tag system that works the same way
+GNU GLOBAL is a source code tag system that works the same way
 across diverse environments such as emacs editoer, vi editor,
 less viewer, bash shell, various web browsers, etc.
-You can locate specified objects in your source files and move there easily.
+You can locate specified objects such as functions, macros, structs, classes
+in your source files and move there easily.
 It is useful for hacking a large project which contains many subdirectories,
 many @code{#ifdef} and many @code{main()} functions.
 It is similar to ctags or etags but is different from them at the point of
@@ -101,8 +102,8 @@ GNU GLOBAL can treat a source tree containing subdirectories as a project.
 Anywhere in the project, you can use the function of high-performance
 tag database. You need not specify where the database is.
 Instead, global(1) locates it by itself.
-Because of this feature, you can do your work while moving freely in a project,
-and among many projects.
+Because of this feature, you can move freely in a project,
+and in and out of many projects.
 
 @section Features
 
@@ -118,24 +119,25 @@ GNU GLOBAL has following features:
 	@item Vi editor (nvi, elvis, vim)
 	@item Less viewer
 	@item Emacs editor (emacs, mule, xemacs)
-	@item Glimmer editor
 	@item Web browser
 	@item Doxygen documentation system
 	@end itemize
 @item find the locations of specified object quickly.
 @item locate not only object definitions but also object references.
 @item allows duplicate objects.
-@item locate paths which include specified pattern.
-@item search not only in a source tree but also in library paths.
-@item understand POSIX 1003.2 regular expression.
-@item support idutils as an external search engine.
-@item generate a hypertext of source code.
-@item tag files are independent of machine architecture.
-@item plugin parser is available to treat new language.
-@item support incremental updating of tag files.
-@item support customizing with gtags.conf.
+@item locate path names which include specified pattern.
+@item hierarchical search is available.
+@item search not only in a source project but also in library projects.
 @item generate completion list for completing input method.
 @item support various output format.
+@item allows customizing of the set of candidate files to be tagged.
+@item understand POSIX 1003.2 regular expression.
+@item support idutils as an external search engine.
+@item tag files are independent of machine architecture.
+@item support incremental updating of tag files.
+@item plugin parser is available to treat new language.
+@item support customizing with gtags.conf.
+@item generate a hypertext of source code.
 @end itemize
 
 @c ***************************************************************************
@@ -158,7 +160,7 @@ It is a big merit of GLOBAL compared with any other tag systems.
 @section Preparation
 
 First of all, you must execute gtags(1)(@pxref{gtags}) at the root of source tree.
-For example, if you want to browse vi's source code:
+For example, if you want to browse vi's source code in FreeBSD:
 
 @example
 
@@ -167,8 +169,9 @@ For example, if you want to browse vi's source code:
 
 @end example
 
-Gtags traverses subdirectories, picks up source files and makes four databases at the root of
-the source tree.
+Gtags traverses subdirectories, picks up source files and makes four tag files
+at the root of the source tree. After this, the whole of under this directory
+is treated as a project.
 
 @example
 
@@ -179,14 +182,16 @@ the source tree.
 
 @itemize @bullet
 @item @file{GTAGS}
-        database of object definitions
+        definition database
 @item @file{GRTAGS}
-        database of object references
+        reference database
 @item @file{GSYMS}
-        database of other symbols
+        symbol database
 @item @file{GPATH}
-        database of path names
+        path name database
 @end itemize
+
+The GSYMS is for the symbols which are not defined in GTAGS.
 
 You should prepare for considerable disk space for the tag files.
 For example, FreeBSD 7.0 kernel source code requires the following disk space.
@@ -210,8 +215,13 @@ Consider the following source tree:
 
 @example
 
-    ROOT/           <- @r{the root of source tree (GTAGS,GRTAGS,...)}
+/home/user/
+ |
+ |-ROOT/      <- @r{the root of source tree (GTAGS,GRTAGS,...)}
     |
+    |- README       .....   +---------------+
+    |                       |The function of|
+    |                       +---------------+
     |- DIR1/
     |  |
     |  |- fileA.c   .....   +---------------+
@@ -240,13 +250,13 @@ Consider the following source tree:
 @end example
 
 @itemize @bullet
-@item You can get the relative path of the files which have specified objects
-from anywhere in the source tree. You need not specify where the tag file is.
-Global(1) locates it by itself instead.
+@item You can execute global(1) from anywhere in the source tree.
+By default, you get the relative path of the files which include specified object.
+You need not specify where the tag file is. Global(1) locates it by itself instead.
 
 @example
 
-    $ cd ROOT
+    $ cd /home/user/ROOT
     $ global func1
     DIR1/fileB.c            # @r{func1() is defined in fileB.c}
     $ cd DIR1
@@ -255,6 +265,17 @@ Global(1) locates it by itself instead.
     $ cd ../DIR2
     $ global func1
     ../DIR1/fileB.c         # @r{relative path from DIR2}
+
+@end example
+
+Global command is possible to use only when you are in a project.
+If you are out of any project, it brings an error message like follows:
+
+@example
+
+    $ cd /home/user
+    $ global func1
+    global: GTAGS not found.
 
 @end example
 
@@ -272,7 +293,7 @@ Global(1) locates it by itself instead.
 
 @example
 
-    $ cd ROOT
+    $ cd /home/user/ROOT
     $ global 'func[1-3]'
     DIR1/fileB.c            # @r{func1, func2 and func3 are matched}
     DIR2/fileC.c
@@ -303,7 +324,7 @@ It is similar to the @samp{-x} option in ctags(1).
 
 @end example
 
-@item The -s command locates symbols which are not defined in @file{GTAGS}.
+@item The @samp{-s} command locates symbols which are not defined in @file{GTAGS}.
 @opindex -s
 
 @example
@@ -313,8 +334,7 @@ It is similar to the @samp{-x} option in ctags(1).
 
 @end example
 
-@item The -g command locates the lines which have specified patterns.
-It is similar to grep(1).
+@item The @samp{-g} command locates the lines which have specified pattern.
 @opindex -g
 
 @example
@@ -324,7 +344,34 @@ It is similar to grep(1).
 
 @end example
 
-@item The -P command enables you to locate paths which include specified
+It is similar to egrep(1) but is far convenient because it searches
+only in the source files in the project.
+If you want to search only in text files like @file{README} then please
+use the @samp{-O} option.
+@opindex -O
+
+@example
+
+    $ global -xgO 'func'
+    func               1 README   The function of 
+
+@end example
+
+To search in the both then use the @samp{-o} option instead.
+@opindex -o
+
+As well as the egrep, the @samp{-i} and @samp{-e} option are available.
+@opindex -i
+@opindex -e
+If you want to make global's regular expression compatible with grep(1),
+use the @samp{-G} option.
+@opindex -G
+You can even make the output format of global(1) grep style
+using the @samp{--result=grep} option.
+@opindex --result
+Of course, these options can be used even by other commands.
+
+@item The @samp{-P} command enables you to locate path names which include specified
 pattern.
 @opindex -P
 
@@ -342,7 +389,7 @@ pattern.
 
 @end example
 
-@item The -f command enables you make a list of objects of specified file.
+@item The @samp{-f} command enables you get a list of objects in specified file.
 @opindex -f
 
 @example
@@ -354,73 +401,32 @@ pattern.
 
 @end example
 
+@item The @samp{-l} option limits the retrieval object under the current directory.
+@opindex -l
+@example
+
+    $ cd DIR1
+    $ global -xl func[1-3]
+    func1        1 fileB.c      func1()@{...@}
+
+@end example
 @end itemize
 
 @c ***************************************************************************
 @node   Applied usage
 @section Applied usage
 
-You can make multiple tag files.
-For example, you can execute gtags(1) at @file{ROOT/}, @file{version1.0/} and @file{version2.0/}.
-
-@example
-
-
-    ROOT/                   <- @r{the root of source tree      (GTAGS,...)}
-    |
-    |- version1.0/          <- @r{the root of version1.0       (GTAGS,...)}
-    |  |
-    |  |- file.c    .....   +---------------+
-    |                       |func1()@{ i++; @}|
-    |                       +---------------+
-    |
-    |- version2.0/          <- @r{the root of version2.0       (GTAGS,...)}
-       |
-       |- file.c    .....   +---------------+
-                            |func1()@{ i--; @}|
-                            +---------------+
-
-@end example
-
 @itemize @bullet
-@item When you are in the @file{version1.0} directory, global will locate objects
-only in the @file{version1.0} directory.
+@item You can customize the set of candidate files to be tagged.
+@opindex -f
 
 @example
 
-    $ cd ROOT/version1.0
-    $ global -x func1
-    func1              1 file.c          func1()@{ i++; @}
+    $ find . -type f -print >/tmp/list     # make a file set
+    $ vi /tmp/list                         # edit the file set
+    $ gtags -f /tmp/list
 
 @end example
-
-@item When you are in the @file{version2.0}, global will locate objects only
-in the @file{version2.0}.
-
-@example
-
-    $ cd ROOT/version2.0
-    $ global -x func1
-    func1              1 file.c          func1()@{ i--; @}
-
-@end example
-
-@item If you are at the @file{ROOT/}, or you set the @code{GTAGSROOT}
-environment variable to @file{ROOT/},
-then global will locate objects in both directories.
-
-@example
-
-    $ cd ROOT
-    $ global -x func1
-    func1              1 version1.0/file.c  func1()@{ i++; @}
-    func1              1 version2.0/file.c  func1()@{ i--; @}
-
-@end example
-
-@end itemize
-
-@itemize @bullet
 
 @item If your source files are on a read-only device, such as CDROM,
 then you cannot make databases at the root of the source tree.
@@ -437,6 +443,21 @@ the @code{GTAGSROOT} environment variable.
     $ global func
 
 @end example
+
+There is another method for it. Since global(1) locates tag files also in
+@file{/usr/obj} + <current directory>, you can setup like follows:
+
+@example
+
+    $ mkdir -p /usr/obj/cdrom/src
+    $ cd /cdrom/src                 # @r{the root of source tree}
+    $ gtags /usr/obj/cdrom/src      # @r{make tag file in /usr/obj/cdrom/src}
+    $ global func
+
+@end example
+
+The value @file{/usr/obj} can be changed by environment variable
+@code{MAKEOBJDIRPREFIX}.
 
 @item If you want to locate objects that are not defined in the source tree,
 then you can specify library directories with the @code{GTAGSLIBPATH}
@@ -465,7 +486,23 @@ If @file{GTAGS} is not found in the directory, global ignores it.
 
 @end example
 
-@item If you forget a object name, you can use the -c (complete) command.
+Or, you can take a more straightforward way to do the same thing.
+In the following example, we treat as if the system library and kernel
+are part of our project.
+
+@example
+
+    $ ln -s /usr/src/lib .
+    $ ln -s /usr/src/sys .
+    $ gtags
+    $ global strlen
+    lib/libc/string/strlen.c
+    $ global access
+    sys/kern/vfs_syscalls.c
+
+@end example
+
+@item If you forget a object name, you can use the @samp{-c} (complete) command.
 @opindex -c
 
 @example
@@ -484,7 +521,7 @@ If @file{GTAGS} is not found in the directory, global ignores it.
 
 @end example
 
-@item You can use the -c command with the complete command in shell.
+@item You can use the @samp{-c} command with the complete command in shell.
 
 In bash:
 @example
@@ -603,7 +640,7 @@ Yor can manage a directory list by cookie facility.
 @subsection Preparation
 
 First, do the preparation of global. @xref{Preparation}.
-And you can invoke bash(1) with ---rcfile option.
+And you can invoke bash(1) with @samp{--rcfile} option.
 @example
 
     $ bash --rcfile /usr/local/share/gtags/globash.rc
@@ -671,6 +708,19 @@ If you need help then please type 'ghelp'.
 
 If no tag name is specified then the latest tag name is used.
 
+@item Input completion facility is available.
+
+For each command, suiable completion is applied.
+@example
+    [/usr/src/sys] x kmem_@kbd{TAB}@kbd{TAB}
+    kmem_alloc          kmem_free           kmem_malloc         
+    kmem_alloc_nofault  kmem_free_wakeup    kmem_object         
+    kmem_alloc_wait     kmem_init           kmem_suballoc       
+    [/usr/src/sys] x kmem_s@kbd{TAB}
+    [/usr/src/sys] x kmem_suballoc
+
+@end example
+
 @item You can select a tag by the show command.
 @example
 
@@ -697,6 +747,20 @@ environment variable or temporarily by options.
     (Preloaded mozilla show boot/alpha/boot1/boot1.c at line 227.)
 
 @end example
+
+You can use the following commands (and abbreviated form):
+@table @code
+@item first (@kbd{f})
+go to the first tag.
+@item last (@kbd{l})
+go to the last tag.
+@item next (@kbd{n})
+go to next tag.
+@item prev (@kbd{p})
+go to previous tag.
+@item 1,2,3,..,999
+go to nth tag
+@end table
 
 @item You can use vi-like tag stack. You can return previous tag list by
 the pop or @kbd{CTL-T} command.
@@ -768,7 +832,7 @@ Cookie directories are valid until you delete them.
 @node Less viewer
 @section Less using GLOBAL
 
-You can use GLOBAL as the tag system of less viewer instead of ctags.
+You can use GLOBAL as the tag system of less(1) viewer instead of ctags.
 
 @menu
 * Features(less)::                       Features.
@@ -782,7 +846,7 @@ You can use GLOBAL as the tag system of less viewer instead of ctags.
 
 @itemize @bullet
 @item
-You can use most of GLOBAL's facilities from less-370 or the later.
+You can use most of GLOBAL's facilities from less viewer.
 @item
 Less viewer support duplicated tag.
 @end itemize
@@ -832,7 +896,7 @@ then please specify the tag file explicitly like this:
 @end example
 
 In the same way, you can use @file{GTAGS}, @file{GRTAGS}, @file{GSYMS},
-@file{GPATH} as a tag file.
+@file{GPATH} as tag files.
 
 @item If a number of objects are located, less goes to the first tag.
 You can go to next tag by typing @kbd{t} and back by typing @kbd{T}.
@@ -847,9 +911,9 @@ go to previous tag.
 @item
 In a less session, you can use @kbd{:t} command to locate new symbol.
 But in this case, you cannot change tag file from one specified by
-@kbd{-T} option.
+@samp{-T} option.
 
-@item With the @kbd{-T-} option, less read standard input as a tag file.
+@item With the @samp{-T-} option, less read standard input as a tag file.
 You can connect global and less with pipe line. It is very convenient.
 @example
 
@@ -978,7 +1042,7 @@ You must start nvi under the source tree described in @ref{Preparation}.
     ab gt perl tag qw(
 @end example
 
-@item To go to the referenced point of func1, add the option @kbd{-r}
+@item To go to the referenced point of func1, add the option @samp{-r}
 @example
 
     :perl tag qw(-r func1)
@@ -1011,7 +1075,7 @@ to @kbd{:perl tag qw(-s @var{current token})}.
 
 It is similar to @kbd{CTL-]} command.
 
-@item You can use the @kbd{-s} option. It locates symbols which are not
+@item You can use the @samp{-s} option. It locates symbols which are not
 defined in @file{GTAGS}.
 @example
 
@@ -1019,7 +1083,7 @@ defined in @file{GTAGS}.
 
 @end example
 
-@item The @kbd{-g}, @kbd{-f} and @kbd{-P} option are also available.
+@item The @samp{-g}, @samp{-f} and @samp{-P} option are also available.
 It works like command line.
 @example
 
@@ -1258,6 +1322,9 @@ Intelligent recognition of the current token and its type.
 Special character '%', '#' and input completion are available.
 @end itemize
 
+To our regret, tag stack facility is not available.
+If you want to use the facility, please try gtags-cscope
+@xref{Gtags-cscope (fake cscope)} instead.
 @c ***************************************************************************
 @node   Preparation(vim)
 @subsection Preparation
@@ -1402,14 +1469,14 @@ If you are editing @file{main.c} itself, you can use '%' instead.
 
 @example
 
-    :Gtags -gi paTtern         <- @r{match to both 'PATTERN' and 'pattern'.}
+    :Gtags -gi paTtern    <- @r{match to both 'PATTERN' and 'pattern'.}
 
-    :Gtags -POi make           <- @r{match to Makefile but doesn't match to makeit.c.}
+    :Gtags -POi make      <- @r{match to Makefile but doesn't match to makeit.c.}
 
 @end example
 	About the other options, please see @xref{global}.
 
-@item The GtagsCursor command brings you to the definition or reference point of the current token.
+@item The GtagsCursor command brings you to the definition or reference of the current token.
 
 	If the context of the current token is a definition then it is equivalent to
 	@kbd{:Gtags -r @var{current token}}.
@@ -1428,7 +1495,7 @@ If you are editing @file{main.c} itself, you can use '%' instead.
     map <C-\>^] :GtagsCursor<CR>
 @end example
 
-Though mapping ':GtagsCursor' to '^]' is a suitable allocation,
+Though the mapping ':GtagsCursor' to '^]' seems suitable,
 it will bring an inconvenience in the help screen.
 
 @item If you have the hypertext generated by htags(1) then you can display
@@ -1493,11 +1560,10 @@ First, do the preparation of global. @xref{Preparation}.
 Second, to use global from emacs, you need to load the @file{gtags.el}
 and execute gtags-mode function in it.
 
-@enumerate
-@item Write the call to autoload function to your @file{$HOME/.emacs},
-       start emacs and execute gtags-mode function.
-       If you put @file{gtags.el} in a directory other than the standard
-       macro directory, you need to add it to @code{load-path}.
+Write the call to autoload function to your @file{$HOME/.emacs},
+start emacs and execute gtags-mode function.
+If you put @file{gtags.el} in a directory other than the standard
+macro directory, you need to add it to @code{load-path}.
 
 @example
 
@@ -1515,8 +1581,9 @@ and execute gtags-mode function in it.
 
 @end example
 
-If you want to get into gtags-mode on c-mode then you can append
-the following code to your @file{$HOME/.emacs}.
+If you want to get into gtags-mode whenever you get into c-mode
+then you can append the following code to your @file{$HOME/.emacs}.
+
 @example
 
       (setq c-mode-hook
@@ -1525,22 +1592,6 @@ the following code to your @file{$HOME/.emacs}.
       ))
 
 @end example
-    
-@item Specify the root directory of the source tree using
-@code{gtags-visit-rootdir}.
-If you have tag files in /usr/src/sys then please do like this:
-@example
-
-    Visit root directory: /usr/src/sys
-
-@end example
-
-Though this is not necessarily indispensable, this makes the display of
-paths of the tag list (see blow) relative from the root directory. By default,
-the display is absolute, that is, relative from the system's root directory.
-This is long and hard to see usually.
-@end enumerate
-
 
 @c ***************************************************************************
 @node   Usage(emacs)
@@ -1564,6 +1615,7 @@ and you can see a prompt in the mini-buffer. Then input the tag name.
 
 @item Tag name completion is available.
      You need to execute @code{gtags-make-complete-list} command before it.
+
 @example
 
     Find tag: fu@kbd{TAB}
@@ -1572,8 +1624,8 @@ and you can see a prompt in the mini-buffer. Then input the tag name.
 
 @end example
 
-@item If a number of objects are located, emacs goes into @dfn{GTAGS SELECT MODE}
-     like this:
+@item If a number of objects are located, emacs goes into @dfn{GTAGS SELECT MODE} like this:
+
 @example
 
     +-------------------------------------------------------------
@@ -1592,11 +1644,37 @@ and you can see a prompt in the mini-buffer. Then input the tag name.
 
 @end example
 
-You can select a tag line by any emacs command and pressing @kbd{RET},
+Please select a tag line by any emacs command and press @kbd{RET},
 and you can go to the tag's point. When you want to go to the next or
 the previous tag, you can return to 'GTAGS SELECT MODE' with @code{gtags-pop-stack}
 and reselect.
-If the display of the paths is absolute, please try @code{gtags-visit-rootdir}.
+
+You can customize the path style in this mode by setting @code{gtags-path-style}
+variable.
+
+@table @code
+@item @code{root}
+relative from the root of the project (Default)
+@item @code{relative}
+relative from the current directory
+@item @code{absolute}
+absolute (relative from the system root directory)
+@end table
+
+There are two method to set this variable:
+@itemize @bullet
+@item You can change it dynamically using the @code{customize} command of emacs.
+
+You will find the entry in the Programming/Tools/Gtags group.
+
+@item You can change it when emacs is loaded using @file{.emacs} file like this:
+
+@example
+    (setq gtags-mode-hook
+      '(lambda ()
+        (setq gtags-path-style 'relative)))
+@end example
+@end itemize
 
 @item @code{gtags-find-tag-from-here} command is available.
 
@@ -1714,12 +1792,13 @@ in order like this:
 @end example
 
 Then you will find a directory named @file{HTML} in the current directory.
-Htags has rich options. If you are new on htags then you had better use
-the --suggest option.
+
+Htags has rich options. If you are new on htags then you are recommended to use
+the @samp{--suggest} option. This option makes some popular options effective,
+and invokes gtags(1) if there is no tag files.
 
 @example
-    Suggested option:
-    $ htags -vsanohIT
+    $ htags --suggest
 @end example
 
 If http server is available then the -D and -f option are also useful.
@@ -1742,6 +1821,7 @@ You can move the HTML directory to anywhere. It is independent of the
 source code as long as CGI facility is not used.
 
 Using mozilla, you can also utilize the hypertext from your command line like this:
+
 @example
 
     $ mozilla				# @r{load mozilla}
@@ -1751,6 +1831,7 @@ Using mozilla, you can also utilize the hypertext from your command line like th
     (show main.c at 10 on mozilla's screen.)
     
 @end example
+
 But in this case, you must not move the HTML directory from the source directory.
 
 @c ***************************************************************************
