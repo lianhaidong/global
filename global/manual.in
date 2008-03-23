@@ -198,6 +198,9 @@
 	@item{@var{GTAGSLABEL}}
 		If this variable is set, its value is used as the label
 		of configuration file. The default is @code{default}.
+	@item{@var{MAKEOBJDIRPREFIX}}
+		If this variable is set, @file{$MAKEOBJDIRPREFIX<current directory>}
+		is used as the candidate directory for tag files.
 	@end_itemize
 @CONFIGURATION
 	The following configuration variables affect the execution of @name{global}:
