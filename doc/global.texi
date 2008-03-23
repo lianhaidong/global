@@ -191,7 +191,7 @@ is treated as a project.
         path name database
 @end itemize
 
-The GSYMS is for the symbols which are not defined in GTAGS.
+The @file{GSYMS} is for the symbols which are not defined in @file{GTAGS}.
 
 You should prepare for considerable disk space for the tag files.
 For example, FreeBSD 7.0 kernel source code requires the following disk space.
@@ -708,9 +708,8 @@ If you need help then please type 'ghelp'.
 
 If no tag name is specified then the latest tag name is used.
 
-@item Input completion facility is available.
+@item Input completion facility is available. For each command, suiable completion is applied.
 
-For each command, suiable completion is applied.
 @example
     [/usr/src/sys] x kmem_@kbd{TAB}@kbd{TAB}
     kmem_alloc          kmem_free           kmem_malloc         
@@ -750,20 +749,22 @@ environment variable or temporarily by options.
 
 You can use the following commands (and abbreviated form):
 @table @code
-@item first (@kbd{f})
+@item list (@kbd{l})
+print tag list.
+@item first
 go to the first tag.
-@item last (@kbd{l})
+@item last
 go to the last tag.
 @item next (@kbd{n})
 go to next tag.
 @item prev (@kbd{p})
 go to previous tag.
-@item 1,2,3,..,999
+@item show n (@kbd{1,2,3,..,999})
 go to nth tag
 @end table
 
 @item You can use vi-like tag stack. You can return previous tag list by
-the pop or @kbd{CTL-T} command.
+the @kbd{pop} or @kbd{CTL-T} command.
 @example
 
     [/usr/src/sys] x main
@@ -781,7 +782,9 @@ the pop or @kbd{CTL-T} command.
 
 @end example
 
-@item You can memory tags using the 'mark' command.
+You can print the tag stack by @kbd{tags} command.
+
+@item You can memory tags using the @kbd{mark} command.
 @example
 
     [/usr/src/sys] x fork
@@ -806,8 +809,8 @@ the pop or @kbd{CTL-T} command.
 Marked tags are valid until you get out of the current project or quit
 the current bash session.
 
-@item You can memory directories using the 'cookie' command, and return there
-using the 'warp' command.
+@item You can memory directories using the @kbd{cookie} command,
+and return there using the @kbd{warp} command.
 @example
 
     [/usr/src/sys] cookie               <- @r{drop a cookie.}
@@ -1324,7 +1327,7 @@ Special character '%', '#' and input completion are available.
 
 To our regret, tag stack facility is not available.
 If you want to use the facility, please try gtags-cscope
-@xref{Gtags-cscope (fake cscope)} instead.
+@xref{Gtags-cscope (fake cscope)}.
 @c ***************************************************************************
 @node   Preparation(vim)
 @subsection Preparation
