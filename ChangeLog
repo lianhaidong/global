@@ -38,7 +38,7 @@ May 5 2007, by Shigio YAMAGUCHI
 March 10 2007, Shigio YAMAGUCHI
 
 	* gtags.el: Added (provide 'gtags).
-	* libutil/env.c: Use putenv(3) if it is avaiable else use setenv(3).
+	* libutil/env.c: Use putenv(3) if it is available else use setenv(3).
 	  Some systems don't have setenv(3).
 
 January 29 2007, Shigio YAMAGUCHI
@@ -272,7 +272,7 @@ November 11 2004, Shigio YAMAGUCHI
         * libutil/strmake.c: strtrim() added.
         * libutil/varray.c added.
 
-        Decrease in dependancy to external commands:
+        Decrease in dependency to external commands:
         * The sed(1), sort(1) and find(1) are not necessary any longer.
         * The support of find(1) as a method of directory traversing
           was ended. As a result, dirent(3) became indispensable.
@@ -375,7 +375,7 @@ July 2 2003, Shigio YAMAGUCHI
 	  you can get them from GNU ftp site.)
 	* reserved.pl: Generate C and Perl code for locating reserved words.
 	* gtags.c: The --createdb and the --readdb option which used for anchor
-	  database were removed, becase there is no necessity any longer.
+	  database were removed, because there is no necessity any longer.
 
 June 5 2003, Shigio YAMAGUCHI
 
@@ -413,7 +413,7 @@ November 9 2002, Shigio YAMAGUCHI
 
 	* gtags.c: --convert/--createdb/--readdb/--scandb option added.
 	* btreeop: replaced with gtags and removed.
-	* split.c: use SPLIT structure which manage substring.
+	* split.c: use SPLIT structure which manage sub-string.
 	* gtagsop.c: now format version is 3 (pathindex format).
 	* configure.ac: fixed for autoconf-2.53 and renamed.
 	* acconfig.h: removed because it is considered to be obsoleted.
@@ -441,7 +441,7 @@ March 30 2002, Shigio YAMAGUCHI
 	* conf.c: added GPATH,GTAGS,GRTAGS,GSYMS,tags,TAGS,ID to DEFAULTSKIP.
 	* find.c: decreased dependency on find(1).
 	  removed length argument from find_read().
-	* global.texi: documentation reconstucted.
+	* global.texi: documentation reconstructed.
 	* globash.rc: --no-wait option added to emacsclient.
 	* gozilla: gozilla directory added.
 	* abs2rel.c: added for path conversion. pathfilter with sed(1)
@@ -529,7 +529,7 @@ September 3 2000, Shigio YAMAGUCHI
 	* gctags/C.c: ignore 'extern' to treat 'extern func() { ...}'. 
 	* global.c: use grep(1) if grep and xargs(1) are available.
 	* global.c: use find(1) if find is available.
-	* gtags.el: reimplement as a minor mode (gtags-mode) and
+	* gtags.el: re-implement as a minor mode (gtags-mode) and
 	  a major mode (gtags-select-mode) to work with other major mode
 	  like c-mode.
 	  prefix 'gtags-' added to all functions to avoid conflicts with
@@ -562,7 +562,7 @@ August 26, 1999, Shigio YAMAGUCHI
 
 	* Cygwin support code added.
 	  David Aspinwall ported Global-3.44 into cygwin32 environment.
-	  I refered his code but I didn't use it in as is style, because it
+	  I referred his code but I didn't use it in as is style, because it
 	  conflicted against Dan Fandrich's Windows 32 code. I wrote new
 	  code for cygwin32 borrowing David's idea.
 	  So any bugs in this area are therefore my fault, not David's.
@@ -587,7 +587,7 @@ March 22, 1999, Shigio YAMAGUCHI
 	* htags: --action=url, --id=id and --nocgi options added to realize
 	  Ron Lee's htmake. (internal use only - undocumented)
 	* Makefile.generic: DESTDIR macro added.
-	* db(3) 1.85 imported to keep machine independency in generic make.
+	* db(3) 1.85 imported to keep machine independence in generic make.
 	  'dbpatches' already has been applied.
 
 January 20, 1999, Shigio YAMAGUCHI
@@ -619,9 +619,9 @@ November 8, 1998, Shigio YAMAGUCHI
 September 13, 1998, Shigio YAMAGUCHI
 
 	* Makefile: library name changed from libutil.a to libgloutil.a
-	  becase that conflicts against other library.
+	  because that conflicts against other library.
 	* gctags: rewritten completely.
-	  Thanks to Ken Arnold and the other people who developped BSD ctags(1).
+	  Thanks to Ken Arnold and the other people who developed BSD ctags(1).
 	  Without it, GLOBAL had never been here.
 
 August 31, 1998, Shigio YAMAGUCHI
@@ -684,7 +684,7 @@ September 20, 1997, Shigio YAMAGUCHI
 	* gtags, htags, global: don't restrict PATH to '/bin:/usr/bin'
 	  like version 1.9 and the former.
 	* htags: shut a security hole.
-	* all command: description of exit code in online manual fixed.
+	* all command: description of exit code in on-line manual fixed.
 	* gozilla: support X-property communication to mozilla.
 	  See http://home.netscape.com/newsref/std/x-remote.html.
 
@@ -700,7 +700,7 @@ April 21, 1997, Shigio YAMAGUCHI
 
 	* gctags, btreeop: a few changes for SunOS 4.1.3.
 	* global: 'format version record' implemented.
-	  (It will be used in the furture.)
+	  (It will be used in the future.)
 	* htags: use temporary directory specified by TMPDIR environment
 	  variable.
 	* nvi-1.79.diff: added for nvi-1.79.

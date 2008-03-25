@@ -101,7 +101,7 @@ Version 5.3 - November 20 2006, by Shigio YAMAGUCHI
 [OTHER CHANGES]
 * global:  Added new option -O(--only-other).
 * htags: Added some new options and new arguments which are synonyms of config variable.
-  This decreases dependence on configration file.
+  This decreases dependence on configuration file.
 
   new option              | config variable
   ------------------------+-------------------------
@@ -128,7 +128,7 @@ Version 5.3 - November 20 2006, by Shigio YAMAGUCHI
     If project directory is specified using 'gtags-visit-rootdir', gtags.el print path
     using the relative path name from the project directory, else print absolute path name.
   - Support dynamic completing-read of tag name.
-    gtags-make-complete-list is deprecated. You can enjoy tag name completetion without
+    gtags-make-complete-list is deprecated. You can enjoy tag name completion without
     invoking this command.
 
 [BUG FIXED]
@@ -253,7 +253,7 @@ Improvement of efficiency:
   behavior as older version.
 * Htags was improved of performance by decreasing the frequency
   of the parser invoking.
-* Htags was improved of performance by omiting flushing temporary
+* Htags was improved of performance by omitting flushing temporary
   files to the disk.
 
 Fixed bugs:
@@ -363,7 +363,7 @@ New features:
   - C_SYMBOL_NAME and C_ENTRY are recognized as a macro
     which shows the start of a function.
   - The string which is not closed finishes at the end of line.
-    This behavior is the same as GNU C preprocessor.
+    This behavior is the same as GNU C pre-processor.
   - The check of correspondence of "#if" and "#endif" was deleted.
     This did not exist in version 4.8.
 * New directory '.snprj/' was added to the DEFAULTSKIP list.
@@ -379,7 +379,7 @@ New features:
 * htags: make suffix list of include file configurable.
   (See man htags(1). config variables: include_file_suffixes)
 * htags: try TMP if TMPDIR doesn't exist.(only DJGPP)
-* htags: Warn about unknown preprocessing directive. As the exception,
+* htags: Warn about unknown pre-processing directive. As the exception,
   when unknown preprocessing directive appeared in assembly source,
   it will be recognized as the start of a shell comment.  
 * htags: Add all yacc directives understood by bison-1.875.
@@ -412,7 +412,7 @@ Fixed bugs:
 
 Version 4.7 - Feb 1 2004, by Shigio YAMAGUCHI
 
-* gtags.vim: Plugin script integrates GLOBAL with vim editor.
+* gtags.vim: Plug-in script integrates GLOBAL with vim editor.
 * global.txi: The usage of gtags.vim script added.
 * global: The -o option becomes available with -P command.
 * gctags: [bug fixed] Gctags couldn't recognize definitions in namespace block.
@@ -494,7 +494,7 @@ Performance tuning:
 htags:
 * Remove tag name and line image from cache record. This made cache
   file smaller.
-* The use of the temporary file was suppressed to the minimum by tring to
+* The use of the temporary file was suppressed to the minimum by trying to
   read the source code.
 
 Other modifications:
@@ -537,7 +537,7 @@ Version 4.5.2 - March 29 2003, by Shigio YAMAGUCHI
 * gtags: environment variable GTAGSCACHE added.
 * and many bug fixes.
 
-Special thanks to Hideki Iwamoto san. Most of improvemnts and bug fixes
+Special thanks to Hideki Iwamoto san. Most of improvements and bug fixes
 in this version are written by him.
 
 Version 4.5.1 - November 9 2002, by Shigio YAMAGUCHI
@@ -561,7 +561,7 @@ Version 4.5 - July 4 2002, by Shigio YAMAGUCHI
 * htags: -s(--symbols) option and symbols config variable added.
 * gctags: --langmap option added.
 * gctags: -t and -d option added.
-* gtags: pick up macros with noargument, typedef name and enum member.
+* gtags: pick up macros with no argument, typedef name and enum member.
 * gozilla: -d option added.
 * gctags: assumes __attribute__, const, volatile, wchar_t as a reserved word
   in C language. assumes __attribute__, explicit, mutable, namespace,
@@ -641,9 +641,9 @@ Version 4.1 - July 12, 2001, by Shigio YAMAGUCHI
   position_begin, position_end and icase_path added.
 * htags: path name search facility added.
 * htags: locate dbpath like global(1) does.
-* htags: show addtional information on status bar.
-* gtags: the -i option also locate tag files among cadedite directories.
-* global, gtags: make icase_path allways enable in Windows32 environment.
+* htags: show additional information on status bar.
+* gtags: the -i option also locate tag files among candidate directories.
+* global, gtags: make icase_path always enable in Windows32 environment.
 * global: the -T(--through) option added.
 * gtags, htags: --gtagsconf option added.
 * gtags.conf: 'htags_options' added.
@@ -745,7 +745,7 @@ Version 3.5 - August 23, 1999, by Shigio YAMAGUCHI
 * 'gctags' support parsing of '#ident' and '#warning'.
 * 'gctags' support the definitions like 'C_LABEL(x)' and 'SYMBOL_NAME(x)'.
 * global.conf: quoted char '\' becomes available.
-* global.conf: sort and sed command become parameterized.
+* global.conf: sort and sed command become parametrized.
 * Support for building on Windows 32 systems.
 
 Version 3.44 - March 22, 1999, by Shigio YAMAGUCHI
@@ -818,7 +818,7 @@ Version 2.23 - January 13, 1998, by Shigio YAMAGUCHI
 
 Version 2.22 - December 26, 1997, by Shigio YAMAGUCHI
 
-* gctags support referencies like 'call EXT(xxx)' or 'call _xxx' in assembly
+* gctags support references like 'call EXT(xxx)' or 'call _xxx' in assembly
   source.
 
 Version 2.21 - December 11, 1997, by Shigio YAMAGUCHI
@@ -864,7 +864,7 @@ Version 1.9 - April 21, 1997, by Shigio YAMAGUCHI
 Version 1.81 - April 14, 1997, by Shigio YAMAGUCHI
 
 * A bug is fixed.
-* Supprt obj directory for BSD build system.
+* Support obj directory for BSD build system.
 
 Version 1.8 - April 5, 1997, by Shigio YAMAGUCHI
 
