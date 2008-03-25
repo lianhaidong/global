@@ -48,7 +48,7 @@
 @COMMANDS
 	The following commands are available:
 	@begin_itemize
-	@item{@arg{pattern}}
+	@item{<no command> @arg{pattern}}
 		Print object which match to the @arg{pattern}.
 		Extended regular expressions which are the same as those
 		accepted by @xref{egrep,1} are available.
