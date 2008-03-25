@@ -17,7 +17,7 @@ ___________________________________
 
 		----------------------------------
 
-Frequentry Asked Questions about GLOBAL.
+Frequently Asked Questions about GLOBAL.
 
 ----------------------------------------------------------------------------
 Q0. Please explain about BOKINware.
@@ -41,7 +41,7 @@ A0. GNU GLOBAL is BOKINware. It means that it is free software
 Q1. Does GLOBAL support DOS and Windows 32 environment?
 
 A1. No, it doesn't. GNU GLOBAL supports only UNIX(POSIX) environment.
-    But some outsite projects develop DOS and Windows 32 version of it.
+    But some outside projects develop DOS and Windows 32 version of it.
     Please see:
            http://www.gnu.org/software/global/download.html
 
