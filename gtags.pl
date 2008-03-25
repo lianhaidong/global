@@ -54,7 +54,7 @@
 #
 # You need this version of GLOBAL.
 #
-my($supported_version) = '5.6.3';
+my($supported_version) = '5.7';
 #
 # Quote characters
 #

@@ -4,7 +4,7 @@ ___________________________________
 |  |   |  |  |  |  |     |     |  |
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007
+ Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008
 	Tama Communications Corporation
 
  This file is free software; as a special exception the author gives
@@ -19,6 +19,31 @@ ___________________________________
 
 GNU GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
+
+Version 5.7 - March 25 2008, by Shigio YAMAGUCHI
+
+[CHANGES]
+o gtags: Allows the symbolic links which point to directories.
+  In older version, such symbolic links were ignored with warning messages.
+o gtags-parser: Pick up the names of struct, union, enum and enum member
+  as definitions.
+o global: Added new --from-here option. This option is used by context jump
+  facility. 
+o gtags,htags,gtags-parser: Added new environment variable GTAGSFORCECPP.
+  If this variable is set, each file whose suffix is 'h' is treated as
+  a C++ source file.
+o htags: Removed self-referred links.
+o global.texi: Added descriptions about gtags-cscope (fake cscope).
+o gtags.el, gtags.vim, gtags.pl: More accurate, language independent context jump.
+o gtags.el: Customizable path style in [GTAGS SELECT MODE] (gtags-path-style).
+
+[INCOMPATIBLE CHANGES]
+o gtags.el: Changed the path style in [GTAGS SELECT MODE] relative from the
+  root of the current project. In older version, it was absolute by default.
+
+[FIXED BUGS]
+o gtags: failed to process new GCC source code.
+o gtags.vim: completion facility didn't work with the -f option of Gtags.
 
 Version 5.6.2 - October 26 2007, by Shigio YAMAGUCHI
 

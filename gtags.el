@@ -24,7 +24,7 @@
 ;; Author: Tama Communications Corporation
 ;; Version: 2.4
 ;; Keywords: tools
-;; Required version: GLOBAL 5.6.3 or later
+;; Required version: GLOBAL 5.7 or later
 
 ;; Gtags-mode is implemented as a minor mode so that it can work with any
 ;; other major modes. Gtags-select mode is implemented as a major mode.
