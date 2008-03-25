@@ -70,7 +70,7 @@
 		By default, object lists are generated statically.
 		Though this option decrease both the size and the generation
 		time of the hypertext, you need to set up a web server, and 
-		you cannot move the hypertext from the source directroy.
+		you cannot move the hypertext from the source directory.
 	@item{@option{-d}, @option{--dbpath} @arg{dbpath}}
 		Specifies the directory in which @file{GTAGS} and @file{GRTAGS}
 		exist. The default is the current directory.
@@ -81,7 +81,7 @@
 	@item{@option{-f}, @option{--form}}
 		Support search form using CGI program.
 		You need to set up a web server, and you cannot move
-		the hypertext from the source directroy.
+		the hypertext from the source directory.
 	@item{@option{--full-path}}
 		List file names with full path in the file index.
 		By default, list just the last component of a path.
@@ -164,7 +164,7 @@
 	@end_itemize
 @EXAMPLES
 	$ gtags -v
-	$ htags -sanohITvt 'Welcom to XXX source tour!'
+	$ htags -sanohITvt 'Welcome to XXX source tour!'
 	$ firefox HTML/index.html
 
 	$ htags --suggest
@@ -207,9 +207,9 @@
 		of configuration file. The default is @code{default}.
 	@item{@var{GTAGSCACHE}}
 		If this variable is set, its value is used as the size of
-		btree cache. The default is 5000000 (bytes).
+		B-tree cache. The default is 5000000 (bytes).
         @item{@var{GTAGSFORCECPP}}
-                If this variable is set, each file whoes suffix is 'h' is treated
+                If this variable is set, each file whose suffix is 'h' is treated
                 as a C++ source file.
 	@end_itemize
 @CONFIGURATION
@@ -241,7 +241,7 @@
 	@item{@code{datadir}(string)}
 		Shared data directory. The default is '/usr/local/share' but
 		you can change the value using configure script.
-		@name{Htags} lookup template files in the 'gtags' directory
+		@name{Htags} look up template files in the 'gtags' directory
 		in this data directory.
 	@item{@code{definition_header}(no|before|right|after)}
 		Position of function header. The default is 'no'.
@@ -278,9 +278,9 @@
 	@item{@code{other_files}(boolean)}
 		File index includes not only source files but also other files. The default is false.
 	@item{@code{position_begin}(string)}
-		Begin tag for posiotion mark. The default is '<font color=gray>'.
+		Begin tag for position mark. The default is '<font color=gray>'.
 	@item{@code{position_end}(string)}
-		End tag for posiotion mark. The default is '</font>'.
+		End tag for position mark. The default is '</font>'.
 	@item{@code{reserved_begin}(string)}
 		Begin tag for reserved word. The default is '<b>'.
 	@item{@code{reserved_end}(string)}
@@ -331,7 +331,7 @@
 	Generated hypertext is VERY LARGE.
 	In advance, check the space of your disk.
 
-	PHP supprt is far from complete.
+	PHP support is far from complete.
 @AUTHOR
 	Tama Communications Corporation.
 @HISTORY

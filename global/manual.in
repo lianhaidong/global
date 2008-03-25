@@ -37,7 +37,7 @@
 	@name{Global} find the locations of specified object
 	in C, C++, Yacc, Java, PHP and Assembly source files.
 	@name{Global} can treat a source tree, that is, a directory that
-	has subdirectories and source files as a project.
+	has sub-directories and source files as a project.
 	You can get the relative path of objects from anywhere within the project.
 	@name{Global} can locate not only object definitions but also object
 	references and other symbols.

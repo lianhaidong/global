@@ -93,7 +93,7 @@
 	The following environment variables affect the execution of @name{gtags-parser}:
         @begin_itemize
         @item{@var{GTAGSFORCECPP}}
-                If this variable is set, each file whoes suffix is 'h' is treated
+                If this variable is set, each file whose suffix is 'h' is treated
                 as a C++ source file.
 	@end_itemize
 @DIAGNOSTICS
