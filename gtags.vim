@@ -3,7 +3,7 @@
 " Version: 0.3
 " Last Modified: Mar 6, 2008
 "
-" Copyright and lisence
+" Copyright and licence
 " ---------------------
 " Copyright (c) 2004, 2008 Tama Communications Corporation
 "
@@ -24,20 +24,20 @@
 "
 " Overview
 " --------
-" The gtags.vim plugin script integrates the GNU GLOBAL source code tag system
+" The gtags.vim plug-in script integrates the GNU GLOBAL source code tag system
 " with Vim. About the details, see http://www.gnu.org/software/global/.
 "
 " Installation
 " ------------
-" Drop the file in your plugin directory or source it from your vimrc.
-" To use this script, you need the GNU GLOBAL-5.6.3 or later installed
+" Drop the file in your plug-in directory or source it from your vimrc.
+" To use this script, you need the GNU GLOBAL-5.7 or later installed
 " in your machine.
 "
 " Usage
 " -----
 " First of all, you must execute gtags(1) at the root of source directory
 " to make tag files. Assuming that your source directory is '/var/src',
-" it is neccessary to execute the following commands.
+" it is necessary to execute the following commands.
 "
 "	$ cd /var/src
 "	$ gtags
@@ -83,7 +83,7 @@
 "      go to the previous entry.
 "
 " :ccN'
-"      go to the N'th entry.
+"      go to the Nth entry.
 "
 " :cl'
 "      list all entries.
@@ -176,7 +176,7 @@
 "
 "	% vim '+Gtags main'
 "
-" Also see the chapter of 'vim editor' of the online manual of GLOBAL.
+" Also see the chapter of 'vim editor' of the on-line manual of GLOBAL.
 "
 "	% info global
 "
@@ -193,7 +193,7 @@ if !exists("Gtags_OpenQuickfixWindow")
     let Gtags_OpenQuickfixWindow = 1
 endif
 
-" Character to use to quote patterns and filenames before passing to global.
+" Character to use to quote patterns and file names before passing to global.
 " (This code was drived from 'grep.vim'.)
 if !exists("Gtags_Shell_Quote_Char")
     if has("win32") || has("win16") || has("win95")
@@ -259,7 +259,7 @@ function s:Extract(line, target)
             endif
         else
             let pattern = ''
-            " allow pattern includs blanks.
+            " allow pattern includes blanks.
             while i < length
                  if a:line[i] == "'"
                      let pattern = pattern . g:Gtags_Single_Quote_Char
@@ -330,7 +330,7 @@ function! s:ExecLoad(option, long_option, pattern)
     if v:shell_error != 0
         if v:shell_error != 0
             if v:shell_error == 2
-                call s:Error('invalid arguments. (gtags.vim requires GLOBAL 5.6.3 or later)')
+                call s:Error('invalid arguments. (gtags.vim requires GLOBAL 5.7 or later)')
             elseif v:shell_error == 3
                 call s:Error('GTAGS not found.')
             else
@@ -413,7 +413,7 @@ endfunction
 
 "
 " Show the current position on mozilla.
-" (You need to execute htags(1) in your source direcotry.)
+" (You need to execute htags(1) in your source directory.)
 "
 function! s:Gozilla()
     let lineno = line('.')
