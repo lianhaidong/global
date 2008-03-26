@@ -22,17 +22,12 @@ ChangeLog about GNU GLOBAL
 March 25 2008, by Shigio YAMAGUCHI
 
 	* gtags.vim, gtags.pl: rewritten using new '--from-here' option of global(1).
-        * Removed nvi-1.79-gtags.diff because nvi-1.79 itself is no longer distributed.
 	* Added htags/ghtml.cgi.tmpl.
 	* Described the method of apache setting as a comment in htags/global.cgi.tmpl.in.
 	* Modifications to allow symbolic link.
 	  To realize it, normalize_path() and abs2rel() in libutil/abs2rel.c module is used
 	  instead of realpath(3) library function.
 	* gtags.el and gtags.vim are rewritten using new '--from-here' option of global(1).
-	* Removed nvi-1.79-gtags.diff because nvi-1.79 is an very old package, and is not
-	  distributed any longer.
-	* gtags-parser: Removed the -d(--define) and -t(--typedef) option, because they
-	  have already been the default operation.
 
 October 26 2007, by Shigio YAMAGUCHI
 

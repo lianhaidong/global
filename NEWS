@@ -23,27 +23,43 @@ At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 Version 5.7 - March 25 2008, by Shigio YAMAGUCHI
 
 [CHANGES]
+New functions:
 o gtags: Allows the symbolic links which point to directories.
   In older version, such symbolic links were ignored with warning messages.
 o gtags-parser: Pick up the names of struct, union, enum and enum member
   as definitions.
+o gtags.el, gtags.vim, gtags.pl: More accurate, language independent context jump.
+o gtags.el: Customizable path style in the [GTAGS SELECT MODE].
+  You can select one of the followings:
+	root		relative from the root of the project (Default)
+	relative	relative from the current directory
+	absolute	absolute (=relative from the system root directory)
+
+New options and variables:
 o global: Added new --from-here option. This option is used by context jump
   facility. 
 o gtags,htags,gtags-parser: Added new environment variable GTAGSFORCECPP.
   If this variable is set, each file whose suffix is 'h' is treated as
   a C++ source file.
-o htags: Removed self-referred links.
+o gtags.el: Added new variable for customizing the path style in the
+  [GTAGS SELECT MODE].
+
+Other changes:
 o global.texi: Added descriptions about gtags-cscope (fake cscope).
-o gtags.el, gtags.vim, gtags.pl: More accurate, language independent context jump.
-o gtags.el: Customizable path style in [GTAGS SELECT MODE] (gtags-path-style).
 
 [INCOMPATIBLE CHANGES]
-o gtags.el: Changed the path style in [GTAGS SELECT MODE] relative from the
-  root of the current project. In older version, it was absolute by default.
+o gtags.el: Changed the default path style in [GTAGS SELECT MODE] relative
+  from the root of the current project. In older version, it was absolute
+  by default.
+o nvi-1.79-gtags.diff: Removed because nvi-1.79 is an very old package,
+  and is not distributed any longer.
+o gtags-parser: Removed the -d(--define) and -t(--typedef) option, because they
+  have already been the default operation.
 
 [FIXED BUGS]
-o gtags: failed to process new GCC source code.
-o gtags.vim: completion facility didn't work with the -f option of Gtags.
+o gtags: Failed to process new GCC source code.
+o gtags.vim: Completion facility didn't work with the -f option of Gtags.
+o htags: Self-referred links.
 
 Version 5.6.2 - October 26 2007, by Shigio YAMAGUCHI
 
