@@ -556,7 +556,7 @@ In Tcsh:
 
 @end example
 
-If you like input completion, you had better try globash(@xref{GloBash}).
+If you like input completion, you had better try globash(@pxref{GloBash}).
 It support you in a suitable way without any preparation.
 
 @item You can edit all files which have specified objects by typing
