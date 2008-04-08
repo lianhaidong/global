@@ -172,8 +172,6 @@
 	Probably valid only for FreeBSD and Linux kernel source.
 
 	There is no concurrency control about tag files.
-
-	Symbols in Assembly source files are not extracted for @file{GSYMS}.
 @AUTHOR
 	Tama Communications Corporation.
 @HISTORY

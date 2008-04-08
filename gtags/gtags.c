@@ -697,8 +697,6 @@ updatetags(const char *dbpath, const char *root, IDSET *deleteset, STRBUF *addli
 		xp->put_gpath = 1;
 		if (vflag)
 			xp->verbose = verbose_updatetags;
-		if (db == GSYMS)
-			xp->skip_assembly = 1;
 		while ((ctags_x = xargs_read(xp)) != NULL) {
 			strlimcpy(tag, strmake(ctags_x, " \t"), sizeof(tag));
 			/*
@@ -796,8 +794,6 @@ createtags(const char *dbpath, const char *root, int db)
 	xp->put_gpath = 1;
 	if (vflag)
 		xp->verbose = verbose_createtags;
-	if (db == GSYMS)
-		xp->skip_assembly = 1;
 	while ((ctags_x = xargs_read(xp)) != NULL) {
 		char tag[MAXTOKEN], *p;
 

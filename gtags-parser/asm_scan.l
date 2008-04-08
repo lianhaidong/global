@@ -32,6 +32,7 @@
 
 #include "asm_parse.h"
 #include "asm_res.h"
+#include "defined.h"
 #include "die.h"
 #include "gctags.h"
 #include "linetable.h"
@@ -56,8 +57,19 @@
 	strbuf_puts0(asm_symtable, LEXTEXT);				\
 } while (0)
 
+#undef PUT
+#define PUT() do {							\
+	if (!nflag) {							\
+		printf("%-16s %4d %-16s ", LEXTEXT, LEXLINENO, asm_input_file);	\
+		linetable_print(stdout, LEXLINENO);			\
+	}								\
+} while (0)
+
+extern int asm_target;
 extern const char *asm_input_file;
 extern STRBUF *asm_symtable;
+
+static int last_directive;
 
 %}
 
@@ -126,17 +138,28 @@ WORD		{ALPHA}{ALPHANUM}*
 {NUMBER}	{ return ASM_CONST; }
 
 <INITIAL>{
-	^[ \t]*\#[ \t]*define	{ yy_push_state(PREPROCESSOR_LINE); return ASM_DEFINE; }
-	^[ \t]*\#[ \t]*undef	{ yy_push_state(PREPROCESSOR_LINE); return ASM_UNDEF; }
 	^[ \t]*\#[ \t]*{WORD} {
-		if (asm_reserved_sharp(LEXTEXT, LEXLENG)) {
+		last_directive = asm_reserved_sharp(LEXTEXT, LEXLENG);
+		switch (last_directive) {
+		case 0:
+			yy_push_state(CPP_COMMENT);
+			break;
+		case SHARP_DEFINE:
+			yy_push_state(PREPROCESSOR_LINE);
+			return ASM_DEFINE;
+		case SHARP_UNDEF:
+			yy_push_state(PREPROCESSOR_LINE);
+			return ASM_UNDEF;
+		default:
 			yy_push_state(PREPROCESSOR_LINE);
 			return ASM_DIRECTIVE;
-		} else {
-			yy_push_state(CPP_COMMENT);
 		}
 	}
-	^[ \t]*\#		{ yy_push_state(PREPROCESSOR_LINE); return ASM_DIRECTIVE; }
+	^[ \t]*\# {
+		last_directive = 0;
+		yy_push_state(PREPROCESSOR_LINE);
+		return ASM_DIRECTIVE;
+	}
 	call|jsr	{ return ASM_CALL; }
 	\.macro|macro	{ return ASM_MACRO; }
 	\.equ|equ	{ return ASM_EQU; }
@@ -152,6 +175,28 @@ WORD		{ALPHA}{ALPHANUM}*
 }
 
 <PREPROCESSOR_LINE>{
+	{WORD} {
+		switch (last_directive) {
+		case SHARP_IF:
+		case SHARP_ELIF:
+			if (strcmp(LEXTEXT, "defined") == 0)
+				break;
+			/* FALLTHROUGH */
+		case SHARP_IFDEF:
+		case SHARP_IFNDEF:
+			if (asm_target == REF) {
+				if (defined(LEXTEXT))
+					PUT();
+			} else if (asm_target == SYM) {
+				if (!defined(LEXTEXT))
+					PUT();
+			}
+			break;
+		default:
+			ADD_SYM();
+			return ASM_SYMBOL;
+		}
+	}
 	\n		{ yy_pop_state(); return '\n'; }
 }
 
