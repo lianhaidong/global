@@ -1,7 +1,7 @@
 " File: gtags.vim
 " Author: Tama Communications Corporation
-" Version: 0.3
-" Last Modified: Mar 6, 2008
+" Version: 0.3.1
+" Last Modified: Mar 9, 2008
 "
 " Copyright and licence
 " ---------------------
@@ -308,12 +308,16 @@ endfunction
 "
 function! s:ExecLoad(option, long_option, pattern)
     " Execute global(1) command and write the result to a temporary file.
-    let tmpfile = tempname()
     let isfile = 0
     let option = ''
+    let result = ''
 
     if a:option =~ 'f'
         let isfile = 1
+        if filereadable(a:pattern) == 0
+            call s:Error('File ' . a:pattern . ' not found.')
+            return
+        endif
     endif
     if a:long_option != ''
         let option = a:long_option . ' '
@@ -324,9 +328,8 @@ function! s:ExecLoad(option, long_option, pattern)
     else
         let cmd = 'global ' . option . 'e ' . g:Gtags_Shell_Quote_Char . a:pattern . g:Gtags_Shell_Quote_Char 
     endif
-"    let stuff = input(cmd)
 
-    silent execute "!" . cmd . ">" . tmpfile
+    let result = system(cmd)
     if v:shell_error != 0
         if v:shell_error != 0
             if v:shell_error == 2
@@ -337,10 +340,9 @@ function! s:ExecLoad(option, long_option, pattern)
                 call s:Error('global command failed. command line: ' . cmd)
             endif
         endif
-        call delete(tmpfile)
         return
     endif
-    if getfsize(tmpfile) == 0
+    if result == '' 
         if option =~ 'f'
             call s:Error('Tag not found in ' . a:pattern . '.')
         elseif option =~ 'P'
@@ -350,23 +352,19 @@ function! s:ExecLoad(option, long_option, pattern)
         else
             call s:Error('Tag which matches to ' . g:Gtags_Shell_Quote_Char . a:pattern . g:Gtags_Shell_Quote_Char . ' not found.')
         endif
-        call delete(tmpfile)
         return
     endif
-
-    " Parse the output of 'global -x'.
-    let efm_org = &efm
-    let &efm="%*\\S%*\\s%l%\\s%f%\\s%m"
-    execute "silent! cfile " . tmpfile
-    let &efm = efm_org
 
     " Open the quickfix window
     if g:Gtags_OpenQuickfixWindow == 1
 "        topleft vertical copen
         botright copen
     endif
-    cc
-    call delete(tmpfile)
+    " Parse the output of 'global -x' and show in the quickfix window.
+    let efm_org = &efm
+    let &efm="%*\\S%*\\s%l%\\s%f%\\s%m"
+    cexpr! result
+    let &efm = efm_org
 endfunction
 
 "
