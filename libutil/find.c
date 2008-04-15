@@ -47,6 +47,7 @@
 #include "gparam.h"
 #include "regex.h"
 
+#include "abs2rel.h"
 #include "char.h"
 #include "checkalloc.h"
 #include "conf.h"
@@ -80,6 +81,7 @@ static char **listarray;		/* list for skipping full path */
 static FILE *ip;
 static FILE *temp;
 static char rootdir[MAXPATHLEN+1];
+static char cwddir[MAXPATHLEN+1];
 static int status;
 #define FIND_OPEN	1
 #define FILELIST_OPEN	2
@@ -444,10 +446,10 @@ find_open_filelist(const char *filename, const char *root)
 	 * rootdir always ends with '/'.
 	 */
 	if (!strcmp(root, "/"))
-		strcpy(rootdir, root);
+		strlimcpy(rootdir, root, sizeof(rootdir));
 	else
 		snprintf(rootdir, sizeof(rootdir), "%s/", root);
-
+	strlimcpy(cwddir, root, sizeof(cwddir));
 	/*
 	 * prepare regular expressions.
 	 */
@@ -612,26 +614,13 @@ find_read_filelist(void)
 			}
 			continue;
 		}
-		if (realpath(path, buf) == NULL) {
-			if (!qflag)
-				warning("realpath(\"%s\", buf) failed.", path);
-			continue;
-		}
-		if (!isabspath(buf))
-			die("realpath(3) is not compatible with BSD version.");
 		/*
-		 * Remove the root part of buf and insert './'.
+		 * normalize path name.
+		 *
 		 *	rootdir  /a/b/
 		 *	buf      /a/b/c/d.c -> c/d.c -> ./c/d.c
 		 */
-		path = locatestring(buf, rootdir, MATCH_AT_FIRST);
-		if (path == NULL) {
-			if (!qflag)
-				warning("'%s' is out of source tree.", buf);
-			continue;
-		}
-		path -= 2;
-		*path = '.';
+		path = normalize(path, rootdir, cwddir, buf, sizeof(buf));
 		/*
 		 * GLOBAL cannot treat path which includes blanks.
 		 * It will be improved in the future.

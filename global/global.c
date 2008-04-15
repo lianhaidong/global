@@ -47,7 +47,6 @@
 static void usage(void);
 static void help(void);
 static void setcom(int);
-char *normalize(const char *, const char *, char *, const int);
 int decide_tag_by_context(const char *, const char *, const char *);
 int main(int, char **);
 void completion(const char *, const char *, const char *);
@@ -160,44 +159,6 @@ setcom(int c)
 		usage();
 }
 /*
- * normalize: normalize path name
- *
- *	i)	path	path name
- *	i)	root	root of project
- *	o)	result	normalized path name
- *	i)	size	size of the result
- *	r)		==NULL: error
- *			!=NULL: result
- */
-char *
-normalize(const char *path, const char *root, char *result, const int size)
-{
-	char *p, abs[MAXPATHLEN+1];
-
-	if (normalize_pathname(path, result, size) == NULL)
-		goto toolong;
-	if (*path == '/') {
-		if (strlen(result) > MAXPATHLEN)
-			goto toolong;
-		strcpy(abs, result);
-	} else {
-		if (rel2abs(result, cwd, abs, sizeof(abs)) == NULL)
-			goto toolong;
-	}
-	/*
-	 * Remove the root part of path and insert './'.
-	 *      rootdir  /a/b/
-	 *      path     /a/b/c/d.c -> c/d.c -> ./c/d.c
-	 */
-	p = locatestring(abs, root, MATCH_AT_FIRST);
-	if (p == NULL || *p != '/')
-		return NULL;
-	snprintf(result, size, ".%s", p);
-	return result;
-toolong:
-	die("path name is too long.");
-}
-/*
  * decide_tag_by_context: decide tag type by context
  *
  *	i)	tag	tag name
@@ -209,11 +170,19 @@ int
 decide_tag_by_context(const char *tag, const char *file, const char *lineno)
 {
 	char path[MAXPATHLEN+1], s_fid[32];
+	char rootdir[MAXPATHLEN+1];
 	const char *tagline, *p;
 	DBOP *dbop;
 	int db = GSYMS;
 
-	if (normalize(file, root, path, sizeof(path)) == NULL)
+        /*
+         * rootdir always ends with '/'.
+         */
+        if (!strcmp(root, "/"))
+                strlimcpy(rootdir, root, sizeof(rootdir));
+        else
+                snprintf(rootdir, sizeof(rootdir), "%s/", root);
+	if (normalize(file, rootdir, cwd, path, sizeof(path)) == NULL)
 		die("'%s' is out of source tree.", file);
 	/*
 	 * get file id
@@ -923,7 +892,15 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 	STRBUF *path_list = strbuf_open(MAXPATHLEN);
 	XARGS *xp;
 	char *ctags_x;
+	char rootdir[MAXPATHLEN+1];
 
+        /*
+         * rootdir always ends with '/'.
+         */
+        if (!strcmp(root, "/"))
+                strlimcpy(rootdir, root, sizeof(rootdir));
+        else
+                snprintf(rootdir, sizeof(rootdir), "%s/", root);
 	/*
 	 * teach parser where is dbpath.
 	 */
@@ -956,7 +933,7 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 		/*
 		 * convert the path into relative from the root directory of source tree.
 		 */
-		if (normalize(av, root, path, sizeof(path)) == NULL)
+		if (normalize(av, rootdir, cwd, path, sizeof(path)) == NULL)
 			if (!qflag)
 				fprintf(stderr, "'%s' is out of source tree.\n", path + 2);
 		if (!gpath_path2fid(path, NULL)) {

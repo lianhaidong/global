@@ -30,6 +30,10 @@
 #endif
 
 #include "abs2rel.h"
+#include "die.h"
+#include "gparam.h"
+#include "locatestring.h"
+#include "strlimcpy.h"
 
 /*
 
@@ -163,6 +167,46 @@ EXAMPLE
          path2 == "/usr/src/sys"
 
 */
+/*
+ * normalize: normalize path name
+ *
+ *	i)	path	path name
+ *	i)	root	root of project (must be end with a '/')
+ *	i)	cwd	current directory
+ *	o)	result	normalized path name
+ *	i)	size	size of the result
+ *	r)		==NULL: error
+ *			!=NULL: result
+ */
+char *
+normalize(const char *path, const char *root, const char *cwd, char *result, const int size)
+{
+	char *p, abs[MAXPATHLEN+1];
+
+	if (normalize_pathname(path, result, size) == NULL)
+		goto toolong;
+	if (*path == '/') {
+		if (strlen(result) > MAXPATHLEN)
+			goto toolong;
+		strcpy(abs, result);
+	} else {
+		if (rel2abs(result, cwd, abs, sizeof(abs)) == NULL)
+			goto toolong;
+	}
+	/*
+	 * Remove the root part of path and insert './'.
+	 *      rootdir  /a/b/
+	 *      path     /a/b/c/d.c -> c/d.c -> ./c/d.c
+	 */
+	p = locatestring(abs, root, MATCH_AT_FIRST);
+	if (p == NULL)
+		return NULL;
+	strlimcpy(result, "./", size);
+	strlimcpy(result + 2, p, size - 2);
+	return result;
+toolong:
+	die("path name is too long.");
+}
 /*
  * normalize_pathname: normalize relative path name.
  *
