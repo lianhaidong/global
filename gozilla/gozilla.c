@@ -376,20 +376,21 @@ void
 getURL(const char *file, STRBUF *URL)
 {
 	char *abspath, *p;
+	char rootdir[MAXPATHLEN+1];
 	char buf[MAXPATHLEN+1];
 	STRBUF *sb = strbuf_open(0);
 	const char *htmldir = locate_HTMLdir();
 
+        /*
+         * rootdir always ends with '/'.
+         */
+        if (!strcmp(root, "/"))
+                strlimcpy(rootdir, root, sizeof(rootdir));
+        else
+                snprintf(rootdir, sizeof(rootdir), "%s/", root);
 	if (!test("f", file) && !test("d", file))
 		die("path '%s' not found.", file);
-	if (!(abspath = realpath(file, buf)))
-		die("cannot make absolute path name. realpath(%s) failed.", file);
-	if (!isabspath(abspath))
-		die("realpath(3) is not compatible with BSD version.");
-	/*
-	 * convert path into URL.
-	 */
-	p = abspath + strlen(root);
+	p = normalize(file, rootdir, cwd, buf, sizeof(buf));
 	if (convertpath(dbpath, htmldir, p, sb) == 0)
 		makefileurl(strbuf_value(sb), linenumber, URL);
 	else
@@ -445,19 +446,15 @@ convertpath(const char *dbpath, const char *htmldir, const char *path, STRBUF *s
 	 * new style.
 	 */
 	if (gpath_open(dbpath, 0) == 0) {
-		char key[MAXPATHLEN+1];
 		int tag1 = strbuf_getlen(sb);
 
-		strlimcpy(key, "./", sizeof(key));
-		strcat(key, path + 1);
-		p = gpath_path2fid(key, NULL);
+		p = gpath_path2fid(path, NULL);
 		if (p == NULL) {
 			gpath_close();
 			return -1;
 		}
-		strlimcpy(key, p, sizeof(key));
 		gpath_close();
-		strbuf_puts(sb, key);
+		strbuf_puts(sb, p);
 		for (i = 0; i < lim; i++) {
 			int tag2 = strbuf_getlen(sb);
 			strbuf_puts(sb, suffix[i]);
