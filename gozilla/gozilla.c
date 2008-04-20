@@ -375,7 +375,7 @@ getdefinitionURL(const char *arg, STRBUF *URL)
 void
 getURL(const char *file, STRBUF *URL)
 {
-	char *abspath, *p;
+	char *p;
 	char rootdir[MAXPATHLEN+1];
 	char buf[MAXPATHLEN+1];
 	STRBUF *sb = strbuf_open(0);
@@ -394,7 +394,7 @@ getURL(const char *file, STRBUF *URL)
 	if (convertpath(dbpath, htmldir, p, sb) == 0)
 		makefileurl(strbuf_value(sb), linenumber, URL);
 	else
-		makefileurl(abspath, 0, URL);
+		makefileurl(realpath(file, buf), 0, URL);
 	strbuf_close(sb);
 }
 /*
