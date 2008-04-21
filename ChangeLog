@@ -19,6 +19,10 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+April 21 2008, by Shigio YAMAGUCHI
+
+	* gtags.vim: Stopped use of temporary file.
+
 March 25 2008, by Shigio YAMAGUCHI
 
 	* gtags.vim, gtags.pl: rewritten using new '--from-here' option of global(1).
