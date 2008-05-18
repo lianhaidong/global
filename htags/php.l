@@ -1,6 +1,6 @@
 %{
 /*
- * Copyright (c) 2002, 2004, 2005, 2006 Tama Communications Corporation
+ * Copyright (c) 2002, 2004, 2005, 2006, 2008 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -49,6 +49,7 @@
 #define ECHO	echos(LEXTEXT)
 
 #define YY_USER_ACTION DEFAULT_YY_USER_ACTION
+#define LEFT_BRACE '('
 
 static int pre_here_document;
 static char end_of_here_document[IDENTLEN+1];
@@ -117,13 +118,14 @@ WORD		{ALPHA}{ALPHANUM}*
 			yy_pop_state();
 		}
 	}
-<PHP>^[ \t]*include[ \t]*\( {
+<PHP>^[ \t]*(include|require|require_once) {
 		int c;
 
-		ECHO;
+		put_reserved_word(LEXTEXT);
 		/*
-		 * include|('aaa/bbb.h');
-		 *          ^
+		 * include  ('aaa/bbb.h');
+		 * include   'aaa/bbb.h';
+		 *        ^
 		 */
 		while ((c = input()) && c != '\n' && isspace(c))
 			echoc(c);
@@ -133,6 +135,8 @@ WORD		{ALPHA}{ALPHANUM}*
 			char path[MAXPATHLEN+1], *p = path;
 			int sep = 0;
 
+			if (c == LEFT_BRACE)
+				c = input();
 			if (c == '"' || c == '\'')
 				sep = c;
 			echoc(c);
@@ -142,16 +146,16 @@ WORD		{ALPHA}{ALPHANUM}*
 				*p++ = c;
 			*p = '\0';
 			if (c == sep) {
-				struct data *inc;
-				const char *basename = locatestring(path, "/", MATCH_LAST);
+				char tmp[MAXPATHLEN+1];
+				char normalized_path[MAXPATHLEN+1];
 
-				if (basename)
-					basename++;
-				else
-					basename = path;
-				inc = get_inc(basename);
-				if (inc)
-					put_include_anchor(inc, path);
+				snprintf(tmp, sizeof(tmp), "%s/%s", get_current_dir(), path);
+				/*
+				 * pick up the file only when it exists.
+				 */
+				if (normalize(tmp, get_root_with_slash(), get_cwd(), normalized_path, sizeof(normalized_path))
+					&& test("f", normalized_path))
+					put_include_anchor_direct(normalized_path, path);
 				else
 					echos(path);
 				echoc(sep);

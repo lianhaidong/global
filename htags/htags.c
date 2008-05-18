@@ -843,7 +843,10 @@ makehtml(int total)
 		 * The path must be start "./".
 		 */
 		anchor_load(path);
-
+		/*
+		 * inform the current path name to lex() function.
+		 */
+		save_current_path(path);
 		count++;
 		path += 2;		/* remove './' at the head */
 		message(" [%d/%d] converting %s", count, total, path);
@@ -1662,6 +1665,7 @@ main(int argc, char **argv)
 	/*
 	 * get dbpath.
 	 */
+	setupdbpath(vflag);			/* for parsers */
 	if (!getcwd(cwdpath, sizeof(cwdpath)))
 		die("cannot get current directory.");
 	if (arg_dbpath[0])

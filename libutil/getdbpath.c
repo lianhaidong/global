@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2002
+ * Copyright (c) 1997, 1998, 1999, 2000, 2002, 2008
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -127,12 +127,16 @@ gtagsexist(const char *candidate, char *dbpath, int size, int verbose)
 #endif
 	return 0;
 }
+static char dbpath[MAXPATHLEN+1];
+static char root[MAXPATHLEN+1];
+static char root_with_slash[MAXPATHLEN+1];
+static char cwd[MAXPATHLEN+1];
 /*
  * getdbpath: get dbpath directory
  *
- *	o)	cwd	current directory
- *	o)	root	root of source tree
- *	o)	dbpath	directory which GTAGS exist
+ *	o)	a_cwd	current directory
+ *	o)	a_root	root of source tree
+ *	o)	a_dbpath directory which GTAGS exist
  *	i)	verbose	verbose mode 1: on, 0: off
  *
  * root and dbpath assumed as
@@ -147,7 +151,29 @@ gtagsexist(const char *candidate, char *dbpath, int size, int verbose)
  * and exit.
  */
 void
-getdbpath(char *cwd, char *root, char *dbpath, int verbose)
+getdbpath(char *a_cwd, char *a_root, char *a_dbpath, int verbose)
+{
+	/*
+	 * get the values.
+	 */
+	setupdbpath(verbose);
+	/*
+	 * return the values.
+	 */
+	strlimcpy(a_dbpath, dbpath, MAXPATHLEN);
+	strlimcpy(a_root, root, MAXPATHLEN);
+	strlimcpy(a_cwd, cwd, MAXPATHLEN);
+}
+/*
+ * setupdbpath: setup dbpath directory
+ *
+ *	go)	cwd	current directory
+ *	go)	root	root of source tree
+ *	go)	dbpath directory which GTAGS exist
+ *	i)	verbose	verbose mode 1: on, 0: off
+ */
+void
+setupdbpath(int verbose)
 {
 	struct stat sb;
 	char *p;
@@ -235,4 +261,31 @@ getdbpath(char *cwd, char *root, char *dbpath, int verbose)
 			break;
 		} while (0);
 	}
+	if (!strcmp(root, "/"))
+		strlimcpy(root_with_slash, root, sizeof(root_with_slash));
+	else
+		snprintf(root_with_slash, sizeof(root_with_slash), "%s/", root);
+}
+/*
+ * return saved values.
+ */
+const char *
+get_dbpath()
+{
+	return (const char *)dbpath;
+}
+const char *
+get_root()
+{
+	return (const char *)root;
+}
+const char *
+get_root_with_slash()
+{
+	return (const char *)root_with_slash;
+}
+const char *
+get_cwd()
+{
+	return (const char *)cwd;
 }

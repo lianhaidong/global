@@ -138,6 +138,7 @@ extern void echos(const char *);
 extern const char *generate_guide(int);
 extern void put_anchor(char *, int, int);
 extern void put_include_anchor(struct data *, const char *);
+extern void put_include_anchor_direct(const char *, const char *);
 extern void put_reserved_word(const char *);
 extern void put_macro(const char *);
 extern void unknown_preprocessing_directive(const char *, int);

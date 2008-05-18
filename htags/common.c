@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005 Tama Communications Corporation
+ * Copyright (c) 2004, 2005, 2008 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -205,6 +205,46 @@ setup_xhtml(void)
 	noframes_begin		= "<noframes>";
 	noframes_end		= "</noframes>";
 }
+/*
+ * These methods is used to tell lex() the current path infomation.
+ */
+static char current_path[MAXPATHLEN+1];
+static char current_dir[MAXPATHLEN+1];
+static char current_file[MAXPATHLEN+1];
+/*
+ * save path infomation
+ */
+void
+save_current_path(const char *path)
+{
+	char *startp, *p;
+
+	strlimcpy(current_path, path, sizeof(current_path));
+	/* Extract directory name and file name from path */
+	strlimcpy(current_dir, path, sizeof(current_path));
+	startp = current_dir;
+	p = startp + strlen(current_dir);
+	while (p > startp) {
+		if (*--p == '/') {
+			*p = '\0';
+			strlimcpy(current_file, p + 1, sizeof(current_file));
+			return;
+		}
+	}
+	/* It seems that the path doesn't include '/' */
+	strlimcpy(current_file, path, sizeof(current_file));
+}
+char *
+get_current_dir()
+{
+	return current_dir;
+}
+char *
+get_current_file()
+{
+	return current_file;
+}
+
 /*
  * Generate upper directory.
  */

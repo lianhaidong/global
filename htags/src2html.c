@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005,
- *		2006
+ *		2006, 2008
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -426,6 +426,19 @@ put_include_anchor(struct data *inc, const char *path)
 		snprintf(id, sizeof(id), "%d", inc->id);
 		strbuf_puts(outbuf, gen_href_begin(upperdir(INCS), id, HTML, NULL));
 	}
+	strbuf_puts(outbuf, path);
+	strbuf_puts(outbuf, gen_href_end());
+}
+/*
+ * put_include_anchor_direct: output HTML anchor.
+ *
+ *	i)	file	normalized path
+ *	i)	path	path name for display
+ */
+void
+put_include_anchor_direct(const char *file, const char *path)
+{
+	strbuf_puts(outbuf, gen_href_begin(NULL, path2fid(file), HTML, NULL));
 	strbuf_puts(outbuf, path);
 	strbuf_puts(outbuf, gen_href_end());
 }

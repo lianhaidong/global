@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000
+ * Copyright (c) 1997, 1998, 1999, 2000, 2008
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -23,5 +23,10 @@
 
 int gtagsexist(const char *, char *, int, int);
 void getdbpath(char *, char *, char *, int);
+void setupdbpath(int);
+const char *get_dbpath();
+const char *get_root();
+const char *get_root_with_slash();
+const char *get_cwd();
 
 #endif /* ! _GETDBPATH_H_ */

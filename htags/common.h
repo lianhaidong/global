@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004 Tama Communications Corporation
+ * Copyright (c) 2004, 2008 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -99,6 +99,9 @@ extern const char *noframes_end;
 
 int fputs_nl(const char *, FILE *);
 void setup_xhtml(void);
+void save_current_path(const char *);
+char *get_current_dir();
+char *get_current_file();
 const char *upperdir(const char *);
 const char *gen_insert_header(int);
 const char *gen_insert_footer(int);
