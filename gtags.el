@@ -41,6 +41,25 @@
 ;;	    '(lambda ()
 ;;		(gtags-mode 1)
 ;;	))
+;;
+;; There are two hooks, gtags-mode-hook and gtags-select-mode-hook.
+;; The usage of the hook is shown as follows.
+;;
+;; [Setting to reproduce old 'Gtags mode']
+;;
+;; (setq gtags-mode-hook
+;;   '(lambda ()
+;;      (setq gtags-pop-delete t)
+;;      (setq gtags-path-style 'absolute)
+;; ))
+;;
+;; [Setting to make 'Gtags select mode' easy to see]
+;;
+;; (setq gtags-select-mode-hook
+;;   '(lambda ()
+;;      (setq hl-line-face 'underline)
+;;      (hl-line-mode 1)
+;; ))
 
 ;;; Code
 
