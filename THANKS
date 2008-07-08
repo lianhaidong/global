@@ -4,7 +4,7 @@ ___________________________________
 |  |   |  |  |  |  |     |     |  |
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Copyright (c) 2000, 2001, 2002, 2003, 2004, 2006, 2007
+ Copyright (c) 2000, 2001, 2002, 2003, 2004, 2006, 2007, 2008
 	Tama Communications Corporation
 
  This file is free software; as a special exception the author gives
@@ -109,6 +109,7 @@ Thomas Gerigk		bug report about skip variable in gtags.conf.
 Thomas Klausner		report about groff's command error of *.1.
 Tim Vanderhoek		GLOBAL tag support on more(1).
 Tobias Polzin		suggestion about correct treatment of CVS repository in htags.
+			He also changed gtags.el to leave visited files after 'gtags-pop-stack'.
 			He also reported C++ parsing problem with constructors and destructors.
 Tomohiko Morioka	advice about deciding emacs version.
 Tom Russell		bug report about parsing error at function definitions with comment.

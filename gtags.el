@@ -68,6 +68,11 @@
   :type 'boolean
   :group 'gtags)
 
+(defcustom gtags-pop-delete nil
+  "*If non-nil, gtags-pop will delete the buffer."
+  :group 'gtags
+  :type 'boolean)
+
 ;; Variables
 (defvar gtags-current-buffer nil
   "Current buffer.")
@@ -399,8 +404,12 @@
     (if (and (not (equal gtags-current-buffer nil))
              (not (equal gtags-current-buffer (current-buffer))))
          (switch-to-buffer gtags-current-buffer)
-      (if (not (gtags-exist-in-stack (current-buffer)))
-	  (setq delete t))
+         ; By default, the buffer of the referred file is left.
+         ; If gtags-pop-delete is set to t, the file is deleted.
+         ; Gtags select mode buffer is always deleted.
+         (if (and (or gtags-pop-delete (equal mode-name "Gtags-Select"))
+                  (not (gtags-exist-in-stack (current-buffer))))
+	     (setq delete t))
       (setq context (gtags-pop-context))
       (if (not context)
 	  (message "The tags stack is empty.")
