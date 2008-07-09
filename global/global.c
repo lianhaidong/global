@@ -170,19 +170,11 @@ int
 decide_tag_by_context(const char *tag, const char *file, const char *lineno)
 {
 	char path[MAXPATHLEN+1], s_fid[32];
-	char rootdir[MAXPATHLEN+1];
 	const char *tagline, *p;
 	DBOP *dbop;
 	int db = GSYMS;
 
-        /*
-         * rootdir always ends with '/'.
-         */
-        if (!strcmp(root, "/"))
-                strlimcpy(rootdir, root, sizeof(rootdir));
-        else
-                snprintf(rootdir, sizeof(rootdir), "%s/", root);
-	if (normalize(file, rootdir, cwd, path, sizeof(path)) == NULL)
+	if (normalize(file, get_root_with_slash(), cwd, path, sizeof(path)) == NULL)
 		die("'%s' is out of source tree.", file);
 	/*
 	 * get file id
@@ -892,15 +884,7 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 	STRBUF *path_list = strbuf_open(MAXPATHLEN);
 	XARGS *xp;
 	char *ctags_x;
-	char rootdir[MAXPATHLEN+1];
 
-        /*
-         * rootdir always ends with '/'.
-         */
-        if (!strcmp(root, "/"))
-                strlimcpy(rootdir, root, sizeof(rootdir));
-        else
-                snprintf(rootdir, sizeof(rootdir), "%s/", root);
 	/*
 	 * teach parser where is dbpath.
 	 */
@@ -933,7 +917,7 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 		/*
 		 * convert the path into relative from the root directory of source tree.
 		 */
-		if (normalize(av, rootdir, cwd, path, sizeof(path)) == NULL)
+		if (normalize(av, get_root_with_slash(), cwd, path, sizeof(path)) == NULL)
 			if (!qflag)
 				fprintf(stderr, "'%s' is out of source tree.\n", path + 2);
 		if (!gpath_path2fid(path, NULL)) {

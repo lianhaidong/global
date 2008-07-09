@@ -376,21 +376,13 @@ void
 getURL(const char *file, STRBUF *URL)
 {
 	char *p;
-	char rootdir[MAXPATHLEN+1];
 	char buf[MAXPATHLEN+1];
 	STRBUF *sb = strbuf_open(0);
 	const char *htmldir = locate_HTMLdir();
 
-        /*
-         * rootdir always ends with '/'.
-         */
-        if (!strcmp(root, "/"))
-                strlimcpy(rootdir, root, sizeof(rootdir));
-        else
-                snprintf(rootdir, sizeof(rootdir), "%s/", root);
 	if (!test("f", file) && !test("d", file))
 		die("path '%s' not found.", file);
-	p = normalize(file, rootdir, cwd, buf, sizeof(buf));
+	p = normalize(file, get_root_with_slash(), cwd, buf, sizeof(buf));
 	if (convertpath(dbpath, htmldir, p, sb) == 0)
 		makefileurl(strbuf_value(sb), linenumber, URL);
 	else
