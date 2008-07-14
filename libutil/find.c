@@ -223,6 +223,9 @@ prepare_skip(void)
 	 * construct regular expression.
 	 */
 	strbuf_putc(reg, '(');	/* ) */
+	/* skip files which start with '.' e.g. .cvsignore */
+	strbuf_puts(reg, "/\\.[^/]+$|");
+	strbuf_puts(reg, "/\\.[^/]+/|");
 	for (p = skiplist; p; ) {
 		char *skipf = p;
 		if ((p = locatestring(p, ",", MATCH_FIRST)) != NULL)
@@ -305,8 +308,13 @@ skipthisfile(const char *path)
 	/*
 	 * unit check.
 	 */
-	if (skip && regexec(skip, path, 0, 0, 0) == 0)
+	if (skip && regexec(skip, path, 0, 0, 0) == 0) {
+#ifdef DEBUG
+		if (debug)
+			fprintf(stderr, "skipthisfile(1): %s\n", path);
+#endif
 		return 1;
+	}
 	/*
 	 * list check.
 	 */
@@ -319,11 +327,21 @@ skipthisfile(const char *path)
 		 * the path must start with "./".
 		 */
 		if (*(last - 1) == '/') {	/* it's a directory */
-			if (!strncmp(path + 1, first, last - first))
+			if (!strncmp(path + 1, first, last - first)) {
+#ifdef DEBUG
+				if (debug)
+					fprintf(stderr, "skipthisfile(2): %s\n", path);
+#endif
 				return 1;
+			}
 		} else {
-			if (!strcmp(path + 1, first))
+			if (!strcmp(path + 1, first)) {
+#ifdef DEBUG
+				if (debug)
+					fprintf(stderr, "skipthisfile(3): %s\n", path);
+#endif
 				return 1;
+			}
 		}
 	}
 	return 0;

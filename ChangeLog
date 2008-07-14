@@ -19,6 +19,25 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+July 14 2008, by Shigio YAMAGUCHI
+
+	* Changed to skip all files whoes first character of name is '.'.
+
+	The following path was deleted from the DEFAULTSKIP in configure.ac, since new
+	rule covers them.
+
+	.notfunction
+	.gdbinit
+	.cvsrc
+	.cvsignore
+	.gitignore
+	.cvspass
+	.cvswrappers
+	.deps/
+	.snprj/
+	.svn/
+	.git/
+
 April 21 2008, by Shigio YAMAGUCHI
 
 	* gtags.vim: Stopped use of temporary file.
