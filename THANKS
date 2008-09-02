@@ -64,6 +64,7 @@ Jun Inoue		idea about generation of lex symbol.
 Jun Obama		improvements on gtags.el.
 Justin Tripp		software evaluation for GNU standard.
 Justin Wojdacki		bug report about htags(1).
+K. Chowksey		new command gtags-select-tag-other-window and gtags-find-tag-other-window.
 Katsuyuki Okabe		advice about deciding emacs version.
 Klaus Borchers		advice about deciding emacs version.
 Hiroyuki KOBAYASHI	bug report and fix patch for gtags-parser(1).

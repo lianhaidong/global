@@ -22,7 +22,7 @@
 
 ;; GLOBAL home page is at: http://www.gnu.org/software/global/
 ;; Author: Tama Communications Corporation
-;; Version: 2.4
+;; Version: 2.5
 ;; Keywords: tools
 ;; Required version: GLOBAL 5.7 or later
 
@@ -116,6 +116,7 @@
 ;
 (define-key gtags-mode-map "\e*" 'gtags-pop-stack)
 (define-key gtags-mode-map "\e." 'gtags-find-tag)
+(define-key gtags-mode-map "\C-x4." 'gtags-find-tag-other-window)
 ;
 ; Old key assignment.
 ;
@@ -164,6 +165,7 @@
 (define-key gtags-select-mode-map "u" 'gtags-pop-stack)
 (define-key gtags-select-mode-map "\C-t" 'gtags-pop-stack)
 (define-key gtags-select-mode-map "\C-m" 'gtags-select-tag)
+(define-key gtags-select-mode-map "\C-o" 'gtags-select-tag-other-window)
 (define-key gtags-select-mode-map "\e." 'gtags-select-tag)
 
 ;;
@@ -278,7 +280,7 @@
        (setq gtags-rootdir (expand-file-name input))
        (setenv "GTAGSROOT" gtags-rootdir)))))
 
-(defun gtags-find-tag ()
+(defun gtags-find-tag (&optional other-win)
   "Input tag name and move to the definition."
   (interactive)
   (let (tagname prompt input)
@@ -291,7 +293,12 @@
     (if (not (equal "" input))
       (setq tagname input))
     (gtags-push-context)
-    (gtags-goto-tag tagname "")))
+    (gtags-goto-tag tagname "" other-win)))
+
+(defun gtags-find-tag-other-window ()
+  "Input tag name and move to the definition in other window."
+  (interactive)
+  (gtags-find-tag t))
 
 (defun gtags-find-rtag ()
   "Input tag name and move to the referenced point."
@@ -400,11 +407,16 @@
       (gtags-push-context)
       (gtags-goto-tag tagname flag))))
 
-(defun gtags-select-tag ()
+(defun gtags-select-tag (&optional other-win)
   "Select a tag in [GTAGS SELECT MODE] and move there."
   (interactive)
   (gtags-push-context)
-  (gtags-select-it nil))
+  (gtags-select-it nil other-win))
+
+(defun gtags-select-tag-other-window ()
+  "Select a tag in [GTAGS SELECT MODE] and move there in other window."
+  (interactive)
+  (gtags-select-tag t))
 
 (defun gtags-select-tag-by-event (event)
   "Select a tag in [GTAGS SELECT MODE] and move there."
@@ -456,7 +468,7 @@
     (gtags-goto-tag tagname flag)))
 
 ;; goto tag's point
-(defun gtags-goto-tag (tagname flag)
+(defun gtags-goto-tag (tagname flag &optional other-win)
   (let (option context save prefix buffer lines)
     (setq save (current-buffer))
     ; Use always ctags-x format.
@@ -522,13 +534,15 @@
 	(set-buffer save))
        ((= 1 lines)
 	(message "Searching %s ... Done" tagname)
-	(gtags-select-it t))
+	(gtags-select-it t other-win))
        (t
-	(switch-to-buffer buffer)
+        (if (null other-win)
+            (switch-to-buffer buffer)
+          (switch-to-buffer-other-window buffer))
 	(gtags-select-mode))))))
 
 ;; select a tag line from lines
-(defun gtags-select-it (delete)
+(defun gtags-select-it (delete &optional other-win)
   (let (line file)
     ;; get context from current tag line
     (beginning-of-line)
@@ -546,7 +560,11 @@
       ;; 
       (let ((prev-buffer (current-buffer)))
         ;; move to the context
-        (if gtags-read-only (find-file-read-only file) (find-file file))
+        (if gtags-read-only 
+	    (if (null other-win) (find-file-read-only file) 
+	      (find-file-read-only-other-window file))
+	  (if (null other-win) (find-file file)
+	    (find-file-other-window file)))
         (if delete (kill-buffer prev-buffer)))
       (setq gtags-current-buffer (current-buffer))
       (goto-line line)
@@ -566,6 +584,8 @@ Specify the root directory of project.
 	\\[gtags-visit-rootdir]
 Input tag name and move to the definition.
 	\\[gtags-find-tag]
+Input tag name and move to the definition in other window.
+        \\[gtags-find-tag-other-window]
 Input tag name and move to the referenced point.
 	\\[gtags-find-rtag]
 Input symbol and move to the locations.
