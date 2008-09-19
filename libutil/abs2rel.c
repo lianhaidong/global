@@ -34,6 +34,7 @@
 #include "gparam.h"
 #include "locatestring.h"
 #include "strlimcpy.h"
+#include "path.h"
 
 /*
 
@@ -185,7 +186,7 @@ normalize(const char *path, const char *root, const char *cwd, char *result, con
 
 	if (normalize_pathname(path, result, size) == NULL)
 		goto toolong;
-	if (*path == '/') {
+	if (isabspath(path)) {
 		if (strlen(result) > MAXPATHLEN)
 			goto toolong;
 		strcpy(abs, result);
@@ -237,8 +238,14 @@ normalize_pathname(const char *path, char *result, const int size)
 	char *endp = result + size - 1;
 
 	/* accept the first '/' */
-	if (*p == '/') {
+	if (isabspath(p)) {
 		*q++ = *p++;
+#if defined(_WIN32) || defined(__DJGPP__)
+		if (*p == ':') {
+			*q++ = *p++;
+			*q++ = *p++;
+		}
+#endif
 		final = q;
 	}
 	do {
@@ -318,12 +325,12 @@ abs2rel(const char *path, const char *base, char *result, const int size)
 	const char *endp = result + size - 1;
 	char *rp;
 
-	if (*path != '/') {
+	if (!isabspath(path)) {
 		if (strlen(path) >= size)
 			goto erange;
 		strcpy(result, path);
 		goto finish;
-	} else if (*base != '/' || !size) {
+	} else if (!isabspath(base) || !size) {
 		errno = EINVAL;
 		return (NULL);
 	} else if (size == 1)
@@ -399,12 +406,12 @@ rel2abs(const char *path, const char *base, char *result, const int size)
 	char *rp;
 	int length;
 
-	if (*path == '/') {
+	if (isabspath(path)) {
 		if (strlen(path) >= size)
 			goto erange;
 		strcpy(result, path);
 		goto finish;
-	} else if (*base != '/' || !size) {
+	} else if (!isabspath(base) || !size) {
 		errno = EINVAL;
 		return (NULL);
 	} else if (size == 1)
