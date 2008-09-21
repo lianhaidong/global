@@ -446,8 +446,8 @@ There is another method for it. Since global(1) locates tag files also in
 
 @example
 
-    $ mkdir -p /usr/obj/cdrom/src
     $ cd /cdrom/src                 # @r{the root of source tree}
+    $ mkdir -p /usr/obj/cdrom/src
     $ gtags /usr/obj/cdrom/src      # @r{make tag files in /usr/obj/cdrom/src}
     $ global func
 
@@ -455,6 +455,8 @@ There is another method for it. Since global(1) locates tag files also in
 
 The value @file{/usr/obj} can be changed by environment variable
 @code{MAKEOBJDIRPREFIX}.
+The @samp{-O, --objdir} option do it automatically instead of you.
+@opindex -O
 
 @item If you want to locate objects that are not defined in the source tree,
 then you can specify library directories with the @code{GTAGSLIBPATH}
