@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2004
+ * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2004, 2008
  *	Tama Communications Corporation
  * #ifdef __DJGPP__
  * Contributed by Jason Hood <jadoxa@yahoo.com.au>, 2001.
@@ -29,6 +29,8 @@
 #else
 #include <strings.h>
 #endif
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #ifdef __DJGPP__
 #include <fcntl.h>			/* for _USE_LFN */
@@ -36,7 +38,10 @@
 
 #include "gparam.h"
 #include "path.h"
+#include "strbuf.h"
 #include "strlimcpy.h"
+#include "test.h"
+
 
 /*
  * isabspath: whether absolute path or not
@@ -171,3 +176,51 @@ realpath(const char *in_path, char *out_path)
 	return out_path;
 }
 #endif
+
+#define SEP '/'
+
+/*
+ * makedirectories: make directories on the path like make(1) with the -p option.
+ *
+ *	i)	base	base directory
+ *	i)	rest	path from the base
+ *	i)	verbose 1: verbose mode, 0: not verbose mode
+ *	r)		0: success
+ *			-1: base directory not found
+ *			-2: permission error
+ *			-3: cannot make directory
+ */
+int
+makedirectories(const char *base, const char *rest, int verbose)
+{
+	STRBUF *sb = strbuf_open(0);
+	char *p, *q;
+	int c = SEP;
+
+	if (!test("d", base))
+		return -1;
+	if (!test("drw", base))
+		return -2;
+	strbuf_puts(sb, base);
+	if (*rest == SEP)
+		rest++;
+	for (p = q = (char *)rest; c == SEP; p = q) {
+		while (*q && *q != SEP)
+			*q++;
+		c = *q;
+		*q = '\0';
+		strbuf_putc(sb, SEP);
+		strbuf_puts(sb, p);
+		p = strbuf_value(sb);
+		if (!test(p, "d")) {
+			if (verbose)
+				fprintf(stderr, " Making directory '%s'.\n", p);
+			if (mkdir(p, 0775) < 0)
+				return -3;
+		}
+		if (c == SEP)
+			*q++ = c;
+	}
+	strbuf_close(sb);
+	return 0;
+}

@@ -71,6 +71,50 @@ setupvariables(int verbose)
 	}
 }
 /*
+ * getobjdir: get objdir if it exists.
+ *
+ *	i)	candidate candidate root directory
+ *	i)	verbose	verbose mode 1: on, 0: off
+ *	r)		objdir(NULL: not found)
+ */
+char *
+getobjdir(const char *candidate, int verbose)
+{
+	static char path[MAXPATHLEN+1];
+
+	/*
+	 * setup makeobjdir and makeobjdirprefix (only first time).
+	 */
+	if (makeobjdir == NULL)
+		setupvariables(0);
+	snprintf(path, sizeof(path), "%s/%s", candidate, makeobjdir);
+	if (test("d", path)) {
+		if (!test("drw", path))
+			die("Found objdir '%s', but you don't have read/write permission for it.", path);
+		if (verbose)
+			fprintf(stderr, "Using objdir '%s'.\n", path);
+		return path;
+	}
+#if !defined(_WIN32) && !defined(__DJGPP__)
+	if (test("d", makeobjdirprefix)) {
+		snprintf(path, sizeof(path), "%s%s", makeobjdirprefix, candidate);
+		if (test("d", path)) {
+			if (!test("drw", path))
+				die("Found objdir '%s', but you don't have read/write permission for it.", path);
+			if (verbose)
+				fprintf(stderr, "Using objdir '%s'.\n", path);
+			return path;
+		}
+		if (makedirectories(makeobjdirprefix, candidate + 1, verbose) < 0)
+			die("Found the base for objdir '%s', but you cannot create new directory in it.", path);
+		if (verbose)
+			fprintf(stderr, "Using objdir '%s'.\n", path);
+		return path;
+	}
+#endif
+	return NULL;
+}
+/*
  * gtagsexist: test whether GTAGS's existence.
  *
  *	i)	candidate candidate root directory

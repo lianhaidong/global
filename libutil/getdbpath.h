@@ -21,6 +21,7 @@
 #ifndef _GETDBPATH_H_
 #define _GETDBPATH_H_
 
+char *getobjdir(const char *, int);
 int gtagsexist(const char *, char *, int, int);
 void getdbpath(char *, char *, char *, int);
 void setupdbpath(int);

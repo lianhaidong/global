@@ -22,10 +22,10 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	GTAGS,1,March 2008,GNU Project
+@HEADER	GTAGS,1,September 2008,GNU Project
 @NAME	gtags - create tag files for global.
 @SYNOPSIS
-	@name{gtags} [-iIqvw][-f @arg{file}][-n @arg{number}][@arg{dbpath}]
+	@name{gtags} [-iIOqvw][-f @arg{file}][-n @arg{number}][@arg{dbpath}]
 @DESCRIPTION
 	@name{Gtags} recursively collect the source files under
 	the current directory,
@@ -72,6 +72,12 @@
 		Maximum number of arguments for @xref{gtags-parser,1}.
 		By default, gtags invokes @name{gtags-parser} with arguments
 		as many as possible to decrease the frequency of invoking.
+	@item{@option{-O}, @option{--objdir}}
+		Use objdir as dbpath.
+		If @file{$MAKEOBJDIRPREFIX} directory exists, @name{gtags} creates
+		@file{$MAKEOBJDIRPREFIX/<current directory>} directory and makes
+		tag files in it.
+		If @arg{dbpath} is specified, this options is ignored.
 	@item{@option{-q}, @option{--quiet}}
 		Quiet mode.
 	@item{@option{-v}, @option{--verbose}}
@@ -118,6 +124,9 @@
 	@item{@var{GTAGSFORCECPP}}
 		If this variable is set, each file whose suffix is 'h' is treated
 		as a C++ source file.
+	@item{@var{MAKEOBJDIRPREFIX}}
+		If this variable is set, @file{$MAKEOBJDIRPREFIX} is used as an object
+		prefix directory. The default is @file{/usr/obj}.
 	@end_itemize
 @CONFIGURATION
 	The following configuration variables affect the execution of @name{gtags}.

@@ -22,7 +22,7 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	GLOBAL,1,March 2008,GNU Project
+@HEADER	GLOBAL,1,September 2008,GNU Project
 @NAME	global - print the locations of specified object.
 @SYNOPSIS
 	@name{global} [-aGilnqrstTvx][-e] @arg{pattern}
@@ -201,6 +201,7 @@
 	@item{@var{MAKEOBJDIRPREFIX}}
 		If this variable is set, @file{$MAKEOBJDIRPREFIX<current directory>}
 		is used as the candidate directory for tag files.
+		The default is @file{/usr/obj}.
 	@end_itemize
 @CONFIGURATION
 	The following configuration variables affect the execution of @name{global}:

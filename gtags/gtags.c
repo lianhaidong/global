@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005, 2006
+ * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005, 2006, 2008
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -65,6 +65,7 @@ void set_base_directory(const char *, const char *);
 
 int iflag;					/* incremental update */
 int Iflag;					/* make  idutils index */
+int Oflag;					/* use objdir */
 int qflag;					/* quiet mode */
 int wflag;					/* warning message */
 int vflag;					/* verbose mode */
@@ -115,6 +116,7 @@ static struct option const long_options[] = {
 	{"incremental", no_argument, NULL, 'i'},
 	{"max-args", required_argument, NULL, 'n'},
 	{"omit-gsyms", no_argument, NULL, 'o'},		/* removed */
+	{"objdir", no_argument, NULL, 'O'},
 	{"quiet", no_argument, NULL, 'q'},
 	{"verbose", no_argument, NULL, 'v'},
 	{"warning", no_argument, NULL, 'w'},
@@ -158,7 +160,7 @@ main(int argc, char **argv)
 	int optchar;
 	int option_index = 0;
 
-	while ((optchar = getopt_long(argc, argv, "f:iIn:oqvwse", long_options, &option_index)) != EOF) {
+	while ((optchar = getopt_long(argc, argv, "f:iIn:oOqvwse", long_options, &option_index)) != EOF) {
 		switch (optchar) {
 		case 0:
 			/* already flags set */
@@ -205,6 +207,9 @@ main(int argc, char **argv)
 			 * is left for compatibility.
 			 */
 			break;
+		case 'O':
+			Oflag++;
+			break;
 		case 'q':
 			qflag++;
 			setquiet();
@@ -239,6 +244,9 @@ main(int argc, char **argv)
 	argc -= optind;
         argv += optind;
 
+	/* If dbpath is specified, -O(--objdir) option is ignored. */
+	if (argc > 0)
+		Oflag = 0;
 	if (show_config) {
 		if (config_name)
 			printconf(config_name);
@@ -312,7 +320,13 @@ main(int argc, char **argv)
 	} else {
 		if (argc > 0)
 			realpath(*argv, dbpath);
-		else
+		else if (Oflag) {
+			char *objdir = getobjdir(cwd, vflag);
+
+			if (objdir == NULL)
+				die("Objdir not found.");
+			strlimcpy(dbpath, objdir, sizeof(dbpath));
+		} else
 			strlimcpy(dbpath, cwd, sizeof(dbpath));
 	}
 	if (iflag && (!test("f", makepath(dbpath, dbname(GTAGS), NULL)) ||
