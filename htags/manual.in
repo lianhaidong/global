@@ -22,7 +22,7 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	HTAGS,1,March 2008,GNU Project
+@HEADER	HTAGS,1,September 2008,GNU Project
 @NAME	htags - generate hypertext from source code.
 @SYNOPSIS
 	@name{htags} [-acDfFghInosTvwx][-d @arg{dbpath}][-m @arg{name}][-S @arg{cgidir}][-t @arg{title}][@arg{dir}]
@@ -207,7 +207,7 @@
 		of configuration file. The default is @code{default}.
 	@item{@var{GTAGSCACHE}}
 		If this variable is set, its value is used as the size of
-		B-tree cache. The default is 5000000 (bytes).
+		B-tree cache. The default is 50000000 (bytes).
         @item{@var{GTAGSFORCECPP}}
                 If this variable is set, each file whose suffix is 'h' is treated
                 as a C++ source file.

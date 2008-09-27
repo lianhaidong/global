@@ -19,6 +19,10 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+September 27 2008, by Shigio YAMAGUCHI
+
+	* Changed the default cache size of DB library from 5M to 50M bytes.
+
 July 14 2008, by Shigio YAMAGUCHI
 
 	* Changed to skip all files whoes first character of name is '.'.

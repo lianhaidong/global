@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2007
+ * Copyright (c) 1997, 1998, 1999, 2000, 2007, 2008
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -36,10 +36,10 @@
 #define MAXKEYLEN	MAXPATHLEN	/* max length of record key	*/
 #define MAXURLLEN	1024		/* max length of URL		*/
 /*
- * The default cache size of db library is 5MB.
+ * The default cache size of db library is 50MB.
  * The minimum size is 500KB.
  */
-#define GTAGSCACHE	5000000		/* default cache size 5MB	*/
+#define GTAGSCACHE	50000000	/* default cache size 50MB	*/
 #define GTAGSMINCACHE	500000		/* minimum cache size 500KB	*/
 
 #endif /* ! _GPARAM_H_ */
