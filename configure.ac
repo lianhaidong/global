@@ -2,7 +2,7 @@ dnl
 dnl Configuration script for GLOBAL.
 dnl Process this file with autoconf to produce a configure script.
 dnl
-dnl Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2006
+dnl Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2008
 dnl	Tama Communications Corporation
 dnl
 dnl This file is part of GNU GLOBAL.
@@ -136,7 +136,7 @@ dnl for home-etc support
 dnl
 AC_MSG_CHECKING(for home-etc support)
 AC_ARG_WITH(home-etc,
-[  --with-home-etc[[=DIR]]     include home-etc support [[DIR=/usr/local]] ],
+[  --with-home-etc[[=DIR]]   include home-etc support [[DIR=/usr/local]] ],
 [
         if test "$withval" = 'no'; then
                 AC_MSG_RESULT(no)
@@ -155,6 +155,21 @@ AC_ARG_WITH(home-etc,
                 LDFLAGS="$LDFLAGS -L$HOMEETC/lib -lhome_etc"
                 AC_DEFINE(HAVE_HOME_ETC_H,1,[Define if you use home-etc facility.])
                 AC_MSG_RESULT([yes, using $HOMEETC])
+        fi
+],[
+        AC_MSG_RESULT(no)
+])
+
+AC_MSG_CHECKING(for pread/pwrite support)
+AC_ARG_WITH(pread-pwrite,
+[  --with-pread-pwrite     include pread/pwrite support fo BSD db library ],
+[
+        if test "$withval" = 'no'; then
+                AC_MSG_RESULT(no)
+        else
+		AC_DEFINE(HAVE_PREAD, 1, [Define to 1 if you have and use pread.])
+		AC_DEFINE(HAVE_PWRITE, 1, [Define to 1 if you have and use pwrite.])
+                AC_MSG_RESULT([yes])
         fi
 ],[
         AC_MSG_RESULT(no)

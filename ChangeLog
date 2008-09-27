@@ -22,6 +22,10 @@ ChangeLog about GNU GLOBAL
 September 27 2008, by Shigio YAMAGUCHI
 
 	* Changed the default cache size of DB library from 5M to 50M bytes.
+	* Recovered the code in which pread/pwrite is used in BSD db library.
+	  However, this code is not automatically used. To include the code,
+	  please invoke configure script with the --with-pread-pwrite option.
+	  The original code was written by Hideki IWAMOTO.
 
 July 14 2008, by Shigio YAMAGUCHI
 

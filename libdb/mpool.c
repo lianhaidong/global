@@ -213,6 +213,13 @@ mpool_get(mp, pgno, flags)
 	++mp->pageread;
 #endif
 	off = mp->pagesize * pgno;
+#ifdef HAVE_PREAD
+	if ((nr = pread(mp->fd, bp->page, mp->pagesize, off)) != mp->pagesize) {
+		if (nr >= 0)
+			errno = EFTYPE;
+		return (NULL);
+	}
+#else
 	if (lseek(mp->fd, off, SEEK_SET) != off)
 		return (NULL);
 	if ((nr = read(mp->fd, bp->page, mp->pagesize)) != mp->pagesize) {
@@ -220,6 +227,7 @@ mpool_get(mp, pgno, flags)
 			errno = EFTYPE;
 		return (NULL);
 	}
+#endif
 
 	/* Set the page number, pin the page. */
 	bp->pgno = pgno;
@@ -388,10 +396,15 @@ mpool_write(mp, bp)
 		(mp->pgout)(mp->pgcookie, bp->pgno, bp->page);
 
 	off = mp->pagesize * bp->pgno;
+#ifdef HAVE_PWRITE
+	if (pwrite(mp->fd, bp->page, mp->pagesize, off) != mp->pagesize)
+		return (RET_ERROR);
+#else
 	if (lseek(mp->fd, off, SEEK_SET) != off)
 		return (RET_ERROR);
 	if (write(mp->fd, bp->page, mp->pagesize) != mp->pagesize)
 		return (RET_ERROR);
+#endif
 
 	bp->flags &= ~MPOOL_DIRTY;
 	return (RET_SUCCESS);
