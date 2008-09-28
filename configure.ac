@@ -162,7 +162,7 @@ AC_ARG_WITH(home-etc,
 
 AC_MSG_CHECKING(for pread/pwrite support)
 AC_ARG_WITH(pread-pwrite,
-[  --with-pread-pwrite     include pread/pwrite support fo BSD db library ],
+[  --with-pread-pwrite     include pread/pwrite support for BSD db library ],
 [
         if test "$withval" = 'no'; then
                 AC_MSG_RESULT(no)
