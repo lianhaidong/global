@@ -525,12 +525,10 @@ find_read_traverse(void)
 				 * o dead symbolic link
 				 */
 				if (!test("f", path)) {
-					if (!qflag) {
-						if (test("d", path))
-							warning("'%s' is a directory. (Ignored)", path);
-						else
-							warning("'%s' not found. (Ignored)", path);
-					}
+					if (test("d", path))
+						warning("'%s' is a directory. (Ignored)", path);
+					else
+						warning("'%s' not found. (Ignored)", path);
 					continue;
 				}
 				/*
@@ -538,8 +536,7 @@ find_read_traverse(void)
 				 * It will be improved in the future.
 				 */
 				if (locatestring(path, " ", MATCH_FIRST)) {
-					if (!qflag)
-						warning("'%s' ignored, because it includes blank.", &path[2]);
+					warning("'%s' ignored, because it includes blank.", &path[2]);
 					continue;
 				}
 				/*
@@ -624,12 +621,10 @@ find_read_filelist(void)
 		 * o dead symbolic link
 		 */
 		if (!test("f", path)) {
-			if (!qflag) {
-				if (test("d", path))
-					warning("'%s' is a directory. (Ignored)", path);
-				else
-					warning("'%s' not found. (Ignored)", path);
-			}
+			if (test("d", path))
+				warning("'%s' is a directory. (Ignored)", path);
+			else
+				warning("'%s' not found. (Ignored)", path);
 			continue;
 		}
 		/*
@@ -648,8 +643,7 @@ find_read_filelist(void)
 		 * It will be improved in the future.
 		 */
 		if (locatestring(path, " ", MATCH_LAST)) {
-			if (!qflag)
-				warning("'%s' ignored, because it includes blank.", path + 2);
+			warning("'%s' ignored, because it includes blank.", path + 2);
 			continue;
 		}
 		if (skipthisfile(path))
