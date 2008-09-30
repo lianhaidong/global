@@ -638,7 +638,11 @@ find_read_filelist(void)
 		 *	rootdir  /a/b/
 		 *	buf      /a/b/c/d.c -> c/d.c -> ./c/d.c
 		 */
-		path = normalize(path, rootdir, cwddir, buf, sizeof(buf));
+		if (normalize(path, rootdir, cwddir, buf, sizeof(buf)) == NULL) {
+			warning("'%s' is out of source tree. (Ignored)", path);
+			continue;
+		}
+		path = buf;
 		/*
 		 * GLOBAL cannot treat path which includes blanks.
 		 * It will be improved in the future.
