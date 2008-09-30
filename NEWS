@@ -20,6 +20,42 @@ ___________________________________
 GNU GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 5.7.2 - September 30 2008
+
+[CHANGES]
+New functions:
+o gtags: New -O(--objdir) option added.
+o gtags.el: New gtags-select-tag-other-window and gtags-find-tag-other-window command added.
+o htags: Supported 'include', 'required' and 'required_once' statement in PHP language.
+  Htags makes a link to the file described in above statements if it is accessible from
+  current directory.
+
+[INCOMPATIBLE CHANGES]
+o gtags: Changed to skip all files whoes first character of name is '.'.
+  The following path was deleted from the DEFAULTSKIP in configure.ac, since new rule
+  covers them.
+
+        .notfunction
+        .gdbinit
+        .cvsrc
+        .cvsignore
+        .gitignore
+        .cvspass
+        .cvswrappers
+        .deps/
+        .snprj/
+        .svn/
+        .git/
+
+o gtags.el: Changed so that the visited files are left after invoking
+  the 'gtags-pop-stack' command. If you hope old specification,
+  please set gtags-pop-delete to true like follows:
+
+        [$HOME/.emacs]
+        (setq gtags-mode-hook
+          '(lambda ()
+                (setq gtags-pop-delete t)))
+
 Version 5.7.1 - April 21 2008
 
 [CHANGES]
