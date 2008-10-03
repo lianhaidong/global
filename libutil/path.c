@@ -180,7 +180,7 @@ realpath(const char *in_path, char *out_path)
 #define SEP '/'
 
 /*
- * makedirectories: make directories on the path like make(1) with the -p option.
+ * makedirectories: make directories on the path like mkdir(1) with the -p option.
  *
  *	i)	base	base directory
  *	i)	rest	path from the base
@@ -193,33 +193,34 @@ realpath(const char *in_path, char *out_path)
 int
 makedirectories(const char *base, const char *rest, int verbose)
 {
-	STRBUF *sb = strbuf_open(0);
-	char *p, *q;
-	int c = SEP;
+	STRBUF *sb;
+	const char *p, *q;
 
 	if (!test("d", base))
 		return -1;
 	if (!test("drw", base))
 		return -2;
+	sb = strbuf_open(0);
 	strbuf_puts(sb, base);
 	if (*rest == SEP)
 		rest++;
-	for (p = q = (char *)rest; c == SEP; p = q) {
+	for (q = rest; *q;) {
+		p = q;
 		while (*q && *q != SEP)
-			*q++;
-		c = *q;
-		*q = '\0';
+			q++;
 		strbuf_putc(sb, SEP);
-		strbuf_puts(sb, p);
+		strbuf_nputs(sb, p, q - p);
 		p = strbuf_value(sb);
-		if (!test(p, "d")) {
+		if (!test("d", p)) {
 			if (verbose)
 				fprintf(stderr, " Making directory '%s'.\n", p);
-			if (mkdir(p, 0775) < 0)
+			if (mkdir(p, 0775) < 0) {
+				strbuf_close(sb);
 				return -3;
+			}
 		}
-		if (c == SEP)
-			*q++ = c;
+		if (*q == SEP)
+			q++;
 	}
 	strbuf_close(sb);
 	return 0;
