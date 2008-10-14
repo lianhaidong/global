@@ -77,6 +77,53 @@ Version 5.7 - March 25 2008
 New functions:
 o gtags: Allows the symbolic links which point to directories.
   In older version, such symbolic links were ignored with warning messages.
+
+	[Example]
+
+	/tmp
+	  +-global
+	  |  +-GTAGS
+	  |  +-gtags ----+ (symbolic link to ../work/gtag2)
+	  |  +-htags --+ | (symbolic link to ../work/htag2)
+	  |            | |
+	  +-work       | |
+	     +-gtag2 <-+ |
+	     |  +-gtags.c|
+	     |           |
+	     +-htag2 <---+
+		+-htags.c
+
+	Old version
+	===========
+	$ cd /tmp/global
+	$ gtags
+	Warning: './gtags' is a directory. (Ignored)
+	Warning: './htags' is a directory. (Ignored)
+	...
+	$ global -f gtags/gtags.c
+	'/tmp/work/gtags/gtags.c' is out of source tree.
+
+	New version
+	===========
+	$ cd /tmp/global
+	$ gtags
+	$ global -f gtags/gtags.c
+	usage              91 gtags/gtags.c  usage(void)
+	help               98 gtags/gtags.c  help(void)
+	...
+	$ global -f gtags/../htags/htags.c
+	mkdir              61 htags/htags.c  #define mkdir(path,mode) mkdir(path)
+	link               62 htags/htags.c  #define link(one,two) (-1)
+	...
+	% cd gtags                                      <= get out of the source tree
+	$ global -f gtags.c
+	global: GTAGS not found.
+	$ pwd
+	/tmp/work/gtags
+
+	Though the symbolic link to a directory might confuse users,
+	it is originally as such. They should understand the characteristic.
+
 o gtags-parser: Pick up the names of struct, union, enum and enum member
   as definitions.
 o gtags.el, gtags.vim, gtags.pl: More accurate, language independent context jump.
