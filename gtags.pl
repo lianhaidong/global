@@ -239,11 +239,11 @@ sub parse_version {
 	$v1 = $1;
 	$v2 = $2;
 	$v3 = $3;
-    } elsif ($version =~ /(\d+)\.(\d+)$/) {
+    } elsif ($v =~ /(\d+)\.(\d+)$/) {
 	$v1 = $1;
 	$v2 = $2;
 	$v3 = 0;
-    } elsif ($version =~ /(\d+)$/) {
+    } elsif ($v =~ /(\d+)$/) {
 	$v1 = $1;
 	$v2 = 0;
 	$v3 = 0;
