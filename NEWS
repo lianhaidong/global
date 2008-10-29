@@ -20,6 +20,14 @@ ___________________________________
 GNU GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 5.7.3 - October 29 2008
+
+[FIXED BUGS]
+gtags: Gtags causes segmentation fault if it read its input file names from
+a file list (use -f option), and the input files aren't in the working
+directory or its sub-directories.
+gtags.pl: Version test is failed.
+
 Version 5.7.2 - September 30 2008
 
 [CHANGES]
@@ -169,7 +177,7 @@ Version 5.6.1 - August 11 2007
 [CHANGES]
 * gtags.conf: Added '.git/' to the DEFAULTSKIP list.
 
-[BUG FIXED]
+[FIXED BUGS]
 * global: Global(1) with the -t option didn't print correct line number.
   Gtags.vim also didn't work correctly due to this bug. This bug was
   introduced in GLOBAL-5.4.
@@ -184,7 +192,7 @@ Version 5.6 - July 6 2007
 * Migrated to GNU GPLv3 and GNU LGPLv3.
 * gtags-parser: Added support of assembler directive ".macro" and ".equ".
 
-[BUG FIXED]
+[FIXED BUGS]
 * global(1): Fix memory leak.
 
 Version 5.5 - May 5 2007
@@ -203,7 +211,7 @@ Version 5.4.1 - March 10 2007
   c: caution, s: search form, m: mains, d: definition, f: files.
   The default is 'csmdf'.
 
-[BUG FIXED]
+[FIXED BUGS]
 * htags: didn't extract some '#include' correctly.
 
 Version 5.4 - January 29 2007
@@ -225,7 +233,7 @@ Version 5.4 - January 29 2007
 		path format: <n> files located
 		other format:<n> objects located
 
-[BUG FIXED]
+[FIXED BUGS]
 * Gtags(1) and global(1) didn't work well in the system root directory('/').
 
 Version 5.3 - November 20 2006
@@ -270,7 +278,7 @@ Version 5.3 - November 20 2006
     gtags-make-complete-list is deprecated. You can enjoy tag name completion without
     invoking this command.
 
-[BUG FIXED]
+[FIXED BUGS]
 * gtags: gtags had exited when it encountered dead symbolic link.
 
 Version 5.2 - August 8 2006
