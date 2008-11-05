@@ -1018,6 +1018,7 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 	STRBUF *sb = NULL, *ib = NULL;
 	char curpath[MAXPATHLEN+1], curtag[IDENTLEN+1];
 	FILE *fp = NULL;
+	int eof = 0;
 	const char *src = "";
 	int lineno, last_lineno;
 
@@ -1057,6 +1058,7 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 			count++;
 		} else if (gtop->format & GTAGS_COMPACT) {
 			/*
+			 * Compact format:
 			 *                    a          b
 			 * tagline = <file id> <tag name> <line no>,...
 			 */
@@ -1099,14 +1101,16 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 			}
 			/*
 			 * Unfold compact format.
-			 *
-			 * If GTAGS_COMPLINE flag is set, each line number is expressed as
-			 * the difference from the previous line number except for the head.
-			 * Please see flush_pool() in libutil/gtagsop.c for the details.
 			 */
 			if (!isdigit(*p))
 				die("illegal compact format.");
 			if (gtop->format & GTAGS_COMPLINE) {
+				/*
+				 *
+				 * If GTAGS_COMPLINE flag is set, each line number is expressed as
+				 * the difference from the previous line number except for the head.
+				 * Please see flush_pool() in libutil/gtagsop.c for the details.
+				 */
 				int last = 0, cont = 0;
 
 				while (*p || cont > 0) {
@@ -1128,8 +1132,12 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 					}
 					if (last_lineno != n && fp) {
 						while (lineno < n) {
-							if (!(src = strbuf_fgets(ib, fp, STRBUF_NOCRLF)))
-								die("unexpected end of file. '%s: %d/%d'", gtp->path, lineno, n);
+							if (!(src = strbuf_fgets(ib, fp, STRBUF_NOCRLF))) {
+								src = "--- Lost line";
+								fclose(fp);
+								fp = NULL;
+								break;
+							}
 							lineno++;
 						}
 					}
@@ -1140,6 +1148,11 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 					last_lineno = last = n;
 				}
 			} else {
+				/*
+				 * In fact, when GTAGS_COMPACT is set, GTAGS_COMPLINE is allways set.
+				 * Therefore, the following code are not actually used.
+				 * However, it is left for some test.
+				 */
 				while (*p) {
 					for (n = 0; isdigit(*p); p++)
 						n = n * 10 + *p - '0';
@@ -1149,8 +1162,12 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 						continue;
 					if (last_lineno != n && fp) {
 						while (lineno < n) {
-							if (!(src = strbuf_fgets(ib, fp, STRBUF_NOCRLF)))
-								die("unexpected end of file. '%s: %d/%d'", gtp->path, lineno, n);
+							if (!(src = strbuf_fgets(ib, fp, STRBUF_NOCRLF))) {
+								src = "--- Lost line";
+								fclose(fp);
+								fp = NULL;
+								break;
+							}
 							lineno++;
 						}
 					}
@@ -1163,6 +1180,7 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 			}
 		} else {
 			/*
+			 * Standard format:
 			 *                    a          b         c
 			 * tagline = <file id> <tag name> <line no> <line image>
 			 */
