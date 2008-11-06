@@ -1008,7 +1008,6 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 	STRBUF *sb = NULL, *ib = NULL;
 	char curpath[MAXPATHLEN+1], curtag[IDENTLEN+1];
 	FILE *fp = NULL;
-	int eof = 0;
 	const char *src = "";
 	int lineno, last_lineno;
 
