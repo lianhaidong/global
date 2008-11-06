@@ -597,34 +597,24 @@ completion(const char *dbpath, const char *root, const char *prefix)
  */
 /*
  * print number of object.
+ *
+ * This procedure is commonly used except for the -P option.
  */
 void
 print_count(int number)
 {
-	if (format == FORMAT_PATH) {
-		switch (number) {
-		case 0:
-			fprintf(stderr, "object not found");
-			break;
-		case 1:
-			fprintf(stderr, "1 file located");
-			break;
-		default:
-			fprintf(stderr, "%d files located", number);
-			break;
-		}
-	} else {
-		switch (number) {
-		case 0:
-			fprintf(stderr, "object not found");
-			break;
-		case 1:
-			fprintf(stderr, "1 object located");
-			break;
-		default:
-			fprintf(stderr, "%d objects located", number);
-			break;
-		}
+	const char *target = format == FORMAT_PATH ? "file" : "object";
+
+	switch (number) {
+	case 0:
+		fprintf(stderr, "object not found");
+		break;
+	case 1:
+		fprintf(stderr, "1 %s located", target);
+		break;
+	default:
+		fprintf(stderr, "%d %ss located", number, target);
+		break;
 	}
 }
 /*
@@ -855,7 +845,7 @@ pathlist(const char *pattern, const char *dbpath)
 			fprintf(stderr, "file not found");
 			break;
 		case 1:
-			fprintf(stderr, "%d file located", count);
+			fprintf(stderr, "1 file located");
 			break;
 		default:
 			fprintf(stderr, "%d files located", count);
