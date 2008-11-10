@@ -181,6 +181,20 @@ Cpp(const char *file)
 					warning("missing namespace block. [+%d %s](0x%x).", lineno, curfile, c);
 			}
 			break;
+		case CPP_EXTERN: /* for 'extern "C"/"C++"' */
+			if (peekc(0) != '"') /* " */
+				continue; /* If does not start with '"', continue. */
+			while ((c = nexttoken(interested, cpp_reserved_word)) == '\n')
+				;
+			/*
+			 * 'extern "C"/"C++"' block is a kind of namespace block.
+			 * (It doesn't have any influence on level.)
+			 */
+			if (c == '{') /* } */
+				namespacelevel++;
+			else
+				pushbacktoken();
+			break;
 		case CPP_CLASS:
 			DBG_PRINT(level, "class");
 			if ((c = nexttoken(interested, cpp_reserved_word)) == SYMBOL) {

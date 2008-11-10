@@ -70,6 +70,7 @@ static struct {
 } stack[MAXPIFSTACK], *cur;
 static int piflevel;		/* condition macro level */
 static int level;		/* brace level */
+static int externclevel;	/* extern "C" block level */
 
 /*
  * yacc: read yacc file and pickup tag entries.
@@ -113,7 +114,7 @@ C_family(const char *file, int type)
 	int yaccstatus = (type == TYPE_YACC) ? DECLARATIONS : PROGRAMS;
 	int inC = (type == TYPE_YACC) ? 0 : 1;	/* 1 while C source */
 
-	level = piflevel = 0;
+	level = piflevel = externclevel = 0;
 	savelevel = -1;
 	target = (sflag) ? SYM : (rflag) ? REF : DEF;
 	startmacro = startsharp = 0;
@@ -197,7 +198,9 @@ C_family(const char *file, int type)
 			/* { */
 		case '}':
 			if (--level < 0) {
-				if (wflag)
+				if (externclevel > 0)
+					externclevel--;
+				else if (wflag)
 					warning("missing left '{' [+%d %s].", lineno, curfile); /* } */
 				level = 0;
 			}
@@ -303,6 +306,20 @@ C_family(const char *file, int type)
 			break;
 		case SHARP_SHARP:		/* ## */
 			(void)nexttoken(interested, c_reserved_word);
+			break;
+		case C_EXTERN: /* for 'extern "C"/"C++"' */
+			if (peekc(0) != '"') /* " */
+				continue; /* If does not start with '"', continue. */
+			while ((c = nexttoken(interested, c_reserved_word)) == '\n')
+				;
+			/*
+			 * 'extern "C"/"C++"' block is a kind of namespace block.
+			 * (It doesn't have any influence on level.)
+			 */
+			if (c == '{') /* } */
+				externclevel++;
+			else
+				pushbacktoken();
 			break;
 		case C_STRUCT:
 		case C_ENUM:

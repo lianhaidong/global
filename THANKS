@@ -54,6 +54,8 @@ Hideki Iwamoto		many bug reports, fixes  and improvements about GLOBAL. See also
 Hideki Mori		advice about the name of parser.
 Hidetaka KOIE		bug report and advice about configure.in for Solaris7.
 Hiroshi MIURA		idea about printing file name on browser's status bar.
+Hirohito Kato		bug fix patch for gtags-parser to pick up objects in extern "C" {...} block.
+Hiroyuki KOBAYASHI	bug report and fix patch for gtags-parser(1).
 Jason Hood		port to DJGPP and Mingw32, and bug report about globash.rc.
 Jean-Marc Saffroy	idea to skip all files whoes first character of name is '.'.
 Jeff Trawick		idea about -l option of htags(1).
@@ -68,7 +70,6 @@ Justin Wojdacki		bug report about htags(1).
 K. Chowksey		new command gtags-select-tag-other-window and gtags-find-tag-other-window.
 Katsuyuki Okabe		advice about deciding emacs version.
 Klaus Borchers		advice about deciding emacs version.
-Hiroyuki KOBAYASHI	bug report and fix patch for gtags-parser(1).
 Koen Hufkens		advice about HP-UX 10.x.
 Koie Hidetaka		bug report about global.conf.
 Marcello Nuccio		bug report about globash.rc.
