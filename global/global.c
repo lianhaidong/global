@@ -1122,7 +1122,7 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 					if (last_lineno != n && fp) {
 						while (lineno < n) {
 							if (!(src = strbuf_fgets(ib, fp, STRBUF_NOCRLF))) {
-								src = "--- Lost line";
+								src = "";
 								fclose(fp);
 								fp = NULL;
 								break;
@@ -1152,7 +1152,7 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 					if (last_lineno != n && fp) {
 						while (lineno < n) {
 							if (!(src = strbuf_fgets(ib, fp, STRBUF_NOCRLF))) {
-								src = "--- Lost line";
+								src = "";
 								fclose(fp);
 								fp = NULL;
 								break;
