@@ -53,6 +53,7 @@ void closetoken(void);
 int nexttoken(const char *, int (*)(const char *, int));
 void pushbacktoken(void);
 int peekc(int);
+void throwaway_nextchar();
 int atfirst_exceptspace(void);
 
 #endif /* ! _TOKEN_H_ */

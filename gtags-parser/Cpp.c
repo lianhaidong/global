@@ -256,7 +256,12 @@ Cpp(const char *file)
 			DBG_PRINT(level, "}");
 			break;
 		case '=':
-			startequal = 1;
+			/* dirty hack. Don't mimic this. */
+			if (peekc(0) == '=') {
+				throwaway_nextchar();
+			} else {
+				startequal = 1;
+			}
 			break;
 		case ';':
 			startthrow = startequal = 0;

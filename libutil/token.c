@@ -280,6 +280,14 @@ peekc(int immediate)
 	return c;
 }
 /*
+ * throwaway_nextchar: throw away next character
+ */
+void
+throwaway_nextchar()
+{
+	nextchar();
+}
+/*
  * atfirst_exceptspace: return if current position is the first column
  *			except for space.
  *	|      1 0
