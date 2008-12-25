@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 1999, 2000, 2002, 2003
+ * Copyright (c) 1998, 1999, 2000, 2002, 2003, 2008
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -257,13 +257,42 @@ peekc(int immediate)
 {
 	int c;
 	long pos;
+    int comment = 0;
 
 	if (cp != NULL) {
 		if (immediate)
 			c = nextchar();
 		else
-			while ((c = nextchar()) != EOF && c != '\n' && isspace(c))
-				;
+            while ((c = nextchar()) != EOF && c != '\n') {
+                if (c == '/') {			/* comment */
+                    if ((c = nextchar()) == '/') {
+                        while ((c = nextchar()) != EOF)
+                            if (c == '\n') {
+                                pushbackchar();
+                                break;
+                            }
+                    } else if (c == '*') {
+                        comment = 1;
+                        while ((c = nextchar()) != EOF) {
+                            if (c == '*') {
+                                if ((c = nextchar()) == '/')
+                                {
+                                    comment = 0;
+                                    break;
+                                }
+                            }
+                            else if (c == '\n')
+                            {
+                                pushbackchar();
+                                break;
+                            }
+                        }
+                    } else
+                        pushbackchar();
+                }
+                else if (!isspace(c))
+                    break;
+            }
 		if (c != EOF)
 			pushbackchar();
 		if (c != '\n' || immediate)
@@ -273,8 +302,38 @@ peekc(int immediate)
 	if (immediate)
 		c = getc(ip);
 	else
-		while ((c = getc(ip)) != EOF && isspace(c))
-			;
+        while ((c = getc(ip)) != EOF) {
+            if (comment) {
+                while ((c = getc(ip)) != EOF) {
+                    if (c == '*') {
+                        if ((c = getc(ip)) == '/')
+                        {
+                            comment = 0;
+                            break;
+                        }
+                    }
+                }
+            }
+            else if (c == '/') {			/* comment */
+                if ((c = getc(ip)) == '/') {
+                    while ((c = getc(ip)) != EOF)
+                        if (c == '\n') {
+                            break;
+                        }
+                } else if (c == '*') {
+                    while ((c = getc(ip)) != EOF) {
+                        if (c == '*') {
+                            if ((c = getc(ip)) == '/')
+                                break;
+                        }
+                    }
+                } else
+                    break;
+            }
+            else if (!isspace(c))
+                break;
+        }
+
 	(void)fseek(ip, pos, SEEK_SET);
 
 	return c;
