@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2008
+ * Copyright (c) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -162,15 +162,15 @@ Cpp(const char *file)
 				}
 			} else
 				pushbacktoken();
-			/* FALLTHROUGH */
+			break;
 		case CPP_NAMESPACE:
 			if (peekc(0) != '{') /* } */ {
-				if ((c = nexttoken(interested, cpp_reserved_word)) == SYMBOL)
-					if (target == DEF)
-						PUT(token, lineno, sp);
+				while ((c = nexttoken(interested, cpp_reserved_word)) != '{') /* } */ {
+					if (c == SYMBOL)
+						if (target == DEF)
+							PUT(token, lineno, sp);
+				}
 			}
-			while ((c = nexttoken(interested, cpp_reserved_word)) == '\n')
-				;
 			/*
 			 * Namespace block doesn't have any influence on level.
 			 */
