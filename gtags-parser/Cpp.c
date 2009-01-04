@@ -151,6 +151,10 @@ Cpp(const char *file)
 			}
 			break;
 		case CPP_USING:
+			/*
+			 * using namespace name;
+			 * using ...;
+			 */
 			if ((c = nexttoken(interested, cpp_reserved_word)) == CPP_NAMESPACE) {
 				if ((c = nexttoken(interested, cpp_reserved_word)) == SYMBOL) {
 					if (target == REF)
@@ -164,11 +168,17 @@ Cpp(const char *file)
 				pushbacktoken();
 			break;
 		case CPP_NAMESPACE:
-			if (peekc(0) != '{') /* } */ {
-				while ((c = nexttoken(interested, cpp_reserved_word)) != '{') /* } */ {
-					if (c == SYMBOL)
-						if (target == DEF)
-							PUT(token, lineno, sp);
+			crflag = 0;
+			/*
+			 * namespace name = ...;
+			 * namespace [name] { ... }
+			 */
+			if ((c = nexttoken(interested, cpp_reserved_word)) == SYMBOL) {
+				if (target == DEF)
+					PUT(token, lineno, sp);
+				if ((c = nexttoken(interested, cpp_reserved_word)) == '=') {
+					crflag = 1;
+					break;
 				}
 			}
 			/*
@@ -180,6 +190,7 @@ Cpp(const char *file)
 				if (wflag)
 					warning("missing namespace block. [+%d %s](0x%x).", lineno, curfile, c);
 			}
+			crflag = 1;
 			break;
 		case CPP_EXTERN: /* for 'extern "C"/"C++"' */
 			if (peekc(0) != '"') /* " */
