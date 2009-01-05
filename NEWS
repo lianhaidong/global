@@ -60,12 +60,13 @@ o gtags-parser: Gtags-parser was not able to recognize the following definitions
         {
         }
 o gtags-parser: Gtags-parser had overlooked 'Foo' in the following construct.
+  Now, it can pick up them.
 
         namespace
         Foo
         { ...
 
-However, this works:
+  However, this works:
 
         namespace Foo
         { ...
