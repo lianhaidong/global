@@ -4,7 +4,7 @@ ___________________________________
 |  |   |  |  |  |  |     |     |  |
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008
+ Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009
 	Tama Communications Corporation
 
  This file is free software; as a special exception the author gives
@@ -19,6 +19,57 @@ ___________________________________
 
 GNU GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
+
+Version 5.7.4 - January 5 2009
+
+[CHANGES]
+o global: In compact format, operation to non-existent lines was changed
+	to avoid needless abnormal termination.
+
+	-- Delete lines 20-last from the test.c.
+	$ global -xr func
+
+	(OLD)
+	func      10 test.c           func(a);
+	global: unexpected end of file. './test.c: 19/20'
+	$ echo $?
+	1                                       <- abnormal termination
+
+	(NEW)
+	func      10 test.c           func(a);
+	func      20 test.c                     <- plain space means non-existence
+	$ echo $?
+	0                                       <- normal termination
+
+[FIXED BUGS]
+o gtags-parser: Gtags-parser had overlooked objects in 'extern "C" {...}'(C, C++).
+  Now, it can pick up them.
+o gtags-parser: Gtags-parser was not able to recognize the following definitions.
+  Now, it can pick up them.
+
+        int invisible /* COMMENT */ ()
+        {
+        }
+
+        int also_invisible // COMMENT
+        ()
+        {
+        }
+
+        int visible () // COMMENT
+        {
+        }
+o gtags-parser: Gtags-parser had overlooked 'Foo' in the following construct.
+
+        namespace
+        Foo
+        { ...
+
+However, this works:
+
+        namespace Foo
+        { ...
+
 
 Version 5.7.3 - October 29 2008
 

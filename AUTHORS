@@ -9,7 +9,8 @@ Copyright holder of GNU GLOBAL
 ==============================
 
 Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005,
-	2006, 2007, 2008 Tama Communications Corporation. All rights reserved.
+	2006, 2007, 2008, 2009
+	Tama Communications Corporation. All rights reserved.
 
 Contributors of GNU GLOBAL
 ==========================
@@ -24,6 +25,8 @@ Port to Windows 32 (for Borland C++ Compiler) by Dan Fandrich.
 
 Port to DJGPP by Jason Hood.
 (libutil/is_unixy.[ch] and most of #ifdef __DJGPP__.)
+
+Improved peekc() in libutil/token.c by Chris Nogradi and Garmin Inc.
 
 The following improvements by Hideki IWAMOTO.
 * INCLUDED FROM index of htags.
