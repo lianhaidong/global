@@ -214,7 +214,7 @@ makedirectories(const char *base, const char *rest, int verbose)
 		if (!test("d", p)) {
 			if (verbose)
 				fprintf(stderr, " Making directory '%s'.\n", p);
-#if (defined(_WIN32) && !defined(__CYGWIN__)) || defined(__DJGPP__)
+#if defined(_WIN32) && !defined(__CYGWIN__)
 			if (mkdir(p) < 0) {
 #else
 			if (mkdir(p, 0775) < 0) {

@@ -440,8 +440,15 @@ generate_file(const char *dist, const char *file)
 	strbuf_reset(sb);
 	strbuf_sprintf(sb, "%s/gtags/%s.tmpl", datadir, file);
 	ip = fopen(strbuf_value(sb), "r");
-	if (!ip)
-		die("skeleton file '%s' not found.", strbuf_value(sb));
+	if (!ip) {
+#ifdef __DJGPP__
+		strbuf_reset(sb);
+		strbuf_sprintf(sb, "%s/gtags/%s", datadir, file);
+		ip = fopen(strbuf_value(sb), "r");
+		if (!ip)
+#endif
+			die("skeleton file '%s' not found.", strbuf_value(sb));
+	}
 	op = fopen(makepath(dist, file, NULL), "w");
 	if (!op)
 		die("cannot create file '%s'.", file);
