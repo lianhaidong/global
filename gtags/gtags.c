@@ -274,11 +274,12 @@ main(int argc, char **argv)
 		 * main      22 /prj/xxx/libc/func.c   main(argc, argv)\n
 		 */
 		STRBUF *ib = strbuf_open(MAXBUFLEN);
-		CONVERT *cv = convert_open(convert_type, FORMAT_CTAGS_X, argv[0], argv[1], argv[2], stdout);
+		CONVERT *cv;
 		char *ctags_x;
 
 		if (argc < 3)
 			die("gtags --path: 3 arguments needed.");
+		cv = convert_open(convert_type, FORMAT_CTAGS_X, argv[0], argv[1], argv[2], stdout);
 		while ((ctags_x = strbuf_fgets(ib, stdin, STRBUF_NOCRLF)) != NULL)
 			convert_put(cv, ctags_x);
 		convert_close(cv);
