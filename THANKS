@@ -4,7 +4,7 @@ ___________________________________
 |  |   |  |  |  |  |     |     |  |
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Copyright (c) 2000, 2001, 2002, 2003, 2004, 2006, 2007, 2008
+ Copyright (c) 2000, 2001, 2002, 2003, 2004, 2006, 2007, 2008, 2009
 	Tama Communications Corporation
 
  This file is free software; as a special exception the author gives
@@ -27,6 +27,7 @@ Andrs Azar		Cygwin trouble report.
 Andy Newman		bug report about treating tab character.
 Andy Zhou		bug report about gtags-parser overlook 'extern' prefixed function.
 Arne Schmitz		bug report about gtags-parser.
+Alex Ott		profitable information about LFS(Large file support).
 Bakken, Luke		bug fix method about stat() in htags(1).
 Bert Gijsbers		investigation about mandoc macro and a bug report.
 Bob Bentley		bug report about bless.sh and gtags.
@@ -60,6 +61,7 @@ Hirohito Kato		bug fix patch for gtags-parser to pick up objects in extern "C" {
 Hiroyuki KOBAYASHI	bug report and fix patch for gtags-parser(1).
 Jason Hood		port to DJGPP and Mingw32, and bug report about globash.rc.
 Jean-Marc Saffroy	idea to skip all files whoes first character of name is '.'.
+			profitable information about LFS(Large file support).
 Jeff Trawick		idea about -l option of htags(1).
 Jianbin Kang		bug report about segmentation fault of gtags(1).
 Jordan K. Hubbard	idea about supporting BSD's obj directory.

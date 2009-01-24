@@ -4,7 +4,7 @@ ___________________________________
 |  |   |  |  |  |  |     |     |  |
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Copyright (c) 2000, 2003, 2004, 2005, 2006, 2007, 2008
+ Copyright (c) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2009
 	Tama Communications Corporation
 
  This file is free software; as a special exception the author gives
@@ -89,7 +89,20 @@ Q3. Why doesn't htags(1) generate XHTML+CSS hypertext by default?
 A3. Because still a lot of browsers which cannot treat XHTML+CSS well remain.
     If you hope XHTML+CSS, please use the --xhtml option of htags.
 ----------------------------------------------------------------------------
-Q4. Deleted.
+Q4. I'm using GNU system. In a large project, gtags fails in making tags
+    like follows:
+
+	$ gtags
+	gtags: cannot write to database.
+	$ _
+
+    It seems that gtags cannot make a file over 2GB. Any solution?
+
+A4. If your GNU system supports 64-bit file offset then please try the
+    following configuration.
+
+	$ ./configure CFLAGS='-D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64'
+
 ----------------------------------------------------------------------------
 Q5. Deleted.
 ----------------------------------------------------------------------------
