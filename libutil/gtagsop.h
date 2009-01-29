@@ -108,7 +108,7 @@ typedef struct {
 } GTOP;
 
 const char *dbname(int);
-GTOP *gtags_open(const char *, const char *, int, int);
+GTOP *gtags_open(const char *, const char *, int, int, int);
 void gtags_put(GTOP *, const char *, const char *);
 void gtags_delete(GTOP *, IDSET *);
 GTP *gtags_first(GTOP *, const char *, int);

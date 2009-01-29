@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2005, 2006,
- *	2007 Tama Communications Corporation
+ *	2007, 2009 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -265,12 +265,13 @@ dbname(int db)
  *	i)	mode	GTAGS_READ: read only
  *			GTAGS_CREATE: create tag
  *			GTAGS_MODIFY: modify tag
+ *	i)	flags	GTAGS_COMPACT: compact format
  *	r)		GTOP structure
  *
  * when error occurred, gtagopen doesn't return.
  */
 GTOP *
-gtags_open(const char *dbpath, const char *root, int db, int mode)
+gtags_open(const char *dbpath, const char *root, int db, int mode, int flags)
 {
 	GTOP *gtop;
 	int dbmode;
@@ -278,6 +279,7 @@ gtags_open(const char *dbpath, const char *root, int db, int mode)
 	gtop = (GTOP *)check_calloc(sizeof(GTOP), 1);
 	gtop->db = db;
 	gtop->mode = mode;
+	gtop->openflags = flags;
 	gtop->format_version = 4;
 	/*
 	 * Open tag file allowing duplicate records.
@@ -307,13 +309,18 @@ gtags_open(const char *dbpath, const char *root, int db, int mode)
 		 */
 		gtop->format = 0;
 		gtop->format_version = 5;
-		if (gtop->db == GTAGS)
-			gtop->format |= GTAGS_COMPRESS;
-		gtop->format |= GTAGS_COMPNAME;
-		if (gtop->db == GRTAGS || gtop->db == GSYMS) {
+		/*
+		 * GRTAGS and GSYSM always use compact format.
+		 * GTAGS uses compact format only when the -c option specified.
+		 */
+		if (gtop->db == GRTAGS || gtop->db == GSYMS || gtop->openflags & GTAGS_COMPACT) {
 			gtop->format |= GTAGS_COMPACT;
 			gtop->format |= GTAGS_COMPLINE;
+		} else {
+			/* standard format */
+			gtop->format |= GTAGS_COMPRESS;
 		}
+		gtop->format |= GTAGS_COMPNAME;
 		if (gtop->format & GTAGS_COMPACT)
 			dbop_putoption(gtop->dbop, COMPACTKEY, NULL);
 		if (gtop->format & GTAGS_COMPRESS) {

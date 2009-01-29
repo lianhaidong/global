@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005, 2006, 2008
- *	Tama Communications Corporation
+ * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005, 2006, 2008,
+ *	2009 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -63,6 +63,7 @@ void createtags(const char *, const char *, int);
 int printconf(const char *);
 void set_base_directory(const char *, const char *);
 
+int cflag;					/* compact format */
 int iflag;					/* incremental update */
 int Iflag;					/* make  idutils index */
 int Oflag;					/* use objdir */
@@ -111,6 +112,7 @@ static struct option const long_options[] = {
 	 * Though the -o(--omit-gsyms) was removed, this code
 	 * is left for compatibility.
 	 */
+	{"compact", no_argument, NULL, 'c'},
 	{"file", required_argument, NULL, 'f'},
 	{"idutils", no_argument, NULL, 'I'},
 	{"incremental", no_argument, NULL, 'i'},
@@ -160,7 +162,7 @@ main(int argc, char **argv)
 	int optchar;
 	int option_index = 0;
 
-	while ((optchar = getopt_long(argc, argv, "f:iIn:oOqvwse", long_options, &option_index)) != EOF) {
+	while ((optchar = getopt_long(argc, argv, "cf:iIn:oOqvwse", long_options, &option_index)) != EOF) {
 		switch (optchar) {
 		case 0:
 			/* already flags set */
@@ -186,6 +188,9 @@ main(int argc, char **argv)
 				convert_type = PATH_THROUGH;
 			else
 				die("Unknown path type.");
+			break;
+		case 'c':
+			cflag++;
 			break;
 		case 'f':
 			file_list = optarg;
@@ -370,7 +375,7 @@ main(int argc, char **argv)
 		 * Version check. If existing tag files are old enough
 		 * gtagsopen() abort with error message.
 		 */
-		GTOP *gtop = gtags_open(dbpath, cwd, GTAGS, GTAGS_MODIFY);
+		GTOP *gtop = gtags_open(dbpath, cwd, GTAGS, GTAGS_MODIFY, 0);
 		gtags_close(gtop);
 		/*
 		 * GPATH is needed for incremental updating.
@@ -667,7 +672,7 @@ updatetags(const char *dbpath, const char *root, IDSET *deleteset, STRBUF *addli
 	 */
 	if (!getconfs(dbname(db), comline))
 		die("cannot get tag command. (%s)", dbname(db));
-	gtop = gtags_open(dbpath, root, db, GTAGS_MODIFY);
+	gtop = gtags_open(dbpath, root, db, GTAGS_MODIFY, 0);
 	if (vflag) {
 		char fid[32];
 		const char *path;
@@ -776,7 +781,7 @@ createtags(const char *dbpath, const char *root, int db)
 	 */
 	if (db == GRTAGS && !test("f", makepath(dbpath, dbname(GTAGS), NULL)))
 		die("GTAGS needed to create GRTAGS.");
-	gtop = gtags_open(dbpath, root, db, GTAGS_CREATE);
+	gtop = gtags_open(dbpath, root, db, GTAGS_CREATE, cflag ? GTAGS_COMPACT : 0);
 	/*
 	 * Set flags.
 	 */

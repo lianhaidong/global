@@ -1,6 +1,6 @@
 #
 # Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005
-#	2007, 2008 Tama Communications Corporation
+#	2007, 2008, 2009 Tama Communications Corporation
 #
 # This file is part of GNU GLOBAL.
 #
@@ -22,10 +22,10 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	GTAGS,1,September 2008,GNU Project
+@HEADER	GTAGS,1,January 2009,GNU Project
 @NAME	gtags - create tag files for global.
 @SYNOPSIS
-	@name{gtags} [-iIOqvw][-f @arg{file}][-n @arg{number}][@arg{dbpath}]
+	@name{gtags} [-ciIOqvw][-f @arg{file}][-n @arg{number}][@arg{dbpath}]
 @DESCRIPTION
 	@name{Gtags} recursively collect the source files under
 	the current directory,
@@ -48,6 +48,9 @@
 @OPTIONS
 	The following options are available:
 	@begin_itemize
+	@item{@option{-c}, @option{--compact}}
+		Make GTAGS with the compact format.
+		GRTAGS and GSYMS always use the compact format.
 	@item{@option{--config}[=@arg{name}]}
 		Show the value of config variable @arg{name}.
 		If @arg{name} is not specified then show whole of config entry.
@@ -99,9 +102,9 @@
 @FILES
 	@begin_itemize
 	@item{@file{GTAGS}}
-		Tag file for function definitions.
+		Tag file for object definitions.
 	@item{@file{GRTAGS}}
-		Tag file for function references.
+		Tag file for object references.
 	@item{@file{GSYMS}}
 		Tag file for other symbols.
 	@item{@file{GPATH}}

@@ -561,7 +561,7 @@ completion(const char *dbpath, const char *root, const char *prefix)
 	if (prefix)
 		flags |= GTOP_PREFIX;
 	db = (sflag) ? GSYMS : GTAGS;
-	gtop = gtags_open(dbpath, root, db, GTAGS_READ);
+	gtop = gtags_open(dbpath, root, db, GTAGS_READ, 0);
 	for (gtp = gtags_first(gtop, prefix, flags); gtp; gtp = gtags_next(gtop)) {
 		fputs(gtp->tag, stdout);
 		fputc('\n', stdout);
@@ -1016,7 +1016,7 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 	/*
 	 * open tag file.
 	 */
-	gtop = gtags_open(dbpath, root, db, GTAGS_READ);
+	gtop = gtags_open(dbpath, root, db, GTAGS_READ, 0);
 	cv = convert_open(type, format, root, cwd, dbpath, stdout);
 	/*
 	 * search through tag file.

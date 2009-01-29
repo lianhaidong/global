@@ -1748,7 +1748,7 @@ main(int argc, char **argv)
 		 * version check.
 		 * Do nothing, but the version of tag file will be checked.
 		 */
-		gtop = gtags_open(dbpath, cwdpath, GTAGS, GTAGS_READ);
+		gtop = gtags_open(dbpath, cwdpath, GTAGS, GTAGS_READ, 0);
 		gtags_close(gtop);
 	}
 	/*
