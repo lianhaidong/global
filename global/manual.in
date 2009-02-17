@@ -89,7 +89,7 @@
 		If this option is specified then the @option{-s} and @option{-r}
 		are ignored.
 		Regular expression is not allowed in the @arg{pattern}.
-		This option is assumes use in conversational environments such as
+		This option assumes use in conversational environments such as
 		editors and IDEs.
 	@item{@option{-e}, @option{--regexp} @arg{pattern}}
 		Use @arg{pattern} as the pattern; useful to protect  patterns
