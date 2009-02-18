@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2005, 2006, 2008
- *	Tama Communications Corporation
+ * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2005, 2006, 2008,
+ *	2009 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -60,6 +60,7 @@
 #include "strbuf.h"
 #include "strlimcpy.h"
 #include "test.h"
+#include "varray.h"
 
 /*
  * usage of find_xxx()
@@ -82,10 +83,10 @@ static FILE *ip;
 static FILE *temp;
 static char rootdir[MAXPATHLEN+1];
 static char cwddir[MAXPATHLEN+1];
-static int status;
+static int find_mode;
+static int find_eof;
 #define FIND_OPEN	1
 #define FILELIST_OPEN	2
-#define END_OF_FIND	3
 
 static void trim(char *);
 static char *find_read_traverse(void);
@@ -347,12 +348,16 @@ skipthisfile(const char *path)
 	return 0;
 }
 
-#define STACKSIZE 50
-static  char dir[MAXPATHLEN+1];			/* directory path */
-static  struct {
+/*
+ * Directory Stack
+ */
+static char dir[MAXPATHLEN+1];			/* directory path */
+static VARRAY *stack;				/* dynamic allocated array */
+struct stack_entry {
 	STRBUF *sb;
 	char *dirp, *start, *end, *p;
-} stack[STACKSIZE], *topp, *curp;		/* stack */
+};
+static int current_entry;			/* current entry of the stack */
 
 /*
  * getdirs: get directory list
@@ -404,16 +409,18 @@ getdirs(const char *dir, STRBUF *sb)
 void
 find_open(const char *start)
 {
-	assert(status == 0);
-	status = FIND_OPEN;
+	struct stack_entry *curp;
+	assert(find_mode == 0);
+	find_mode = FIND_OPEN;
 
 	if (!start)
 		start = ".";
 	/*
 	 * setup stack.
 	 */
-	curp = &stack[0];
-	topp = curp + STACKSIZE; 
+	stack = varray_open(sizeof(struct stack_entry), 50);
+	current_entry = 0;
+	curp = varray_assign(stack, current_entry, 1);
 	strlimcpy(dir, start, sizeof(dir));
 	curp->dirp = dir + strlen(dir);
 	curp->sb = strbuf_open(0);
@@ -438,8 +445,8 @@ find_open(const char *start)
 void
 find_open_filelist(const char *filename, const char *root)
 {
-	assert(status == 0);
-	status = FILELIST_OPEN;
+	assert(find_mode == 0);
+	find_mode = FILELIST_OPEN;
 
 	if (!strcmp(filename, "-")) {
 		/*
@@ -484,12 +491,12 @@ find_read(void)
 {
 	static char *path;
 
-	assert(status != 0);
-	if (status == END_OF_FIND)
+	assert(find_mode != 0);
+	if (find_eof)
 		path = NULL;
-	else if (status == FILELIST_OPEN)
+	else if (find_mode == FILELIST_OPEN)
 		path = find_read_filelist();
-	else if (status == FIND_OPEN)
+	else if (find_mode == FIND_OPEN)
 		path = find_read_traverse();
 	else
 		die("find_read: internal error.");
@@ -504,6 +511,7 @@ char *
 find_read_traverse(void)
 {
 	static char val[MAXPATHLEN+1];
+	struct stack_entry *curp = varray_assign(stack, current_entry, 1);
 
 	for (;;) {
 		while (curp->p < curp->end) {
@@ -569,8 +577,7 @@ find_read_traverse(void)
 				/*
 				 * Push stack.
 				 */
-				if (++curp >= topp)
-					die("directory stack over flow.");
+				curp = varray_assign(stack, ++current_entry, 1);
 				curp->dirp = dirp + strlen(dirp);
 				curp->sb = sb;
 				curp->start = curp->p = strbuf_value(sb);
@@ -579,15 +586,15 @@ find_read_traverse(void)
 		}
 		strbuf_close(curp->sb);
 		curp->sb = NULL;
-		if (curp == &stack[0])
+		if (current_entry == 0)
 			break;
 		/*
 		 * Pop stack.
 		 */
-		curp--;
+		curp = varray_assign(stack, --current_entry, 0);
 		*(curp->dirp) = 0;
 	}
-	status = END_OF_FIND;
+	find_eof = 1;
 	return NULL;
 }
 /*
@@ -607,7 +614,7 @@ find_read_filelist(void)
 		path = strbuf_fgets(ib, ip, STRBUF_NOCRLF);
 		if (path == NULL) {
 			/* EOF */
-			status = END_OF_FIND;
+			find_eof = 1;
 			return NULL;
 		}
 		if (*path == '\0') {
@@ -663,23 +670,22 @@ find_read_filelist(void)
 void
 find_close(void)
 {
-	assert(status != 0);
-	if (status == FIND_OPEN) {
-		for (curp = &stack[0]; curp < topp; curp++)
-			if (curp->sb != NULL)
-				strbuf_close(curp->sb);
-	} else if (status == FILELIST_OPEN) {
+	assert(find_mode != 0);
+	if (find_mode == FIND_OPEN) {
+		if (stack)
+			varray_close(stack);
+	} else if (find_mode == FILELIST_OPEN) {
 		/*
 		 * The --file=- option is specified, we don't close file
 		 * to read it repeatedly.
 		 */
 		if (ip != temp)
 			fclose(ip);
-	} else if (status != END_OF_FIND) {
-		die("illegal find_close");
+	} else {
+		die("find_close: internal error.");
 	}
 	regfree(suff);
 	if (skip)
 		regfree(skip);
-	status = 0;
+	find_eof = find_mode = 0;
 }
