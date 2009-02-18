@@ -299,6 +299,10 @@ prepare_skip(void)
  *
  *	i)	path	path name (must start with ./)
  *	r)		1: skip, 0: dont skip
+ *
+ * Specification of required path name.
+ * o Path must start with "./".
+ * o Directory path name must end with "/".
  */
 static int
 skipthisfile(const char *path)
@@ -314,6 +318,7 @@ skipthisfile(const char *path)
 		if (debug)
 			fprintf(stderr, "skipthisfile(1): %s\n", path);
 #endif
+/* fprintf(stderr, "skipthisfile: skip %s\n", path);*/
 		return 1;
 	}
 	/*
@@ -414,7 +419,7 @@ find_open(const char *start)
 	find_mode = FIND_OPEN;
 
 	if (!start)
-		start = ".";
+		start = "./";
 	/*
 	 * setup stack.
 	 */
@@ -511,6 +516,7 @@ char *
 find_read_traverse(void)
 {
 	static char val[MAXPATHLEN+1];
+	char path[MAXPATHLEN+1];
 	struct stack_entry *curp = varray_assign(stack, current_entry, 1);
 
 	for (;;) {
@@ -519,13 +525,17 @@ find_read_traverse(void)
 			const char *unit = curp->p + 1;
 
 			curp->p += strlen(curp->p) + 1;
-			if (type == 'f') {
-				char path[MAXPATHLEN];
 
+			/*
+			 * Skip files described in the skip list.
+			 */
 				/* makepath() returns unsafe module local area. */
-				strlimcpy(path, makepath(dir, unit, NULL), sizeof(path));
-				if (skipthisfile(path))
-					continue;
+			strlimcpy(path, makepath(dir, unit, NULL), sizeof(path));
+			if (type == 'd')
+				strcat(path, "/");
+			if (skipthisfile(path))
+				continue;
+			if (type == 'f') {
 				/*
 				 * Skip the following:
 				 * o directory
@@ -566,8 +576,8 @@ find_read_traverse(void)
 				STRBUF *sb = strbuf_open(0);
 				char *dirp = curp->dirp;
 
-				strcat(dirp, "/");
 				strcat(dirp, unit);
+				strcat(dirp, "/");
 				if (getdirs(dir, sb) < 0) {
 					warning("cannot open directory '%s'. (Ignored)", dir);
 					strbuf_close(sb);

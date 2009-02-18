@@ -23,6 +23,8 @@ February 18 2009, Shigio YAMAGUCHI
 
 	* Rewrote the stack in libutil/find.c using the varray (libutil/varray.c)
 	  instead of static array.
+	* Changed gtags(1) not to do useless inspection for the files in the
+	  directories which are listed in the skip list.
 
 September 27 2008, by Shigio YAMAGUCHI
 
@@ -34,7 +36,7 @@ September 27 2008, by Shigio YAMAGUCHI
 
 July 14 2008, by Shigio YAMAGUCHI
 
-	* Changed to skip all files whoes first character of name is '.'.
+	* Changed gtags(1) to skip all files whoes first character of name is '.'.
 
 	The following path was deleted from the DEFAULTSKIP in configure.ac, since new
 	rule covers them.
