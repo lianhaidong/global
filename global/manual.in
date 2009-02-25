@@ -1,6 +1,6 @@
 #
 # Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2006
-#	2008, Tama Communications Corporation
+#	2008, 2009 Tama Communications Corporation
 #
 # This file is part of GNU GLOBAL.
 #
@@ -22,7 +22,7 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	GLOBAL,1,September 2008,GNU Project
+@HEADER	GLOBAL,1,February 2009,GNU Project
 @NAME	global - print the locations of specified object.
 @SYNOPSIS
 	@name{global} [-aGilnqrstTvx][-e] @arg{pattern}
@@ -193,8 +193,10 @@
 		This value is ignored when @var{GTAGSROOT} is not defined.
 	@item{@var{GTAGSLIBPATH}}
 		If this variable is set, it is used as the path to search
-		for library functions. If the specified function is not
+		for library functions. If the specified object is not
 		found in the source project, @name{global} also search in these paths.
+		Since only @file{GTAGS} is targeted in the retrieval, this variable is
+		ignored when the @option{-r} or @option{-s} is specified.
 	@item{@var{GTAGSLABEL}}
 		If this variable is set, its value is used as the label
 		of configuration file. The default is @code{default}.
