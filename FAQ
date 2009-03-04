@@ -96,7 +96,8 @@ Q4. I'm using GNU system. In a large project, gtags fails in making tags
 	gtags: cannot write to database.
 	$ _
 
-    It seems that gtags cannot make a file over 2GB. Any solution?
+    File system is not full. It seems that gtags cannot make a file over 2GB.
+    Any solution?
 
 A4. If your GNU system supports 64-bit file offset then please try the
     following configuration.
