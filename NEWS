@@ -89,7 +89,7 @@ o htags: Picks up the words 'include', 'required' and 'required_once' statement 
   accessible from the current directory.
 
 [INCOMPATIBLE CHANGES]
-o gtags: Changed to skip all files whoes first character of name is '.'.
+o gtags: Changed to skip all files whose first character of name is '.'.
   The following paths were deleted from the DEFAULTSKIP list in configure.ac,
   since new rule covers them.
 
@@ -298,17 +298,17 @@ Version 5.3 - November 20 2006
 
 [OTHER CHANGES]
 * global:  New -O(--only-other) option.
-* htags: Added some new options and new arguments which are synonyms of config variable.
-  This decreases dependence on configuration file.
+* htags: Added some new options and new arguments which are synonyms of
+  configuration variable. This decreases dependence on configuration file.
 
-  new option              | config variable
+  new option              | configuration variable
   ------------------------+-------------------------
   --disable-grep          | disable_grep
   --table-list            | table_list
   --tabs=<n>              | tabs
   --full-path             | full_path
 
-  new argument            | config variable
+  new argument            | configuration variable
   ------------------------+-------------------------
   --line-number [columns] | ncol
   --func-header [position]| definition_header
@@ -342,7 +342,7 @@ Version 5.2 - August 8 2006
 	$ htags -vsanohIT
 * htags: Changed the default color of braces from blue to red to make them stand out.
 * htags: Always enable 'Grep pattern' form when the -f(--form) option specified.
-  Removed config variable 'enable_grep' since it became meaningless. Instead, added
+  Removed configuration variable 'enable_grep' since it became meaningless. Instead, added
   a new variable 'disable_grep'.
 * htags: Added more profitable tips in the file browser.
   - File        size of bytes
@@ -485,10 +485,10 @@ Version 4.8.5 - April 19 2005
 
 * htags: Added the support for XHTML (--xhtml).
   If the --frame option is specified then generates XHTML-1.0 Frameset,
-  else if config variable 'xhtml_version' is set to 1.1 then generates
+  else if configuration variable 'xhtml_version' is set to 1.1 then generates
   XHTML-1.1 else XHTML 1.0 Transitional.
   You can customize the appearance using style sheet file 'style.css'.
-* htags: Added config variable 'xhtml_version'.
+* htags: Added configuration variable 'xhtml_version'.
 * htags: Added 'html/' to the fault skip list.
   It is the output directory of doxygen document.
 * gtags-parser: Added yacc directives introduced in bison-2.0.
@@ -511,13 +511,14 @@ Version 4.8.3 - February 26 2005
   But it doesn't mean the deletion of the code for DOS and Windows 32.
   We leave the support to outside projects and accept their code as is.
   Therefore, anything has not been changed substantially up to now.
-* Renamed gctags(1) to gtags-parser(1) because some sysmtems have
+* Renamed gctags(1) to gtags-parser(1) because some systems have
   another 'gctags' which does not relate to GLOBAL.
 * Changed gtags-parser(1) to decide language type of the source files
   only by the suffix. In older version, *.h files were considered to be
   C++ source files if they include token 'class'. New version considers
   *.h files always to be C source files. If you want gtags-parser to
-  consider them C++ then you must redefine new config variable 'langmap'.
+  consider them C++ then you must redefine new configuration variable
+  'langmap'.
   
 [OTHER CHANGES]
 Fixed bugs:
@@ -525,14 +526,14 @@ Fixed bugs:
 * htags: Buffer overflow occurred in dupindex.c:makedupindex().
 * htags: Could not ignore path name which includes blank correctly.
 New features:
-* gtags,htags: New config variable 'langmap'.
+* gtags,htags: New configuration variable 'langmap'.
   This variable is used for customizing the mapping of languages and the
   parsers, and it includes the function of obsoleted 'suffixes' variable.
   If you use 'suffixes' then it is effective else GLOBAL internally
   generates the value of 'suffixes' from the 'langmap'.
   The reason to continue 'suffixes' is that it is needed for plug-in parser.
   If you don't use plug-in parser then you should use 'langmap' instead.
-* htags: New config variable 'copy_files'.
+* htags: New configuration variable 'copy_files'.
   With the -f option, htags makes links of tag files in the 'cgi-bin'
   directory by default. With this variable, htags copy them instead of
   linking.
@@ -542,7 +543,7 @@ Version 4.8.2 - November 11 2004
 [INCOMPATIBLE CHANGES]
 * The support for postgres ended.
 * Removed htags.pl (older version of htags written by Perl) completely.
-* Removed config variables: sed_command and sort_command.
+* Removed configuration variables: sed_command and sort_command.
   Sed(1) and sort(1) are not necessary any longer.
 
 [OTHER CHANGES]
@@ -575,7 +576,7 @@ Fixed bugs:
 
 New features:
 * htags: Configurable suffix list for include file.
-  (See man htags(1). config variables: include_file_suffixes)
+  (See man htags(1). configuration variables: include_file_suffixes)
 * htags: Uses environment variable TMP if TMPDIR doesn't exist.(only DJGPP)
 * htags: Warns about unknown pre-processing directive. As the exception,
   when unknown preprocessing directive appears in assembly source,
@@ -630,7 +631,7 @@ Version 4.6.1 - Oct 3 2003
 Version 4.6 - July 2 2003
 
 [INCOMPATIBLE CHANGES]
-* Changed the default value of config variable 'definition_header' to 'no',
+* Changed the default value of configuration variable 'definition_header' to 'no',
   because definition header is unsightly according to the place, especially
   in class definition.
 
@@ -642,7 +643,7 @@ Version 4.6 - July 2 2003
     word of PHP are recognized as reserved words of PHP.
   Htags(1) should be rewritten greatly to solve above problems in the future.
 * Added support for SCM_DEFINE macro which is part of guile-snarf.
-* Added 'right' as a value of config variable 'definition_header'.
+* Added 'right' as a value of configuration variable 'definition_header'.
 * Added some tool tips.
   - Alphabet in the alphabetical definition index shows the count of definitions.
   - File name in the file index shows the full path name.
@@ -731,7 +732,8 @@ Version 4.5.1 - November 9 2002
 
 [INCOMPATIBLE CHANGES]
 
-* htags: Renamed the --symbols option and config variable 'symbols' to 'symbol'.
+* htags: Renamed the --symbols option and configuration variable 'symbols'
+  to 'symbol'.
 
 [OTHER CHANGES]
 
@@ -743,9 +745,9 @@ Version 4.5 - July 4 2002
 
 * htags: New -m(--main-func) option.
 * htags: New --style-sheet=<style file> option.
-* htags: New --no-javascript option and no_javascript config variable.
+* htags: New --no-javascript option and no_javascript configuration variable.
 * htags: New -g(--gtags) option.
-* htags: New -s(--symbols) option and config variable 'symbols'.
+* htags: New -s(--symbols) option and configuration variable 'symbols'.
 * gctags: New --langmap option.
 * gctags: New -t and -d option.
 * gtags: Now picks up macros with no argument, typedef names and enum members.
@@ -759,7 +761,7 @@ Version 4.4 - March 30 2002
 * Gozilla(1) came back to GLOBAL.
 * global, htags: Added -o(--other) option which picks up not only source
   files but also other files like 'README'.
-* htags: New config variables: other_files, definition_header, enable_grep
+* htags: New configuration variables: other_files, definition_header, enable_grep
   and enable_idutils.
 * htags: Removed the -l(--each-line-tag) option.
   From now on, htags works as if -l flag is always specified.
@@ -787,8 +789,8 @@ Version 4.2 - November 24 2001
 
 * Added support for postgres.
   You need to configure GLOBAL with --with-postgres option.
-* gtags: When no parser specified in config file, use default value.
-* gtags: Now accepts full path name in config variable 'skip'.
+* gtags: When no parser specified in the configuration file, use default value.
+* gtags: Now accepts full path name in configuration variable 'skip'.
 * htags: New --caution option.
 * global.texi: Added command reference manuals.
 * gtags, htags: Now accepts relative path name as the parameter of --gtagsconf.
@@ -820,7 +822,7 @@ Version 4.1 - July 12, 2001
 * Fixed some bugs.
 * Added GloBash -- Global facility for Bash (globash.rc).
 * htags: Now creates bless.sh command when the -S option is specified.
-* htags: Added config variables prolog_script, epilog_script, show_position,
+* htags: Added configuration variables prolog_script, epilog_script, show_position,
   position_begin, position_end and icase_path.
 * htags: Added path name search facility.
 * htags: Now locates dbpath like global(1) does.
@@ -878,7 +880,7 @@ Version 4.0 - September 3, 2000
 * Now long name options are available.
 * global: Improved performance when the -g option is specified.
 * global: New -I (--idutils) option.
-* htags: New config variable 'table_list'.
+* htags: New configuration variable 'table_list'.
 * htags: New -S (--secure-cgi) option which enables centralized cgi script.
 * htags: Added new anchors to the file index.
 * htags: Added new frame for search when the both of -F and -f option are
@@ -933,7 +935,7 @@ Version 3.5 - August 23, 1999
 Version 3.44 - March 22, 1999
 
 * Fixed a few bugs.
-* New config variabls: full_path and normal_suffix in gtags.el.
+* New configuration variables: full_path and normal_suffix in gtags.el.
 * Gctags(1) now picks up NENTRY() in assembly source.
 
 Version 3.43 - January 20, 1999
@@ -1060,7 +1062,7 @@ Version 1.7 - February 17, 1997
 
 * Fixed a few bugs.
 * The frame.html has been removed from the output of htags(1).
-* Major speed improvments for htags(1).
+* Major speed improvements for htags(1).
 * New htags(1) option -a, -v and -t.
 * New gtags(1) option -s.
 * New script systags.sh.
