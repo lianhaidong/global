@@ -49,8 +49,9 @@
 	The following options are available:
 	@begin_itemize
 	@item{@option{-c}, @option{--compact}}
-		Make GTAGS with the compact format.
-		GRTAGS and GSYMS always use the compact format.
+		Make GTAGS in compact format.
+		This option does not influence GRTAGS and GSYMS,
+		because they are always made in compact format.
 	@item{@option{--config}[=@arg{name}]}
 		Show the value of config variable @arg{name}.
 		If @arg{name} is not specified then show whole of config entry.
