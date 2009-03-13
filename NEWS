@@ -71,29 +71,27 @@ o gtags-parser: Gtags-parser had overlooked 'Foo' in the following construct.
         namespace Foo
         { ...
 
-
 Version 5.7.3 - October 29 2008
 
 [FIXED BUGS]
-gtags: Gtags causes segmentation fault if it read its input file names from
-a file list (use -f option), and the input files aren't in the working
-directory or its sub-directories.
-gtags.pl: Version test is failed.
+gtags: Gtags with the -f option caused segmentation fault if a file in the
+file list is not in the working directory or its sub-directories.
+gtags.pl: Version test was failed.
 
 Version 5.7.2 - September 30 2008
 
 [CHANGES]
 New functions:
-o gtags: New -O(--objdir) option added.
-o gtags.el: New gtags-select-tag-other-window and gtags-find-tag-other-window command added.
-o htags: Supported 'include', 'required' and 'required_once' statement in PHP language.
-  Htags makes a link to the file described in above statements if it is accessible from
-  current directory.
+o gtags: New -O(--objdir) option.
+o gtags.el: New commands: gtags-select-tag-other-window and gtags-find-tag-other-window.
+o htags: Picks up the words 'include', 'required' and 'required_once' statement in PHP
+  source files. Htags makes a link to the file described in above statements if it is
+  accessible from the current directory.
 
 [INCOMPATIBLE CHANGES]
 o gtags: Changed to skip all files whoes first character of name is '.'.
-  The following path was deleted from the DEFAULTSKIP in configure.ac, since new rule
-  covers them.
+  The following paths were deleted from the DEFAULTSKIP list in configure.ac,
+  since new rule covers them.
 
         .notfunction
         .gdbinit
@@ -120,7 +118,7 @@ Version 5.7.1 - April 21 2008
 
 [CHANGES]
 New functions:
-o gtags-parser: Pick up symbols in #{if,elif,ifdef,ifndef} line in assembly source.
+o gtags-parser: Picks up symbols in #{if,elif,ifdef,ifndef} line in assembly source.
 
 Other changes:
 o gtags.conf: Added new skip files: cscope.po.out,cscope.in.out
@@ -129,13 +127,13 @@ o gtags.vim: Added error check for the -f option.
 [FIXED BUGS]
 o Fixed imperfect symbolic link support.
   - global: Global didn't work with the -f option.
-  - gozilla: Gozilla couldn't convert paths which include symbolic linked directory.
+  - gozilla: Gozilla couldn't convert paths which include symbolic link.
 
 Version 5.7 - March 25 2008
 
 [CHANGES]
 New functions:
-o gtags: Allows the symbolic links which point to directories.
+o gtags: Allows the symbolic links which point to a directory.
   In older version, such symbolic links were ignored with warning messages.
 
 	[Example]
@@ -184,9 +182,10 @@ o gtags: Allows the symbolic links which point to directories.
 	Though the symbolic link to a directory might confuse users,
 	it is originally as such. They should understand the characteristic.
 
-o gtags-parser: Pick up the names of struct, union, enum and enum member
+o gtags-parser: Picks up the names of struct, union, enum and enum member
   as definitions.
-o gtags.el, gtags.vim, gtags.pl: More accurate, language independent context jump.
+o gtags.el, gtags.vim, gtags.pl: More accurate, language independent context jump
+  using new --from-here option of global(1).
 o gtags.el: Customizable path style in the [GTAGS SELECT MODE].
   You can select one of the followings:
 	root		relative from the root of the project (Default)
@@ -194,9 +193,8 @@ o gtags.el: Customizable path style in the [GTAGS SELECT MODE].
 	absolute	absolute (=relative from the system root directory)
 
 New options and variables:
-o global: Added new --from-here option. This option is used by context jump
-  facility. 
-o gtags,htags,gtags-parser: Added new environment variable GTAGSFORCECPP.
+o global: New --from-here option. This option is used by context jump facility. 
+o gtags,htags,gtags-parser: New environment variable GTAGSFORCECPP.
   If this variable is set, each file whose suffix is 'h' is treated as
   a C++ source file.
 o gtags.el: Added new variable for customizing the path style in the
@@ -209,8 +207,8 @@ o global.texi: Added descriptions about gtags-cscope (fake cscope).
 o gtags.el: Changed the default path style in [GTAGS SELECT MODE] relative
   from the root of the current project. In older version, it was absolute
   by default.
-o nvi-1.79-gtags.diff: Removed because nvi-1.79 is an very old package,
-  and is not distributed any longer.
+o nvi-1.79-gtags.diff: The support for nvi-1.79 ended. This nvi is an very
+  old program, and is not distributed any longer.
 o gtags-parser: Removed the -d(--define) and -t(--typedef) option, because they
   have already been the default operation.
 
@@ -222,7 +220,8 @@ o htags: Self-referred links.
 Version 5.6.2 - October 26 2007
 
 [CHANGES]
-* gtags-parser: In C++, ignore forward definitions of classes (e.g. "class name;")
+* gtags-parser: In C++ source code, now ignores forward definitions of classes
+  (e.g. "class name;")
 
 Version 5.6.1 - August 11 2007
 
@@ -242,24 +241,24 @@ Version 5.6 - July 6 2007
 
 [CHANGES]
 * Migrated to GNU GPLv3 and GNU LGPLv3.
-* gtags-parser: Added support of assembler directive ".macro" and ".equ".
+* gtags-parser: Added support for assembler directive ".macro" and ".equ".
 
 [FIXED BUGS]
-* global(1): Fix memory leak.
+* global(1): Fixed a memory leak.
 
 Version 5.5 - May 5 2007
 
 * GNU GLOBAL became a BOKINware.
 
-* gtags-parser: Support of 'enum' (java).
+* gtags-parser: Added support for 'enum' (java).
 * gtags.el: Changed to work without event-point function.
 
 Version 5.4.1 - March 10 2007
 
 [CHANGES]
-* htags: Added new --item-order option.
-  Specify order of items in the top page. The spec is a string
-  consists of item signs in order. Each sign means as follows:
+* htags: New --item-order option.
+  Specify the order of items in the top page. The spec is a string
+  which consists of item signs in order. Each sign means as follows:
   c: caution, s: search form, m: mains, d: definition, f: files.
   The default is 'csmdf'.
 
@@ -269,15 +268,15 @@ Version 5.4.1 - March 10 2007
 Version 5.4 - January 29 2007
 
 [INCOMPATIBLE CHANGES]
-* Further compression of tag file (format version 5).
+* Further compression of tag files (format version 5).
   Though new global can read older tag file since version-5.0, older
   global cannot read new format. It might say like follows:
 	"GTAGS seems new format. Please install the latest GLOBAL."
 
 [OTHER CHANGES]
 * global: Improved performance when the -x option is not specified.
-* globash.rc: Added new option -l for tag search command (x,r,s,g,P,I,f).
-  This option invokes less(1) directly without tag stack.
+* globash.rc: New option -l for tag search command (x,r,s,g,P,I,f).
+  This option invokes less(1) directly without using tag stack.
 * Verbose messages are unified.
   P option      file not found
 		<n> files located
@@ -293,12 +292,12 @@ Version 5.3 - November 20 2006
 [INCOMPATIBLE CHANGES]
 * global: Changed not to locate other symbols (-s) in GTAGSLIBPATH.
   This is the original specification of GLOBAL.
-* global: Stop sorting when the -I(--idutils) option specified.
+* global: Discontinued sorting when the -I(--idutils) option specified.
   The output of gid(idutils) is sorted by the suitable way. Though the order is
   slightly differ from global(1), it need not be sorted again.
 
 [OTHER CHANGES]
-* global:  Added new option -O(--only-other).
+* global:  New -O(--only-other) option.
 * htags: Added some new options and new arguments which are synonyms of config variable.
   This decreases dependence on configuration file.
 
@@ -320,11 +319,11 @@ Version 5.3 - November 20 2006
 	version: *1.0, 1.1
 
 * htags: Changed to use each 'CVS/Repository' file to generate URLs if it is available.
-* htags: Added '.gitignore' to the default skip file list.
+* htags: Added '.gitignore' to the DEFAULTSKIP list.
 
 * gtags.el:
   - Shorten path names in [GTAGS SELECT MODE]:
-    If project directory is specified using 'gtags-visit-rootdir', gtags.el print path
+    If the project directory is specified using 'gtags-visit-rootdir', gtags.el print path
     using the relative path name from the project directory, else print absolute path name.
   - Support dynamic completing-read of tag name.
     gtags-make-complete-list is deprecated. You can enjoy tag name completion without
@@ -345,7 +344,7 @@ Version 5.2 - August 8 2006
 * htags: Always enable 'Grep pattern' form when the -f(--form) option specified.
   Removed config variable 'enable_grep' since it became meaningless. Instead, added
   a new variable 'disable_grep'.
-* htags: Added more profitable tips in file browser.
+* htags: Added more profitable tips in the file browser.
   - File        size of bytes
   - Directory   number of files in the directory.
 
@@ -353,11 +352,11 @@ Version 5.1 - June 10 2006
 
 [INCOMPATIBLE CHANGES]
 * Changed the priority about the --result option to make the format
-  specification easy. The --result option is given to priority more
-  than the -t and -x option. (This option appeared in version 5.0.)
+  specification easy. The --result option is now given to priority
+  more than the -t and -x option. (This option appeared in version 5.0.)
 
 [OTHER CHANGES]
-* Added new program 'gtags-cscope'.
+* New program 'gtags-cscope'.
   Gtags-cscope is a pseudo cscope which implements the line-oriented
   interface. You can use this command for various clients instead of
   true cscope.
@@ -369,7 +368,7 @@ Version 5.0 - April 21 2006
 * Moved to new tag format. (GTAGS, GRTAGS, GSYMS, GPATH)
   The purpose is as follows:
   o Allows path name including blanks, at least in tag files.
-    (GLOBAL still doesn't support path name which contains blanks.)
+    (GLOBAL still doesn't support the path name which contains blanks.)
   o Decrease disk space used.
   o Make tag format simpler.
   o Realize stable performance.
@@ -378,7 +377,7 @@ Version 5.0 - April 21 2006
   Compact format was progressively canceled with the adoption of
   the new tag format. The -c(--compact) option of gtags(1) was removed.
 
-  The following error messages are displayed in a wrong combination:
+  The following error messages are displayed in wrong combinations:
   - older global and new tag file
     $ global -x main
     GTAGS seems new format. Please install the latest GLOBAL.
@@ -393,26 +392,26 @@ Version 5.0 - April 21 2006
 
 New requirement:
 * Added new requirement of plug-in parser
-  Plug-in parser must process arguments in the order they are given
+  Plug-in parser must process the arguments in the order they are given
   in the command line. In each file, any order is acceptable.
   Exuberant Ctags with the -xu option meets this requirement.
   (See global.info for the detail.)
 
 Removed options:
-* gtags(1): The -c(--compact) option was removed.
-  Compact format was progressively canceled with the adoption of the new
+* gtags(1): Removed the -c(--compact) option.
+  Compact format was progressively canceled with the adoption of new
   tag format.
-* gtags(1): The -o(--omit-gsyms) option was removed.
+* gtags(1): Removed the -o(--omit-gsyms) option.
   This option was necessary in the past to use the program in a incompetent
   machine with a small hard disk. Since most recent machines has powerful
   CPU and mass hard disk. This options might already be unnecessary.
-* htags(1): The --style-sheet option was removed.
-  This is a really halfway option, and now nobody might need it because
+* htags(1): Removed the --style-sheet option.
+  This was a really halfway option, and now nobody might need it because
   the --xhtml option became available.
 
 [OTHER CHANGES]
 New options:
-* global: Added --result=<format> option. Grep format is newly supported.
+* global: New --result=<format> option. Grep format became available.
 
   <format>: path,ctags,ctags-x,grep
         
@@ -429,42 +428,43 @@ New options:
 Version 4.8.7 - September 30 2005
 
 New options:
-* gtags: New --file file-list option added.
-  Gtags(1) accept a file list specified by --file option.
+* gtags: New --file <file list> option.
+  Using this option, you can give the file set which should be
+  processed to gtags.
 
         % find . -type f -print >/tmp/list
         % gtags --file=/tmp/list
         or
         % find . -type f -print | gtags --file=-
 
-* gtags: New --max-args option added.
+* gtags: New --max-args option.
 
 Improvement of efficiency:
-* Gtags was improved of performance by changing algorithm of
+* Gtags was improved of performance by changing algorithm of the
   incremental updating. Along with it, the verbose message was
   greatly changed.
 * Gtags was improved of performance by decreasing the frequency
-  of the parser invoking.
-  Under the influence of it, the verbose message is not necessarily
-  real-time. If you dislike this behavior, use the --max-args
-  option of gtags. You can control the frequency of the invoking
-  with the option. With --max-args=1, the program does the same
-  behavior as older version.
+  of the parser invoking. Under the influence of it, the verbose
+  message is not necessarily real-time. If you dislike this behavior,
+  use the --max-args option of gtags. You can control the frequency
+  of the invoking with the option. With --max-args=1, the program
+  does the same behavior as older version.
 * Htags was improved of performance by decreasing the frequency
   of the parser invoking.
 * Htags was improved of performance by omitting flushing temporary
   files to the disk.
 
 Fixed bugs:
-* Htags didn't treat here document of PHP source code correctly.
-  (<<<WORD)
+* Htags didn't treat here document (<<<word) of PHP source code correctly.
+  Now it is treated correctly.
 * Htags didn't treat HTML part of PHP source code correctly.
+  Now it is treated correctly.
 
 Other facilities:
 * Added 'Htags Hyper-text Reference Kit'.
-  The hyper-text generated by htags(1) is available from external
+  The hypertext generated by htags(1) is now available from external
   programs. This kit helps you to convert the path of the source
-  file into the URL in the hyper-text.
+  file into the URL in the hypertext.
 
 * doc/global.txi: Added the usage of Doxygen using GLOBAL.
 
@@ -472,25 +472,24 @@ Version 4.8.6 - May 12 2005
 
 [INCOMPATIBLE CHANGES]
 * htags: Changed the value of id attribute and name attribute of
-  line number anchor from line number itself to 'L' + line number
-  like this.
-	<a name='100'> => <a name='L100'>
-  It is because XHTML prohibit the id attribute which starts
+  the anchor of each line like follows:
+	<a id='100' name='100'> => <a id='L100' name='L100'>
+  It is because XHTML prohibits the id attribute which starts
   with a digit. If you refer these anchors from outer system,
-  please rewrite it.
+  please rewrite them.
 
 [OTHER CHANGES]
-* htags: New option --insert-header and --insert-footer added.
+* htags: New option --insert-header and --insert-footer.
 
 Version 4.8.5 - April 19 2005
 
-* htags: XHTML support(--xhtml) added.
-  If the --frame option is specified then generate XHTML-1.0 Frameset,
-  else if config variable 'xhtml_version' is set to 1.1 then generate
+* htags: Added the support for XHTML (--xhtml).
+  If the --frame option is specified then generates XHTML-1.0 Frameset,
+  else if config variable 'xhtml_version' is set to 1.1 then generates
   XHTML-1.1 else XHTML 1.0 Transitional.
   You can customize the appearance using style sheet file 'style.css'.
 * htags: Added config variable 'xhtml_version'.
-* htags: Added 'html/' to the fault skip list of htags(1).
+* htags: Added 'html/' to the fault skip list.
   It is the output directory of doxygen document.
 * gtags-parser: Added yacc directives introduced in bison-2.0.
   %default-prec(%default_prec)
@@ -503,23 +502,22 @@ Version 4.8.4 - March 4 2005
 
 Fixed bugs:
 * gtags-parser: C and C++ parser was broken.
-* gnusort: Compile error in Solaris environment.
+* gnusort: Couldn't be compiled in Solaris environment.
 
 Version 4.8.3 - February 26 2005
 
 [INCOMPATIBLE CHANGES]
-* DOS and Windows 32 support ended.
+* The support for DOS and Windows 32 ended.
   But it doesn't mean the deletion of the code for DOS and Windows 32.
-  We leave the support to outside projects and accept the code
-  from them as is. Therefore, anything has not changed substantially
-  up to now.
-* Command gctags(1) was renamed to gtags-parser(1) because some systems
-  have another 'gctags' which is not GLOBAL's.
-* About gtags-parser(1), language type of source file is decided
-  only by the suffix. In older version, *.h file was considered
-  to be C++ source file if it includes token 'class'. But the new version
-  considers it always C source file. If you want to consider it C++
-  then you must redefine new config variable 'langmap'.
+  We leave the support to outside projects and accept their code as is.
+  Therefore, anything has not been changed substantially up to now.
+* Renamed gctags(1) to gtags-parser(1) because some sysmtems have
+  another 'gctags' which does not relate to GLOBAL.
+* Changed gtags-parser(1) to decide language type of the source files
+  only by the suffix. In older version, *.h files were considered to be
+  C++ source files if they include token 'class'. New version considers
+  *.h files always to be C source files. If you want gtags-parser to
+  consider them C++ then you must redefine new config variable 'langmap'.
   
 [OTHER CHANGES]
 Fixed bugs:
@@ -527,29 +525,29 @@ Fixed bugs:
 * htags: Buffer overflow occurred in dupindex.c:makedupindex().
 * htags: Could not ignore path name which includes blank correctly.
 New features:
-* gtags,htags: New config variable 'langmap' added.
+* gtags,htags: New config variable 'langmap'.
   This variable is used for customizing the mapping of languages and the
   parsers, and it includes the function of obsoleted 'suffixes' variable.
   If you use 'suffixes' then it is effective else GLOBAL internally
   generates the value of 'suffixes' from the 'langmap'.
   The reason to continue 'suffixes' is that it is needed for plug-in parser.
   If you don't use plug-in parser then you should use 'langmap' instead.
-* htags: New config variable 'copy_files' added.
-  If the -f option is used then htags makes links of tag files in 'cgi-bin'
-  directory by default. With this variable, htags copy tag files instead of
+* htags: New config variable 'copy_files'.
+  With the -f option, htags makes links of tag files in the 'cgi-bin'
+  directory by default. With this variable, htags copy them instead of
   linking.
 
 Version 4.8.2 - November 11 2004
 
 [INCOMPATIBLE CHANGES]
-* Postgres support ended.
-* Htags.pl (perl version of htags) was removed completely.
-* Config variable sed_command and sort_command were removed.
-  The sed(1) and sort(1) are not necessary any longer.
+* The support for postgres ended.
+* Removed htags.pl (older version of htags written by Perl) completely.
+* Removed config variables: sed_command and sort_command.
+  Sed(1) and sort(1) are not necessary any longer.
 
 [OTHER CHANGES]
 Fixed bugs:
-* Wrong output of 'global -Po' was fixed.
+* Fixed wrong output of 'global -Po'.
 
 New features:
 * gctags(assembly language):
@@ -565,62 +563,64 @@ New features:
     This behavior is the same as GNU C pre-processor.
   - The check of correspondence of "#if" and "#endif" was deleted.
     This did not exist in version 4.8.
-* New directory '.snprj/' was added to the DEFAULTSKIP list.
-  This is the tag directory of Source-Navigator.
+* Added '.snprj/' directory to the DEFAULTSKIP list.
+  This is the tag directory for the Source-Navigator.
 
 Version 4.8.1 - October 6 2004
 
 Fixed bugs:
-* htags: The -d option of htags didn't work.
-* htags: didn't recognize continued line and null directive(#).
+* htags: The -d option of htags didn't work. Now it works well.
+* htags: Didn't recognize continued line and null directive(#).
+  Now it works well.
 
 New features:
-* htags: make suffix list of include file configurable.
+* htags: Configurable suffix list for include file.
   (See man htags(1). config variables: include_file_suffixes)
-* htags: try TMP if TMPDIR doesn't exist.(only DJGPP)
-* htags: Warn about unknown pre-processing directive. As the exception,
-  when unknown preprocessing directive appeared in assembly source,
+* htags: Uses environment variable TMP if TMPDIR doesn't exist.(only DJGPP)
+* htags: Warns about unknown pre-processing directive. As the exception,
+  when unknown preprocessing directive appears in assembly source,
   it will be recognized as the start of a shell comment.  
-* htags: Add all yacc directives understood by bison-1.875.
+* htags: Added all yacc directives supported by bison-1.875.
 
 Version 4.8 - August 26 2004
 
-* The htags(1) was rewritten in C language completely. It is compatible
-  with the perl version and the performance has improved greatly.
+* Htags(1) was rewritten in C language completely. It is compatible
+  with the perl version and the performance has been improved greatly.
   The perl version is left in the package for the time being as
   '/usr/local/bin/htags.pl' by default.
-* htags: In PHP language, pickup variables in strings. ("${aaa}")
-* gctags: Reserved word __thread added in C and C++.
+* htags: In PHP source code, now picks up variables in strings ("${aaa}").
+* gctags: Added __thread to the reserved word list of C and C++.
 
 Version 4.7.2 - June 7 2004
 
 Fixed bugs:
-* Obsolete style of sort(1) still remained.
+* Fixed obsolete style option for sort(1).
 
 Version 4.7.1 - June 1 2004
 
 New features:
-* Support home_etc(3) facility on PLD Linux/GNU.
-* gctags: Pick up external defined functions as symbols.
+* Added support for home_etc(3) facility on PLD Linux/GNU.
+* gctags: Now picks up external defined functions as symbols.
 
 Fixed bugs:
-* GLOBAL doesn't work with the GNU sort(1) based on POSIX 1003.1-2001.
-  The GNU sort(1) with the latest glibc doesn't accept obsolete
-  +POS1[-POS2] style option.
-* GLOBAL-4.3 and the later couldn't treat shadow tree.
+* Global(1) didn't work with the GNU sort(1) based on POSIX 1003.1-2001.
+  GNU sort(1) with the latest glibc doesn't accept obsolete +POS1[-POS2]
+  style option. Now global(1) works well with it.
+* GLOBAL-4.3 and the later couldn't treat shadow tree. Now it works well.
 
 Version 4.7 - Feb 1 2004
 
-* gtags.vim: Plug-in script integrates GLOBAL with vim editor.
-* global.txi: The usage of gtags.vim script added.
-* global: The -o option becomes available with -P command.
-* gctags: [bug fixed] Gctags couldn't recognize definitions in namespace block.
-* Install gtags.conf and other files to $datadir/gtags.
-* Borland C++ compiler support in Windows32 was finished because
+* gtags.vim: Plug-in script which integrates GLOBAL and vim editor.
+* global.txi: Added the usage of gtags.vim script.
+* global: The -o option is now available with the -P command.
+* gctags: Fixed a bug: Gctags couldn't recognize the definitions
+  in namespace block. Now it can recognize them.
+* Changed to install gtags.conf and other files to $datadir/gtags.
+* Borland C++ compiler support in Windows32 ended because
   - Now, Cygwin environment is widely used.
   - Borland C++ compiler is not free software.
 
-  The w32/ directory is leaved in this release but will be removed in the
+  The w32/ directory is left in this release but will be removed in the
   future release.
 
 Version 4.6.1 - Oct 3 2003
@@ -630,25 +630,25 @@ Version 4.6.1 - Oct 3 2003
 Version 4.6 - July 2 2003
 
 [INCOMPATIBLE CHANGES]
-* The default value of the config variable 'definition_header' was changed
-  to 'no', because the definition header is unsightly according to the place,
-  especially in class definition.
+* Changed the default value of config variable 'definition_header' to 'no',
+  because definition header is unsightly according to the place, especially
+  in class definition.
 
 [OTHER CHANGES]
 * Added support for PHP language.
   (Known problems in htags)
-  - The variable in string cannot be recognized.(global can recognize that.)
-  - In HTML, the character string of the same spelling as the reserved
-    word of PHP is recognized as a reserved word of PHP.
-  I will rewrite htags in C language in the future to solve above problems.
+  - Variables in string cannot be recognized.(global can recognize that.)
+  - In HTML, character strings which are same spelling with the reserved
+    word of PHP are recognized as reserved words of PHP.
+  Htags(1) should be rewritten greatly to solve above problems in the future.
 * Added support for SCM_DEFINE macro which is part of guile-snarf.
 * Added 'right' as a value of config variable 'definition_header'.
 * Added some tool tips.
-  - Alphabet in alphabetical index shows the count of definitions.
-  - File name in file index show the full path name.
-  - Anchor to duplicate index show the number of duplicated objects.
+  - Alphabet in the alphabetical definition index shows the count of definitions.
+  - File name in the file index shows the full path name.
+  - Anchor in the duplicate index shows the number of duplicated objects.
 * Added .cvsrc,.cvsignore,.cvspass,.cvswrappers,autom4te.cache/
-  to the default skip list.
+  to the DEFAULTSKIP list.
 
 Always thanks to Hideki Iwamoto san for his contribution.
 
@@ -656,51 +656,41 @@ Version 4.5.3 - June 5 2003
 
 [INCOMPATIBLE CHANGES]
 
-* htags: Htags does not generate the code of javascript at all.
-  In the former version, we used javascript to display information about
-  links. But a browser these days had come to support the tool tip using
-  'title' attribute. So, we replaced the function using tool tip instead
-  of javascript facility.
-* The --no-javascript option was removed because it was already unnecessary.
-* global: The pattern of the argument came always to be interpreted
-  as a extended regular expression. In the former version, there was both
-  the case for the pattern to be interpreted as a basic regular expression
-  and the interpretation as the extended regular expression. This depended
-  on the environment of the build. (If you have grep(1) and xargs(1),
-  basic regular expression will be used.)
-  In the new version, if you want the pattern to be interpreted as a basic
-  regular expression, please specify the -G option.
+* htags: Tool tip is now implemented by title attribute instead of javascript.
+* htags: Removed the --no-javascript option because it is already unnecessary.
+* global: Argument pattern is now always interpreted as an extended regular expression.
+  In older version, it was interpreted as a basic or extended regular expression.
+  It depended on the build environment. In the new version, if you want pattern
+  to be interpreted as a basic regular expression, please specify the -G option.
 
 [OTHER CHANGES]
 
 New features:
 
 htags:
-* CVS REPOSITORY link (the --cvsweb and --cvsweb-cvsroot option).
-  You can link CVS repository from the hypertext of source code.
-* Tooltip inserted in links.
-* The --no-map-file option added.
-  Htags generate 'MAP' file by default. You can suppress it by this.
-* The --statistics option added.
-  With this option, htags print statistics information to the standard error.
+* Added CVS REPOSITORY link (the --cvsweb and --cvsweb-cvsroot option).
+* Added tooltips in some anchors.
+* Added --no-map-file option.
+  Htags generates 'MAP' file by default. You can suppress it by the option.
+* Added --statistics option.
+  With this option, htags prints statistics information to standard error.
 
 global:
-* The -e(--regexp) option added like grep(1).
-* The -G(--basic-regexp) option added like egrep(1).
+* New -e(--regexp) option like grep(1).
+* New -G(--basic-regexp) option like egrep(1).
 
 Performance tuning:
 
 htags:
-* Remove tag name and line image from cache record. This made cache
-  file smaller.
-* The use of the temporary file was suppressed to the minimum by trying to
-  read the source code.
+* Reduced the size of cache file by removing unnecessary information.
+* Suppressed the use of temporary file to the minimum by trying to read from
+  the source code.
 
 Other modifications:
 
-* A security hole was shut.
-* conf.h: add '{arch}' and '.notfunction' to default skip list.
-* gctags: support __attribute__((...)).
+* Shut a security hole.
+* Added '{arch}' and '.notfunction' to the DEFAULTSKIP list.
+* gctags: Added support for __attribute__((...)).
 
 I wish to express my gratitude continuously since last time for the
 contribution of Hideki Iwamoto san.
@@ -709,32 +699,30 @@ Version 4.5.2 - March 29 2003
 
 [INCOMPATIBLE CHANGES]
 
-* htags: move title's '<H1>...</H1>' into configuration variables
-  'title_begin' and 'title_end'. This makes configuration more flexible.
+* htags: Added configuration variables: 'title_begin' and 'title_end'.
+  This makes the configuration more flexible.
   If you are still using older version of gtags.conf, please replace it
-  with one in this version.
+  with the one in this package.
 
 [OTHER CHANGES]
 
-* htags: add INCLUDED FROM index of htags by Hideki IWAMOTO.
-  This indexes the places  where the header file is included.
-* htags: add support of multi-line string.
-* htags, gtags: pass option '-w' from htags to gtags.
-* htags: allow reference to nonexistent definition without warning.
-* htags: add missing reserved words.
-  - add C99 reserved words _Bool,_Complex,_Imaginary,inline,restrict.
-  - add missing C++ reserved words asm,bool,const_cast,dynamic_cast,
+* htags: Added 'INCLUDED FROM' index written by Hideki IWAMOTO.
+  This indexes the places where the header file is included.
+* htags: Added support for multi-line string.
+* htags: Now pass the '-w' option to gtags when the -g option specified.
+* htags: Now allows the references to nonexistent definition without warning.
+* htags: Added missing reserved words.
+  - Added C99 reserved words _Bool,_Complex,_Imaginary,inline,restrict.
+  - Added missing C++ reserved words asm,bool,const_cast,dynamic_cast,
     explicit,export,false,mutable,namespace,reinterpret_cast,static_cast,
     true,typeid,typename,using,wchar_t.
-* htags: insert HTML tag in the line which was warned.
-  (see configuration variable 'colorize_warned_line', 'warned_line_begin'
-  and 'warned_line_end'.)
-* gctags: pick up reference to macro in conditional directive.
-* gctags: remove wchar_t from the reservation word list of C.
-* gctags: remove overload from the reserved word list of C++.
-* gctags: remove wchar_t from the reservation word list of C.
-* gtags: environment variable GTAGSCACHE added.
-* and many bug fixes.
+* htags: New configuration variables: 'colorize_warned_line', 'warned_line_begin'
+  and 'warned_line_end'.
+* gctags: Now picks up references to the macro in conditional directive.
+* gctags: Removed wchar_t from the reservation word list of C.
+* gctags: Removed overload from the reserved word list of C++.
+* gtags: Added new environment variable GTAGSCACHE.
+* Fixed many bugs.
 
 Special thanks to Hideki Iwamoto san. Most of improvements and bug fixes
 in this version are written by him.
@@ -743,136 +731,131 @@ Version 4.5.1 - November 9 2002
 
 [INCOMPATIBLE CHANGES]
 
-* htags: --symbols option and symbols config variable was renamed to 'symbol'.
+* htags: Renamed the --symbols option and config variable 'symbols' to 'symbol'.
 
 [OTHER CHANGES]
 
-* gtags,htags: --gtagslabel option added.
-* htags: -D(--dynamic) option added.
-* Some bugs fixed.
+* gtags, htags: Added --gtagslabel option.
+* htags: Added -D(--dynamic) option.
+* Fixed some bugs.
 
 Version 4.5 - July 4 2002
 
-* htags: -m(--main-func) option added.
-* htags: --style-sheet=<style file> option added.
-* htags: --no-javascript option and no_javascript config variable added.
-* htags: -g(--gtags) option added.
-* htags: -s(--symbols) option and symbols config variable added.
-* gctags: --langmap option added.
-* gctags: -t and -d option added.
-* gtags: pick up macros with no argument, typedef name and enum member.
-* gozilla: -d option added.
-* gctags: assumes __attribute__, const, volatile, wchar_t as a reserved word
+* htags: New -m(--main-func) option.
+* htags: New --style-sheet=<style file> option.
+* htags: New --no-javascript option and no_javascript config variable.
+* htags: New -g(--gtags) option.
+* htags: New -s(--symbols) option and config variable 'symbols'.
+* gctags: New --langmap option.
+* gctags: New -t and -d option.
+* gtags: Now picks up macros with no argument, typedef names and enum members.
+* gozilla: New -d option.
+* gctags: Now assumes __attribute__, const, volatile, wchar_t as a reserved word
   in C language. assumes __attribute__, explicit, mutable, namespace,
   overload, typename, using as a reserved word in C++ language.
 
 Version 4.4 - March 30 2002
 
-* gozilla: gozilla return to GLOBAL.
-* htags: -o(--other) option added. This option list not only source files
-  but also other files like 'README'.
-* global: -o(--other) option added. This option search in not only source
+* Gozilla(1) came back to GLOBAL.
+* global, htags: Added -o(--other) option which picks up not only source
   files but also other files like 'README'.
-* htags: configuration variable other_files added.
-* htags: configuration variable definition_header={no|after|before} added.
-* htags: configuration variable enable_grep and enable_idutils added.
-* htags: -l(--each-line-tag) option deleted.
+* htags: New config variables: other_files, definition_header, enable_grep
+  and enable_idutils.
+* htags: Removed the -l(--each-line-tag) option.
   From now on, htags works as if -l flag is always specified.
-  But -l(--each-line-tag) option is accepted for backward compatibility.
-* global: path conversion optimized and bug fixed.
-* gtags.conf: added documentation about variables.
-* htags: shut another security hole.
-* Some bugs are fixed.
+  Htags accepts the option for backward compatibility.
+* global: Improved performance of path conversion.
+* gtags.conf: Added documentation.
+* htags: Shut another security hole.
+* Fixed some bugs.
 
 Version 4.3.1 - January 22 2002
 
-This is bug fix version.
-* htags: global.cgi wasn't generated correctly.
+This is a bug fix version.
+* Htags didn't generate global.cgi file correctly. Now it works well.
 
 Version 4.3 - January 10 2002
 
-* Support DJGPP.
-* Support nvi-1.81.5.
-* global.texi: chapter of less viewer, nvi-1.81.5 and reference manuals added.
-* global,gtags: the -q option added.
-* htags: fill anchors into path name.
-* global: GTAGSROOT file supported.
+* Added support for DJGPP.
+* Added support for nvi-1.81.5.
+* global.texi: Added the chapter of less viewer and nvi-1.81.5.
+* global,gtags: New -q option.
+* htags: Added new anchors in path names.
+* global: Added support for GTAGSROOT file.
 
 Version 4.2 - November 24 2001
 
-* postgres support added.
+* Added support for postgres.
   You need to configure GLOBAL with --with-postgres option.
-* gtags: when no parser specified in config file, overloaded by default values.
-* gtags: variable 'skip' accept full path name.
-* htags: changed to refer to macros which is defined in other C source.
-* htags: --caution option added.
-* global.texi: reference manual added.
-* gtags, htags: allow relative path name for --gtagsconf.
+* gtags: When no parser specified in config file, use default value.
+* gtags: Now accepts full path name in config variable 'skip'.
+* htags: New --caution option.
+* global.texi: Added command reference manuals.
+* gtags, htags: Now accepts relative path name as the parameter of --gtagsconf.
 
 Version 4.1.1 - July 31, 2001
 
-* htags: bug fixed. bless.sh removed 'TARGET=mains'.
-* htags: bug fixed. bless.sh didn't work without config file.
-* configure: bug fixed. --srcdir option didn't work.
-  now you can build project at any directory other than source directory.
-* htags: generates rebuild.sh to redo the job with the previous context.
-* globash.rc: when GTAGSROOT specified, prompt is changed to "[$root]!$cwd"
-  instead of "[$root]/...".
-* globash.rc: bug fixed. number was ignored in 'next <no>' and 'prev <no>'.
-* globash.rc: The -e option of show use emacsclient instead of emacs.
+* htags: Fixed some bug.
+* configure: Fixed a bug. The --srcdir option didn't work.
+  Now you can build the project at any directory other than source directory.
+* htags: Now generates rebuild.sh to redo the job with the previous context.
+* globash.rc: Changed the prompt when GTAGSROOT is specified from "[$root]/..."
+  to "[$root]!$cwd".
+* globash.rc: Fixed a bug. In 'next <no>' and 'prev <no>', the <no> was ignored.
+* globash.rc: show command: Now use emacsclient instead of emacs when the -e
+  option is specified.
 
 Version 4.1 - July 12, 2001
 
 [INCOMPATIBLE CHANGES]
 
-* global: rename the -i(incremental) option to -u(update) and the new
-  -i(--ignore-case) option added because -i options is generally used
-  for this purpose (see grep(1)).
-* gtags.conf: rename global.conf into gtags.conf because the old name was
-  too generic. (GLOBAL also accepts old name for compatibility.)
+* global: Renamed the -i(incremental) option to -u(update), and added new
+  -i(--ignore-case) option, because -i options is generally used for this
+  purpose (see grep(1)).
+* gtags.conf: Renamed global.conf into gtags.conf because the old name was
+  too generic. (GLOBAL accepts old name for compatibility.)
 
 [OTHER CHANGES]
 
-* Some bugs are fixed.
-* globash.rc: GloBash --- Global facility for Bash added.
-* htags: create bless.sh when the -S option specified.
-* htags: config variables prolog_script, epilog_script, show_position,
-  position_begin, position_end and icase_path added.
-* htags: path name search facility added.
-* htags: locate dbpath like global(1) does.
-* htags: show additional information on status bar.
-* gtags: the -i option also locate tag files among candidate directories.
-* global, gtags: make icase_path always enable in Windows32 environment.
-* global: the -T(--through) option added.
-* gtags, htags: --gtagsconf option added.
-* gtags.conf: 'htags_options' added.
-* global.texi: the method to use vim with GLOBAL and the description
-  about GloBash added.
+* Fixed some bugs.
+* Added GloBash -- Global facility for Bash (globash.rc).
+* htags: Now creates bless.sh command when the -S option is specified.
+* htags: Added config variables prolog_script, epilog_script, show_position,
+  position_begin, position_end and icase_path.
+* htags: Added path name search facility.
+* htags: Now locates dbpath like global(1) does.
+* htags: Now shows additional information on the browser's status bar.
+* gtags: The -i option now locate tag files among candidate directories.
+* global, gtags: Makes icase_path always enable in Windows32 environment.
+* global: New -T(--through) option.
+* gtags, htags: New --gtagsconf option.
+* gtags.conf: Added 'htags_options' variable.
+* global.texi: Added descriptions about vim+Global and GloBash.
 
 Version 4.0.1 - September 26, 2000
 
-* htags: shut a security hole in global.cgi.
+* htags: Shut a security hole in global.cgi.
 
 Version 4.0 - September 3, 2000
 
 [INCOMPATIBLE CHANGES]
 
-* htags: doesn't make frame tags(<FRAME>...</FRAME>) by default to reduce
-  dependency on javascript.
-  Instead, you can use the new -F (--frame) option to make framed hypertext.
-* htags: -h option removed. Instead, htags displays the path of source file
+* htags: Htags(1) no longer makes frame tag (<FRAME>...</FRAME>) by default.
+  It is to reduce dependency on javascript.  Instead, you can use the new
+  -F (--frame) option to make it.
+* htags: Removed the -h option. Instead, htags(1) displays the path of source file
   at browser's status bar by default if javascript is enabled.
-* global.conf: 'bgcolor','text','link','vlink','alink' are removed.
-  Instead, 'body_begin','body_end','table_begin','table_end' are added.
-  You can write removed items into 'body_begin' directly.
-* nvi-1.79-gtags.diff: new patch for nvi-1.79.
-  ':rtag' command is removed. Instead, please use ':tag -r' command.
+* global.conf: Removed variables 'bgcolor', 'text', 'link', 'vlink' and 'alink'.
+  Instead, Added 'body_begin', 'body_end', 'table_begin' and 'table_end'.
+  You can write removed items into the 'body_begin' directly.
+* nvi-1.79-gtags.diff: New patch for nvi-1.79.
+  Removed the ':rtag' command. Instead, please use ':tag -r' command.
   Now you can use all commands and options of global(1) from nvi editor
   except for -c (--completion), -i (incremental), -p (print-dbpath),
   -v (verbose), --help, --version.
-* gtags.el: key assignment is changed to avoid conflicting with other
+* gtags.el: Changed the key assignment to avoid conflicting with other
   key bindings. If you hope old style key assignment, please include
-  following code to your $HOME/.emacs:
+  the following code to your $HOME/.emacs:
 
 (setq gtags-mode-hook
   '(lambda ()
@@ -891,221 +874,223 @@ Version 4.0 - September 3, 2000
 
 [OTHER CHANGES]
 
-* Some bugs are fixed.
-* Support long name options.
-* global: -g option is optimized.
-* global: support the new -I (--idutils) options.
-* htags: support the new config variable 'table_list'.
-* htags: support the new -S (--secure-cgi) options for centralised cgi script.
-* htags: new anchors added to file index.
-* htags: become to make new frame for search when the both of -F and -f option
+* Fixed some bugs.
+* Now long name options are available.
+* global: Improved performance when the -g option is specified.
+* global: New -I (--idutils) option.
+* htags: New config variable 'table_list'.
+* htags: New -S (--secure-cgi) option which enables centralized cgi script.
+* htags: Added new anchors to the file index.
+* htags: Added new frame for search when the both of -F and -f option are
   specified.
-* gctags: now 'extern' statement is ignored for detect pattern like:
-  'extern type function() { ...};'
-* gozilla and systags have been removed from the package.
-* gtags.el: new commands 'gtags-find-with-idutils' and 'gtags-visit-rootdir'
-  are added. 'gtags-find-pattern' is renamed to 'gtags-find-with-grep'.
-  ('gtags-find-pattern' is leaved only for compatibility)
+* Gctags: Now 'extern' statement is ignored to detect function definition
+  like the following: 'extern type function() { ...};'
+* Removed gozilla(1) and systags(1) from the package.
+* gtags.el: New commands 'gtags-find-with-idutils' and 'gtags-visit-rootdir'.
+  Renamed 'gtags-find-pattern' to 'gtags-find-with-grep'.
+  (The 'gtags-find-pattern' is left only for compatibility.)
 
 Version 3.55 - December 23, 1999
 
-* A serious bug fixed.
-  Htags(1) in version 3.54 has a serious bug:
-  '*** HTAGS(1) MAY REMOVE ALL FILES IN CURRENT DIRECTORY IN ERROR CASE. ***'
-  If you are using the version, please replace it with the later or earlier
+* Fixed a serious bug.
+  Htags(1) in GLOBAL-3.54 has a serious bug:
+  '*** HTAGS(1) MAY REMOVE ALL FILES IN THE CURRENT DIRECTORY IN A ERROR CASE. ***'
+  If you are using that version of htags(1), please replace it with the later or earlier
   version. Only 3.54 has the bug.
-* Global is optimized about the -g and -s options.
+* Improved performance when the -g and -s option is specified.
 
 Version 3.54 - November 3, 1999
 
-* A few bugs are fixed.
+* Fixed a few bugs.
 
 Version 3.53 - September 17, 1999
 
-* Support the new option --version.
-* 'gtags.el' support mini-buffer history and default tag for input tag name.
+* New option --version for each command.
+* gtags.el: Now mini-buffer history and default tag for input tag name are available.
 
 Version 3.52 - August 29, 1999
 
-* A few bugs are fixed.
+* Fixed a few bugs.
 
 Version 3.51 - August 26, 1999
 
-* Support for building on cygwin 32 systems.
+* Added support for cygwin 32 system.
 
 Version 3.5 - August 23, 1999
 
-* A few bugs are fixed.
-* Added C++ language support.
-* 'gtags.el' support XEmacs.
-* 'gtags.el' support the new command gtags-find-file.
-* The -f option of htags support symbol search.
-* 'gozilla' support the new protocols https, ftp, nntp, mailto and about.
-* 'gctags' support parsing of '#ident' and '#warning'.
-* 'gctags' support the definitions like 'C_LABEL(x)' and 'SYMBOL_NAME(x)'.
-* global.conf: quoted char '\' becomes available.
-* global.conf: sort and sed command become parametrized.
-* Support for building on Windows 32 systems.
+* Fixed a few bugs.
+* Added support for C++ language.
+* Gtags.el now supports XEmacs.
+* New command gtags-find-file of gtags.el.
+* The -f option of htags(1) now can be used with the -s option.
+* Gozilla(1) now supports new protocols: https, ftp, nntp, mailto and about.
+* Gctags(1) now can parse '#ident' and '#warning'.
+* Gctags(1) now picks up definitions like 'C_LABEL(x)' and 'SYMBOL_NAME(x)'.
+* Quoted char '\' is now available in the global.conf.
+* You can change sort and sed command using variables in the global.conf.
+* Added support for Windows 32 system.
 
 Version 3.44 - March 22, 1999
 
-* A few bugs are fixed.
-* 'global.conf' support the new 'full_path' and 'normal_suffix' parameters.
-* 'gctags' support definition by 'NENTRY()' in assembly source.
+* Fixed a few bugs.
+* New config variabls: full_path and normal_suffix in gtags.el.
+* Gctags(1) now picks up NENTRY() in assembly source.
 
 Version 3.43 - January 20, 1999
 
-* A few bugs are fixed.
-* 'gtags.el' stop auto execution of gtags-make-complete-list.
+* Fixed a few bugs.
+* Gtags.el now does not invoke gtags-make-complete-list command automatically.
 
 Version 3.42 - January 8, 1999
 
-* A few bugs are fixed.
+* Fixed a few bugs.
 
 Version 3.41 - December 10, 1998
 
-* Support for multilingual nvi-1.79 is finished.
+* The support for multilingual nvi-1.79 ended.
 
 Version 3.4 - November 8, 1998
 
-* 'htags' support unlimited nested index for directories.
-* 'btreeop' support the new -L2 option.
+* Htags(1) can now make unlimited nested directory index.
+* New btreeop(1) -L2.
 
 Version 3.3 - September 13, 1998
 
-* A few bugs are fixed.
-* 'gctags' support #if block parsing.
-* 'gctags' support the new -b, -n and -w options.
-* 'gtags.el' support the new command gtags-display-browser.
+* Fixed a few bugs.
+* Improved handling of #if block in gctags(1).
+* New gctags(1) option -b, -n and -w.
+* New command gtags-display-browser in gtags.el.
 
 Version 3.2 - August 31, 1998
 
-* Support multilingual nvi-1.79.
-* Support nvi-1.66.
-* Support for nvi-1.34 is finished.
+* Added support for multilingual nvi-1.79.
+* Added support for nvi-1.66.
+* The support for nvi-1.34 ended.
 
 Version 3.1 - August 4, 1998
 
-* A few bugs are fixed.
-* Added Java language support.
-* 'htags' support the new -h option.
+* Fixed a few bugs.
+* Added support for Java language.
+* New htags(1) option -h.
 
 Version 3.01 - July 5, 1998
 
-* A few bugs are fixed.
-* The -f option of 'global' accept multiple files.
+* Fixed a few bugs.
+* Now the -f option of global(1) accepts multiple files.
 
 Version 3.0 - June 25, 1998
 
-* A few bugs are fixed.
-* Support configuration file 'global.conf'.
-* Support compact format tag files.
-* 'gtags' support the new -c option.
-* 'htags' support the new -c option.
-* The -c option has been removed from 'gctags'.
-* 'gctags' support the new -n option.
-* 'global' support the new -t option. This option is for two variables:
-  'tagprg' and 'tagprgonce' in Elvis editor 2.1g-beta or later.
+* Fixed a few bugs.
+* New configuration file global.conf.
+* Added compact format for tag files.
+* New gtags(1) option -c.
+* New htags(1) option -c.
+* The -c option has been removed from gctags(1).
+* New gctags(1) option -n.
+* New global(1) option -t.
+  This option assumes use for two variables: tagprg and tagprgonce
+  in Elvis editor 2.1g-beta or later.
 
 Version 2.24 - January 20, 1998
 
-* A few bugs are fixed.
+* Fixed a few bugs.
 
 Version 2.23 - January 13, 1998
 
-* A few bugs are fixed.
+* Fixed a few bugs.
 
 Version 2.22 - December 26, 1997
 
-* gctags support references like 'call EXT(xxx)' or 'call _xxx' in assembly
-  source.
+* Gctags(1) now picks up references like 'call EXT(xxx)' or 'call _xxx'
+  in assembly source.
 
 Version 2.21 - December 11, 1997
 
-* A few bugs are fixed.
+* Fixed a few bugs.
 
 Version 2.2 - December 7, 1997
 
-* 'global' support POSIX regular expression (extension) instead of perl's one.
-* The -b, -c, -l and -p options have been removed from 'btreeop'.
+* Changed regular expression to POSIX (extension) instead of perl's one.
+* The -b, -c, -l and -p options have been removed from btreeop(1).
 
 Version 2.11 - November 7, 1997
 
-* A few bugs are fixed.
+* Fixed a few bugs.
 
 Version 2.1 - September 20, 1997
 
-* The -e and -s options has been removed from 'gtags'. It becomes default.
-* 'global' support the new environment variables MAKEOBJDIR
-  and MAKEOBJDIRPREFIX. It works like BSD make.
-* A few bugs are fixed.
-* A new command 'gozilla'.
-* 'global' support the new -g, -s, -i, -l and -v options.
-* 'gtags' support the new -i, -v and -o options.
-* 'gtags.el' support the new command gtags-find-symbol and gtags-find-pattern.
+* The -e and -s options has been removed from gtags(1). Now it's default.
+* New environment variables MAKEOBJDIR and MAKEOBJDIRPREFIX for global(1).
+  It works like BSD make.
+* Fixed a few bugs.
+* New command gozilla(1).
+* New global(1) options -g, -s, -i, -l and -v.
+* New gtags(1) options -i, -v and -o.
+* Added new command gtags-find-symbol and gtags-find-pattern for gtags.el.
 
 Version 2.0 - July 7, 1997
 
-* A few bugs are fixed.
-* Support emacs editor (gtags.el).
-* 'htags' support the new -n and -f option.
-* 'htags' support the links for include files.
-* 'global' support the new -f option.
-* 'btreeop' support the new -L option.
+* Fixed a few bugs.
+* Added support for emacs editor (gtags.el).
+* New htags(1) option -n and -f.
+* New links for include files in the hypertext generated by htags(1).
+* New global(1) option -f.
+* New btreeop(1) -L.
 
 Version 1.9 - April 21, 1997
 
-* A few bugs are fixed.
-* 'btreeop' support the new -A and -D options.
-* 'htags' support the new -l option and TMPDIR environment variable.
-* Support nvi-1.79.
+* Fixed a few bugs.
+* New btreeop(1) option -A and -D.
+* New htags(1) option -l.
+* Added an environment variable TMPDIR.
+* Added support for nvi-1.79.
 
 Version 1.81 - April 14, 1997
 
-* A bug is fixed.
-* Support obj directory for BSD build system.
+* Fixed a few bugs.
+* Added support for 'obj' directory on BSD build system.
 
 Version 1.8 - April 5, 1997
 
-* A few bugs are fixed.
-* 'global' support the new -c option.
-* 'htags' support the new -d and -w options.
+* Fixed a few bugs.
+* New global(1) option -c.
+* New htags(1) option -d and -w.
 
 Version 1.7 - February 17, 1997
 
-* A few bugs are fixed.
-* frame.html has been removed from hypertext generated by htags.
-* 'htags' works MUCH faster than previous versions.
-* 'htags' support the new -a, -v and -t options.
-* 'gtags' support the new -s option.
-* A new script systags.sh.
+* Fixed a few bugs.
+* The frame.html has been removed from the output of htags(1).
+* Major speed improvments for htags(1).
+* New htags(1) option -a, -v and -t.
+* New gtags(1) option -s.
+* New script systags.sh.
 
 Version 1.6 - January 21, 1997
 
-* A few bugs are fixed.
-* Support nvi-1.76.
-* 'global' support the new -a option.
+* Fixed a few bugs.
+* Added support for nvi-1.76.
+* New global(1) option -a: absolute path name.
 
 Version 1.5 - December 12, 1996
 
-* A new command 'htags' (Hypertext generator).
-* A few bugs are fixed.
+* New command htags: Hypertext generator.
+* Fixed a few bugs.
 
 Version 1.4 - October 26, 1996
 
-* Support yacc source file.
+* Added support for yacc source code.
 
 Version 1.3 - July 28, 1996
 
-* Support GTAGSLIBPATH environment variable.
+* Added an environment variable GTAGSLIBPATH.
 
 Version 1.2 - June 7, 1996
 
-* Support nvi-1.34.
+* Added support for nvi-1.34.
 
 Version 1.1 - May 2, 1996
 
-* A few bugs are fixed.
+* Fixed a few bugs.
 
 Version 1.0 - April 21, 1996
 
