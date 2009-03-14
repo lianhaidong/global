@@ -20,6 +20,19 @@ ___________________________________
 GNU GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 5.7.5 - March 14 2009
+
+[CHANGES]
+Change of gtags:
+o Revived the -c option.
+  If this option is specified, gtags uses compact format for GTAGS.
+  This option does not influence GRTAGS and GSYMS, because they are always
+  made using compact format.
+  If you think that GTAGS is too big, please use this option.
+o Removed the limitation of the depth of the directory hierarchy. 
+o Changed not to do useless inspection for the files in the directories
+  which are listed in the skip list.
+
 Version 5.7.4 - January 5 2009
 
 [CHANGES]
