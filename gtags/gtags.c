@@ -79,6 +79,7 @@ char *gtagslabel;
 int debug;
 const char *config_name;
 const char *file_list;
+const char *dump_target;
 char *single_update;
 
 /*
@@ -114,6 +115,7 @@ static struct option const long_options[] = {
 	 * is left for compatibility.
 	 */
 	{"compact", no_argument, NULL, 'c'},
+	{"dump", required_argument, NULL, 'd'},
 	{"file", required_argument, NULL, 'f'},
 	{"idutils", no_argument, NULL, 'I'},
 	{"incremental", no_argument, NULL, 'i'},
@@ -158,7 +160,7 @@ main(int argc, char **argv)
 	int optchar;
 	int option_index = 0;
 
-	while ((optchar = getopt_long(argc, argv, "cf:iIn:oOqvwse", long_options, &option_index)) != EOF) {
+	while ((optchar = getopt_long(argc, argv, "cd:f:iIn:oOqvwse", long_options, &option_index)) != EOF) {
 		switch (optchar) {
 		case 0:
 			/* already flags set */
@@ -191,6 +193,9 @@ main(int argc, char **argv)
 			break;
 		case 'c':
 			cflag++;
+			break;
+		case 'd':
+			dump_target = optarg;
 			break;
 		case 'f':
 			file_list = optarg;
@@ -290,6 +295,20 @@ main(int argc, char **argv)
 		convert_close(cv);
 		strbuf_close(ib);
 		exit(0);
+	} else if (dump_target) {
+		/*
+		 * Dump a tag file.
+		 */
+		DBOP *dbop = NULL;
+		const char *dat = 0;
+
+		if (!test("f", dump_target))
+			die("file '%s' not found.", dump_target);
+		if ((dbop = dbop_open(dump_target, 0, 0, 0)) == NULL)
+			die("file '%s' is not a tag file.", dump_target);
+		for (dat = dbop_first(dbop, NULL, NULL, 0); dat != NULL; dat = dbop_next(dbop))
+			printf("%s\t%s\n", dbop->lastkey, dat);
+		dbop_close(dbop);
 	} else if (Iflag) {
 		if (!usable("mkid"))
 			die("mkid not found.");
