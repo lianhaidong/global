@@ -309,6 +309,7 @@ main(int argc, char **argv)
 		for (dat = dbop_first(dbop, NULL, NULL, 0); dat != NULL; dat = dbop_next(dbop))
 			printf("%s\t%s\n", dbop->lastkey, dat);
 		dbop_close(dbop);
+		exit(0);
 	} else if (Iflag) {
 		if (!usable("mkid"))
 			die("mkid not found.");
