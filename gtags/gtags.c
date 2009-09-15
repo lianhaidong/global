@@ -301,13 +301,25 @@ main(int argc, char **argv)
 		 */
 		DBOP *dbop = NULL;
 		const char *dat = 0;
+		int is_gpath = 0;
 
 		if (!test("f", dump_target))
 			die("file '%s' not found.", dump_target);
-		if ((dbop = dbop_open(dump_target, 0, 0, 0)) == NULL)
+		if ((dbop = dbop_open(dump_target, 0, 0, DBOP_RAW)) == NULL)
 			die("file '%s' is not a tag file.", dump_target);
-		for (dat = dbop_first(dbop, NULL, NULL, 0); dat != NULL; dat = dbop_next(dbop))
-			printf("%s\t%s\n", dbop->lastkey, dat);
+		/*
+		 * The file which has a NEXTKEY record is GPATH.
+		 */
+		if (dbop_get(dbop, NEXTKEY))
+			is_gpath = 1;
+		for (dat = dbop_first(dbop, NULL, NULL, 0); dat != NULL; dat = dbop_next(dbop)) {
+			const char *flag = is_gpath ? dbop_getflag(dbop) : "";
+
+			if (*flag)
+				printf("%s\t%s\t%s\n", dbop->lastkey, dat, flag);
+			else
+				printf("%s\t%s\n", dbop->lastkey, dat);
+		}
 		dbop_close(dbop);
 		exit(0);
 	} else if (Iflag) {
