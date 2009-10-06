@@ -347,7 +347,7 @@ main(int argc, char **argv)
 		
 		if (!test("f", p))
 			die("'%s' not found.", p);
-		if (p[0] == '/')
+		if (isabspath(p))
 			die("--single-update requires relative path name.");
 		if (!(p[0] == '.' && p[1] == '/')) {
 			snprintf(regular_path_name, MAXPATHLEN, "./%s", p);
@@ -364,7 +364,7 @@ main(int argc, char **argv)
 	 * Gtags create tag files at current directory by default.
 	 * If dbpath is specified as an argument then use it.
 	 * If the -i option specified and both GTAGS and GRTAGS exists
-	 * at one of the candedite directories then gtags use existing
+	 * at one of the candidate directories then gtags use existing
 	 * tag files.
 	 */
 	if (iflag) {

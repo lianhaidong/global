@@ -44,6 +44,15 @@
 #include "strlimcpy.h"
 #include "test.h"
 
+/*
+ * define the position of the root slash.
+ */
+#if defined(_WIN32) || defined(__DJGPP__)
+#define ROOT 2
+#else
+#define ROOT 0
+#endif
+
 static const char *makeobjdirprefix;	/* obj partition		*/
 static const char *makeobjdir;		/* obj directory		*/
 
@@ -294,7 +303,7 @@ setupdbpath(int verbose)
 			} else {
 				if (verbose)
 					fprintf(stderr, "GTAGSROOT found at '%s'.\n", path);
-				if (*s != '/') {
+				if (!isabspath(s)) {
 					char buf[MAXPATHLEN+1];
 					s = realpath(makepath(root, s, NULL), buf);
 				}
@@ -305,7 +314,7 @@ setupdbpath(int verbose)
 			break;
 		} while (0);
 	}
-	if (!strcmp(root, "/"))
+	if (!strcmp(root+ROOT, "/"))
 		strlimcpy(root_with_slash, root, sizeof(root_with_slash));
 	else
 		snprintf(root_with_slash, sizeof(root_with_slash), "%s/", root);
