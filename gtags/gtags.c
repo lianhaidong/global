@@ -843,7 +843,6 @@ createtags(const char *dbpath, const char *root, int db)
 	XARGS *xp;
 	char *ctags_x;
 	STRBUF *comline = strbuf_open(0);
-	STRBUF *path_list = strbuf_open(MAXPATHLEN);
 
 	/*
 	 * get tag command.
@@ -915,7 +914,6 @@ createtags(const char *dbpath, const char *root, int db)
 	find_close();
 	gtags_close(gtop);
 	strbuf_close(comline);
-	strbuf_close(path_list);
 }
 /*
  * printconf: print configuration data.
