@@ -463,7 +463,7 @@ put_macro(const char *word)
 	strbuf_puts(outbuf, sharp_end);
 }
 /*
- * Print warning message when unkown preprocessing directive is found.
+ * Print warning message when unknown preprocessing directive is found.
  */
 void
 unknown_preprocessing_directive(const char *word, int lineno)
