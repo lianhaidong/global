@@ -268,13 +268,17 @@ setupdbpath(int verbose)
 		strlimcpy(root, cwd, MAXPATHLEN);
 		p = root + strlen(root);
 		while (!gtagsexist(root, dbpath, MAXPATHLEN, verbose)) {
-			while (*--p != '/' && p > root)
-				;
-			*p = 0;
-			if (root == p)	/* reached root directory */
+			if (!strcmp(root+ROOT, "/")) { 	/* reached the system's root directory */
+				*(root+ROOT) = '\0';
 				break;
+			}
+			while (*--p != '/' && p > (root+ROOT))
+				;
+			if (p == (root+ROOT))
+				p++;
+			*p = 0;
 		}
-		if (*root == 0)
+		if (*(root+ROOT) == 0)
 			die_with_code(3, "GTAGS not found.");
 		/*
 		 * If file 'GTAGSROOT' found without environment variable
