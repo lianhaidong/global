@@ -1,7 +1,7 @@
 ;;; gtags.el --- gtags facility for Emacs
 
 ;;
-;; Copyright (c) 1997, 1998, 1999, 2000, 2006, 2007, 2008
+;; Copyright (c) 1997, 1998, 1999, 2000, 2006, 2007, 2008, 2009
 ;;	Tama Communications Corporation
 ;;
 ;; This file is part of GNU GLOBAL.
@@ -22,7 +22,7 @@
 
 ;; GLOBAL home page is at: http://www.gnu.org/software/global/
 ;; Author: Tama Communications Corporation
-;; Version: 2.5
+;; Version: 2.6
 ;; Keywords: tools
 ;; Required version: GLOBAL 5.7 or later
 
@@ -223,21 +223,29 @@
   (gtags-completing 'gtags string predicate code))
 (defun gtags-completing-gsyms (string predicate code)
   (gtags-completing 'gsyms string predicate code))
+(defun gtags-completing-files (string predicate code)
+  (gtags-completing 'files string predicate code))
 ;; common part of completing-XXXX
-;;   flag: 'gtags or 'gsyms
+;;   flag: 'gtags or 'gsyms or 'files
 (defun gtags-completing (flag string predicate code)
-  (let ((option "-c")
+  ; The purpose of using the -n option for the -P command is to exclude
+  ; dependence on the execution directory.
+  (let ((option (cond ((eq flag 'files) "-Pon")
+                      ((eq flag 'syms)  "-cs")
+                      (t                "-c")))
         (complete-list (make-vector 63 0))
         (prev-buffer (current-buffer)))
     ; build completion list
     (set-buffer (generate-new-buffer "*Completions*"))
-    (if (eq flag 'gsyms)
-        (setq option (concat option "s")))
     (call-process "global" nil t nil option string)
     (goto-char (point-min))
-    (while (looking-at gtags-symbol-regexp)
-      (intern (gtags-match-string 0) complete-list)
-      (forward-line))
+    (if (eq flag 'files)
+        (while (looking-at (concat ".*\\(" string ".*\\)"))
+          (intern (gtags-match-string 1) complete-list)
+          (forward-line))
+      (while (looking-at gtags-symbol-regexp)
+        (intern (gtags-match-string 0) complete-list)
+        (forward-line)))
     (kill-buffer (current-buffer))
     ; recover current buffer
     (set-buffer prev-buffer)
@@ -349,10 +357,11 @@
   (interactive)
   (let (tagname prompt input)
     (setq prompt "Find files: ")
-    (setq input (read-string prompt))
+    (setq input (completing-read prompt 'gtags-completing-files
+                  nil nil nil gtags-history-list))
     (if (not (equal "" input)) (setq tagname input))
     (gtags-push-context)
-    (gtags-goto-tag tagname "P")))
+    (gtags-goto-tag tagname "Po")))
 
 (defun gtags-parse-file ()
   "Input file name, parse it and show object list."
@@ -469,25 +478,26 @@
 
 ;; goto tag's point
 (defun gtags-goto-tag (tagname flag &optional other-win)
-  (let (option context save prefix buffer lines)
+  (let (option context save prefix buffer lines flag-char)
     (setq save (current-buffer))
+    (setq flag-char (string-to-char flag))
     ; Use always ctags-x format.
     (setq option "-x")
-    (if (equal flag "C")
+    (if (char-equal flag-char ?C)
         (setq context (concat "--from-here=" (number-to-string (gtags-current-lineno)) ":" buffer-file-name))
         (setq option (concat option flag)))
     (cond
-     ((equal flag "C")
+     ((char-equal flag-char ?C)
       (setq prefix "(CONTEXT)"))
-     ((equal flag "P")
+     ((char-equal flag-char ?P)
       (setq prefix "(P)"))
-     ((equal flag "g")
+     ((char-equal flag-char ?g)
       (setq prefix "(GREP)"))
-     ((equal flag "I")
+     ((char-equal flag-char ?I)
       (setq prefix "(IDUTILS)"))
-     ((equal flag "s")
+     ((char-equal flag-char ?s)
       (setq prefix "(S)"))
-     ((equal flag "r")
+     ((char-equal flag-char ?r)
       (setq prefix "(R)"))
      (t (setq prefix "(D)")))
     ;; load tag
@@ -519,13 +529,13 @@
       (cond
        ((= 0 lines)
          (cond
-          ((equal flag "P")
+          ((char-equal flag-char ?P)
            (message "%s: path not found" tagname))
-          ((equal flag "g")
+          ((char-equal flag-char ?g)
            (message "%s: pattern not found" tagname))
-          ((equal flag "I")
+          ((char-equal flag-char ?I)
            (message "%s: token not found" tagname))
-          ((equal flag "s")
+          ((char-equal flag-char ?s)
            (message "%s: symbol not found" tagname))
           (t
            (message "%s: tag not found" tagname)))
