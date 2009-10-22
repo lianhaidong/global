@@ -1,7 +1,7 @@
 #
 # GloBash --- Global facility for Bash
 #
-# Copyright (c) 2001, 2002, 2004, 2006 Tama Communications Corporation
+# Copyright (c) 2001, 2002, 2004, 2006, 2009 Tama Communications Corporation
 #
 # This file is part of GNU GLOBAL.
 #
@@ -20,7 +20,7 @@
 #
 # GLOBAL home page is at: http://www.gnu.org/software/global/
 # Author: Tama Communications Corporation
-  version=0.3
+  version=0.4
 # Usage:
 # $ bash --rcfile <this file>
 #	or
@@ -421,31 +421,31 @@ mark()
 ###########################################################################
 __gtags_completion()
 {
-	local cur fflag sflag xflag
+	local cur Pflag sflag xflag
 
 	cur=${COMP_WORDS[COMP_CWORD]}
-	fflag=0
+	Pflag=0
 	sflag=0
 	case $1 in
-	f)	fflag=1;;
+	P)	Pflag=1;;
 	s)	sflag=1;;
 	global)
 		for (( i=0; i < ${#COMP_WORDS[@]}; i++ )); do
 			case ${COMP_WORDS[i]} in
-			--file)		fflag=1;;
+			--path)		Pflag=1;;
 			--symbol)	sflag=1;;
 			--*)		;;
+			-*P*)		Pflag=1;;
 			-*s*)		sflag=1;;
-			-*f*)		fflag=1;;
 			esac
 		done
 		;;
 	esac
 	COMPREPLY=()
-	if [ $sflag = 1 ]; then
+	if [ $Pflag = 1 ]; then
+		COMPREPLY=(`global -Pon $cur 2>/dev/null | sed "s!./!!"`)
+	elif [ $sflag = 1 ]; then
 		COMPREPLY=(`global -cs $cur 2>/dev/null`)
-	elif [ $fflag = 1 ]; then
-		COMPREPLY=( $(compgen -f $cur) )
 	else
 		COMPREPLY=(`global -c $cur 2>/dev/null`)
 	fi
@@ -455,7 +455,7 @@ complete -F __gtags_completion global
 complete -F __gtags_completion x
 complete -F __gtags_completion r
 complete -F __gtags_completion s
-complete -F __gtags_completion f
+complete -F __gtags_completion P
 ###########################################################################
 # Main
 ###########################################################################
