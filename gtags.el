@@ -231,7 +231,7 @@
   ; The purpose of using the -n option for the -P command is to exclude
   ; dependence on the execution directory.
   (let ((option (cond ((eq flag 'files) "-Pon")
-                      ((eq flag 'syms)  "-cs")
+                      ((eq flag 'gsyms)  "-cs")
                       (t                "-c")))
         (complete-list (make-vector 63 0))
         (prev-buffer (current-buffer)))
