@@ -48,8 +48,6 @@
 #include "strlimcpy.h"
 #include "test.h"
 
-int print_statistics = 0;
-
 #define ismeta(p)	(*((char *)(p)) == ' ')
 
 /*
