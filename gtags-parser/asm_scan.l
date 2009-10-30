@@ -65,7 +65,6 @@
 	}								\
 } while (0)
 
-extern int asm_target;
 extern const char *asm_input_file;
 extern STRBUF *asm_symtable;
 
@@ -184,12 +183,14 @@ WORD		{ALPHA}{ALPHANUM}*
 			/* FALLTHROUGH */
 		case SHARP_IFDEF:
 		case SHARP_IFNDEF:
-			if (asm_target == REF) {
+			if (target == REF) {
 				if (defined(LEXTEXT))
 					PUT();
-			} else if (asm_target == SYM) {
+			} else if (target == SYM) {
 				if (!defined(LEXTEXT))
 					PUT();
+			} else if (target == REF_SYM) {
+				PUT();
 			}
 			break;
 		default:

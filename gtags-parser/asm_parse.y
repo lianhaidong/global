@@ -49,7 +49,6 @@
 int yylex(void);
 void asm_initscan(void);
 
-int asm_target;
 const char *asm_input_file;
 STRBUF *asm_symtable;
 
@@ -83,26 +82,28 @@ input:	/* empty */
 
 line:	ASM_ENTRY '(' ASM_SYMBOL ')' error '\n'
 		{
-			if (asm_target == REF) {
+			if (target == DEF) {
+				PUT(GET_SYM($3), @3);
+			} else if (target == REF) {
 				char *sym = GET_SYM($1);
 
 				if (defined(sym))
 					PUT(sym, @1);
+			} else if (target == REF_SYM) {
+				PUT(GET_SYM($1), @1);
 			}
-			if (asm_target == DEF)
-				PUT(GET_SYM($3), @3);
 			strbuf_reset(asm_symtable);
 		}
 	| ASM_CALL ASM_SYMBOL error '\n'
 		{
-			if (asm_target == REF) {
+			if (target == REF || target == REF_SYM) {
 				char *sym = GET_SYM($2);
 
 				if (sym[0] == '_') {
 					int c = (unsigned char)sym[1];
 
 					if ((isalpha(c) || c == '_' || c >= 0x80)
-					    && defined(&sym[1]))
+					    && (target == REF_SYM || defined(&sym[1])))
 						PUT(&sym[1], @2);
 				}
 			}
@@ -110,7 +111,7 @@ line:	ASM_ENTRY '(' ASM_SYMBOL ')' error '\n'
 		}
 	| ASM_CALL ASM_EXT '(' ASM_SYMBOL ')' error '\n'
 		{
-			if (asm_target == REF) {
+			if (target == REF) {
 				char *sym;
 
 				sym = GET_SYM($2);
@@ -120,42 +121,45 @@ line:	ASM_ENTRY '(' ASM_SYMBOL ')' error '\n'
 				sym = GET_SYM($4);
 				if (defined(sym))
 					PUT(sym, @4);
+			} else if (target == REF_SYM) {
+				PUT(GET_SYM($2), @2);
+				PUT(GET_SYM($4), @4);
 			}
 			strbuf_reset(asm_symtable);
 		}
 	| "#define" ASM_SYMBOL error '\n'
 		{
-			if (asm_target == DEF)
+			if (target == DEF)
 				PUT(GET_SYM($2), @2);
 			strbuf_reset(asm_symtable);
 		}
 	| "#undef" ASM_SYMBOL error '\n'
 		{
-			if (asm_target == DEF)
+			if (target == DEF)
 				PUT(GET_SYM($2), @2);
 			strbuf_reset(asm_symtable);
 		}
 	| ASM_MACRO ASM_SYMBOL error '\n'
 		{
-			if (asm_target == DEF)
+			if (target == DEF)
 				PUT(GET_SYM($2), @2);
 			strbuf_reset(asm_symtable);
 		}
 	| ASM_LABEL ASM_MACRO error '\n'
 		{
-			if (asm_target == DEF)
+			if (target == DEF)
 				PUT(GET_SYM($1), @1);
 			strbuf_reset(asm_symtable);
 		}
 	| ASM_EQU ASM_SYMBOL ',' error '\n'
 		{
-			if (asm_target == DEF)
+			if (target == DEF)
 				PUT(GET_SYM($2), @2);
 			strbuf_reset(asm_symtable);
 		}
 	| ASM_LABEL ASM_EQU error '\n'
 		{
-			if (asm_target == DEF)
+			if (target == DEF)
 				PUT(GET_SYM($1), @1);
 			strbuf_reset(asm_symtable);
 		}
@@ -168,8 +172,6 @@ line:	ASM_ENTRY '(' ASM_SYMBOL ')' error '\n'
 void
 assembly(const char *file)
 {
-	asm_target = sflag ? SYM : rflag ? REF : DEF;
-
 	if (linetable_open(file) == -1)
 		die("'%s' cannot open.", file);
 	asm_input_file = file;

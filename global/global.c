@@ -874,7 +874,16 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 	STRBUF *path_list = strbuf_open(MAXPATHLEN);
 	XARGS *xp;
 	char *ctags_x;
+	int skip_defined = 0, skip_undefined = 0;
 
+	if (getconfb("use_2pass_parser")) {
+		if (db == GRTAGS) {
+			skip_undefined = 1;
+		} else if (db == GSYMS) {
+			skip_defined = 1;
+			db = GRTAGS;
+		}
+	}
 	/*
 	 * teach parser where is dbpath.
 	 */
@@ -950,6 +959,10 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 					recover(&ptable);
 					die("too small number of parts.\n'%s'", ctags_x);
 				}
+				if (skip_defined || skip_undefined) {
+					if (defined(ptable.part[PART_TAG].start) ? skip_defined : skip_undefined)
+						continue;
+				}
 				if (strcmp(curpath, ptable.part[PART_PATH].start)) {
 					strlimcpy(curpath, ptable.part[PART_PATH].start, sizeof(curpath));
 					convert_put(cv, curpath);
@@ -958,6 +971,17 @@ parsefile(int argc, char **argv, const char *cwd, const char *root, const char *
 			}
 		} else {
 			while ((ctags_x = xargs_read(xp)) != NULL) {
+				if (skip_defined || skip_undefined) {
+					SPLIT ptable;
+
+					if (split((char *)ctags_x, 4, &ptable) < 4) {
+						recover(&ptable);
+						die("too small number of parts.\n'%s'", ctags_x);
+					}
+					if (defined(ptable.part[PART_TAG].start) ? skip_defined : skip_undefined)
+						continue;
+					recover(&ptable);
+				}
 				convert_put(cv, ctags_x);
 				count++;
 			}

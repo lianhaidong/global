@@ -50,7 +50,6 @@ java(const char *file)
 {
 	int c;
 	int level;					/* brace level */
-	int target;
 	int startclass, startthrows, startequal;
 	char classname[MAXTOKEN];
 	char completename[MAXCOMPLETENAME];
@@ -67,7 +66,6 @@ java(const char *file)
 	stack[0].terminate = completename;
 	stack[0].level = 0;
 	level = classlevel = 0;
-	target = (sflag) ? SYM : ((rflag) ? REF : DEF);
 	startclass = startthrows = startequal = 0;
 
 	if (!opentoken(file))
@@ -82,17 +80,18 @@ java(const char *file)
 			if (c != SYMBOL)
 				break;
 			if (startclass || startthrows) {
-				if (target == REF && defined(token))
+				if ((target == REF && defined(token)) || target == REF_SYM)
 					PUT(token, lineno, sp);
 			} else if (peekc(0) == '('/* ) */) {
 				if (target == DEF && level == stack[classlevel].level && !startequal)
 					/* ignore constructor */
 					if (strcmp(stack[classlevel].classname, token))
 						PUT(token, lineno, sp);
-				if (target == REF && (level > stack[classlevel].level || startequal) && defined(token))
-					PUT(token, lineno, sp);
+				if (level > stack[classlevel].level || startequal)
+					if ((target == REF && defined(token)) || target == REF_SYM)
+						PUT(token, lineno, sp);
 			} else {
-				if (target == SYM)
+				if (target == SYM || target == REF_SYM)
 					PUT(token, lineno, sp);
 			}
 			break;
@@ -148,10 +147,10 @@ java(const char *file)
 		case JAVA_NEW:
 		case JAVA_INSTANCEOF:
 			while ((c = nexttoken(interested, java_reserved_word)) == SYMBOL && peekc(1) == '.')
-				if (target == SYM)
+				if (target == SYM || target == REF_SYM)
 					PUT(token, lineno, sp);
 			if (c == SYMBOL)
-				if (target == REF && defined(token))
+				if ((target == REF && defined(token)) || target == REF_SYM)
 					PUT(token, lineno, sp);
 			break;
 		case JAVA_THROWS:
