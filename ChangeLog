@@ -37,7 +37,7 @@ October 30 2009, Hideki IWAMOTO
 	[ 3-pass mode (current implementation) ]
 	  Pass 1:
 			    +--------------+            +-------+
-	   source files ===>| gtags-parser |===========>| gtags |===> GATGS
+	   source files ===>| gtags-parser |===========>| gtags |===> GTAGS
 			    +--------------+            +-------+
 	  Pass 2:
 			    +--------------+            +-------+
@@ -53,7 +53,7 @@ October 30 2009, Hideki IWAMOTO
 	[ 2-pass mode ]
 	  Pass 1:
 			    +--------------+            +-------+
-	   source files ===>| gtags-parser |===========>| gtags |===> GATGS
+	   source files ===>| gtags-parser |===========>| gtags |===> GTAGS
 			    +--------------+            +-------+
 	  Pass 2:                 
 			    +--------------+            +-------+ 
