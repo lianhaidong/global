@@ -361,6 +361,20 @@ strbuf_sprintf(STRBUF *sb, const char *s, ...)
 	va_list ap;
 
 	va_start(ap, s);
+	strbuf_vsprintf(sb, s, ap);
+	va_end(ap);
+}
+/*
+ * strbuf_vsprintf: do sprintf into string buffer.
+ *
+ *	i)	sb	STRBUF structure
+ *	i)	s	similar to vsprintf()
+ *			Currently the following format is supported.
+ *			%s, %d, %<number>d, %<number>s, %-<number>d, %-<number>s
+ */
+void
+strbuf_vsprintf(STRBUF *sb, const char *s, va_list ap)
+{
 	if (sb->alloc_failed)
 		return;
 	for (; *s; s++) {
@@ -421,7 +435,6 @@ strbuf_sprintf(STRBUF *sb, const char *s, ...)
 			}
 		}
 	}
-	va_end(ap);
 }
 /*
  * strbuf_close: close string buffer.

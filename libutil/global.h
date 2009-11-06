@@ -48,6 +48,7 @@
 #include "pathconvert.h"
 #include "pool.h"
 #include "split.h"
+#include "statistics.h"
 #include "strbuf.h"
 #include "strhash.h"
 #include "strlimcpy.h"

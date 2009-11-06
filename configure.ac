@@ -48,6 +48,7 @@ dnl Checks for libraries.
 
 dnl Checks for header files.
 AC_CHECK_HEADERS(limits.h string.h unistd.h stdarg.h sys/time.h fcntl.h)
+AC_CHECK_HEADERS(sys/resource.h)
 AC_HEADER_DIRENT
 if test ${ac_header_dirent} = no; then
         AC_MSG_ERROR([dirent(3) is required but not found.])
@@ -99,6 +100,7 @@ AC_FUNC_STRFTIME
 AC_CHECK_FUNCS(getcwd putenv lstat snprintf)
 AC_CHECK_FUNCS(index rindex bzero bcmp bcopy strchr strrchr memset memcmp memmove)
 AC_CHECK_FUNCS(putc_unlocked getc_unlocked)
+AC_CHECK_FUNCS(gettimeofday getrusage)
 AG_DJGPP
 
 INCLUDES='-I$(top_srcdir)/libutil -I$(top_srcdir)/libdb -I$(top_srcdir)/libglibc -I../libutil'

@@ -124,8 +124,10 @@ char *strbuf_value(STRBUF *);
 void strbuf_trim(STRBUF *);
 void strbuf_close(STRBUF *);
 char *strbuf_fgets(STRBUF *, FILE *, int);
-void strbuf_sprintf(STRBUF *sb, const char *s, ...)
+void strbuf_sprintf(STRBUF *, const char *, ...)
 	__attribute__ ((__format__ (__printf__, 2, 3)));
+void strbuf_vsprintf(STRBUF *, const char *, va_list)
+	__attribute__ ((__format__ (__printf__, 2, 0)));
 STRBUF *strbuf_open_tempbuf(void);
 void strbuf_release_tempbuf(STRBUF *);
 

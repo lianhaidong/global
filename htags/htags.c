@@ -37,7 +37,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/param.h>
-#include <time.h>
 
 #include "checkalloc.h"
 #include "getopt.h"
@@ -116,7 +115,7 @@ int caution;				/* --caution option		*/
 int dynamic;				/* --dynamic(-D) option		*/
 int symbol;				/* --symbol(-s) option          */
 int suggest;				/* --suggest option		*/
-int statistics;				/* --statistics option		*/
+int statistics = STATISTICS_STYLE_NONE;	/* --statistics option		*/
 
 int copy_files;				/* 1: copy tag files		*/
 int no_order_list;			/* 1: doesn't use order list	*/
@@ -278,7 +277,7 @@ static struct option const long_options[] = {
         {"nocgi", no_argument, &cgi, 0},
         {"no-map-file", no_argument, &map_file, 0},
         {"show-position", no_argument, &show_position, 1},
-        {"statistics", no_argument, &statistics, 1},
+        {"statistics", no_argument, &statistics, STATISTICS_STYLE_TABLE},
         {"suggest", no_argument, &suggest, 1},
         {"table-list", no_argument, &table_list, 1},
         {"version", no_argument, &show_version, 1},
@@ -1446,9 +1445,8 @@ main(int argc, char **argv)
 	const char *index = NULL;
 	int optchar;
         int option_index = 0;
-	time_t start_time, end_time, start_all_time, end_all_time,
-		T_makedupindex, T_makedefineindex, T_makefileindex,
-		T_makeincludeindex, T_makehtml, T_all;
+	STATISTICS_TIME *T_makedupindex, *T_makedefineindex, *T_makefileindex,
+		*T_makeincludeindex, *T_makehtml, *T_all;
 
 	arg_dbpath[0] = 0;
 	basic_check();
@@ -1820,7 +1818,7 @@ main(int argc, char **argv)
         HTML = (cflag) ? gzipped_suffix : normal_suffix;
 
 	message("[%s] Htags started", now());
-	start_all_time = time(NULL);
+	T_all = statistics_time_start("The entire time");
 	/*
 	 * (#) check if GTAGS, GRTAGS is the latest.
 	 */
@@ -1895,11 +1893,10 @@ main(int argc, char **argv)
 	 */
 	message("[%s] (3) making duplicate entries ...", now());
 	cache_open();
-	start_time = time(NULL);
+	T_makedupindex = statistics_time_start("Time of making duplicate entries");
 	func_total = makedupindex();
-	end_time = time(NULL);
+	statistics_time_end(T_makedupindex);
 	message("Total %d functions.", func_total);
-	T_makedupindex = end_time - start_time;
 	/*
 	 * (4) search index. (search.html)
 	 */
@@ -1916,31 +1913,28 @@ main(int argc, char **argv)
 		 *     PRODUCE @defines
 		 */
 		message("[%s] (5) making function index ...", now());
-		start_time = time(NULL);
+		T_makedefineindex = statistics_time_start("Time of making function index");
 		func_total = makedefineindex("defines.html", func_total, defines);
-		end_time = time(NULL);
+		statistics_time_end(T_makedefineindex);
 		message("Total %d functions.", func_total);
-		T_makedefineindex = end_time - start_time;
 		/*
 		 * (6) make file index (files.html and files/)
 		 *     PRODUCE @files, %includes
 		 */
 		message("[%s] (6) making file index ...", now());
 		init_inc();
-		start_time = time(NULL);
+		T_makefileindex = statistics_time_start("Time of making file index");
 		file_total = makefileindex("files.html", files);
-		end_time = time(NULL);
+		statistics_time_end(T_makefileindex);
 		message("Total %d files.", file_total);
-		T_makefileindex = end_time - start_time;
 		html_count += file_total;
 		/*
 		 * [#] make include file index.
 		 */
 		message("[%s] (#) making include file index ...", now());
-		start_time = time(NULL);
+		T_makeincludeindex = statistics_time_start("Time of making include file index");
 		makeincludeindex();
-		end_time = time(NULL);
-		T_makeincludeindex = end_time - start_time;
+		statistics_time_end(T_makeincludeindex);
 		/*
 		 * [#] make a common part for mains.html and index.html
 		 *     USING @defines @files
@@ -1966,10 +1960,9 @@ main(int argc, char **argv)
 	 *     USING TAG CACHE, %includes and anchor database.
 	 */
 	message("[%s] (9) making hypertext from source code ...", now());
-	start_time = time(NULL);
+	T_makehtml = statistics_time_start("Time of making hypertext");
 	makehtml(file_total);
-	end_time = time(NULL);
-	T_makehtml = end_time - start_time;
+	statistics_time_end(T_makehtml);
 	/*
 	 * (10) rebuild script. (rebuild.sh)
 	 *
@@ -1987,9 +1980,8 @@ main(int argc, char **argv)
 		snprintf(dst, sizeof(dst), "%s/style.css", distpath);
 		copyfile(src, dst);
 	}
-	end_all_time = time(NULL);
+	statistics_time_end(T_all);
 	message("[%s] Done.", now());
-	T_all = end_all_time - start_all_time;
 	if (vflag && cgi && (cflag || fflag || dynamic)) {
 		message("\n[Information]\n");
 		if (cflag) {
@@ -2025,15 +2017,7 @@ main(int argc, char **argv)
 	/*
 	 * Print statistics information.
 	 */
-	if (statistics) {
-		setverbose();
-		message("- Elapsed time of making duplicate entries ............ %10ld seconds.", T_makedupindex);
-		message("- Elapsed time of making function index ............... %10ld seconds.", T_makedefineindex);
-		message("- Elapsed time of making file index ................... %10ld seconds.", T_makefileindex);
-		message("- Elapsed time of making include file index ........... %10ld seconds.", T_makeincludeindex);
-		message("- Elapsed time of making hypertext .................... %10ld seconds.", T_makehtml);
-		message("- The entire elapsed time ............................. %10ld seconds.", T_all);
-	}
+	print_statistics(statistics);
 	clean();
 	return 0;
 }
