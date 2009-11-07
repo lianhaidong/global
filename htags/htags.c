@@ -1446,7 +1446,7 @@ main(int argc, char **argv)
 	int optchar;
         int option_index = 0;
 	STATISTICS_TIME *T_makedupindex, *T_makedefineindex, *T_makefileindex,
-		*T_makeincludeindex, *T_makehtml, *T_all;
+		*T_makeincludeindex, *T_makehtml;
 
 	arg_dbpath[0] = 0;
 	basic_check();
@@ -1818,7 +1818,7 @@ main(int argc, char **argv)
         HTML = (cflag) ? gzipped_suffix : normal_suffix;
 
 	message("[%s] Htags started", now());
-	T_all = statistics_time_start("The entire time");
+	init_statistics();
 	/*
 	 * (#) check if GTAGS, GRTAGS is the latest.
 	 */
@@ -1980,7 +1980,6 @@ main(int argc, char **argv)
 		snprintf(dst, sizeof(dst), "%s/style.css", distpath);
 		copyfile(src, dst);
 	}
-	statistics_time_end(T_all);
 	message("[%s] Done.", now());
 	if (vflag && cgi && (cflag || fflag || dynamic)) {
 		message("\n[Information]\n");

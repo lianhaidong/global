@@ -115,17 +115,26 @@ struct statistics_time {
 	char name[1];
 };
 
+static STRBUF *sb;
+static STATISTICS_TIME *T_all;
 static STAILQ_HEAD(statistics_time_list, statistics_time)
 	statistics_time_list = STAILQ_HEAD_INITIALIZER(statistics_time_list);
+
+void
+init_statistics(void)
+{
+	assert(sb == NULL);
+	sb = strbuf_open(0);
+	T_all = statistics_time_start("The entire time");
+}
 
 STATISTICS_TIME *
 statistics_time_start(const char *fmt, ...)
 {
 	STATISTICS_TIME *t;
-	STATIC_STRBUF(sb);
 	va_list ap;
 
-	strbuf_clear(sb);
+	strbuf_reset(sb);
 
 	va_start(ap, fmt);
 	strbuf_vsprintf(sb, fmt, ap);
@@ -301,33 +310,33 @@ static const char percent_heading_string[] = "%CPU";
 static void
 print_header_table(void **ppriv)
 {
-	struct printing_width *max_width;
+	struct printing_width max_width;
 	char *bar;
 	int bar_len;
 
-	*ppriv = max_width = check_malloc(sizeof(*max_width));
-
-	max_width->name = sizeof(name_heading_string) - 1;
-	max_width->elapsed = sizeof(elapsed_heading_string) - 1;
+	max_width.name = sizeof(name_heading_string) - 1;
+	max_width.elapsed = sizeof(elapsed_heading_string) - 1;
 #if CPU_TIME_AVAILABLE
-	max_width->user = sizeof(user_heading_string) - 1;
-	max_width->system = sizeof(system_heading_string) - 1;
-	max_width->percent = sizeof(percent_heading_string) - 1;
+	max_width.user = sizeof(user_heading_string) - 1;
+	max_width.system = sizeof(system_heading_string) - 1;
+	max_width.percent = sizeof(percent_heading_string) - 1;
 #endif
-	get_max_width(max_width);
+	get_max_width(&max_width);
 
-	bar_len = (max_width->name > max_width->elapsed)
-		? max_width->name : max_width->elapsed;
+	bar_len = (max_width.name > max_width.elapsed)
+		? max_width.name : max_width.elapsed;
 #if CPU_TIME_AVAILABLE
-	if (max_width->user > bar_len)
-		bar_len = max_width->user;
-	if (max_width->system > bar_len)
-		bar_len = max_width->system;
-	if (max_width->percent > bar_len)
-		bar_len = max_width->percent;
+	if (max_width.user > bar_len)
+		bar_len = max_width.user;
+	if (max_width.system > bar_len)
+		bar_len = max_width.system;
+	if (max_width.percent > bar_len)
+		bar_len = max_width.percent;
 #endif
 
-	bar = check_malloc(bar_len + 1);
+	*ppriv = bar = check_malloc(sizeof(max_width) + bar_len + 1);
+	memcpy(bar, &max_width, sizeof(max_width));
+	bar += sizeof(max_width);
 	memset(bar, '-', bar_len);
 	bar[bar_len] = '\0';
 
@@ -335,33 +344,47 @@ print_header_table(void **ppriv)
 
 #if CPU_TIME_AVAILABLE
 	message("%-*s %*s %*s %*s %*s",
-		max_width->name, name_heading_string,
-		max_width->user, user_heading_string,
-		max_width->system, system_heading_string,
-		max_width->elapsed, elapsed_heading_string,
-		max_width->percent, percent_heading_string);
+		max_width.name, name_heading_string,
+		max_width.user, user_heading_string,
+		max_width.system, system_heading_string,
+		max_width.elapsed, elapsed_heading_string,
+		max_width.percent, percent_heading_string);
 	message("%.*s %.*s %.*s %.*s %.*s",
-		max_width->name, bar,
-		max_width->user, bar,
-		max_width->system, bar,
-		max_width->elapsed, bar,
-		max_width->percent, bar);
+		max_width.name, bar,
+		max_width.user, bar,
+		max_width.system, bar,
+		max_width.elapsed, bar,
+		max_width.percent, bar);
 #else
 	message("%-*s %*s",
-		max_width->name, name_heading_string,
-		max_width->elapsed, elapsed_heading_string);
+		max_width.name, name_heading_string,
+		max_width.elapsed, elapsed_heading_string);
 	message("%.*s %.*s",
-		max_width->name, bar,
-		max_width->elapsed, bar);
+		max_width.name, bar,
+		max_width.elapsed, bar);
 #endif
-
-	free(bar);
 }
 
 static void
 print_time_table(const STATISTICS_TIME *t, void *priv)
 {
 	const struct printing_width *max_width = priv;
+	const char *bar = (const char *)&max_width[1];
+
+	if (t == T_all) {
+#if CPU_TIME_AVAILABLE
+		message("%.*s %.*s %.*s %.*s %.*s",
+			max_width->name, bar,
+			max_width->user, bar,
+			max_width->system, bar,
+			max_width->elapsed, bar,
+			max_width->percent, bar);
+#else
+		message("%.*s %.*s",
+			max_width->name, bar,
+			max_width->elapsed, bar);
+#endif
+	}
 
 #if CPU_TIME_AVAILABLE
 	message("%-*s"
@@ -414,6 +437,9 @@ print_statistics(int style_no)
 	STATISTICS_TIME *t;
 	void *priv;
 
+	assert(T_all != NULL);
+	statistics_time_end(T_all);
+
 	assert(style_no >= 0 && style_no < ARRAY_SIZE(printing_styles));
 	style = &printing_styles[style_no];
 
@@ -432,5 +458,9 @@ print_statistics(int style_no)
 
 	if (style->print_footer != NULL)
 		style->print_footer(priv);
+
+	strbuf_close(sb);
+	T_all = NULL;
+	sb = NULL;
 }
 

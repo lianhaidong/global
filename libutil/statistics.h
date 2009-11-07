@@ -40,9 +40,9 @@
  * Usage:
  *     main()
  *     {
- *         STATISTICS_TIME *T_all, *T_foo, *T_bar[3];
+ *         STATISTICS_TIME *T_foo, *T_bar[3];
  *
- *         T_all = statistics_time_start("The entire time");
+ *         init_statistics();
  *         T_foo = statistics_time_start("Time of making foo");
  *         makefoo();
  *         statistics_time_end(T_foo);
@@ -51,17 +51,12 @@
  *             makebar(i);
  *             statistics_time_end(T_bar[i]);
  *         }
- *         statistics_time_end(T_all);
  *         print_statistics(style);
  *         exit(0);
  *     }
  */
 struct statistics_time;
 typedef struct statistics_time STATISTICS_TIME;
-
-STATISTICS_TIME *statistics_time_start(const char *, ...)
-	__attribute__ ((__format__ (__printf__, 1, 2)));
-void statistics_time_end(STATISTICS_TIME *);
 
 /*
  * STATISTICS_STYLE_NONE:
@@ -85,6 +80,7 @@ void statistics_time_end(STATISTICS_TIME *);
  *     Time of making bar0     0.268       0.040        0.282 109.1
  *     Time of making bar1     1.084       0.120        1.208  99.2
  *     Time of making bar2    18.325       2.112       16.010 127.3
+ *     ------------------- --------- ----------- ------------ -----
  *     The entire time        21.721       2.420       18.989 127.4
  */
 enum {
@@ -93,6 +89,10 @@ enum {
 	STATISTICS_STYLE_TABLE
 };
 
+void init_statistics(void);
+STATISTICS_TIME *statistics_time_start(const char *, ...)
+	__attribute__ ((__format__ (__printf__, 1, 2)));
+void statistics_time_end(STATISTICS_TIME *);
 void print_statistics(int);
 
 #endif
