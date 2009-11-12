@@ -243,7 +243,7 @@ seekto(const char *string, int n)
  */
 static int upper_bound_version = 5;	/* acceptable format version (upper bound) */
 static int lower_bound_version = 4;	/* acceptable format version (lower bound) */
-static const char *tagslist[] = {"GPATH", "GTAGS", "GRTAGS", "GSYMS"};
+static const char *const tagslist[] = {"GPATH", "GTAGS", "GRTAGS", "GSYMS"};
 /*
  * dbname: return db name
  *

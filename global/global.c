@@ -53,7 +53,7 @@ void completion(const char *, const char *, const char *);
 void idutils(const char *, const char *);
 void grep(const char *, const char *);
 void pathlist(const char *, const char *);
-void parsefile(int, char **, const char *, const char *, const char *, int);
+void parsefile(int, char *const *, const char *, const char *, const char *, int);
 int search(const char *, const char *, const char *, const char *, int);
 void tagsearch(const char *, const char *, const char *, const char *, int);
 void encode(char *, int, const char *);
@@ -865,7 +865,7 @@ pathlist(const char *pattern, const char *dbpath)
  *	i)	db	type of parse
  */
 void
-parsefile(int argc, char **argv, const char *cwd, const char *root, const char *dbpath, int db)
+parsefile(int argc, char *const *argv, const char *cwd, const char *root, const char *dbpath, int db)
 {
 	CONVERT *cv;
 	int count = 0;

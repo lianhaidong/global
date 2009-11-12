@@ -1048,7 +1048,7 @@ basic_check(void)
  * load configuration variables.
  */
 static void
-configuration(int argc, char **argv)
+configuration(int argc, char *const *argv)
 {
 	STRBUF *sb = strbuf_open(0);
 	int i, n;
@@ -1312,7 +1312,7 @@ configuration(int argc, char **argv)
  * save_environment: save configuration data and arguments.
  */
 static void
-save_environment(int argc, char **argv)
+save_environment(int argc, char *const *argv)
 {
 	char command[MAXFILLEN];
 	STRBUF *sb = strbuf_open(0);
@@ -1380,7 +1380,7 @@ save_environment(int argc, char **argv)
 }
 
 char **
-append_options(int *argc, char **argv)
+append_options(int *argc, char *const *argv)
 {
 
 	STRBUF *sb = strbuf_open(0);
@@ -1426,15 +1426,14 @@ append_options(int *argc, char **argv)
 	while (j < *argc)
 		newargv[i++] = argv[j++];
 	newargv[i] = NULL;
-	argv = (char **)newargv;
 	*argc = i;
 #ifdef DEBUG
 	for (i = 0; i < *argc; i++)
-		fprintf(stderr, "argv[%d] = '%s'\n", i, argv[i]);
+		fprintf(stderr, "newargv[%d] = '%s'\n", i, newargv[i]);
 #endif
 	/* doesn't close string buffer. */
 
-	return argv;
+	return (char **)newargv;
 }
 int
 main(int argc, char **argv)

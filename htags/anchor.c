@@ -72,7 +72,7 @@ anchor_prepare(FILE *anchor_stream)
 	 * not to change the command length. This length influences
 	 * the number of arguments in the xargs processing.
 	 */
-	char *options[] = {NULL, " ", "r", "s"};
+	static const char *const options[] = {NULL, " ", "r", "s"};
 	char comline[MAXFILLEN];
 	int db;
 
