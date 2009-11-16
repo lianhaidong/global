@@ -1444,8 +1444,7 @@ main(int argc, char **argv)
 	const char *index = NULL;
 	int optchar;
         int option_index = 0;
-	STATISTICS_TIME *T_makedupindex, *T_makedefineindex, *T_makefileindex,
-		*T_makeincludeindex, *T_makehtml;
+	STATISTICS_TIME *tim;
 
 	arg_dbpath[0] = 0;
 	basic_check();
@@ -1892,9 +1891,9 @@ main(int argc, char **argv)
 	 */
 	message("[%s] (3) making duplicate entries ...", now());
 	cache_open();
-	T_makedupindex = statistics_time_start("Time of making duplicate entries");
+	tim = statistics_time_start("Time of making duplicate entries");
 	func_total = makedupindex();
-	statistics_time_end(T_makedupindex);
+	statistics_time_end(tim);
 	message("Total %d functions.", func_total);
 	/*
 	 * (4) search index. (search.html)
@@ -1912,9 +1911,9 @@ main(int argc, char **argv)
 		 *     PRODUCE @defines
 		 */
 		message("[%s] (5) making function index ...", now());
-		T_makedefineindex = statistics_time_start("Time of making function index");
+		tim = statistics_time_start("Time of making function index");
 		func_total = makedefineindex("defines.html", func_total, defines);
-		statistics_time_end(T_makedefineindex);
+		statistics_time_end(tim);
 		message("Total %d functions.", func_total);
 		/*
 		 * (6) make file index (files.html and files/)
@@ -1922,18 +1921,18 @@ main(int argc, char **argv)
 		 */
 		message("[%s] (6) making file index ...", now());
 		init_inc();
-		T_makefileindex = statistics_time_start("Time of making file index");
+		tim = statistics_time_start("Time of making file index");
 		file_total = makefileindex("files.html", files);
-		statistics_time_end(T_makefileindex);
+		statistics_time_end(tim);
 		message("Total %d files.", file_total);
 		html_count += file_total;
 		/*
 		 * [#] make include file index.
 		 */
 		message("[%s] (#) making include file index ...", now());
-		T_makeincludeindex = statistics_time_start("Time of making include file index");
+		tim = statistics_time_start("Time of making include file index");
 		makeincludeindex();
-		statistics_time_end(T_makeincludeindex);
+		statistics_time_end(tim);
 		/*
 		 * [#] make a common part for mains.html and index.html
 		 *     USING @defines @files
@@ -1959,9 +1958,9 @@ main(int argc, char **argv)
 	 *     USING TAG CACHE, %includes and anchor database.
 	 */
 	message("[%s] (9) making hypertext from source code ...", now());
-	T_makehtml = statistics_time_start("Time of making hypertext");
+	tim = statistics_time_start("Time of making hypertext");
 	makehtml(file_total);
-	statistics_time_end(T_makehtml);
+	statistics_time_end(tim);
 	/*
 	 * (10) rebuild script. (rebuild.sh)
 	 *

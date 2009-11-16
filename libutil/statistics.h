@@ -40,16 +40,16 @@
  * Usage:
  *     main()
  *     {
- *         STATISTICS_TIME *T_foo, *T_bar[3];
+ *         STATISTICS_TIME *tim;
  *
  *         init_statistics();
- *         T_foo = statistics_time_start("Time of making foo");
+ *         tim = statistics_time_start("Time of making foo");
  *         makefoo();
- *         statistics_time_end(T_foo);
+ *         statistics_time_end(tim);
  *         for (i = 0; i < 3; i++) {
- *             T_bar[i] = statistics_time_start("Time of making bar%d", i);
+ *             tim = statistics_time_start("Time of making bar%d", i);
  *             makebar(i);
- *             statistics_time_end(T_bar[i]);
+ *             statistics_time_end(tim);
  *         }
  *         print_statistics(style);
  *         exit(0);
