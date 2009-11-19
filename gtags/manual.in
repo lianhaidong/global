@@ -92,6 +92,9 @@
 		This option implies the -i option.
 		If the @arg{file} is new then @option{--single-update} is ignored,
 		and the processing is automatically switched to the normal incremental updating.
+	@item{@option{--statistics}}
+		Print statistics information.
+		This option is valid only for normal creation of tag files.
 	@item{@option{-q}, @option{--quiet}}
 		Quiet mode.
 	@item{@option{-v}, @option{--verbose}}

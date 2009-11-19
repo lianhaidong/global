@@ -81,6 +81,7 @@ const char *config_name;
 const char *file_list;
 const char *dump_target;
 char *single_update;
+int statistics = STATISTICS_STYLE_NONE;
 
 /*
  * Path filter
@@ -132,6 +133,7 @@ static struct option const long_options[] = {
 	 */
 	/* flag value */
 	{"debug", no_argument, &debug, 1},
+	{"statistics", no_argument, &statistics, STATISTICS_STYLE_TABLE},
 	{"version", no_argument, &show_version, 1},
 	{"help", no_argument, &show_help, 1},
 
@@ -160,6 +162,7 @@ main(int argc, char **argv)
 	int db;
 	int optchar;
 	int option_index = 0;
+	STATISTICS_TIME *tim;
 
 	while ((optchar = getopt_long(argc, argv, "cd:f:iIn:oOqvwse", long_options, &option_index)) != EOF) {
 		switch (optchar) {
@@ -439,8 +442,9 @@ main(int argc, char **argv)
 		(void)incremental(dbpath, cwd);
 		exit(0);
 	}
+	init_statistics();
 	/*
- 	 * create GTAGS, GRTAGS and GSYMS
+	 * create GTAGS, GRTAGS and GSYMS
 	 */
 	for (db = GTAGS; db < GTAGLIM; db++) {
 		if (two_pass_mode && db == GSYMS)
@@ -453,6 +457,8 @@ main(int argc, char **argv)
 			continue;
 		if (!usable(strmake(strbuf_value(sb), " \t")))
 			die("Parser '%s' not found or not executable.", strmake(strbuf_value(sb), " \t"));
+		tim = statistics_time_start("Time of creating %s",
+			(two_pass_mode && db == GRTAGS) ? "GRTAGS and GSYMS" : dbname(db));
 		if (vflag)
 			fprintf(stderr, "[%s] Creating '%s'.\n", now(),
 				(two_pass_mode && db == GRTAGS) ? "GRTAGS and GSYMS" : dbname(db));
@@ -477,11 +483,13 @@ main(int argc, char **argv)
 					fprintf(stderr, "GSYMS_extra command failed: %s\n", strbuf_value(sb));
 			break;
 		}
+		statistics_time_end(tim);
 	}
 	/*
 	 * create idutils index.
 	 */
 	if (Iflag) {
+		tim = statistics_time_start("Time of creating ID");
 		if (vflag)
 			fprintf(stderr, "[%s] Creating indexes for idutils.\n", now());
 		strbuf_reset(sb);
@@ -505,11 +513,13 @@ main(int argc, char **argv)
 		strbuf_puts(sb, makepath(dbpath, "ID", NULL));
 		if (system(strbuf_value(sb)))
 			die("chmod failed: %s", strbuf_value(sb));
+		statistics_time_end(tim);
 	}
 	if (vflag)
 		fprintf(stderr, "[%s] Done.\n", now());
 	closeconf();
 	strbuf_close(sb);
+	print_statistics(statistics);
 
 	return 0;
 }
