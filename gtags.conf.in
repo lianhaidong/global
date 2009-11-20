@@ -52,6 +52,8 @@ gtags:\
 #
 # 2-pass mode (experimental)
 #
+2pass:\
+	:tc=gtags-2pass:tc=htags:
 gtags-2pass:\
 	:tc=common:\
 	:GTAGS=gtags-parser %s:\

@@ -331,6 +331,7 @@ clean(void)
 {
 	unload_gpath();
 	cache_close();
+	anchor_close();
 }
 /*
  * Signal handler.
@@ -815,26 +816,13 @@ static void
 makehtml(int total)
 {
 	GFIND *gp;
-	FILE *anchor_stream;
 	const char *path;
 	int count = 0;
 
 	/*
-	 * Create anchor stream for anchor_load().
-	 */
-	anchor_stream = tmpfile();
-	gp = gfind_open(dbpath, NULL, other_files ? GPATH_BOTH : GPATH_SOURCE);
-	while ((path = gfind_read(gp)) != NULL) {
-		if (gp->type == GPATH_OTHER)
-			fputc(' ', anchor_stream);
-		fputs(path, anchor_stream);
-		fputc('\n', anchor_stream);
-	}
-	gfind_close(gp);
-	/*
 	 * Prepare anchor stream for anchor_load().
 	 */
-	anchor_prepare(anchor_stream);
+	anchor_prepare();
 	/*
 	 * For each path in GPATH, convert the path into HTML file.
 	 */

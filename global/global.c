@@ -53,7 +53,7 @@ void completion(const char *, const char *, const char *);
 void idutils(const char *, const char *);
 void grep(const char *, const char *);
 void pathlist(const char *, const char *);
-void parsefile(int, char *const *, const char *, const char *, const char *, int);
+void parsefile(char *const *, const char *, const char *, const char *, int);
 int search(const char *, const char *, const char *, const char *, int);
 void tagsearch(const char *, const char *, const char *, const char *, int);
 void encode(char *, int, const char *);
@@ -92,6 +92,7 @@ char root[MAXPATHLEN+1];		/* root of source tree	*/
 char dbpath[MAXPATHLEN+1];		/* dbpath directory	*/
 char *context_file;
 char *context_lineno;
+const char *args_file;
 
 static void
 usage(void)
@@ -110,6 +111,7 @@ help(void)
 
 #define RESULT		128
 #define FROM_HERE	129
+#define ARGS_FILE	130
 #define SORT_FILTER     1
 #define PATH_FILTER     2
 #define BOTH_FILTER     (SORT_FILTER|PATH_FILTER)
@@ -140,6 +142,7 @@ static struct option const long_options[] = {
 	{"cxref", no_argument, NULL, 'x'},
 
 	/* long name only */
+	{"args-file", required_argument, NULL, ARGS_FILE},
 	{"from-here", required_argument, NULL, FROM_HERE},
 	{"debug", no_argument, &debug, 1},
 	{"version", no_argument, &show_version, 1},
@@ -306,6 +309,9 @@ main(int argc, char **argv)
 		case 'x':
 			xflag++;
 			break;
+		case ARGS_FILE:
+			args_file = optarg;
+			break;
 		case FROM_HERE:
 			{
 			char *p = optarg;
@@ -374,6 +380,10 @@ main(int argc, char **argv)
 		case 'p':
 		case 'P':
 			break;
+		case 'f':
+			if (args_file == NULL)
+				usage();
+			break;
 		default:
 			usage();
 			break;
@@ -403,6 +413,17 @@ main(int argc, char **argv)
 			;
 	if (cflag && av && isregex(av))
 		die_with_code(2, "only name char is allowed with -c option.");
+	/*
+	 * If the args_file other than "-" is given, it must be readable file.
+	 */
+	if (args_file != NULL && strcmp(args_file, "-") != 0) {
+		if (test("d", args_file))
+			die("'%s' is a directory.", args_file);
+		else if (!test("f", args_file))
+			die("'%s' not found.", args_file);
+		else if (!test("r", args_file))
+			die("'%s' is not readable.", args_file);
+	}
 	/*
 	 * get path of following directories.
 	 *	o current directory
@@ -530,7 +551,7 @@ main(int argc, char **argv)
 	 * parse source files.
 	 */
 	else if (fflag) {
-		parsefile(argc, argv, cwd, root, dbpath, db);
+		parsefile(argv, cwd, root, dbpath, db);
 	}
 	/*
 	 * tag search.
@@ -857,7 +878,6 @@ pathlist(const char *pattern, const char *dbpath)
 /*
  * parsefile: parse file to pick up tags.
  *
- *	i)	argc
  *	i)	argv
  *	i)	cwd	current directory
  *	i)	root	root directory of source tree
@@ -865,16 +885,38 @@ pathlist(const char *pattern, const char *dbpath)
  *	i)	db	type of parse
  */
 void
-parsefile(int argc, char *const *argv, const char *cwd, const char *root, const char *dbpath, int db)
+parsefile(char *const *argv, const char *cwd, const char *root, const char *dbpath, int db)
 {
 	CONVERT *cv;
 	int count = 0;
 	int file_count = 0;
 	STRBUF *comline = strbuf_open(0);
-	STRBUF *path_list = strbuf_open(MAXPATHLEN);
+	STRBUF *ib = NULL, *pathlist_sb = NULL;
+	FILE *ip = NULL, *pathlist_fp = NULL;
+	const char *av;
 	XARGS *xp;
 	char *ctags_x;
 	int skip_defined = 0, skip_undefined = 0;
+
+	/*
+	 * Expanding strbuf frequently spends much CPU cycles for mremap(2) system call.
+	 * When args_file is specified, use the temporary file to avoid it.
+	 */
+	if (args_file != NULL) {
+		if (strcmp(args_file, "-") == 0) {
+			ip = stdin;
+		} else {
+			ip = fopen(args_file, "r");
+			if (ip == NULL)
+				 die("cannot open '%s'.", args_file);
+		}
+		ib = strbuf_open(0);
+		pathlist_fp = tmpfile();
+		if (pathlist_fp == NULL)
+			die("cannot make temporary file.");
+	} else {
+		pathlist_sb = strbuf_open(MAXPATHLEN);
+	}
 
 	if (getconfb("use_2pass_parser")) {
 		if (db == GRTAGS) {
@@ -909,12 +951,14 @@ parsefile(int argc, char *const *argv, const char *cwd, const char *root, const 
 	/*
 	 * Make a path list while checking the validity of path name.
 	 */
-	for (; argc > 0; argv++, argc--) {
-		const char *av = argv[0];
+	while ((av = (ip != NULL) ? strbuf_fgets(ib, ip, STRBUF_NOCRLF) : *argv++) != NULL) {
 		char path[MAXPATHLEN+1];
 
+		/* skip empty line. */
+		if (ip != NULL && *av == '\0')
+			continue;
 		/*
-		 * convert the path into relative from the root directory of source tree.
+		 * convert the path into relative to the root directory of source tree.
 		 */
 		if (normalize(av, get_root_with_slash(), cwd, path, sizeof(path)) == NULL)
 			if (!qflag)
@@ -939,8 +983,18 @@ parsefile(int argc, char *const *argv, const char *cwd, const char *root, const 
 		/*
 		 * Add a path to the path list.
 		 */
-		strbuf_puts0(path_list, path);
+		if (pathlist_fp != NULL) {
+			fputs(path, pathlist_fp);
+			putc('\n', pathlist_fp);
+		} else {
+			strbuf_puts0(pathlist_sb, path);
+		}
 		file_count++;
+	}
+	if (ip != NULL) {
+		if (ip != stdin)
+			fclose(ip);
+		strbuf_close(ib);
 	}
 	if (file_count > 0) {
 		/*
@@ -948,7 +1002,10 @@ parsefile(int argc, char *const *argv, const char *cwd, const char *root, const 
 		 */
 		if (chdir(root) < 0)
 			die("cannot move to '%s' directory.", root);
-		xp = xargs_open_with_strbuf(strbuf_value(comline), 0, path_list);
+		if (pathlist_fp != NULL)
+			xp = xargs_open_with_file(strbuf_value(comline), 0, pathlist_fp);
+		else
+			xp = xargs_open_with_strbuf(strbuf_value(comline), 0, pathlist_sb);
 		if (format == FORMAT_PATH) {
 			SPLIT ptable;
 			char curpath[MAXPATHLEN+1];
@@ -996,9 +1053,13 @@ parsefile(int argc, char *const *argv, const char *cwd, const char *root, const 
 	gpath_close();
 	convert_close(cv);
 	strbuf_close(comline);
-	strbuf_close(path_list);
-	if (file_count == 0)
-		die("file not found.");
+	if (pathlist_fp != NULL) {
+		fclose(pathlist_fp);
+	} else {
+		strbuf_close(pathlist_sb);
+		if (file_count == 0)
+			die("file not found.");
+	}
 	if (vflag) {
 		print_count(count);
 		fprintf(stderr, " (no index used).\n");

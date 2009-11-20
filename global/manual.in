@@ -59,6 +59,8 @@
 	@item{@option{-f}, @option{--file} @arg{files}}
 		Print all tags in the @arg{files}.
 		This option implies the -x option.
+		If the @option{--args-file} options is specified, @arg{files} on the command line
+		is ignored.
 	@item{@option{-g}, @option{--grep} @arg{pattern}}
 		Print all lines which match to the @arg{pattern}.
 	@item{@option{--help}}
@@ -84,6 +86,11 @@
 	@begin_itemize
 	@item{@option{-a}, @option{--absolute}}
 		Print absolute path name. By default, print relative path name.
+	@item{@option{--args-file} @arg{file}}
+		Read from @arg{file} a list of arguments.
+		If @arg{file} is @file{-}, read from standard input.
+		Arguments must be separated by newline.
+		This option can be used only with the @option{-f} command now.
 	@item{@option{--from-here} @arg{context}}
 		Decide tag type by the context. The @arg{context} must be 'lineno:path'.
 		If this option is specified then the @option{-s} and @option{-r}
