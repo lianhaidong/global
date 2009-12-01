@@ -47,7 +47,7 @@
 static void usage(void);
 static void help(void);
 static void setcom(int);
-int decide_tag_by_context(const char *, const char *, const char *);
+int decide_tag_by_context(const char *, const char *, int);
 int main(int, char **);
 void completion(const char *, const char *, const char *);
 void idutils(const char *, const char *);
@@ -169,13 +169,18 @@ setcom(int c)
  *	i)	lineno	context lineno
  *	r)		GTAGS, GRTAGS, GSYMS
  */
+#define NEXT_NUMBER(p) do {                                                         \
+	for (n = 0; isdigit(*p); p++)                                               \
+		n = n * 10 + (*p - '0');                                            \
+} while (0)
 int
-decide_tag_by_context(const char *tag, const char *file, const char *lineno)
+decide_tag_by_context(const char *tag, const char *file, int lineno)
 {
 	char path[MAXPATHLEN+1], s_fid[32];
 	const char *tagline, *p;
 	DBOP *dbop;
 	int db = GSYMS;
+	int iscompline = 0;
 
 	if (normalize(file, get_root_with_slash(), cwd, path, sizeof(path)) == NULL)
 		die("'%s' is out of source tree.", file);
@@ -192,6 +197,8 @@ decide_tag_by_context(const char *tag, const char *file, const char *lineno)
 	 * read btree records directly to avoid the overhead.
 	 */
 	dbop = dbop_open(makepath(dbpath, dbname(GTAGS), NULL), 0, 0, 0);
+	if (dbop_getoption(dbop, COMPLINEKEY))
+		iscompline = 1;
 	tagline = dbop_first(dbop, tag, NULL, 0);
 	if (tagline)
 		db = GTAGS;
@@ -203,14 +210,52 @@ decide_tag_by_context(const char *tag, const char *file, const char *lineno)
 		if (p != NULL && *p == ' ') {
 			for (p++; *p && *p != ' '; p++)
 				;
-			if (*p++ != ' ')
-				die("Impossible!");
-			if ((p = locatestring(p, lineno, MATCH_AT_FIRST)) != NULL && *p == ' ') {
-				db = GRTAGS;
-				break;
+			if (*p++ != ' ' || !isdigit(*p))
+				die("Impossible! decide_tag_by_context(1)");
+			/*
+			 * Standard format	n <blank> <image>$
+			 * Compact format	d,d,d,d$
+			 */
+			if (!iscompline) {			/* Standard format */
+				if (atoi(p) == lineno) {
+					db = GRTAGS;
+					goto finish;
+				}
+			} else {				/* Compact format */
+				int n, cur, last = 0;
+
+				do {
+					if (!isdigit(*p))
+						die("Impossible! decide_tag_by_context(2)");
+					NEXT_NUMBER(p);
+					cur = last + n;
+					if (cur == lineno) {
+						db = GRTAGS;
+						goto finish;
+					}
+					last = cur;
+					if (*p == '-') {
+						if (!isdigit(*++p))
+							die("Impossible! decide_tag_by_context(3)");
+						NEXT_NUMBER(p);
+						cur = last + n;
+						if (lineno >= last && lineno <= cur) {
+							db = GRTAGS;
+							goto finish;
+						}
+						last = cur;
+					}
+					if (*p) {
+						if (*p == ',')
+							p++;
+						else
+							die("Impossible! decide_tag_by_context(4)");
+					}
+				} while (*p);
 			}
 		}
 	}
+finish:
         dbop_close(dbop);
 	return db;
 }
@@ -500,7 +545,7 @@ main(int argc, char **argv)
 	if (context_file) {
 		if (isregex(av))
 			die_with_code(2, "regular expression is not allowed with the --from-here option.");
-		db = decide_tag_by_context(av, context_file, context_lineno);
+		db = decide_tag_by_context(av, context_file, atoi(context_lineno));
 	} else {
 		db = (rflag) ? GRTAGS : ((sflag) ? GSYMS : GTAGS);
 	}
