@@ -59,12 +59,13 @@ int bflag;			/* -b: force level 1 block start */
 int eflag;			/* -e: force level 1 block end */
 int nflag;			/* -n: doen't print tag */
 int qflag;			/* -q: quiet mode */
+int rflag;			/* -r: function reference */
+int sflag;			/* -s: collect symbols */
 int wflag;			/* -w: warning message */
 int vflag;			/* -v: verbose mode */
 int show_version;
 int show_help;
 int debug;
-int target = DEF;		/* DEF, REF, SYM, or REF_SYM */
 
 /*----------------------------------------------------------------------*/
 /* Parser switch                                                        */
@@ -147,7 +148,6 @@ static struct option const long_options[] = {
 	{"warning", no_argument, NULL, 'w'},
 
 	/* long name only */
-	{"both-ref-and-sym", no_argument, &target, REF_SYM},
 	{"debug", no_argument, &debug, 1},
 	{"langmap", required_argument, NULL, 0},
 	{"version", no_argument, &show_version, 1},
@@ -184,10 +184,12 @@ main(int argc, char **argv)
 			qflag++;
 			break;
 		case 'r':
-			target = REF;
+			rflag++;
+			sflag = 0;
 			break;
 		case 's':
-			target = SYM;
+			sflag++;
+			rflag = 0;
 			break;
 		case 't':
 			break;

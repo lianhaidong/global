@@ -32,18 +32,10 @@
 #ifdef HAVE_CTYPE_H
 #include <ctype.h>
 #endif
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
 #include "global.h"
 #include "anchor.h"
 #include "htags.h"
 
-#if (defined(_WIN32) && !defined(__CYGWIN__))
-#define mkstemp(p) open(_mktemp(p), _O_CREAT | _O_SHORT_LIVED | _O_EXCL)
-#endif
-
-static char pathlist_name[MAXPATHLEN+1];
 static XARGS *anchor_input[GTAGLIM];
 static struct anchor *table;
 static VARRAY *vb;
@@ -68,40 +60,24 @@ static struct anchor *CURRENTDEF;
 
 /*
  * anchor_prepare: setup input stream.
+ *
+ *	i)	anchor_stream	file pointer of path list
  */
 void
-anchor_prepare(void)
+anchor_prepare(FILE *anchor_stream)
 {
-	static const char *const options[] = {NULL, "", "r", "s"};
+	/*
+	 * Option table:
+	 * We use blank string as null option instead of null string("")
+	 * not to change the command length. This length influences
+	 * the number of arguments in the xargs processing.
+	 */
+	static const char *const options[] = {NULL, " ", "r", "s"};
 	char comline[MAXFILLEN];
 	int db;
-	static char *const argv[2] = {pathlist_name, NULL};
-	int fd;
-	GFIND *gp;
-	const char *path;
-	FILE *fp;
-
-	/* Create the list of file which should be parsed. */
-	snprintf(pathlist_name, sizeof(pathlist_name), "%s/pathlist.XXXXXX", tmpdir);
-	fd = mkstemp(pathlist_name);
-	if (fd == -1) {
-		pathlist_name[0] = '\0';
-		die("cannot make temporary file.");
-	}
-	fp = fdopen(fd, "w");
-	if (fp == NULL)
-		die("fdopen failed.");
-	gp = gfind_open(dbpath, NULL, GPATH_SOURCE);
-	while ((path = gfind_read(gp)) != NULL) {
-		fputs(path, fp);
-		putc('\n', fp);
-	}
-	gfind_close(gp);
-	fclose(fp);
 
 	for (db = GTAGS; db < GTAGLIM; db++) {
-		if (!gtags_exist[db])
-			continue;
+		anchor_input[db] = NULL;
 		/*
 		 * Htags(1) should not use gtags-parser(1) directly;
 		 * it should use global(1) with the -f option instead.
@@ -115,19 +91,10 @@ anchor_prepare(void)
 		 * by the path, it is guaranteed that the records concerning
 		 * the same file are consecutive.
 		 */
-		snprintf(comline, sizeof(comline), "%s -f%s --nofilter=path --args-file", global_path, options[db]);
-		anchor_input[db] = xargs_open_with_argv(comline, 0, 1, argv);
-	}
-}
-/*
- * anchor_close: remove temporary file
- */
-void
-anchor_close(void)
-{
-	if (pathlist_name[0] != '\0') {
-		unlink(pathlist_name);
-		pathlist_name[0] = '\0';
+		if (gtags_exist[db] == 1) {
+			snprintf(comline, sizeof(comline), "%s -f%s --nofilter=path", global_path, options[db]);
+			anchor_input[db] = xargs_open_with_file(comline, 0, anchor_stream);
+		}
 	}
 }
 /*

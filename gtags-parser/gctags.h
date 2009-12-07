@@ -25,7 +25,6 @@
 #define DEF	1
 #define REF	2
 #define SYM	3
-#define REF_SYM	4	/* collect both reference snd symbol */
 
 #define NOTFUNCTION	".notfunction"
 #ifdef __DJGPP__
@@ -36,10 +35,11 @@
 extern int bflag;
 extern int eflag;
 extern int nflag;
+extern int rflag;
+extern int sflag;
 extern int vflag;
 extern int wflag;
 extern int debug;
-extern int target;
 
 #define PUT(tag, lno, line) do {					\
 	DBG_PRINT(level, line);						\

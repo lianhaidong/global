@@ -50,16 +50,6 @@ gtags:\
 	:GRTAGS=gtags-parser -r %s:\
 	:GSYMS=gtags-parser -s %s:
 #
-# 2-pass mode (experimental)
-#
-2pass:\
-	:tc=gtags-2pass:tc=htags:
-gtags-2pass:\
-	:tc=common:\
-	:GTAGS=gtags-parser %s:\
-	:GRTAGS=gtags-parser --both-ref-and-sym %s:\
-	:use_2pass_parser:
-#
 # [Exuberant Ctags]
 #
 # This ctags is distributed as a part of Vim editor.

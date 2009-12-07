@@ -63,8 +63,7 @@ struct anchor {
 #define A_HELP		7
 #define A_LIMIT		8
 
-void anchor_prepare(void);
-void anchor_close(void);
+void anchor_prepare(FILE *);
 void anchor_load(const char *);
 void anchor_unload(void);
 struct anchor *anchor_first(void);

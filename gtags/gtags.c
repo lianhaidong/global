@@ -91,7 +91,6 @@ int convert_type = PATH_RELATIVE;
 
 int extractmethod;
 int total;
-int two_pass_mode;
 
 static void
 usage(void)
@@ -404,8 +403,6 @@ main(int argc, char **argv)
 	openconf();
 	if (getconfb("extractmethod"))
 		extractmethod = 1;
-	if (getconfb("use_2pass_parser"))
-		two_pass_mode = 1;
 	strbuf_reset(sb);
 	/*
 	 * Pass the following information to gtags-parser(1)
@@ -447,8 +444,7 @@ main(int argc, char **argv)
 	 * create GTAGS, GRTAGS and GSYMS
 	 */
 	for (db = GTAGS; db < GTAGLIM; db++) {
-		if (two_pass_mode && db == GSYMS)
-			continue;
+
 		strbuf_reset(sb);
 		/*
 		 * get parser for db. (gtags-parser by default)
@@ -457,31 +453,23 @@ main(int argc, char **argv)
 			continue;
 		if (!usable(strmake(strbuf_value(sb), " \t")))
 			die("Parser '%s' not found or not executable.", strmake(strbuf_value(sb), " \t"));
-		tim = statistics_time_start("Time of creating %s",
-			(two_pass_mode && db == GRTAGS) ? "GRTAGS and GSYMS" : dbname(db));
+		tim = statistics_time_start("Time of creating %s", dbname(db));
 		if (vflag)
-			fprintf(stderr, "[%s] Creating '%s'.\n", now(),
-				(two_pass_mode && db == GRTAGS) ? "GRTAGS and GSYMS" : dbname(db));
+			fprintf(stderr, "[%s] Creating '%s'.\n", now(), dbname(db));
 		createtags(dbpath, cwd, db);
 		strbuf_reset(sb);
-		switch (db) {
-		case GTAGS:
+		if (db == GTAGS) {
 			if (getconfs("GTAGS_extra", sb))
 				if (system(strbuf_value(sb)))
 					fprintf(stderr, "GTAGS_extra command failed: %s\n", strbuf_value(sb));
-			break;
-		case GRTAGS:
+		} else if (db == GRTAGS) {
 			if (getconfs("GRTAGS_extra", sb))
 				if (system(strbuf_value(sb)))
 					fprintf(stderr, "GRTAGS_extra command failed: %s\n", strbuf_value(sb));
-			if (!two_pass_mode)
-				break;
-			/* FALLTHROUGH */
-		case GSYMS:
+		} else if (db == GSYMS) {
 			if (getconfs("GSYMS_extra", sb))
 				if (system(strbuf_value(sb)))
 					fprintf(stderr, "GSYMS_extra command failed: %s\n", strbuf_value(sb));
-			break;
 		}
 		statistics_time_end(tim);
 	}
@@ -669,8 +657,6 @@ normal_update:
 		int db;
 
 		for (db = GTAGS; db < GTAGLIM; db++) {
-			if (two_pass_mode && db == GSYMS)
-				continue;
 			/*
 			 * GTAGS needed at least.
 			 */
@@ -678,8 +664,7 @@ normal_update:
 			    && !test("f", makepath(dbpath, dbname(db), NULL)))
 				continue;
 			if (vflag)
-				fprintf(stderr, "[%s] Updating '%s'.\n", now(),
-					(two_pass_mode && db == GRTAGS) ? "GRTAGS and GSYMS" : dbname(db));
+				fprintf(stderr, "[%s] Updating '%s'.\n", now(), dbname(db));
 			updatetags(dbpath, root, deleteset, addlist, db);
 		}
 		updated = 1;
@@ -755,7 +740,7 @@ verbose_updatetags(char *path, int seqno, int skip)
 void
 updatetags(const char *dbpath, const char *root, IDSET *deleteset, STRBUF *addlist, int db)
 {
-	GTOP *gtop, *gtop2 = NULL;
+	GTOP *gtop;
 	STRBUF *comline = strbuf_open(0);
 	int seqno;
 
@@ -771,11 +756,6 @@ updatetags(const char *dbpath, const char *root, IDSET *deleteset, STRBUF *addli
 	if (!getconfs(dbname(db), comline))
 		die("cannot get tag command. (%s)", dbname(db));
 	gtop = gtags_open(dbpath, root, db, GTAGS_MODIFY, 0);
-	/*
-	 * On 2-pass mode, update GRTAGS and GSYMS concurrently.
-	 */
-	if (two_pass_mode && db == GRTAGS)
-		gtop2 = gtags_open(dbpath, root, GSYMS, GTAGS_MODIFY, 0);
 	if (vflag) {
 		char fid[32];
 		const char *path;
@@ -791,18 +771,13 @@ updatetags(const char *dbpath, const char *root, IDSET *deleteset, STRBUF *addli
 			fprintf(stderr, " [%d/%d] deleting tags of %s\n", seqno++, total, path + 2);
 		}
 	}
-	if (!idset_empty(deleteset)) {
+	if (!idset_empty(deleteset))
 		gtags_delete(gtop, deleteset);
-		if (gtop2 != NULL)
-			gtags_delete(gtop2, deleteset);
-	}
 	gtop->flags = 0;
 	if (extractmethod)
 		gtop->flags |= GTAGS_EXTRACTMETHOD;
 	if (debug)
 		gtop->flags |= GTAGS_DEBUG;
-	if (gtop2 != NULL)
-		gtop2->flags = gtop->flags;
 	/*
 	 * Compact format requires the tag records of the same file are
 	 * consecutive. We assume that the output of gtags-parser and
@@ -844,16 +819,11 @@ updatetags(const char *dbpath, const char *root, IDSET *deleteset, STRBUF *addli
 				else
 					p = tag;
 			}
-			if (gtop2 == NULL || defined(p))
-				gtags_put(gtop, p, ctags_x);
-			else
-				gtags_put(gtop2, p, ctags_x);
+			gtags_put(gtop, p, ctags_x);
 		}
 		total = xargs_close(xp);
 	}
 	gtags_close(gtop);
-	if (gtop2 != NULL)
-		gtags_close(gtop2);
 	strbuf_close(comline);
 }
 /*
@@ -878,7 +848,7 @@ verbose_createtags(char *path, int seqno, int skip)
 void
 createtags(const char *dbpath, const char *root, int db)
 {
-	GTOP *gtop, *gtop2 = NULL;
+	GTOP *gtop;
 	XARGS *xp;
 	char *ctags_x;
 	STRBUF *comline = strbuf_open(0);
@@ -902,13 +872,6 @@ createtags(const char *dbpath, const char *root, int db)
 		gtop->flags |= GTAGS_EXTRACTMETHOD;
 	if (debug)
 		gtop->flags |= GTAGS_DEBUG;
-	/*
-	 * On 2-pass mode, create GRTAGS and GSYMS concurrently.
-	 */
-	if (two_pass_mode && db == GRTAGS) {
-		gtop2 = gtags_open(dbpath, root, GSYMS, GTAGS_CREATE, cflag ? GTAGS_COMPACT : 0);
-		gtop2->flags = gtop->flags;
-	}
 	/*
 	 * Compact format requires the tag records of the same file are
 	 * consecutive. We assume that the output of gtags-parser and
@@ -954,16 +917,11 @@ createtags(const char *dbpath, const char *root, int db)
 			else
 				p = tag;
 		}
-		if (gtop2 == NULL || defined(p))
-			gtags_put(gtop, p, ctags_x);
-		else
-			gtags_put(gtop2, p, ctags_x);
+		gtags_put(gtop, p, ctags_x);
 	}
 	total = xargs_close(xp);
 	find_close();
 	gtags_close(gtop);
-	if (gtop2 != NULL)
-		gtags_close(gtop2);
 	strbuf_close(comline);
 }
 /*

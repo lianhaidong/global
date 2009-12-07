@@ -281,6 +281,7 @@ void
 php(const char *file)
 {
 	int token;
+	int target = (sflag) ? SYM : (rflag) ? REF : DEF;
 
 	level = 0;
 	string = strbuf_open(0);
@@ -315,19 +316,19 @@ php(const char *file)
 			break;
 		case PHP_VARIABLE:
 			if (php_reserved_variable(LEXTEXT, LEXLENG)) {
-				if (target == SYM || target == REF_SYM)
+				if (target == SYM)
 					PUT(LEXTEXT, LEXLINENO, file);
 				if (LEXLEX() == PHP_LBRACK && LEXLEX() == PHP_STRING && LEXLEX() == PHP_RBRACK) {
 					char *str = strbuf_value(string);
 
 					if (strchr(str, '$') == 0)
-						if (target == SYM || target == REF_SYM)
+						if (target == SYM)
 							PUT(str, LEXLINENO, file);
 				}
 			} else if (!strcmp(LEXTEXT, "this")) {
 				;
 			} else {
-				if (target == SYM || target == REF_SYM)
+				if (target == SYM)
 					PUT(LEXTEXT, LEXLINENO, file);
 			}
 			break;
@@ -342,14 +343,12 @@ php(const char *file)
 			} else if (target == SYM) {
 				if (!defined(LEXTEXT))
 					PUT(LEXTEXT, LEXLINENO, file);
-			} else if (target == REF_SYM) {
-				PUT(LEXTEXT, LEXLINENO, file);
 			}
 			break;
 		case PHP_NEW:
 			if (LEXLEX() != PHP_TOKEN)
 				break;
-			if (target == REF || target == REF_SYM)
+			if (target == REF)
 				PUT(LEXTEXT, LEXLINENO, file);
 			break;
 		/*
@@ -366,8 +365,6 @@ php(const char *file)
 					} else if (target == SYM) {
 						if (!defined(LEXTEXT))
 							PUT(LEXTEXT, LEXLINENO, file);
-					} else if (target == REF_SYM) {
-						PUT(LEXTEXT, LEXLINENO, file);
 					}
 				}
 			}

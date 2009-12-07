@@ -19,51 +19,6 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
-
-October 30 2009, Hideki IWAMOTO
-
-	* Added 2-pass mode (Giant Steps).
-
-	To improve the performance of gtags, this modification adds 2-pass mode. 
-
-	The following three points are improved by moving use of function defined()
-	from gtags-parser to gtags. 
-	 1. Decreases the frequency of parsing source file from three times to two times.
-	 2. Decreases reading of GTAGS by keeping cache of GTAGS
-	    beyond the duration of parser process. 
-	 3. Increases parallelism of gtags-parser and gtags on multiprocessor system. 
-
-
-	[ 3-pass mode (current implementation) ]
-	  Pass 1:
-			    +--------------+            +-------+
-	   source files ===>| gtags-parser |===========>| gtags |===> GTAGS
-			    +--------------+            +-------+
-	  Pass 2:
-			    +--------------+            +-------+
-	   source files ===>| gtags-parser |===========>| gtags |===> GRTAGS
-		  GTAGS ===>|              |            +-------+
-			    +--------------+            
-	  pass 3:
-			    +--------------+            +-------+
-	   source files ===>| gtags-parser |===========>| gtags |===> GSYMS
-		  GTAGS ===>|              |            +-------+
-			    +--------------+            
-	 
-	[ 2-pass mode ]
-	  Pass 1:
-			    +--------------+            +-------+
-	   source files ===>| gtags-parser |===========>| gtags |===> GTAGS
-			    +--------------+            +-------+
-	  Pass 2:                 
-			    +--------------+            +-------+ 
-	   source files ===>| gtags-parser |===========>| gtags |===> GRTAGS
-			    +--------------+  GTAGS ===>|       |===> GSYMS
-							+-------+
-	Performance improvement:
-	  2-pass mode is 20-30% faster than 3-pass mode on 1-CPU system,
-	  40-50% faster on 2-CPU system.
-
 February 18 2009, Shigio YAMAGUCHI
 
 	* Rewrote the stack in libutil/find.c using the varray (libutil/varray.c)

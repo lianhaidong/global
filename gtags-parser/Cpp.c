@@ -44,10 +44,10 @@
 #include "token.h"
 #include "cpp_res.h"
 
-static void process_attribute(void);
-static int function_definition(void);
+static void process_attribute(int);
+static int function_definition(int);
 static int seems_datatype(const char *);
-static void condition_macro(int);
+static void condition_macro(int, int);
 
 #define MAXCOMPLETENAME 1024            /* max size of complete name of class */
 #define MAXCLASSSTACK   100             /* max size of class stack */
@@ -75,6 +75,7 @@ Cpp(const char *file)
 {
 	int c, cc;
 	int savelevel;
+	int target;
 	int startclass, startthrow, startmacro, startsharp, startequal;
 	char classname[MAXTOKEN];
 	char completename[MAXCOMPLETENAME];
@@ -93,6 +94,7 @@ Cpp(const char *file)
 	stack[0].level = 0;
 	level = classlevel = piflevel = namespacelevel = 0;
 	savelevel = -1;
+	target = (sflag) ? SYM : (rflag) ? REF : DEF;
 	startclass = startthrow = startmacro = startsharp = startequal = 0;
 
 	if (!opentoken(file))
@@ -107,11 +109,11 @@ Cpp(const char *file)
 		switch (cc) {
 		case SYMBOL:		/* symbol	*/
 			if (startclass || startthrow) {
-				if ((target == REF && defined(token)) || target == REF_SYM)
+				if (target == REF && defined(token))
 					PUT(token, lineno, sp);
 			} else if (peekc(0) == '('/* ) */) {
 				if (isnotfunction(token)) {
-					if ((target == REF && defined(token)) || target == REF_SYM)
+					if (target == REF && defined(token))
 						PUT(token, lineno, sp);
 				} else if (level > stack[classlevel].level || startequal || startmacro) {
 					if (target == REF) {
@@ -120,8 +122,6 @@ Cpp(const char *file)
 					} else if (target == SYM) {
 						if (!defined(token))
 							PUT(token, lineno, sp);
-					} else if (target == REF_SYM) {
-						PUT(token, lineno, sp);
 					}
 				} else if (level == stack[classlevel].level && !startmacro && !startsharp && !startequal) {
 					char savetok[MAXTOKEN], *saveline;
@@ -131,12 +131,12 @@ Cpp(const char *file)
 					strbuf_reset(sb);
 					strbuf_puts(sb, sp);
 					saveline = strbuf_value(sb);
-					if (function_definition()) {
+					if (function_definition(target)) {
 						/* ignore constructor */
 						if (target == DEF && strcmp(stack[classlevel].classname, savetok))
 							PUT(savetok, savelineno, saveline);
 					} else {
-						if ((target == REF && defined(savetok)) || target == REF_SYM)
+						if (target == REF && defined(savetok))
 							PUT(savetok, savelineno, saveline);
 					}
 				}
@@ -147,8 +147,6 @@ Cpp(const char *file)
 				} else if (target == SYM) {
 					if (!defined(token))
 						PUT(token, lineno, sp);
-				} else if (target == REF_SYM) {
-					PUT(token, lineno, sp);
 				}
 			}
 			break;
@@ -159,7 +157,7 @@ Cpp(const char *file)
 			 */
 			if ((c = nexttoken(interested, cpp_reserved_word)) == CPP_NAMESPACE) {
 				if ((c = nexttoken(interested, cpp_reserved_word)) == SYMBOL) {
-					if (target == REF || target == REF_SYM)
+					if (target == REF)
 						PUT(token, lineno, sp);
 				} else {
 					if (wflag)
@@ -302,7 +300,7 @@ Cpp(const char *file)
 				if (target == DEF)
 					PUT(token, lineno, sp);
 				while ((c = nexttoken("()", cpp_reserved_word)) != EOF && c != '\n' && c != /* ( */ ')')
-					if (c == SYMBOL && (target == SYM || target == REF_SYM))
+					if (c == SYMBOL && target == SYM)
 						PUT(token, lineno, sp);
 				if (c == '\n')
 					pushbacktoken();
@@ -329,14 +327,14 @@ Cpp(const char *file)
 		case SHARP_ELIF:
 		case SHARP_ELSE:
 		case SHARP_ENDIF:
-			condition_macro(cc);
+			condition_macro(cc, target);
 			break;
 		case SHARP_SHARP:		/* ## */
 			(void)nexttoken(interested, cpp_reserved_word);
 			break;
 		case CPP_NEW:
 			if ((c = nexttoken(interested, cpp_reserved_word)) == SYMBOL)
-				if ((target == REF && defined(token)) || target == REF_SYM)
+				if (target == REF && defined(token))
 					PUT(token, lineno, sp);
 			break;
 		case CPP_STRUCT:
@@ -353,8 +351,6 @@ Cpp(const char *file)
 				} else if (target == SYM) {
 					if (!defined(token))
 						PUT(token, lineno, sp);
-				} else if (target == REF_SYM) {
-					PUT(token, lineno, sp);
 				}
 				c = nexttoken(interested, cpp_reserved_word);
 			}
@@ -369,7 +365,7 @@ Cpp(const char *file)
 					case SHARP_ELIF:
 					case SHARP_ELSE:
 					case SHARP_ENDIF:
-						condition_macro(c);
+						condition_macro(c, target);
 						continue;
 					default:
 						break;
@@ -399,7 +395,7 @@ Cpp(const char *file)
 						if (--level == 0)
 							break;
 					} else if (c == SYMBOL) {
-						if (target == SYM || target == REF_SYM)
+						if (target == SYM)
 							PUT(token, lineno, sp);
 					}
 				}
@@ -415,7 +411,7 @@ Cpp(const char *file)
 				} else if (c == ';') {
 					break;
 				} else if (c == SYMBOL) {
-					if (target == SYM || target == REF_SYM)
+					if (target == SYM)
 						PUT(token, lineno, sp);
 				}
 			}
@@ -479,8 +475,6 @@ Cpp(const char *file)
 						} else if (target == SYM) {
 							if (!defined(token))
 								PUT(token, lineno, sp);
-						} else if (target == REF_SYM) {
-							PUT(token, lineno, sp);
 						}
 						c = nexttoken(interest_enum, cpp_reserved_word);
 					}
@@ -492,7 +486,7 @@ Cpp(const char *file)
 						case SHARP_ELIF:
 						case SHARP_ELSE:
 						case SHARP_ENDIF:
-							condition_macro(c);
+							condition_macro(c, target);
 							continue;
 						default:
 							break;
@@ -510,7 +504,7 @@ Cpp(const char *file)
 							if (c_ == CPP_ENUM) {
 								if (target == DEF && level > typedef_savelevel)
 									PUT(token, lineno, sp);
-								if ((target == SYM || target == REF_SYM) && level == typedef_savelevel)
+								if (target == SYM && level == typedef_savelevel)
 									PUT(token, lineno, sp);
 							} else {
 								if (target == REF) {
@@ -519,8 +513,6 @@ Cpp(const char *file)
 								} else if (target == SYM) {
 									if (!defined(token))
 										PUT(token, lineno, sp);
-								} else if (target == REF_SYM) {
-									PUT(token, lineno, sp);
 								} else if (target == DEF) {
 									/* save lastest token */
 									strlimcpy(savetok, token, sizeof(savetok));
@@ -538,9 +530,7 @@ Cpp(const char *file)
 				} else if (c == SYMBOL) {
 					if (target == REF && defined(token))
 						PUT(token, lineno, sp);
-					else if (target == SYM && !defined(token))
-						PUT(token, lineno, sp);
-					else if (target == REF_SYM)
+					if (target == SYM && !defined(token))
 						PUT(token, lineno, sp);
 				}
 				savetok[0] = 0;
@@ -552,7 +542,7 @@ Cpp(const char *file)
 					case SHARP_ELIF:
 					case SHARP_ELSE:
 					case SHARP_ENDIF:
-						condition_macro(c);
+						condition_macro(c, target);
 						continue;
 					default:
 						break;
@@ -563,12 +553,12 @@ Cpp(const char *file)
 						level--;
 					else if (c == SYMBOL) {
 						if (level > typedef_savelevel) {
-							if (target == SYM || target == REF_SYM)
+							if (target == SYM)
 								PUT(token, lineno, sp);
 						} else {
 							/* put latest token if any */
 							if (savetok[0]) {
-								if (target == SYM || target == REF_SYM)
+								if (target == SYM)
 									PUT(savetok, savelineno, sp);
 							}
 							/* save lastest token */
@@ -594,7 +584,7 @@ Cpp(const char *file)
 			}
 			break;
 		case CPP___ATTRIBUTE__:
-			process_attribute();
+			process_attribute(target);
 			break;
 		default:
 			break;
@@ -612,10 +602,10 @@ Cpp(const char *file)
 /*
  * process_attribute: skip attributes in __attribute__((...)).
  *
- *	gi)	target	DEF, REF, SYM or REF_SYM
+ *	r)	target type
  */
 static void
-process_attribute(void)
+process_attribute(int target)
 {
 	int brace = 0;
 	int c;
@@ -635,8 +625,6 @@ process_attribute(void)
 			} else if (target == SYM) {
 				if (!defined(token))
 					PUT(token, lineno, sp);
-			} else if (target == REF_SYM) {
-				PUT(token, lineno, sp);
 			}
 		}
 		if (brace == 0)
@@ -646,11 +634,10 @@ process_attribute(void)
 /*
  * function_definition: return if function definition or not.
  *
- *	gi)	target	DEF, REF, SYM or REF_SYM
  *	r)	target type
  */
 static int
-function_definition(void)
+function_definition(int target)
 {
 	int c;
 	int brace_level;
@@ -664,7 +651,7 @@ function_definition(void)
 		case SHARP_ELIF:
 		case SHARP_ELSE:
 		case SHARP_ENDIF:
-			condition_macro(c);
+			condition_macro(c, target);
 			continue;
 		default:
 			break;
@@ -683,8 +670,6 @@ function_definition(void)
 			} else if (target == SYM) {
 				if (!seems_datatype(token) || !defined(token))
 					PUT(token, lineno, sp);
-			} else if (target == REF_SYM) {
-				PUT(token, lineno, sp);
 			}
 		}
 	}
@@ -703,10 +688,10 @@ function_definition(void)
 		case SHARP_ELIF:
 		case SHARP_ELSE:
 		case SHARP_ENDIF:
-			condition_macro(c);
+			condition_macro(c, target);
 			continue;
 		case CPP___ATTRIBUTE__:
-			process_attribute();
+			process_attribute(target);
 			continue;
 		default:
 			break;
@@ -732,8 +717,6 @@ function_definition(void)
 			} else if (target == SYM) {
 				if (!seems_datatype(token) || !defined(token))
 					PUT(token, lineno, sp);
-			} else if (target == REF_SYM) {
-				PUT(token, lineno, sp);
 			}
 		}
 	}
@@ -744,10 +727,10 @@ function_definition(void)
  * condition_macro: 
  *
  *	i)	cc	token
- *	gi)	target	DEF, REF, SYM or REF_SYM
+ *	i)	target	current target
  */
 static void
-condition_macro(int cc)
+condition_macro(int cc, int target)
 {
 	cur = &pifstack[piflevel];
 	if (cc == SHARP_IFDEF || cc == SHARP_IFNDEF || cc == SHARP_IF) {
@@ -795,15 +778,13 @@ condition_macro(int cc)
 		}
 	}
 	while ((cc = nexttoken(NULL, cpp_reserved_word)) != EOF && cc != '\n') {
-		if (cc == SYMBOL && strcmp(token, "defined") != 0) {
+                if (cc == SYMBOL && strcmp(token, "defined") != 0) {
 			if (target == REF) {
 				if (defined(token))
-					PUT(token, lineno, sp);
+		                        PUT(token, lineno, sp);
 			} else if (target == SYM) {
 				if (!defined(token))
-					PUT(token, lineno, sp);
-			} else if (target == REF_SYM) {
-				PUT(token, lineno, sp);
+		                	PUT(token, lineno, sp);
 			}
 		}
 	}
