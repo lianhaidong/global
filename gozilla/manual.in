@@ -122,7 +122,7 @@
 	@name{Gozilla} can treat not only source file but also normal file,
 	directory, HTML file and even URL, because it is omnivorous.
 @AUTHORS
-	Tama Communications Corporation.
+	Shigio YAMAGUCHI.
 @HISTORY
 	The @name{gozilla} command appeared in FreeBSD 2.2.2 but did not
 	installed by default.

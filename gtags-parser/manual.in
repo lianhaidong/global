@@ -110,6 +110,6 @@
 	@name{Gtags-parser} relies on the input being well formed,
 	and any syntactical errors will completely confuse it.
 @AUTHOR
-	Tama Communications Corporation.
+	Shigio YAMAGUCHI, Hideki IWAMOTO and others.
 @HISTORY
 	The @name{gtags-parser}(gctags) command appeared in FreeBSD 2.2.2.

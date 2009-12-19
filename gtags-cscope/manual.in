@@ -89,6 +89,6 @@
 	GLOBAL doesn't recognize it.
 	Command 2 (Find functions called by this function) is not implemented.
 @AUTHOR
-	Tama Communications Corporation.
+	Shigio YAMAGUCHI.
 @HISTORY
 	The @name{gtags-cscope} command appeared in 2006.

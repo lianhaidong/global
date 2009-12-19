@@ -333,6 +333,6 @@
 
 	PHP support is far from complete.
 @AUTHOR
-	Tama Communications Corporation.
+	Shigio YAMAGUCHI, Hideki IWAMOTO and others.
 @HISTORY
 	The @name{htags} command appeared in FreeBSD 2.2.2.

@@ -199,6 +199,6 @@
 
 	There is no concurrency control about tag files.
 @AUTHOR
-	Tama Communications Corporation.
+	Shigio YAMAGUCHI, Hideki IWAMOTO and others.
 @HISTORY
 	The @name{gtags} command appeared in FreeBSD 2.2.2.
