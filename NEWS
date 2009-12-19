@@ -20,6 +20,18 @@ ___________________________________
 GNU GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 5.7.7 - December 19 2009
+
+[CHANGES]
+o htags: More accurate statistics mechanism using gettimeofday(2) and getrusage(2).
+o gtags: New --statistics option.
+o gtags.el: Added completion support for the 'gtags-find-file'.
+o global: Allows tag files in the system's root directory.
+  This does not recommend tag files to be put on the system's root directory.
+  In some systems except UNIX, putting tag files there might be suitable.
+[FIXED BUGS]
+o The --from-here option didn't work with compact format GTAGS (gtags -c).
+
 Version 5.7.6 - October 6 2009
 
 [CHANGES]
