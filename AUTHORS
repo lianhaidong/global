@@ -42,6 +42,8 @@ The following improvements by Hideki IWAMOTO.
 * Essential part of internal sort filter (replacement of gnusort).
 * Performance improvement of idset module by using "unsigned long" instead of
   "unsigned int" for bitmask. This is necessary to use 64 bit processor effectively.
+* More accurate statistics mechanism for htags(1) and gtags(1)(--statistics).
+
 Besides he has contributed many improvements to GLOBAL.
 
 There are also many others who have contributed patches and fixes.
