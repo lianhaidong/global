@@ -101,7 +101,6 @@ typedef struct {
 	 */
 	char cur_path[MAXPATHLEN+1];	/* current path */
 	STRBUF *sb;			/* string buffer */
-	FILE *fp;			/* descriptor of 'path' */
 	/* used for compact format and path name only read */
 	STRHASH *path_hash;
 

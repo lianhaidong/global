@@ -521,8 +521,6 @@ gtags_first(GTOP *gtop, const char *pattern, int flags)
 		regflags |= REG_EXTENDED;
 	if (flags & GTOP_IGNORECASE)
 		regflags |= REG_ICASE;
-	if (gtop->format & GTAGS_COMPACT)
-		gtop->fp = NULL;
 	/*
 	 * Get key and compiled regular expression for dbop_xxxx().
 	 */
@@ -692,8 +690,6 @@ gtags_next(GTOP *gtop)
 void
 gtags_close(GTOP *gtop)
 {
-	if (gtop->format & GTAGS_COMPACT && gtop->fp != NULL)
-		fclose(gtop->fp);
 	if (gtop->format & GTAGS_COMPRESS)
 		abbrev_close();
 	if (gtop->format & GTAGS_COMPACT && gtop->cur_path[0])
