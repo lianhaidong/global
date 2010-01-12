@@ -61,7 +61,6 @@ int incremental(const char *, const char *);
 void updatetags(const char *, const char *, IDSET *, STRBUF *, int);
 void createtags(const char *, const char *, int);
 int printconf(const char *);
-void set_base_directory(const char *, const char *);
 
 int cflag;					/* compact format */
 int iflag;					/* incremental update */
