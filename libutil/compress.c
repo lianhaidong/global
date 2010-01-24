@@ -21,6 +21,10 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+#include <ctype.h>
+#include <stdio.h>
+#include <string.h>
+
 #include "compress.h"
 #include "die.h"
 #include "gtagsop.h"

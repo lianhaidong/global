@@ -20,8 +20,6 @@
 
 #ifndef _GTOP_H_
 #define _GTOP_H_
-#include <stdio.h>
-#include <ctype.h>
 
 #include "gparam.h"
 #include "dbop.h"
