@@ -1,7 +1,7 @@
 ;;; gtags.el --- gtags facility for Emacs
 
 ;;
-;; Copyright (c) 1997, 1998, 1999, 2000, 2006, 2007, 2008, 2009
+;; Copyright (c) 1997, 1998, 1999, 2000, 2006, 2007, 2008, 2009, 2010
 ;;	Tama Communications Corporation
 ;;
 ;; This file is part of GNU GLOBAL.
@@ -89,6 +89,11 @@
 
 (defcustom gtags-pop-delete nil
   "*If non-nil, gtags-pop will delete the buffer."
+  :group 'gtags
+  :type 'boolean)
+
+(defcustom gtags-select-buffer-single nil
+  "*If non-nil, gtags select buffer is single."
   :group 'gtags
   :type 'boolean)
 
@@ -501,6 +506,29 @@
       (setq prefix "(R)"))
      (t (setq prefix "(D)")))
     ;; load tag
+    (if gtags-select-buffer-single
+        (progn
+          ; delete "*GTAGS SELECT*" buffer info from gtags-buffer-stack and gtags-point-stack
+          (let (now-gtags-buffer-stack now-buffer now-gtags-point-stack now-point)
+            (setq now-gtags-buffer-stack gtags-buffer-stack)
+            (setq now-gtags-point-stack gtags-point-stack)
+            (while now-gtags-buffer-stack
+              (setq now-buffer (car now-gtags-buffer-stack))
+              (setq now-point (car now-gtags-point-stack))
+              (if (string-match "*GTAGS SELECT*" (buffer-name now-buffer))
+                  (progn
+                    (delete now-buffer gtags-buffer-stack)
+                    (delete now-point gtags-point-stack)))
+              (setq now-gtags-buffer-stack (cdr now-gtags-buffer-stack))
+              (setq now-gtags-point-stack (cdr now-gtags-point-stack))))
+          ; kill "*GTAGS SELECT*" buffer
+          (let (now-buffer-list now-buffer)
+            (setq now-buffer-list (buffer-list))
+            (while now-buffer-list
+              (setq now-buffer (car now-buffer-list))
+              (if (string-match "*GTAGS SELECT*" (buffer-name now-buffer))
+                  (kill-buffer now-buffer))
+              (setq now-buffer-list (cdr now-buffer-list))))))
     (setq buffer (generate-new-buffer (generate-new-buffer-name (concat "*GTAGS SELECT* " prefix tagname))))
     (set-buffer buffer)
     ;
