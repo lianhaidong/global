@@ -244,11 +244,20 @@
     (set-buffer (generate-new-buffer "*Completions*"))
     (call-process "global" nil t nil option string)
     (goto-char (point-min))
+    ;
+    ; The specification of the completion for files is different from that for symbols.
+    ; The completion for symbols matches only to the head of the symbol. But the completion
+    ; for files matches any part of the path.
+    ;
     (if (eq flag 'files)
-        (while (looking-at (concat ".*\\(" string ".*\\)"))
-          (intern (gtags-match-string 1) complete-list)
-          (forward-line))
-      (while (looking-at gtags-symbol-regexp)
+        ; extract input string and the following part.
+        (let ((match-string (if (equal "" string) "\./\\(.*\\)" (concat ".*\\(" string ".*\\)"))))
+          (while (not (eobp))
+            (looking-at match-string)
+            (intern (gtags-match-string 1) complete-list)
+            (forward-line)))
+      (while (not (eobp))
+        (looking-at gtags-symbol-regexp)
         (intern (gtags-match-string 0) complete-list)
         (forward-line)))
     (kill-buffer (current-buffer))
