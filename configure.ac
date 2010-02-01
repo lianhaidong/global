@@ -45,10 +45,11 @@ AC_CHECK_TOOL(AR, ar)
 AC_GNU_SOURCE
 
 dnl Checks for libraries.
+AC_CHECK_LIB(dl, dlopen)
 
 dnl Checks for header files.
 AC_CHECK_HEADERS(limits.h string.h unistd.h stdarg.h sys/time.h fcntl.h)
-AC_CHECK_HEADERS(sys/resource.h)
+AC_CHECK_HEADERS(sys/resource.h dlfcn.h)
 AC_HEADER_DIRENT
 if test ${ac_header_dirent} = no; then
         AC_MSG_ERROR([dirent(3) is required but not found.])
@@ -100,11 +101,11 @@ AC_FUNC_STRFTIME
 AC_CHECK_FUNCS(getcwd putenv lstat snprintf)
 AC_CHECK_FUNCS(index rindex bzero bcmp bcopy strchr strrchr memset memcmp memmove)
 AC_CHECK_FUNCS(putc_unlocked getc_unlocked)
-AC_CHECK_FUNCS(gettimeofday getrusage)
+AC_CHECK_FUNCS(gettimeofday getrusage dlopen dlsym)
 AG_DJGPP
 
-INCLUDES='-I$(top_srcdir)/libutil -I$(top_srcdir)/libdb -I$(top_srcdir)/libglibc -I../libutil'
-LDADD='../libutil/libgloutil.a ../libdb/libglodb.a ../libglibc/libgloglibc.a'
+INCLUDES='-I$(top_srcdir)/libparser -I$(top_srcdir)/libutil -I$(top_srcdir)/libdb -I$(top_srcdir)/libglibc -I../libutil'
+DBLIBRARY='../libdb/libglodb.a'
 
 dnl
 dnl This option is for debugging GLOBAL. Not for normal use.
@@ -127,11 +128,13 @@ AC_ARG_WITH(db185-compat,
 			LDFLAGS="$LDFLAGS -L$withval/lib"
 			;;
 		esac
-		LDADD='../libutil/libgloutil.a -ldb ../libglibc/libgloglibc.a'
+		DBLIBRARY='-ldb'
 		AC_DEFINE(USE_DB185_COMPAT,1,[Define if you use DB1.85 compatible API.])
 	fi
 ],[ with_db185_compat='no' ])
 AM_CONDITIONAL([USE_DB185_COMPAT], [test "$with_db185_compat" != no])
+
+LDADD="../libparser/libgloparser.a ../libutil/libgloutil.a $DBLIBRARY ../libglibc/libgloglibc.a"
 
 dnl
 dnl for home-etc support
@@ -217,5 +220,6 @@ AC_CONFIG_FILES([Makefile
 	libglibc/Makefile
 	doc/Makefile
 	icons/Makefile
+	libparser/Makefile
 ])
 AC_OUTPUT

@@ -21,6 +21,8 @@
 #ifndef _GTOP_H_
 #define _GTOP_H_
 
+#include <stdio.h>
+
 #include "gparam.h"
 #include "dbop.h"
 #include "idset.h"
@@ -101,12 +103,19 @@ typedef struct {
 	STRBUF *sb;			/* string buffer */
 	/* used for compact format and path name only read */
 	STRHASH *path_hash;
-
+	/*
+	 * Stuff for 1-pass parsing
+	 */
+	FILE *fp;
 } GTOP;
 
 const char *dbname(int);
 GTOP *gtags_open(const char *, const char *, int, int, int);
 void gtags_put(GTOP *, const char *, const char *);
+void gtags_put_using(GTOP *, const char *, int, const char *, const char *);
+void gtags_flush(GTOP *, const char *);
+void gtags_add_ref_sym(GTOP *const *, FILE *);
+void gtags_move_ref_sym(GTOP *const *);
 void gtags_delete(GTOP *, IDSET *);
 GTP *gtags_first(GTOP *, const char *, int);
 GTP *gtags_next(GTOP *);

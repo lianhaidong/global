@@ -84,6 +84,19 @@ for lang in c cpp java php asm; do
 	flex -o$lang.c $lang.l
 done
 )
+(cd libparser; set -x
+for lang in c cpp java php asm; do
+	if [ -f $lang.l ]; then
+		flex -o$lang.c $lang.l
+	fi
+	if [ -f ${lang}_scan.l ]; then
+		flex -o${lang}_scan.c ${lang}_scan.l
+	fi
+	if [ -f ${lang}_parse.y ]; then
+		bison -d -o ${lang}_parse.c ${lang}_parse.y
+	fi
+done
+)
 
 echo "- Collecting reference manuals ..."
 commands="global gtags htags gtags-parser gozilla gtags-cscope";

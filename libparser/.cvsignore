@@ -1,0 +1,7 @@
+.deps
+Makefile
+Makefile.in
+asm_parse.c
+asm_parse.h
+asm_scan.c
+php.c

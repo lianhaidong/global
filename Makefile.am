@@ -10,7 +10,7 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
-SUBDIRS = libglibc libutil
+SUBDIRS = libglibc libutil libparser
 if !USE_DB185_COMPAT
         SUBDIRS += libdb
 endif

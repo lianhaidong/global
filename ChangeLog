@@ -19,6 +19,28 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+February 1 2010, Hideki IWAMOTO
+
+	* Added built-in parser to improve the performance of making tag files.
+
+	  When the built-in parser is used, the source files are parsed only once. 
+	  The candidate of reference and other symbols are written to the temporary
+	  file in Pass1, and read in Pass2.
+
+	Pass 1:
+	                             +-------+ 
+	  source files =============>| gtags |============> GTAGS
+	                             |       |============> GPATH
+	                             |       | tag record
+	                             |       |============> temporary file
+	                             +-------+
+	Pass 2:
+	                 tag record  +-------+
+	 temporary file ============>| gtags |============> GRTAGS
+	                             |       |
+	          GTAGS ============>|       |============> GSYMS
+	                             +-------+
+
 February 18 2009, Shigio YAMAGUCHI
 
 	* Rewrote the stack in libutil/find.c using the varray (libutil/varray.c)

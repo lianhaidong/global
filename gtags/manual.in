@@ -175,6 +175,10 @@
 		As a special exception, @name{gtags} collect values from multiple @code{suffixes} variables.
 		This variable is obsoleted. If the langmap variable is defined
 		@name{gtags} no longer refers this.
+	@item{@code{use_builtin_parser}(boolean)}
+		Use built-in parser instead of external command.
+		The following restrictions are in incremental updating with built-in parser:
+		If @file{GRTAGS} or @file{GSYMS} exists, both of them exist and the format should be the same.
 	@end_itemize
 @DIAGNOSTICS
 	@name{Gtags} exits with a non 0 value if an error occurred, 0 otherwise.

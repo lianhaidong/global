@@ -62,7 +62,7 @@ static int compare_path(const void *, const void *);
 static int compare_lineno(const void *, const void *);
 static int compare_tags(const void *, const void *);
 static const char *seekto(const char *, int);
-static void flush_pool(GTOP *);
+static void flush_pool(GTOP *, const char *);
 static void segment_read(GTOP *);
 
 /*
@@ -380,6 +380,165 @@ gtags_open(const char *dbpath, const char *root, int db, int mode, int flags)
 	return gtop;
 }
 /*
+ * gtags_put_using: put tag record with packing.
+ *
+ *	i)	gtop	descripter of GTOP
+ *	i)	tag	tag name
+ *	i)	lno	line number
+ *	i)	fid	file id
+ *	i)	img	line image
+ */
+void
+gtags_put_using(GTOP *gtop, const char *tag, int lno, const char *fid, const char *img)
+{
+	const char *key;
+
+	if (gtop->format & GTAGS_COMPACT) {
+		struct sh_entry *entry;
+
+		/*
+		 * Register each record into the pool.
+		 *
+		 * Pool image:
+		 *
+		 * tagname   lno
+		 * ------------------------------
+		 * "funcA"   | 1| 3| 7|23|11| 2|...
+		 * "funcB"   |34| 2| 5|66| 3|...
+		 * ...
+		 */
+		entry = strhash_assign(gtop->path_hash, tag, 1);
+		if (entry->value == NULL)
+			entry->value = varray_open(sizeof(int), 100);
+		*(int *)varray_append((VARRAY *)entry->value) = lno;
+		return;
+	}
+	/*
+	 * extract method when class method definition.
+	 *
+	 * Ex: Class::method(...)
+	 *
+	 * key	= 'method'
+	 * data = 'Class::method  103 ./class.cpp ...'
+	 */
+	if (gtop->flags & GTAGS_EXTRACTMETHOD) {
+		if ((key = locatestring(tag, ".", MATCH_LAST)) != NULL)
+			key++;
+		else if ((key = locatestring(tag, "::", MATCH_LAST)) != NULL)
+			key += 2;
+		else
+			key = tag;
+	} else {
+		key = tag;
+	}
+	if (gtop->fp != NULL) {
+		fputs(key, gtop->fp);
+		putc('\n', gtop->fp);
+		fputs(fid, gtop->fp);
+		putc(' ', gtop->fp);
+		fputs((gtop->format & GTAGS_COMPNAME) ? compress(tag, key) : tag, gtop->fp);
+		fprintf(gtop->fp, " %d %s\n", lno,
+			(gtop->format & GTAGS_COMPRESS) ? compress(img, key) : img);
+	} else {
+		strbuf_reset(gtop->sb);
+		strbuf_puts(gtop->sb, fid);
+		strbuf_putc(gtop->sb, ' ');
+		strbuf_puts(gtop->sb, (gtop->format & GTAGS_COMPNAME) ? compress(tag, key) : tag);
+		strbuf_putc(gtop->sb, ' ');
+		strbuf_putn(gtop->sb, lno);
+		strbuf_putc(gtop->sb, ' ');
+		strbuf_puts(gtop->sb, (gtop->format & GTAGS_COMPRESS) ? compress(img, key) : img);
+		dbop_put(gtop->dbop, key, strbuf_value(gtop->sb));
+	}
+}
+/*
+ * gtags_flush: Flush the pool for compact format.
+ *
+ *	i)	gtop	descripter of GTOP
+ *	i)	fid	file id
+ */
+void
+gtags_flush(GTOP *gtop, const char *fid)
+{
+	if (gtop->format & GTAGS_COMPACT) {
+		flush_pool(gtop, fid);
+		strhash_reset(gtop->path_hash);
+	}
+}
+/*
+ * gtags_add_ref_sym: read candidate of reference and other symbol from temporary file,
+ *                    and put into GRTAGS or GSYMS.
+ *
+ *	i) gtop		array of descripter of GTOP
+ *	i) ip		file pointer of temporary file
+ */
+void
+gtags_add_ref_sym(GTOP *const *gtop, FILE *ip)
+{
+	STRBUF *ib = strbuf_open(MAXBUFLEN);
+	int data_offset;
+	const char *key;
+	DBOP *dbop[GTAGLIM];
+
+	dbop[GTAGS] = gtop[GTAGS]->dbop;
+	dbop[GRTAGS] = gtop[GRTAGS]->dbop;
+	dbop[GSYMS] = gtop[GSYMS]->dbop;
+	rewind(ip);
+	while (strbuf_fgets(ib, ip, STRBUF_NOCRLF) != NULL) {
+		strbuf_putc(ib, '\0');
+		data_offset = strbuf_getlen(ib);
+		key = strbuf_fgets(ib, ip, STRBUF_NOCRLF | STRBUF_APPEND);
+		if (dbop_get(dbop[GTAGS], key) != NULL)
+			dbop_put(dbop[GRTAGS], key, key + data_offset);
+		else
+			dbop_put(dbop[GSYMS], key, key + data_offset);
+	}
+
+	strbuf_close(ib);
+}
+/*
+ * gtags_move_ref_sym: move defined symbols from GSYMS to GRTAGS,
+ *                     and move undefined symbols from GRTAGS to GSYMS.
+ *
+ *	i) gtop		array of descripter of GTOP
+ */
+void
+gtags_move_ref_sym(GTOP *const *gtop)
+{
+	int result = 0;
+	const char *defkey, *refdata, *symdata;
+	DBOP *dbop[GTAGLIM];
+
+	dbop[GTAGS] = gtop[GTAGS]->dbop;
+	dbop[GRTAGS] = gtop[GRTAGS]->dbop;
+	dbop[GSYMS] = gtop[GSYMS]->dbop;
+	defkey = dbop_first(dbop[GTAGS], NULL, NULL, DBOP_KEY);
+	refdata = dbop_first(dbop[GRTAGS], NULL, NULL, 0);
+	symdata = dbop_first(dbop[GSYMS], NULL, NULL, 0);
+	for (;;) {
+		if (refdata != NULL
+		    && (symdata == NULL || strcmp(dbop[GRTAGS]->lastkey, dbop[GSYMS]->lastkey) < 0)) {
+			while (defkey != NULL && (result = strcmp(dbop[GRTAGS]->lastkey, defkey)) > 0)
+				defkey = dbop_next(dbop[GTAGS]);
+			if (defkey == NULL || result < 0) {
+				dbop_put(dbop[GSYMS], dbop[GRTAGS]->lastkey, refdata);
+				dbop_delete(dbop[GRTAGS], NULL);
+			}
+			refdata = dbop_next(dbop[GRTAGS]);
+		} else if (symdata != NULL) {
+			while (defkey != NULL && (result = strcmp(dbop[GSYMS]->lastkey, defkey)) > 0)
+				defkey = dbop_next(dbop[GTAGS]);
+			if (defkey != NULL && result == 0) {
+				dbop_put(dbop[GRTAGS], dbop[GSYMS]->lastkey, symdata);
+				dbop_delete(dbop[GSYMS], NULL);
+			}
+			symdata = dbop_next(dbop[GSYMS]);
+		} else {
+			break;
+		}
+	}
+}
+/*
  * gtags_put: put tag record with packing.
  *
  *	i)	gtop	descripter of GTOP
@@ -408,7 +567,7 @@ gtags_put(GTOP *gtop, const char *key, const char *ctags_x)	/* virtually const *
 		 * output  funcA 33 1,2,3,7,11,23...
 		 */
 		if (gtop->cur_path[0] && strcmp(gtop->cur_path, ptable.part[PART_PATH].start)) {
-			flush_pool(gtop);
+			flush_pool(gtop, NULL);
 			strhash_reset(gtop->path_hash);
 		}
 		strlimcpy(gtop->cur_path, ptable.part[PART_PATH].start, sizeof(gtop->cur_path));
@@ -693,7 +852,7 @@ gtags_close(GTOP *gtop)
 	if (gtop->format & GTAGS_COMPRESS)
 		abbrev_close();
 	if (gtop->format & GTAGS_COMPACT && gtop->cur_path[0])
-		flush_pool(gtop);
+		flush_pool(gtop, NULL);
 	if (gtop->segment_pool)
 		pool_close(gtop->segment_pool);
 	if (gtop->path_array)
@@ -714,14 +873,13 @@ gtags_close(GTOP *gtop)
  *	i)	gtop	descripter of GTOP
  */
 static void
-flush_pool(GTOP *gtop)
+flush_pool(GTOP *gtop, const char *s_fid)
 {
 	struct sh_entry *entry;
-	const char *s_fid = gpath_path2fid(gtop->cur_path, NULL);
 	int header_offset;
 	int i, last;
 
-	if (s_fid == NULL)
+	if (s_fid == NULL && (s_fid = gpath_path2fid(gtop->cur_path, NULL)) == NULL)
 		die("GPATH is corrupted.('%s' not found)", gtop->cur_path);
 	/*
 	 * Write records as compact format and free line number table
@@ -801,7 +959,14 @@ flush_pool(GTOP *gtop)
 						strbuf_putn(gtop->sb, n);
 					}
 					if (strbuf_getlen(gtop->sb) > DBOP_PAGESIZE / 4) {
-						dbop_put(gtop->dbop, key, strbuf_value(gtop->sb));
+						if (gtop->fp != NULL) {
+							fputs(key, gtop->fp);
+							putc('\n', gtop->fp);
+							fputs(strbuf_value(gtop->sb), gtop->fp);
+							putc('\n', gtop->fp);
+						} else {
+							dbop_put(gtop->dbop, key, strbuf_value(gtop->sb));
+						}
 						strbuf_setlen(gtop->sb, header_offset);
 					}
 				}
@@ -825,14 +990,29 @@ flush_pool(GTOP *gtop)
 					strbuf_putc(gtop->sb, ',');
 				strbuf_putn(gtop->sb, n);
 				if (strbuf_getlen(gtop->sb) > DBOP_PAGESIZE / 4) {
-					dbop_put(gtop->dbop, key, strbuf_value(gtop->sb));
+					if (gtop->fp != NULL) {
+						fputs(key, gtop->fp);
+						putc('\n', gtop->fp);
+						fputs(strbuf_value(gtop->sb), gtop->fp);
+						putc('\n', gtop->fp);
+					} else {
+						dbop_put(gtop->dbop, key, strbuf_value(gtop->sb));
+					}
 					strbuf_setlen(gtop->sb, header_offset);
 				}
 				last = n;
 			}
 		}
-		if (strbuf_getlen(gtop->sb) > header_offset)
-			dbop_put(gtop->dbop, key, strbuf_value(gtop->sb));
+		if (strbuf_getlen(gtop->sb) > header_offset) {
+			if (gtop->fp != NULL) {
+				fputs(key, gtop->fp);
+				putc('\n', gtop->fp);
+				fputs(strbuf_value(gtop->sb), gtop->fp);
+				putc('\n', gtop->fp);
+			} else {
+				dbop_put(gtop->dbop, key, strbuf_value(gtop->sb));
+			}
+		}
 		/* Free line number table */
 		varray_close(vb);
 	}

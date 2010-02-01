@@ -41,6 +41,7 @@
 #include "getopt.h"
 
 #include "global.h"
+#include "parser.h"
 #include "regex.h"
 #include "const.h"
 
@@ -54,6 +55,7 @@ void idutils(const char *, const char *);
 void grep(const char *, const char *);
 void pathlist(const char *, const char *);
 void parsefile(int, char *const *, const char *, const char *, const char *, int);
+void parsefile_using_builtin_parser(char *const *, const char *, const char *, const char *, int);
 int search(const char *, const char *, const char *, const char *, int);
 void tagsearch(const char *, const char *, const char *, const char *, int);
 void encode(char *, int, const char *);
@@ -575,7 +577,10 @@ main(int argc, char **argv)
 	 * parse source files.
 	 */
 	else if (fflag) {
-		parsefile(argc, argv, cwd, root, dbpath, db);
+		if (getconfb("use_builtin_parser"))
+			parsefile_using_builtin_parser(argv, cwd, root, dbpath, db);
+		else
+			parsefile(argc, argv, cwd, root, dbpath, db);
 	}
 	/*
 	 * tag search.
@@ -1018,6 +1023,151 @@ parsefile(int argc, char *const *argv, const char *cwd, const char *root, const 
 	convert_close(cv);
 	strbuf_close(comline);
 	strbuf_close(path_list);
+	if (file_count == 0)
+		die("file not found.");
+	if (vflag) {
+		print_count(count);
+		fprintf(stderr, " (no index used).\n");
+	}
+}
+/*
+ * parsefile_using_builtin_parser: parse file to pick up tags.
+ *
+ *	i)	argv
+ *	i)	cwd	current directory
+ *	i)	root	root directory of source tree
+ *	i)	dbpath	dbpath
+ *	i)	db	type of parse
+ */
+#define TARGET_DEF	(1 << GTAGS)
+#define TARGET_REF	(1 << GRTAGS)
+#define TARGET_SYM	(1 << GSYMS)
+struct parsefile_data {
+	CONVERT *cv;
+	DBOP *dbop;
+	int target;
+	int extractmethod;
+	int count;
+};
+static void
+put_syms(int type, const char *tag, int lno, const char *path, const char *line_image, void *arg)
+{
+	struct parsefile_data *data = arg;
+	const char *key;
+
+	if (format == FORMAT_PATH && data->count > 0)
+		return;
+	switch (type) {
+	case PARSER_DEF:
+		if (!(data->target & TARGET_DEF))
+			return;
+		break;
+	case PARSER_REF_SYM:
+		if (!(data->target & (TARGET_REF | TARGET_SYM)))
+			return;
+		/*
+		 * extract method when class method definition.
+		 *
+		 * Ex: Class::method(...)
+		 *
+		 * key	= 'method'
+		 * data = 'Class::method  103 ./class.cpp ...'
+		 */
+		if (data->extractmethod) {
+			if ((key = locatestring(tag, ".", MATCH_LAST)) != NULL)
+				key++;
+			else if ((key = locatestring(tag, "::", MATCH_LAST)) != NULL)
+				key += 2;
+			else
+				key = tag;
+		} else {
+			key = tag;
+		}
+		if (dbop_get(data->dbop, key) != NULL) {
+			if (!(data->target & TARGET_REF))
+				return;
+		} else {
+			if (!(data->target & TARGET_SYM))
+				return;
+		}
+		break;
+	default:
+		return;
+	}
+	convert_put_using(data->cv, tag, path, lno, line_image);
+	data->count++;
+}
+void
+parsefile_using_builtin_parser(char *const *argv, const char *cwd, const char *root, const char *dbpath, int db)
+{
+	int count = 0;
+	int file_count = 0;
+	STRBUF *sb = strbuf_open(0);
+	const char *langmap, *av;
+	char path[MAXPATHLEN+1];
+	struct parsefile_data data;
+
+	data.target = 1 << db;
+	data.extractmethod = getconfb("extractmethod");
+	if (getconfs("langmap", sb))
+		langmap = strbuf_value(sb);
+	else
+		langmap = DEFAULTLANGMAP;
+	data.cv = convert_open(type, format, root, cwd, dbpath, stdout);
+	if (gpath_open(dbpath, 0) < 0)
+		die("GPATH not found.");
+	if (data.target & (TARGET_REF | TARGET_SYM)) {
+		data.dbop = dbop_open(makepath(dbpath, dbname(GTAGS), NULL), 0, 0, 0);
+		if (data.dbop == NULL)
+			die("%s not found.", dbname(GTAGS));
+	} else {
+		data.dbop = NULL;
+	}
+	/*
+	 * Execute parser in the root directory of source tree.
+	 */
+	if (chdir(root) < 0)
+		die("cannot move to '%s' directory.", root);
+	parser_init(langmap, NULL);
+	while ((av = *argv++) != NULL) {
+		/*
+		 * convert the path into relative to the root directory of source tree.
+		 */
+		if (normalize(av, get_root_with_slash(), cwd, path, sizeof(path)) == NULL)
+			if (!qflag)
+				fprintf(stderr, "'%s' is out of source tree.\n", path + 2);
+		if (!gpath_path2fid(path, NULL)) {
+			if (!qflag)
+				fprintf(stderr, "'%s' not found in GPATH.\n", path + 2);
+			continue;
+		}
+		if (!test("f", makepath(root, path, NULL))) {
+			if (test("d", NULL)) {
+				if (!qflag)
+					fprintf(stderr, "'%s' is a directory.\n", av);
+			} else {
+				if (!qflag)
+					fprintf(stderr, "'%s' not found.\n", av);
+			}
+			continue;
+		}
+		if (lflag && !locatestring(path, localprefix, MATCH_AT_FIRST))
+			continue;
+		data.count = 0;
+		parse_file(path, 0, put_syms, &data);
+		count += data.count;
+		file_count++;
+	}
+	if (chdir(cwd) < 0)
+		die("cannot move to '%s' directory.", cwd);
+	/*
+	 * Settlement
+	 */
+	if (data.dbop != NULL)
+		dbop_close(data.dbop);
+	gpath_close();
+	convert_close(data.cv);
+	strbuf_close(sb);
 	if (file_count == 0)
 		die("file not found.");
 	if (vflag) {

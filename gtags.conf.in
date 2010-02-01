@@ -50,6 +50,11 @@ gtags:\
 	:GRTAGS=gtags-parser -r %s:\
 	:GSYMS=gtags-parser -s %s:
 #
+# built-in parser (experimental)
+#
+builtin:\
+	:tc=gtags:tc=htags:use_builtin_parser:
+#
 # [Exuberant Ctags]
 #
 # This ctags is distributed as a part of Vim editor.
