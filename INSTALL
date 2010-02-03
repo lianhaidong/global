@@ -106,5 +106,6 @@ o Vim
    Please copy gtags.vim file to your plug-in directory.
 
 	$ cp /usr/local/share/gtags/gtags.vim $HOME/.vim/plugin
+	$ cp /usr/local/share/gtags/gtags-cscope.vim $HOME/.vim/plugin
 
 Good luck!

@@ -63,6 +63,7 @@ int qflag;
 int vflag;
 
 #define NA	-1
+#define FROM_HERE -2
 
 /*
 static void
@@ -90,7 +91,7 @@ static struct option const long_options[] = {
 };
 
 char global_path[MAXFILLEN];
-
+char *context;
 int ignore_case;
 
 /*
@@ -329,12 +330,15 @@ execute_command(STRBUF *sb, const int com, const int opt, const char *arg)
 	strbuf_puts(command, global_path);
 	strbuf_puts(command, " --result=cscope");
 	if (opt || ignore_case) {
-		strbuf_putc(command, ' ');
-		strbuf_putc(command, '-');
-		if (opt)
+		if (opt == FROM_HERE) {
+			strbuf_puts(command, " --from-here=");
+			strbuf_puts(command, context);
+		} else {
+			strbuf_puts(command, " -");
 			strbuf_putc(command, opt);
+		}
 		if (ignore_case)
-			strbuf_putc(command, 'i');
+			strbuf_puts(command, " --ignore-case");
 	}
 	strbuf_putc(command, ' ');
 	strbuf_putc(command, QUOTE);
@@ -410,7 +414,7 @@ static void
 search(int com, const char *arg)
 {
 	static STRBUF *sb;
-	char buf[1024];
+	char buf[1024], *p;
 	int count = 0, opt = 0;
 
 	if (sb == NULL)
@@ -425,7 +429,14 @@ search(int com, const char *arg)
 	case '1':		/* Find this definition */
 		break;
 	case '2':		/* Find functions called by this function */
-		opt = NA;
+		/*
+		 * <symbol>:<line number>:<path>
+		 */
+		for (p = arg; *p && *p != ':'; p++)
+			;
+		*p++ = '\0';
+		context = p;
+		opt = FROM_HERE;
 		break;
 	case '3':		/* Find functions calling this function */
 		opt = 'r';

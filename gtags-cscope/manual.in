@@ -34,6 +34,9 @@
 	Since @name{gtags-cscope} is intended to make GLOBAL available
 	through cscope interface, the output is not necessarily the same
 	as cscope.
+
+	Command 2 is not available.
+	This command is used as a internal command for context search.
 @OPTIONS
         The following options are available:
         @begin_itemize
@@ -49,8 +52,7 @@
 	>> help
 	0<arg>: Find this C symbol
 	1<arg>: Find this definition
-	2<arg>: Find functions called by this function
-		(Not implemented yet.)
+	2<arg>: <NA>(This command is used by gtags-cscope.vim internally)
 	3<arg>: Find functions calling this function
 	4<arg>: Find this text string
 	6<arg>: Find this egrep pattern
