@@ -55,7 +55,7 @@ static char *include_pattern(const char *);
 static void command_help(void);
 static void command_loop(void);
 static int execute_command(STRBUF *, const int, const int, const char *);
-static void search(int, const char *);
+static void search(int, char *);
 
 int show_version;
 int show_help;
@@ -411,7 +411,7 @@ execute_command(STRBUF *sb, const int com, const int opt, const char *arg)
  * Unsupported command prints "cscope: 0 lines\n".
  */
 static void
-search(int com, const char *arg)
+search(int com, char *arg)
 {
 	static STRBUF *sb;
 	char buf[1024], *p;
