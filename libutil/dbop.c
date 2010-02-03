@@ -58,7 +58,6 @@
  *	i)	perm	file permission
  *	i)	flags
  *			DBOP_DUP: allow duplicate records.
- *			DBOP_REMOVE: remove on closed.
  *	r)		descripter for dbop_xxx()
  */
 DBOP *
@@ -505,14 +504,12 @@ dbop_close(DBOP *dbop)
 	(void)db->close(db);
 #else
 	/*
-	 * If DBOP_REMOVE is specified, omit writing to the disk in __bt_close().
+	 * If dbname = NULL, omit writing to the disk in __bt_close().
 	 */
-	(void)db->close(db, (dbop->openflags & DBOP_REMOVE || dbop->dbname[0] == '\0') ? 1 : 0);
+	(void)db->close(db, dbop->dbname[0] == '\0' ? 1 : 0);
 #endif
 	if (dbop->dbname[0] != '\0') {
-		if (dbop->openflags & DBOP_REMOVE)
-			(void)unlink(dbop->dbname);
-		else if (dbop->perm && chmod(dbop->dbname, dbop->perm) < 0)
+		if (dbop->perm && chmod(dbop->dbname, dbop->perm) < 0)
 			die("cannot change file mode.");
 	}
 	(void)free(dbop);

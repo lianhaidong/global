@@ -61,7 +61,6 @@ typedef	struct {
  * openflags
  */
 #define	DBOP_DUP	1		/* allow duplicate records	*/
-#define DBOP_REMOVE	2		/* remove file when closed	*/
 /*
  * ioflags
  */

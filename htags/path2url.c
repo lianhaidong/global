@@ -48,7 +48,7 @@ load_gpath(const char *dbpath)
 	const char *path;
 	int n;
 
-	assoc = assoc_open('a');
+	assoc = assoc_open();
 	nextkey = 0;
 	dbop = dbop_open(makepath(dbpath, dbname(GPATH), NULL), 0, 0, 0);
 	if (dbop == NULL)

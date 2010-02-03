@@ -61,9 +61,9 @@ static ASSOC *assoc[GTAGLIM];
 void
 cache_open(void)
 {
-	assoc[GTAGS]  = assoc_open('d');
-	assoc[GRTAGS] = assoc_open('r');
-	assoc[GSYMS] = symbol ? assoc_open('y') : NULL;
+	assoc[GTAGS]  = assoc_open();
+	assoc[GRTAGS] = assoc_open();
+	assoc[GSYMS] = symbol ? assoc_open() : NULL;
 }
 /*
  * cache_put: put tag line.
