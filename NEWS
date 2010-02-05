@@ -4,7 +4,8 @@ ___________________________________
 |  |   |  |  |  |  |     |     |  |
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009
+ Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009,
+	2010
 	Tama Communications Corporation
 
  This file is free software; as a special exception the author gives
@@ -19,6 +20,43 @@ ___________________________________
 
 GNU GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
+
+Version 5.8 - February 5 2010
+
+[CHANGES]
+New facilities:
+o gtags: Built-in parser by Hideki IWAMOTO.
+  This improvement has shortened the processing time to about 1/3.
+  Built-in parser is not effective by default in this version.
+  To use built-in parser, please define 'use_builtin_parser' in your
+  configuration file like follows:
+
+	$ cp /usr/local/share/gtags/gtags.conf $HOME/.globalrc
+	$ vi $HOME/.globalrc
+	+------------------------------------
+	|...
+	|default:\
+	|       :tc=gtags:tc=htags:use_builtin_parser:	<= ADD THIS
+
+  In the near future, built-in parser will become effective by default.
+o gtags.el: Single 'GTAGS SELECT MODE' buffer of gtags.el by Yushi Oka.
+  If "gtags-select-buffer-single" is non-nil, then 'GTAGS SELECT MODE'
+  buffer is kept single.
+o gtags-cscope.vim: Plug-in script which integrates GLOBAL and vim editor
+  using cscope interface. Since this script makes vim think GLOBAL is cscope,
+  you can use the tag stack facility of vim like cscope. Gtags-cscope can
+  coexist with gtags.vim.
+
+[FIXED BUGS]
+o gtags.el: the completion read in the gtags-find-file fails into endless
+  loop when the input string is NULL.
+
+[INCOMPATIBLE CHANGES]
+o gtags(built-in parser): In the existing parser (gtags-parser), some symbols
+  were stored in both GRTAGS and GSYMS. In the built-in parser, all the symbols
+  defined in GTAGS have been moved from GSYMS to GRTAGS. New specification
+  is more consistent, and useful for efficiency improvement. If you feel this
+  a problem, please inform bug mailing list of your insistence.
 
 Version 5.7.7 - December 19 2009
 

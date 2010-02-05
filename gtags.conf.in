@@ -29,6 +29,10 @@
 #
 default:\
 	:tc=gtags:tc=htags:
+#
+# To use build-in parser, please replace the line above by this:
+#	:tc=gtags:tc=htags:use_builtin_parser:
+#
 #---------------------------------------------------------------------
 # Configuration for gtags(1)
 # See gtags(1).

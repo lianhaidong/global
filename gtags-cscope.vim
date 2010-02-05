@@ -1,7 +1,7 @@
 " File: gtags-cscope.vim
 " Author: Tama Communications Corporation
-" Version: 0.1
-" Last Modified: Feb 3, 2010
+" Version: 0.2
+" Last Modified: Feb 5, 2010
 "
 " Copyright and lisence
 " ---------------------
@@ -30,7 +30,7 @@
 " Installation
 " ------------
 " Drop the file in your plugin directory or source it from your vimrc.
-" To use this script, you need the GNU GLOBAL-5.7 or later installed
+" To use this script, you need the GNU GLOBAL-5.8 or later installed
 " in your machine.
 "
 " Usage

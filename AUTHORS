@@ -46,6 +46,10 @@ The following improvements by Hideki IWAMOTO.
 * Performance improvement of idset module by using "unsigned long" instead of
   "unsigned int" for bitmask. This is necessary to use 64 bit processor effectively.
 * More accurate statistics mechanism for htags(1) and gtags(1)(--statistics).
+* Built-in parser in gtags(1). This work includes the following two optimizations:
+  - Giant Steps
+  - 1pass-parsing
+  These have shortened the processing time of gtags(1) to about 1/3.
 
 Besides he has contributed many improvements to GLOBAL.
 
