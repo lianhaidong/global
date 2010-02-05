@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2005, 2006, 2007
+ * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2005, 2006, 2007, 2010
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
