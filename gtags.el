@@ -519,15 +519,17 @@
         (progn
           ; delete "*GTAGS SELECT*" buffer info from gtags-buffer-stack and gtags-point-stack
           (let (now-gtags-buffer-stack now-buffer now-gtags-point-stack now-point)
-            (setq now-gtags-buffer-stack gtags-buffer-stack)
-            (setq now-gtags-point-stack gtags-point-stack)
+            (setq now-gtags-buffer-stack (reverse gtags-buffer-stack))
+            (setq now-gtags-point-stack (reverse gtags-point-stack))
+            (setq gtags-buffer-stack nil)
+            (setq gtags-point-stack nil)
             (while now-gtags-buffer-stack
               (setq now-buffer (car now-gtags-buffer-stack))
               (setq now-point (car now-gtags-point-stack))
-              (if (string-match "*GTAGS SELECT*" (buffer-name now-buffer))
+              (if (and (buffer-name now-buffer) (not (string-match "*GTAGS SELECT*" (buffer-name now-buffer))))
                   (progn
-                    (delete now-buffer gtags-buffer-stack)
-                    (delete now-point gtags-point-stack)))
+                    (setq gtags-buffer-stack (cons now-buffer gtags-buffer-stack))
+                    (setq gtags-point-stack (cons now-point gtags-point-stack))))
               (setq now-gtags-buffer-stack (cdr now-gtags-buffer-stack))
               (setq now-gtags-point-stack (cdr now-gtags-point-stack))))
           ; kill "*GTAGS SELECT*" buffer
