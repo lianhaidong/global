@@ -108,6 +108,7 @@ extern const char *insert_footer;
 
 extern const char *title_define_index;
 extern const char *title_file_index;
+extern const char *title_call_tree;
 extern const char *title_included_from;
 
 extern const char *anchor_label[];

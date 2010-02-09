@@ -1,6 +1,6 @@
 #
 # Copyright (c} 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005
-#	2006, 2007, 2008 Tama Communications Corporation
+#	2006, 2007, 2008, 2010 Tama Communications Corporation
 #
 # This file is part of GNU GLOBAL.
 #
@@ -22,7 +22,7 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	HTAGS,1,September 2008,GNU Project
+@HEADER	HTAGS,1,February 2010,GNU Project
 @NAME	htags - generate hypertext from source code.
 @SYNOPSIS
 	@name{htags} [-acDfFghInosTvwx][-d @arg{dbpath}][-m @arg{name}][-S @arg{cgidir}][-t @arg{title}][@arg{dir}]
@@ -54,6 +54,10 @@
 		for a large project.
 	@item{@option{--caution}}
 		Include caution message to prohibit downloading.
+	@item{@option{--cflow} @arg{cflowfile}}
+		Add a call tree by @xref{cflow,1}. @arg{cflowfile} must be posix format.
+		If you use GNU cflow, invoke cflow at the root of the project with
+		the @option{--format=posix} option. See EXAMPLES.
 	@item{@option{-c}, @option{--compact}}
 		Compress html files  by @xref{gzip,1}.
 		You need to set up a web server so that @xref{gzip,1}
@@ -79,7 +83,7 @@
 	@item{@option{-F}, @option{--frame}}
 		Use frame for each part of the contents.
 	@item{@option{-f}, @option{--form}}
-		Support search form using CGI program.
+		Add a search form using CGI program.
 		You need to set up a web server, and you cannot move
 		the hypertext from the source directory.
 	@item{@option{--full-path}}
@@ -110,7 +114,7 @@
 		The @arg{spec} is a string consists of item signs in order.
 		Each sign means as follows:
 		@name{c}: caution, @name{s}: search form,
-		@name{m}: mains, @name{d}: definition, @name{f}: files.
+		@name{m}: mains, @name{d}: definition, @name{f}: files, @name{t}: call tree.
 		The default is @arg{csmdf}.
 	@item{@option{-m}, @option{--main-func} @arg{name}}
 		Specify the main function name. The default is @code{main}.
@@ -168,6 +172,9 @@
 	$ firefox HTML/index.html
 
 	$ htags --suggest
+
+	$ cflow --tree --format=posix *.[ch] >cflow.out
+	$ htags --cflow=cflow.out
 
 @FILES
 	@begin_itemize

@@ -12,7 +12,7 @@
 #
 bin_PROGRAMS= htags
 
-htags_SOURCES = htags.c defineindex.c dupindex.c fileindex.c src2html.c \
+htags_SOURCES = htags.c defineindex.c dupindex.c fileindex.c cflowindex.c src2html.c \
 		anchor.c cache.c common.c incop.c assoc.c path2url.c \
 		c.c cpp.c java.c php.c asm.c
 

@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005,
- *      2006, 2007, 2008 Tama Communications Corporation
+ *      2006, 2007, 2008, 2010 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -55,6 +55,7 @@ int makedupindex(void);
 int makedefineindex(const char *, int, STRBUF *);
 int makefileindex(const char *, STRBUF *);
 void makeincludeindex(void);
+int makecflowindex(const char *, const char *);
 
 #if defined(_WIN32) && !defined(__CYGWIN__)
 #define mkdir(path,mode) mkdir(path)
@@ -91,8 +92,9 @@ const char *tmpdir = "/tmp";
  * 'm': mains
  * 'd': definitions
  * 'f': files
+ * 't': call tree
  */
-char *item_order = "csmdf";
+char *item_order = "csmdft";
 /*
  * options
  */
@@ -142,6 +144,7 @@ const char *insert_footer;		/* --insert-footer=<file>	*/
  */
 const char *title_define_index = "DEFINITIONS";
 const char *title_file_index = "FILES";
+const char *title_call_tree = "CALL TREE";
 const char *title_included_from = "INCLUDED FROM";
 /*
  * Function header items.
@@ -224,6 +227,7 @@ const char *icon_suffix = "png";	/* icon suffix (jpg, png etc)	*/
 const char *icon_spec = "border='0' align='top'";/* parameter in IMG tag*/
 const char *prolog_script = NULL;	/* include script at first	*/
 const char *epilog_script = NULL;	/* include script at last	*/
+const char *cflow_file = NULL;		/* file name of cflow output	*/
 int show_position = 0;			/* show current position	*/
 int table_list = 0;			/* tag list using table tag	*/
 int table_flist = 0;			/* file list using table tag	*/
@@ -295,7 +299,9 @@ static struct option const long_options[] = {
 #define OPT_INSERT_HEADER	136
 #define OPT_ITEM_ORDER		137
 #define OPT_TABS		138
+#define OPT_CFLOW		139
         {"action", required_argument, NULL, OPT_ACTION},
+        {"cflow", required_argument, NULL, OPT_CFLOW},
         {"cvsweb", required_argument, NULL, OPT_CVSWEB},
         {"cvsweb-cvsroot", required_argument, NULL, OPT_CVSWEB_CVSROOT},
         {"gtagsconf", required_argument, NULL, OPT_GTAGSCONF},
@@ -953,6 +959,16 @@ makecommonpart(const char *title, const char *defines, const char *files)
 				strbuf_puts_nl(sb, hr);
 			}
 			break;
+		case 't':
+			if (cflow_file) {
+				strbuf_puts(sb, header_begin);
+				strbuf_puts(sb, gen_href_begin(NULL, "cflow", normal_suffix, NULL));
+				strbuf_puts(sb, title_call_tree);
+				strbuf_puts(sb, gen_href_end());
+				strbuf_puts_nl(sb, header_end);
+				strbuf_puts_nl(sb, hr);
+			}
+			break;
 		case 'm':
 			strbuf_sprintf(sb, "%sMAINS%s\n", header_begin, header_end);
 
@@ -1006,8 +1022,8 @@ makecommonpart(const char *title, const char *defines, const char *files)
 					strbuf_puts_nl(sb, list_end);
 				else
 					strbuf_puts_nl(sb, br);
-				strbuf_puts_nl(sb, hr);
 			}
+			strbuf_puts_nl(sb, hr);
 			break;
 		default:
 			warning("unknown item '%c'. (Ignored)", *item);
@@ -1466,6 +1482,9 @@ main(int argc, char **argv)
 		case OPT_ACTION:
 			action_value = optarg;
 			break;
+		case OPT_CFLOW:
+			cflow_file = optarg;
+			break;
 		case OPT_CVSWEB:
 			cvsweb_url = optarg;
 			break;
@@ -1612,6 +1631,8 @@ main(int argc, char **argv)
 		if (gtags_not_found)
 			gflag = 1;
 	}
+	if (cflow_file && !test("fr", cflow_file))
+		die("cflow file not found. '%s'", cflow_file);
 	if (insert_header && !test("fr", insert_header))
 		die("page header file '%s' not found.", insert_header);
 	if (insert_footer && !test("fr", insert_footer))
@@ -1927,6 +1948,16 @@ main(int argc, char **argv)
 		message("Total %d files.", file_total);
 		html_count += file_total;
 		/*
+		 * (7) make call tree using cflow(1)'s output (cflow.html)
+		 */
+		if (cflow_file) {
+			message("[%s] (7) making cflow index ...", now());
+			tim = statistics_time_start("Time of making cflow index");
+			if (makecflowindex("cflow.html", cflow_file) < 0)
+				cflow_file = NULL;
+			statistics_time_end(tim);
+		}
+		/*
 		 * [#] make include file index.
 		 */
 		message("[%s] (#) making include file index ...", now());
@@ -1978,7 +2009,6 @@ main(int argc, char **argv)
 		snprintf(dst, sizeof(dst), "%s/style.css", distpath);
 		copyfile(src, dst);
 	}
-	message("[%s] Done.", now());
 	if (vflag && cgi && (cflag || fflag || dynamic)) {
 		message("\n[Information]\n");
 		if (cflag) {
