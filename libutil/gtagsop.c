@@ -506,37 +506,58 @@ void
 gtags_move_ref_sym(GTOP *const *gtop)
 {
 	int result = 0;
-	const char *defkey, *refdata, *symdata;
-	DBOP *dbop[GTAGLIM];
+	DBOP *defdbop;
+	const char *defkey;
+	struct {
+		DBOP *dbop;
+		const char *key, *dat;
+		char saved_key[MAXKEYLEN+1];
+		STRBUF *saved_dat;
+	} ref, sym, *smaller, *larger;
 
-	dbop[GTAGS] = gtop[GTAGS]->dbop;
-	dbop[GRTAGS] = gtop[GRTAGS]->dbop;
-	dbop[GSYMS] = gtop[GSYMS]->dbop;
-	defkey = dbop_first(dbop[GTAGS], NULL, NULL, DBOP_KEY);
-	refdata = dbop_first(dbop[GRTAGS], NULL, NULL, 0);
-	symdata = dbop_first(dbop[GSYMS], NULL, NULL, 0);
+	defdbop = gtop[GTAGS]->dbop;
+	defkey = dbop_first(defdbop, NULL, NULL, DBOP_KEY);
+	ref.dbop = gtop[GRTAGS]->dbop;
+	ref.dat = dbop_first(ref.dbop, NULL, NULL, 0);
+	ref.key = ref.dbop->lastkey;
+	ref.saved_dat = strbuf_open(MAXBUFLEN);
+	sym.dbop = gtop[GSYMS]->dbop;
+	sym.dat = dbop_first(sym.dbop, NULL, NULL, 0);
+	sym.key = sym.dbop->lastkey;
+	sym.saved_dat = strbuf_open(MAXBUFLEN);
 	for (;;) {
-		if (refdata != NULL
-		    && (symdata == NULL || strcmp(dbop[GRTAGS]->lastkey, dbop[GSYMS]->lastkey) < 0)) {
-			while (defkey != NULL && (result = strcmp(dbop[GRTAGS]->lastkey, defkey)) > 0)
-				defkey = dbop_next(dbop[GTAGS]);
-			if (defkey == NULL || result < 0) {
-				dbop_put(dbop[GSYMS], dbop[GRTAGS]->lastkey, refdata);
-				dbop_delete(dbop[GRTAGS], NULL);
-			}
-			refdata = dbop_next(dbop[GRTAGS]);
-		} else if (symdata != NULL) {
-			while (defkey != NULL && (result = strcmp(dbop[GSYMS]->lastkey, defkey)) > 0)
-				defkey = dbop_next(dbop[GTAGS]);
-			if (defkey != NULL && result == 0) {
-				dbop_put(dbop[GRTAGS], dbop[GSYMS]->lastkey, symdata);
-				dbop_delete(dbop[GSYMS], NULL);
-			}
-			symdata = dbop_next(dbop[GSYMS]);
+		if (ref.dat != NULL && (sym.dat == NULL || strcmp(ref.key, sym.key) < 0)) {
+			smaller = &ref;
+			larger = &sym;
+		} else if (sym.dat != NULL) {
+			smaller = &sym;
+			larger = &ref;
 		} else {
 			break;
 		}
+		while (defkey != NULL && (result = strcmp(smaller->key, defkey)) > 0)
+			defkey = dbop_next(defdbop);
+		if (defkey != NULL && (smaller == &ref ? result < 0 : result == 0)) {
+			/*
+			 * Calling dbop_put doesn't affect the position of cursor,
+			 * but it invalidates the pointer to read data.
+			 */
+			if (larger->dat != NULL && larger->key != larger->saved_key) {
+				strlimcpy(larger->saved_key, larger->key, sizeof(larger->saved_key));
+				larger->key = larger->saved_key;
+				strbuf_reset(larger->saved_dat);
+				strbuf_puts(larger->saved_dat, larger->dat);
+				larger->dat = strbuf_value(larger->saved_dat);
+			}
+			dbop_put(larger->dbop, smaller->key, smaller->dat);
+			dbop_delete(smaller->dbop, NULL);
+		}
+		smaller->dat = dbop_next(smaller->dbop);
+		smaller->key = smaller->dbop->lastkey;
 	}
+
+	strbuf_close(ref.saved_dat);
+	strbuf_close(sym.saved_dat);
 }
 /*
  * gtags_put: put tag record with packing.
