@@ -1198,7 +1198,10 @@ createtags_using_builtin_parser(const char *dbpath, const char *root)
 	if (vflag)
 		fprintf(stderr, "[%s] Creating '%s' and '%s'.\n", now(), dbname(GRTAGS), dbname(GSYMS));
 	data.gtop[GSYMS] = gtags_open(dbpath, root, GSYMS, GTAGS_CREATE, openflags);
-	if (vflag) {
+	/*
+	 * Gtags always makes GRTAGS and GSYMS even if they are empty.
+	 */
+	if (ftell(tmp) > 0 && vflag) {
 		if (file_list)
 			find_open_filelist(file_list, root);
 		else
