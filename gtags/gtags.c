@@ -1108,7 +1108,7 @@ updatetags_using_builtin_parser(const char *dbpath, const char *root, IDSET *del
 		fprintf(stderr, " moving defined symbols from '%s' to '%s'.\n", dbname(GSYMS), dbname(GRTAGS));
 	}
 	gtags_move_ref_sym(data.gtop);
-	if (vflag) {
+	if (ftell(tmp) > 0 && vflag) {
 		seqno = 0;
 		for (path = start; path < end; path += strlen(path) + 1)
 			fprintf(stderr, " [%d/%d] adding tags of %s\n", ++seqno, total, path + 2);
