@@ -4,3 +4,4 @@ Makefile.in
 const.h
 gtags
 gtags.1
+.libs

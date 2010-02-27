@@ -44,12 +44,21 @@ AC_CHECK_TOOL(AR, ar)
 
 AC_GNU_SOURCE
 
+LT_PREREQ([2.2.6b])
+LT_CONFIG_LTDL_DIR([libltdl])
+dnl
+dnl Because autoreconf up to version 2.59 doesn't know LT_INIT,
+dnl we use the old name AC_PROG_LIBTOOL.
+dnl
+AC_LIBTOOL_DLOPEN
+AC_PROG_LIBTOOL
+LTDL_INIT([recursive])
+
 dnl Checks for libraries.
-AC_CHECK_LIB(dl, dlopen)
 
 dnl Checks for header files.
 AC_CHECK_HEADERS(limits.h string.h unistd.h stdarg.h sys/time.h fcntl.h)
-AC_CHECK_HEADERS(sys/resource.h dlfcn.h)
+AC_CHECK_HEADERS(sys/resource.h)
 AC_HEADER_DIRENT
 if test ${ac_header_dirent} = no; then
         AC_MSG_ERROR([dirent(3) is required but not found.])
@@ -101,10 +110,10 @@ AC_FUNC_STRFTIME
 AC_CHECK_FUNCS(getcwd putenv lstat snprintf)
 AC_CHECK_FUNCS(index rindex bzero bcmp bcopy strchr strrchr memset memcmp memmove)
 AC_CHECK_FUNCS(putc_unlocked getc_unlocked)
-AC_CHECK_FUNCS(gettimeofday getrusage dlopen dlsym)
+AC_CHECK_FUNCS(gettimeofday getrusage)
 AG_DJGPP
 
-INCLUDES='-I$(top_srcdir)/libparser -I$(top_srcdir)/libutil -I$(top_srcdir)/libdb -I$(top_srcdir)/libglibc -I../libutil'
+INCLUDES='-I$(top_srcdir)/libparser $(LTDLINCL) -I$(top_srcdir)/libutil -I$(top_srcdir)/libdb -I$(top_srcdir)/libglibc -I../libutil'
 DBLIBRARY='../libdb/libglodb.a'
 
 dnl
@@ -134,7 +143,7 @@ AC_ARG_WITH(db185-compat,
 ],[ with_db185_compat='no' ])
 AM_CONDITIONAL([USE_DB185_COMPAT], [test "$with_db185_compat" != no])
 
-LDADD="../libparser/libgloparser.a ../libutil/libgloutil.a $DBLIBRARY ../libglibc/libgloglibc.a"
+LDADD='../libparser/libgloparser.a ../libutil/libgloutil.a '$DBLIBRARY' ../libglibc/libgloglibc.a'
 
 dnl
 dnl for home-etc support
@@ -183,6 +192,16 @@ AC_ARG_WITH(pread-pwrite,
         AC_MSG_RESULT(no)
 ])
 
+dnl
+dnl for gtags.conf and function layer plugin parser sample.
+dnl
+AC_ARG_WITH(exuberant-ctags,
+[  --with-exuberant-ctags=PROGRAM  specify Exuberant Ctags program ],
+[ EXUBERANT_CTAGS="$withval" ],
+[ EXUBERANT_CTAGS=/usr/local/bin/ctags-exuberant ])
+AC_DEFINE_UNQUOTED(EXUBERANT_CTAGS, "$EXUBERANT_CTAGS", [Exuberant Ctags program.])
+AC_SUBST(EXUBERANT_CTAGS)
+
 AC_SUBST(INCLUDES)
 AC_SUBST(LDADD)
 AC_SUBST(LDFLAGS)
@@ -221,5 +240,7 @@ AC_CONFIG_FILES([Makefile
 	doc/Makefile
 	icons/Makefile
 	libparser/Makefile
+	plugin-example/Makefile
+	libltdl/Makefile
 ])
 AC_OUTPUT

@@ -26,6 +26,7 @@
  */
 
 void parser_init(const char *, const char *);
+void parser_exit(void);
 
 /* tag type */
 #define PARSER_DEF		1	/* definition */
@@ -43,11 +44,14 @@ typedef void (*PARSER_CALLBACK)(int, const char *, int, const char *, const char
 void parse_file(const char *, int, PARSER_CALLBACK, void *);
 
 struct parser_param {
-	const char *file;
+	int size;		/* size of this structure */
 	int flags;
+	const char *file;
 	PARSER_CALLBACK put;
 	void *arg;
 	int (*isnotfunction)(const char *);
+	const char *langmap;
+	void (*die)(const char *, ...);
 };
 
 #endif

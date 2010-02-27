@@ -21,9 +21,6 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-#ifdef HAVE_DLFCN_H
-#include <dlfcn.h>
-#endif
 #include <stdio.h>
 #ifdef STDC_HEADERS
 #include <stdlib.h>
@@ -33,6 +30,7 @@
 #else
 #include <strings.h>
 #endif
+#include <ltdl.h>
 
 #include "parser.h"
 #include "internal.h"
@@ -118,21 +116,31 @@ struct lang_entry {
 
 struct plugin_entry {
 	SLIST_ENTRY(plugin_entry) next;
+	lt_dlhandle handle;
 	struct lang_entry entry;
 };
 
 static SLIST_HEAD(plugin_list, plugin_entry)
 	plugin_list = SLIST_HEAD_INITIALIZER(plugin_list);
+static char *langmap_saved, *pluginspec_saved;
 
+/*
+ * Syntax:
+ *   <pluginspec> ::= <map> | <map>","<pluginspec>
+ *   <map>        ::= <language name>":"<shared object path>
+ *                  | <language name>":"<shared object path>":"<function name>
+ */
 static void
 setup_plugin_parser(const char *pluginspec)
 {
-#if HAVE_DLOPEN && HAVE_DLSYM
-	char *p = check_strdup(pluginspec);
+	char *p, *q;
 	const char *dso_name, *func;
-	void *handle;
 	struct plugin_entry *pent;
 
+	pluginspec_saved = check_strdup(pluginspec);
+	if (lt_dlinit() != 0)
+		die("cannot initialize libltdl.");
+	p = pluginspec_saved;
 	while (*p != '\0') {
 		pent = check_malloc(sizeof(*pent));
 		pent->entry.lang_name = p;
@@ -143,29 +151,45 @@ setup_plugin_parser(const char *pluginspec)
 		if (*p == '\0')
 			die_with_code(2, "syntax error in pluginspec '%s'.", pluginspec);
 		dso_name = p;
-		p = strchr(p, ':');
-		if (p == NULL)
-			die_with_code(2, "syntax error in pluginspec '%s'.", pluginspec);
-		*p++ = '\0';
-		handle = dlopen(dso_name, RTLD_LAZY);
-		if (handle == NULL)
-			die_with_code(2, "cannot open shared object '%s'.", dso_name);
-		if (*p == '\0')
-			die_with_code(2, "syntax error in pluginspec '%s'.", pluginspec);
-		func = p;
 		p = strchr(p, ',');
 		if (p != NULL)
 			*p++ = '\0';
-		pent->entry.parser = dlsym(handle, func);
+		q = strchr(dso_name, ':');
+		if (q == NULL) {
+			func = "parser";
+		} else {
+			*q++ = '\0';
+			if (*q == '\0')
+				die_with_code(2, "syntax error in pluginspec '%s'.", pluginspec);
+			func = q;
+		}
+		pent->handle = lt_dlopen(dso_name);
+		if (pent->handle == NULL)
+			die_with_code(2, "cannot open shared object '%s'.", dso_name);
+		pent->entry.parser = lt_dlsym(pent->handle, func);
 		if (pent->entry.parser == NULL)
 			die_with_code(2, "cannot find symbol '%s' in '%s'.", func, dso_name);
 		SLIST_INSERT_HEAD(&plugin_list, pent, next);
 		if (p == NULL)
 			break;
 	}
-#else
-	warning("plugin parser is not supported on this platform.");
-#endif
+}
+
+static void
+unload_plugin(void)
+{
+	struct plugin_entry *pent;
+
+	if (pluginspec_saved == NULL)
+		return;
+	while (!SLIST_EMPTY(&plugin_list)) {
+		pent = SLIST_FIRST(&plugin_list);
+		lt_dlclose(pent->handle);
+		SLIST_REMOVE_HEAD(&plugin_list, next);
+		free(pent);
+	}
+	lt_dlexit();
+	free(pluginspec_saved);
 }
 
 /*
@@ -218,6 +242,7 @@ parser_init(const char *langmap, const char *pluginspec)
 	if (langmap == NULL)
 		langmap = DEFAULTLANGMAP;
 	setup_langmap(langmap);
+	langmap_saved = check_strdup(langmap);
 
 	/* load shared objects. */
 	if (pluginspec != NULL)
@@ -233,6 +258,13 @@ parser_init(const char *langmap, const char *pluginspec)
 	else if (test("r", DOS_NOTFUNCTION))
 		load_notfunction(DOS_NOTFUNCTION);
 #endif
+}
+
+void
+parser_exit(void)
+{
+	unload_plugin();
+	free(langmap_saved);
 }
 
 void
@@ -259,11 +291,14 @@ parse_file(const char *path, int flags, PARSER_CALLBACK put, void *arg)
 	/*
 	 * call language specific parser.
 	 */
-	param.file = path;
+	param.size = sizeof(param);
 	param.flags = flags;
+	param.file = path;
 	param.put = put;
 	param.arg = arg;
 	param.isnotfunction = isnotfunction;
+	param.langmap = langmap_saved;
+	param.die = die;
 	ent->parser(&param);
 }
 

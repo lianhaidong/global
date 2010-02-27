@@ -1,7 +1,6 @@
 .deps
 Makefile
 Makefile.in
-const.h
-global
-global.1
 .libs
+*.la
+*.lo

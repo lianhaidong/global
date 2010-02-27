@@ -390,7 +390,8 @@ getconfs(const char *name, STRBUF *sb)
 
 	if (!opened)
 		openconf();
-	if (!strcmp(name, "suffixes") || !strcmp(name, "skip"))
+	if (!strcmp(name, "suffixes") || !strcmp(name, "skip")
+	 || !strcmp(name, "gtags_parser") || !strcmp(name, "langmap"))
 		all = 1;
 	snprintf(buf, sizeof(buf), ":%s=", name);
 	p = confline;

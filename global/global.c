@@ -1103,16 +1103,22 @@ parsefile_using_builtin_parser(char *const *argv, const char *cwd, const char *r
 	int count = 0;
 	int file_count = 0;
 	STRBUF *sb = strbuf_open(0);
-	const char *langmap, *av;
+	char *langmap;
+	const char *plugin_parser, *av;
 	char path[MAXPATHLEN+1];
 	struct parsefile_data data;
 
 	data.target = 1 << db;
 	data.extractmethod = getconfb("extractmethod");
 	if (getconfs("langmap", sb))
-		langmap = strbuf_value(sb);
+		langmap = check_strdup(strbuf_value(sb));
 	else
-		langmap = DEFAULTLANGMAP;
+		langmap = NULL;
+	strbuf_reset(sb);
+	if (getconfs("gtags_parser", sb))
+		plugin_parser = strbuf_value(sb);
+	else
+		plugin_parser = NULL;
 	data.cv = convert_open(type, format, root, cwd, dbpath, stdout);
 	if (gpath_open(dbpath, 0) < 0)
 		die("GPATH not found.");
@@ -1128,7 +1134,9 @@ parsefile_using_builtin_parser(char *const *argv, const char *cwd, const char *r
 	 */
 	if (chdir(root) < 0)
 		die("cannot move to '%s' directory.", root);
-	parser_init(langmap, NULL);
+	parser_init(langmap, plugin_parser);
+	if (langmap != NULL)
+		free(langmap);
 	while ((av = *argv++) != NULL) {
 		/*
 		 * convert the path into relative to the root directory of source tree.
@@ -1158,6 +1166,7 @@ parsefile_using_builtin_parser(char *const *argv, const char *cwd, const char *r
 		count += data.count;
 		file_count++;
 	}
+	parser_exit();
 	if (chdir(cwd) < 0)
 		die("cannot move to '%s' directory.", cwd);
 	/*

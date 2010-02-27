@@ -19,3 +19,4 @@ java_res.h
 php.c
 php_res.gpf
 php_res.h
+.libs

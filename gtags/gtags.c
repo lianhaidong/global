@@ -421,7 +421,14 @@ main(int argc, char **argv)
 	if (getconfs("langmap", sb))
 		langmap = check_strdup(strbuf_value(sb));
 	if (use_builtin_parser) {
-		parser_init(langmap, NULL);
+		const char *plugin_parser;
+
+		strbuf_reset(sb);
+		if (getconfs("gtags_parser", sb))
+			plugin_parser = strbuf_value(sb);
+		else
+			plugin_parser = NULL;
+		parser_init(langmap, plugin_parser);
 	} else {
 		set_env("GTAGSLANGMAP", langmap);
 		set_env("GTAGSDBPATH", dbpath);
@@ -1076,6 +1083,7 @@ updatetags_using_builtin_parser(const char *dbpath, const char *root, IDSET *del
 		if (data.gtop[GRTAGS] != NULL)
 			gtags_flush(data.gtop[GRTAGS], data.fid);
 	}
+	parser_exit();
 	if (data.gtop[GRTAGS] == NULL) {
 		gtags_close(data.gtop[GTAGS]);
 		return;
@@ -1175,6 +1183,7 @@ createtags_using_builtin_parser(const char *dbpath, const char *root)
 		gtags_flush(data.gtop[GRTAGS], data.fid);
 	}
 	total = seqno;
+	parser_exit();
 	find_close();
 	data.gtop[GRTAGS]->fp = NULL;
 	statistics_time_end(tim);

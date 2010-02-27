@@ -12,3 +12,4 @@ htags.1
 htags.pl
 java.c
 php.c
+.libs

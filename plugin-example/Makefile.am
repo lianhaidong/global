@@ -1,6 +1,6 @@
 ## Process this file with automake to create Makefile.in
 #
-# Copyright (c) 2000 Tama Communications Corporation
+# Copyright (c) 2010 Tama Communications Corporation
 #
 # This file is free software; as a special exception the author gives
 # unlimited permission to copy and/or distribute it, with or without
@@ -10,15 +10,10 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
-bin_PROGRAMS= gtags
+plugindir = ${libdir}/gtags
+plugin_LTLIBRARIES = exuberant-ctags.la
+
+exuberant_ctags_la_SOURCES = exuberant-ctags.c
+exuberant_ctags_la_LDFLAGS = -module -avoid-version
 
 INCLUDES = @INCLUDES@
-
-LDADD = @LDADD@
-
-gtags_LDADD = $(LDADD) $(LIBLTDL)
-gtags_DEPENDENCIES = $(LDADD) $(LTDLDEPS)
-
-man_MANS = gtags.1
-
-EXTRA_DIST = $(man_MANS) const.h manual.in

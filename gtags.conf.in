@@ -54,11 +54,6 @@ gtags:\
 	:GRTAGS=gtags-parser -r %s:\
 	:GSYMS=gtags-parser -s %s:
 #
-# built-in parser (experimental)
-#
-builtin:\
-	:tc=gtags:tc=htags:use_builtin_parser:
-#
 # [Exuberant Ctags]
 #
 # This ctags is distributed as a part of Vim editor.
@@ -66,16 +61,41 @@ builtin:\
 # [Installation]
 # % cd <Vim source directory>/src/ctags
 # % make
-# # cp ctags /usr/local/bin/ctags-exuberant
+# # cp ctags @EXUBERANT_CTAGS@
 #
 ctags-exuberant|Exuberant Ctags|ctags by Darren Hiebert:\
 	:tc=common:\
 	:suffixes=s,a,sa,asm,C,H,cpp,cxx,hxx,hpp,cc,c,h,y:\
 	:extractmethod:\
-	:GTAGS=/usr/local/bin/ctags-exuberant -xu %s | perl -ne '\
+	:GTAGS=@EXUBERANT_CTAGS@ -xu %s | perl -ne '\
 		if (/^operator \\S+\\s+function\\s/) { s/^operator //; }\
 		($name, $type, $no, $path, $line) = split(/[ \\t]+/, $_, 5);\
 		printf(STDOUT "%-16s %4d %-16s %s", $name, $no, $path, $line);':
+#
+# [Function layer plugin parser]
+#
+plugin-example|Example of function layer plugin parser:\
+	:tc=common:use_builtin_parser:extractmethod:\
+	:langmap=@DEFAULTLANGMAP_QUOTED@:\
+	:langmap=fortran\:.f.for.f77.f90.f95,pascal\:.p.pas,c#\:.cs,lisp\:.l.el.lisp,scheme\:.scm:\
+	:langmap=awk\:.awk,ruby\:.rb,perl\:.pl,python\:.py,vim\:.vim,sh\:.sh:\
+	:gtags_parser=c\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=yacc\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=asm\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=java\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=cpp\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=php\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=fortran\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=pascal\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=c#\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=lisp\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=scheme\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=awk\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=ruby\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=perl\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=python\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=vim\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=sh\:@prefix@/lib/gtags/exuberant-ctags.la:
 #---------------------------------------------------------------------
 # Configuration for htags(1)
 # Let's paint hypertext with your favorite colors!

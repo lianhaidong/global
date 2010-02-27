@@ -164,7 +164,14 @@
 	@item{@code{langmap}(comma separated list)}
 		Language mapping. Each comma-separated map consists of
 		the language name, a colon, and a list of file extensions.
+		As a special exception, @name{gtags} collect values from multiple @code{langmap} variables.
 		Default mapping is 'c:.c.h,yacc:.y,asm:.s.S,java:.java,cpp:.c++.cc.cpp.cxx.hxx.hpp.C.H,php:.php.php3.phtml'.
+	@item{@code{gtags_parser}(comma separated list)}
+		Specify the mapping of funtion layer plugin parser.
+		Each part delimited by the comma consists of the language name, a colon,
+		the shared object path, an optional colon followed by a function name.
+		If the function name is not specified, 'parser' is assumed.
+		As a special exception, @name{gtags} collect values from multiple @code{gtags_parser} variables.
 	@item{@code{skip}(comma separated list)}
 		@name{Gtags} skips files which are listed in this list.
 		As a special exception, @name{gtags} collect values from multiple @code{skip} variables.
