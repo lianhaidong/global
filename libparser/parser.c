@@ -125,13 +125,17 @@ static SLIST_HEAD(plugin_list, plugin_entry)
 static char *langmap_saved, *pluginspec_saved;
 
 /*
+ * load_plugin_parser: Load plug-in parsers.
+ *
+ *	i)	pluginspec	described below
+ *
  * Syntax:
  *   <pluginspec> ::= <map> | <map>","<pluginspec>
  *   <map>        ::= <language name>":"<shared object path>
  *                  | <language name>":"<shared object path>":"<function name>
  */
 static void
-setup_plugin_parser(const char *pluginspec)
+load_plugin_parser(const char *pluginspec)
 {
 	char *p, *q;
 	const char *dso_name, *func;
@@ -175,8 +179,11 @@ setup_plugin_parser(const char *pluginspec)
 	}
 }
 
+/*
+ * unload_plugin_parser: Unload plug-in parsers.
+ */
 static void
-unload_plugin(void)
+unload_plugin_parser(void)
 {
 	struct plugin_entry *pent;
 
@@ -235,6 +242,32 @@ get_lang_entry(const char *lang)
 	return DEFAULT_ENTRY;
 }
 
+/*
+ * Usage:
+ * [gtags.conf]
+ * +----------------------------
+ * |...
+ * |gtags_parser=<pluginspec>
+ * |langmap=<langmap>
+ *
+ * 1. Load langmap and pluginspec, and initialize parsers.
+ *
+ *	parser_init(langmap, plugin_parser);
+ *
+ * 2. Execute parsers
+ *
+ *	parse_file(...);
+ *
+ * 3. Unload parsers.
+ *
+ *	parser_exit();
+ */
+/*
+ * parser_init: load langmap and shared libraries.
+ *
+ *	i)	langmap		the value of langmap=<langmap>
+ *	i)	pluginspec	the value of gtags_parser=<pluginspec>
+ */
 void
 parser_init(const char *langmap, const char *pluginspec)
 {
@@ -246,7 +279,7 @@ parser_init(const char *langmap, const char *pluginspec)
 
 	/* load shared objects. */
 	if (pluginspec != NULL)
-		setup_plugin_parser(pluginspec);
+		load_plugin_parser(pluginspec);
 
 	/*
 	 * This is a hack for FreeBSD.
@@ -260,13 +293,25 @@ parser_init(const char *langmap, const char *pluginspec)
 #endif
 }
 
+/*
+ * parser_exit: unload shared libraries.
+ */
 void
 parser_exit(void)
 {
-	unload_plugin();
+	unload_plugin_parser();
 	free(langmap_saved);
 }
 
+/*
+ * parse_file: select and execute a parser.
+ *
+ *	i)	path	path name
+ *	i)	flags	PARSER_WARNING: print warning messages
+ *	i)	put	callback routine
+ *			each parser use this routine for output
+ *	i)	arg	argument for callback routine
+ */
 void
 parse_file(const char *path, int flags, PARSER_CALLBACK put, void *arg)
 {
