@@ -23,6 +23,7 @@ Thanks to:		for his(her):
 ---------------------------------------------------------------------------
 A.E. Brouwer		advice about writing code for generic UNIX.
 Andrew Gallatin		bug report about generating wrong path.
+Aneesh Kumar		bug report about beta facility of gtags(1).
 Andrs Azar		Cygwin trouble report.
 Andy Newman		bug report about treating tab character.
 Andy Zhou		bug report about gtags-parser overlook 'extern' prefixed function.
@@ -126,6 +127,7 @@ Tobias Polzin		suggestion about correct treatment of CVS repository in htags.
 			He also contributed to the concept and implementation of completion
 			facility for 'gtags-find-file' in gtags.el.
 Tomohiko Morioka	advice about deciding emacs version.
+Tomohiro Matsuyama	bug report about buffer overflow error of libutil/token.c.
 Tom Russell		bug report about parsing error at function definitions with comment.
 Tom Tromey		GTAGS target in automake.
 Tomi Ollila		proposal of adding (provide 'gtags) to gtags.el.
