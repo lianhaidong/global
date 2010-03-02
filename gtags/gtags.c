@@ -1060,10 +1060,14 @@ updatetags_using_builtin_parser(const char *dbpath, const char *root, IDSET *del
 	if (test("f", makepath(dbpath, dbname(GRTAGS), NULL))) {
 		data.gtop[GRTAGS] = gtags_open(dbpath, root, GRTAGS, GTAGS_MODIFY, 0);
 		data.gtop[GRTAGS]->flags = data.gtop[GTAGS]->flags;
+		/*
+		 * If you set file pointer to tmpfile_fp, gtags_put() and gtags_put_using()
+		 * write records to the temporary file instead of db(3) file.
+		 */
 		tmp = tmpfile();
 		if (tmp == NULL)
 			die("cannot make temporary file.");
-		data.gtop[GRTAGS]->fp = tmp;
+		data.gtop[GRTAGS]->tmpfile_fp = tmp;
 	} else {
 		data.gtop[GRTAGS] = NULL;
 		tmp = NULL;
@@ -1091,7 +1095,7 @@ updatetags_using_builtin_parser(const char *dbpath, const char *root, IDSET *del
 
 	if (vflag)
 		fprintf(stderr, "[%s] Updating '%s' and '%s'.\n", now(), dbname(GRTAGS), dbname(GSYMS));
-	data.gtop[GRTAGS]->fp = NULL;
+	data.gtop[GRTAGS]->tmpfile_fp = NULL;
 	data.gtop[GSYMS] = gtags_open(dbpath, root, GSYMS, GTAGS_MODIFY, 0);
 	if (vflag) {
 		char fid[32];
@@ -1158,7 +1162,11 @@ createtags_using_builtin_parser(const char *dbpath, const char *root)
 		data.gtop[GTAGS]->flags |= GTAGS_DEBUG;
 	data.gtop[GRTAGS] = gtags_open(dbpath, root, GRTAGS, GTAGS_CREATE, openflags);
 	data.gtop[GRTAGS]->flags = data.gtop[GTAGS]->flags;
-	data.gtop[GRTAGS]->fp = tmp;
+	/*
+	 * If you set file pointer to tmpfile_fp, gtags_put() and gtags_put_using()
+	 * write records to the temporary file instead of db(3) file.
+	 */
+	data.gtop[GRTAGS]->tmpfile_fp = tmp;
 	if (file_list)
 		find_open_filelist(file_list, root);
 	else
@@ -1185,7 +1193,7 @@ createtags_using_builtin_parser(const char *dbpath, const char *root)
 	total = seqno;
 	parser_exit();
 	find_close();
-	data.gtop[GRTAGS]->fp = NULL;
+	data.gtop[GRTAGS]->tmpfile_fp = NULL;
 	statistics_time_end(tim);
 	strbuf_reset(sb);
 	if (getconfs("GTAGS_extra", sb)) {

@@ -122,6 +122,26 @@ seekto(const char *string, int n)
 	return p;
 }
 /*
+ * tmpfile_put: write to the temporary file instead of db(3) file.
+ *
+ *	i)	fp	file pointer
+ *	i)	key	key of db(3)
+ *	i)	data	data of db(3)
+ *
+ * record format:
+ * <key>\n<data>\n
+ *
+ * Finally, this record should be written in db(3) file.
+ */
+void
+tmpfile_put(FILE *fp, const char *key, const char *data)
+{
+	fputs(key, fp);
+	putc('\n', fp);
+	fputs(data, fp);
+	putc('\n', fp);
+}
+/*
  * Tag format
  *
  * [Specification of format version 4]
@@ -431,23 +451,17 @@ gtags_put_using(GTOP *gtop, const char *tag, int lno, const char *fid, const cha
 	} else {
 		key = tag;
 	}
-	if (gtop->fp != NULL) {
-		fputs(key, gtop->fp);
-		putc('\n', gtop->fp);
-		fputs(fid, gtop->fp);
-		putc(' ', gtop->fp);
-		fputs((gtop->format & GTAGS_COMPNAME) ? compress(tag, key) : tag, gtop->fp);
-		fprintf(gtop->fp, " %d %s\n", lno,
-			(gtop->format & GTAGS_COMPRESS) ? compress(img, key) : img);
+	strbuf_reset(gtop->sb);
+	strbuf_puts(gtop->sb, fid);
+	strbuf_putc(gtop->sb, ' ');
+	strbuf_puts(gtop->sb, (gtop->format & GTAGS_COMPNAME) ? compress(tag, key) : tag);
+	strbuf_putc(gtop->sb, ' ');
+	strbuf_putn(gtop->sb, lno);
+	strbuf_putc(gtop->sb, ' ');
+	strbuf_puts(gtop->sb, (gtop->format & GTAGS_COMPRESS) ? compress(img, key) : img);
+	if (gtop->tmpfile_fp != NULL) {
+		tmpfile_put(gtop->tmpfile_fp, key, strbuf_value(gtop->sb));
 	} else {
-		strbuf_reset(gtop->sb);
-		strbuf_puts(gtop->sb, fid);
-		strbuf_putc(gtop->sb, ' ');
-		strbuf_puts(gtop->sb, (gtop->format & GTAGS_COMPNAME) ? compress(tag, key) : tag);
-		strbuf_putc(gtop->sb, ' ');
-		strbuf_putn(gtop->sb, lno);
-		strbuf_putc(gtop->sb, ' ');
-		strbuf_puts(gtop->sb, (gtop->format & GTAGS_COMPRESS) ? compress(img, key) : img);
 		dbop_put(gtop->dbop, key, strbuf_value(gtop->sb));
 	}
 }
@@ -626,7 +640,11 @@ gtags_put(GTOP *gtop, const char *key, const char *ctags_x)	/* virtually const *
 		strbuf_puts(gtop->sb, gtop->format & GTAGS_COMPRESS ?
 			compress(ptable.part[PART_LINE].start, key) :
 			ptable.part[PART_LINE].start);
-		dbop_put(gtop->dbop, key, strbuf_value(gtop->sb));
+		if (gtop->tmpfile_fp != NULL) {
+			tmpfile_put(gtop->tmpfile_fp, key, strbuf_value(gtop->sb));
+		} else {
+			dbop_put(gtop->dbop, key, strbuf_value(gtop->sb));
+		}
 	}
 	recover(&ptable);
 }
@@ -980,11 +998,8 @@ flush_pool(GTOP *gtop, const char *s_fid)
 						strbuf_putn(gtop->sb, n);
 					}
 					if (strbuf_getlen(gtop->sb) > DBOP_PAGESIZE / 4) {
-						if (gtop->fp != NULL) {
-							fputs(key, gtop->fp);
-							putc('\n', gtop->fp);
-							fputs(strbuf_value(gtop->sb), gtop->fp);
-							putc('\n', gtop->fp);
+						if (gtop->tmpfile_fp != NULL) {
+							tmpfile_put(gtop->tmpfile_fp, key, strbuf_value(gtop->sb));
 						} else {
 							dbop_put(gtop->dbop, key, strbuf_value(gtop->sb));
 						}
@@ -1011,11 +1026,8 @@ flush_pool(GTOP *gtop, const char *s_fid)
 					strbuf_putc(gtop->sb, ',');
 				strbuf_putn(gtop->sb, n);
 				if (strbuf_getlen(gtop->sb) > DBOP_PAGESIZE / 4) {
-					if (gtop->fp != NULL) {
-						fputs(key, gtop->fp);
-						putc('\n', gtop->fp);
-						fputs(strbuf_value(gtop->sb), gtop->fp);
-						putc('\n', gtop->fp);
+					if (gtop->tmpfile_fp != NULL) {
+						tmpfile_put(gtop->tmpfile_fp, key, strbuf_value(gtop->sb));
 					} else {
 						dbop_put(gtop->dbop, key, strbuf_value(gtop->sb));
 					}
@@ -1025,11 +1037,8 @@ flush_pool(GTOP *gtop, const char *s_fid)
 			}
 		}
 		if (strbuf_getlen(gtop->sb) > header_offset) {
-			if (gtop->fp != NULL) {
-				fputs(key, gtop->fp);
-				putc('\n', gtop->fp);
-				fputs(strbuf_value(gtop->sb), gtop->fp);
-				putc('\n', gtop->fp);
+			if (gtop->tmpfile_fp != NULL) {
+				tmpfile_put(gtop->tmpfile_fp, key, strbuf_value(gtop->sb));
 			} else {
 				dbop_put(gtop->dbop, key, strbuf_value(gtop->sb));
 			}

@@ -105,8 +105,11 @@ typedef struct {
 	STRHASH *path_hash;
 	/*
 	 * Stuff for 1-pass parsing
+	 *
+	 * If you set file pointer to tmpfile_fp, gtags_put() and gtags_put_using()
+	 * write records to the temporary file instead of db(3) file.
 	 */
-	FILE *fp;
+	FILE *tmpfile_fp;
 } GTOP;
 
 const char *dbname(int);
