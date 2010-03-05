@@ -129,7 +129,7 @@ seekto(const char *string, int n)
  *	i)	data	data of db(3)
  *
  * record format:
- * <key>\n<data>\n
+ * <key>\t<data>\n
  *
  * Finally, this record should be written in db(3) file.
  */
@@ -137,7 +137,7 @@ void
 tmpfile_put(FILE *fp, const char *key, const char *data)
 {
 	fputs(key, fp);
-	putc('\n', fp);
+	putc('\t', fp);
 	fputs(data, fp);
 	putc('\n', fp);
 }
@@ -490,24 +490,27 @@ void
 gtags_add_ref_sym(GTOP *const *gtop, FILE *ip)
 {
 	STRBUF *ib = strbuf_open(MAXBUFLEN);
-	int data_offset;
-	const char *key;
-	DBOP *dbop[GTAGLIM];
 
-	dbop[GTAGS] = gtop[GTAGS]->dbop;
-	dbop[GRTAGS] = gtop[GRTAGS]->dbop;
-	dbop[GSYMS] = gtop[GSYMS]->dbop;
 	rewind(ip);
 	while (strbuf_fgets(ib, ip, STRBUF_NOCRLF) != NULL) {
-		strbuf_putc(ib, '\0');
-		data_offset = strbuf_getlen(ib);
-		key = strbuf_fgets(ib, ip, STRBUF_NOCRLF | STRBUF_APPEND);
-		if (dbop_get(dbop[GTAGS], key) != NULL)
-			dbop_put(dbop[GRTAGS], key, key + data_offset);
+		/*
+		 * [record format]
+		 * <key>\t<data>\n
+		 */
+		char *key = strbuf_value(ib);
+		char *data = strchr(key, '\t');
+		if (data == NULL)
+			die("gtags_add_ref_sym: internal error.");
+		*data++ = '\0';
+		/*
+		 * If the key is defined in GTAGS then put the record into GRTAGS
+		 * else put it into GSYMS.
+		 */
+		if (dbop_get(gtop[GTAGS]->dbop, key) != NULL)
+			dbop_put(gtop[GRTAGS]->dbop, key, data);
 		else
-			dbop_put(dbop[GSYMS], key, key + data_offset);
+			dbop_put(gtop[GSYMS]->dbop, key, data);
 	}
-
 	strbuf_close(ib);
 }
 /*
