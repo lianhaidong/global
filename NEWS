@@ -21,6 +21,40 @@ ___________________________________
 GNU GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 5.8.1 - March 6 2010
+
+[CHANGES]
+New facilities:
+o gtags: Added support of function layer plug-in parser by Hideki IWAMOTO.
+  This includes exuberant-ctags shared library, an example of plug-in
+  parser using Exuberant ctags. To use this, please try the following:
+  (It assumed that Exuberant ctags exists in "/usr/local/bin".)
+        $ ./configure --with-exuberant-ctags=/usr/local/bin/ctags
+        $ make
+        $ sudo make install
+        $ gtags --gtagsconf=/usr/local/share/gtags/gtags.conf --gtagslabel=plugin-example
+  Please see plugin-example/README for the detail.
+o htags: Added call-tree facility using cflow(1).
+  Please try this:
+        $ gtags
+        $ cflow --tree --format=posix `global -P` >cflow.out
+        $ htags --cflow=cflow.out
+  Input file must be POSIX format(use the --format=posix).
+  GNU cflow is available at: http://www.gnu.org/software/cflow/
+
+[FIXED BUGS]
+gtags-parser: Input of long token(>= 512bytes) brings buffer overflow.
+
+[INCOMPATIBLE CHANGES]
+gtags: Gtags using function layer plug-in parser always makes all tag files
+even if some of them are empty. Old style command layer plug-in parser makes
+only specified tag files. The new specification is better than old one for the
+reason that tag files of different parsers don't mix.
+If you want to know whether a tag file is empty or not, please use the following
+commands:
+        $ global '.*' -r                # GRTAGS is empty?
+        $ global '.*' -s                # GSYMS is empty?
+
 Version 5.8 - February 5 2010
 
 [CHANGES]
