@@ -128,6 +128,7 @@ Tobias Polzin		suggestion about correct treatment of CVS repository in htags.
 			facility for 'gtags-find-file' in gtags.el.
 Tomohiko Morioka	advice about deciding emacs version.
 Tomohiro Matsuyama	bug report about buffer overflow error of libutil/token.c.
+			suggestion of making the -i option effective with the -c command.
 Tom Russell		bug report about parsing error at function definitions with comment.
 Tom Tromey		GTAGS target in automake.
 Tomi Ollila		proposal of adding (provide 'gtags) to gtags.el.

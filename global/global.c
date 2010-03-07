@@ -601,20 +601,62 @@ void
 completion(const char *dbpath, const char *root, const char *prefix)
 {
 	int flags = GTOP_KEY;
-	GTOP *gtop;
+	GTOP *gtop = gtags_open(dbpath, root, (sflag) ? GSYMS : GTAGS, GTAGS_READ, 0);
 	GTP *gtp;
-	int db;
 
-	flags |= GTOP_NOREGEX;
 	if (prefix && *prefix == 0)	/* In the case global -c '' */
 		prefix = NULL;
-	if (prefix)
+	if (prefix && isalpha(*prefix) && iflag) {
+		/*
+		 * If the -i option is specified, we use both of regular
+		 * expression and prefix read for performance. It is done
+		 * by connecting two prefix reading.
+		 */
+		STRBUF *sb = strbuf_open(0);
+		regex_t	preg;
+		int i, firstchar[2];
+
+		flags |= GTOP_NOREGEX;
 		flags |= GTOP_PREFIX;
-	db = (sflag) ? GSYMS : GTAGS;
-	gtop = gtags_open(dbpath, root, db, GTAGS_READ, 0);
-	for (gtp = gtags_first(gtop, prefix, flags); gtp; gtp = gtags_next(gtop)) {
-		fputs(gtp->tag, stdout);
-		fputc('\n', stdout);
+		/*
+		 * make regular expression.
+		 */
+		strbuf_putc(sb, '^');
+		strbuf_puts(sb, prefix);
+		if (regcomp(&preg, strbuf_value(sb), REG_ICASE) != 0)
+			die("invalid regular expression.");
+		/*
+		 * Two prefix reading:
+		 *
+		 * prefix = 'main'
+		 * v
+		 * firstchar[0] = 'M';		/^M/	the first time
+		 * firstchar[1] = 'm';		/^m/	the second time
+		 */
+		firstchar[0] = firstchar[1] = *prefix;
+		if (isupper(firstchar[0]))
+			firstchar[1] = tolower(firstchar[0]);
+		else
+			firstchar[0] = toupper(firstchar[0]);
+		for (i = 0; i < 2; i++) {
+			strbuf_reset(sb);
+			strbuf_putc(sb, firstchar[i]);
+			for (gtp = gtags_first(gtop, strbuf_value(sb), flags); gtp; gtp = gtags_next(gtop)) {
+				if (regexec(&preg, gtp->tag, 0, 0, 0) == 0) {
+					fputs(gtp->tag, stdout);
+					fputc('\n', stdout);
+				}
+			}
+		}
+		strbuf_close(sb);
+	} else {
+		flags |= GTOP_NOREGEX;
+		if (prefix)
+			flags |= GTOP_PREFIX;
+		for (gtp = gtags_first(gtop, prefix, flags); gtp; gtp = gtags_next(gtop)) {
+			fputs(gtp->tag, stdout);
+			fputc('\n', stdout);
+		}
 	}
 	gtags_close(gtop);
 }
