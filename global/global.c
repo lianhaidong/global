@@ -577,10 +577,13 @@ main(int argc, char **argv)
 	 * parse source files.
 	 */
 	else if (fflag) {
-		if (getconfb("use_builtin_parser"))
-			parsefile_using_builtin_parser(argv, cwd, root, dbpath, db);
-		else
+		/*
+		 * parserfile() is obsolete.
+		 */
+		if (getconfs("GTAGS", NULL))
 			parsefile(argc, argv, cwd, root, dbpath, db);
+		else
+			parsefile_using_builtin_parser(argv, cwd, root, dbpath, db);
 	}
 	/*
 	 * tag search.

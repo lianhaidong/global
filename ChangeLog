@@ -19,6 +19,13 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+March 8 2010, Shigio YAMAGUCHI
+
+	* Changed the default parser of gtags(1) from gtags-parser(1) to libgloparser.a.
+	  Config parameter 'use_builtin_parser' is not used any longer. If the config
+	  variable GTAGS is defined then gtags(1) use the command layer parser specified
+	  by the variable as well as before. But it is obsolete.
+
 February 27 2010, Hideki IWAMOTO
 
 	* Added support of function layer plugin parser.

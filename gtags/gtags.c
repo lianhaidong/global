@@ -94,7 +94,7 @@ int convert_type = PATH_RELATIVE;
 
 int extractmethod;
 int total;
-int use_builtin_parser;
+int use_command_parser;				/* command layer parser is obsolete */
 
 static void
 usage(void)
@@ -407,8 +407,11 @@ main(int argc, char **argv)
 	openconf();
 	if (getconfb("extractmethod"))
 		extractmethod = 1;
-	if (getconfb("use_builtin_parser"))
-		use_builtin_parser = 1;
+	/*
+	 * Command layer parser is obsolete.
+	 */
+	if (getconfs("GTAGS", NULL))
+		use_command_parser = 1;
 	strbuf_reset(sb);
 	/*
 	 * Pass the following information to gtags-parser(1)
@@ -420,7 +423,7 @@ main(int argc, char **argv)
 	strbuf_reset(sb);
 	if (getconfs("langmap", sb))
 		langmap = check_strdup(strbuf_value(sb));
-	if (use_builtin_parser) {
+	if (!use_command_parser) {
 		const char *plugin_parser;
 
 		strbuf_reset(sb);
@@ -430,6 +433,9 @@ main(int argc, char **argv)
 			plugin_parser = NULL;
 		parser_init(langmap, plugin_parser);
 	} else {
+		/*
+		 * Command layer parser is obsolete.
+		 */
 		set_env("GTAGSLANGMAP", langmap);
 		set_env("GTAGSDBPATH", dbpath);
 		if (wflag)
@@ -458,7 +464,7 @@ main(int argc, char **argv)
 		 * If GRTAGS or GSYMS exists, both of them exist and the format
 		 * should be the same.
 		 */
-		if (use_builtin_parser) {
+		if (!use_command_parser) {
 			int format_r, format_s;
 
 			if (test("f", makepath(dbpath, dbname(GRTAGS), NULL)))
@@ -482,9 +488,12 @@ main(int argc, char **argv)
 	/*
 	 * create GTAGS, GRTAGS and GSYMS
 	 */
-	if (use_builtin_parser) {
+	if (!use_command_parser) {
 		createtags_using_builtin_parser(dbpath, cwd);
 	} else {
+		/*
+		 * Command layer parser is obsolete.
+		 */
 		for (db = GTAGS; db < GTAGLIM; db++) {
 			/*
 			 * get parser for db. (gtags-parser by default)
@@ -696,9 +705,12 @@ normal_update:
 	 * execute updating.
 	 */
 	if (!idset_empty(deleteset) || strbuf_getlen(addlist) > 0) {
-		if (use_builtin_parser) {
+		if (!use_command_parser) {
 			updatetags_using_builtin_parser(dbpath, root, deleteset, addlist);
 		} else {
+			/*
+			 * Command layer parser is obsolete.
+			 */
 			int db;
 
 			for (db = GTAGS; db < GTAGLIM; db++) {
@@ -763,13 +775,15 @@ normal_update:
 	return updated;
 }
 /*
- * updatetags: update tag file.
+ * updatetags: update tag file (using command layer parser)
  *
  *	i)	dbpath		directory in which tag file exist
  *	i)	root		root directory of source tree
  *	i)	deleteset	bit array of fid of deleted or modified files 
  *	i)	addlist		\0 separated list of added or modified files
  *	i)	db		GTAGS, GRTAGS, GSYMS
+ *
+ * Command layer parser is obsolete.
  */
 static void
 verbose_updatetags(char *path, int seqno, int skip)
@@ -877,11 +891,13 @@ updatetags(const char *dbpath, const char *root, IDSET *deleteset, STRBUF *addli
 	strbuf_close(comline);
 }
 /*
- * createtags: create tags file
+ * createtags: create tags file (using command layer parser)
  *
  *	i)	dbpath	dbpath directory
  *	i)	root	root directory of source tree
  *	i)	db	GTAGS, GRTAGS, GSYMS
+ *
+ * Command layer parser is obsolete.
  */
 static void
 verbose_createtags(char *path, int seqno, int skip)

@@ -29,10 +29,6 @@
 #
 default:\
 	:tc=gtags:tc=htags:
-#
-# To use build-in parser, please replace the line above by this:
-#	:tc=gtags:tc=htags:use_builtin_parser:
-#
 #---------------------------------------------------------------------
 # Configuration for gtags(1)
 # See gtags(1).
@@ -40,21 +36,23 @@ default:\
 common:\
 	:skip=@DEFAULTSKIP@:\
 	:langmap=@DEFAULTLANGMAP_QUOTED@:
+gtags:\
+	:tc=common:
 #
-# [gtags-parser]
+# [gtags-parser] command layer gtags parser (obsolete)
 #
 # This command is distributed as part of GLOBAL.
 # The %s is replaced with the path of source file.
 # You need not use --langmap=xxx option. Gtags-parser(1) get the value
 # from environment variable.
 #
-gtags:\
+gtags-command:\
 	:tc=common:\
 	:GTAGS=gtags-parser %s:\
 	:GRTAGS=gtags-parser -r %s:\
 	:GSYMS=gtags-parser -s %s:
 #
-# [Exuberant Ctags]
+# [Exuberant Ctags] (obsolete)
 #
 # This ctags is distributed as a part of Vim editor.
 #
@@ -62,6 +60,8 @@ gtags:\
 # % cd <Vim source directory>/src/ctags
 # % make
 # # cp ctags @EXUBERANT_CTAGS@
+#
+# Command layer parser is obsolete.
 #
 ctags-exuberant|Exuberant Ctags|ctags by Darren Hiebert:\
 	:tc=common:\
@@ -75,7 +75,7 @@ ctags-exuberant|Exuberant Ctags|ctags by Darren Hiebert:\
 # [Function layer plugin parser]
 #
 plugin-example|Example of function layer plugin parser:\
-	:tc=common:use_builtin_parser:extractmethod:\
+	:tc=common:extractmethod:\
 	:langmap=@DEFAULTLANGMAP_QUOTED@:\
 	:langmap=fortran\:.f.for.f77.f90.f95,pascal\:.p.pas,c#\:.cs,lisp\:.l.el.lisp,scheme\:.scm:\
 	:langmap=awk\:.awk,ruby\:.rb,perl\:.pl,python\:.py,vim\:.vim,sh\:.sh:\

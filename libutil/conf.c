@@ -286,7 +286,7 @@ openconf(void)
 		fclose(fp);
 	}
 	/*
-	 * make up lacked variables.
+	 * make up required variables.
 	 */
 	sb = strbuf_open(0);
 	strbuf_puts(sb, confline);
@@ -297,7 +297,7 @@ openconf(void)
 		const char *langmap = NULL;
 
 		/*
-		 * Variable 'suffixes' is obsoleted. But it is generated
+		 * Variable 'suffixes' is obsolete. But it is generated
 		 * internally from the value of variable 'langmap'.
 		 */
 		if (getconfs("langmap", tmp))
@@ -311,36 +311,6 @@ openconf(void)
 	if (!getconfs("skip", NULL)) {
 		strbuf_puts(sb, ":skip=");
 		strbuf_puts(sb, DEFAULTSKIP);
-	}
-	/*
-	 * GTAGS, GRTAGS and GSYMS have no default values but non of them
-	 * specified then use default values.
-	 * (Otherwise, nothing to do for gtags.)
-	 */
-	if (!getconfs("GTAGS", NULL) && !getconfs("GRTAGS", NULL) && !getconfs("GSYMS", NULL)) {
-		const char *path;
-
-		/*
-		 * usable search in BINDIR at first.
-		 */
-#if defined(_WIN32)
-		path = "gtags-parser.exe";
-#elif defined(__DJGPP__)
-		path = usable("gtags-parser") ? "gtags-parser.exe" : "gtags-~1.exe";
-#else
-		path = usable("gtags-parser");
-		if (!path)
-			path = "gtags-parser";
-#endif /* _WIN32 */
-		strbuf_puts(sb, ":GTAGS=");
-		strbuf_puts(sb, path);
-		strbuf_puts(sb, " %s");
-		strbuf_puts(sb, ":GRTAGS=");
-		strbuf_puts(sb, path);
-		strbuf_puts(sb, " -r %s");
-		strbuf_puts(sb, ":GSYMS=");
-		strbuf_puts(sb, path);
-		strbuf_puts(sb, " -s %s");
 	}
 	strbuf_unputc(sb, ':');
 	strbuf_putc(sb, ':');
