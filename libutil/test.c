@@ -38,6 +38,7 @@
 #endif
 
 #include "locatestring.h"
+#include "char.h"
 #include "die.h"
 #include "test.h"
 
@@ -51,8 +52,8 @@ static int
 is_binary(const char *path)
 {
 	int ip;
-	char buf[32];
-	int i, c, size;
+	char buf[512];
+	int i, size;
 
 	ip = open(path, O_RDONLY);
 	if (ip < 0)
@@ -64,8 +65,7 @@ is_binary(const char *path)
 	if (size >= 7 && locatestring(buf, "!<arch>", MATCH_AT_FIRST))
 		return 1;
 	for (i = 0; i < size; i++) {
-		c = (unsigned char)buf[i];
-		if (c == 0 || c > 127)
+		if (isbinarychar(buf[i]))
 			return 1;
 	}
 	return 0;
