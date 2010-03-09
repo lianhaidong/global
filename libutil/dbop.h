@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2006, 2009
+ * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2006, 2009, 2010
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -46,6 +46,7 @@ typedef	struct {
 	int lastkeysize;		/* the size of the key */
 	regex_t	*preg;			/* compiled regular expression */
 	int unread;			/* leave record to read again */
+	const char *put_errmsg;		/* error message for put_xxx() */
 	/*
 	 * (2) DB185 PART
 	 */

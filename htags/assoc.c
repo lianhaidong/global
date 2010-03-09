@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004 Tama Communications Corporation
+ * Copyright (c) 2004, 2010 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -44,6 +44,7 @@ assoc_open()
 	assoc->dbop = dbop_open(NULL, 1, 0600, 0);
 	if (assoc->dbop == NULL)
 		abort();
+	assoc->dbop->put_errmsg = "cannot write to temporary file.\nYou can specify the directory for the temporary file using environment variable 'TMPDIR'.";
 	return assoc;
 }
 /*

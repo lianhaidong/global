@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005, 2006, 2009
+ * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005, 2006,
+ *	2009, 2010
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -180,7 +181,7 @@ dbop_put(DBOP *dbop, const char *name, const char *data)
 		break;
 	case RET_ERROR:
 	case RET_SPECIAL:
-		die("cannot write to database.");
+		die(dbop->put_errmsg ? dbop->put_errmsg : "cannot write to database.");
 	}
 }
 /*
@@ -214,7 +215,7 @@ dbop_put_withlen(DBOP *dbop, const char *name, const char *data, int length)
 		break;
 	case RET_ERROR:
 	case RET_SPECIAL:
-		die("cannot write to database.");
+		die(dbop->put_errmsg ? dbop->put_errmsg : "cannot write to database.");
 	}
 }
 /*
