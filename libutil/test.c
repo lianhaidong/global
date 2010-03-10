@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2006
+ * Copyright (c) 1997, 1998, 1999, 2000, 2006, 2010
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -62,7 +62,9 @@ is_binary(const char *path)
 	close(ip);
 	if (size < 0)
 		return 1;
-	if (size >= 7 && locatestring(buf, "!<arch>", MATCH_AT_FIRST))
+	if (size >= 7 && locatestring(buf, "!<arch>", MATCH_AT_FIRST))	/* ar */
+		return 1;
+	if (size >= 4 && locatestring(buf, "%PDF", MATCH_AT_FIRST))	/* PDF */
 		return 1;
 	for (i = 0; i < size; i++) {
 		if (isbinarychar(buf[i]))
