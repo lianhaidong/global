@@ -46,6 +46,7 @@ Don Fisher		bug report about the buffer overflow in htags(1).
 Dunford, Martin		advice about Windows 32 version of GLOBAL.
 Dirk Schultheis		advice about compat.h for Solaris.
 Emile Heyns		advice about writing code for generic UNIX.
+Erik Jonsson		algorithm for detecting binary file.
 Eric Paire		bug report about gtags-parser's memory violation.
 Frederic Maitre		bug report about global(1) and gtags(1) at the system root directory.
 Gary Kline		advice about the name of parser.
