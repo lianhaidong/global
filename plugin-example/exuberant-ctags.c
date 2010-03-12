@@ -22,7 +22,9 @@
 #include <config.h>
 #endif
 #include <sys/types.h>
+#if !defined(_WIN32) || defined(__CYGWIN__)
 #include <sys/wait.h>
+#endif
 #include <assert.h>
 #include <ctype.h>
 #include <errno.h>

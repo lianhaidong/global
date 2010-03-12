@@ -387,7 +387,22 @@ getconfs(const char *name, STRBUF *sb)
 			strbuf_puts(sb, BINDIR);
 			exist = 1;
 		} else if (!strcmp(name, "datadir")) {
+#if defined(_WIN32) && !defined(__CYGWIN__)
+			/*
+			 * Test if this directory exists, and if not, take the
+			 * directory relative to the binary.
+			 */
+			if (test("d", DATADIR))
+				strbuf_puts(sb, DATADIR);
+			else {
+				const char *name = strrchr(_pgmptr, '\\');
+				if (name)
+					strbuf_nputs(sb, _pgmptr, name+1 - _pgmptr);
+				strbuf_puts(sb, "..\\share");
+			}
+#else
 			strbuf_puts(sb, DATADIR);
+#endif
 			exist = 1;
 		}
 	}
