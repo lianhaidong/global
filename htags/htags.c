@@ -375,10 +375,19 @@ static void
 make_directory_in_distpath(const char *name)
 {
 	const char *path = makepath(distpath, name, NULL);
+	FILE *op;
 
 	if (!test("d", path))
 		if (mkdir(path, 0775))
 			die("cannot make directory '%s'.", path);
+	/*
+	 * Not to publish the directory list.
+	 */
+	op = fopen(makepath(path, "index.html", NULL), "w");
+	fputs(html_begin, op);
+	fputs(html_end, op);
+	fputc('\n', op);
+	fclose(op);
 }
 /*
  * generate_file: generate file with replacing macro.
