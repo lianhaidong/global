@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005 Tama Communications Corporation
+ * Copyright (c) 2005, 2010 Tama Communications Corporation
  *
  * This file is free software; as a special exception the author gives
  * unlimited permission to copy and/or distribute it, with or without
@@ -23,6 +23,7 @@ th, td		{ white-space: nowrap; }
 .tag		{ text-align: left; }
 .line		{ text-align: right; }
 .code		{ text-align: left; }
+.curline:hover	{ background-color:lightgray; }
 th.file		{ text-align: center; }
 td.file		{ text-align: left; }
 table.flist	{ border-spacing: 2px; width: 100%; }

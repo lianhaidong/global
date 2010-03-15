@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2005, 2008 Tama Communications Corporation
+ * Copyright (c) 2004, 2005, 2008, 2010 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -610,14 +610,14 @@ gen_list_body(const char *srcdir, const char *ctags_x)		/* virtually const */
 	fid = path2fid(filename);
 	if (table_list) {
 		if (enable_xhtml) {
-			strbuf_puts(sb, "<tr><td class='tag'>");
+			strbuf_puts(sb, "<tr class='curline'><td class='tag'>");
 			strbuf_puts(sb, gen_href_begin(srcdir, fid, HTML, ptable.part[PART_LNO].start));
 			strbuf_puts(sb, ptable.part[PART_TAG].start);
 			strbuf_puts(sb, gen_href_end());
 			strbuf_sprintf(sb, "</td><td class='line'>%s</td><td class='file'>%s</td><td class='code'>",
 				ptable.part[PART_LNO].start, filename);
 		} else {
-			strbuf_puts(sb, "<tr><td nowrap>");
+			strbuf_puts(sb, "<tr class='curline'><td nowrap>");
 			strbuf_puts(sb, gen_href_begin(srcdir, fid, HTML, ptable.part[PART_LNO].start));
 			strbuf_puts(sb, ptable.part[PART_TAG].start);
 			strbuf_puts(sb, gen_href_end());
@@ -647,6 +647,7 @@ gen_list_body(const char *srcdir, const char *ctags_x)		/* virtually const */
 	} else {
 		int done = 0;
 
+		strbuf_puts(sb, "<span class='curline'>");
 		strbuf_puts(sb, gen_href_begin(srcdir, fid, HTML, ptable.part[PART_LNO].start));
 		strbuf_puts(sb, ptable.part[PART_TAG].start);
 		strbuf_puts(sb, gen_href_end());
@@ -669,6 +670,7 @@ gen_list_body(const char *srcdir, const char *ctags_x)		/* virtually const */
 			else
 				strbuf_putc(sb, c);
 		}
+		strbuf_puts(sb, "</span>");
 	}
 	return strbuf_value(sb);
 }
