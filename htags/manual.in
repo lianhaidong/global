@@ -203,7 +203,8 @@
 		By default, it is assumed that @file{GTAGS} and @file{HTML} are in the
 		same place. If you move @file{HTML} to another place, please write the
 		original directory to this file.
-		If @file{GTAGSROOT} exists, global.cgi use the content as GTAGSROOT directory.
+		If @file{GTAGSROOT} exists, global.cgi use the content as the name of
+		GTAGSROOT directory.
 	@end_itemize
 @ENVIRONMENT
 	The following environment variables affect the execution of @name{htags}:
