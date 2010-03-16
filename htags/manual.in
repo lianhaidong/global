@@ -199,6 +199,11 @@
 	@item{@file{HTML/style.css}}
 		Style sheet file. This file is generated when the @option{--xhtml}
 		option is specified.
+	@item{@file{HTML/GTAGSROOT}}
+		By default, it is assumed that @file{GTAGS} and @file{HTML} are in the
+		same place. If you move @file{HTML} to another place, please write the
+		original directory to this file.
+		If @file{GTAGSROOT} exists, global.cgi use the content as GTAGSROOT directory.
 	@end_itemize
 @ENVIRONMENT
 	The following environment variables affect the execution of @name{htags}:

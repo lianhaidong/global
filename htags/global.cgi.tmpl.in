@@ -10,16 +10,12 @@
 # are using.
 #
 # If you are using Apache HTTP Server [http://httpd.apache.org/],
-# you may set it up by adding an entry to the configuration file
-# [http.conf] like follows:
+# you may set it up by making .htaccess file like follows:
 #
+# [HTML/.htaccess]
 # +-----------------------------------------
-# |...
-# |<Directory /usr/local/apache/htdocs/tour> <= depends your environment
-# |    Options +ExecCGI
-# |    AddHandler cgi-script .cgi
-# |</Directory>
-# |...
+# |Options +ExecCGI
+# |AddHandler cgi-script .cgi
 # +-----------------------------------------
 #
 # If you are using other systems, please consult the manuals.
@@ -35,27 +31,32 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
+# Display an error message and exit.
+sub error {
+        local($msg) = @_;
+        print "@error_begin@Error@error_end@\n";
+        print "@message_begin@$msg <a href='$htmlbase/mains.@normal_suffix@'>[return]</a>@message_end@\n";
+        print "@body_end@\n";
+        print "@page_end@\n";
+        exit 0;
+}
 print "Content-type: text/html\n\n";
 print "@page_begin@\n";
 print "@body_begin@\n";
 $htmlbase = $ENV{'HTTP_REFERER'};
 if (!$htmlbase) {
-	print "@error_begin@Error@error_end@\n";
-	print "@message_begin@Your browser doesn't send HTTP_REFERER.@message_end@\n";
-	print "@body_end@\n";
-	print "@page_end@\n";
-	exit 0;
+        print "@error_begin@Error@error_end@\n";
+        print "@message_begin@Your browser doesn't send HTTP_REFERER. Please use another one.@message_end@\n";
+        print "@body_end@\n";
+        print "@page_end@\n";
+        exit 0;
 }
 $htmlbase =~ s!/[^\/]+$!!;		# remove file name.
 $htmlbase =~ s!/defines$!!;
 $htmlbase =~ s!/S$!!;
 $htmlbase =~ s!/$!!;
 if (! -x '@globalpath@') {
-	print "@error_begin@Error@error_end@\n";
-	print "@message_begin@Server side command not found. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a>@message_end@\n";
-	print "@body_end@\n";
-	print "@page_end@\n";
-	exit 0;
+	error("Server side command not found.");
 }
 @pairs = split (/&/, $ENV{'QUERY_STRING'});
 foreach $p (@pairs) {
@@ -65,11 +66,7 @@ foreach $p (@pairs) {
 	$form{$name} = $value;
 }
 if ($form{'pattern'} eq '') {
-	print "@error_begin@Error@error_end@\n";
-	print "@message_begin@Pattern not specified. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a>@message_end@\n";
-	print "@body_end@\n";
-	print "@page_end@\n";
-	exit 0;
+	error("Pattern not specified.");
 }
 $pattern = $form{'pattern'};
 $flag = '';
@@ -101,20 +98,19 @@ if ($form{'other'} && ($flag eq 'g' || $flag eq 'P')) {
 if ($form{'id'}) {
 	chdir("$form{'id'}/cgi-bin");
 	if ($?) {	
-		print "@error_begin@Error@error_end@\n";
-		print "@message_begin@Couldn't find tag directory in secure mode. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a>@message_end@\n";
-		print "@body_end@\n";
-		print "@page_end@\n";
-		exit 0;
+		error("Couldn't find tag directory in secure mode.");
 	}
 }
-chdir("../..");
-if ($?) {	
-	print "@error_begin@Error@error_end@\n";
-	print "@message_begin@Couldn't change directory for $form{'type'} search. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a>@message_end@\n";
-	print "@body_end@\n";
-	print "@page_end@\n";
-	exit 0;
+if (-f "../GTAGSROOT" && open(GTAGSROOT, "../GTAGSROOT")) {
+	$gtagsroot = <GTAGSROOT>;
+	chop($gtagsroot);
+	close(GTAGSROOT);
+} else {
+	$gtagsroot = "../..";
+}
+chdir($gtagsroot);
+if ($?) {
+	error("GTAGSROOT directory not found.");
 }
 #
 # Sanity check
@@ -133,11 +129,7 @@ if (! -f 'GTAGS') {
 	$missed = 'ID';
 }
 if ($missed) {
-	print "@error_begin@Error@error_end@\n";
-	print "@message_begin@Tag file ($missed) not found. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a>@message_end@\n";
-	print "@body_end@\n";
-	print "@page_end@\n";
-	exit 0;
+	error("Tag file ($missed) not found.");
 }
 local(%ctab) = ('&', '&amp;', '<', '&lt;', '>', '&gt;');
 #
@@ -152,11 +144,7 @@ if ($flags eq '') {
 	open(PIPE, "-|") || exec '@globalpath@', '--result=ctags-xid', '-'.$flags, '-e', $pattern;
 }
 if ($?) {	
-	print "@error_begin@Error@error_end@\n";
-	print "@message_begin@Cannot execute global. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a>@message_end@\n";
-	print "@body_end@\n";
-	print "@page_end@\n";
-	exit 0;
+	error("Cannot execute global.");
 }
 $pattern =~ s/([&<>])/$ctab{$1}/ge;
 print "@title_begin@" . $pattern . "@title_end@\n";
@@ -172,12 +160,13 @@ print "@verbatim_begin@\n";
 # 100 main  32 ./main.c main(argc, argv)
 #
 while (<PIPE>) {
+	chop;
 	$cnt++;
 	($fid, $tag, $lno, $filename) = split;
 	s/^[0-9]+[ \t]+//;
 	s/([&<>])/$ctab{$1}/ge;
 	s!(^[^ \t]+)!<a href='$htmlbase/S/$fid.@HTML@#L$lno'>$1<\/a>!;
-	print;
+	print "<span class='curline'>$_</span>\n";
 }
 close(PIPE);
 print "@verbatim_end@\n";
