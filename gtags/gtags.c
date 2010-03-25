@@ -248,8 +248,9 @@ main(int argc, char **argv)
 		if (realpath(gtagsconf, path) == NULL)
 			die("%s not found.", gtagsconf);
 		set_env("GTAGSCONF", path);
-		if (gtagslabel)
-			set_env("GTAGSLABEL", gtagslabel);
+	}
+	if (gtagslabel) {
+		set_env("GTAGSLABEL", gtagslabel);
 	}
 	if (qflag)
 		vflag = 0;
