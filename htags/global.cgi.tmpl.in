@@ -5,20 +5,10 @@
 # How to setup search form of htags
 # =================================
 #
-# You must setup HTTP server so that this script can be executed
-# as a CGI script. This setup depends on the HTTP server which you
-# are using.
+# You should start HTTP server so that this script is executed as a CGI script.
+# Setup procedure for it depends on the HTTP server which you are using.
+# If you are using Apache, 'HTML/.htaccess' might be helpful for you.
 #
-# If you are using Apache HTTP Server [http://httpd.apache.org/],
-# you may set it up by making .htaccess file like follows:
-#
-# [HTML/.htaccess]
-# +-----------------------------------------
-# |Options +ExecCGI
-# |AddHandler cgi-script .cgi
-# +-----------------------------------------
-#
-# If you are using other systems, please consult the manuals.
 #------------------------------------------------------------------
 #
 # Copyright (c) 1997, 2004, 2006, 2008 Tama Communications Corporation
