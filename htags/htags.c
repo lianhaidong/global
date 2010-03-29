@@ -1715,7 +1715,7 @@ main(int argc, char **argv)
 	/*
 	 * get dbpath.
 	 */
-	setupdbpath(vflag);			/* for parsers */
+	setupdbpath(0);				/* for parsers */
 	if (!getcwd(cwdpath, sizeof(cwdpath)))
 		die("cannot get current directory.");
 	if (arg_dbpath[0])
@@ -1867,6 +1867,8 @@ main(int argc, char **argv)
 	/*
 	 * (#) check if GTAGS, GRTAGS is the latest.
 	 */
+	if (get_dbpath())
+		message(" Using %s/GTAGS", get_dbpath());
 	if (!w32) {
 		/* UNDER CONSTRUCTION */
 	}
