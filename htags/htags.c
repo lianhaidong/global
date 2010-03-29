@@ -119,7 +119,6 @@ int symbol;				/* --symbol(-s) option          */
 int suggest;				/* --suggest option		*/
 int statistics = STATISTICS_STYLE_NONE;	/* --statistics option		*/
 
-int copy_files;				/* 1: copy tag files		*/
 int no_order_list;			/* 1: doesn't use order list	*/
 int other_files;			/* 1: list other files		*/
 int enable_grep = 1;			/* 1: enable grep		*/
@@ -1197,8 +1196,6 @@ configuration(int argc, char *const *argv)
 		table_flist = 1;
 	if (getconfb("no_order_list"))
 		no_order_list = 1;
-	if (getconfb("copy_files"))
-		copy_files = 1;
 	if (getconfb("no_map_file"))
 		map_file = 0;
 	strbuf_reset(sb);
@@ -1683,13 +1680,6 @@ main(int argc, char **argv)
 	 */
 	if (enable_xhtml)
 		setup_xhtml();
-	/*
-	 * If copy_files is true then htags copy tag files instead of linking.
-	 * Since Windows 32 environment doesn't have link system call
-	 * we set copy_files true.
-	 */
-	if (w32)
-		copy_files = 1;
         if (show_version)
                 version(av, vflag);
         if (show_help)
