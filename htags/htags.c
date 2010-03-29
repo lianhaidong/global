@@ -124,7 +124,7 @@ int no_order_list;			/* 1: doesn't use order list	*/
 int other_files;			/* 1: list other files		*/
 int enable_grep = 1;			/* 1: enable grep		*/
 int enable_idutils;			/* 1: enable idutils		*/
-int enable_xhtml;			/* 1: enable XHTML		*/
+int enable_xhtml = 1;			/* 1: enable XHTML		*/
 
 const char *action_value;
 const char *id_value;
@@ -278,6 +278,7 @@ static struct option const long_options[] = {
         {"debug", no_argument, &debug, 1},
         {"disable-grep", no_argument, &enable_grep, 0},
         {"full-path", no_argument, &full_path, 1},
+        {"html4", no_argument, &enable_xhtml, 0},
         {"nocgi", no_argument, &cgi, 0},
         {"no-map-file", no_argument, &map_file, 0},
         {"show-position", no_argument, &show_position, 1},

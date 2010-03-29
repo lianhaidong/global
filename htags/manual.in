@@ -103,6 +103,8 @@
 		You can specify the position using @arg{position} argument,
 		which allows one of @code{before}, @code{right} and @code{after}.
 		The default position is @code{after}.
+	@item{@option{--html4}}
+		Generate HTML4 hypertext instead of XHTML.
 	@item{@option{-I}, @option{--icon}}
 		Use icons instead of text for some links.
 	@item{@option{--insert-footer} @arg{file}}
@@ -155,7 +157,7 @@
 	@item{@option{-w}, @option{--warning}}
 		Print warning messages.
 	@item{@option{-x}, @option{--xhtml}[=@arg{version}]}
-		Generate XHTML hypertext instead of HTML.
+		Generate XHTML hypertext. This is the default.
 		If the @option{--frame} option is specified then
 		generate XHTML-1.0 Frameset for index.html
 		and generate XHTML-1.0 Transitional for other files,
