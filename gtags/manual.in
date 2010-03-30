@@ -1,6 +1,6 @@
 #
 # Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005
-#	2007, 2008, 2009 Tama Communications Corporation
+#	2007, 2008, 2009, 2010 Tama Communications Corporation
 #
 # This file is part of GNU GLOBAL.
 #
@@ -22,16 +22,16 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	GTAGS,1,September 2009,GNU Project
+@HEADER	GTAGS,1,March 2010,GNU Project
 @NAME	gtags - create tag files for global.
 @SYNOPSIS
 	@name{gtags} [-ciIOqvw][-d @arg{tag-file}][-f @arg{file}][-n @arg{number}][@arg{dbpath}]
 @DESCRIPTION
-	@name{Gtags} recursively collect the source files under
-	the current directory,
-	pickup symbols and write the cross-reference data into tag files
+	@name{Gtags} is used to create tag files for @xref{global,1}.
+
+	@name{Gtags} recursively collects source files under the current directory,
+	pickup symbols and write the cross-reference data into the tag files
 	(@file{GTAGS}, @file{GRTAGS}, @file{GSYMS} and @file{GPATH}).
-	You should execute this command at the root of the source tree.
 
 	C, C++, yacc, java, PHP and Assembly source files are supported.
 	Files whose names end in @file{.c} or @file{.h} are assumed to be
@@ -53,25 +53,22 @@
 		This option does not influence GRTAGS and GSYMS,
 		because they are always made in compact format.
 	@item{@option{--config}[=@arg{name}]}
-		Show the value of config variable @arg{name}.
-		If @arg{name} is not specified then show whole of config entry.
+		Print the value of config variable @arg{name}.
+		If @arg{name} is not specified then print all names and values.
 	@item{@option{-d}, @option{--dump} @arg{tag-file}}
 		Dump a tag file. The output format is 'key<tab>data'.
 		This is for debugging.
 	@item{@option{-f}, @option{--file} @arg{file}}
-		Read from @arg{file} a list of file names which should be
-		considered as the candidate of source files.
-		By default, all files under the current directory are
-		considered as the candidate.
-		If @arg{file} is @file{-}, read from standard input.
+		Browse through all source files whose names are listed in @arg{file}.
+		The argument @arg{file} can  be set to @file{-} to accept a list of
+		files from the standard input.
 		File names must be separated by newline.
 	@item{@option{--gtagsconf} @arg{file}}
-		Load user's configuration from @arg{file}.
+		Set the @var{GTAGSCONF} environment variable to @arg{file}.
 	@item{@option{--gtagslabel} @arg{label}}
-		@arg{label} is used as the label of configuration file.
-		The default is @code{default}.
+		Set the @var{GTAGSLABEL} environment variable to @arg{label}.
 	@item{@option{-I}, @option{--idutils}}
-		Make index files for @xref{idutils,1} too.
+		Also make the ID database file for @xref{idutils,1}.
 	@item{@option{-i}, @option{--incremental}}
 		Update tag files incrementally. You had better use
 		@xref{global,1} with the -u option.
@@ -80,7 +77,7 @@
 		By default, gtags invokes @name{gtags-parser} with arguments
 		as many as possible to decrease the frequency of invoking.
 	@item{@option{-O}, @option{--objdir}}
-		Use objdir as dbpath.
+		Use BSD-style objdir as the location of tag files.
 		If @file{$MAKEOBJDIRPREFIX} directory exists, @name{gtags} creates
 		@file{$MAKEOBJDIRPREFIX/<current directory>} directory and makes
 		tag files in it.
@@ -91,7 +88,7 @@
 		updated.  The @arg{file} must be relative path name from the current directory.
 		This option implies the -i option.
 		If the @arg{file} is new then @option{--single-update} is ignored,
-		and the processing is automatically switched to the normal incremental updating.
+		and the processing is automatically switched to normal incremental updating.
 	@item{@option{--statistics}}
 		Print statistics information.
 		This option is valid only for normal creation of tag files.
@@ -104,8 +101,6 @@
 	@item{@arg{dbpath}}
 		The directory in which tag files are generated.
 		The default is the current directory.
-		It is useful when your source directory is on a read only
-		device like CDROM.
 	@end_itemize
 @EXAMPLES
 	$ ls -F
@@ -129,21 +124,20 @@
 @ENVIRONMENT
 	The following environment variables affect the execution of @name{gtags}:
 	@begin_itemize
+	@item{@var{TMPDIR}}
+		The location used to stored temporary files. The default is @file{/tmp}.
 	@item{@var{GTAGSCONF}}
-		If this variable is set, its value is used as the
-		configuration file. The default is @file{$HOME/.globalrc}.
+		Configuration file. The default is @file{$HOME/.globalrc}.
 	@item{@var{GTAGSLABEL}}
-		If this variable is set, its value is used as the label
-		of configuration file. The default is @code{default}.
+		Configuration label. The default is @arg{default}.
 	@item{@var{GTAGSCACHE}}
-		If this variable is set, its value is used as the size of
-		B-tree cache. The default is 50000000 (bytes).
+		The size of B-tree cache. The default is 50000000 (bytes).
 	@item{@var{GTAGSFORCECPP}}
 		If this variable is set, each file whose suffix is 'h' is treated
 		as a C++ source file.
 	@item{@var{MAKEOBJDIRPREFIX}}
-		If this variable is set, @file{$MAKEOBJDIRPREFIX} is used as an object
-		prefix directory. The default is @file{/usr/obj}.
+		If this variable is set, @file{$MAKEOBJDIRPREFIX} is used as the prefix
+		of BSD-style objdir. The default is @file{/usr/obj}.
 	@end_itemize
 @CONFIGURATION
 	The following configuration variables affect the execution of @name{gtags}.
@@ -178,17 +172,13 @@
 		If the value ends with '/', it assumed as a directory and @name{gtags} skips all files under it.
 		If the value start with '/', it assumed relative path from the root of source directory.
 	@item{@code{suffixes}(comma separated list)}
-		Suffixes of target source file.
+		Suffixes of target source files.
 		As a special exception, @name{gtags} collect values from multiple @code{suffixes} variables.
 		This variable is obsoleted. If the langmap variable is defined
 		@name{gtags} no longer refers this.
 	@end_itemize
 @DIAGNOSTICS
 	@name{Gtags} exits with a non 0 value if an error occurred, 0 otherwise.
-@MESSAGE FORMAT
-	Verbose message has important level. The most important level is 0,
-	the second is 1 and so on. All the message has level numbers leading
-	blanks.
 @SEE ALSO
 	@xref{gtags-parser,1},
 	@xref{global,1},
