@@ -28,7 +28,7 @@
 	@name{gtags-cscope} [-Cqv]
 @DESCRIPTION
 	@name{Gtags-cscope} is a pseudo cscope which implements the
-	line-oriented interface.
+	line-oriented interface of @xref{cscope,1}.
 	You can use this command for various clients instead of true cscope.
 
 	Since @name{gtags-cscope} is intended to make GLOBAL available
