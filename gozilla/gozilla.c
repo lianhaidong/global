@@ -316,7 +316,6 @@ getdefinitionURL(const char *arg, STRBUF *URL)
 {
 	FILE *fp;
 	char *p;
-	DBOP *dbop = NULL;
 	SPLIT ptable;
 	int status = -1;
 	STRBUF *sb = strbuf_open(0);
