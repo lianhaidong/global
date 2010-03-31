@@ -174,7 +174,7 @@
 	@item{@code{suffixes}(comma separated list)}
 		Suffixes of target source files.
 		As a special exception, @name{gtags} collect values from multiple @code{suffixes} variables.
-		This variable is obsoleted. If the langmap variable is defined
+		This variable is obsolete. If the langmap variable is defined
 		@name{gtags} no longer refers this.
 	@end_itemize
 @DIAGNOSTICS

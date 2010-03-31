@@ -1930,6 +1930,9 @@ About the capabilities, please see each command manual. @xref{Reference}.
 
 You can write new parser for gtags(1).
 
+Command layer plug-in parser is obsolete.
+Please see @file{plugin-example/} to know function layer plug-in parser.
+
 @subsection How to plug in a parser
 
 Copy @file{gtags.conf} to @file{/etc/gtags.conf} or @file{$HOME/.globalrc}.
