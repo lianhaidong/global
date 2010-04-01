@@ -818,7 +818,7 @@ makehtaccess(const char *file)
 	fputs_nl("# |AllowOverride Options FileInfo", op);
 	fputs_nl("#", op);
 	fputs_nl("# Htags was invoked with the -f, -c or -D option.", op);
-	fprintf(op, "# You should start HTTP server so that %s/cgi-bin/*.cgi is executed", cgidir);
+	fprintf(op, "# You should start HTTP server so that %s/*.cgi is executed\n", cgidir);
 	fputs_nl("# as a CGI script.", op);
 	fputs_nl("#", op);
 	fputs_nl("Options +ExecCGI", op);
