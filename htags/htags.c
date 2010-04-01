@@ -277,7 +277,7 @@ static struct option const long_options[] = {
         {"debug", no_argument, &debug, 1},
         {"disable-grep", no_argument, &enable_grep, 0},
         {"full-path", no_argument, &full_path, 1},
-        {"html4", no_argument, &enable_xhtml, 0},
+        {"html", no_argument, &enable_xhtml, 0},
         {"nocgi", no_argument, &cgi, 0},
         {"no-map-file", no_argument, &map_file, 0},
         {"show-position", no_argument, &show_position, 1},
