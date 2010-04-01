@@ -329,17 +329,15 @@ execute_command(STRBUF *sb, const int com, const int opt, const char *arg)
 	strbuf_clear(command);
 	strbuf_puts(command, global_path);
 	strbuf_puts(command, " --result=cscope");
-	if (opt || ignore_case) {
-		if (opt == FROM_HERE) {
-			strbuf_puts(command, " --from-here=");
-			strbuf_puts(command, context);
-		} else {
-			strbuf_puts(command, " -");
-			strbuf_putc(command, opt);
-		}
-		if (ignore_case)
-			strbuf_puts(command, " --ignore-case");
+	if (opt == FROM_HERE) {
+		strbuf_puts(command, " --from-here=");
+		strbuf_puts(command, context);
+	} else if (opt) {
+		strbuf_puts(command, " -");
+		strbuf_putc(command, opt);
 	}
+	if (ignore_case)
+		strbuf_puts(command, " --ignore-case");
 	strbuf_putc(command, ' ');
 	strbuf_putc(command, QUOTE);
 	strbuf_puts(command, arg);
