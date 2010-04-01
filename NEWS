@@ -21,6 +21,27 @@ ___________________________________
 GNU GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 5.8.2 - April 1 2010
+
+[CHANGES]
+o gtags, htags: Changed the algorithm for detecting binary file.
+  If the first 512 bytes contain any character of 0-7, 14-26,28-31,
+  the file is basically considered to be a binary. New method can correctly
+  treat multi-byte text file too. This is suggested by Erik Jonsson.
+o global: Changed the -i option to be effective with the -c command.
+
+[INCOMPATIBLE CHANGES]
+o gtags: the built-in parser in function layer has become the default.
+  Config parameter 'use_builtin_parser' is not used any longer.
+o htags: Changed the default output from HTML to XHTML.
+  In older htags,
+        no option: HTML
+        --xhtml: XHTML
+  In new htags,
+        no option: XHTML
+        --xhtml: XHTML
+        --html(new option): HTML
+
 Version 5.8.1 - March 6 2010
 
 [CHANGES]
