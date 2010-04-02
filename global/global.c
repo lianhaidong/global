@@ -742,7 +742,7 @@ idutils(const char *pattern, const char *dbpath)
 	 */
 	strbuf_puts(ib, lid);
 	strbuf_puts(ib, " --separator=newline");
-	if (!tflag && !xflag)
+	if (format == FORMAT_PATH)
 		strbuf_puts(ib, " --result=filenames --key=none");
 	else
 		strbuf_puts(ib, " --result=grep");
