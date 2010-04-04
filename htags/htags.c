@@ -122,7 +122,7 @@ int statistics = STATISTICS_STYLE_NONE;	/* --statistics option		*/
 int no_order_list;			/* 1: doesn't use order list	*/
 int other_files;			/* 1: list other files		*/
 int enable_grep = 1;			/* 1: enable grep		*/
-int enable_idutils;			/* 1: enable idutils		*/
+int enable_idutils = 1;			/* 1: enable idutils		*/
 int enable_xhtml = 1;			/* 1: enable XHTML		*/
 
 const char *action_value;
@@ -276,6 +276,7 @@ static struct option const long_options[] = {
         {"caution", no_argument, &caution, 1},
         {"debug", no_argument, &debug, 1},
         {"disable-grep", no_argument, &enable_grep, 0},
+        {"disable-idutils", no_argument, &enable_idutils, 0},
         {"full-path", no_argument, &full_path, 1},
         {"html", no_argument, &enable_xhtml, 0},
         {"nocgi", no_argument, &cgi, 0},
@@ -311,7 +312,6 @@ static struct option const long_options[] = {
         {"insert-footer", required_argument, NULL, OPT_INSERT_FOOTER},
         {"insert-header", required_argument, NULL, OPT_INSERT_HEADER},
         {"item-order", required_argument, NULL, OPT_ITEM_ORDER},
-        {"tabs", required_argument, NULL, OPT_TABS},
         { 0 }
 };
 
@@ -1158,60 +1158,28 @@ configuration(int argc, char *const *argv)
 		else
 			tabs = n;
 	}
-	if (getconfn("flist_fields", &n)) {
-		if (n < 1)
-			warning("parameter 'flist_fields' ignored because the value (=%d) is too large or too small.", n);
-		else
-			flist_fields = n;
-	}
 	strbuf_reset(sb);
 	if (getconfs("gzipped_suffix", sb))
 		gzipped_suffix = check_strdup(strbuf_value(sb));
 	strbuf_reset(sb);
 	if (getconfs("normal_suffix", sb))
 		normal_suffix = check_strdup(strbuf_value(sb));
-	strbuf_reset(sb);
-	if (getconfs("definition_header", sb)) {
-		p = strbuf_value(sb);
-		if (!strcmp(p, "no"))
-			definition_header = NO_HEADER;
-		else if (!strcmp(p, "before"))
-			definition_header = BEFORE_HEADER;
-		else if (!strcmp(p, "right"))
-			definition_header = RIGHT_HEADER;
-		else if (!strcmp(p, "after"))
-			definition_header = AFTER_HEADER;
-	}
-	if (getconfb("other_files"))
-		other_files = 1;
-	if (getconfb("disable_grep"))
-		enable_grep = 0;
-	if (getconfb("enable_idutils"))
-		enable_idutils = 1;
-	if (getconfb("full_path"))
-		full_path = 1;
-	if (getconfb("table_list"))
-		table_list = 1;
-	if (getconfb("table_flist"))
-		table_flist = 1;
 	if (getconfb("no_order_list"))
 		no_order_list = 1;
-	if (getconfb("no_map_file"))
-		map_file = 0;
+/*
 	strbuf_reset(sb);
 	if (getconfs("icon_spec", sb))
 		icon_spec = check_strdup(strbuf_value(sb));
 	strbuf_reset(sb);
 	if (getconfs("icon_suffix", sb))
 		icon_suffix = check_strdup(strbuf_value(sb));
+*/
 	strbuf_reset(sb);
 	if (getconfs("prolog_script", sb))
 		prolog_script = check_strdup(strbuf_value(sb));
 	strbuf_reset(sb);
 	if (getconfs("epilog_script", sb))
 		epilog_script = check_strdup(strbuf_value(sb));
-	if (getconfb("show_position"))
-		show_position = 1;
 	if (getconfb("colorize_warned_line"))
 		colorize_warned_line = 1;
 	strbuf_reset(sb);
@@ -1223,8 +1191,6 @@ configuration(int argc, char *const *argv)
 			*q = '\0';
 		script_alias = p;
 	}
-	if (getconfb("dynamic"))
-		dynamic = 1;
 	strbuf_reset(sb);
 	if (getconfs("body_begin", sb)) {
 		p = check_strdup(strbuf_value(sb));
