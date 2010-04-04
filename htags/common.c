@@ -95,8 +95,12 @@ const char *reserved_begin	= "<b>";
 const char *reserved_end	= "</b>";
 const char *position_begin	= "<font color='gray'>";
 const char *position_end	= "</font>";
-const char *warned_line_begin	= "<span style='background-color:yellow'>";
-const char *warned_line_end	= "</span>";
+const char *warned_line_begin	= "<font color='red'>";
+const char *warned_line_end	= "</font>";
+const char *current_line_begin	= "";
+const char *current_line_end	= "";
+const char *current_row_begin	= "<tr>";
+const char *current_row_end	= "</tr>";
 const char *error_begin		= "<h1><font color='#cc0000'>";
 const char *error_end		= "</font></h1>";
 const char *message_begin	= "<h3>";
@@ -189,6 +193,10 @@ setup_xhtml(void)
 	position_end		= "</em>";
 	warned_line_begin	= "<em class='warned'>";
 	warned_line_end		= "</em>";
+	current_line_begin	= "<span class='curline'>";
+	current_line_end	= "</span>";
+	current_row_begin	= "<tr class='curline'>";
+	current_row_end		= "</tr>";
 	error_begin		= "<h2 class='error'>";
 	error_end		= "</h2>";
 	message_begin		= "<h3 class='message'>";
@@ -609,22 +617,22 @@ gen_list_body(const char *srcdir, const char *ctags_x)		/* virtually const */
 	filename = ptable.part[PART_PATH].start + 2;	/* remove './' */
 	fid = path2fid(filename);
 	if (table_list) {
+		strbuf_puts(sb, current_row_begin);
 		if (enable_xhtml) {
-			strbuf_puts(sb, "<tr class='curline'><td class='tag'>");
+			strbuf_puts(sb, "<td class='tag'>");
 			strbuf_puts(sb, gen_href_begin(srcdir, fid, HTML, ptable.part[PART_LNO].start));
 			strbuf_puts(sb, ptable.part[PART_TAG].start);
 			strbuf_puts(sb, gen_href_end());
 			strbuf_sprintf(sb, "</td><td class='line'>%s</td><td class='file'>%s</td><td class='code'>",
 				ptable.part[PART_LNO].start, filename);
 		} else {
-			strbuf_puts(sb, "<tr class='curline'><td nowrap>");
+			strbuf_puts(sb, "<td nowrap>");
 			strbuf_puts(sb, gen_href_begin(srcdir, fid, HTML, ptable.part[PART_LNO].start));
 			strbuf_puts(sb, ptable.part[PART_TAG].start);
 			strbuf_puts(sb, gen_href_end());
 			strbuf_sprintf(sb, "</td><td nowrap align='right'>%s</td><td nowrap align='left'>%s</td><td nowrap>",
 				ptable.part[PART_LNO].start, filename);
 		}
-
 		for (p = ptable.part[PART_LINE].start; *p; p++) {
 			unsigned char c = *p;
 
@@ -642,12 +650,13 @@ gen_list_body(const char *srcdir, const char *ctags_x)		/* virtually const */
 			} else
 				strbuf_putc(sb, c);
 		}
-		strbuf_puts(sb, "</td></tr>");
+		strbuf_puts(sb, "</td>");
+		strbuf_puts(sb, current_row_end);
 		recover(&ptable);
 	} else {
 		int done = 0;
 
-		strbuf_puts(sb, "<span class='curline'>");
+		strbuf_puts(sb, current_line_begin);
 		strbuf_puts(sb, gen_href_begin(srcdir, fid, HTML, ptable.part[PART_LNO].start));
 		strbuf_puts(sb, ptable.part[PART_TAG].start);
 		strbuf_puts(sb, gen_href_end());
@@ -670,7 +679,7 @@ gen_list_body(const char *srcdir, const char *ctags_x)		/* virtually const */
 			else
 				strbuf_putc(sb, c);
 		}
-		strbuf_puts(sb, "</span>");
+		strbuf_puts(sb, current_line_end);
 	}
 	return strbuf_value(sb);
 }
