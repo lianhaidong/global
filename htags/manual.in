@@ -129,7 +129,7 @@
 		@code{script_alias} in @file{gtags.conf}.
 	@item{@option{-s}, @option{--symbol}}
 		Make anchors not only for object definitions and references but also other symbols.
-	@item{@option{--show_position}}
+	@item{@option{--show-position}}
 		Show position per function definition. The default is false.
 	@item{@option{--statistics}}
 		Print statistics information.
@@ -144,8 +144,6 @@
 		The default is the last component of the path of the current directory.
 	@item{@option{--table-list}}
 		Use <table> tag to display the tag list.
-	@item{@option{--tabs @arg{number}}}
-		Tab stop. The default is 8.
 	@item{@option{-v}, @option{--verbose}}
 		Verbose mode.
 	@item{@option{-w}, @option{--warning}}
