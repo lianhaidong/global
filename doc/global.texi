@@ -158,6 +158,10 @@ It is a big merit of GLOBAL compared with any other tag systems.
 @node   Preparation
 @section Preparation
 
+Before beginning, please read the FAQ (Frequently Asked Questions) file.
+
+    $ more /usr/local/share/gtags/FAQ
+
 First of all, you must execute gtags(1)(@pxref{gtags}) at the root of source tree.
 For example, if you want to browse the source code of Vi editor in FreeBSD,
 please move to the source directory and invoke gtags(1).
