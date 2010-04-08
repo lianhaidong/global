@@ -93,7 +93,7 @@ A3. GLOBAL treats *.h files as a C source file. If you want to treat them
 
         or
 
-	$ export GTAGSFORCECPP 1
+	$ export GTAGSFORCECPP=
 
 ----------------------------------------------------------------------------
 Q4. I'm using GNU system. In a large project, gtags fails in making tags
