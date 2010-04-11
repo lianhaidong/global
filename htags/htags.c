@@ -312,6 +312,7 @@ static struct option const long_options[] = {
         {"insert-footer", required_argument, NULL, OPT_INSERT_FOOTER},
         {"insert-header", required_argument, NULL, OPT_INSERT_HEADER},
         {"item-order", required_argument, NULL, OPT_ITEM_ORDER},
+	{"tabs", required_argument, NULL, OPT_TABS},
         { 0 }
 };
 
