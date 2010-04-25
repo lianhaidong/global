@@ -122,23 +122,23 @@ convert_open(int type, int format, const char *root, const char *cwd, const char
  * convert_put: convert path into relative or absolute and print.
  *
  *	i)	cv	CONVERT structure
- *	i)	tagline	output record
+ *	i)	ctags_x	tag record (ctags-x format)
  */
 void
-convert_put(CONVERT *cv, const char *tagline)
+convert_put(CONVERT *cv, const char *ctags_x)
 {
 	char *tagnextp = NULL;
 	int tagnextc = 0;
 	char *tag = NULL, *lineno = NULL, *path, *rest = NULL;
 
+	if (cv->format == FORMAT_PATH)
+		die("convert_put: internal error.");	/* Use convert_put_path() */
 	/*
 	 * parse tag line.
 	 * Don't use split() function not to destroy line image.
 	 */
-	if (cv->format == FORMAT_PATH) {
-		path = (char *)tagline;
-	} else {
-		char *p = (char *)tagline;
+	{
+		char *p = (char *)ctags_x;
 		/*
 		 * tag name
 		 */
@@ -181,9 +181,6 @@ convert_put(CONVERT *cv, const char *tagline)
 		rest = p;
 	}
 	switch (cv->format) {
-	case FORMAT_PATH:
-		fputs(convert_pathname(cv, path), cv->op);
-		break;
 	case FORMAT_CTAGS:
 		fputs(tag, cv->op);
 		fputc('\t', cv->op);
@@ -200,7 +197,7 @@ convert_put(CONVERT *cv, const char *tagline)
 		 * print until path name.
 		 */
 		*tagnextp = tagnextc;
-		fputs(tagline, cv->op);
+		fputs(ctags_x, cv->op);
 		fputc(' ', cv->op);
 		/*
 		 * print path name and the rest.
@@ -230,6 +227,20 @@ convert_put(CONVERT *cv, const char *tagline)
 	default:
 		die("unknown format type.");
 	}
+	(void)fputc('\n', cv->op);
+}
+/*
+ * convert_put_path: convert path into relative or absolute and print.
+ *
+ *	i)	cv	CONVERT structure
+ *	i)	path	path name
+ */
+void
+convert_put_path(CONVERT *cv, const char *path)
+{
+	if (cv->format != FORMAT_PATH)
+		die("convert_put_path: internal error.");
+	fputs(convert_pathname(cv, path), cv->op);
 	(void)fputc('\n', cv->op);
 }
 /*

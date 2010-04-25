@@ -774,7 +774,7 @@ idutils(const char *pattern, const char *dbpath)
 		count++;
 		switch (format) {
 		case FORMAT_PATH:
-			convert_put(cv, path);
+			convert_put_path(cv, path);
 			break;
 		default:
 			/* extract line number */
@@ -853,7 +853,7 @@ grep(const char *pattern, const char *dbpath)
 			if (regexec(&preg, buffer, 0, 0, 0) == 0) {
 				count++;
 				if (format == FORMAT_PATH) {
-					convert_put(cv, path);
+					convert_put_path(cv, path);
 					break;
 				} else {
 					convert_put_using(cv, edit, path, linenum, buffer);
@@ -925,7 +925,7 @@ pathlist(const char *pattern, const char *dbpath)
 		if (pattern && regexec(&preg, p, 0, 0, 0) != 0)
 			continue;
 		if (format == FORMAT_PATH)
-			convert_put(cv, path);
+			convert_put_path(cv, path);
 		else
 			convert_put_using(cv, "path", path, 1, " ");
 		count++;
@@ -1047,7 +1047,7 @@ parsefile(int argc, char *const *argv, const char *cwd, const char *root, const 
 				}
 				if (strcmp(curpath, ptable.part[PART_PATH].start)) {
 					strlimcpy(curpath, ptable.part[PART_PATH].start, sizeof(curpath));
-					convert_put(cv, curpath);
+					convert_put_path(cv, curpath);
 					count++;
 				}
 			}
@@ -1292,7 +1292,7 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 		if (lflag && !locatestring(gtp->path, localprefix, MATCH_AT_FIRST))
 			continue;
 		if (format == FORMAT_PATH) {
-			convert_put(cv, gtp->path);
+			convert_put_path(cv, gtp->path);
 			count++;
 		} else if (gtop->format & GTAGS_COMPACT) {
 			/*
