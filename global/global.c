@@ -856,7 +856,7 @@ grep(const char *pattern, const char *dbpath)
 					convert_put_path(cv, path);
 					break;
 				} else {
-					convert_put_using(cv, edit, path, linenum, buffer, NULL);
+					convert_put_using(cv, edit, path, linenum, buffer, gp->dbop->lastdat);
 				}
 			}
 		}
@@ -927,7 +927,7 @@ pathlist(const char *pattern, const char *dbpath)
 		if (format == FORMAT_PATH)
 			convert_put_path(cv, path);
 		else
-			convert_put_using(cv, "path", path, 1, " ", NULL);
+			convert_put_using(cv, "path", path, 1, " ", gp->dbop->lastdat);
 		count++;
 	}
 	gfind_close(gp);
@@ -1093,6 +1093,7 @@ struct parsefile_data {
 	int target;
 	int extractmethod;
 	int count;
+	const char *fid;			/* fid of the file under processing */
 };
 static void
 put_syms(int type, const char *tag, int lno, const char *path, const char *line_image, void *arg)
@@ -1139,7 +1140,7 @@ put_syms(int type, const char *tag, int lno, const char *path, const char *line_
 	default:
 		return;
 	}
-	convert_put_using(data->cv, tag, path, lno, line_image, NULL);
+	convert_put_using(data->cv, tag, path, lno, line_image, data->fid);
 	data->count++;
 }
 void
@@ -1174,6 +1175,7 @@ parsefile_using_builtin_parser(char *const *argv, const char *cwd, const char *r
 	} else {
 		data.dbop = NULL;
 	}
+	data.fid = NULL;
 	/*
 	 * Execute parser in the root directory of source tree.
 	 */
@@ -1189,7 +1191,8 @@ parsefile_using_builtin_parser(char *const *argv, const char *cwd, const char *r
 		if (normalize(av, get_root_with_slash(), cwd, path, sizeof(path)) == NULL)
 			if (!qflag)
 				fprintf(stderr, "'%s' is out of source tree.\n", path + 2);
-		if (!gpath_path2fid(path, NULL)) {
+		data.fid = gpath_path2fid(path, NULL);
+		if (!data.fid) {
 			if (!qflag)
 				fprintf(stderr, "'%s' not found in GPATH.\n", path + 2);
 			continue;
