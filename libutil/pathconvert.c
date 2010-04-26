@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2006 Tama Communications Corporation
+ * Copyright (c) 2005, 2006, 2010 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -251,9 +251,10 @@ convert_put_path(CONVERT *cv, const char *path)
  *      i)      path    path name
  *      i)      lineno  line number
  *      i)      line    line image
+ *	i)	fid	file id (only when fid != NULL)
  */
 void
-convert_put_using(CONVERT *cv, const char *tag, const char *path, int lineno, const char *rest)
+convert_put_using(CONVERT *cv, const char *tag, const char *path, int lineno, const char *rest, const char *fid)
 {
 	switch (cv->format) {
 	case FORMAT_PATH:
@@ -267,7 +268,7 @@ convert_put_using(CONVERT *cv, const char *tag, const char *path, int lineno, co
 		fprintf(cv->op, "%d", lineno);
 		break;
 	case FORMAT_CTAGS_XID:
-		fputs(gpath_path2fid(path, NULL), cv->op);
+		fputs(fid ? fid : gpath_path2fid(path, NULL), cv->op);
 		fputc(' ', cv->op);
 		/* PASS THROUGH */
 	case FORMAT_CTAGS_X:

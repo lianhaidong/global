@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2006 Tama Communications Corporation
+ * Copyright (c) 2005, 2006, 2010 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -36,7 +36,7 @@ typedef struct {
 CONVERT *convert_open(int, int, const char *, const char *, const char *, FILE *);
 void convert_put(CONVERT *, const char *);
 void convert_put_path(CONVERT *, const char *);
-void convert_put_using(CONVERT *, const char *, const char *, int, const char *);
+void convert_put_using(CONVERT *, const char *, const char *, int, const char *, const char *);
 void convert_close(CONVERT *cv);
 
 #endif /* ! _PATHCONVERT_H_ */

@@ -792,7 +792,7 @@ idutils(const char *pattern, const char *dbpath)
 			/*
 			 * print out.
 			 */
-			convert_put_using(cv, edit, path, linenum, p);
+			convert_put_using(cv, edit, path, linenum, p, NULL);
 			break;
 		}
 	}
@@ -856,7 +856,7 @@ grep(const char *pattern, const char *dbpath)
 					convert_put_path(cv, path);
 					break;
 				} else {
-					convert_put_using(cv, edit, path, linenum, buffer);
+					convert_put_using(cv, edit, path, linenum, buffer, NULL);
 				}
 			}
 		}
@@ -927,7 +927,7 @@ pathlist(const char *pattern, const char *dbpath)
 		if (format == FORMAT_PATH)
 			convert_put_path(cv, path);
 		else
-			convert_put_using(cv, "path", path, 1, " ");
+			convert_put_using(cv, "path", path, 1, " ", NULL);
 		count++;
 	}
 	gfind_close(gp);
@@ -1139,7 +1139,7 @@ put_syms(int type, const char *tag, int lno, const char *path, const char *line_
 	default:
 		return;
 	}
-	convert_put_using(data->cv, tag, path, lno, line_image);
+	convert_put_using(data->cv, tag, path, lno, line_image, NULL);
 	data->count++;
 }
 void
@@ -1301,9 +1301,10 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 			 * tagline = <file id> <tag name> <line no>,...
 			 */
 			char *p = (char *)gtp->tagline;
-			const char *tagname;
+			const char *fid, *tagname;
 			int n = 0;
 
+			fid = p;
 			while (*p != ' ')
 				p++;
 			*p++ = '\0';			/* a */
@@ -1381,7 +1382,7 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 					}
 					if (gtop->format & GTAGS_COMPNAME)
 						tagname = (char *)uncompress(tagname, gtp->tag);
-					convert_put_using(cv, tagname, gtp->path, n, src);
+					convert_put_using(cv, tagname, gtp->path, n, src, fid);
 					count++;
 					last_lineno = last = n;
 				}
@@ -1411,7 +1412,7 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 					}
 					if (gtop->format & GTAGS_COMPNAME)
 						tagname = (char *)uncompress(tagname, gtp->tag);
-					convert_put_using(cv, tagname, gtp->path, n, src);
+					convert_put_using(cv, tagname, gtp->path, n, src, fid);
 					count++;
 					last_lineno = n;
 				}
@@ -1424,8 +1425,9 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 			 */
 			char *p = (char *)gtp->tagline;
 			char namebuf[IDENTLEN+1];
-			const char *tagname, *image;
+			const char *fid, *tagname, *image;
 
+			fid = p;
 			while (*p != ' ')
 				p++;
 			*p++ = '\0';			/* a */
@@ -1446,7 +1448,7 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 				if (gtop->format & GTAGS_COMPRESS)
 					image = (char *)uncompress(image, gtp->tag);
 			}
-			convert_put_using(cv, tagname, gtp->path, gtp->lineno, image);
+			convert_put_using(cv, tagname, gtp->path, gtp->lineno, image, fid);
 			count++;
 		}
 	}
