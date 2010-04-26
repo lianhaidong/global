@@ -35,6 +35,7 @@
 #include "global.h"
 #include "anchor.h"
 #include "htags.h"
+#include "path2url.h"
 
 static XARGS *anchor_input[GTAGLIM];
 static struct anchor *table;
@@ -92,7 +93,7 @@ anchor_prepare(FILE *anchor_stream)
 		 * the same file are consecutive.
 		 */
 		if (gtags_exist[db] == 1) {
-			snprintf(comline, sizeof(comline), "%s -f%s --nofilter=path", global_path, options[db]);
+			snprintf(comline, sizeof(comline), "%s -f%s --result=ctags-xid --nofilter=path", global_path, options[db]);
 			anchor_input[db] = xargs_open_with_file(comline, 0, anchor_stream);
 		}
 	}
@@ -105,8 +106,15 @@ anchor_prepare(FILE *anchor_stream)
 void
 anchor_load(const char *path)
 {
-	int db;
+	int db, current_fid;
 
+	/* Get fid of the path */
+	{
+		const char *p = path2fid(path);
+		if (p == NULL)
+			die("anchor_load: internal error. file '%s' not found in GPATH.", path);
+		current_fid = atoi(p);
+	}
 	FIRST = LAST = 0;
 	end = CURRENT = NULL;
 
@@ -117,7 +125,7 @@ anchor_load(const char *path)
 
 	for (db = GTAGS; db < GTAGLIM; db++) {
 		XARGS *xp;
-		char *ctags_x;
+		char *ctags_xid, *ctags_x;
 
 		if ((xp = anchor_input[db]) == NULL)
 			continue;
@@ -125,23 +133,25 @@ anchor_load(const char *path)
 		 * Read from input stream until it reaches end of file
 		 * or the line of another file appears.
 		 */
-		while ((ctags_x = xargs_read(xp)) != NULL) {
+		while ((ctags_xid = xargs_read(xp)) != NULL) {
 			SPLIT ptable;
 			struct anchor *a;
+			char *fid;
 			int type;
 
+			/*
+			 * It is the following file.
+			 */
+			if (current_fid != atoi(ctags_xid)) {
+				xargs_unread(xp);
+				break;
+			}
+			for (ctags_x = ctags_xid; *ctags_x && *ctags_x != ' '; ctags_x++)
+				;
+			ctags_x++;
 			if (split(ctags_x, 4, &ptable) < 4) {
 				recover(&ptable);
 				die("too small number of parts in anchor_load().\n'%s'", ctags_x);
-			}
-			if (!locatestring(ptable.part[PART_PATH].start, "./", MATCH_AT_FIRST)) {
-				recover(&ptable);
-				die("The output of parser is illegal.\n%s", ctags_x);
-			}
-			if (strcmp(ptable.part[PART_PATH].start, path) != 0) {
-				recover(&ptable);
-				xargs_unread(xp);
-				break;
 			}
 			if (db == GTAGS) {
 				char *p = ptable.part[PART_LINE].start;
@@ -181,7 +191,7 @@ anchor_load(const char *path)
 			settag(a, ptable.part[PART_TAG].start);
 			recover(&ptable);
 		}
-		if (ctags_x == NULL) {
+		if (ctags_xid == NULL) {
 			xargs_close(anchor_input[db]);
 			anchor_input[db] = NULL;
 		}
