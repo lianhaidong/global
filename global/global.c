@@ -1191,11 +1191,20 @@ parsefile_using_builtin_parser(char *const *argv, const char *cwd, const char *r
 		if (normalize(av, get_root_with_slash(), cwd, path, sizeof(path)) == NULL)
 			if (!qflag)
 				fprintf(stderr, "'%s' is out of source tree.\n", path + 2);
-		data.fid = gpath_path2fid(path, NULL);
-		if (!data.fid) {
-			if (!qflag)
-				fprintf(stderr, "'%s' not found in GPATH.\n", path + 2);
-			continue;
+		/*
+		 * Memorize the file id of the path. This is used in put_syms().
+		 */
+		{
+			static char s_fid[32];
+			const char *p = gpath_path2fid(path, NULL);
+
+			if (!p) {
+				if (!qflag)
+					fprintf(stderr, "'%s' not found in GPATH.\n", path + 2);
+				continue;
+			}
+			strlimcpy(s_fid, p, sizeof(s_fid));
+			data.fid = s_fid;
 		}
 		if (!test("f", makepath(root, path, NULL))) {
 			if (test("d", NULL)) {
