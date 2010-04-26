@@ -136,7 +136,6 @@ anchor_load(const char *path)
 		while ((ctags_xid = xargs_read(xp)) != NULL) {
 			SPLIT ptable;
 			struct anchor *a;
-			char *fid;
 			int type;
 
 			/*
