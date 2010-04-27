@@ -34,6 +34,7 @@
 #include "common.h"
 #include "incop.h"
 #include "path2url.h"
+#include "split.h"
 #include "htags.h"
 
 /*----------------------------------------------------------------------*/
@@ -355,14 +356,18 @@ put_anchor(char *name, int type, int lineno)
 		strbuf_puts(outbuf, name);
 	} else {
 		/*
-		 * About cache record format, please see the comment in cache.c.
+		 * About the format of 'line', please see the head comment of cache.c.
 		 */
 		if (*line == ' ') {
+			SPLIT ptable;
 			char tmp[MAXPATHLEN];
-			const char *id = strmake(++line, " ");
-			const char *count = locatestring(line, " ", MATCH_FIRST) + 1;
+			const char *id, *count;
 			const char *dir, *file, *suffix = NULL;
 
+			if (split((char *)line + 1, 2, &ptable) < 2)
+				die("too small number of parts in put_anchor().\n'%s'", line);
+			id = ptable.part[0].start;
+			count = ptable.part[1].start;
 			if (dynamic) {
 				const char *s;
 
@@ -389,24 +394,30 @@ put_anchor(char *name, int type, int lineno)
 			strbuf_puts(outbuf, gen_href_begin_with_title(dir, file, suffix, NULL, tooltip(type, -1, count)));
 			strbuf_puts(outbuf, name);
 			strbuf_puts(outbuf, gen_href_end());
+			recover(&ptable);
 		} else {
-			char lno[32];
-			const char *filename;
+			SPLIT ptable;
+			const char *lno, *fid, *path;
 
+			if (split((char *)line, 2, &ptable) < 2)
+				die("too small number of parts in put_anchor().\n'%s'", line);
+			lno = ptable.part[0].start;
+			fid = ptable.part[1].start;
+			path = gpath_fid2path(fid, NULL);
+			path += 2;              /* remove './' */
 			/*
 			 * Don't make a link which refers to itself.
 			 * Being used only once means that it is a self link.
 			 */
 			if (db == GSYMS) {
 				strbuf_puts(outbuf, name);
+				recover(&ptable);
 				return;
 			}
-			strlimcpy(lno, strmake(line, " "), sizeof(lno));
-			filename = strmake(locatestring(line, " ", MATCH_FIRST) + 1, " ")
-						+ 2;	/* remove './' */
-			strbuf_puts(outbuf, gen_href_begin_with_title(upperdir(SRCS), path2fid(filename), HTML, lno, tooltip(type, atoi(lno), filename)));
+			strbuf_puts(outbuf, gen_href_begin_with_title(upperdir(SRCS), fid, HTML, lno, tooltip(type, atoi(lno), path)));
 			strbuf_puts(outbuf, name);
 			strbuf_puts(outbuf, gen_href_end());
+			recover(&ptable);
 		}
 	}
 }

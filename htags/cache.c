@@ -48,11 +48,10 @@ static ASSOC *assoc[GTAGLIM];
  *    The duplicate object entry file can be referred to as 'D/<fid>.html'.
  *	
  * (2) The tag definition.
- *	+---------------------------+
- *	|<line number>' '<file name>|
- *	+---------------------------+
+ *	+---------------------+
+ *	|<line number>' '<fid>|
+ *	+---------------------+
  *    The tag entry is referred to as 'S/<fid>.html#<line number>'.
- *    The <fid> can be calculated by path2fid(<file name>).
  */
 
 /*

@@ -32,6 +32,7 @@
 #include "cache.h"
 #include "htags.h"
 #include "path2url.h"
+#include "split.h"
 #include "common.h"
 
 /*
@@ -195,21 +196,19 @@ makedefineindex(const char *file, int total, STRBUF *defines)
 
 		if (line == NULL)
 			die("internal error in makedefineindex()."); 
+		/*
+		 * About the format of 'line', please see the head comment of cache.c.
+		 */
 		if (*line == ' ') {
 			SPLIT ptable;
 			const char *fid, *enumber;
 
-			if (split((char *)line + 1, 2, &ptable) < 2) {
-				recover(&ptable);
+			if (split((char *)line + 1, 2, &ptable) < 2)
 				die("too small number of parts in makedefineindex().\n'%s'", line);
-			}
 			fid     = ptable.part[0].start;
 			enumber = ptable.part[1].start;
 			snprintf(url_for_map, sizeof(url_for_map), "%s/%s.%s",
 				DEFS, fid, HTML);
-			/*
-			 * cache record: " <file id> <entry number>"
-			 */
 			if (dynamic) {
 				if (*action != '/' && aflag)
 					strbuf_puts(url, "../");
@@ -226,15 +225,13 @@ makedefineindex(const char *file, int total, STRBUF *defines)
 			SPLIT ptable;
 			const char *lno, *fid, *path;
 
-			if (split((char *)line, 2, &ptable) < 2) {
-				recover(&ptable);
+			if (split((char *)line, 2, &ptable) < 2)
 				die("too small number of parts in makedefineindex().\n'%s'", line);
-			}
 			lno = ptable.part[0].start;
-			path = ptable.part[1].start;
+			fid = ptable.part[1].start;
+			path = gpath_fid2path(fid, NULL);
 			path += 2;		/* remove './' */
 
-			fid = path2fid(path);
 			snprintf(url_for_map, sizeof(url_for_map), "%s/%s.%s#L%s",
 				SRCS, fid, HTML, lno);
 			if (aflag)

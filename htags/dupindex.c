@@ -123,13 +123,14 @@ makedupindex(void)
 				}				
 				/* single entry */
 				if (first_line[0]) {
-					const char *ctags_x = parse_xid(first_line, NULL, NULL);
+					char fid[MAXFIDLEN+1];
+					const char *ctags_x = parse_xid(first_line, fid, NULL);
 
 					if (split(ctags_x, 4, &ptable) < 4) {
 						recover(&ptable);
 						die("too small number of parts.(2)\n'%s'", ctags_x);
 					}
-					snprintf(buf, sizeof(buf), "%s %s", ptable.part[PART_LNO].start, ptable.part[PART_PATH].start);
+					snprintf(buf, sizeof(buf), "%s %s", ptable.part[PART_LNO].start, fid);
 					cache_put(db, prev, buf);
 					recover(&ptable);
 				}
@@ -195,7 +196,7 @@ makedupindex(void)
 				recover(&ptable);
 				die("too small number of parts.(3)\n'%s'", ctags_x);
 			}
-			snprintf(buf, sizeof(buf), "%s %s", ptable.part[PART_LNO].start, ptable.part[PART_PATH].start);
+			snprintf(buf, sizeof(buf), "%s %s", ptable.part[PART_LNO].start, fid);
 			cache_put(db, prev, buf);
 			recover(&ptable);
 		}

@@ -1830,6 +1830,8 @@ main(int argc, char **argv)
 	 */
 	if (get_dbpath())
 		message(" Using %s/GTAGS", get_dbpath());
+	if (gpath_open(get_dbpath(), 0) < 0)
+		die("GPATH not found.");
 	if (!w32) {
 		/* UNDER CONSTRUCTION */
 	}
@@ -2023,6 +2025,7 @@ main(int argc, char **argv)
 			copyfile(src, dst);
 		}
 	}
+	gpath_close();
 	/*
 	 * Print statistics information.
 	 */
