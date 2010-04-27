@@ -117,7 +117,7 @@ const char *gen_href_begin(const char *, const char *, const char *, const char 
 const char *gen_href_begin_simple(const char *);
 const char *gen_href_end(void);
 const char *gen_list_begin(void);
-const char *gen_list_body(const char *, const char *);
+const char *gen_list_body(const char *, const char *, const char *);
 const char *gen_list_end(void);
 const char *gen_div_begin(const char *);
 const char *gen_div_end(void);

@@ -125,7 +125,7 @@ anchor_load(const char *path)
 
 	for (db = GTAGS; db < GTAGLIM; db++) {
 		XARGS *xp;
-		char *ctags_xid, *ctags_x;
+		char *ctags_xid;
 
 		if ((xp = anchor_input[db]) == NULL)
 			continue;
@@ -136,18 +136,16 @@ anchor_load(const char *path)
 		while ((ctags_xid = xargs_read(xp)) != NULL) {
 			SPLIT ptable;
 			struct anchor *a;
-			int type;
+			int type, fid;
+			const char *ctags_x = parse_xid(ctags_xid, NULL, &fid);
 
 			/*
 			 * It is the following file.
 			 */
-			if (current_fid != atoi(ctags_xid)) {
+			if (current_fid != fid) {
 				xargs_unread(xp);
 				break;
 			}
-			for (ctags_x = ctags_xid; *ctags_x && *ctags_x != ' '; ctags_x++)
-				;
-			ctags_x++;
 			if (split(ctags_x, 4, &ptable) < 4) {
 				recover(&ptable);
 				die("too small number of parts in anchor_load().\n'%s'", ctags_x);

@@ -67,7 +67,8 @@ makedupindex(void)
 		int writing = 0;
 		int count = 0;
 		int entry_count = 0;
-		char *ctags_x, tag[IDENTLEN], prev[IDENTLEN], first_line[MAXBUFLEN];
+		const char *ctags_xid, *ctags_x;
+		char tag[IDENTLEN], prev[IDENTLEN], first_line[MAXBUFLEN];
 
 		if (gtags_exist[db] == 0)
 			continue;
@@ -77,7 +78,7 @@ makedupindex(void)
 		 * construct command line.
 		 */
 		strbuf_reset(command);
-		strbuf_sprintf(command, "%s -x%s --nofilter=path", global_path, option);
+		strbuf_sprintf(command, "%s -x%s --result=ctags-xid --nofilter=path", global_path, option);
 		/*
 		 * Optimization when the --dynamic option is specified.
 		 */
@@ -89,9 +90,11 @@ makedupindex(void)
 		strbuf_puts(command, " \".*\"");
 		if ((ip = popen(strbuf_value(command), "r")) == NULL)
 			die("cannot execute command '%s'.", strbuf_value(command));
-		while ((ctags_x = strbuf_fgets(sb, ip, STRBUF_NOCRLF)) != NULL) {
+		while ((ctags_xid = strbuf_fgets(sb, ip, STRBUF_NOCRLF)) != NULL) {
 			SPLIT ptable;
+			char fid[MAXFIDLEN+1];
 
+			ctags_x = parse_xid(ctags_xid, fid, NULL);
 			if (split(ctags_x, 2, &ptable) < 2) {
 				recover(&ptable);
 				die("too small number of parts.(1)\n'%s'", ctags_x);
@@ -120,7 +123,9 @@ makedupindex(void)
 				}				
 				/* single entry */
 				if (first_line[0]) {
-					if (split(first_line, 4, &ptable) < 4) {
+					const char *ctags_x = parse_xid(first_line, NULL, NULL);
+
+					if (split(ctags_x, 4, &ptable) < 4) {
 						recover(&ptable);
 						die("too small number of parts.(2)\n'%s'", ctags_x);
 					}
@@ -132,13 +137,16 @@ makedupindex(void)
 				 * Chop the tail of the line. It is not important.
 				 * strlimcpy(first_line, ctags_x, sizeof(first_line));
 				 */
-				strncpy(first_line, ctags_x, sizeof(first_line));
+				strncpy(first_line, ctags_xid, sizeof(first_line));
 				first_line[sizeof(first_line) - 1] = '\0';
 				strlimcpy(prev, tag, sizeof(prev));
 				entry_count = 0;
 			} else {
 				/* duplicate entry */
 				if (first_line[0]) {
+					char fid[MAXFIDLEN+1];
+					const char *ctags_x = parse_xid(first_line, fid, NULL);
+
 					if (!dynamic) {
 						char path[MAXPATHLEN+1];
 
@@ -148,14 +156,14 @@ makedupindex(void)
 						fputs_nl(gen_page_begin(tag, SUBDIR), op);
 						fputs_nl(body_begin, op);
 						fputs_nl(gen_list_begin(), op);
-						fputs_nl(gen_list_body(srcdir, first_line), op);
+						fputs_nl(gen_list_body(srcdir, ctags_x, fid), op);
 					}
 					writing = 1;
 					entry_count++;
 					first_line[0] = 0;
 				}
 				if (!dynamic) {
-					fputs_nl(gen_list_body(srcdir, ctags_x), op);
+					fputs_nl(gen_list_body(srcdir, ctags_x, fid), op);
 				}
 				entry_count++;
 			}
@@ -180,8 +188,10 @@ makedupindex(void)
 		}
 		if (first_line[0]) {
 			SPLIT ptable;
+			char fid[MAXFIDLEN+1];
+			const char *ctags_x = parse_xid(first_line, fid, NULL);
 
-			if (split(first_line, 4, &ptable) < 4) {
+			if (split(ctags_x, 4, &ptable) < 4) {
 				recover(&ptable);
 				die("too small number of parts.(3)\n'%s'", ctags_x);
 			}

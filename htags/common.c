@@ -603,10 +603,10 @@ gen_list_begin(void)
  * s must be choped.
  */
 const char *
-gen_list_body(const char *srcdir, const char *ctags_x)		/* virtually const */
+gen_list_body(const char *srcdir, const char *ctags_x, const char *fid)	/* virtually const */
 {
 	STATIC_STRBUF(sb);
-	const char *p, *filename, *fid;
+	const char *p, *filename;
 	SPLIT ptable;
 
 	strbuf_clear(sb);
@@ -615,7 +615,8 @@ gen_list_body(const char *srcdir, const char *ctags_x)		/* virtually const */
 		die("too small number of parts in list_body().\n'%s'", ctags_x);
 	}
 	filename = ptable.part[PART_PATH].start + 2;	/* remove './' */
-	fid = path2fid(filename);
+	if (fid == NULL)
+		fid = path2fid(filename);
 	if (table_list) {
 		strbuf_puts(sb, current_row_begin);
 		if (enable_xhtml) {

@@ -862,7 +862,7 @@ makeincludeindex(void)
 				int count = inc->ref_count;
 
 				for (; count; line += strlen(line) + 1, count--)
-					fputs_nl(gen_list_body(upperdir(SRCS), line), INCLUDE);
+					fputs_nl(gen_list_body(upperdir(SRCS), line, NULL), INCLUDE);
 			}
 			fputs_nl(gen_list_end(), INCLUDE);
 			fputs_nl(body_end, INCLUDE);

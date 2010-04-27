@@ -999,13 +999,16 @@ makecommonpart(const char *title, const char *defines, const char *files)
 		case 'm':
 			strbuf_sprintf(sb, "%sMAINS%s\n", header_begin, header_end);
 
-			snprintf(buf, sizeof(buf), "%s -x --nofilter=path %s", global_path, main_func);
+			snprintf(buf, sizeof(buf), "%s --result=ctags-xid --nofilter=path %s", global_path, main_func);
 			ip = popen(buf, "r");
 			if (!ip)
 				die("cannot execute command '%s'.", buf);
 			strbuf_puts_nl(sb, gen_list_begin());
 			while ((_ = strbuf_fgets(ib, ip, STRBUF_NOCRLF)) != NULL) {
-				strbuf_puts_nl(sb, gen_list_body(SRCS, _));
+				char fid[MAXFIDLEN+1];
+				const char *ctags_x = parse_xid(_, fid, NULL);
+
+				strbuf_puts_nl(sb, gen_list_body(SRCS, ctags_x, fid));
 			}
 			strbuf_puts_nl(sb, gen_list_end());
 			if (pclose(ip) != 0)
