@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004 Tama Communications Corporation
+ * Copyright (c) 2004, 2010 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -28,6 +28,7 @@ typedef struct {
 ASSOC *assoc_open(void);
 void assoc_close(ASSOC *);
 void assoc_put(ASSOC *, const char *, const char *);
+void assoc_put_withlen(ASSOC *, const char *, const char *, int);
 const char *assoc_get(ASSOC *, const char *);
 
 #endif /* ! _ASSOC_H_ */

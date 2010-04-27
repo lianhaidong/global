@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002 Tama Communications Corporation
+ * Copyright (c) 2002, 2010 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -183,4 +183,20 @@ parse_xid(const char *ctags_xid, char *s_fid, int *n_fid)
 	if (n_fid != NULL)
 		*n_fid = n;
 	return p;
+}
+/*
+ * nextstring: seek to the next string.
+ *
+ *      i)      s       original string
+ *      r)              next string
+ *
+ *  s       v
+ * "aaaaaa\0bbbbb\0"
+ */
+const char *
+nextstring(const char *s)
+{
+	while (*s)
+		s++;
+	return s + 1;
 }

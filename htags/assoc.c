@@ -77,6 +77,21 @@ assoc_put(ASSOC *assoc, const char *name, const char *value)
 	dbop_put(assoc->dbop, name, value);
 }
 /*
+ * assoc_put_withlen: put data into associate array.
+ *
+ *	i)	assoc	descriptor
+ *	i)	name	name
+ *	i)	value	value
+ *	i)	len	length
+ */
+void
+assoc_put_withlen(ASSOC *assoc, const char *name, const char *value, int len)
+{
+	if (assoc->dbop == NULL)
+		abort();
+	dbop_put_withlen(assoc->dbop, name, value, len);
+}
+/*
  * assoc_get: get data from associate array.
  *
  *	i)	assoc	descriptor

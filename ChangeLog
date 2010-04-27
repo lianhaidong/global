@@ -19,6 +19,21 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+April 27 2010, Shigo YAMAGUCHI
+
+	* Changed the cache format like follows:
+
+	(1) Duplicate tag file
+	     +--------------------+           +---------------------+
+	     | <fid> <frequency>\0|        -> | <fid>\0<frequency>\0|
+	     +--------------------+           +---------------------+
+						'D/<fid>.html'
+	(2) Tag definition
+	     +---------------------------+    +----------------------+
+	     |<line number> <file name>\0| -> |<line number>\0<fid>\0|
+	     +---------------------------+    +----------------------+
+						'S/<fid>.html#<line number>'
+
 March 8 2010, Shigio YAMAGUCHI
 
 	* Changed the default parser of gtags(1) from gtags-parser(1) to libgloparser.a.

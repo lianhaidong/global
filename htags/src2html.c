@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005,
- *		2006, 2008
+ *		2006, 2008, 2010
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -359,15 +359,11 @@ put_anchor(char *name, int type, int lineno)
 		 * About the format of 'line', please see the head comment of cache.c.
 		 */
 		if (*line == ' ') {
-			SPLIT ptable;
 			char tmp[MAXPATHLEN];
-			const char *id, *count;
+			const char *id = line + 1;
+			const char *count = nextstring(id);
 			const char *dir, *file, *suffix = NULL;
 
-			if (split((char *)line + 1, 2, &ptable) < 2)
-				die("too small number of parts in put_anchor().\n'%s'", line);
-			id = ptable.part[0].start;
-			count = ptable.part[1].start;
 			if (dynamic) {
 				const char *s;
 
@@ -394,16 +390,11 @@ put_anchor(char *name, int type, int lineno)
 			strbuf_puts(outbuf, gen_href_begin_with_title(dir, file, suffix, NULL, tooltip(type, -1, count)));
 			strbuf_puts(outbuf, name);
 			strbuf_puts(outbuf, gen_href_end());
-			recover(&ptable);
 		} else {
-			SPLIT ptable;
-			const char *lno, *fid, *path;
+			const char *lno = line;
+			const char *fid = nextstring(line);
+			const char *path = gpath_fid2path(fid, NULL);
 
-			if (split((char *)line, 2, &ptable) < 2)
-				die("too small number of parts in put_anchor().\n'%s'", line);
-			lno = ptable.part[0].start;
-			fid = ptable.part[1].start;
-			path = gpath_fid2path(fid, NULL);
 			path += 2;              /* remove './' */
 			/*
 			 * Don't make a link which refers to itself.
@@ -411,13 +402,11 @@ put_anchor(char *name, int type, int lineno)
 			 */
 			if (db == GSYMS) {
 				strbuf_puts(outbuf, name);
-				recover(&ptable);
 				return;
 			}
 			strbuf_puts(outbuf, gen_href_begin_with_title(upperdir(SRCS), fid, HTML, lno, tooltip(type, atoi(lno), path)));
 			strbuf_puts(outbuf, name);
 			strbuf_puts(outbuf, gen_href_end());
-			recover(&ptable);
 		}
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003
+ * Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2010
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -51,6 +51,7 @@ int
 makedupindex(void)
 {
 	STRBUF *sb = strbuf_open(0);
+	STRBUF *tmp = strbuf_open(0);
 	STRBUF *command = strbuf_open(0);
 	int definition_count = 0;
 	char srcdir[MAXPATHLEN];
@@ -116,10 +117,15 @@ makedupindex(void)
 					}
 					writing = 0;
 					/*
-					 * cache record: " <file id> <entry number>"
+					 * cache record: " <file id>\0<entry number>"
 					 */
-					snprintf(buf, sizeof(buf), " %d %d", count - 1, entry_count);
-					cache_put(db, prev, buf);
+					strbuf_reset(tmp);
+					strbuf_putc(tmp, ' ');
+					strbuf_putn(tmp, count - 1);
+					strbuf_putc(tmp, '\0');
+					strbuf_putn(tmp, entry_count);
+					/* snprintf(buf, sizeof(buf), " %d%c%d", count - 1, '\0', entry_count);*/
+					cache_put(db, prev, strbuf_value(tmp), strbuf_getlen(tmp) + 1);
 				}				
 				/* single entry */
 				if (first_line[0]) {
@@ -130,8 +136,12 @@ makedupindex(void)
 						recover(&ptable);
 						die("too small number of parts.(2)\n'%s'", ctags_x);
 					}
-					snprintf(buf, sizeof(buf), "%s %s", ptable.part[PART_LNO].start, fid);
-					cache_put(db, prev, buf);
+					strbuf_reset(tmp);
+					strbuf_puts(tmp, ptable.part[PART_LNO].start);
+					strbuf_putc(tmp, '\0');
+					strbuf_puts(tmp, fid);
+					/* snprintf(buf, sizeof(buf), "%s%c%s", ptable.part[PART_LNO].start, '\0', fid);*/
+					cache_put(db, prev, strbuf_value(tmp), strbuf_getlen(tmp) + 1);
 					recover(&ptable);
 				}
 				/*
@@ -184,8 +194,13 @@ makedupindex(void)
 			/*
 			 * cache record: " <file id> <entry number>"
 			 */
-			snprintf(buf, sizeof(buf), " %d %d", count, entry_count);
-			cache_put(db, prev, buf);
+			strbuf_reset(tmp);
+			strbuf_putc(tmp, ' ');
+			strbuf_putn(tmp, count);
+			strbuf_putc(tmp, '\0');
+			strbuf_putn(tmp, entry_count);
+			/* snprintf(buf, sizeof(buf), " %d%c%d", count, '\0', entry_count);*/
+			cache_put(db, prev, strbuf_value(tmp), strbuf_getlen(tmp) + 1);
 		}
 		if (first_line[0]) {
 			SPLIT ptable;
@@ -196,12 +211,17 @@ makedupindex(void)
 				recover(&ptable);
 				die("too small number of parts.(3)\n'%s'", ctags_x);
 			}
-			snprintf(buf, sizeof(buf), "%s %s", ptable.part[PART_LNO].start, fid);
-			cache_put(db, prev, buf);
+			strbuf_reset(tmp);
+			strbuf_puts(tmp, ptable.part[PART_LNO].start);
+			strbuf_putc(tmp, '\0');
+			strbuf_puts(tmp, fid);
+			/* snprintf(buf, sizeof(buf), "%s%c%s", ptable.part[PART_LNO].start, '\0', fid);*/
+			cache_put(db, prev, strbuf_value(tmp), strbuf_getlen(tmp) + 1);
 			recover(&ptable);
 		}
 	}
 	strbuf_close(sb);
+	strbuf_close(tmp);
 	strbuf_close(command);
 	return definition_count;
 }
