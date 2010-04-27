@@ -56,7 +56,7 @@ makedupindex(void)
 	int definition_count = 0;
 	char srcdir[MAXPATHLEN];
 	int db;
-	char buf[1024];
+	/* char buf[1024];*/
 	FILEOP *fileop = NULL;
 	FILE *op = NULL;
 	FILE *ip = NULL;
