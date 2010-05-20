@@ -19,6 +19,43 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+May 20 2010, Shigo YAMAGUCHI
+
+	* Changed the architecture of gtags(1) from 2 pass to 1 pass.
+
+	[Current]
+
+        Pass 1:                      +-------+ 
+          source files =============>| gtags |============> GTAGS
+                                     |       |============> GPATH
+                                     |       |============> temporary file
+                                     +-------+
+        Pass 2:                      +-------+
+         temporary file ============>| gtags |============> GRTAGS
+                  GTAGS ============>|       |============> GSYMS
+                                     +-------+
+	[New]
+
+        Pass 1:                      +-------+
+          source files =============>| gtags |============> GPATH
+                                     |       |==>[sort]===> GTAGS
+                                     |       |==>[sort]===> GRTAGS
+                                     +-------+
+	(1) 1 pass architecture
+		GLOBAL doesn't use GSYMS any longer. Symbols stored there before are
+		put into GRTAGS instead. The divergence to GRTAGS and GSYMS is done
+		in referring stage (gtags_first() and gtags_next()) not in generating
+		stage. This change removes complexity from the program very much.
+	 
+	(2) Sorted writing
+		The (1) brings a big GRTAGS and decrease at the writing speed.
+		To avoid it, the records written to tag files are sorted beforehand.
+		This function becomes effective if DBOP_SORTED_WRITE flag is specified
+		for function dbop_open(). It uses an external POSIX sort program.
+
+	Note: In the new method, temporary file doesn't become unnecessary.
+	Because the external sort program also uses temporary files for its job.
+
 April 27 2010, Shigo YAMAGUCHI
 
 	* Changed the cache format like follows:

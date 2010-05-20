@@ -665,10 +665,8 @@ makesearchpart(const char *action, const char *id, const char *target)
 	strbuf_puts_nl(sb, target ? "Def" : "Definition");
 	strbuf_puts(sb, gen_input_radio("type", "reference", 0, "Retrieve the reference place of the specified symbol."));
 	strbuf_puts_nl(sb, target ? "Ref" : "Reference");
-	if (test("f", makepath(dbpath, dbname(GSYMS), NULL))) {
-		strbuf_puts(sb, gen_input_radio("type", "symbol", 0, "Retrieve the place of the specified symbol is used."));
-		strbuf_puts_nl(sb, target ? "Sym" : "Other symbol");
-	}
+	strbuf_puts(sb, gen_input_radio("type", "symbol", 0, "Retrieve the place of the specified symbol is used."));
+	strbuf_puts_nl(sb, target ? "Sym" : "Other symbol");
 	strbuf_puts(sb, gen_input_radio("type", "path", 0, "Look for path name which matches to the specified pattern."));
 	strbuf_puts(sb, target ? "Path" : "Path name");
 	if (enable_grep) {
@@ -1742,12 +1740,13 @@ main(int argc, char **argv)
 			path = makepath(dbpath, dbname(i), NULL);
 			gtags_exist[i] = test("fr", path);
 		}
-		if (!gtags_exist[GPATH] || !gtags_exist[GTAGS])
-			die("GPATH and/or GTAGS not found. Please reexecute htags with the -g option.");
-		if (!symbol)
-			gtags_exist[GSYMS] = 0;
-		else if (!gtags_exist[GSYMS])
-			die("the -s(--symbol) option needs GSYMS. Please reexecute htags with the -g option.");
+		/*
+		 * Real GRTAGS includes virtual GSYMS.
+		 */
+		if (gtags_exist[GRTAGS])
+			gtags_exist[GSYMS] = 1;
+		if (!gtags_exist[GPATH] || !gtags_exist[GTAGS] || !gtags_exist[GRTAGS])
+			die("GPATH, GTAGS and/or GRTAGS not found. Please reexecute htags with the -g option.");
 		/*
 		 * version check.
 		 * Do nothing, but the version of tag file will be checked.

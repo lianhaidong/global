@@ -39,6 +39,7 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
+#include <errno.h>
 
 #include "char.h"
 #include "checkalloc.h"
@@ -51,6 +52,82 @@
 
 #define ismeta(p)	(*((char *)(p)) == ' ')
 
+static char *argv[] = {
+	POSIX_SORT,
+	"-k",
+	"1,2",
+	NULL
+};
+
+static void start_sort_process(DBOP *);
+static void terminate_sort_process(DBOP *);
+
+/*
+ * start_sort_process: start sort process for sorted writing
+ *
+ *	i)	dbop	DBOP descriptor
+ */
+static void
+start_sort_process(DBOP *dbop) {
+	int opipe[2], ipipe[2];
+
+	if (!test("fx", POSIX_SORT)) {
+		static int informed;
+
+		if (!informed) {
+			warning("POSIX sort program not found. If available, the program will be speed up.");
+			informed = 1;
+		}
+		return;
+	}
+	/*
+	 * Setup pipe for two way communication
+	 *
+	 *	Parent(gtags)				Child(sort)
+	 *	---------------------------------------------------
+	 *	(dbop->sortout) opipe[1] =====> opipe[0] (stdin)
+	 *	(dbop->sortin)  ipipe[0] <===== ipipe[1] (stdout)
+	 */
+	if (pipe(opipe) < 0 || pipe(ipipe) < 0)
+		fprintf(stderr, "cannot create pipe.");
+	dbop->pid = fork();
+	if (dbop->pid == 0) {
+		/* child process */
+		close(opipe[1]);
+		close(ipipe[0]);
+		if (dup2(opipe[0], 0) < 0 || dup2(ipipe[1], 1) < 0)
+			die("dup2 failed.");
+		close(opipe[0]);
+		close(ipipe[1]);
+		/*
+		 * Use C locale in order to avoid the degradation of performance 	 
+		 * by internationalized sort command. 	 
+		 */
+		set_env("LC_ALL", "C");
+		execvp(POSIX_SORT, argv);
+	} else if (dbop->pid < 0)
+		die("fork failed.");
+	/* parent process */
+	close(opipe[0]);
+	close(ipipe[1]);
+	fcntl(ipipe[0], F_SETFD, FD_CLOEXEC);
+	fcntl(opipe[1], F_SETFD, FD_CLOEXEC);
+	dbop->sortout = fdopen(opipe[1], "w");
+	dbop->sortin = fdopen(ipipe[0], "r");
+	if (dbop->sortout == NULL || dbop->sortin == NULL)
+		die("fdopen failed.");
+}
+/*
+ * terminate_sort_process: terminate sort process
+ *
+ *	i)	dbop	DBOP descriptor
+ */
+static void
+terminate_sort_process(DBOP *dbop) {
+	while (waitpid(dbop->pid, NULL, 0) < 0 && errno == EINTR)
+		;
+}
+
 /*
  * dbop_open: open db database.
  *
@@ -59,7 +136,10 @@
  *	i)	perm	file permission
  *	i)	flags
  *			DBOP_DUP: allow duplicate records.
+ *			DBOP_SORTED_WRITE: use sorted writing. This requires POSIX sort.
  *	r)		descripter for dbop_xxx()
+ *
+ * Sorted wirting is fast because all writing is done by not insertion but addition.
  */
 DBOP *
 dbop_open(const char *path, int mode, int perm, int flags)
@@ -118,7 +198,13 @@ dbop_open(const char *path, int mode, int perm, int flags)
 	dbop->perm	= (mode == 1) ? perm : 0;
 	dbop->lastdat	= NULL;
 	dbop->lastsize	= 0;
-
+	dbop->sortout	= NULL;
+	dbop->sortin	= NULL;
+	/*
+	 * Setup sorted writing.
+	 */
+	if (dbop->openflags & DBOP_SORTED_WRITE)
+		start_sort_process(dbop);
 	return dbop;
 }
 /*
@@ -170,6 +256,14 @@ dbop_put(DBOP *dbop, const char *name, const char *data)
 		die("primary key size == 0.");
 	if (len > MAXKEYLEN)
 		die("primary key too long.");
+	/* sorted writing */
+	if (dbop->sortout != NULL) {
+		fputs(name, dbop->sortout);
+		putc('\t', dbop->sortout);
+		fputs(data, dbop->sortout);
+		putc('\n', dbop->sortout);
+		return;
+	}
 	key.data = (char *)name;
 	key.size = strlen(name)+1;
 	dat.data = (char *)data;
@@ -191,6 +285,8 @@ dbop_put(DBOP *dbop, const char *name, const char *data)
  *	i)	name	key
  *	i)	data	data
  *	i)	length	length of data
+ *
+ * Note: This function doesn't support sorted writing.
  */
 void
 dbop_put_withlen(DBOP *dbop, const char *name, const char *data, int length)
@@ -501,6 +597,37 @@ dbop_close(DBOP *dbop)
 {
 	DB *db = dbop->db;
 
+	/*
+	 * Load sorted tag records and write them to the tag file.
+	 */
+	if (dbop->sortout != NULL) {
+		STRBUF *sb = strbuf_open(256);
+		char *p;
+
+		/*
+		 * End of the former stage of sorted writing.
+		 * fclose() and sortout = NULL is important.
+		 *
+		 * fclose(): enables reading from sortin descriptor.
+		 * sortout = NULL: makes the following dbop_put write to the tag file directly.
+		 */
+		fclose(dbop->sortout);
+		dbop->sortout = NULL;
+		/*
+		 * The last stage of sorted writing.
+		 */
+		while (strbuf_fgets(sb, dbop->sortin, STRBUF_NOCRLF)) {
+			for (p = strbuf_value(sb); *p && *p != '\t'; p++)
+				;
+			if (!*p)
+				die("unexpected end of record.");
+			*p++ = '\0';
+			dbop_put(dbop, strbuf_value(sb), p);
+		}
+		fclose(dbop->sortin);
+		strbuf_close(sb);
+		terminate_sort_process(dbop);
+	}
 #ifdef USE_DB185_COMPAT
 	(void)db->close(db);
 #else

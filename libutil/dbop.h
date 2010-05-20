@@ -56,6 +56,12 @@ typedef	struct {
 	int keylen;			/* key length */
 	char prev[MAXKEYLEN+1];		/* previous key value */
 	int perm;			/* file permission */
+	/*
+	 * (3) sorted write
+	 */
+	FILE *sortout;			/* write to sort command */
+	FILE *sortin;			/* read from sort command */
+	int pid;			/* sort process id */
 } DBOP;
 
 /*
@@ -65,9 +71,10 @@ typedef	struct {
 /*
  * ioflags
  */
-#define DBOP_KEY	1		/* read key part		*/
-#define DBOP_PREFIX	2		/* prefixed read		*/
-#define DBOP_RAW	4		/* raw read			*/
+#define DBOP_KEY		1	/* read key part		*/
+#define DBOP_PREFIX		2	/* prefixed read		*/
+#define DBOP_RAW		4	/* raw read			*/
+#define DBOP_SORTED_WRITE	8	/* sorted write			*/
 
 DBOP *dbop_open(const char *, int, int, int);
 const char *dbop_get(DBOP *, const char *);

@@ -73,6 +73,7 @@ typedef struct {
 
 typedef struct {
 	DBOP *dbop;			/* descripter of DBOP */
+	DBOP *gtags;			/* descripter of GTAGS */
 	int format_version;		/* format version */
 	int format;			/* GTAGS_COMPACT, GTAGS_COMPRESS */
 	int mode;			/* mode */
@@ -103,13 +104,6 @@ typedef struct {
 	STRBUF *sb;			/* string buffer */
 	/* used for compact format and path name only read */
 	STRHASH *path_hash;
-	/*
-	 * Stuff for 1-pass parsing
-	 *
-	 * If you set file pointer to tmpfile_fp, gtags_put() and gtags_put_using()
-	 * write records to the temporary file instead of db(3) file.
-	 */
-	FILE *tmpfile_fp;
 } GTOP;
 
 const char *dbname(int);

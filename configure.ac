@@ -195,12 +195,26 @@ AC_ARG_WITH(pread-pwrite,
 dnl
 dnl for gtags.conf and function layer plugin parser sample.
 dnl
+AC_MSG_CHECKING(for exuberant ctags program)
 AC_ARG_WITH(exuberant-ctags,
 [  --with-exuberant-ctags=PROGRAM  specify Exuberant Ctags program ],
 [ EXUBERANT_CTAGS="$withval" ],
 [ EXUBERANT_CTAGS=/usr/local/bin/ctags-exuberant ])
 AC_DEFINE_UNQUOTED(EXUBERANT_CTAGS, "$EXUBERANT_CTAGS", [Exuberant Ctags program.])
+AC_MSG_RESULT("$EXUBERANT_CTAGS")
 AC_SUBST(EXUBERANT_CTAGS)
+
+dnl
+dnl for POSIX sort program. By default, "/usr/bin/sort" is used.
+dnl
+AC_MSG_CHECKING(for POSIX sort program)
+AC_ARG_WITH(posix-sort,
+[  --with-posix-sort=PROGRAM  specify POSIX sort program ],
+[ POSIX_SORT="$withval" ],
+[ POSIX_SORT=/usr/bin/sort ])
+AC_DEFINE_UNQUOTED(POSIX_SORT, "$POSIX_SORT", [POSIX sort program.])
+AC_MSG_RESULT("$POSIX_SORT")
+AC_SUBST(POSIX_SORT)
 
 AC_SUBST(INCLUDES)
 AC_SUBST(LDADD)

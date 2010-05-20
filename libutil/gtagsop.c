@@ -62,6 +62,7 @@ static int compare_path(const void *, const void *);
 static int compare_lineno(const void *, const void *);
 static int compare_tags(const void *, const void *);
 static const char *seekto(const char *, int);
+static int is_defined_in_GTAGS(GTOP *, const char *);
 static void flush_pool(GTOP *, const char *);
 static void segment_read(GTOP *);
 
@@ -120,26 +121,6 @@ seekto(const char *string, int n)
 		p++;
 	}
 	return p;
-}
-/*
- * tmpfile_put: write to the temporary file instead of db(3) file.
- *
- *	i)	fp	file pointer
- *	i)	key	key of db(3)
- *	i)	data	data of db(3)
- *
- * record format:
- * <key>\t<data>\n
- *
- * Finally, this record should be written in db(3) file.
- */
-void
-tmpfile_put(FILE *fp, const char *key, const char *data)
-{
-	fputs(key, fp);
-	putc('\t', fp);
-	fputs(data, fp);
-	putc('\n', fp);
 }
 /*
  * Tag format
@@ -261,9 +242,49 @@ tmpfile_put(FILE *fp, const char *key, const char *data)
  *       $ global -x main
  *       GTAGS seems older format. Please remake tag files.
  */
-static int upper_bound_version = 5;	/* acceptable format version (upper bound) */
-static int lower_bound_version = 4;	/* acceptable format version (lower bound) */
+static int new_format_version = 6;	/* new format version */
+static int upper_bound_version = 6;	/* acceptable format version (upper bound) */
+static int lower_bound_version = 6;	/* acceptable format version (lower bound) */
 static const char *const tagslist[] = {"GPATH", "GTAGS", "GRTAGS", "GSYMS"};
+/*
+ * Virtual GRTAGS, GSYMS processing:
+ *
+ * We use a real GRTAGS as virtual GRTAGS and GSYMS.
+ * In fact, GSYMS tag file doesn't exist.
+ *
+ * Real tag file	virtual tag file
+ * --------------------------------------
+ * GTAGS =============> GTAGS
+ *
+ * GRTAGS ====+=======> GRTAGS	tags which is defined in GTAGS
+ *            +=======> GSYMS	tags which is not defined in GTAGS
+ */
+#define VIRTUAL_GRTAGS_GSYMS_PROCESSING(gtop) 						\
+	if (gtop->db != GTAGS) {							\
+		int defined = is_defined_in_GTAGS(gtop, gtop->dbop->lastkey);		\
+		if (gtop->db == GRTAGS && !defined || gtop->db == GSYMS && defined)	\
+			continue;							\
+	}
+/*
+ * is_defined_in_GTAGS: whether or not the name is defined in GTAGS.
+ *
+ *	i)	gtop
+ *	i)	name	tag name
+ *	r)		0: not defined, 1: defined
+ *
+ * It is assumed that the input stream is sorted by the tag name.
+ */
+static int
+is_defined_in_GTAGS(GTOP *gtop, const char *name)
+{
+	static char prev_name[MAXTOKEN+1];
+	static int prev_result;
+
+	if (!strcmp(name, prev_name))
+		return prev_result;
+	strlimcpy(prev_name, name, sizeof(prev_name));
+	return prev_result = dbop_get(gtop->gtags, prev_name) ? 1 : 0;
+}
 /*
  * dbname: return db name
  *
@@ -294,13 +315,13 @@ GTOP *
 gtags_open(const char *dbpath, const char *root, int db, int mode, int flags)
 {
 	GTOP *gtop;
+	char tagfile[MAXPATHLEN+1];
 	int dbmode;
 
 	gtop = (GTOP *)check_calloc(sizeof(GTOP), 1);
 	gtop->db = db;
 	gtop->mode = mode;
 	gtop->openflags = flags;
-	gtop->format_version = 4;
 	/*
 	 * Open tag file allowing duplicate records.
 	 */
@@ -317,18 +338,39 @@ gtags_open(const char *dbpath, const char *root, int db, int mode, int flags)
 	default:
 		assert(0);
 	}
-	gtop->dbop = dbop_open(makepath(dbpath, dbname(db), NULL), dbmode, 0644, DBOP_DUP);
+	/*
+	 * GRTAGS and GSYMS are virtual tag file. They are included in a real GRTAGS file.
+	 * In fact, GSYMS doesn't exist now.
+	 *
+	 * GRTAGS:	tags which belongs to GRTAGS, and are defined in GTAGS.
+	 * GSYMS:	tags which belongs to GRTAGS, and is not defined in GTAGS.
+	 */
+	strlimcpy(tagfile, makepath(dbpath, dbname(db == GSYMS ? GRTAGS : db), NULL), sizeof(tagfile));
+	gtop->dbop = dbop_open(tagfile, dbmode, 0644, DBOP_DUP|DBOP_SORTED_WRITE);
 	if (gtop->dbop == NULL) {
 		if (dbmode == 1)
 			die("cannot make %s.", dbname(db));
 		die("%s not found.", dbname(db));
+	}
+	if (gtop->mode == GTAGS_READ && db != GTAGS) {
+		const char *gtags = makepath(dbpath, dbname(GTAGS), NULL);
+		int format_version;
+
+		gtop->gtags = dbop_open(gtags, 0, 0, 0);
+		if (gtop->gtags == NULL)
+			die("GTAGS not found.");
+		format_version = dbop_getversion(gtop->dbop);
+		if (format_version > upper_bound_version)
+			die("%s seems new format. Please install the latest GLOBAL.", gtags);
+		else if (format_version < lower_bound_version)
+			die("%s seems older format. Please remake tag files.", gtags);
 	}
 	if (gtop->mode == GTAGS_CREATE) {
 		/*
 		 * Decide format.
 		 */
 		gtop->format = 0;
-		gtop->format_version = 5;
+		gtop->format_version = new_format_version;
 		/*
 		 * GRTAGS and GSYSM always use compact format.
 		 * GTAGS uses compact format only when the -c option specified.
@@ -365,9 +407,9 @@ gtags_open(const char *dbpath, const char *root, int db, int mode, int flags)
 		 */
 		gtop->format_version = dbop_getversion(gtop->dbop);
 		if (gtop->format_version > upper_bound_version)
-			die("%s seems new format. Please install the latest GLOBAL.", dbname(gtop->db));
+			die("%s seems new format. Please install the latest GLOBAL.", tagfile);
 		else if (gtop->format_version < lower_bound_version)
-			die("%s seems older format. Please remake tag files.", dbname(gtop->db));
+			die("%s seems older format. Please remake tag files.", tagfile);
 		gtop->format = 0;
 		if (dbop_getoption(gtop->dbop, COMPACTKEY) != NULL)
 			gtop->format |= GTAGS_COMPACT;
@@ -459,11 +501,7 @@ gtags_put_using(GTOP *gtop, const char *tag, int lno, const char *fid, const cha
 	strbuf_putn(gtop->sb, lno);
 	strbuf_putc(gtop->sb, ' ');
 	strbuf_puts(gtop->sb, (gtop->format & GTAGS_COMPRESS) ? compress(img, key) : img);
-	if (gtop->tmpfile_fp != NULL) {
-		tmpfile_put(gtop->tmpfile_fp, key, strbuf_value(gtop->sb));
-	} else {
-		dbop_put(gtop->dbop, key, strbuf_value(gtop->sb));
-	}
+	dbop_put(gtop->dbop, key, strbuf_value(gtop->sb));
 }
 /*
  * gtags_flush: Flush the pool for compact format.
@@ -478,103 +516,6 @@ gtags_flush(GTOP *gtop, const char *fid)
 		flush_pool(gtop, fid);
 		strhash_reset(gtop->path_hash);
 	}
-}
-/*
- * gtags_add_ref_sym: read candidate of reference and other symbol from temporary file,
- *                    and put into GRTAGS or GSYMS.
- *
- *	i) gtop		array of descripter of GTOP
- *	i) ip		file pointer of temporary file
- */
-void
-gtags_add_ref_sym(GTOP *const *gtop, FILE *ip)
-{
-	STRBUF *ib = strbuf_open(MAXBUFLEN);
-
-	rewind(ip);
-	while (strbuf_fgets(ib, ip, STRBUF_NOCRLF) != NULL) {
-		/*
-		 * [record format]
-		 * <key>\t<data>\n
-		 */
-		char *key = strbuf_value(ib);
-		char *data = strchr(key, '\t');
-		if (data == NULL)
-			die("gtags_add_ref_sym: internal error.");
-		*data++ = '\0';
-		/*
-		 * If the key is defined in GTAGS then put the record into GRTAGS
-		 * else put it into GSYMS.
-		 */
-		if (dbop_get(gtop[GTAGS]->dbop, key) != NULL)
-			dbop_put(gtop[GRTAGS]->dbop, key, data);
-		else
-			dbop_put(gtop[GSYMS]->dbop, key, data);
-	}
-	strbuf_close(ib);
-}
-/*
- * gtags_move_ref_sym: move defined symbols from GSYMS to GRTAGS,
- *                     and move undefined symbols from GRTAGS to GSYMS.
- *
- *	i) gtop		array of descripter of GTOP
- */
-void
-gtags_move_ref_sym(GTOP *const *gtop)
-{
-	int result = 0;
-	DBOP *defdbop;
-	const char *defkey;
-	struct {
-		DBOP *dbop;
-		const char *key, *dat;
-		char saved_key[MAXKEYLEN+1];
-		STRBUF *saved_dat;
-	} ref, sym, *smaller, *larger;
-
-	defdbop = gtop[GTAGS]->dbop;
-	defkey = dbop_first(defdbop, NULL, NULL, DBOP_KEY);
-	ref.dbop = gtop[GRTAGS]->dbop;
-	ref.dat = dbop_first(ref.dbop, NULL, NULL, 0);
-	ref.key = ref.dbop->lastkey;
-	ref.saved_dat = strbuf_open(MAXBUFLEN);
-	sym.dbop = gtop[GSYMS]->dbop;
-	sym.dat = dbop_first(sym.dbop, NULL, NULL, 0);
-	sym.key = sym.dbop->lastkey;
-	sym.saved_dat = strbuf_open(MAXBUFLEN);
-	for (;;) {
-		if (ref.dat != NULL && (sym.dat == NULL || strcmp(ref.key, sym.key) < 0)) {
-			smaller = &ref;
-			larger = &sym;
-		} else if (sym.dat != NULL) {
-			smaller = &sym;
-			larger = &ref;
-		} else {
-			break;
-		}
-		while (defkey != NULL && (result = strcmp(smaller->key, defkey)) > 0)
-			defkey = dbop_next(defdbop);
-		if (defkey != NULL && (smaller == &ref ? result < 0 : result == 0)) {
-			/*
-			 * Calling dbop_put doesn't affect the position of cursor,
-			 * but it invalidates the pointer to read data.
-			 */
-			if (larger->dat != NULL && larger->key != larger->saved_key) {
-				strlimcpy(larger->saved_key, larger->key, sizeof(larger->saved_key));
-				larger->key = larger->saved_key;
-				strbuf_reset(larger->saved_dat);
-				strbuf_puts(larger->saved_dat, larger->dat);
-				larger->dat = strbuf_value(larger->saved_dat);
-			}
-			dbop_put(larger->dbop, smaller->key, smaller->dat);
-			dbop_delete(smaller->dbop, NULL);
-		}
-		smaller->dat = dbop_next(smaller->dbop);
-		smaller->key = smaller->dbop->lastkey;
-	}
-
-	strbuf_close(ref.saved_dat);
-	strbuf_close(sym.saved_dat);
 }
 /*
  * gtags_put: put tag record with packing.
@@ -643,11 +584,7 @@ gtags_put(GTOP *gtop, const char *key, const char *ctags_x)	/* virtually const *
 		strbuf_puts(gtop->sb, gtop->format & GTAGS_COMPRESS ?
 			compress(ptable.part[PART_LINE].start, key) :
 			ptable.part[PART_LINE].start);
-		if (gtop->tmpfile_fp != NULL) {
-			tmpfile_put(gtop->tmpfile_fp, key, strbuf_value(gtop->sb));
-		} else {
-			dbop_put(gtop->dbop, key, strbuf_value(gtop->sb));
-		}
+		dbop_put(gtop->dbop, key, strbuf_value(gtop->sb));
 	}
 	recover(&ptable);
 }
@@ -781,6 +718,7 @@ gtags_first(GTOP *gtop, const char *pattern, int flags)
 		     tagline != NULL;
 		     tagline = dbop_next(gtop->dbop))
 		{
+			VIRTUAL_GRTAGS_GSYMS_PROCESSING(gtop);
 			/* extract file id */
 			p = locatestring(tagline, " ", MATCH_FIRST);
 			if (p == NULL)
@@ -820,8 +758,14 @@ gtags_first(GTOP *gtop, const char *pattern, int flags)
 		gtop->gtp.path = gtop->path_array[gtop->path_index++];
 		return &gtop->gtp;
 	} else if (gtop->flags & GTOP_KEY) {
-		return ((gtop->gtp.tag = dbop_first(gtop->dbop, key, preg, dbflags)) == NULL)
-			? NULL : &gtop->gtp;
+		for (gtop->gtp.tag = dbop_first(gtop->dbop, key, preg, dbflags);
+		     gtop->gtp.tag != NULL;
+		     gtop->gtp.tag = dbop_next(gtop->dbop))
+		{
+			VIRTUAL_GRTAGS_GSYMS_PROCESSING(gtop);
+			break;
+		}
+		return gtop->gtp.tag ? &gtop->gtp : NULL;
 	} else {
 		if (gtop->vb == NULL)
 			gtop->vb = varray_open(sizeof(GTP), 200);
@@ -859,14 +803,22 @@ gtags_first(GTOP *gtop, const char *pattern, int flags)
 GTP *
 gtags_next(GTOP *gtop)
 {
+	const char *tagline;
+
 	if (gtop->flags & GTOP_PATH) {
 		if (gtop->path_index >= gtop->path_count)
 			return NULL;
 		gtop->gtp.path = gtop->path_array[gtop->path_index++];
 		return &gtop->gtp;
 	} else if (gtop->flags & GTOP_KEY) {
-		return ((gtop->gtp.tag = dbop_next(gtop->dbop)) == NULL)
-			? NULL : &gtop->gtp;
+		for (gtop->gtp.tag = dbop_next(gtop->dbop);
+		     gtop->gtp.tag != NULL;
+		     gtop->gtp.tag = dbop_next(gtop->dbop))
+		{
+			VIRTUAL_GRTAGS_GSYMS_PROCESSING(gtop);
+			break;
+		}
+		return gtop->gtp.tag ? &gtop->gtp : NULL;
 	} else {
 		/*
 		 * End of segment.
@@ -907,6 +859,8 @@ gtags_close(GTOP *gtop)
 		strhash_close(gtop->path_hash);
 	gpath_close();
 	dbop_close(gtop->dbop);
+	if (gtop->gtags)
+		dbop_close(gtop->gtags);
 	free(gtop);
 }
 /*
@@ -1001,11 +955,7 @@ flush_pool(GTOP *gtop, const char *s_fid)
 						strbuf_putn(gtop->sb, n);
 					}
 					if (strbuf_getlen(gtop->sb) > DBOP_PAGESIZE / 4) {
-						if (gtop->tmpfile_fp != NULL) {
-							tmpfile_put(gtop->tmpfile_fp, key, strbuf_value(gtop->sb));
-						} else {
-							dbop_put(gtop->dbop, key, strbuf_value(gtop->sb));
-						}
+						dbop_put(gtop->dbop, key, strbuf_value(gtop->sb));
 						strbuf_setlen(gtop->sb, header_offset);
 					}
 				}
@@ -1029,22 +979,14 @@ flush_pool(GTOP *gtop, const char *s_fid)
 					strbuf_putc(gtop->sb, ',');
 				strbuf_putn(gtop->sb, n);
 				if (strbuf_getlen(gtop->sb) > DBOP_PAGESIZE / 4) {
-					if (gtop->tmpfile_fp != NULL) {
-						tmpfile_put(gtop->tmpfile_fp, key, strbuf_value(gtop->sb));
-					} else {
-						dbop_put(gtop->dbop, key, strbuf_value(gtop->sb));
-					}
+					dbop_put(gtop->dbop, key, strbuf_value(gtop->sb));
 					strbuf_setlen(gtop->sb, header_offset);
 				}
 				last = n;
 			}
 		}
 		if (strbuf_getlen(gtop->sb) > header_offset) {
-			if (gtop->tmpfile_fp != NULL) {
-				tmpfile_put(gtop->tmpfile_fp, key, strbuf_value(gtop->sb));
-			} else {
-				dbop_put(gtop->dbop, key, strbuf_value(gtop->sb));
-			}
+			dbop_put(gtop->dbop, key, strbuf_value(gtop->sb));
 		}
 		/* Free line number table */
 		varray_close(vb);
@@ -1081,6 +1023,7 @@ segment_read(GTOP *gtop)
 	 */
 	gtop->cur_tagname[0] = '\0';
 	while ((tagline = dbop_next(gtop->dbop)) != NULL) {
+		VIRTUAL_GRTAGS_GSYMS_PROCESSING(gtop);
 		/*
 		 * get tag name and line number.
 		 *

@@ -393,9 +393,10 @@ main(int argc, char **argv)
 			strlimcpy(dbpath, cwd, sizeof(dbpath));
 	}
 	if (iflag && (!test("f", makepath(dbpath, dbname(GTAGS), NULL)) ||
+		!test("f", makepath(dbpath, dbname(GRTAGS), NULL)) ||
 		!test("f", makepath(dbpath, dbname(GPATH), NULL)))) {
 		if (wflag)
-			warning("GTAGS or GPATH not found. -i option ignored.");
+			warning("GTAGS, GRTAGS or GPATH not found. -i option ignored.");
 		iflag = 0;
 	}
 	if (!test("d", dbpath))
@@ -459,29 +460,6 @@ main(int argc, char **argv)
 		 */
 		if (!test("f", makepath(dbpath, dbname(GPATH), NULL)))
 			die("Old version tag file found. Please remake it.");
-		/*
-		 * The following restrictions are in incremental updating with
-		 * built-in parser:
-		 * If GRTAGS or GSYMS exists, both of them exist and the format
-		 * should be the same.
-		 */
-		if (!use_command_parser) {
-			int format_r, format_s;
-
-			if (test("f", makepath(dbpath, dbname(GRTAGS), NULL)))
-				format_r = peek_dbformat(dbpath, cwd, GRTAGS);
-			else
-				format_r = -1;
-			if (test("f", makepath(dbpath, dbname(GSYMS), NULL)))
-				format_s = peek_dbformat(dbpath, cwd, GSYMS);
-			else
-				format_s = -1;
-			if (format_r != format_s)
-				die("%s\n  Please invoke gtags again without the -i option.",
-					(format_r == -1) ? "GRTAGS doesn't exist though GSYMS exists."
-					: (format_s == -1) ? "GSYMS doesn't exist though GRTAGS exists."
-					: "The format of GRTAGS and GSYMS is different.");
-		}
 		(void)incremental(dbpath, cwd);
 		exit(0);
 	}
@@ -1050,13 +1028,24 @@ void
 updatetags_using_builtin_parser(const char *dbpath, const char *root, IDSET *deleteset, STRBUF *addlist)
 {
 	struct put_func_data data;
-	int seqno;
+	int seqno, flags;
 	const char *path, *start, *end;
-	FILE *tmp;
 
 	if (vflag)
-		fprintf(stderr, "[%s] Updating '%s'.\n", now(), dbname(GTAGS));
+		fprintf(stderr, "[%s] Updating '%s and '%s''.\n", now(), dbname(GTAGS), dbname(GRTAGS));
+	/*
+	 * Open tag files.
+	 */
 	data.gtop[GTAGS] = gtags_open(dbpath, root, GTAGS, GTAGS_MODIFY, 0);
+	if (test("f", makepath(dbpath, dbname(GRTAGS), NULL))) {
+		data.gtop[GRTAGS] = gtags_open(dbpath, root, GRTAGS, GTAGS_MODIFY, 0);
+	} else {
+		/*
+		 * If you set NULL to data.gtop[GRTAGS], parse_file() doesn't write to
+		 * GRTAGS. See put_syms().
+		 */
+		data.gtop[GRTAGS] = NULL;
+	}
 	/*
 	 * Delete tags from GTAGS.
 	 */
@@ -1076,33 +1065,20 @@ updatetags_using_builtin_parser(const char *dbpath, const char *root, IDSET *del
 			}
 		}
 		gtags_delete(data.gtop[GTAGS], deleteset);
-	}
-	data.gtop[GTAGS]->flags = 0;
-	if (extractmethod)
-		data.gtop[GTAGS]->flags |= GTAGS_EXTRACTMETHOD;
-	if (debug)
-		data.gtop[GTAGS]->flags |= GTAGS_DEBUG;
-	if (test("f", makepath(dbpath, dbname(GRTAGS), NULL))) {
-		data.gtop[GRTAGS] = gtags_open(dbpath, root, GRTAGS, GTAGS_MODIFY, 0);
-		data.gtop[GRTAGS]->flags = data.gtop[GTAGS]->flags;
-		/*
-		 * If you set file pointer to tmpfile_fp, gtags_put() and gtags_put_using()
-		 * write records to the temporary file instead of db(3) file.
-		 */
-		tmp = tmpfile();
-		if (tmp == NULL)
-			die("cannot make temporary file.");
-		data.gtop[GRTAGS]->tmpfile_fp = tmp;
-	} else {
-		/*
-		 * If you set NULL to data.gtop[GRTAGS], parse_file() doesn't write to
-		 * GRTAGS. See put_syms().
-		 */
-		data.gtop[GRTAGS] = NULL;
-		tmp = NULL;
+		if (data.gtop[GRTAGS] != NULL)
+			gtags_delete(data.gtop[GRTAGS], deleteset);
 	}
 	/*
-	 * Add tags to GTAGS and the temporary file.
+	 * Set flags.
+	 */
+	flags = 0;
+	if (extractmethod)
+		flags |= GTAGS_EXTRACTMETHOD;
+	if (debug)
+		flags |= GTAGS_DEBUG;
+	data.gtop[GTAGS]->flags = data.gtop[GRTAGS]->flags = flags;
+	/*
+	 * Add tags to GTAGS and GRTAGS.
 	 */
 	start = strbuf_value(addlist);
 	end = start + strbuf_getlen(addlist);
@@ -1120,67 +1096,9 @@ updatetags_using_builtin_parser(const char *dbpath, const char *root, IDSET *del
 			gtags_flush(data.gtop[GRTAGS], data.fid);
 	}
 	parser_exit();
-	if (data.gtop[GRTAGS] == NULL) {
-		gtags_close(data.gtop[GTAGS]);
-		return;
-	}
-
-	if (vflag)
-		fprintf(stderr, "[%s] Updating '%s' and '%s'.\n", now(), dbname(GRTAGS), dbname(GSYMS));
-	data.gtop[GRTAGS]->tmpfile_fp = NULL;
-	data.gtop[GSYMS] = gtags_open(dbpath, root, GSYMS, GTAGS_MODIFY, 0);
-	/*
-	 * Delete tags from GRTAGS and GSYMS.
-	 */
-	if (!idset_empty(deleteset)) {
-		if (vflag) {
-			char fid[32];
-			int total = idset_count(deleteset);
-			unsigned int id;
-
-			seqno = 1;
-			for (id = idset_first(deleteset); id != END_OF_ID; id = idset_next(deleteset)) {
-				snprintf(fid, sizeof(fid), "%d", id);
-				path = gpath_fid2path(fid, NULL);
-				if (path == NULL)
-					die("GPATH is corrupted.");
-				fprintf(stderr, " [%d/%d] deleting tags of %s\n", seqno++, total, path + 2);
-			}
-		}
-		gtags_delete(data.gtop[GRTAGS], deleteset);
-		gtags_delete(data.gtop[GSYMS], deleteset);
-	}
-	/*
-	 * Move tags between GRTAGS and GSYMS.
-	 *
-	 * GRTAGS if not defined in GTAGS       ===> GSYMS
-	 * GSYMS if defined in GTAGS            ===> GRTAGS
-	 */
-	if (vflag) {
-		fprintf(stderr, " moving undefined symbols from '%s' to '%s'.\n", dbname(GRTAGS), dbname(GSYMS));
-		fprintf(stderr, " moving defined symbols from '%s' to '%s'.\n", dbname(GSYMS), dbname(GRTAGS));
-	}
-	gtags_move_ref_sym(data.gtop);
-	/*
-	 * Add tags to GRTAGS and GSYMS.
-	 *
-	 * temporary file ===>  if defined in GTAGS     ===> GRTAGS
-	 *                      else                    ===> GSYMS
-	 *
-	 * Gtags always makes GRTAGS and GSYMS even if they are empty.
-	 */
-	if (ftell(tmp) > 0) {
-		if (vflag) {
-			seqno = 0;
-			for (path = start; path < end; path += strlen(path) + 1)
-				fprintf(stderr, " [%d/%d] adding tags of %s\n", ++seqno, total, path + 2);
-		}
-		gtags_add_ref_sym(data.gtop, tmp);
-	}
-	fclose(tmp);
 	gtags_close(data.gtop[GTAGS]);
-	gtags_close(data.gtop[GRTAGS]);
-	gtags_close(data.gtop[GSYMS]);
+	if (data.gtop[GRTAGS] != NULL)
+		gtags_close(data.gtop[GRTAGS]);
 }
 /*
  * createtags_using_builtin_parser: create tags file
@@ -1196,14 +1114,10 @@ createtags_using_builtin_parser(const char *dbpath, const char *root)
 	struct put_func_data data;
 	int openflags, seqno;
 	const char *path;
-	FILE *tmp;
 
-	tim = statistics_time_start("Time of creating %s and temporary file", dbname(GTAGS));
+	tim = statistics_time_start("Time of creating %s and %s.", dbname(GTAGS), dbname(GRTAGS));
 	if (vflag)
-		fprintf(stderr, "[%s] Creating '%s' and temporary file.\n", now(), dbname(GTAGS));
-	tmp = tmpfile();
-	if (tmp == NULL)
-		die("cannot make temporary file.");
+		fprintf(stderr, "[%s] Creating '%s' and '%s'.\n", now(), dbname(GTAGS), dbname(GRTAGS));
 	openflags = cflag ? GTAGS_COMPACT : 0;
 	data.gtop[GTAGS] = gtags_open(dbpath, root, GTAGS, GTAGS_CREATE, openflags);
 	data.gtop[GTAGS]->flags = 0;
@@ -1213,11 +1127,6 @@ createtags_using_builtin_parser(const char *dbpath, const char *root)
 		data.gtop[GTAGS]->flags |= GTAGS_DEBUG;
 	data.gtop[GRTAGS] = gtags_open(dbpath, root, GRTAGS, GTAGS_CREATE, openflags);
 	data.gtop[GRTAGS]->flags = data.gtop[GTAGS]->flags;
-	/*
-	 * If you set file pointer to tmpfile_fp, gtags_put() and gtags_put_using()
-	 * write records to the temporary file instead of db(3) file.
-	 */
-	data.gtop[GRTAGS]->tmpfile_fp = tmp;
 	/*
 	 * Add tags to GTAGS and the temporary file.
 	 */
@@ -1247,7 +1156,6 @@ createtags_using_builtin_parser(const char *dbpath, const char *root)
 	total = seqno;
 	parser_exit();
 	find_close();
-	data.gtop[GRTAGS]->tmpfile_fp = NULL;
 	statistics_time_end(tim);
 	strbuf_reset(sb);
 	if (getconfs("GTAGS_extra", sb)) {
@@ -1264,41 +1172,10 @@ createtags_using_builtin_parser(const char *dbpath, const char *root)
 			die("%s not found.", dbname(GTAGS));
 		statistics_time_end(tim);
 	}
-
-	tim = statistics_time_start("Time of creating %s and %s", dbname(GRTAGS), dbname(GSYMS));
-	if (vflag)
-		fprintf(stderr, "[%s] Creating '%s' and '%s'.\n", now(), dbname(GRTAGS), dbname(GSYMS));
-	data.gtop[GSYMS] = gtags_open(dbpath, root, GSYMS, GTAGS_CREATE, openflags);
-	/*
-	 * Add tags to GRTAGS and GSYMS.
-	 *
-	 * temporary file ===>  if defined in GTAGS     ===> GRTAGS
-	 *                      else                    ===> GSYMS
-	 *
-	 * Gtags always makes GRTAGS and GSYMS even if they are empty.
-	 */
-	if (ftell(tmp) > 0) {
-		if (vflag) {
-			if (file_list)
-				find_open_filelist(file_list, root);
-			else
-				find_open(NULL);
-			seqno = 0;
-			while ((path = find_read()) != NULL) {
-				if (*path == ' ')
-					continue;
-				fprintf(stderr, " [%d/%d] adding tags of %s\n", ++seqno, total, path + 2);
-			}
-			find_close();
-		}
-		gtags_add_ref_sym(data.gtop, tmp);
-	}
-	fclose(tmp);
 	statistics_time_end(tim);
 	tim = statistics_time_start("Time of flushing B-tree cache");
 	gtags_close(data.gtop[GTAGS]);
 	gtags_close(data.gtop[GRTAGS]);
-	gtags_close(data.gtop[GSYMS]);
 	statistics_time_end(tim);
 	strbuf_reset(sb);
 	if (getconfs("GRTAGS_extra", sb)) {
@@ -1314,7 +1191,6 @@ createtags_using_builtin_parser(const char *dbpath, const char *root)
 			fprintf(stderr, "GSYMS_extra command failed: %s\n", strbuf_value(sb));
 		statistics_time_end(tim);
 	}
-
 	strbuf_close(sb);
 }
 /*
