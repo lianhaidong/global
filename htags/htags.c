@@ -1743,8 +1743,7 @@ main(int argc, char **argv)
 		/*
 		 * Real GRTAGS includes virtual GSYMS.
 		 */
-		if (gtags_exist[GRTAGS])
-			gtags_exist[GSYMS] = 1;
+		gtags_exist[GSYMS] = symbol ? 1 : 0;
 		if (!gtags_exist[GPATH] || !gtags_exist[GTAGS] || !gtags_exist[GRTAGS])
 			die("GPATH, GTAGS and/or GRTAGS not found. Please reexecute htags with the -g option.");
 		/*
