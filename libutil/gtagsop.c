@@ -262,7 +262,7 @@ static const char *const tagslist[] = {"GPATH", "GTAGS", "GRTAGS", "GSYMS"};
 #define VIRTUAL_GRTAGS_GSYMS_PROCESSING(gtop) 						\
 	if (gtop->db != GTAGS) {							\
 		int defined = is_defined_in_GTAGS(gtop, gtop->dbop->lastkey);		\
-		if (gtop->db == GRTAGS && !defined || gtop->db == GSYMS && defined)	\
+		if ((gtop->db == GRTAGS && !defined) || (gtop->db == GSYMS && defined))	\
 			continue;							\
 	}
 /*
@@ -803,8 +803,6 @@ gtags_first(GTOP *gtop, const char *pattern, int flags)
 GTP *
 gtags_next(GTOP *gtop)
 {
-	const char *tagline;
-
 	if (gtop->flags & GTOP_PATH) {
 		if (gtop->path_index >= gtop->path_count)
 			return NULL;

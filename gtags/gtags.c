@@ -61,7 +61,6 @@ int main(int, char **);
 int incremental(const char *, const char *);
 void updatetags(const char *, const char *, IDSET *, STRBUF *, int);
 void createtags(const char *, const char *, int);
-static int peek_dbformat(const char *, const char *, int);
 void updatetags_using_builtin_parser(const char *, const char *, IDSET *, STRBUF *);
 void createtags_using_builtin_parser(const char *, const char *);
 int printconf(const char *);
@@ -970,26 +969,6 @@ createtags(const char *dbpath, const char *root, int db)
 	strbuf_close(comline);
 }
 /*
- * peek_dbformat: peek format of tags file
- *
- *	i)	dbpath	dbpath directory
- *	i)	root	root directory of source tree
- *	i)	db	GTAGS, GRTAGS, GSYMS
- *	r)		db format
- */
-static int
-peek_dbformat(const char *dbpath, const char *root, int db)
-{
-	GTOP *gtop;
-	int format;
-
-	gtop = gtags_open(dbpath, root, db, GTAGS_READ, 0);
-	format = gtop->format;
-	gtags_close(gtop);
-
-	return format;
-}
-/*
  * callback functions for built-in parser
  */
 struct put_func_data {
@@ -1032,7 +1011,7 @@ updatetags_using_builtin_parser(const char *dbpath, const char *root, IDSET *del
 	const char *path, *start, *end;
 
 	if (vflag)
-		fprintf(stderr, "[%s] Updating '%s and '%s''.\n", now(), dbname(GTAGS), dbname(GRTAGS));
+		fprintf(stderr, "[%s] Updating '%s' and '%s'.\n", now(), dbname(GTAGS), dbname(GRTAGS));
 	/*
 	 * Open tag files.
 	 */
@@ -1128,7 +1107,7 @@ createtags_using_builtin_parser(const char *dbpath, const char *root)
 	data.gtop[GRTAGS] = gtags_open(dbpath, root, GRTAGS, GTAGS_CREATE, openflags);
 	data.gtop[GRTAGS]->flags = data.gtop[GTAGS]->flags;
 	/*
-	 * Add tags to GTAGS and the temporary file.
+	 * Add tags to GTAGS and GRTAGS.
 	 */
 	if (file_list)
 		find_open_filelist(file_list, root);
@@ -1157,26 +1136,17 @@ createtags_using_builtin_parser(const char *dbpath, const char *root)
 	parser_exit();
 	find_close();
 	statistics_time_end(tim);
-	strbuf_reset(sb);
-	if (getconfs("GTAGS_extra", sb)) {
-		tim = statistics_time_start("Time of executing GTAGS_extra command");
-		/*
-		 * GTAGS_extra command may modify GTAGS.
-		 * Closing and reopening are necessary to avoid damaging GTAGS.
-		 */
-		dbop_close(data.gtop[GTAGS]->dbop);
-		if (system(strbuf_value(sb)))
-			fprintf(stderr, "GTAGS_extra command failed: %s\n", strbuf_value(sb));
-		data.gtop[GTAGS]->dbop = dbop_open(makepath(dbpath, dbname(GTAGS), NULL), 0, 0, 0);
-		if (data.gtop[GTAGS]->dbop == NULL)
-			die("%s not found.", dbname(GTAGS));
-		statistics_time_end(tim);
-	}
-	statistics_time_end(tim);
 	tim = statistics_time_start("Time of flushing B-tree cache");
 	gtags_close(data.gtop[GTAGS]);
 	gtags_close(data.gtop[GRTAGS]);
 	statistics_time_end(tim);
+	strbuf_reset(sb);
+	if (getconfs("GTAGS_extra", sb)) {
+		tim = statistics_time_start("Time of executing GTAGS_extra command");
+		if (system(strbuf_value(sb)))
+			fprintf(stderr, "GTAGS_extra command failed: %s\n", strbuf_value(sb));
+		statistics_time_end(tim);
+	}
 	strbuf_reset(sb);
 	if (getconfs("GRTAGS_extra", sb)) {
 		tim = statistics_time_start("Time of executing GRTAGS_extra command");

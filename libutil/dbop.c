@@ -24,6 +24,9 @@
 #endif
 #include <sys/types.h>
 #include <sys/stat.h>
+#if !defined(_WIN32) || defined(__CYGWIN__)
+#include <sys/wait.h>
+#endif
 
 #include <assert.h>
 #include <ctype.h>
@@ -45,6 +48,7 @@
 #include "checkalloc.h"
 #include "dbop.h"
 #include "die.h"
+#include "env.h"
 #include "locatestring.h"
 #include "strbuf.h"
 #include "strlimcpy.h"

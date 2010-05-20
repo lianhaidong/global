@@ -43,7 +43,7 @@
 static unsigned char encode[256];
 static int encoding;
 
-#define required_encode(c) encode[c]
+#define required_encode(c) encode[(unsigned char)(c)]
 /*
  * set_encode_chars: stores chars to be encoded.
  */
@@ -57,7 +57,7 @@ set_encode_chars(const char *chars)
 	/* set bits */
 	encoding = 0;
 	for (i = 0; chars[i]; i++) {
-		encode[chars[i]] = 1;
+		encode[(unsigned char)chars[i]] = 1;
 		encoding = 1;
 	}
 	/* '%' is always encoded when encode is enable. */
@@ -121,16 +121,18 @@ convert_pathname(CONVERT *cv, const char *path)
 			}
 		if (required) {
 			static char buf[MAXPATHLEN+1];
-			char c[16] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+			static const char table[16] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 			char *q = buf;
 
 			for (p = path; *p; p++) {
-				if (required_encode(*p)) {
+				int c = (unsigned char)*p;
+
+				if (required_encode(c)) {
 					*q++ = '%';
-					*q++ = c[*p / 16];
-					*q++ = c[*p % 16];
+					*q++ = table[c / 16];
+					*q++ = table[c % 16];
 				} else
-					*q++ = *p;
+					*q++ = c;
 			}
 			*q = '\0';
 			path = buf;
