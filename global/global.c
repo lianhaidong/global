@@ -112,6 +112,7 @@ help(void)
 
 #define RESULT		128
 #define FROM_HERE	129
+#define ENCODE_PATH	130
 #define SORT_FILTER     1
 #define PATH_FILTER     2
 #define BOTH_FILTER     (SORT_FILTER|PATH_FILTER)
@@ -142,6 +143,7 @@ static struct option const long_options[] = {
 	{"cxref", no_argument, NULL, 'x'},
 
 	/* long name only */
+	{"encode-path", required_argument, NULL, ENCODE_PATH},
 	{"from-here", required_argument, NULL, FROM_HERE},
 	{"debug", no_argument, &debug, 1},
 	{"version", no_argument, &show_version, 1},
@@ -352,6 +354,13 @@ main(int argc, char **argv)
 			break;
 		case 'x':
 			xflag++;
+			break;
+		case ENCODE_PATH:
+			if (strlen(optarg) > 255)
+				die("too many encode chars.");
+			if (strchr(optarg, '/') || strchr(optarg, '.'))
+				die("cannot encode '/' and '.' in the path.");
+			set_encode_chars(optarg);
 			break;
 		case FROM_HERE:
 			{

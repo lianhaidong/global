@@ -24,6 +24,11 @@
 #ifdef STDC_HEADERS
 #include <stdlib.h>
 #endif
+#ifdef HAVE_STRING_H
+#include <string.h>
+#else
+#include <strings.h>
+#endif
 
 #include "abs2rel.h"
 #include "checkalloc.h"
@@ -35,6 +40,29 @@
 #include "strbuf.h"
 #include "strlimcpy.h"
 
+static unsigned char encode[256];
+static int encoding;
+
+#define required_encode(c) encode[c]
+/*
+ * set_encode_chars: stores chars to be encoded.
+ */
+void
+set_encode_chars(const char *chars)
+{
+	unsigned int i;
+
+	/* clean the table */
+	memset(encode, 0, sizeof(encode));
+	/* set bits */
+	encoding = 0;
+	for (i = 0; chars[i]; i++) {
+		encode[chars[i]] = 1;
+		encoding = 1;
+	}
+	/* '%' is always encoded when encode is enable. */
+	encode['%'] = 1;
+}
 /*
  * Path filter for the output of global(1).
  */
@@ -78,6 +106,35 @@ convert_pathname(CONVERT *cv, const char *path)
 	default:
 		die("unknown path type.");
 		break;
+	}
+	/*
+	 * encoding of the path name.
+	 */
+	if (encoding) {
+		const char *p;
+		int required = 0;
+
+		for (p = path; *p; p++)
+			if (required_encode(*p)) {
+				required = 1;
+				break;
+			}
+		if (required) {
+			static char buf[MAXPATHLEN+1];
+			char c[16] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+			char *q = buf;
+
+			for (p = path; *p; p++) {
+				if (required_encode(*p)) {
+					*q++ = '%';
+					*q++ = c[*p / 16];
+					*q++ = c[*p % 16];
+				} else
+					*q++ = *p;
+			}
+			*q = '\0';
+			path = buf;
+		}
 	}
 	return (const char *)path;
 }

@@ -100,6 +100,10 @@
 	@item{@option{-e}, @option{--regexp} @arg{pattern}}
 		Use @arg{pattern} as the pattern; useful to protect patterns
 		beginning with @file{-}.
+	@item{@option{--encode-path} @arg{chars}}
+		Convert path characters in @arg{chars} into a '%' symbol, followed by the
+		two-digit hexadecimal representation of the character.
+		A blank will be converted to '%20'.
 	@item{@option{-G}, @option{--basic-regexp}}
 		Interpret @arg{pattern} as a basic regular expression.
 		The default is extended regular expression.
