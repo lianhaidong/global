@@ -43,12 +43,12 @@
 static unsigned char encode[256];
 static int encoding;
 
-#define required_encode(c) encode[(unsigned char)(c)]
+#define required_encode(c) encode[(unsigned char)c]
 /*
  * set_encode_chars: stores chars to be encoded.
  */
 void
-set_encode_chars(const char *chars)
+set_encode_chars(const unsigned char *chars)
 {
 	unsigned int i;
 
@@ -63,6 +63,36 @@ set_encode_chars(const char *chars)
 	/* '%' is always encoded when encode is enable. */
 	encode['%'] = 1;
 }
+#define outofrange(c)	(c < '0' || c > 'f')
+#define h2int(c) (c >= 'a' ? c - 'a' : c - '0')
+/*
+ * decode_path: decode encoded path name.
+ *
+ *	i)	path	encoded path name
+ *	r)		decoded path name
+ */
+char *
+decode_path(const unsigned char *path)
+{
+	STATIC_STRBUF(sb);
+	const unsigned char *p;
+
+	if (strchr(path, '%') == NULL)
+		return (char *)path;
+	strbuf_clear(sb);
+	for (p = path; *p; p++) {
+		if (*p == '%') {
+			unsigned char c1, c2;
+			c1 = *++p;
+			c2 = *++p;
+			if (outofrange(c1) || outofrange(c2))
+				die("decode_path: unexpected character. (%%%c%c)", c1, c2);
+			strbuf_putc(sb, h2int(c1) * 16 + h2int(c2));
+		} else
+			strbuf_putc(sb, *p);
+	}
+	return strbuf_value(sb);
+}
 /*
  * Path filter for the output of global(1).
  */
@@ -72,40 +102,37 @@ convert_pathname(CONVERT *cv, const char *path)
 	static char buf[MAXPATHLEN+1];
 	const char *a, *b;
 
-	/*
-	 * print without conversion.
-	 */
-	if (cv->type == PATH_THROUGH)
-		return path;
-	/*
-	 * make absolute path name.
-	 * 'path + 1' means skipping "." at the head.
-	 */
-	strbuf_setlen(cv->abspath, cv->start_point);
-	strbuf_puts(cv->abspath, path + 1);
-	/*
-	 * print path name with converting.
-	 */
-	switch (cv->type) {
-	case PATH_ABSOLUTE:
-		path = strbuf_value(cv->abspath);
-		break;
-	case PATH_RELATIVE:
-		a = strbuf_value(cv->abspath);
-		b = cv->basedir;
+	if (cv->type != PATH_THROUGH) {
+		/*
+		 * make absolute path name.
+		 * 'path + 1' means skipping "." at the head.
+		 */
+		strbuf_setlen(cv->abspath, cv->start_point);
+		strbuf_puts(cv->abspath, path + 1);
+		/*
+		 * print path name with converting.
+		 */
+		switch (cv->type) {
+		case PATH_ABSOLUTE:
+			path = strbuf_value(cv->abspath);
+			break;
+		case PATH_RELATIVE:
+			a = strbuf_value(cv->abspath);
+			b = cv->basedir;
 #if defined(_WIN32) || defined(__DJGPP__)
-		while (*a != '/')
-			a++;
-		while (*b != '/')
-			b++;
+			while (*a != '/')
+				a++;
+			while (*b != '/')
+				b++;
 #endif
-		if (!abs2rel(a, b, buf, sizeof(buf)))
-			die("abs2rel failed. (path=%s, base=%s).", a, b);
-		path = buf;
-		break;
-	default:
-		die("unknown path type.");
-		break;
+			if (!abs2rel(a, b, buf, sizeof(buf)))
+				die("abs2rel failed. (path=%s, base=%s).", a, b);
+			path = buf;
+			break;
+		default:
+			die("unknown path type.");
+			break;
+		}
 	}
 	/*
 	 * encoding of the path name.
@@ -114,25 +141,24 @@ convert_pathname(CONVERT *cv, const char *path)
 		const char *p;
 		int required = 0;
 
-		for (p = path; *p; p++)
+		for (p = path; *p; p++) {
 			if (required_encode(*p)) {
 				required = 1;
 				break;
 			}
+		}
 		if (required) {
 			static char buf[MAXPATHLEN+1];
-			static const char table[16] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+			char c[16] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 			char *q = buf;
 
 			for (p = path; *p; p++) {
-				int c = (unsigned char)*p;
-
-				if (required_encode(c)) {
+				if (required_encode(*p)) {
 					*q++ = '%';
-					*q++ = table[c / 16];
-					*q++ = table[c % 16];
+					*q++ = c[*p / 16];
+					*q++ = c[*p % 16];
 				} else
-					*q++ = c;
+					*q++ = *p;
 			}
 			*q = '\0';
 			path = buf;
