@@ -54,7 +54,6 @@ void completion(const char *, const char *, const char *);
 void idutils(const char *, const char *);
 void grep(const char *, const char *);
 void pathlist(const char *, const char *);
-void parsefile(int, char *const *, const char *, const char *, const char *, int);
 void parsefile_using_builtin_parser(char *const *, const char *, const char *, const char *, int);
 int search(const char *, const char *, const char *, const char *, int);
 void tagsearch(const char *, const char *, const char *, const char *, int);
@@ -586,13 +585,7 @@ main(int argc, char **argv)
 	 * parse source files.
 	 */
 	else if (fflag) {
-		/*
-		 * parserfile() is obsolete.
-		 */
-		if (getconfs("GTAGS", NULL))
-			parsefile(argc, argv, cwd, root, dbpath, db);
-		else
-			parsefile_using_builtin_parser(argv, cwd, root, dbpath, db);
+		parsefile_using_builtin_parser(argv, cwd, root, dbpath, db);
 	}
 	/*
 	 * tag search.
@@ -956,132 +949,6 @@ pathlist(const char *pattern, const char *dbpath)
 			break;
 		}
 		fprintf(stderr, " (using '%s').\n", makepath(dbpath, dbname(GPATH), NULL));
-	}
-}
-/*
- * parsefile: parse file to pick up tags.
- *
- *	i)	argc
- *	i)	argv
- *	i)	cwd	current directory
- *	i)	root	root directory of source tree
- *	i)	dbpath	dbpath
- *	i)	db	type of parse
- */
-void
-parsefile(int argc, char *const *argv, const char *cwd, const char *root, const char *dbpath, int db)
-{
-	CONVERT *cv;
-	int count = 0;
-	int file_count = 0;
-	STRBUF *comline = strbuf_open(0);
-	STRBUF *path_list = strbuf_open(MAXPATHLEN);
-	XARGS *xp;
-	char *ctags_x;
-
-	/*
-	 * teach parser where is dbpath.
-	 */
-	set_env("GTAGSDBPATH", dbpath);
-	/*
-	 * teach parser language mapping.
-	 */
-	{
-		STRBUF *sb = strbuf_open(0);
-
-		if (getconfs("langmap", sb))
-			set_env("GTAGSLANGMAP", strbuf_value(sb));
-		strbuf_close(sb);
-	}
-	/*
-	 * get parser.
-	 */
-	if (!getconfs(dbname(db), comline))
-		die("cannot get parser for %s.", dbname(db));
-	cv = convert_open(type, format, root, cwd, dbpath, stdout);
-	if (gpath_open(dbpath, 0) < 0)
-		die("GPATH not found.");
-	/*
-	 * Make a path list while checking the validity of path name.
-	 */
-	for (; argc > 0; argv++, argc--) {
-		const char *av = argv[0];
-		char path[MAXPATHLEN+1];
-
-		/*
-		 * convert the path into relative to the root directory of source tree.
-		 */
-		if (normalize(av, get_root_with_slash(), cwd, path, sizeof(path)) == NULL)
-			if (!qflag)
-				fprintf(stderr, "'%s' is out of source tree.\n", path + 2);
-		if (!gpath_path2fid(path, NULL)) {
-			if (!qflag)
-				fprintf(stderr, "'%s' not found in GPATH.\n", path + 2);
-			continue;
-		}
-		if (!test("f", makepath(root, path, NULL))) {
-			if (test("d", NULL)) {
-				if (!qflag)
-					fprintf(stderr, "'%s' is a directory.\n", av);
-			} else {
-				if (!qflag)
-					fprintf(stderr, "'%s' not found.\n", av);
-			}
-			continue;
-		}
-		if (lflag && !locatestring(path, localprefix, MATCH_AT_FIRST))
-			continue;
-		/*
-		 * Add a path to the path list.
-		 */
-		strbuf_puts0(path_list, path);
-		file_count++;
-	}
-	if (file_count > 0) {
-		/*
-		 * Execute parser in the root directory of source tree.
-		 */
-		if (chdir(root) < 0)
-			die("cannot move to '%s' directory.", root);
-		xp = xargs_open_with_strbuf(strbuf_value(comline), 0, path_list);
-		if (format == FORMAT_PATH) {
-			SPLIT ptable;
-			char curpath[MAXPATHLEN+1];
-
-			curpath[0] = '\0';
-			while ((ctags_x = xargs_read(xp)) != NULL) {
-				if (split((char *)ctags_x, 4, &ptable) < 4) {
-					recover(&ptable);
-					die("too small number of parts.\n'%s'", ctags_x);
-				}
-				if (strcmp(curpath, ptable.part[PART_PATH].start)) {
-					strlimcpy(curpath, ptable.part[PART_PATH].start, sizeof(curpath));
-					convert_put_path(cv, curpath);
-					count++;
-				}
-			}
-		} else {
-			while ((ctags_x = xargs_read(xp)) != NULL) {
-				convert_put(cv, ctags_x);
-				count++;
-			}
-		}
-		xargs_close(xp);
-		if (chdir(cwd) < 0)
-			die("cannot move to '%s' directory.", cwd);
-	}
-	/*
-	 * Settlement
-	 */
-	gpath_close();
-	convert_close(cv);
-	strbuf_close(comline);
-	strbuf_close(path_list);
-	if (file_count == 0)
-		die("file not found.");
-	if (vflag) {
-		print_count(count);
-		fprintf(stderr, " (no index used).\n");
 	}
 }
 /*
