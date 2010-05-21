@@ -359,7 +359,7 @@ main(int argc, char **argv)
 				die("too many encode chars.");
 			if (strchr(optarg, '/') || strchr(optarg, '.'))
 				die("cannot encode '/' and '.' in the path.");
-			set_encode_chars(optarg);
+			set_encode_chars((unsigned char *)optarg);
 			break;
 		case FROM_HERE:
 			{

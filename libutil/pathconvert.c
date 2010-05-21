@@ -77,7 +77,7 @@ decode_path(const unsigned char *path)
 	STATIC_STRBUF(sb);
 	const unsigned char *p;
 
-	if (strchr(path, '%') == NULL)
+	if (strchr((const char *)path, '%') == NULL)
 		return (char *)path;
 	strbuf_clear(sb);
 	for (p = path; *p; p++) {
