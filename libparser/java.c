@@ -31,7 +31,7 @@
 #include "die.h"
 #include "strlimcpy.h"
 #include "token.h"
-#include "../gtags-parser/java_res.h"
+#include "java_res.h"
 
 #define MAXCOMPLETENAME 1024            /* max size of complete name of class */
 #define MAXCLASSSTACK   100             /* max size of class stack */

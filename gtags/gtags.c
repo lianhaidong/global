@@ -59,8 +59,6 @@ static void usage(void);
 static void help(void);
 int main(int, char **);
 int incremental(const char *, const char *);
-void updatetags(const char *, const char *, IDSET *, STRBUF *, int);
-void createtags(const char *, const char *, int);
 void updatetags_using_builtin_parser(const char *, const char *, IDSET *, STRBUF *);
 void createtags_using_builtin_parser(const char *, const char *);
 int printconf(const char *);
@@ -72,7 +70,6 @@ int Oflag;					/* use objdir */
 int qflag;					/* quiet mode */
 int wflag;					/* warning message */
 int vflag;					/* verbose mode */
-int max_args;
 int show_version;
 int show_help;
 int show_config;
@@ -93,7 +90,6 @@ int convert_type = PATH_RELATIVE;
 
 int extractmethod;
 int total;
-int use_command_parser;				/* command layer parser is obsolete */
 
 static void
 usage(void)
@@ -154,6 +150,7 @@ static struct option const long_options[] = {
 };
 
 static const char *langmap = DEFAULTLANGMAP;
+static const char *gtags_parser;
 
 int
 main(int argc, char **argv)
@@ -211,11 +208,6 @@ main(int argc, char **argv)
 			break;
 		case 'I':
 			Iflag++;
-			break;
-		case 'n':
-			max_args = atoi(optarg);
-			if (max_args <= 0)
-				die("--max-args option requires number > 0.");
 			break;
 		case 'o':
 			/*
@@ -403,45 +395,23 @@ main(int argc, char **argv)
 	if (vflag)
 		fprintf(stderr, "[%s] Gtags started.\n", now());
 	/*
-	 * load .globalrc or /etc/gtags.conf
+	 * load configuration file.
 	 */
 	openconf();
 	if (getconfb("extractmethod"))
 		extractmethod = 1;
-	/*
-	 * Command layer parser is obsolete.
-	 */
-	if (getconfs("GTAGS", NULL))
-		use_command_parser = 1;
-	strbuf_reset(sb);
-	/*
-	 * Pass the following information to gtags-parser(1)
-	 * using environment variable.
-	 *
-	 * o langmap
-	 * o DBPATH
-	 */
 	strbuf_reset(sb);
 	if (getconfs("langmap", sb))
 		langmap = check_strdup(strbuf_value(sb));
-	if (!use_command_parser) {
-		const char *plugin_parser;
-
-		strbuf_reset(sb);
-		if (getconfs("gtags_parser", sb))
-			plugin_parser = strbuf_value(sb);
-		else
-			plugin_parser = NULL;
-		parser_init(langmap, plugin_parser);
-	} else {
-		/*
-		 * Command layer parser is obsolete.
-		 */
-		set_env("GTAGSLANGMAP", langmap);
-		set_env("GTAGSDBPATH", dbpath);
-		if (wflag)
-			set_env("GTAGSWARNING", "1");
-	}
+	strbuf_reset(sb);
+	if (getconfs("gtags_parser", sb))
+		gtags_parser = check_strdup(strbuf_value(sb));
+	/*
+	 * initialize parser.
+	 */
+	if (vflag && gtags_parser)
+		fprintf(stderr, " Using plug-in parser.\n");
+	parser_init(langmap, gtags_parser);
 	/*
 	 * incremental update.
 	 */
@@ -464,44 +434,9 @@ main(int argc, char **argv)
 	}
 	init_statistics();
 	/*
-	 * create GTAGS, GRTAGS and GSYMS
+	 * create GTAGS and GRTAGS
 	 */
-	if (!use_command_parser) {
-		createtags_using_builtin_parser(dbpath, cwd);
-	} else {
-		/*
-		 * Command layer parser is obsolete.
-		 */
-		for (db = GTAGS; db < GTAGLIM; db++) {
-			/*
-			 * get parser for db. (gtags-parser by default)
-			 */
-			strbuf_reset(sb);
-			if (!getconfs(dbname(db), sb))
-				continue;
-			if (!usable(strmake(strbuf_value(sb), " \t")))
-				die("Parser '%s' not found or not executable.", strmake(strbuf_value(sb), " \t"));
-			tim = statistics_time_start("Time of creating %s", dbname(db));
-			if (vflag)
-				fprintf(stderr, "[%s] Creating '%s'.\n", now(), dbname(db));
-			createtags(dbpath, cwd, db);
-			strbuf_reset(sb);
-			if (db == GTAGS) {
-				if (getconfs("GTAGS_extra", sb))
-					if (system(strbuf_value(sb)))
-						fprintf(stderr, "GTAGS_extra command failed: %s\n", strbuf_value(sb));
-			} else if (db == GRTAGS) {
-				if (getconfs("GRTAGS_extra", sb))
-					if (system(strbuf_value(sb)))
-						fprintf(stderr, "GRTAGS_extra command failed: %s\n", strbuf_value(sb));
-			} else if (db == GSYMS) {
-				if (getconfs("GSYMS_extra", sb))
-					if (system(strbuf_value(sb)))
-						fprintf(stderr, "GSYMS_extra command failed: %s\n", strbuf_value(sb));
-			}
-			statistics_time_end(tim);
-		}
-	}
+	createtags_using_builtin_parser(dbpath, cwd);
 	/*
 	 * create idutils index.
 	 */
@@ -683,26 +618,7 @@ normal_update:
 	 * execute updating.
 	 */
 	if (!idset_empty(deleteset) || strbuf_getlen(addlist) > 0) {
-		if (!use_command_parser) {
-			updatetags_using_builtin_parser(dbpath, root, deleteset, addlist);
-		} else {
-			/*
-			 * Command layer parser is obsolete.
-			 */
-			int db;
-
-			for (db = GTAGS; db < GTAGLIM; db++) {
-				/*
-				 * GTAGS needed at least.
-				 */
-				if ((db == GRTAGS || db == GSYMS)
-				    && !test("f", makepath(dbpath, dbname(db), NULL)))
-					continue;
-				if (vflag)
-					fprintf(stderr, "[%s] Updating '%s'.\n", now(), dbname(db));
-				updatetags(dbpath, root, deleteset, addlist, db);
-			}
-		}
+		updatetags_using_builtin_parser(dbpath, root, deleteset, addlist);
 		updated = 1;
 	}
 	if (strbuf_getlen(deletelist) + strbuf_getlen(addlist_other) > 0) {
@@ -751,222 +667,6 @@ normal_update:
 	idset_close(findset);
 
 	return updated;
-}
-/*
- * updatetags: update tag file (using command layer parser)
- *
- *	i)	dbpath		directory in which tag file exist
- *	i)	root		root directory of source tree
- *	i)	deleteset	bit array of fid of deleted or modified files 
- *	i)	addlist		\0 separated list of added or modified files
- *	i)	db		GTAGS, GRTAGS, GSYMS
- *
- * Command layer parser is obsolete.
- */
-static void
-verbose_updatetags(char *path, int seqno, int skip)
-{
-	if (total)
-		fprintf(stderr, " [%d/%d]", seqno, total);
-	else
-		fprintf(stderr, " [%d]", seqno);
-	fprintf(stderr, " adding tags of %s", path);
-	if (skip)
-		fprintf(stderr, " (skipped)");
-	fputc('\n', stderr);
-}
-void
-updatetags(const char *dbpath, const char *root, IDSET *deleteset, STRBUF *addlist, int db)
-{
-	GTOP *gtop;
-	STRBUF *comline = strbuf_open(0);
-	int seqno;
-
-	/*
-	 * GTAGS needed to make GRTAGS.
-	 */
-	if (db == GRTAGS && !test("f", makepath(dbpath, dbname(GTAGS), NULL)))
-		die("GTAGS needed to create GRTAGS.");
-
-	/*
-	 * get tag command.
-	 */
-	if (!getconfs(dbname(db), comline))
-		die("cannot get tag command. (%s)", dbname(db));
-	gtop = gtags_open(dbpath, root, db, GTAGS_MODIFY, 0);
-	/*
-	 * Delete tags from GTAGS.
-	 */
-	if (!idset_empty(deleteset)) {
-		if (vflag) {
-			char fid[32];
-			const char *path;
-			int total = idset_count(deleteset);
-			unsigned int id;
-
-			seqno = 1;
-			for (id = idset_first(deleteset); id != END_OF_ID; id = idset_next(deleteset)) {
-				snprintf(fid, sizeof(fid), "%d", id);
-				path = gpath_fid2path(fid, NULL);
-				if (path == NULL)
-					die("GPATH is corrupted.");
-				fprintf(stderr, " [%d/%d] deleting tags of %s\n", seqno++, total, path + 2);
-			}
-		}
-		gtags_delete(gtop, deleteset);
-	}
-	gtop->flags = 0;
-	if (extractmethod)
-		gtop->flags |= GTAGS_EXTRACTMETHOD;
-	if (debug)
-		gtop->flags |= GTAGS_DEBUG;
-	/*
-	 * Compact format requires the tag records of the same file are
-	 * consecutive. We assume that the output of gtags-parser and
-	 * any plug-in parsers are consecutive for each file.
-	 * if (gtop->format & GTAGS_COMPACT) {
-	 *	nothing to do
-	 * }
-	 */
-	/*
-	 * If the --max-args option is not specified, we pass the parser
-	 * the source file as a lot as possible to decrease the invoking
-	 * frequency of the parser.
-	 */
-	{
-		XARGS *xp;
-		char *ctags_x;
-		char tag[MAXTOKEN], *p;
-
-		xp = xargs_open_with_strbuf(strbuf_value(comline), max_args, addlist);
-		xp->put_gpath = 1;
-		if (vflag)
-			xp->verbose = verbose_updatetags;
-		while ((ctags_x = xargs_read(xp)) != NULL) {
-			strlimcpy(tag, strmake(ctags_x, " \t"), sizeof(tag));
-			/*
-			 * extract method when class method definition.
-			 *
-			 * Ex: Class::method(...)
-			 *
-			 * key	= 'method'
-			 * data = 'Class::method  103 ./class.cpp ...'
-			 */
-			p = tag;
-			if (gtop->flags & GTAGS_EXTRACTMETHOD) {
-				if ((p = locatestring(tag, ".", MATCH_LAST)) != NULL)
-					p++;
-				else if ((p = locatestring(tag, "::", MATCH_LAST)) != NULL)
-					p += 2;
-				else
-					p = tag;
-			}
-			gtags_put(gtop, p, ctags_x);
-		}
-		total = xargs_close(xp);
-	}
-	gtags_close(gtop);
-	strbuf_close(comline);
-}
-/*
- * createtags: create tags file (using command layer parser)
- *
- *	i)	dbpath	dbpath directory
- *	i)	root	root directory of source tree
- *	i)	db	GTAGS, GRTAGS, GSYMS
- *
- * Command layer parser is obsolete.
- */
-static void
-verbose_createtags(char *path, int seqno, int skip)
-{
-	if (total)
-		fprintf(stderr, " [%d/%d]", seqno, total);
-	else
-		fprintf(stderr, " [%d]", seqno);
-	fprintf(stderr, " extracting tags of %s", path);
-	if (skip)
-		fprintf(stderr, " (skipped)");
-	fputc('\n', stderr);
-}
-void
-createtags(const char *dbpath, const char *root, int db)
-{
-	GTOP *gtop;
-	XARGS *xp;
-	char *ctags_x;
-	STRBUF *comline = strbuf_open(0);
-
-	/*
-	 * get tag command.
-	 */
-	if (!getconfs(dbname(db), comline))
-		die("cannot get tag command. (%s)", dbname(db));
-	/*
-	 * GTAGS needed to make GRTAGS.
-	 */
-	if (db == GRTAGS && !test("f", makepath(dbpath, dbname(GTAGS), NULL)))
-		die("GTAGS needed to create GRTAGS.");
-	gtop = gtags_open(dbpath, root, db, GTAGS_CREATE, cflag ? GTAGS_COMPACT : 0);
-	/*
-	 * Set flags.
-	 */
-	gtop->flags = 0;
-	if (extractmethod)
-		gtop->flags |= GTAGS_EXTRACTMETHOD;
-	if (debug)
-		gtop->flags |= GTAGS_DEBUG;
-	/*
-	 * Compact format requires the tag records of the same file are
-	 * consecutive. We assume that the output of gtags-parser and
-	 * any plug-in parsers are consecutive for each file.
-	 * if (gtop->format & GTAGS_COMPACT) {
-	 *	nothing to do
-	 * }
-	 */
-	/*
-	 * If the --max-args option is not specified, we pass the parser
-	 * the source file as a lot as possible to decrease the invoking
-	 * frequency of the parser.
-	 */
-	if (file_list)
-		find_open_filelist(file_list, root);
-	else
-		find_open(NULL);
-	/*
-	 * Add tags.
-	 */
-	xp = xargs_open_with_find(strbuf_value(comline), max_args);
-	xp->put_gpath = 1;
-	if (vflag)
-		xp->verbose = verbose_createtags;
-	while ((ctags_x = xargs_read(xp)) != NULL) {
-		char tag[MAXTOKEN], *p;
-
-		strlimcpy(tag, strmake(ctags_x, " \t"), sizeof(tag));
-		/*
-		 * extract method when class method definition.
-		 *
-		 * Ex: Class::method(...)
-		 *
-		 * key	= 'method'
-		 * data = 'Class::method  103 ./class.cpp ...'
-		 */
-		p = tag;
-		if (gtop->flags & GTAGS_EXTRACTMETHOD) {
-			if ((p = locatestring(tag, ".", MATCH_LAST)) != NULL)
-				p++;
-			else if ((p = locatestring(tag, "::", MATCH_LAST)) != NULL)
-				p += 2;
-			else
-				p = tag;
-		}
-		gtags_put(gtop, p, ctags_x);
-	}
-	total = xargs_close(xp);
-	find_close();
-	gtags_close(gtop);
-	strbuf_close(comline);
 }
 /*
  * callback functions for built-in parser

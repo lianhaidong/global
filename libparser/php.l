@@ -37,7 +37,7 @@
 #include "gparam.h"
 #include "linetable.h"
 #include "strbuf.h"
-#include "../gtags-parser/php_res.h"
+#include "php_res.h"
 
 #define lex_symbol_generation_rule(x) php_ ## x
 #define LEXLEX lex_symbol_generation_rule(lex)

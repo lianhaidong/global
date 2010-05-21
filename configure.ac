@@ -244,7 +244,6 @@ AC_CONFIG_FILES([Makefile
 	libutil/Makefile
 	gtags/Makefile
 	htags/Makefile
-	gtags-parser/Makefile
 	libdb/Makefile
 	global/Makefile
 	gozilla/Makefile

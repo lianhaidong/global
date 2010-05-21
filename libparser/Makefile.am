@@ -12,7 +12,8 @@
 #
 noinst_LIBRARIES = libgloparser.a
 
-noinst_HEADERS = parser.h internal.h asm_parse.h
+noinst_HEADERS = parser.h internal.h asm_parse.h \
+		c_res.h cpp_res.h java_res.h php_res.h asm_res.h asm_parse.h
 
 libgloparser_a_SOURCES = parser.c C.c Cpp.c asm_parse.c asm_scan.c java.c php.c
 
@@ -20,4 +21,9 @@ INCLUDES = @INCLUDES@
 
 libgloparser_a_DEPENDENCIES = $(libgloparser_a_LIBADD)
 
-EXTRA_DIST = php.l asm_parse.y asm_scan.l
+EXTRA_DIST = reserved.pl HACKING \
+		c_res.in c_res.gpf \
+		cpp_res.in cpp_res.gpf \
+		java_res.in java_res.gpf \
+		php_res.in php_res.gpf php.l \
+		asm_res.in asm_res.gpf asm_parse.y asm_scan.l

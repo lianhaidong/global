@@ -33,7 +33,7 @@
 #include "incop.h"
 #include "common.h"
 #include "htags.h"
-#include "../gtags-parser/cpp_res.h"
+#include "../libparser/cpp_res.h"
 
 #define lex_symbol_generation_rule(x) cpp_ ## x
 #include "lexcommon.h"

@@ -33,7 +33,7 @@
 #include "incop.h"
 #include "common.h"
 #include "htags.h"
-#include "../gtags-parser/asm_res.h"
+#include "../libparser/asm_res.h"
 
 #define lex_symbol_generation_rule(x) asm_ ## x
 #include "lexcommon.h"

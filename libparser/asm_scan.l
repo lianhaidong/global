@@ -31,7 +31,7 @@
 
 #include "internal.h"
 #include "asm_parse.h"
-#include "../gtags-parser/asm_res.h"
+#include "asm_res.h"
 #include "die.h"
 #include "linetable.h"
 #include "strbuf.h"

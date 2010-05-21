@@ -79,7 +79,6 @@
 	@name{Gtags-cscope} exits with a non 0 value if an error occurred, 0 otherwise.
 @SEE ALSO
 	@xref{cscope,1},
-	@xref{gtags-parser,1},
 	@xref{gtags,1},
 	@xref{global,1},
 	@xref{htags,1}.

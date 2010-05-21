@@ -33,7 +33,7 @@
 #include "strbuf.h"
 #include "strlimcpy.h"
 #include "token.h"
-#include "../gtags-parser/c_res.h"
+#include "c_res.h"
 
 static void C_family(const struct parser_param *, int);
 static void process_attribute(const struct parser_param *);

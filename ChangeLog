@@ -19,6 +19,10 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+May 21 2010, Shigo YAMAGUCHI
+
+	* Removed support for command layer plug-in parser(gtags-parser/).
+
 May 20 2010, Shigo YAMAGUCHI
 
 	* Changed the architecture of gtags(1) from 2 pass to 1 pass.

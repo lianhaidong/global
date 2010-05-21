@@ -38,7 +38,7 @@
 #include "common.h"
 #include "incop.h"
 #include "htags.h"
-#include "../gtags-parser/php_res.h"
+#include "../libparser/php_res.h"
 
 #define lex_symbol_generation_rule(x) php_ ## x
 #include "lexcommon.h"

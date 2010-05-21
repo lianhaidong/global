@@ -39,41 +39,7 @@ gtags:\
 	:tc=common:\
 	:langmap=@DEFAULTLANGMAP_QUOTED@:
 #
-# [gtags-parser] command layer gtags parser (obsolete)
-#
-# This command is distributed as part of GLOBAL.
-# The %s is replaced with the path of source file.
-# You need not use --langmap=xxx option. Gtags-parser(1) get the value
-# from environment variable.
-#
-gtags-command:\
-	:tc=common:\
-	:langmap=@DEFAULTLANGMAP_QUOTED@:\
-	:GTAGS=gtags-parser %s:\
-	:GRTAGS=gtags-parser -r %s:\
-	:GSYMS=gtags-parser -s %s:
-#
-# [Exuberant Ctags] (obsolete)
-#
-# This ctags is distributed as a part of Vim editor.
-#
-# [Installation]
-# % cd <Vim source directory>/src/ctags
-# % make
-# # cp ctags @EXUBERANT_CTAGS@
-#
-# Command layer parser is obsolete.
-#
-ctags-exuberant|Exuberant Ctags|ctags by Darren Hiebert:\
-	:tc=common:\
-	:suffixes=s,a,sa,asm,C,H,cpp,cxx,hxx,hpp,cc,c,h,y:\
-	:extractmethod:\
-	:GTAGS=@EXUBERANT_CTAGS@ -xu %s | perl -ne '\
-		if (/^operator \\S+\\s+function\\s/) { s/^operator //; }\
-		($name, $type, $no, $path, $line) = split(/[ \\t]+/, $_, 5);\
-		printf(STDOUT "%-16s %4d %-16s %s", $name, $no, $path, $line);':
-#
-# [Function layer plugin parser]
+# plugin parser
 #
 plugin-example|Example of function layer plugin parser:\
 	:tc=common:extractmethod:\
