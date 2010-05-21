@@ -158,7 +158,6 @@ main(int argc, char **argv)
 	char dbpath[MAXPATHLEN+1];
 	char cwd[MAXPATHLEN+1];
 	STRBUF *sb = strbuf_open(0);
-	int db;
 	int optchar;
 	int option_index = 0;
 	STATISTICS_TIME *tim;
