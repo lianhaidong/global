@@ -166,7 +166,7 @@
         GNU GLOBAL source code tag system@br
         (http://www.gnu.org/software/global/).
 @BUG
-	@file{GTAGS}, @file{GRTAGS} and @file{GSYMS} are very large.
+	@file{GTAGS} and @file{GRTAGS} are very large.
 	In advance of using this command, check the space of your disk.
 
 	Assembly support is far from complete.

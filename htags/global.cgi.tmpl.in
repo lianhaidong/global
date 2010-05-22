@@ -113,8 +113,6 @@ if (! -f 'GTAGS') {
 	$missed = 'GPATH';
 } elsif ($flag eq 'r' && ! -f 'GRTAGS') {
 	$missed = 'GRTAGS';
-} elsif ($flag eq 's' && ! -f 'GSYMS') {
-	$missed = 'GSYMS';
 } elsif ($flag eq 'I' && ! -f 'ID') {
 	$missed = 'ID';
 }
