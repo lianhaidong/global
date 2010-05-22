@@ -256,11 +256,12 @@ static const char *const tagslist[] = {"GPATH", "GTAGS", "GRTAGS", "GSYMS"};
  * --------------------------------------
  * GTAGS =============> GTAGS
  *
- * GRTAGS ====+=======> GRTAGS	tags which is defined in GTAGS
+ * GRTAGS ============> GRTAGS + GSYMS
+ *            +=======> GRTAGS	tags which is defined in GTAGS
  *            +=======> GSYMS	tags which is not defined in GTAGS
  */
 #define VIRTUAL_GRTAGS_GSYMS_PROCESSING(gtop) 						\
-	if (gtop->db != GTAGS) {							\
+	if (gtop->db == GRTAGS || gtop->db == GSYMS) {					\
 		int defined = is_defined_in_GTAGS(gtop, gtop->dbop->lastkey);		\
 		if ((gtop->db == GRTAGS && !defined) || (gtop->db == GSYMS && defined))	\
 			continue;							\
@@ -294,6 +295,8 @@ is_defined_in_GTAGS(GTOP *gtop, const char *name)
 const char *
 dbname(int db)
 {
+	if (db == GRTAGS + GSYMS)
+		db = GRTAGS;
 	assert(db >= 0 && db < GTAGLIM);
 	return tagslist[db];
 }

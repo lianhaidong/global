@@ -415,11 +415,6 @@ main(int argc, char **argv)
 	if (show_version)
 		version(av, vflag);
 	/*
-	 * invalid options.
-	 */
-	if (sflag && rflag)
-		die_with_code(2, "both of -s and -r are not allowed.");
-	/*
 	 * only -c, -u, -P and -p allows no argument.
 	 */
 	if (!av) {
@@ -536,7 +531,10 @@ main(int argc, char **argv)
 			die_with_code(2, "regular expression is not allowed with the --from-here option.");
 		db = decide_tag_by_context(av, context_file, atoi(context_lineno));
 	} else {
-		db = (rflag) ? GRTAGS : ((sflag) ? GSYMS : GTAGS);
+		if (rflag && sflag)
+			db = GRTAGS + GSYMS;
+		else
+			db = (rflag) ? GRTAGS : ((sflag) ? GSYMS : GTAGS);
 	}
 	/*
 	 * decide format.
@@ -1005,12 +1003,14 @@ put_syms(int type, const char *tag, int lno, const char *path, const char *line_
 		} else {
 			key = tag;
 		}
-		if (dbop_get(data->dbop, key) != NULL) {
-			if (!(data->target & TARGET_REF))
-				return;
-		} else {
-			if (!(data->target & TARGET_SYM))
-				return;
+		if (data->target == TARGET_REF || data->target == TARGET_SYM) {
+			if (dbop_get(data->dbop, key) != NULL) {
+				if (!(data->target & TARGET_REF))
+					return;
+			} else {
+				if (!(data->target & TARGET_SYM))
+					return;
+			}
 		}
 		break;
 	default:
@@ -1030,7 +1030,10 @@ parsefile_using_builtin_parser(char *const *argv, const char *cwd, const char *r
 	char path[MAXPATHLEN+1];
 	struct parsefile_data data;
 
-	data.target = 1 << db;
+	if (db == GRTAGS + GSYMS)
+		data.target = TARGET_REF|TARGET_SYM;
+	else
+		data.target = 1 << db;
 	data.extractmethod = getconfb("extractmethod");
 	if (getconfs("langmap", sb))
 		langmap = check_strdup(strbuf_value(sb));
@@ -1044,7 +1047,7 @@ parsefile_using_builtin_parser(char *const *argv, const char *cwd, const char *r
 	data.cv = convert_open(type, format, root, cwd, dbpath, stdout);
 	if (gpath_open(dbpath, 0) < 0)
 		die("GPATH not found.");
-	if (data.target & (TARGET_REF | TARGET_SYM)) {
+	if (data.target == TARGET_REF || data.target == TARGET_SYM) {
 		data.dbop = dbop_open(makepath(dbpath, dbname(GTAGS), NULL), 0, 0, 0);
 		if (data.dbop == NULL)
 			die("%s not found.", dbname(GTAGS));
