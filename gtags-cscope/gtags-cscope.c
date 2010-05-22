@@ -102,9 +102,9 @@ int ignore_case;
 static void
 check_dbpath(void)
 {
-	char cwd[MAXPATHLEN+1];
-	char root[MAXPATHLEN+1];
-	char dbpath[MAXPATHLEN+1];
+	char cwd[MAXPATHLEN];
+	char root[MAXPATHLEN];
+	char dbpath[MAXPATHLEN];
 
 	getdbpath(cwd, root, dbpath, vflag);
 }

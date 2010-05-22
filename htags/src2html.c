@@ -638,7 +638,7 @@ get_cvs_module(const char *file, const char **basename)
 {
 	const char *p;
 	STATIC_STRBUF(dir);
-	static char prev_dir[MAXPATHLEN+1];
+	static char prev_dir[MAXPATHLEN];
 	STATIC_STRBUF(module);
 	FILE *ip;
 

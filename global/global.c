@@ -88,9 +88,9 @@ int nosource;				/* undocumented command */
 int debug;
 int format;
 int type;				/* path conversion type */
-char cwd[MAXPATHLEN+1];			/* current directory	*/
-char root[MAXPATHLEN+1];		/* root of source tree	*/
-char dbpath[MAXPATHLEN+1];		/* dbpath directory	*/
+char cwd[MAXPATHLEN];			/* current directory	*/
+char root[MAXPATHLEN];			/* root of source tree	*/
+char dbpath[MAXPATHLEN];		/* dbpath directory	*/
 char *context_file;
 char *context_lineno;
 
@@ -176,7 +176,7 @@ setcom(int c)
 int
 decide_tag_by_context(const char *tag, const char *file, int lineno)
 {
-	char path[MAXPATHLEN+1], s_fid[32];
+	char path[MAXPATHLEN], s_fid[MAXFIDLEN];
 	const char *tagline, *p;
 	DBOP *dbop;
 	int db = GSYMS;
@@ -724,7 +724,7 @@ idutils(const char *pattern, const char *dbpath)
 	FILE *ip;
 	CONVERT *cv;
 	STRBUF *ib = strbuf_open(0);
-	char edit[IDENTLEN+1];
+	char edit[IDENTLEN];
 	const char *path, *lno, *lid;
 	int linenum, count;
 	char *p, *grep;
@@ -818,7 +818,7 @@ grep(const char *pattern, const char *dbpath)
 	GFIND *gp;
 	STRBUF *ib = strbuf_open(MAXBUFLEN);
 	const char *path;
-	char edit[IDENTLEN+1];
+	char edit[IDENTLEN];
 	const char *buffer;
 	int linenum, count;
 	int flags = 0;
@@ -892,7 +892,7 @@ pathlist(const char *pattern, const char *dbpath)
 		target = GPATH_OTHER;
 	if (pattern) {
 		int flags = 0;
-		char edit[IDENTLEN+1];
+		char edit[IDENTLEN];
 
 		if (!Gflag)
 			flags |= REG_EXTENDED;
@@ -1027,7 +1027,7 @@ parsefile_using_builtin_parser(char *const *argv, const char *cwd, const char *r
 	STRBUF *sb = strbuf_open(0);
 	char *langmap;
 	const char *plugin_parser, *av;
-	char path[MAXPATHLEN+1];
+	char path[MAXPATHLEN];
 	struct parsefile_data data;
 
 	if (db == GRTAGS + GSYMS)
@@ -1074,7 +1074,7 @@ parsefile_using_builtin_parser(char *const *argv, const char *cwd, const char *r
 		 * Memorize the file id of the path. This is used in put_syms().
 		 */
 		{
-			static char s_fid[32];
+			static char s_fid[MAXFIDLEN];
 			const char *p = gpath_path2fid(path, NULL);
 
 			if (!p) {
@@ -1146,7 +1146,7 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 	GTP *gtp;
 	int flags = 0;
 	STRBUF *sb = NULL, *ib = NULL;
-	char curpath[MAXPATHLEN+1], curtag[IDENTLEN+1];
+	char curpath[MAXPATHLEN], curtag[IDENTLEN];
 	FILE *fp = NULL;
 	const char *src = "";
 	int lineno, last_lineno;
@@ -1315,7 +1315,7 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 			 * tagline = <file id> <tag name> <line no> <line image>
 			 */
 			char *p = (char *)gtp->tagline;
-			char namebuf[IDENTLEN+1];
+			char namebuf[IDENTLEN];
 			const char *fid, *tagname, *image;
 
 			fid = p;
@@ -1366,7 +1366,7 @@ void
 tagsearch(const char *pattern, const char *cwd, const char *root, const char *dbpath, int db)
 {
 	int count, total = 0;
-	char libdbpath[MAXPATHLEN+1];
+	char libdbpath[MAXPATHLEN];
 
 	/*
 	 * search in current source tree.

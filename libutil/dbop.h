@@ -51,10 +51,10 @@ typedef	struct {
 	 * (2) DB185 PART
 	 */
 	DB *db;				/* descripter of DB */
-	char dbname[MAXPATHLEN+1];	/* dbname */
-	char key[MAXKEYLEN+1];		/* key */
+	char dbname[MAXPATHLEN];	/* dbname */
+	char key[MAXKEYLEN];		/* key */
 	int keylen;			/* key length */
-	char prev[MAXKEYLEN+1];		/* previous key value */
+	char prev[MAXKEYLEN];		/* previous key value */
 	int perm;			/* file permission */
 	/*
 	 * (3) sorted write

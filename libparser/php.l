@@ -63,7 +63,7 @@
 static void debug_print(const char *, ...);
 static int level;			/* block nest level */
 static STRBUF *string;			/* string */
-static char end_of_here_document[IDENTLEN+1];
+static char end_of_here_document[IDENTLEN];
 static int pre_here_document;
 
 /*

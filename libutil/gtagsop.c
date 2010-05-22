@@ -318,7 +318,7 @@ GTOP *
 gtags_open(const char *dbpath, const char *root, int db, int mode, int flags)
 {
 	GTOP *gtop;
-	char tagfile[MAXPATHLEN+1];
+	char tagfile[MAXPATHLEN];
 	int dbmode;
 
 	gtop = (GTOP *)check_calloc(sizeof(GTOP), 1);
@@ -636,7 +636,7 @@ gtags_first(GTOP *gtop, const char *pattern, int flags)
 {
 	int dbflags = 0;
 	int regflags = 0;
-	char prefix[IDENTLEN+1];
+	char prefix[IDENTLEN];
 	static regex_t reg;
 	regex_t *preg = &reg;
 	const char *key = NULL;

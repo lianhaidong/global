@@ -93,7 +93,7 @@ makedupindex(void)
 			die("cannot execute command '%s'.", strbuf_value(command));
 		while ((ctags_xid = strbuf_fgets(sb, ip, STRBUF_NOCRLF)) != NULL) {
 			SPLIT ptable;
-			char fid[MAXFIDLEN+1];
+			char fid[MAXFIDLEN];
 
 			ctags_x = parse_xid(ctags_xid, fid, NULL);
 			if (split(ctags_x, 2, &ptable) < 2) {
@@ -129,7 +129,7 @@ makedupindex(void)
 				}				
 				/* single entry */
 				if (first_line[0]) {
-					char fid[MAXFIDLEN+1];
+					char fid[MAXFIDLEN];
 					const char *ctags_x = parse_xid(first_line, fid, NULL);
 
 					if (split(ctags_x, 4, &ptable) < 4) {
@@ -155,11 +155,11 @@ makedupindex(void)
 			} else {
 				/* duplicate entry */
 				if (first_line[0]) {
-					char fid[MAXFIDLEN+1];
+					char fid[MAXFIDLEN];
 					const char *ctags_x = parse_xid(first_line, fid, NULL);
 
 					if (!dynamic) {
-						char path[MAXPATHLEN+1];
+						char path[MAXPATHLEN];
 
 						snprintf(path, sizeof(path), "%s/%s/%d.%s", distpath, dirs[db], count, HTML);
 						fileop = open_output_file(path, cflag);
@@ -204,7 +204,7 @@ makedupindex(void)
 		}
 		if (first_line[0]) {
 			SPLIT ptable;
-			char fid[MAXFIDLEN+1];
+			char fid[MAXFIDLEN];
 			const char *ctags_x = parse_xid(first_line, fid, NULL);
 
 			if (split(ctags_x, 4, &ptable) < 4) {

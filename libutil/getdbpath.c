@@ -89,7 +89,7 @@ setupvariables(int verbose)
 char *
 getobjdir(const char *candidate, int verbose)
 {
-	static char path[MAXPATHLEN+1];
+	static char path[MAXPATHLEN];
 
 	/*
 	 * setup makeobjdir and makeobjdirprefix (only first time).
@@ -139,7 +139,7 @@ getobjdir(const char *candidate, int verbose)
 int
 gtagsexist(const char *candidate, char *dbpath, int size, int verbose)
 {
-	char path[MAXPATHLEN+1];
+	char path[MAXPATHLEN];
 
 	/*
 	 * setup makeobjdir and makeobjdirprefix (only first time).
@@ -180,10 +180,10 @@ gtagsexist(const char *candidate, char *dbpath, int size, int verbose)
 #endif
 	return 0;
 }
-static char dbpath[MAXPATHLEN+1];
-static char root[MAXPATHLEN+1];
-static char root_with_slash[MAXPATHLEN+1];
-static char cwd[MAXPATHLEN+1];
+static char dbpath[MAXPATHLEN];
+static char root[MAXPATHLEN];
+static char root_with_slash[MAXPATHLEN];
+static char cwd[MAXPATHLEN];
 /*
  * getdbpath: get dbpath directory
  *
@@ -193,9 +193,9 @@ static char cwd[MAXPATHLEN+1];
  *	i)	verbose	verbose mode 1: on, 0: off
  *
  * root and dbpath assumed as
- *	char	cwd[MAXPATHLEN+1];
- *	char	root[MAXPATHLEN+1];
- *	char	dbpath[MAXPATHLEN+1];
+ *	char	cwd[MAXPATHLEN];
+ *	char	root[MAXPATHLEN];
+ *	char	dbpath[MAXPATHLEN];
  *
  * At first, getdbpath locate GTAGS file in the current directory.
  * If not found, it move up to the parent directory and locate GTAGS again.
@@ -308,7 +308,7 @@ setupdbpath(int verbose)
 				if (verbose)
 					fprintf(stderr, "GTAGSROOT found at '%s'.\n", path);
 				if (!isabspath(s)) {
-					char buf[MAXPATHLEN+1];
+					char buf[MAXPATHLEN];
 					s = realpath(makepath(root, s, NULL), buf);
 				}
 				strlimcpy(root, s, MAXPATHLEN);

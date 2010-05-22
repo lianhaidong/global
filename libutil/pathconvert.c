@@ -99,7 +99,7 @@ decode_path(const unsigned char *path)
 static const char *
 convert_pathname(CONVERT *cv, const char *path)
 {
-	static char buf[MAXPATHLEN+1];
+	static char buf[MAXPATHLEN];
 	const char *a, *b;
 
 	if (cv->type != PATH_THROUGH) {
@@ -148,7 +148,7 @@ convert_pathname(CONVERT *cv, const char *path)
 			}
 		}
 		if (required) {
-			static char buf[MAXPATHLEN+1];
+			static char buf[MAXPATHLEN];
 			char c[16] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 			char *q = buf;
 

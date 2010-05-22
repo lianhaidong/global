@@ -94,8 +94,8 @@ static int list_count;
 static char **listarray;		/* list for skipping full path */
 static FILE *ip;
 static FILE *temp;
-static char rootdir[MAXPATHLEN+1];
-static char cwddir[MAXPATHLEN+1];
+static char rootdir[MAXPATHLEN];
+static char cwddir[MAXPATHLEN];
 static int find_mode;
 static int find_eof;
 #define FIND_OPEN	1
@@ -369,7 +369,7 @@ skipthisfile(const char *path)
 /*
  * Directory Stack
  */
-static char dir[MAXPATHLEN+1];			/* directory path */
+static char dir[MAXPATHLEN];			/* directory path */
 static VARRAY *stack;				/* dynamic allocated array */
 struct stack_entry {
 	STRBUF *sb;
@@ -472,7 +472,7 @@ find_open_filelist(const char *filename, const char *root)
 		 * temporary file to be able to read repeatedly.
 		 */
 		if (temp == NULL) {
-			char buf[MAXPATHLEN+1];
+			char buf[MAXPATHLEN];
 
 			temp = tmpfile();
 			while (fgets(buf, sizeof(buf), stdin) != NULL)
@@ -528,8 +528,8 @@ find_read(void)
 char *
 find_read_traverse(void)
 {
-	static char val[MAXPATHLEN+1];
-	char path[MAXPATHLEN+1];
+	static char val[MAXPATHLEN];
+	char path[MAXPATHLEN];
 	struct stack_entry *curp = varray_assign(stack, current_entry, 1);
 
 	for (;;) {

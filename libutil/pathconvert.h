@@ -28,7 +28,7 @@ typedef struct {
 	int type;		/* PATH_ABSOLUTE, PATH_RELATIVE */
 	int format;		/* defined in format.h */
 	STRBUF *abspath;
-	char basedir[MAXPATHLEN+1];
+	char basedir[MAXPATHLEN];
 	int start_point;
 
 } CONVERT;

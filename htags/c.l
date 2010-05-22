@@ -112,7 +112,7 @@ YACC_IDENTIFIER	({ALPHA}|\.)({ALPHANUM}|\.)*
 		if (c == '\n') {
 			unput(c);
 		} else if (c) {
-			char path[MAXPATHLEN+1], *p = path;
+			char path[MAXPATHLEN], *p = path;
 			int sep = 0;
 
 			if (c == '"')

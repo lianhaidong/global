@@ -155,8 +155,8 @@ static const char *gtags_parser;
 int
 main(int argc, char **argv)
 {
-	char dbpath[MAXPATHLEN+1];
-	char cwd[MAXPATHLEN+1];
+	char dbpath[MAXPATHLEN];
+	char cwd[MAXPATHLEN];
 	STRBUF *sb = strbuf_open(0);
 	int optchar;
 	int option_index = 0;
@@ -233,7 +233,7 @@ main(int argc, char **argv)
 		}
 	}
 	if (gtagsconf) {
-		char path[MAXPATHLEN+1];
+		char path[MAXPATHLEN];
 
 		if (realpath(gtagsconf, path) == NULL)
 			die("%s not found.", gtagsconf);
@@ -340,7 +340,7 @@ main(int argc, char **argv)
 	 * Regularize the path name for single updating (--single-update).
 	 */
 	if (single_update) {
-		static char regular_path_name[MAXPATHLEN+1];
+		static char regular_path_name[MAXPATHLEN];
 		char *p = single_update;
 		
 		if (!test("f", p))
@@ -587,7 +587,7 @@ normal_update:
 		 */
 		limit = gpath_nextkey();
 		for (id = 1; id < limit; id++) {
-			char fid[32];
+			char fid[MAXFIDLEN];
 			int type;
 
 			snprintf(fid, sizeof(fid), "%d", id);
@@ -729,7 +729,7 @@ updatetags_using_builtin_parser(const char *dbpath, const char *root, IDSET *del
 	 */
 	if (!idset_empty(deleteset)) {
 		if (vflag) {
-			char fid[32];
+			char fid[MAXFIDLEN];
 			int total = idset_count(deleteset);
 			unsigned int id;
 

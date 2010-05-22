@@ -1003,7 +1003,7 @@ makecommonpart(const char *title, const char *defines, const char *files)
 				die("cannot execute command '%s'.", buf);
 			strbuf_puts_nl(sb, gen_list_begin());
 			while ((_ = strbuf_fgets(ib, ip, STRBUF_NOCRLF)) != NULL) {
-				char fid[MAXFIDLEN+1];
+				char fid[MAXFIDLEN];
 				const char *ctags_x = parse_xid(_, fid, NULL);
 
 				strbuf_puts_nl(sb, gen_list_body(SRCS, ctags_x, fid));

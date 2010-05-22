@@ -86,7 +86,7 @@ open_output_file(const char *path, int compress)
 {
 	FILEOP *fileop;
 	FILE *fp;
-	char command[MAXFILLEN+1];
+	char command[MAXFILLEN];
 
 	if (compress) {
 		snprintf(command, sizeof(command), "gzip -c >%s", path);

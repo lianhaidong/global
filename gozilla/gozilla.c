@@ -65,9 +65,9 @@ void show_page_by_url(const char *, const char *);
 #define isblank(c)	((c) == ' ' || (c) == '\t')
 #endif
 
-char cwd[MAXPATHLEN+1];
-char root[MAXPATHLEN+1];
-char dbpath[MAXPATHLEN+1];
+char cwd[MAXPATHLEN];
+char root[MAXPATHLEN];
+char dbpath[MAXPATHLEN];
 
 int bflag;
 int pflag;
@@ -181,7 +181,7 @@ alias(const char *alias_name)
 static const char *
 locate_HTMLdir(void)
 {
-	static char htmldir[MAXPATHLEN+1];
+	static char htmldir[MAXPATHLEN];
 
 	if (test("d", makepath(dbpath, "HTML", NULL)))
 		strlimcpy(htmldir, makepath(dbpath, "HTML", NULL), sizeof(htmldir));
@@ -356,7 +356,7 @@ void
 getURL(const char *file, STRBUF *URL)
 {
 	char *p;
-	char buf[MAXPATHLEN+1];
+	char buf[MAXPATHLEN];
 	STRBUF *sb = strbuf_open(0);
 	const char *htmldir = locate_HTMLdir();
 
@@ -507,7 +507,7 @@ show_page_by_url(const char *browser, const char *url)
 void
 show_page_by_url(const char *browser, const char *url)
 {
-	char com[MAXFILLEN+1];
+	char com[MAXFILLEN];
 	char *path;
 
 	/*

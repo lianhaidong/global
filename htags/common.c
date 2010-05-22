@@ -216,9 +216,9 @@ setup_xhtml(void)
 /*
  * These methods is used to tell lex() the current path infomation.
  */
-static char current_path[MAXPATHLEN+1];
-static char current_dir[MAXPATHLEN+1];
-static char current_file[MAXPATHLEN+1];
+static char current_path[MAXPATHLEN];
+static char current_dir[MAXPATHLEN];
+static char current_file[MAXPATHLEN];
 /*
  * save path infomation
  */

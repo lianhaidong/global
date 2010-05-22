@@ -343,7 +343,7 @@ print_directory(int level, char *basedir)
 	int count = 0;
 
 	if (level > 0) {
-		char name[MAXPATHLEN+1];
+		char name[MAXPATHLEN];
 
 		snprintf(name, sizeof(name), "%s/files/%s.%s", distpath, path2fid(basedir), HTML);
 		fileop = open_output_file(name, cflag);
@@ -445,7 +445,7 @@ print_directory_header(FILE *op, int level, const char *dir)
  	strbuf_sprintf(sb, "%s%sroot%s/", header_begin, gen_href_begin(NULL, indexlink, normal_suffix, NULL), gen_href_end());
 	fputs(strbuf_value(sb), op);
 	{
-		char path[MAXPATHLEN+1];
+		char path[MAXPATHLEN];
 		char *p, *q;
 
 		strlimcpy(path, dir, sizeof(path));
@@ -469,7 +469,7 @@ print_directory_header(FILE *op, int level, const char *dir)
 	}
 	fputs_nl(header_end, op);
 	{
-		char parentdir[MAXPATHLEN+1];
+		char parentdir[MAXPATHLEN];
 		const char *suffix, *parent;
 
 		(void)dirpart(dir, parentdir);
@@ -507,7 +507,7 @@ static void
 print_directory_footer(FILE *op, int level, const char *dir)
 {
 	const char *parent, *suffix;
-	char parentdir[MAXPATHLEN+1];
+	char parentdir[MAXPATHLEN];
 
 	if (level == 0)
 		die("print_directory_footer: internal error.");
@@ -653,7 +653,7 @@ makefileindex(const char *file, STRBUF *a_files)
 	 * progress of processing. It isn't copied each every recursive call
 	 * not to waste the stack.
 	 */
-	char basedir[MAXPATHLEN+1];
+	char basedir[MAXPATHLEN];
 
 	/*
 	 * Initialize data.

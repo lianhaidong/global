@@ -80,7 +80,7 @@ typedef struct {
 	int db;				/* 0:GTAGS, 1:GRTAGS, 2:GSYMS */
 	int openflags;			/* flags value of gtags_open() */
 	int flags;			/* flags */
-	char root[MAXPATHLEN+1];	/* root directory of source tree */
+	char root[MAXPATHLEN];	/* root directory of source tree */
 	/*
 	 * Stuff for GTOP_PATH.
 	 */
@@ -96,11 +96,11 @@ typedef struct {
 	GTP gtp;
 	POOL *segment_pool;
 	VARRAY *vb;
-	char cur_tagname[IDENTLEN+1];	/* current tag name */
+	char cur_tagname[IDENTLEN];	/* current tag name */
 	/*
 	 * Stuff for compact format
 	 */
-	char cur_path[MAXPATHLEN+1];	/* current path */
+	char cur_path[MAXPATHLEN];	/* current path */
 	STRBUF *sb;			/* string buffer */
 	/* used for compact format and path name only read */
 	STRHASH *path_hash;

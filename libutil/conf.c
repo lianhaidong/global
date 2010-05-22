@@ -330,7 +330,7 @@ int
 getconfn(const char *name, int *num)
 {
 	const char *p;
-	char buf[MAXPROPLEN+1];
+	char buf[MAXPROPLEN];
 
 	if (!opened)
 		openconf();
@@ -354,7 +354,7 @@ int
 getconfs(const char *name, STRBUF *sb)
 {
 	const char *p;
-	char buf[MAXPROPLEN+1];
+	char buf[MAXPROPLEN];
 	int all = 0;
 	int exist = 0;
 
@@ -417,7 +417,7 @@ getconfs(const char *name, STRBUF *sb)
 int
 getconfb(const char *name)
 {
-	char buf[MAXPROPLEN+1];
+	char buf[MAXPROPLEN];
 
 	if (!opened)
 		openconf();
