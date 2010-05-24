@@ -93,7 +93,7 @@ anchor_prepare(FILE *anchor_stream)
 		 * the same file are consecutive.
 		 */
 		if (gtags_exist[db] == 1) {
-			snprintf(comline, sizeof(comline), "%s -f%s --result=ctags-xid --nofilter=path", global_path, options[db]);
+			snprintf(comline, sizeof(comline), "%s -f%s --encode-path=\" \t\" --result=ctags-xid --nofilter=path", global_path, options[db]);
 			anchor_input[db] = xargs_open_with_file(comline, 0, anchor_stream);
 		}
 	}
