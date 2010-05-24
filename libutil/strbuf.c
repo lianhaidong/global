@@ -219,7 +219,7 @@ strbuf_puts(STRBUF *sb, const char *s)
  *	i)	c	terminator
  *	r)		pointer to the terminator
  */
-const char *
+void
 strbuf_puts_withterm(STRBUF *sb, const char *s, int c)
 {
 	if (!sb->alloc_failed) {
@@ -228,7 +228,6 @@ strbuf_puts_withterm(STRBUF *sb, const char *s, int c)
 				__strbuf_expandbuf(sb, 0);
 			*sb->curp++ = *s++;
 		}
-		return *s;
 	}
 }
 /*

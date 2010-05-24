@@ -117,7 +117,7 @@ void strbuf_clear(STRBUF *);
 void strbuf_nputs(STRBUF *, const char *, int);
 void strbuf_nputc(STRBUF *, int, int);
 void strbuf_puts(STRBUF *, const char *);
-const char *strbuf_puts_withterm(STRBUF *, const char *, int);
+void strbuf_puts_withterm(STRBUF *, const char *, int);
 void strbuf_puts_nl(STRBUF *, const char *);
 void strbuf_putn(STRBUF *, int);
 int strbuf_unputc(STRBUF *, int);
