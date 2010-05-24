@@ -36,5 +36,6 @@ void recover(SPLIT *);
 void split_dump(SPLIT *);
 const char *parse_xid(const char *, char *, int *);
 const char *nextstring(const char *);
+const char *nextelement(const char *);
 
 #endif /* ! _SPLIT_H_ */

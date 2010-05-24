@@ -200,3 +200,27 @@ nextstring(const char *s)
 		s++;
 	return s + 1;
 }
+/*
+ * nextelement: seek to the next element
+ *
+ *	i)	s	point the current element or the following blanks
+ *	r)		next element
+ *
+ *	s     s   return value
+ *	v     v   v
+ *	xxxxx     yyyyy    zzzzzz
+ *	(current) (next)
+ */
+const char *
+nextelement(const char *s)
+{
+	while (*s && !isspace(*s))
+		s++;
+	if (!*s)
+		die("nextelement: unexpected end of string(1).");
+	while (*s && isspace(*s))
+		s++;
+	if (!*s)
+		die("nextelement: unexpected end of string(2).");
+	return s;
+}

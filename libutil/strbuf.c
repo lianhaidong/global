@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2002, 2005, 2006
+ * Copyright (c) 1997, 1998, 1999, 2000, 2002, 2005, 2006, 2010
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -209,6 +209,26 @@ strbuf_puts(STRBUF *sb, const char *s)
 				__strbuf_expandbuf(sb, 0);
 			*sb->curp++ = *s++;
 		}
+	}
+}
+/*
+ * strbuf_puts_withterm: Put string until the terminator
+ *
+ *	i)	sb	string buffer
+ *	i)	s	string
+ *	i)	c	terminator
+ *	r)		pointer to the terminator
+ */
+const char *
+strbuf_puts_withterm(STRBUF *sb, const char *s, int c)
+{
+	if (!sb->alloc_failed) {
+		while (*s && *s != c) {
+			if (sb->curp >= sb->endp)
+				__strbuf_expandbuf(sb, 0);
+			*sb->curp++ = *s++;
+		}
+		return *s;
 	}
 }
 /*

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2002, 2005, 2006
+ * Copyright (c) 1997, 1998, 1999, 2000, 2002, 2005, 2006, 2010
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -117,6 +117,7 @@ void strbuf_clear(STRBUF *);
 void strbuf_nputs(STRBUF *, const char *, int);
 void strbuf_nputc(STRBUF *, int, int);
 void strbuf_puts(STRBUF *, const char *);
+const char *strbuf_puts_withterm(STRBUF *, const char *, int);
 void strbuf_puts_nl(STRBUF *, const char *);
 void strbuf_putn(STRBUF *, int);
 int strbuf_unputc(STRBUF *, int);

@@ -56,7 +56,6 @@ makedupindex(void)
 	int definition_count = 0;
 	char srcdir[MAXPATHLEN];
 	int db;
-	/* char buf[1024];*/
 	FILEOP *fileop = NULL;
 	FILE *op = NULL;
 	FILE *ip = NULL;
@@ -92,17 +91,11 @@ makedupindex(void)
 		if ((ip = popen(strbuf_value(command), "r")) == NULL)
 			die("cannot execute command '%s'.", strbuf_value(command));
 		while ((ctags_xid = strbuf_fgets(sb, ip, STRBUF_NOCRLF)) != NULL) {
-			SPLIT ptable;
 			char fid[MAXFIDLEN];
 
 			ctags_x = parse_xid(ctags_xid, fid, NULL);
-			if (split(ctags_x, 2, &ptable) < 2) {
-				recover(&ptable);
-				die("too small number of parts.(1)\n'%s'", ctags_x);
-			}
-			strlimcpy(tag, ptable.part[PART_TAG].start, sizeof(tag));
-			recover(&ptable);
-
+			/* tag name */
+			(void)strcpy_withterm(tag, ctags_x, sizeof(tag), ' ');
 			if (strcmp(prev, tag)) {
 				count++;
 				if (vflag)
@@ -117,32 +110,26 @@ makedupindex(void)
 					}
 					writing = 0;
 					/*
-					 * cache record: " <file id>\0<entry number>"
+					 * cache record: " <fid>\0<entry number>\0"
 					 */
 					strbuf_reset(tmp);
 					strbuf_putc(tmp, ' ');
 					strbuf_putn(tmp, count - 1);
 					strbuf_putc(tmp, '\0');
 					strbuf_putn(tmp, entry_count);
-					/* snprintf(buf, sizeof(buf), " %d%c%d", count - 1, '\0', entry_count);*/
 					cache_put(db, prev, strbuf_value(tmp), strbuf_getlen(tmp) + 1);
 				}				
 				/* single entry */
 				if (first_line[0]) {
 					char fid[MAXFIDLEN];
 					const char *ctags_x = parse_xid(first_line, fid, NULL);
+					const char *lno = nextelement(ctags_x);
 
-					if (split(ctags_x, 4, &ptable) < 4) {
-						recover(&ptable);
-						die("too small number of parts.(2)\n'%s'", ctags_x);
-					}
 					strbuf_reset(tmp);
-					strbuf_puts(tmp, ptable.part[PART_LNO].start);
+					strbuf_puts_withterm(tmp, lno, ' ');
 					strbuf_putc(tmp, '\0');
 					strbuf_puts(tmp, fid);
-					/* snprintf(buf, sizeof(buf), "%s%c%s", ptable.part[PART_LNO].start, '\0', fid);*/
 					cache_put(db, prev, strbuf_value(tmp), strbuf_getlen(tmp) + 1);
-					recover(&ptable);
 				}
 				/*
 				 * Chop the tail of the line. It is not important.
@@ -192,32 +179,25 @@ makedupindex(void)
 				html_count++;
 			}
 			/*
-			 * cache record: " <file id> <entry number>"
+			 * cache record: " <fid>\0<entry number>\0"
 			 */
 			strbuf_reset(tmp);
 			strbuf_putc(tmp, ' ');
 			strbuf_putn(tmp, count);
 			strbuf_putc(tmp, '\0');
 			strbuf_putn(tmp, entry_count);
-			/* snprintf(buf, sizeof(buf), " %d%c%d", count, '\0', entry_count);*/
 			cache_put(db, prev, strbuf_value(tmp), strbuf_getlen(tmp) + 1);
 		}
 		if (first_line[0]) {
-			SPLIT ptable;
 			char fid[MAXFIDLEN];
 			const char *ctags_x = parse_xid(first_line, fid, NULL);
+			const char *lno = nextelement(ctags_x);
 
-			if (split(ctags_x, 4, &ptable) < 4) {
-				recover(&ptable);
-				die("too small number of parts.(3)\n'%s'", ctags_x);
-			}
 			strbuf_reset(tmp);
-			strbuf_puts(tmp, ptable.part[PART_LNO].start);
+			strbuf_puts_withterm(tmp, lno, ' ');
 			strbuf_putc(tmp, '\0');
 			strbuf_puts(tmp, fid);
-			/* snprintf(buf, sizeof(buf), "%s%c%s", ptable.part[PART_LNO].start, '\0', fid);*/
 			cache_put(db, prev, strbuf_value(tmp), strbuf_getlen(tmp) + 1);
-			recover(&ptable);
 		}
 	}
 	strbuf_close(sb);
