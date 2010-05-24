@@ -214,11 +214,11 @@ nextstring(const char *s)
 const char *
 nextelement(const char *s)
 {
-	while (*s && !isspace(*s))
+	while (*s && !isblank(*s))
 		s++;
 	if (!*s)
 		die("nextelement: unexpected end of string(1).");
-	while (*s && isspace(*s))
+	while (*s && isblank(*s))
 		s++;
 	if (!*s)
 		die("nextelement: unexpected end of string(2).");
