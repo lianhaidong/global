@@ -34,7 +34,6 @@
 #include "common.h"
 #include "incop.h"
 #include "path2url.h"
-#include "split.h"
 #include "htags.h"
 
 /*----------------------------------------------------------------------*/
