@@ -78,7 +78,7 @@ makedupindex(void)
 		 * construct command line.
 		 */
 		strbuf_reset(command);
-		strbuf_sprintf(command, "%s -x%s --result=ctags-xid --nofilter=path", global_path, option);
+		strbuf_sprintf(command, "%s -x%s --result=ctags-xid --encode-path=\" \t\" --nofilter=path", global_path, option);
 		/*
 		 * Optimization when the --dynamic option is specified.
 		 */

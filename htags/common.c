@@ -600,13 +600,14 @@ gen_list_begin(void)
 /*
  * Generate list body.
  *
- * s must be choped.
+ * ctags_x with the --encode-path=" \t"
  */
 const char *
 gen_list_body(const char *srcdir, const char *ctags_x, const char *fid)	/* virtually const */
 {
 	STATIC_STRBUF(sb);
-	const char *p, *filename;
+	char path[MAXPATHLEN];
+	const char *p;
 	SPLIT ptable;
 
 	strbuf_clear(sb);
@@ -614,9 +615,9 @@ gen_list_body(const char *srcdir, const char *ctags_x, const char *fid)	/* virtu
 		recover(&ptable);
 		die("too small number of parts in list_body().\n'%s'", ctags_x);
 	}
-	filename = ptable.part[PART_PATH].start + 2;	/* remove './' */
+	strlimcpy(path, decode_path(ptable.part[PART_PATH].start + 2), sizeof(path));
 	if (fid == NULL)
-		fid = path2fid(filename);
+		fid = path2fid(path);
 	if (table_list) {
 		strbuf_puts(sb, current_row_begin);
 		if (enable_xhtml) {
@@ -625,14 +626,14 @@ gen_list_body(const char *srcdir, const char *ctags_x, const char *fid)	/* virtu
 			strbuf_puts(sb, ptable.part[PART_TAG].start);
 			strbuf_puts(sb, gen_href_end());
 			strbuf_sprintf(sb, "</td><td class='line'>%s</td><td class='file'>%s</td><td class='code'>",
-				ptable.part[PART_LNO].start, filename);
+				ptable.part[PART_LNO].start, path);
 		} else {
 			strbuf_puts(sb, "<td nowrap>");
 			strbuf_puts(sb, gen_href_begin(srcdir, fid, HTML, ptable.part[PART_LNO].start));
 			strbuf_puts(sb, ptable.part[PART_TAG].start);
 			strbuf_puts(sb, gen_href_end());
 			strbuf_sprintf(sb, "</td><td nowrap align='right'>%s</td><td nowrap align='left'>%s</td><td nowrap>",
-				ptable.part[PART_LNO].start, filename);
+				ptable.part[PART_LNO].start, path);
 		}
 		for (p = ptable.part[PART_LINE].start; *p; p++) {
 			unsigned char c = *p;
@@ -655,23 +656,23 @@ gen_list_body(const char *srcdir, const char *ctags_x, const char *fid)	/* virtu
 		strbuf_puts(sb, current_row_end);
 		recover(&ptable);
 	} else {
-		int done = 0;
-
+		/* print tag name with anchor */
 		strbuf_puts(sb, current_line_begin);
 		strbuf_puts(sb, gen_href_begin(srcdir, fid, HTML, ptable.part[PART_LNO].start));
 		strbuf_puts(sb, ptable.part[PART_TAG].start);
 		strbuf_puts(sb, gen_href_end());
-		p = ctags_x + strlen(ptable.part[PART_TAG].start);
 		recover(&ptable);
 
-		for (; *p; p++) {
+		/* print line number */
+		for (p = ptable.part[PART_TAG].end; p < ptable.part[PART_PATH].start; p++)
+			strbuf_putc(sb, *p);
+		/* print file name */
+		strbuf_puts(sb, path);
+		/* print the rest */
+		for (p = ptable.part[PART_PATH].end; *p; p++) {
 			unsigned char c = *p;
 
-			/* ignore "./" in path name */
-			if (!done && c == '.' && *(p + 1) == '/') {
-				p++;
-				done = 1;
-			} else if (c == '&')
+			if (c == '&')
 				strbuf_puts(sb, quote_amp);
 			else if (c == '<')
 				strbuf_puts(sb, quote_little);

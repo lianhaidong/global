@@ -755,7 +755,7 @@ makeincludeindex(void)
 	 * Unlike Perl regular expression, POSIX regular expression doesn't support C-style escape sequence.
 	 * Therefore, we can not use "\\t" here.
 	 */
-	snprintf(command, sizeof(command), "%s -gnx \"^[ \t]*(#[ \t]*(import|include)|include[ \t]*\\()\"", global_path);
+	snprintf(command, sizeof(command), "%s -gnx --encode-path=\" \t\" \"^[ \t]*(#[ \t]*(import|include)|include[ \t]*\\()\"", global_path);
 	if ((PIPE = popen(command, "r")) == NULL)
 		die("cannot fork.");
 	strbuf_reset(input);
@@ -844,7 +844,7 @@ makeincludeindex(void)
 				recover(&ptable);
 				die("too small number of parts in makefileindex().");
 			}
-			snprintf(buf, sizeof(buf), "%s %s", ptable.part[PART_LNO].start, ptable.part[PART_PATH].start);
+			snprintf(buf, sizeof(buf), "%s %s", ptable.part[PART_LNO].start, decode_path(ptable.part[PART_PATH].start));
 			recover(&ptable);
 			strbuf_reset(inc->ref_contents);
 			strbuf_puts(inc->ref_contents, buf);
