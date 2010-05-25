@@ -844,7 +844,7 @@ makeincludeindex(void)
 				recover(&ptable);
 				die("too small number of parts in makefileindex().");
 			}
-			snprintf(buf, sizeof(buf), "%s %s", ptable.part[PART_LNO].start, decode_path(ptable.part[PART_PATH].start));
+			snprintf(buf, sizeof(buf), "%s %s", ptable.part[PART_LNO].start, decode_path((unsigned char *)ptable.part[PART_PATH].start));
 			recover(&ptable);
 			strbuf_reset(inc->ref_contents);
 			strbuf_puts(inc->ref_contents, buf);
