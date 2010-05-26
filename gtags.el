@@ -22,9 +22,9 @@
 
 ;; GLOBAL home page is at: http://www.gnu.org/software/global/
 ;; Author: Tama Communications Corporation
-;; Version: 2.6
+;; Version: 2.7
 ;; Keywords: tools
-;; Required version: GLOBAL 5.7 or later
+;; Required version: GLOBAL 5.9 or later
 
 ;; Gtags-mode is implemented as a minor mode so that it can work with any
 ;; other major modes. Gtags-select mode is implemented as a major mode.
@@ -283,6 +283,17 @@
       (kill-buffer buffer))
     path))
 
+;; decode path name
+;; The path is encoded by global(1) with the --encode-path="..." option.
+;; A blank is encoded to %20.
+(defun gtags-decode-pathname (path)
+  (let (start result)
+    (while (setq start (string-match "%\\([0-9a-f][0-9a-f]\\)" path))
+      (setq result (concat result
+                     (substring path 0 start)
+                     (format "%c" (string-to-int (substring path (match-beginning 1) (match-end 1)) 16))))
+      (setq path (substring path (match-end 1))))
+    (concat result path)))
 ;;
 ;; interactive command
 ;;
@@ -559,8 +570,8 @@
         (if rootdir (cd rootdir)))))
     (message "Searching %s ..." tagname)
     (if (not (= 0 (if (equal flag "C")
-                      (call-process "global" nil t nil option context tagname)
-                      (call-process "global" nil t nil option tagname))))
+                      (call-process "global" nil t nil option "--encode-path=\" \t\"" context tagname)
+                      (call-process "global" nil t nil option "--encode-path=\" \t\"" tagname))))
 	(progn (message (buffer-substring (point-min)(1- (point-max))))
                (gtags-pop-context))
       (goto-char (point-min))
@@ -598,7 +609,7 @@
     (if (not (looking-at "[^ \t]+[ \t]+\\([0-9]+\\)[ \t]\\([^ \t]+\\)[ \t]"))
         (gtags-pop-context)
       (setq line (string-to-number (gtags-match-string 1)))
-      (setq file (gtags-match-string 2))
+      (setq file (gtags-decode-pathname (gtags-match-string 2)))
       ;;
       ;; Why should we load new file before killing current-buffer?
       ;;
