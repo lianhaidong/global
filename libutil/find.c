@@ -109,6 +109,7 @@ extern int qflag;
 #ifdef DEBUG
 extern int debug;
 #endif
+int allow_blank = 0;
 /*
  * trim: remove blanks and '\'.
  */
@@ -431,6 +432,11 @@ find_open(const char *start)
 	assert(find_mode == 0);
 	find_mode = FIND_OPEN;
 
+	/*
+	 * This is temporary measures. It doesn't decide how to become final.
+	 */
+	if (getenv("GTAGSALLOWBLANK"))
+		allow_blank = 1;
 	if (!start)
 		start = "./";
 	/*
@@ -466,6 +472,11 @@ find_open_filelist(const char *filename, const char *root)
 	assert(find_mode == 0);
 	find_mode = FILELIST_OPEN;
 
+	/*
+	 * This is temporary measures. It doesn't decide how to become final.
+	 */
+	if (getenv("GTAGSALLOWBLANK"))
+		allow_blank = 1;
 	if (!strcmp(filename, "-")) {
 		/*
 		 * If the filename is '-', copy standard input onto
@@ -566,7 +577,7 @@ find_read_traverse(void)
 				 * GLOBAL cannot treat path which includes blanks.
 				 * It will be improved in the future.
 				 */
-				if (locatestring(path, " ", MATCH_FIRST)) {
+				if (!allow_blank && locatestring(path, " ", MATCH_FIRST)) {
 					warning("'%s' ignored, because it includes blank.", &path[2]);
 					continue;
 				}
@@ -672,7 +683,7 @@ find_read_filelist(void)
 		 * GLOBAL cannot treat path which includes blanks.
 		 * It will be improved in the future.
 		 */
-		if (locatestring(path, " ", MATCH_LAST)) {
+		if (!allow_blank && locatestring(path, " ", MATCH_LAST)) {
 			warning("'%s' ignored, because it includes blank.", path + 2);
 			continue;
 		}
