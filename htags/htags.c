@@ -1998,6 +1998,7 @@ main(int argc, char **argv)
 		snprintf(dst, sizeof(dst), "%s/style.css", distpath);
 		copyfile(src, dst);
 	}
+	message("[%s] Done.", now());
 	if (vflag && cgi && (cflag || fflag || dynamic)) {
 		message("\n[Information]\n");
 		if (fflag || cflag || dynamic) {
