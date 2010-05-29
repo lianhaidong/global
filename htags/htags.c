@@ -1661,7 +1661,7 @@ main(int argc, char **argv)
 			strbuf_puts(sb, " -v");
 		if (wflag)
 			strbuf_puts(sb, " -w");
-		if (enable_idutils)
+		if (enable_idutils && usable("mkid"))
 			strbuf_puts(sb, " -I");
 		if (arg_dbpath[0]) {
 			strbuf_putc(sb, ' ');

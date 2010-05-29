@@ -459,11 +459,8 @@ main(int argc, char **argv)
 			fprintf(stderr, "executing mkid like: %s\n", strbuf_value(sb));
 		if (system(strbuf_value(sb)))
 			die("mkid failed: %s", strbuf_value(sb));
-		strbuf_reset(sb);
-		strbuf_puts(sb, "chmod 644 ");
-		strbuf_puts(sb, makepath(dbpath, "ID", NULL));
-		if (system(strbuf_value(sb)))
-			die("chmod failed: %s", strbuf_value(sb));
+		if (chmod(makepath(dbpath, "ID", NULL), 0644) < 0)
+			die("cannot chmod ID file.");
 		statistics_time_end(tim);
 	}
 	if (vflag)
@@ -851,13 +848,6 @@ createtags_using_builtin_parser(const char *dbpath, const char *root)
 		tim = statistics_time_start("Time of executing GRTAGS_extra command");
 		if (system(strbuf_value(sb)))
 			fprintf(stderr, "GRTAGS_extra command failed: %s\n", strbuf_value(sb));
-		statistics_time_end(tim);
-	}
-	strbuf_reset(sb);
-	if (getconfs("GSYMS_extra", sb)) {
-		tim = statistics_time_start("Time of executing GSYMS_extra command");
-		if (system(strbuf_value(sb)))
-			fprintf(stderr, "GSYMS_extra command failed: %s\n", strbuf_value(sb));
 		statistics_time_end(tim);
 	}
 	strbuf_close(sb);
