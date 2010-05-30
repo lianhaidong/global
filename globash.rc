@@ -91,17 +91,15 @@ fi
 declare -r XREF=$GHOME/xref-$$			# global's output
 declare -r STACK=$GHOME/stack-$$		# stack for tags command
 declare -r MARKER=$GHOME/marker-$$		# marker
-declare -r TMP1=$GHOME/tmp1-$$			# temporary file(1)
-declare -r TMP2=$GHOME/tmp2-$$			# temporary file(2)
+declare -r TMP1=$GHOME/tmp1-$$			# temporary file
 __gtags_clean() {
-	rm -f "$XREF" "$STACK" "$MARKER" "$TMP1" "$TMP2"
+	rm -f "$XREF" "$STACK" "$MARKER" "$TMP1"
 }
 builtin trap 'status=$?; __gtags_clean; exit $status' 0
 cp /dev/null "$XREF"
 cp /dev/null "$STACK"
 cp /dev/null "$MARKER"
 cp /dev/null "$TMP1"
-cp /dev/null "$TMP2"
 __gtags_stack=()			# tag stack
 __gtags_lasttag=			# last tag
 __gtags_lastcom=			# last command
@@ -151,36 +149,33 @@ __gtags_resume()
 }
 __gtags_push_stack()
 {
-	if [ -s "$XREF" ]; then
-		cat "$XREF" | sed -n "${__gtags_current}p" | cat - "$STACK" >"$TMP2"
-		mv "$TMP2" "$STACK"
-	fi
+	local IFS=''
+	local file=`cat "$XREF" | sed -n "${__gtags_current}p" | cat - "$STACK"`
+	echo $file > $STACK
 	__gtags_stack=( "${__gtags_lastcom}|${__gtags_lasttag}|${__gtags_current}" "${__gtags_stack[@]}" )
 	return 0
 }
 __gtags_pop_stack()
 {
 	local size=${#__gtags_stack[@]}
-	local count pop
+	local count=$1
 
-	if __gtags_is_num $1 && [ $1 -gt 0 ]; then
-		count=$1
-	else
-		count=1
-	fi
-	if [ $size -eq 0 ] && [ "$__gtags_lastcom" != "" ]; then
+	if (( $size == 0 )) && [ "$__gtags_lastcom" != "" ]; then
+		if (( $count > 1 )); then
+			return 1
+		fi
 		__gtags_init_stack
-		return 0
+		return 0;
 	fi
-	if [ $size -eq 0 ]; then
-		return 1;
+	if (( $size == 0 )); then
+		return 1
 	fi
 	if (( size + 1 - count < 0 )); then
 		return 1
 	fi
 	if (( size + 1 - count == 0 )); then
 		__gtags_init_stack
-		return 0	
+		return 0
 	fi
 	(( pop = count - 1 ))
 	__gtags_resume "${__gtags_stack[$pop]}"
@@ -188,8 +183,9 @@ __gtags_pop_stack()
 	if [ -s "$STACK" ]; then
 		(( size -= count ))
 		if (( size > 0 )); then
-			tail -$size "$STACK" >"$TMP2"
-			mv "$TMP2" "$STACK"
+			local IFS=''
+			local file=`tail -$size "$STACK"`
+			echo $file > "$STACK"
 		elif (( size == 0 )); then
 			cp /dev/null "$STACK"
 		fi
@@ -202,7 +198,7 @@ dump()
 	echo "__gtags_lasttag	= $__gtags_lasttag"
 	echo "__gtags_lastcom	= $__gtags_lastcom"
 	echo "__gtags_current	= $__gtags_current"
-	echo "*** Stack"
+	echo "*** Stack (size = ${#__gtags_stack[@]}) "
 	local __gtags_lastcom __gtags_lasttag __gtags_current
 	for (( i=0; i < ${#__gtags_stack[@]}; i++ )); do
 		__gtags_resume "${__gtags_stack[i]}"
@@ -551,7 +547,9 @@ __gtags_locate_tag() {
 		global --encode-path=' ' --nofilter=path -x$command "$tag" >"$TMP1"
 		local count=`wc -l < "$TMP1" | sed 's/ //g'`
 		if (( $count > 0 )); then
-			__gtags_push_stack
+			if [ -s "$XREF" ]; then
+				__gtags_push_stack
+			fi
 			mv "$TMP1" "$XREF"
 			__gtags_lastcom="$command"
 			__gtags_lasttag="$tag"
@@ -593,7 +591,9 @@ f() {
 		global --encode-path=' ' --nofilter=path -f "$absolute" >"$TMP1"
 		local count=`wc -l < "$TMP1" | sed 's/ //g'`
 		if (( $count > 0 )); then
-			__gtags_push_stack
+			if [ -s "$XREF" ]; then
+				__gtags_push_stack
+			fi
 			mv "$TMP1" "$XREF"
 			__gtags_lastcom=f
 			__gtags_prev_file="$absolute"
@@ -608,22 +608,27 @@ list() {
 	__gtags_list_xref
 }
 tags() {
-	if [ -s "$XREF" ]; then
-		sed -n "${__gtags_current}p" < "$XREF" >"$TMP1"
-		cat "$STACK">> "$TMP1"
-		com="$__gtags_filter < '$TMP1' | cat -n | sed '1s/^ />/'"
+	if [ "$__gtags_current" != '' ]; then
+		local IFS=''
+		file=`sed -n "${__gtags_current}p" < "$XREF"; cat "$STACK"`
+		com="echo '$file' | $__gtags_filter | cat -n | sed '1s/^ />/'"
 		eval $com
-#	elif [ -s "$STACK" ]; then
-#		com="$__gtags_filter < '$STACK' | cat -n"
-#		eval $com
 	fi
 }
 pop()
 {
-	if __gtags_pop_stack $1; then
-		__gtags_gen_xref $__gtags_lastcom "$__gtags_lasttag"
-		__gtags_list_xref
-	elif (( ${#__gtags_stack[@]} == 0 )); then
+	local count
+	if __gtags_is_num $1 && [ $1 -gt 0 ]; then
+		count=$1
+	else
+		count=1
+	fi
+	if __gtags_pop_stack $count; then
+		if [ "$__gtags_current" != '' ]; then
+			__gtags_gen_xref $__gtags_lastcom "$__gtags_lasttag"
+			__gtags_list_xref
+		fi
+	elif (( ${#__gtags_stack[@]} == 0 && $count == 1 )); then
 		echo "The tags stack is empty."
 		return 1
 	else
@@ -751,7 +756,7 @@ ghelp() {
 	echo
 	echo "GloBash --- Global facility for Bash"
 	echo
-	echo "Copyright (c) 2001, 2002, 2004, 2006 Tama Communications Corporation"
+	echo "Copyright (c) 2001, 2002, 2004, 2006, 2010 Tama Communications Corporation"
 	echo "GLOBAL WWW: http://www.gnu.org/software/global/"
 	echo
 	echo "Prompt:"
