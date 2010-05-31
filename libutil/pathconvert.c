@@ -103,8 +103,6 @@ convert_pathname(CONVERT *cv, const char *path)
 	const char *a, *b;
 
 	if (cv->type != PATH_THROUGH) {
-		if (encoding)
-			path = decode_path(path);
 		/*
 		 * make absolute path name.
 		 * 'path + 1' means skipping "." at the head.
@@ -210,6 +208,8 @@ convert_open(int type, int format, const char *root, const char *cwd, const char
  *
  *	i)	cv	CONVERT structure
  *	i)	ctags_x	tag record (ctags-x format)
+ *
+ * Note: This function is only called by gtags with the --path option.
  */
 void
 convert_put(CONVERT *cv, const char *ctags_x)
@@ -267,6 +267,10 @@ convert_put(CONVERT *cv, const char *ctags_x)
 		*p++ = '\0';
 		rest = p;
 	}
+	/*
+	 * The path name has already been encoded.
+	 */
+	path = decode_path(path);
 	switch (cv->format) {
 	case FORMAT_CTAGS:
 		fputs(tag, cv->op);
