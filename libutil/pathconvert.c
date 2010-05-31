@@ -270,7 +270,7 @@ convert_put(CONVERT *cv, const char *ctags_x)
 	/*
 	 * The path name has already been encoded.
 	 */
-	path = decode_path(path);
+	path = decode_path((unsigned char *)path);
 	switch (cv->format) {
 	case FORMAT_CTAGS:
 		fputs(tag, cv->op);
