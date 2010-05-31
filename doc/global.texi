@@ -641,14 +641,21 @@ Yoo can manage a directory list by cookie facility.
 @subsection Preparation
 
 First, do the preparation of global. @xref{Preparation}.
-And you can invoke Bash(1) with @samp{--rcfile} option.
+And you can invoke globash(1) command.
 @example
 
-    $ bash --rcfile /usr/local/share/gtags/globash.rc
+    $ globash
 
 @end example
 
-You will see a prompt like this:
+Only first time, you will see the following message.
+
+@example
+    GloBash needs a working directory. Do you create '/home/you/.globash'? ([y]/n)
+@end example
+
+Inputing the ENTER key, you will see a prompt like this:
+
 @example
 
     [/usr/src/sys]/kern _
@@ -1955,7 +1962,6 @@ Instead, you can use incremental updating facility (@samp{-u} option).
 
     $ global -vu                            # @r{try again}
     [Sat May 29 00:33:16 JST 2010] Gtags started.
-     Using config file '/home/shigio/.globalrc'.
      Tag found in '/usr/local/src/linux-2.6.32'.
      Incremental updating.
      Global databases are up to date.       # @r{do nothing}
