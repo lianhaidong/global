@@ -247,7 +247,7 @@ __gtags_prompt() {
 	fi
 	PS1="$ps "
 	if [ "$root" != "" ] && [ "$cwd" != "" ] && [ "$dbpath" != "" ]; then
-		__gtags_filter="gtags --path=relative '$root' '$cwd' '$dbpath'"
+		__gtags_filter="gtags --encode-path=' ' --path=relative '$root' '$cwd' '$dbpath'"
 		__gtags_prev_root=$root
 	fi
 }

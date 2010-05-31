@@ -103,6 +103,8 @@ convert_pathname(CONVERT *cv, const char *path)
 	const char *a, *b;
 
 	if (cv->type != PATH_THROUGH) {
+		if (encoding)
+			path = decode_path(path);
 		/*
 		 * make absolute path name.
 		 * 'path + 1' means skipping "." at the head.

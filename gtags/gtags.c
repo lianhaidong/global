@@ -141,7 +141,9 @@ static struct option const long_options[] = {
 #define OPT_GTAGSLABEL		130
 #define OPT_PATH		131
 #define OPT_SINGLE_UPDATE	132
+#define OPT_ENCODE_PATH		133
 	{"config", optional_argument, NULL, OPT_CONFIG},
+	{"encode-path", required_argument, NULL, OPT_ENCODE_PATH},
 	{"gtagsconf", required_argument, NULL, OPT_GTAGSCONF},
 	{"gtagslabel", required_argument, NULL, OPT_GTAGSLABEL},
 	{"path", required_argument, NULL, OPT_PATH},
@@ -192,6 +194,13 @@ main(int argc, char **argv)
 		case OPT_SINGLE_UPDATE:
 			iflag++;
 			single_update = optarg;
+			break;
+		case OPT_ENCODE_PATH:
+			if (strlen(optarg) > 255)
+				die("too many encode chars.");
+			if (strchr(optarg, '/') || strchr(optarg, '.'))
+				die("cannot encode '/' and '.' in the path.");
+			set_encode_chars((unsigned char *)optarg);
 			break;
 		case 'c':
 			cflag++;
