@@ -248,6 +248,7 @@ AC_CONFIG_FILES([Makefile
 	global/Makefile
 	gozilla/Makefile
 	gtags-cscope/Makefile
+	globash/Makefile
 	htags-refkit/Makefile
 	libglibc/Makefile
 	doc/Makefile

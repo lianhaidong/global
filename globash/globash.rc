@@ -21,7 +21,7 @@
 #
 # GLOBAL home page is at: http://www.gnu.org/software/global/
 # Author: Tama Communications Corporation
-  version=0.4
+  version=0.5
 # Usage:
 # $ bash --rcfile <this file>
 #	or
@@ -29,58 +29,55 @@
 #
 # [/usr/src/sys] ghelp<RET>
 #
-bash_minorversion=$(echo ${BASH_VERSINFO[1]} | sed 's/[^0-9]//')
-if !(( BASH_VERSINFO[0] > 2 || BASH_VERSINFO[0] == 2 && 10#${bash_minorversion} >= 4 )); then
-	echo "GLOBASH ERROR: GloBash needs Bash version 2.04 or later."
-	exit 1
-fi
-unset bash_minorversion
-###########################################################################
-# Global variables and utilities.
-###########################################################################
 ### Working directory
 #
 # The HOME_ETC environment variable is used by home-etc facility
 # in PLD Linux/GNU. Globash obey this method if the variable defined.
 #
 if [ -n "$HOME_ETC" ]; then
-        GHOME=$HOME_ETC/.globash
+        GHOME="$HOME_ETC/.globash"
 else
-        GHOME=$HOME/.globash
+        GHOME="$HOME/.globash"
 fi
 #
 # Less-370 or later can treat GLOBAL as tag system if environment variable
 # LESSGLOBALTAGS is set.
 #
 export LESSGLOBALTAGS=global
-
+#
+# Initialize
+#
+prompt="Do you create '$GHOME'? ([y]/n)"
 if [ ! -d "$GHOME" ]; then
-	echo
-	echo "GloBash --- Global facility for Bash"
-	echo
-	echo "GloBash needs a working directory."
-	echo
-	echo -n "Create '$GHOME'? ([y]/n) "
+	echo -n "GloBash needs a working directory. $prompt"
 	while read ans; do
 		case $ans in
-		Y|y|"")
+		YES|Yes|yes|Y|y|"")
+			echo -n "Creating..."
 			if mkdir "$GHOME"; then
+				echo "Done."
 				break
 			else
-				echo "GLOBASH ERROR: Cannot make '$GHOME' directory."
+				echo " ERROR: Cannot make '$GHOME' directory."
 				exit 1
 			fi
 			;;
-		N|n)	echo "Bye ..."; exit 1;;
+		NO|No|no|N|n)
+			echo "Bye ..."
+			exit 1;;
 		esac
+		echo -n "$prompt"
 	done
 	echo
-	echo "Created."
+	echo "___________________________________________"
+	echo "|      |  |  |     |  _  |     |     |  |  |"
+	echo "|  |___|  |  |  |  |    _|  |  |  ---|  |  |    A special shell for GLOBAL"
+	echo "|  |   |  |  |  |  |     |     |     |     |"
+	echo "|  ~~  |   ~~|     |  ~  |  |  |---  |  |  |          using GNU bash"
+	echo "___________________________________________|"
 	echo
-	echo "Welcome to Globash! When you need help, please type 'ghelp'."
+	echo "Welcome to Globash!"
 	echo
-else
-	echo "When you need help, please type 'ghelp'."
 fi
 #
 # Temporary file definitions:
@@ -88,10 +85,10 @@ fi
 # When exiting shell, temporary files are removed.
 # We should be careful not to remove other files.
 #
-declare -r XREF=$GHOME/xref-$$			# global's output
-declare -r STACK=$GHOME/stack-$$		# stack for tags command
-declare -r MARKER=$GHOME/marker-$$		# marker
-declare -r TMP1=$GHOME/tmp1-$$			# temporary file
+declare -r XREF="$GHOME/xref-$$"		# global's output
+declare -r STACK="$GHOME/stack-$$"		# stack for tags command
+declare -r MARKER="$GHOME/marker-$$"		# marker
+declare -r TMP1="$GHOME/tmp1-$$"		# temporary file
 __gtags_clean() {
 	rm -f "$XREF" "$STACK" "$MARKER" "$TMP1"
 }
@@ -214,6 +211,7 @@ __gtags_pwd() {
 	/bin/pwd
 }
 __gtags_prompt() {
+	local ps
 	local cwd=`__gtags_pwd`
 	local dbpath=`global -p 2>/dev/null`
 	local root=`global -pr 2>/dev/null`
@@ -248,8 +246,10 @@ __gtags_prompt() {
 		cp /dev/null "$MARKER"
 	fi
 	PS1="$ps "
-	__gtags_filter="gtags --path=relative '$root' '$cwd' '$dbpath'"
-	__gtags_prev_root=$root
+	if [ "$root" != "" ] && [ "$cwd" != "" ] && [ "$dbpath" != "" ]; then
+		__gtags_filter="gtags --path=relative '$root' '$cwd' '$dbpath'"
+		__gtags_prev_root=$root
+	fi
 }
 __gtags_parse() {
        while case $1 in
@@ -290,12 +290,9 @@ popd() {
 	builtin popd $*
 	__gtags_prompt
 }
-__gtags_prompt
-if [ "$__gtags_prev_root" = "" ]; then
-	# we cannot find tag files (GTAGS).
-	echo "Warning: Out of project."
-fi
-### Cookie
+###########################################################################
+# Cookie manager
+###########################################################################
 __gtags_load_cookie()
 {
 	if [ -s "$COOKIE" ]; then
@@ -748,16 +745,18 @@ show()	{
 	*)	__gtags_view_tag $1;;
 	esac
 }
-
 ###########################################################################
 # Help
 ###########################################################################
 ghelp() {
 	echo
-	echo "GloBash --- Global facility for Bash"
+	echo "GloBash --- A special shell for GLOBAL using GNU bash."
 	echo
 	echo "Copyright (c) 2001, 2002, 2004, 2006, 2010 Tama Communications Corporation"
 	echo "GLOBAL WWW: http://www.gnu.org/software/global/"
+	echo
+	echo "GloBash is nothing other than Bash with special commands for GLOBAL."
+	echo "When you want to end the session, please type 'exit <ENTER>'."
 	echo
 	echo "Prompt:"
 	echo
@@ -830,6 +829,10 @@ ghelp() {
 	echo "For the details, read the script." 
 }
 #
+# Make Globash prompt.
+#
+__gtags_prompt
+#
 # Run private command script.
 #
 gtags_aliases=1
@@ -865,3 +868,4 @@ if [ "$gtags_aliases" = "1" ]; then
 	alias m=mark
 	bind '\C-t": "pop\n"'
 fi
+echo "Globash started. When you need help, please type 'ghelp <ENTER>'."

@@ -86,7 +86,7 @@ done
 )
 
 echo "- Collecting reference manuals ..."
-commands="global gtags htags gozilla gtags-cscope";
+commands="global gtags htags gozilla gtags-cscope globash";
 perl ./convert.pl --menu $commands > doc/reference.texi
 for d in `echo $commands`; do
 	perl ./convert.pl --info $d/manual.in > doc/$d.ref
