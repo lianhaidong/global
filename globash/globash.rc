@@ -866,6 +866,6 @@ if [ "$gtags_aliases" = "1" ]; then
 	alias .=show
 	alias c=cookie
 	alias m=mark
-	bind '\C-t": "pop\n"'
+	bind '"\C-t": "pop\n"'
 fi
 echo "Globash started. When you need help, please type 'ghelp <ENTER>'."
