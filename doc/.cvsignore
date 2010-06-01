@@ -1,6 +1,5 @@
 Makefile
 Makefile.in
-gtags-parser.ref
 global.info
 global.ref
 gozilla.ref
@@ -10,3 +9,4 @@ reference.texi
 stamp-vti
 version.texi
 gtags-cscope.ref
+globash.ref
