@@ -56,10 +56,14 @@
 
 #define ismeta(p)	(*((char *)(p)) == ' ')
 
+/*
+ * Stuff for DBOP_SORTED_WRITE
+ */
+#define SORT_SEP '\t'
 static char *argv[] = {
 	POSIX_SORT,
 	"-k",
-	"1,2",
+	"1,1",
 	NULL
 };
 
@@ -263,7 +267,7 @@ dbop_put(DBOP *dbop, const char *name, const char *data)
 	/* sorted writing */
 	if (dbop->sortout != NULL) {
 		fputs(name, dbop->sortout);
-		putc('\t', dbop->sortout);
+		putc(SORT_SEP, dbop->sortout);
 		fputs(data, dbop->sortout);
 		putc('\n', dbop->sortout);
 		return;
@@ -621,7 +625,7 @@ dbop_close(DBOP *dbop)
 		 * The last stage of sorted writing.
 		 */
 		while (strbuf_fgets(sb, dbop->sortin, STRBUF_NOCRLF)) {
-			for (p = strbuf_value(sb); *p && *p != '\t'; p++)
+			for (p = strbuf_value(sb); *p && *p != SORT_SEP; p++)
 				;
 			if (!*p)
 				die("unexpected end of record.");
