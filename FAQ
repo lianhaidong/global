@@ -117,10 +117,19 @@ Q5. Deleted.
 Q6. It seems that gtags(1) cannot treat files which include blanks in the path.
     Why?
 
-A6. Because it is hard for GLOBAL to treat them correctly with keeping
-    upper compatibility. Gtags(1) currently ignores files which include
-    blanks in the path. We put the improvement to our TODO list but
-    the priority is not high. The best way is not to use blanks in path name.
+A6. GLOBAL will support path names which include blanks.
+    It is doing the examination operation now.
+    Please set a environment variable GTAGSALLOWBLANK.
+
+	% setenv GTAGSALLOWBLANK
+
+        or
+
+	$ export GTAGSALLOWBLANK=
+
+    And gtags(1) will pick up files whose path name include blanks.
+    (Vim and less support cannot be done without the authors's cooperation.)
+    Please mail to us when you find a bug. Thank you.
 
 ----------------------------------------------------------------------------
 Q7. Gtags(1) and htags(1) work only for one directory tree. So, we cannot
