@@ -125,36 +125,11 @@ seekto(const char *string, int n)
 /*
  * Tag format
  *
- * [Specification of format version 4]
+ * [Specification of format version 6]
  * 
- * Standard format (for GTAGS)
- * 
- *         <file id> <tag name> <line number> <line image>
- * 
- *                 * Separator is single blank.
- * 
- *         [example]
- *         +------------------------------------
- *         |110 func 10 int func(int a)
- *         |110 func 30 func(int a1, int a2)
- * 
- *         Line image might be compressed (GTAGS_COMPRESS).
+ * Standard format:
  *
- * With compact option for GRTAGS, GSYMS (GTAGS_COMPACT)
- * 
- *         <file id> <tag name> <line number>,...
- * 
- *                 * Separator is single blank.
- * 
- *         [example]
- *         +------------------------------------
- *         |110 func 10,30
- * 
- *         Line numbers are sorted in a line.
- * 
- * [Specification of format version 5]
- * 
- * Standard format for GTAGS
+ *	This format is the default format of GTAGS.
  * 
  *         <file id> <tag name> <line number> <line image>
  * 
@@ -168,16 +143,20 @@ seekto(const char *string, int n)
  *         Line image might be compressed (GTAGS_COMPRESS).
  *         Tag name might be compressed (GTAGS_COMPNAME).
  *
- * With compact option for GRTAGS, GSYMS (GTAGS_COMPACT)
+ * Compact format:
  * 
+ *	This format is the default format of GRTAGS.
+ *	It is used for GTAGS with the -c option.
+ *
  *         <file id> <tag name> <line number>,...
  * 
  *                 * Separator is single blank.
  * 
  *         [example]
  *         +------------------------------------
- *         |110 func 10,20
+ *         |110 func 10,30
  * 
+ *         Line numbers are sorted in a line.
  *	   Each line number might be expressed as difference from the previous
  *	   line number except for the head (GTAGS_COMPLINE).
  *           ex: 10,3,2 means '10 13 15'.
@@ -187,7 +166,8 @@ seekto(const char *string, int n)
  * [Description]
  * 
  * o Standard format is applied to GTAGS, and compact format is applied
- *   to GRTAGS and GSYMS by default.
+ *   to GRTAGS by default.
+ * o GSYMS is not used any longer. It is virtually included by GRTAGS.
  * o Above two formats are same to the first line number. So, we can use
  *   common function to sort them.
  * o Separator is single blank.
@@ -227,8 +207,10 @@ seekto(const char *string, int n)
  *                      if (format > 3) then print error message.
  * GLOBAL-5.0 -	5.3	support format version only 4.
  *                      if (format !=  4) then print error message.
- * GLOBAL-5.4 -		support format version 4 and 5
+ * GLOBAL-5.4 - 5.8.2	support format version 4 and 5
  *                      if (format > 5 || format < 4) then print error message.
+ * GLOBAL-5.9 -		support only format version 6
+ *                      if (format > 6 || format < 6) then print error message.
  *
  * In GLOBAL-5.0, we threw away the compatibility with the past formats.
  * Though we could continue the support for older formats, it seemed
