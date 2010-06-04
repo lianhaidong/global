@@ -60,6 +60,11 @@
  * Stuff for DBOP_SORTED_WRITE
  */
 #define SORT_SEP '\t'
+/*
+ * Though it doesn't understand why, GNU sort with no option is faster
+ * than 'sort -k 1,1'. But we should use '-k 1,1' here not to rely on
+ * a specific command.
+ */
 static char *argv[] = {
 	POSIX_SORT,
 	"-k",
