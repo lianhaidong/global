@@ -27,8 +27,9 @@
 #define PARENT 1
 
 /* gen_page_begin() */
-#define SUBDIR 1
 #define TOPDIR 0
+#define SUBDIR 1
+#define CGIDIR 2
 
 /*
  * tag

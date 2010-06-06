@@ -350,8 +350,19 @@ static const char *
 gen_page_generic_begin(const char *title, int place, int use_frameset)
 {
 	STATIC_STRBUF(sb);
-	const char *dir = (place == SUBDIR) ? "../" : "";
+	const char *dir = NULL;
 
+	switch (place) {
+	case TOPDIR:
+		dir = "";
+		break;
+	case SUBDIR:
+		 dir = "../";
+		break;
+	case CGIDIR:
+		 dir = "$basedir/";	/* decided by the CGI script */
+		break;
+	}
 	strbuf_clear(sb);
 	if (enable_xhtml) {
 		/*

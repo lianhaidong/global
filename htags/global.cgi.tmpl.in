@@ -11,7 +11,7 @@
 #
 #------------------------------------------------------------------
 #
-# Copyright (c) 1997, 2004, 2006, 2008 Tama Communications Corporation
+# Copyright (c) 1997, 2004, 2006, 2008, 2010 Tama Communications Corporation
 #
 # This file is free software; as a special exception the author gives
 # unlimited permission to copy and/or distribute it, with or without
@@ -22,29 +22,34 @@
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
 # Display an error message and exit.
-sub error {
-        local($msg) = @_;
-        print "@error_begin@Error@error_end@\n";
-        print "@message_begin@$msg <a href='$htmlbase/mains.@normal_suffix@'>[return]</a>@message_end@\n";
-        print "@body_end@\n";
-        print "@page_end@\n";
-        exit 0;
-}
-print "Content-type: text/html\n\n";
-print "@page_begin@\n";
-print "@body_begin@\n";
-$htmlbase = $ENV{'HTTP_REFERER'};
-if (!$htmlbase) {
+#
+$basedir = $ENV{'HTTP_REFERER'};
+if (!$basedir) {
+	print "Content-type: text/html\n\n";
+	print "@page_begin@\n";
+	print "@body_begin@\n";
         print "@error_begin@Error@error_end@\n";
         print "@message_begin@Your browser doesn't send HTTP_REFERER. Please use another one.@message_end@\n";
         print "@body_end@\n";
         print "@page_end@\n";
         exit 0;
 }
-$htmlbase =~ s!/[^\/]+$!!;		# remove file name.
-$htmlbase =~ s!/defines$!!;
-$htmlbase =~ s!/S$!!;
-$htmlbase =~ s!/$!!;
+$basedir =~ s!http://[^\/]+!!;		# remove http://host
+$basedir =~ s!/[^\/]+$!!;		# remove file name.
+$basedir =~ s!/defines$!!;
+$basedir =~ s!/S$!!;
+$basedir =~ s!/$!!;
+print "Content-type: text/html\n\n";
+print "@page_begin@\n";
+print "@body_begin@\n";
+sub error {
+        local($msg) = @_;
+        print "@error_begin@Error@error_end@\n";
+        print "@message_begin@$msg <a href='$basedir/mains.@normal_suffix@'>[return]</a>@message_end@\n";
+        print "@body_end@\n";
+        print "@page_end@\n";
+        exit 0;
+}
 if (! -x '@globalpath@') {
 	error("Server side command not found.");
 }
@@ -91,6 +96,7 @@ if ($form{'id'}) {
 		error("Couldn't find tag directory in secure mode.");
 	}
 }
+$html = (-s "../compress") ? 'ghtml' : 'html';
 if (-f "../GTAGSROOT" && open(GTAGSROOT, "../GTAGSROOT")) {
 	$gtagsroot = <GTAGSROOT>;
 	chop($gtagsroot);
@@ -119,7 +125,6 @@ if (! -f 'GTAGS') {
 if ($missed) {
 	error("Tag file ($missed) not found.");
 }
-local(%ctab) = ('&', '&amp;', '<', '&lt;', '>', '&gt;');
 #
 # fork and exec global(1) to avoid command substitutions in $pattern.
 # The --result=ctags-xid print the file id of the path at the head
@@ -134,6 +139,7 @@ if ($flags eq '') {
 if ($?) {	
 	error("Cannot execute global.");
 }
+local(%ctab) = ('&', '&amp;', '<', '&lt;', '>', '&gt;');
 $pattern =~ s/([&<>])/$ctab{$1}/ge;
 print "@title_begin@" . $pattern . "@title_end@\n";
 print "Following $words are matched to above pattern.@hr@\n";
@@ -153,13 +159,13 @@ while (<PIPE>) {
 	($fid, $tag, $lno, $filename) = split;
 	s/^[0-9]+[ \t]+//;
 	s/([&<>])/$ctab{$1}/ge;
-	s!(^[^ \t]+)!<a href='$htmlbase/S/$fid.@HTML@#L$lno'>$1<\/a>!;
+	s!(^[^ \t]+)!<a href='$basedir/S/$fid.$html#L$lno'>$1<\/a>!;
 	print "<span class='curline'>$_</span>\n";
 }
 close(PIPE);
 print "@verbatim_end@\n";
 if ($cnt == 0) {
-	print "@message_begin@Pattern not found. <a href='$htmlbase/mains.@normal_suffix@'>[return]</a>@message_end@\n";
+	print "@message_begin@Pattern not found. <a href='$basedir/mains.@normal_suffix@'>[return]</a>@message_end@\n";
 }
 print "@hr@\n";
 print "@body_end@\n";

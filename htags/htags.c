@@ -395,9 +395,10 @@ make_directory_in_distpath(const char *name)
  *
  *	i)	dist	directory where the file should be created
  *	i)	file	file name
+ *	i)	place	TOPDIR, SUBDIR, CGIDIR
  */
 static void
-generate_file(const char *dist, const char *file)
+generate_file(const char *dist, const char *file, int place)
 {
 	regex_t preg;
 	regmatch_t pmatch[2];
@@ -435,7 +436,7 @@ generate_file(const char *dist, const char *file)
         };
 	int tabsize = sizeof(tab) / sizeof(struct map);
 
-	tab[0].value = gen_page_begin("Result", SUBDIR);
+	tab[0].value = gen_page_begin("Result", place);
 	tab[1].value = gen_page_end();
 	/*
 	 * construct regular expression.
@@ -517,7 +518,7 @@ generate_file(const char *dist, const char *file)
 static void
 makeprogram(const char *cgidir, const char *file)
 {
-	generate_file(cgidir, file);
+	generate_file(cgidir, file, CGIDIR);
 }
 /*
  * makebless: make bless.sh file.
@@ -527,7 +528,7 @@ makebless(const char *file)
 {
 	const char *save = action;
 	action = saction;
-	generate_file(distpath, file);
+	generate_file(distpath, file, SUBDIR);
 	action = save;
 }
 /*
@@ -539,7 +540,7 @@ makebless(const char *file)
 static void
 makeghtml(const char *cgidir, const char *file)
 {
-	generate_file(cgidir, file);
+	generate_file(cgidir, file, SUBDIR);
 }
 /*
  * makerebuild: make rebuild script
@@ -1884,6 +1885,17 @@ main(int argc, char **argv)
 			die("cannot chmod bless script.");
 	} else {
 		message("[%s] (1) making CGI program ...(skipped)", now());
+	}
+	/*
+	 * Save the suffix of compress format for the safe CGI script.
+	 */
+	{
+		FILE *op = fopen(makepath(distpath, "compress", NULL), "w");
+		if (cflag) {
+			fputs(HTML, op);
+			fputc('\n', op);
+		}
+		fclose(op);
 	}
 	/*
 	 * (2) make help file
