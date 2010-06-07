@@ -62,7 +62,7 @@ May 20 2010, Shigo YAMAGUCHI
 
 April 27 2010, Shigo YAMAGUCHI
 
-	* Changed the cache format like follows:
+	* Changed the cache format (htags/cache.c) like follows:
 
 	(1) Duplicate tag file
 	     +--------------------+           +---------------------+

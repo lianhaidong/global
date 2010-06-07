@@ -23,8 +23,9 @@
 #
 # Display an error message and exit.
 #
-$basedir = $ENV{'HTTP_REFERER'};
-if (!$basedir) {
+$basedir = "..";
+$url = $ENV{'HTTP_REFERER'};
+if (!$url) {
 	print "Content-type: text/html\n\n";
 	print "@page_begin@\n";
 	print "@body_begin@\n";
@@ -34,6 +35,7 @@ if (!$basedir) {
         print "@page_end@\n";
         exit 0;
 }
+$basedir = $url;
 $basedir =~ s!http://[^\/]+!!;		# remove http://host
 $basedir =~ s!/[^\/]+$!!;		# remove file name.
 $basedir =~ s!/defines$!!;
