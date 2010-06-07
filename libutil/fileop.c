@@ -89,7 +89,7 @@ open_output_file(const char *path, int compress)
 	char command[MAXFILLEN];
 
 	if (compress) {
-		snprintf(command, sizeof(command), "gzip -c >%s", path);
+		snprintf(command, sizeof(command), "gzip -c >\"%s\"", path);
 		fp = popen(command, "w");
 		if (fp == NULL)
 			die("cannot create pipe.");
