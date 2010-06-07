@@ -54,7 +54,11 @@
 #include "strlimcpy.h"
 #include "test.h"
 
-#define ismeta(p)	(*((char *)(p)) == ' ')
+/*
+ * Though the prefix of the key of meta record is currently only a ' ',
+ * this will be enhanced in the future.
+ */
+#define ismeta(p)	(*((char *)(p)) <= ' ')
 
 /*
  * Stuff for DBOP_SORTED_WRITE
