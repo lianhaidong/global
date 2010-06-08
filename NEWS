@@ -21,6 +21,76 @@ ___________________________________
 GNU GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 5.9 - June 8 2010
+
+			*** Caution ***
+
+This version of GLOBAL doesn't support tag files of the former version.
+If you install this version, you should remake all tag files again using
+gtags(1) in this package. Though new gtags's speed has improved very much,
+you need not hurry up to upgrade it if you have a lot of tag files of
+former version. Thank you for your cooperation.
+
+[CHANGES]
+New facilities:
+o global: New --encode-path option.
+  This option is to support path names which includes blanks.
+o globash: New command.
+o global: Accept the -r and -s option at the same time.
+o gtags, global, htags: Allows path name which includes blanks.
+  This is experimental operation. You can use this function by setting
+  environment variable 'GTAGSALLOWBLANK'. Please try and send us bug reports.
+o gtags: Speed-up using 'sorted writing'.
+  It uses external POSIX sort program (/usr/bin/sort). If your system's path
+  is different from /usr/bin/sort, you will see the following message:
+
+    Warning: POSIX sort program not found. If available, the program will be speed up.
+
+  In that case, please rebuild GLOBAL with the --with-posix-sort option.
+
+    $ ./configure --with-posix-sort=<path of POXIS sort program in your system>
+
+[FIXED BUGS]
+o gtags-cscope: When using gtags-cscope with the -C argument to ignore case,
+  it passes malformed arguments to global which prevents it from looking
+  up the definition points of the requested identifier.
+o global: The -I command with the --result option fails.
+
+[INCOMPATIBLE CHANGES]
+o GLOBAL shifted to new architecture and new tag files. GLOBAL doesn't use
+  GSYMS tag file any longer. New GLOBAL doesn't support older tag files.
+  When you use older tag files, you will see the following message:
+
+	global: /*/GTAGS seems older format. Please remake tag files.
+
+o Removed undermentioned config variables:
+
+Removed config variable         replacement
+-------------------------------------------------------------------------
+definition_header(position)     -h, --func-header[=position]
+disable_grep                    --disable-grep
+dynamic                         -D, --dynamic
+full_path                       --full-path
+no_map_file                     --no-map-file
+other_files                     -o, --other
+show_position                   --show-position
+table_flist                     -T, --table-flist[=rows]
+flist_fields(number)            -T, --table-flist[=rows]
+enable_idutils                  --disable-idutils (*1)
+table_list                      --table-list
+suffixes			langmap
+-------------------------------------------------------------------------
+  *1 Please note that '--disable-idutils' is opposite to 'enable_idutils'.
+
+If you use above removed variables in your configuration file, please
+use config variable 'htags_options' instead.
+
+For example:
+:definition_header=before:full_path:other_files:table_flist:flist_fields#3:disable_grep:\
+        |
+        v
+:htags_options=--func-header=before --full-path --other --table-flist=3 --disable-grep:\
+
 Version 5.8.2 - April 1 2010
 
 [CHANGES]
