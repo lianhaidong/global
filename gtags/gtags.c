@@ -59,8 +59,8 @@ static void usage(void);
 static void help(void);
 int main(int, char **);
 int incremental(const char *, const char *);
-void updatetags_using_builtin_parser(const char *, const char *, IDSET *, STRBUF *);
-void createtags_using_builtin_parser(const char *, const char *);
+void updatetags(const char *, const char *, IDSET *, STRBUF *);
+void createtags(const char *, const char *);
 int printconf(const char *);
 
 int cflag;					/* compact format */
@@ -444,7 +444,7 @@ main(int argc, char **argv)
 	/*
 	 * create GTAGS and GRTAGS
 	 */
-	createtags_using_builtin_parser(dbpath, cwd);
+	createtags(dbpath, cwd);
 	/*
 	 * create idutils index.
 	 */
@@ -623,7 +623,7 @@ normal_update:
 	 * execute updating.
 	 */
 	if (!idset_empty(deleteset) || strbuf_getlen(addlist) > 0) {
-		updatetags_using_builtin_parser(dbpath, root, deleteset, addlist);
+		updatetags(dbpath, root, deleteset, addlist);
 		updated = 1;
 	}
 	if (strbuf_getlen(deletelist) + strbuf_getlen(addlist_other) > 0) {
@@ -701,7 +701,7 @@ put_syms(int type, const char *tag, int lno, const char *path, const char *line_
 	gtags_put_using(gtop, tag, lno, data->fid, line_image);
 }
 /*
- * updatetags_using_builtin_parser: update tag file.
+ * updatetags: update tag file.
  *
  *	i)	dbpath		directory in which tag file exist
  *	i)	root		root directory of source tree
@@ -709,7 +709,7 @@ put_syms(int type, const char *tag, int lno, const char *path, const char *line_
  *	i)	addlist		\0 separated list of added or modified files
  */
 void
-updatetags_using_builtin_parser(const char *dbpath, const char *root, IDSET *deleteset, STRBUF *addlist)
+updatetags(const char *dbpath, const char *root, IDSET *deleteset, STRBUF *addlist)
 {
 	struct put_func_data data;
 	int seqno, flags;
@@ -785,13 +785,13 @@ updatetags_using_builtin_parser(const char *dbpath, const char *root, IDSET *del
 		gtags_close(data.gtop[GRTAGS]);
 }
 /*
- * createtags_using_builtin_parser: create tags file
+ * createtags: create tags file
  *
  *	i)	dbpath	dbpath directory
  *	i)	root	root directory of source tree
  */
 void
-createtags_using_builtin_parser(const char *dbpath, const char *root)
+createtags(const char *dbpath, const char *root)
 {
 	STATISTICS_TIME *tim;
 	STRBUF *sb = strbuf_open(0);

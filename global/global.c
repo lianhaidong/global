@@ -54,7 +54,7 @@ void completion(const char *, const char *, const char *);
 void idutils(const char *, const char *);
 void grep(const char *, const char *);
 void pathlist(const char *, const char *);
-void parsefile_using_builtin_parser(char *const *, const char *, const char *, const char *, int);
+void parsefile(char *const *, const char *, const char *, const char *, int);
 int search(const char *, const char *, const char *, const char *, int);
 void tagsearch(const char *, const char *, const char *, const char *, int);
 void encode(char *, int, const char *);
@@ -583,7 +583,7 @@ main(int argc, char **argv)
 	 * parse source files.
 	 */
 	else if (fflag) {
-		parsefile_using_builtin_parser(argv, cwd, root, dbpath, db);
+		parsefile(argv, cwd, root, dbpath, db);
 	}
 	/*
 	 * tag search.
@@ -950,7 +950,7 @@ pathlist(const char *pattern, const char *dbpath)
 	}
 }
 /*
- * parsefile_using_builtin_parser: parse file to pick up tags.
+ * parsefile: parse file to pick up tags.
  *
  *	i)	argv
  *	i)	cwd	current directory
@@ -1020,7 +1020,7 @@ put_syms(int type, const char *tag, int lno, const char *path, const char *line_
 	data->count++;
 }
 void
-parsefile_using_builtin_parser(char *const *argv, const char *cwd, const char *root, const char *dbpath, int db)
+parsefile(char *const *argv, const char *cwd, const char *root, const char *dbpath, int db)
 {
 	int count = 0;
 	int file_count = 0;
