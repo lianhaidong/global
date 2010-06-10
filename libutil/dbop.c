@@ -24,10 +24,6 @@
 #endif
 #include <sys/types.h>
 #include <sys/stat.h>
-#if !defined(_WIN32) || defined(__CYGWIN__)
-#include <sys/wait.h>
-#endif
-
 #include <assert.h>
 #include <ctype.h>
 #include <fcntl.h>
@@ -64,6 +60,109 @@
  * Stuff for DBOP_SORTED_WRITE
  */
 #define SORT_SEP '\t'
+
+/*
+ * Two functions required for sorted writing.
+ *
+ * (1) start_sort_process: start sort process for sorted writing
+ *
+ *	i)	dbop	DBOP descriptor
+ *
+ * (2) terminate_sort_process: terminate sort process
+ *
+ *	i)	dbop	DBOP descriptor
+ */
+static void start_sort_process(DBOP *);
+static void terminate_sort_process(DBOP *);
+/*
+ * 1. DJGPP
+ */
+#if defined(__DJGPP__)
+/*
+ * Just ignored. DJGPP version doesn't use sorted writing.
+ */
+static void
+start_sort_process(DBOP *dbop) {
+	return;
+}
+static void
+terminate_sort_process(DBOP *dbop) {
+	return;
+}
+/*
+ * 2. WIN32
+ */
+#elif defined(_WIN32) && !defined(__CYGWIN__)
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+/*
+ * sort is included with the binary distribution
+ */
+static char argv[] = "sort -k 1,1";
+static void
+start_sort_process(DBOP *dbop) {
+	HANDLE opipe[2], ipipe[2];
+	SECURITY_ATTRIBUTES sa;
+	STARTUPINFO si;
+	PROCESS_INFORMATION pi;
+	const char* lc_all;
+	char sort[MAX_PATH];
+	char* path;
+	static int informed;
+
+	if (informed)
+		return;
+	/*
+	 * force using sort in the same directory as the program, to avoid
+	 * using the Windows one
+	 */
+	path = strrchr(_pgmptr, '\\');
+	sprintf(sort, "%.*s\\sort.exe", path - _pgmptr, _pgmptr);
+	if (!test("fx", sort)) {
+		warning("POSIX sort program not found. If available, the program will be speed up.");
+		informed = 1;
+		return;
+	}
+
+	sa.nLength = sizeof(sa);
+	sa.bInheritHandle = TRUE;
+	sa.lpSecurityDescriptor = NULL;
+	if (!CreatePipe(&opipe[0], &opipe[1], &sa, 0) ||
+	    !CreatePipe(&ipipe[0], &ipipe[1], &sa, 0))
+		die("cannot create pipe.");
+	SetHandleInformation(opipe[1], HANDLE_FLAG_INHERIT, 0);
+	SetHandleInformation(ipipe[0], HANDLE_FLAG_INHERIT, 0);
+	ZeroMemory(&si, sizeof(si));
+	si.cb = sizeof(si);
+	si.hStdInput = opipe[0];
+	si.hStdOutput = ipipe[1];
+	si.hStdError = GetStdHandle(STD_ERROR_HANDLE);
+	si.dwFlags = STARTF_USESTDHANDLES;
+	lc_all = getenv("LC_ALL");
+	if (lc_all == NULL)
+		lc_all = "";
+	set_env("LC_ALL", "C");
+	CreateProcess(sort, argv, NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi);
+	set_env("LC_ALL", lc_all);
+	CloseHandle(opipe[0]);
+	CloseHandle(ipipe[1]);
+	CloseHandle(pi.hThread);
+	dbop->pid = pi.hProcess;
+	dbop->sortout = fdopen(_open_osfhandle((long)opipe[1], _O_WRONLY), "w");
+	dbop->sortin = fdopen(_open_osfhandle((long)ipipe[0], _O_RDONLY), "r");
+	if (dbop->sortout == NULL || dbop->sortin == NULL)
+		die("fdopen failed.");
+}
+static void
+terminate_sort_process(DBOP *dbop) {
+	WaitForSingleObject(dbop->pid, INFINITE);
+	CloseHandle(dbop->pid);
+}
+/*
+ * 3. UNIX and CYGWIN
+ */
+#else
+#include <sys/wait.h>
 /*
  * Though it doesn't understand why, GNU sort with no option is faster
  * than 'sort -k 1,1'. But we should use '-k 1,1' here not to rely on
@@ -75,15 +174,6 @@ static char *argv[] = {
 	"1,1",
 	NULL
 };
-
-static void start_sort_process(DBOP *);
-static void terminate_sort_process(DBOP *);
-
-/*
- * start_sort_process: start sort process for sorted writing
- *
- *	i)	dbop	DBOP descriptor
- */
 static void
 start_sort_process(DBOP *dbop) {
 	int opipe[2], ipipe[2];
@@ -134,16 +224,12 @@ start_sort_process(DBOP *dbop) {
 	if (dbop->sortout == NULL || dbop->sortin == NULL)
 		die("fdopen failed.");
 }
-/*
- * terminate_sort_process: terminate sort process
- *
- *	i)	dbop	DBOP descriptor
- */
 static void
 terminate_sort_process(DBOP *dbop) {
 	while (waitpid(dbop->pid, NULL, 0) < 0 && errno == EINTR)
 		;
 }
+#endif
 
 /*
  * dbop_open: open db database.

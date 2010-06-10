@@ -30,6 +30,10 @@
 #include "regex.h"
 #include "strbuf.h"
 
+#if defined(_WIN32) && !defined(__CYGWIN__)
+typedef void* HANDLE;
+#endif
+
 #define DBOP_PAGESIZE	8192
 #define VERSIONKEY	" __.VERSION"
 
@@ -61,7 +65,11 @@ typedef	struct {
 	 */
 	FILE *sortout;			/* write to sort command */
 	FILE *sortin;			/* read from sort command */
+#if defined(_WIN32) && !defined(__CYGWIN__)
+	HANDLE pid;
+#else
 	int pid;			/* sort process id */
+#endif
 } DBOP;
 
 /*
