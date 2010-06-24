@@ -755,12 +755,15 @@ updatetags(const char *dbpath, const char *root, IDSET *deleteset, STRBUF *addli
 	/*
 	 * Set flags.
 	 */
-	flags = 0;
+	data.gtop[GTAGS]->flags = 0;
 	if (extractmethod)
-		flags |= GTAGS_EXTRACTMETHOD;
+		data.gtop[GTAGS]->flags |= GTAGS_EXTRACTMETHOD;
+	data.gtop[GRTAGS]->flags = data.gtop[GTAGS]->flags;
+	flags = 0;
 	if (debug)
-		flags |= GTAGS_DEBUG;
-	data.gtop[GTAGS]->flags = data.gtop[GRTAGS]->flags = flags;
+		flags |= PARSER_DEBUG;
+	if (wflag)
+		flags |= PARSER_WARNING;
 	/*
 	 * Add tags to GTAGS and GRTAGS.
 	 */
@@ -774,7 +777,9 @@ updatetags(const char *dbpath, const char *root, IDSET *deleteset, STRBUF *addli
 			die("GPATH is corrupted.('%s' not found)", path);
 		if (vflag)
 			fprintf(stderr, " [%d/%d] extracting tags of %s\n", ++seqno, total, path + 2);
-		parse_file(path, wflag ? PARSER_WARNING : 0, put_syms, &data);
+		if (debug)
+			fprintf(stderr, "[%s]\n", path + 2);
+		parse_file(path, flags, put_syms, &data);
 		gtags_flush(data.gtop[GTAGS], data.fid);
 		if (data.gtop[GRTAGS] != NULL)
 			gtags_flush(data.gtop[GRTAGS], data.fid);
@@ -796,7 +801,7 @@ createtags(const char *dbpath, const char *root)
 	STATISTICS_TIME *tim;
 	STRBUF *sb = strbuf_open(0);
 	struct put_func_data data;
-	int openflags, seqno;
+	int openflags, flags, seqno;
 	const char *path;
 
 	tim = statistics_time_start("Time of creating %s and %s.", dbname(GTAGS), dbname(GRTAGS));
@@ -807,10 +812,13 @@ createtags(const char *dbpath, const char *root)
 	data.gtop[GTAGS]->flags = 0;
 	if (extractmethod)
 		data.gtop[GTAGS]->flags |= GTAGS_EXTRACTMETHOD;
-	if (debug)
-		data.gtop[GTAGS]->flags |= GTAGS_DEBUG;
 	data.gtop[GRTAGS] = gtags_open(dbpath, root, GRTAGS, GTAGS_CREATE, openflags);
 	data.gtop[GRTAGS]->flags = data.gtop[GTAGS]->flags;
+	flags = 0;
+	if (debug)
+		flags |= PARSER_DEBUG;
+	if (wflag)
+		flags |= PARSER_WARNING;
 	/*
 	 * Add tags to GTAGS and GRTAGS.
 	 */
@@ -833,7 +841,9 @@ createtags(const char *dbpath, const char *root)
 		seqno++;
 		if (vflag)
 			fprintf(stderr, " [%d] extracting tags of %s\n", seqno, path + 2);
-		parse_file(path, wflag ? PARSER_WARNING : 0, put_syms, &data);
+		if (debug)
+			fprintf(stderr, "[%s]\n", path + 2);
+		parse_file(path, flags, put_syms, &data);
 		gtags_flush(data.gtop[GTAGS], data.fid);
 		gtags_flush(data.gtop[GRTAGS], data.fid);
 	}
