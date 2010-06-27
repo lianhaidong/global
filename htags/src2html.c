@@ -358,24 +358,34 @@ put_anchor(char *name, int type, int lineno)
 		 * About the format of 'line', please see the head comment of cache.c.
 		 */
 		if (*line == ' ') {
-			char tmp[MAXPATHLEN];
 			const char *id = line + 1;
 			const char *count = nextstring(id);
 			const char *dir, *file, *suffix = NULL;
 
 			if (dynamic) {
 				const char *s;
+				STATIC_STRBUF(sb);
 
-				dir = (*action == '/') ? NULL : "..";
+				strbuf_clear(sb);
+				strbuf_puts(sb, action);
+				strbuf_putc(sb, '?');
+				strbuf_puts(sb, "pattern=");
+				strbuf_puts(sb, name);
+				strbuf_puts(sb, quote_amp);
+				if (Sflag) {
+					strbuf_puts(sb, "id=");
+					strbuf_puts(sb, id_value);
+					strbuf_puts(sb, quote_amp);
+				}
+				strbuf_puts(sb, "type=");
 				if (db == GTAGS)
-					s = "definitions";
+					strbuf_puts(sb, "definitions");
 				else if (db == GRTAGS)
-					s = "reference";
+					strbuf_puts(sb, "reference");
 				else
-					s = "symbol";
-				snprintf(tmp, sizeof(tmp), "%s?pattern=%s%stype=%s",
-					action, name, quote_amp, s);
-				file = tmp;
+					strbuf_puts(sb, "symbol");
+				file = strbuf_value(sb);;
+				dir = (*action == '/') ? NULL : "..";
 			} else {
 				if (type == 'R')
 					dir = upperdir(DEFS);

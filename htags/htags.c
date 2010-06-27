@@ -37,6 +37,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/param.h>
+#include <errno.h>
 
 #include "checkalloc.h"
 #include "getopt.h"
@@ -222,6 +223,7 @@ int tabs = 8;				/* tab skip			*/
 int flist_fields = 5;			/* fields number of file list	*/
 int full_path = 0;			/* file index format		*/
 int map_file = 1;			/* 1: create MAP file		*/
+int overwrite_key = 0;			/* 0: over write site key	*/
 const char *icon_suffix = "png";	/* icon suffix (jpg, png etc)	*/
 const char *icon_spec = "border='0' align='top'";/* parameter in IMG tag*/
 const char *prolog_script = NULL;	/* include script at first	*/
@@ -238,7 +240,7 @@ const char *HTML;
 const char *action = "cgi-bin/global.cgi";/* default action		*/
 const char *saction;			/* safe action			*/
 const char *id = NULL;			/* id (default non)		*/
-int cgi = 1;				/* 1: make cgi-bin/		*/
+int nocgi = 0;				/* 1: don't make cgi-bin/	*/
 int definition_header=NO_HEADER;	/* (NO|BEFORE|RIGHT|AFTER)_HEADER */
 const char *htags_options = NULL;
 const char *include_file_suffixes = "h,hxx,hpp,H,inc.php";
@@ -279,8 +281,9 @@ static struct option const long_options[] = {
         {"disable-idutils", no_argument, &enable_idutils, 0},
         {"full-path", no_argument, &full_path, 1},
         {"html", no_argument, &enable_xhtml, 0},
-        {"nocgi", no_argument, &cgi, 0},
+        {"nocgi", no_argument, &nocgi, 1},
         {"no-map-file", no_argument, &map_file, 0},
+        {"overwrite-key", no_argument, &overwrite_key, 1},
         {"show-position", no_argument, &show_position, 1},
         {"statistics", no_argument, &statistics, STATISTICS_STYLE_TABLE},
         {"suggest", no_argument, &suggest, 1},
@@ -391,6 +394,26 @@ make_directory_in_distpath(const char *name)
 	fclose(op);
 }
 /*
+ * make file in the dist directory.
+ */
+static void
+make_file_in_distpath(const char *name, const char *data)
+{
+	FILE *op;
+	const char *path = makepath(distpath, name, NULL);
+
+	op = fopen(path, "w");
+	if (op) {
+		if (data) {
+			fputs(data, op);
+			fputc('\n', op);
+		}
+		fclose(op);
+	} else {
+		die("cannot make file '%s'.", path); 
+	}
+}
+/*
  * generate_file: generate file with replacing macro.
  *
  *	i)	dist	directory where the file should be created
@@ -429,6 +452,7 @@ generate_file(const char *dist, const char *file, int place)
                 {"@hr@", hr},
                 {"@br@", br},
                 {"@HTML@", HTML},
+		{"@DATADIR@", datadir},
                 {"@action@", action},
                 {"@null_device@", null_device},
                 {"@globalpath@", global_path},
@@ -1169,14 +1193,6 @@ configuration(int argc, char *const *argv)
 		normal_suffix = check_strdup(strbuf_value(sb));
 	if (getconfb("no_order_list"))
 		no_order_list = 1;
-/*
-	strbuf_reset(sb);
-	if (getconfs("icon_spec", sb))
-		icon_spec = check_strdup(strbuf_value(sb));
-	strbuf_reset(sb);
-	if (getconfs("icon_suffix", sb))
-		icon_suffix = check_strdup(strbuf_value(sb));
-*/
 	strbuf_reset(sb);
 	if (getconfs("prolog_script", sb))
 		prolog_script = check_strdup(strbuf_value(sb));
@@ -1562,7 +1578,7 @@ main(int argc, char **argv)
                         break;
                 case 'S':
 			Sflag++;
-			cgidir = optarg;
+			id_value = optarg;
                         break;
                 case 'T':
 			table_flist = 1;
@@ -1691,8 +1707,6 @@ main(int argc, char **argv)
 		char *p = strrchr(cwdpath, sep);
 		title = p ? p + 1 : cwdpath;
 	}
-	if (dynamic && Sflag)
-		die("Current implementation doesn't allow both -D(--dynamic) and the -S(--secure-cgi).");
 	if (cvsweb_url && test("d", "CVS"))
 		use_cvs_module = 1;
 	/*
@@ -1719,8 +1733,35 @@ main(int argc, char **argv)
 		saction = buf;
 	}
 	if (Sflag) {
+		char path[MAXBUFLEN];
+		char *name = "sitekeys";
+		int fd;
+
 		action = saction;
-		id = distpath;
+		snprintf(path, sizeof(path), "%s/gtags", datadir);
+		if (!test("d", makepath(path, name, NULL))) {
+			setverbose();
+			message("htags: cannot make sitekey file.");
+			message("\n[Information]\n");
+			message("Htags was invoked with the -S option. It is required a special site key directory.");
+			message("Please make it by the following command line:");
+			message(" $ mkdir %s/%s", path, name);
+			message(" $ chmod 773 %s/%s", path, name);
+			message("");
+			message("Thank you for your cooperation.");
+			exit(0);
+		}
+		snprintf(path, sizeof(path), "%s/gtags/%s/%s", datadir, name, id_value);
+		if (test("f", path) && overwrite_key == 0)
+			die("key '%s' is not unique. please change key or use --overwrite-key option.", id_value);
+		fd = creat(path, 644);
+		if (fd < 0)
+			die("cannot create file '%s'.", path);
+		write(fd, distpath, strlen(distpath));
+		write(fd, "\n", 1);
+		if (fchmod(fd, 0644) < 0)
+			die("cannot chmod file '%s'(errono = %d).", path, errno);
+		close(fd);
 	}
 	/* --action, --id overwrite Sflag's value. */
 	if (action_value) {
@@ -1783,16 +1824,12 @@ main(int argc, char **argv)
 	 * check directories
 	 */
 	if (fflag || cflag || dynamic) {
-		if (cgidir && !test("d", cgidir))
-			die("'%s' not found.", cgidir);
-		if (!Sflag) {
-			static char buf[MAXPATHLEN];
-			snprintf(buf, sizeof(buf), "%s/cgi-bin", distpath);
-			cgidir = buf;
-		}
+		static char buf[MAXPATHLEN];
+		snprintf(buf, sizeof(buf), "%s/cgi-bin", distpath);
+		cgidir = buf;
 	} else {
 		Sflag = 0;
-		cgidir = 0;
+		cgidir = NULL;
 	}
 	/*------------------------------------------------------------------
 	 * MAKE FILES
@@ -1846,30 +1883,35 @@ main(int argc, char **argv)
 	make_directory_in_distpath(SRCS);
 	make_directory_in_distpath(INCS);
 	make_directory_in_distpath(INCREFS);
+	make_file_in_distpath("sitekey", id_value);
 	if (!dynamic) {
 		make_directory_in_distpath(DEFS);
 		make_directory_in_distpath(REFS);
 		if (symbol)
 			make_directory_in_distpath(SYMS);
 	}
-	if (cgi && (fflag || cflag || dynamic))
+	if (!nocgi && (fflag || cflag || dynamic))
 		make_directory_in_distpath("cgi-bin");
 	if (Iflag)
 		make_directory_in_distpath("icons");
 	/*
 	 * (1) make CGI program
 	 */
-	if (cgi && (fflag || cflag || dynamic)) {
+	if (!nocgi && (fflag || cflag || dynamic)) {
 		message("[%s] (1) making CGI program ...", now());
 		if (cgidir) {
+			/*
+			 * If the Sflag is specified, CGI script is invalidated.
+			 */
+			int perm = Sflag ? 0644 : 0755;
 			if (fflag || dynamic) {
 				makeprogram(cgidir, "global.cgi");
-				if (chmod(makepath(cgidir, "global.cgi", NULL), 0755) < 0)
+				if (chmod(makepath(cgidir, "global.cgi", NULL), perm) < 0)
 					die("cannot chmod CGI program.");
 			}
 			if (cflag) {
 				makeghtml(cgidir, "ghtml.cgi");
-				if (chmod(makepath(cgidir, "ghtml.cgi", NULL), 0755) < 0)
+				if (chmod(makepath(cgidir, "ghtml.cgi", NULL), perm) < 0)
 					die("cannot chmod unzip script.");
 			}
 			makehtaccess(".htaccess");
@@ -1883,18 +1925,35 @@ main(int argc, char **argv)
 		makebless("bless.sh");
 		if (chmod(makepath(distpath, "bless.sh", NULL), 0640) < 0)
 			die("cannot chmod bless script.");
+		if (dynamic) {
+			const char *path = makepath(distpath, "dynamic", NULL);
+			FILE *op = fopen(path, "w");
+			if (op == NULL)
+				die("cannot make file '%s'.", path);
+			fclose(op);
+		}
 	} else {
 		message("[%s] (1) making CGI program ...(skipped)", now());
 	}
 	/*
 	 * Save the suffix of compress format for the safe CGI script.
 	 */
-	{
-		FILE *op = fopen(makepath(distpath, "compress", NULL), "w");
-		if (cflag) {
-			fputs(HTML, op);
-			fputc('\n', op);
-		}
+	if (cflag) {
+		const char *path = makepath(distpath, "compress", NULL);
+		FILE *op = fopen(path, "w");
+		if (op == NULL)
+			die("cannot make file '%s'.", path);
+		fputs(HTML, op);
+		fputc('\n', op);
+		fclose(op);
+	}
+	if (av) {
+		const char *path = makepath(distpath, "GTAGSROOT", NULL);
+		FILE *op = fopen(path, "w");
+		if (op == NULL)
+			die("cannot make file '%s'.", path);
+		fputs(cwdpath, op);
+		fputc('\n', op);
 		fclose(op);
 	}
 	/*
@@ -2011,7 +2070,7 @@ main(int argc, char **argv)
 		copyfile(src, dst);
 	}
 	message("[%s] Done.", now());
-	if (vflag && cgi && (cflag || fflag || dynamic)) {
+	if (vflag && !nocgi && (cflag || fflag || dynamic)) {
 		message("\n[Information]\n");
 		if (fflag || cflag || dynamic) {
 			message(" o Htags was invoked with the -f, -c or -D option. You should start HTTP");

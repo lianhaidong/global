@@ -25,7 +25,7 @@
 @HEADER	HTAGS,1,March 2010,GNU Project
 @NAME	htags - generate a hypertext from a set of source files.
 @SYNOPSIS
-	@name{htags} [-acDfFghInosTvwx][-d @arg{dbpath}][-m @arg{name}][-S @arg{cgidir}][-t @arg{title}][@arg{dir}]
+	@name{htags} [-acDfFghInosTvwx][-d @arg{dbpath}][-m @arg{name}][-S @arg{key}][-t @arg{title}][@arg{dir}]
 @DESCRIPTION
 	@name{Htags} generates a hypertext from a set of source files of
 	C, C++, Yacc, Java, PHP and Assembly.
@@ -122,11 +122,12 @@
 		By default, @name{htags} generates them.
 	@item{@option{-o}, @option{--other}}
 		Pick up not only source files but also other files in the file index.
-	@item{@option{-S}, @option{--secure-cgi} @arg{cgidir}}
-		Write CGI programs into the @arg{cgidir} to realize centralised CGI program.
-		Script alias is @file{/cgi-bin} by default.
-		You can overwrite this value using config variable
-		@code{script_alias} in @file{gtags.conf}.
+	@item{@option{--overwrite-key}}
+		Allow the same key as the parameter of the @option{-S} option.
+	@item{@option{-S}, @option{--secure-cgi} @arg{key}}
+		Use the center CGI script. The @arg{key} must be a unique key in your site.
+		At the first time, you should copy the CGI script written by this command
+		into the center CGI directory.
 	@item{@option{-s}, @option{--symbol}}
 		Make anchors not only for object definitions and references but also other symbols.
 	@item{@option{--show-position}}
