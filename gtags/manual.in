@@ -114,6 +114,8 @@
 		Tag file for path of source files.
 	@item{@file{/etc/gtags.conf}, @file{$HOME/.globalrc}}
 		Configuration file.
+	@item{@file{gtags.files}}
+		The list of candidates of target files.
 	@end_itemize
 @ENVIRONMENT
 	The following environment variables affect the execution of @name{gtags}:

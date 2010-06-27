@@ -82,6 +82,8 @@ const char *dump_target;
 char *single_update;
 int statistics = STATISTICS_STYLE_NONE;
 
+#define GTAGSFILES "gtags.files"
+
 /*
  * Path filter
  */
@@ -335,8 +337,11 @@ main(int argc, char **argv)
 	}
 
 	/*
+	 * If 'gtags.files' exists, use it as a file list.
 	 * If the file_list other than "-" is given, it must be readable file.
 	 */
+	if (file_list == NULL && test("f", GTAGSFILES))
+		file_list = GTAGSFILES;
 	if (file_list && strcmp(file_list, "-")) {
 		if (test("d", file_list))
 			die("'%s' is a directory.", file_list);
@@ -420,6 +425,8 @@ main(int argc, char **argv)
 	if (vflag && gtags_parser)
 		fprintf(stderr, " Using plug-in parser.\n");
 	parser_init(langmap, gtags_parser);
+	if (vflag && file_list)
+		fprintf(stderr, " Using '%s' as a file list.\n", file_list);
 	/*
 	 * incremental update.
 	 */
