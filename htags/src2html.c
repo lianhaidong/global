@@ -363,7 +363,6 @@ put_anchor(char *name, int type, int lineno)
 			const char *dir, *file, *suffix = NULL;
 
 			if (dynamic) {
-				const char *s;
 				STATIC_STRBUF(sb);
 
 				strbuf_clear(sb);
