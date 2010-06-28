@@ -1925,13 +1925,6 @@ main(int argc, char **argv)
 		makebless("bless.sh");
 		if (chmod(makepath(distpath, "bless.sh", NULL), 0640) < 0)
 			die("cannot chmod bless script.");
-		if (dynamic) {
-			const char *path = makepath(distpath, "dynamic", NULL);
-			FILE *op = fopen(path, "w");
-			if (op == NULL)
-				die("cannot make file '%s'.", path);
-			fclose(op);
-		}
 	} else {
 		message("[%s] (1) making CGI program ...(skipped)", now());
 	}
