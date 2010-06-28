@@ -656,6 +656,11 @@ find_read_filelist(void)
 			continue;
 		}
 		/*
+		 * Lines which start with ". " are considered to be comments.
+		 */
+		if (*path == '.' && *(path + 1) == ' ')
+			continue;
+		/*
 		 * Skip the following:
 		 * o directory
 		 * o file which does not exist
