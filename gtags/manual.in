@@ -25,13 +25,16 @@
 @HEADER	GTAGS,1,March 2010,GNU Project
 @NAME	gtags - create tag files for global.
 @SYNOPSIS
-	@name{gtags} [-ciIOqvw][-d @arg{tag-file}][-f @arg{file}][-n @arg{number}][@arg{dbpath}]
+	@name{gtags} [-ciIOqvw][-d @arg{tag-file}][-f @arg{file}][@arg{dbpath}]
 @DESCRIPTION
 	@name{Gtags} is used to create tag files for @xref{global,1}.
 
 	@name{Gtags} recursively collects source files under the current directory,
 	pickup symbols and write the cross-reference data into the tag files
 	(@file{GTAGS}, @file{GRTAGS} and @file{GPATH}).
+
+	If @file{gtags.files} exists or the @option{-f} option is specified,
+	target files are limited by it. Lines starts with ". " are comments.
 
 	C, C++, yacc, java, PHP and Assembly source files are supported.
 	Files whose names end in @file{.c} or @file{.h} are assumed to be
