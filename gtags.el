@@ -22,7 +22,7 @@
 
 ;; GLOBAL home page is at: http://www.gnu.org/software/global/
 ;; Author: Tama Communications Corporation
-;; Version: 2.7
+;; Version: 2.8
 ;; Keywords: tools
 ;; Required version: GLOBAL 5.9 or later
 
@@ -183,9 +183,9 @@
 (defun gtags-current-token ()
   (cond
    ((looking-at "[0-9A-Za-z_]")
-    (while (looking-at "[0-9A-Za-z_]")
+    (while (and (not (bolp)) (looking-at "[0-9A-Za-z_]"))
       (forward-char -1))
-    (forward-char 1))
+    (if (not (looking-at "[0-9A-Za-z_]")) (forward-char 1)))
    (t
     (while (looking-at "[ \t]")
       (forward-char 1))))
