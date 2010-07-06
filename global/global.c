@@ -51,6 +51,7 @@ static void setcom(int);
 int decide_tag_by_context(const char *, const char *, int);
 int main(int, char **);
 void completion(const char *, const char *, const char *);
+void completion_idutils(const char *, const char *, const char *);
 void idutils(const char *, const char *);
 void grep(const char *, const char *);
 void pathlist(const char *, const char *);
@@ -158,6 +159,10 @@ setcom(int c)
 {
 	if (command == 0)
 		command = c;
+	else if (c == 'c' && command == 'I')
+		command = c;
+	else if (c == 'I' && command == 'c')
+		;
 	else if (command != c)
 		usage();
 }
@@ -497,7 +502,10 @@ main(int argc, char **argv)
 	 * complete function name
 	 */
 	if (cflag) {
-		completion(dbpath, root, av);
+		if (Iflag)
+			completion_idutils(dbpath, root, av);
+		else
+			completion(dbpath, root, av);
 		exit(0);
 	}
 	/*
@@ -662,6 +670,57 @@ completion(const char *dbpath, const char *root, const char *prefix)
 		}
 	}
 	gtags_close(gtop);
+}
+/*
+ * completion_idutils: print completion list of specified prefix
+ *
+ *	i)	dbpath	dbpath directory
+ *	i)	root	root directory
+ *	i)	prefix	prefix of primary key
+ */
+void
+completion_idutils(const char *dbpath, const char *root, const char *prefix)
+{
+	FILE *ip;
+	STRBUF *sb = strbuf_open(0);
+	const char *lid = usable("lid");
+	char *line, *p;
+
+	if (prefix && *prefix == 0)	/* In the case global -c '' */
+		prefix = NULL;
+	/*
+	 * make lid command line.
+	 * Invoke lid with the --result=grep option to generate grep format.
+	 */
+	if (!lid)
+		die("lid(idutils) not found.");
+	strbuf_puts(sb, lid);
+	strbuf_puts(sb, " --key=token");
+	if (iflag)
+		strbuf_puts(sb, " --ignore-case");
+	strbuf_putc(sb, ' ');
+	strbuf_putc(sb, '"');
+	strbuf_putc(sb, '^');
+	strbuf_puts(sb, prefix);
+	strbuf_putc(sb, '"');
+	if (debug)
+		fprintf(stderr, "completion_idutils: %s\n", strbuf_value(sb));
+	if (chdir(root) < 0)
+		die("cannot move to '%s' directory.", root);
+	if (!(ip = popen(strbuf_value(sb), "r")))
+		die("cannot execute '%s'.", strbuf_value(sb));
+	while ((line = strbuf_fgets(sb, ip, STRBUF_NOCRLF)) != NULL) {
+		for (p = line; *p && *p != ' '; p++)
+			;
+		if (*p == '\0') {
+			warning("Illegal line: %s", line);
+			continue;
+		}
+		*p = '\0';
+		puts(line);
+	}
+	fclose(ip);
+	strbuf_close(sb);
 }
 /*
  * Output filter
