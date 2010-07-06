@@ -724,10 +724,11 @@ idutils(const char *pattern, const char *dbpath)
 	FILE *ip;
 	CONVERT *cv;
 	STRBUF *ib = strbuf_open(0);
-	char edit[IDENTLEN];
-	const char *path, *lno, *lid;
+	char encoded_pattern[IDENTLEN];
+	char path[MAXPATHLEN];
+	const char *lno, *lid;
 	int linenum, count;
-	char *p, *grep;
+	char *p, *q, *grep;
 
 	lid = usable("lid");
 	if (!lid)
@@ -735,7 +736,7 @@ idutils(const char *pattern, const char *dbpath)
 	/*
 	 * convert spaces into %FF format.
 	 */
-	encode(edit, sizeof(edit), pattern);
+	encode(encoded_pattern, sizeof(encoded_pattern), pattern);
 	/*
 	 * make lid command line.
 	 * Invoke lid with the --result=grep option to generate grep format.
@@ -756,17 +757,19 @@ idutils(const char *pattern, const char *dbpath)
 		die("cannot execute '%s'.", strbuf_value(ib));
 	cv = convert_open(type, format, root, cwd, dbpath, stdout);
 	count = 0;
+	strcpy(path, "./");
 	while ((grep = strbuf_fgets(ib, ip, STRBUF_NOCRLF)) != NULL) {
-		p = grep;
+		q = path + 2;
 		/* extract path name */
-		path = p;
+		if (*grep == '/')
+			die("The path in the output of lid is assumed absolute. '%s'", grep);
+		p = grep;
 		while (*p && *p != ':')
-			p++;
+			*q++ = *p++;
+		*q = '\0'; 
 		if ((xflag || tflag) && !*p)
-			die("invalid lid(idutils) output format. '%s'", grep);
-		*p++ = 0;
-		/* normalize path name */
-		path = makepath(".", path, NULL);
+			die("invalid lid(idutils) output format(1). '%s'", grep);
+		p++;
 		if (lflag) {
 			if (!locatestring(path, localprefix, MATCH_AT_FIRST))
 				continue;
@@ -780,19 +783,18 @@ idutils(const char *pattern, const char *dbpath)
 			/* extract line number */
 			while (*p && isspace(*p))
 				p++;
-			lno = p;
-			while (*p && isdigit(*p))
-				p++;
+			linenum = 0;
+			for (linenum = 0; *p && isdigit(*p); linenum = linenum * 10 + (*p++ - '0'))
+				;
 			if (*p != ':')
-				die("invalid lid(idutils) output format. '%s'", grep);
-			*p++ = 0;
-			linenum = atoi(lno);
+				die("invalid lid(idutils) output format(2). '%s'", grep);
 			if (linenum <= 0)
-				die("invalid lid(idutils) output format. '%s'", grep);
+				die("invalid lid(idutils) output format(3). '%s'", grep);
+			p++;
 			/*
 			 * print out.
 			 */
-			convert_put_using(cv, edit, path, linenum, p, NULL);
+			convert_put_using(cv, encoded_pattern, path, linenum, p, NULL);
 			break;
 		}
 	}
@@ -818,7 +820,7 @@ grep(const char *pattern, const char *dbpath)
 	GFIND *gp;
 	STRBUF *ib = strbuf_open(MAXBUFLEN);
 	const char *path;
-	char edit[IDENTLEN];
+	char encoded_pattern[IDENTLEN];
 	const char *buffer;
 	int linenum, count;
 	int flags = 0;
@@ -828,7 +830,7 @@ grep(const char *pattern, const char *dbpath)
 	/*
 	 * convert spaces into %FF format.
 	 */
-	encode(edit, sizeof(edit), pattern);
+	encode(encoded_pattern, sizeof(encoded_pattern), pattern);
 
 	if (oflag)
 		target = GPATH_BOTH;
@@ -856,7 +858,7 @@ grep(const char *pattern, const char *dbpath)
 					convert_put_path(cv, path);
 					break;
 				} else {
-					convert_put_using(cv, edit, path, linenum, buffer, gp->dbop->lastdat);
+					convert_put_using(cv, encoded_pattern, path, linenum, buffer, gp->dbop->lastdat);
 				}
 			}
 		}
