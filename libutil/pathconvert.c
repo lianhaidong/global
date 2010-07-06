@@ -216,7 +216,8 @@ convert_put(CONVERT *cv, const char *ctags_x)
 {
 	char *tagnextp = NULL;
 	int tagnextc = 0;
-	char *tag = NULL, *lineno = NULL, *path, *rest = NULL, *fid = NULL;
+	char *tag = NULL, *lineno = NULL, *path, *rest = NULL;
+	const char *fid = NULL;
 
 	if (cv->format == FORMAT_PATH)
 		die("convert_put: internal error.");	/* Use convert_put_path() */

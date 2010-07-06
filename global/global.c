@@ -785,7 +785,7 @@ idutils(const char *pattern, const char *dbpath)
 	STRBUF *ib = strbuf_open(0);
 	char encoded_pattern[IDENTLEN];
 	char path[MAXPATHLEN];
-	const char *lno, *lid;
+	const char *lid;
 	int linenum, count;
 	char *p, *q, *grep;
 
