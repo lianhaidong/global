@@ -383,7 +383,7 @@ put_anchor(char *name, int type, int lineno)
 					strbuf_puts(sb, "reference");
 				else
 					strbuf_puts(sb, "symbol");
-				file = strbuf_value(sb);;
+				file = strbuf_value(sb);
 				dir = (*action == '/') ? NULL : "..";
 			} else {
 				if (type == 'R')
