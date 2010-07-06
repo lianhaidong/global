@@ -693,7 +693,7 @@ makesearchpart(const char *action, const char *id, const char *target)
 	strbuf_puts(sb, gen_input_radio("type", "symbol", 0, "Retrieve the place of the specified symbol is used."));
 	strbuf_puts_nl(sb, target ? "Sym" : "Other symbol");
 	strbuf_puts(sb, gen_input_radio("type", "path", 0, "Look for path name which matches to the specified pattern."));
-	strbuf_puts(sb, target ? "Path" : "Path name");
+	strbuf_puts_nl(sb, target ? "Path" : "Path name");
 	if (enable_grep) {
 		strbuf_puts(sb, gen_input_radio("type", "grep", 0, "Retrieve lines which matches to the specified pattern."));
 		strbuf_puts_nl(sb, target ? "Grep" : "Grep pattern");
