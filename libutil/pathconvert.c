@@ -216,7 +216,7 @@ convert_put(CONVERT *cv, const char *ctags_x)
 {
 	char *tagnextp = NULL;
 	int tagnextc = 0;
-	char *tag = NULL, *lineno = NULL, *path, *rest = NULL;
+	char *tag = NULL, *lineno = NULL, *path, *rest = NULL, *fid = NULL;
 
 	if (cv->format == FORMAT_PATH)
 		die("convert_put: internal error.");	/* Use convert_put_path() */
@@ -280,7 +280,10 @@ convert_put(CONVERT *cv, const char *ctags_x)
 		fputs(lineno, cv->op);
 		break;
 	case FORMAT_CTAGS_XID:
-		fputs(gpath_path2fid(path, NULL), cv->op);
+		fid = gpath_path2fid(path, NULL);
+		if (fid == NULL)
+			die("convert_put: unknown file. '%s'", path);
+		fputs(fid, cv->op);
 		fputc(' ', cv->op);
 		/* PASS THROUGH */
 	case FORMAT_CTAGS_X:
@@ -359,7 +362,12 @@ convert_put_using(CONVERT *cv, const char *tag, const char *path, int lineno, co
 		fprintf(cv->op, "%d", lineno);
 		break;
 	case FORMAT_CTAGS_XID:
-		fputs(fid ? fid : gpath_path2fid(path, NULL), cv->op);
+		if (fid == NULL) {
+			fid = gpath_path2fid(path, NULL);
+			if (fid == NULL)
+				die("convert_put_using: unknown file. '%s'", path);
+		}
+		fputs(fid, cv->op);
 		fputc(' ', cv->op);
 		/* PASS THROUGH */
 	case FORMAT_CTAGS_X:
