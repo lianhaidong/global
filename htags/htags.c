@@ -118,6 +118,8 @@ int caution;				/* --caution option		*/
 int dynamic;				/* --dynamic(-D) option		*/
 int symbol;				/* --symbol(-s) option          */
 int suggest;				/* --suggest option		*/
+int auto_completion;			/* --auto-completion		*/
+char *auto_completion_limit = "0";	/* --auto-completion=limit	*/
 int statistics = STATISTICS_STYLE_NONE;	/* --statistics option		*/
 
 int no_order_list;			/* 1: doesn't use order list	*/
@@ -138,7 +140,7 @@ const char *title;
 const char *xhtml_version = "1.0";
 const char *insert_header;		/* --insert-header=<file>	*/
 const char *insert_footer;		/* --insert-footer=<file>	*/
-
+const char *jscode;			/* javascript code		*/
 /*
  * Constant values.
  */
@@ -238,8 +240,8 @@ const char *gzipped_suffix = "ghtml";	/* suffix of gzipped html file	*/
 const char *normal_suffix = "html";	/* suffix of normal html file	*/
 const char *HTML;
 const char *action = "cgi-bin/global.cgi";/* default action		*/
-const char *saction;			/* safe action			*/
-const char *id = NULL;			/* id (default non)		*/
+const char *completion_action = "cgi-bin/completion.cgi";
+const char *id = "";			/* id (default non)		*/
 int nocgi = 0;				/* 1: don't make cgi-bin/	*/
 int definition_header=NO_HEADER;	/* (NO|BEFORE|RIGHT|AFTER)_HEADER */
 const char *htags_options = NULL;
@@ -304,7 +306,9 @@ static struct option const long_options[] = {
 #define OPT_ITEM_ORDER		137
 #define OPT_TABS		138
 #define OPT_CFLOW		139
+#define OPT_AUTO_COMPLETION	140
         {"action", required_argument, NULL, OPT_ACTION},
+        {"auto-completion", optional_argument, NULL, OPT_AUTO_COMPLETION},
         {"cflow", required_argument, NULL, OPT_CFLOW},
         {"cvsweb", required_argument, NULL, OPT_CVSWEB},
         {"cvsweb-cvsroot", required_argument, NULL, OPT_CVSWEB_CVSROOT},
@@ -378,9 +382,10 @@ signal_setup(void)
 static void
 make_directory_in_distpath(const char *name)
 {
-	const char *path = makepath(distpath, name, NULL);
+	char path[MAXPATHLEN];
 	FILE *op;
 
+	strlimcpy(path, makepath(distpath, name, NULL), sizeof(path));
 	if (!test("d", path))
 		if (mkdir(path, 0775))
 			die("cannot make directory '%s'.", path);
@@ -388,6 +393,8 @@ make_directory_in_distpath(const char *name)
 	 * Not to publish the directory list.
 	 */
 	op = fopen(makepath(path, "index.html", NULL), "w");
+	if (op == NULL)
+		die("cannot make file '%s'.", makepath(path, "index.html", NULL));
 	fputs(html_begin, op);
 	fputs(html_end, op);
 	fputc('\n', op);
@@ -413,50 +420,48 @@ make_file_in_distpath(const char *name, const char *data)
 		die("cannot make file '%s'.", path); 
 	}
 }
-/*
- * generate_file: generate file with replacing macro.
- *
- *	i)	dist	directory where the file should be created
- *	i)	file	file name
- *	i)	place	TOPDIR, SUBDIR, CGIDIR
- */
-static void
-generate_file(const char *dist, const char *file, int place)
+void
+load_with_replace(const char *file, STRBUF *result, int place)
 {
+	STRBUF *sb = strbuf_open(0);
+	FILE *ip;
 	regex_t preg;
 	regmatch_t pmatch[2];
-	STRBUF *sb = strbuf_open(0);
-	FILE *ip, *op;
 	char *_;
 	int i;
+
         struct map {
-                const char *name;
-                const char *value;
+		const char *name;
+		const char *value;
         } tab[] = {
 		/* dynamic initialization */
-                {"@page_begin@", NULL},
-                {"@page_end@", NULL},
+		{"@page_begin@", NULL},
+		{"@page_end@", NULL},
 
 		/* static initialization */
-                {"@body_begin@", body_begin},
-                {"@body_end@", body_end},
-                {"@title_begin@", title_begin},
-                {"@title_end@", title_end},
-                {"@error_begin@", error_begin},
-                {"@error_end@", error_end},
-                {"@message_begin@", message_begin},
-                {"@message_end@", message_end},
-                {"@verbatim_begin@", verbatim_begin},
-                {"@verbatim_end@", verbatim_end},
-                {"@normal_suffix@", normal_suffix},
-                {"@hr@", hr},
-                {"@br@", br},
-                {"@HTML@", HTML},
+		{"@body_begin@", body_begin},
+		{"@body_end@", body_end},
+		{"@title_begin@", title_begin},
+		{"@title_end@", title_end},
+		{"@error_begin@", error_begin},
+		{"@error_end@", error_end},
+		{"@message_begin@", message_begin},
+		{"@message_end@", message_end},
+		{"@verbatim_begin@", verbatim_begin},
+		{"@verbatim_end@", verbatim_end},
+		{"@normal_suffix@", normal_suffix},
+		{"@hr@", hr},
+		{"@br@", br},
+		{"@HTML@", HTML},
 		{"@DATADIR@", datadir},
-                {"@action@", action},
-                {"@null_device@", null_device},
-                {"@globalpath@", global_path},
-                {"@gtagspath@", gtags_path},
+		{"@action@", action},
+		{"@completion_action@", completion_action},
+		{"@limit@", auto_completion_limit},
+		{"@script_alias@", script_alias},
+		{"@id@", id},
+		{"@null_device@", null_device},
+		{"@globalpath@", global_path},
+		{"@gtagspath@", gtags_path},
         };
 	int tabsize = sizeof(tab) / sizeof(struct map);
 
@@ -489,9 +494,6 @@ generate_file(const char *dist, const char *file, int place)
 #endif
 			die("skeleton file '%s' not found.", strbuf_value(sb));
 	}
-	op = fopen(makepath(dist, file, NULL), "w");
-	if (!op)
-		die("cannot create file '%s'.", file);
 	strbuf_reset(sb);
 	/*
 	 * Read template file and evaluate macros.
@@ -506,7 +508,7 @@ generate_file(const char *dist, const char *file, int place)
 
 			/* print before macro */
 			for (i = 0; i < pmatch[0].rm_so; i++)
-				fputc(p[i], op);
+				strbuf_putc(result, p[i]);
 			for (i = 0; i < tabsize; i++)
 				if (!strncmp(start, tab[i].name, length))
 					break;
@@ -520,22 +522,41 @@ generate_file(const char *dist, const char *file, int place)
 				 */
 				for (q = tab[i].value; *q; q++) {
 					if (*q == '"')
-						fputc('\\', op);
+						strbuf_putc(result, '\\');
 					else if (*q == '\n')
-						fputc('\\', op);
-					fputc(*q, op);
+						strbuf_putc(result, '\\');
+					strbuf_putc(result, *q);
 				}
 			}
 		}
-		fputs_nl(p, op);
+		strbuf_puts_nl(result, p);
 	}
-	fclose(op);
 	fclose(ip);
 	strbuf_close(sb);
 	regfree(&preg);
-	html_count++;
 }
+/*
+ * generate_file: generate file with replacing macro.
+ *
+ *	i)	dist	directory where the file should be created
+ *	i)	file	file name
+ *	i)	place	TOPDIR, SUBDIR, CGIDIR
+ */
+static void
+generate_file(const char *dist, const char *file, int place)
+{
+	FILE *op;
+	STRBUF *result = strbuf_open(0);
 
+	op = fopen(makepath(dist, file, NULL), "w");
+	if (!op)
+		die("cannot create file '%s'.", file);
+	load_with_replace(file, result, place);
+	fputs(strbuf_value(result), op);
+	fclose(op);
+	html_count++;
+	strbuf_close(result);
+}
 /*
  * makeprogram: make CGI program
  */
@@ -550,10 +571,7 @@ makeprogram(const char *cgidir, const char *file)
 static void
 makebless(const char *file)
 {
-	const char *save = action;
-	action = saction;
 	generate_file(distpath, file, SUBDIR);
-	action = save;
 }
 /*
  * makeghtml: make ghtml.cgi file.
@@ -656,13 +674,11 @@ makehelp(const char *file)
 /*
  * makesearchpart: make search part
  *
- *	i)	$action	action url
- *	i)	$id	hidden variable
  *	i)	$target	target
  *	r)		html
  */
 static char *
-makesearchpart(const char *action, const char *id, const char *target)
+makesearchpart(const char *target)
 {
 	STATIC_STRBUF(sb);
 
@@ -680,8 +696,6 @@ makesearchpart(const char *action, const char *id, const char *target)
 	}
 	strbuf_puts_nl(sb, gen_form_begin(target));
 	strbuf_puts_nl(sb, gen_input("pattern", NULL, NULL));
-	if (id == NULL)
-		id = "";
 	strbuf_puts_nl(sb, gen_input("id", id, "hidden"));
 	strbuf_puts_nl(sb, gen_input(NULL, "Search", "submit"));
 	strbuf_puts(sb, gen_input(NULL, "Reset", "reset"));
@@ -703,10 +717,10 @@ makesearchpart(const char *action, const char *id, const char *target)
 		strbuf_puts_nl(sb, target ? "Id" : "Id pattern");
 	}
 	strbuf_puts_nl(sb, br);
-	strbuf_puts(sb, gen_input_checkbox("icase", "1", "Ignore case distinctions in the pattern."));
+	strbuf_puts(sb, gen_input_checkbox("icase", NULL, "Ignore case distinctions in the pattern."));
 	strbuf_puts_nl(sb, target ? "Icase" : "Ignore case");
 	if (other_files) {
-		strbuf_puts(sb, gen_input_checkbox("other", "1", "Files other than the source code are also retrieved."));
+		strbuf_puts(sb, gen_input_checkbox("other", NULL, "Files other than the source code are also retrieved."));
 		strbuf_puts_nl(sb, target ? "Other" : "Other files");
 	}
 	if (other_files && !target) {
@@ -730,6 +744,7 @@ static void
 makeindex(const char *file, const char *title, const char *index)
 {
 	FILE *op;
+	const char *header_item = auto_completion ? jscode : NULL;
 
 	op = fopen(makepath(distpath, file, NULL), "w");
 	if (!op)
@@ -759,7 +774,7 @@ makeindex(const char *file, const char *title, const char *index)
 		fputs_nl(gen_frameset_end(), op);
 		fputs_nl(gen_page_end(), op);
 	} else {
-		fputs_nl(gen_page_begin(title, TOPDIR), op);
+		fputs_nl(gen_page_index_begin(title, header_item), op);
 		fputs_nl(body_begin, op);
 		if (insert_header)
 			fputs(gen_insert_header(TOPDIR), op);
@@ -782,11 +797,12 @@ static void
 makemainindex(const char *file, const char *index)
 {
 	FILE *op;
+	const char *header_item = auto_completion ? jscode : NULL;
 
 	op = fopen(makepath(distpath, file, NULL), "w");
 	if (!op)
 		die("cannot make file '%s'.", file);
-	fputs_nl(gen_page_begin(title, TOPDIR), op);
+	fputs_nl(gen_page_index_begin(title, header_item), op);
 	fputs_nl(body_begin, op);
 	if (insert_header)
 		fputs(gen_insert_header(TOPDIR), op);
@@ -807,13 +823,14 @@ static void
 makesearchindex(const char *file)
 {
 	FILE *op;
+	const char *header_item = auto_completion ? jscode : NULL;
 
 	op = fopen(makepath(distpath, file, NULL), "w");
 	if (!op)
 		die("cannot create file '%s'.", file);
-	fputs_nl(gen_page_begin("SEARCH", TOPDIR), op);
+	fputs_nl(gen_page_index_begin("SEARCH", header_item), op);
 	fputs_nl(body_begin, op);
-	fputs(makesearchpart(action, id, "mains"), op);
+	fputs(makesearchpart("mains"), op);
 	fputs_nl(body_end, op);
 	fputs_nl(gen_page_end(), op);
 	fclose(op);
@@ -918,6 +935,18 @@ makehtml(int total)
 	gfind_close(gp);
 }
 /*
+ * Load file.
+ */
+static char *
+loadfile(const char *file)
+{
+	STATIC_STRBUF(result);
+
+	strbuf_reset(result);
+	load_with_replace(file, result, 0);
+	return strbuf_value(result);
+}
+/*
  * copy file.
  */
 static void
@@ -1005,7 +1034,7 @@ makecommonpart(const char *title, const char *defines, const char *files)
 			break;
 		case 's':
 			if (fflag) {
-				strbuf_puts(sb, makesearchpart(action, id, NULL));
+				strbuf_puts(sb, makesearchpart(NULL));
 				strbuf_puts_nl(sb, hr);
 			}
 			break;
@@ -1491,6 +1520,15 @@ main(int argc, char **argv)
 		case OPT_ACTION:
 			action_value = optarg;
 			break;
+		case OPT_AUTO_COMPLETION:
+			auto_completion = 1;
+			if (optarg) {
+				if (atoi(optarg) > 0)
+					auto_completion_limit = optarg;
+				else
+					die("The option value of --auto-completion must be numeric.");
+			}
+			break;
 		case OPT_CFLOW:
 			cflow_file = optarg;
 			break;
@@ -1578,7 +1616,7 @@ main(int argc, char **argv)
                         break;
                 case 'S':
 			Sflag++;
-			id_value = optarg;
+			id = optarg;
                         break;
                 case 'T':
 			table_flist = 1;
@@ -1727,17 +1765,17 @@ main(int argc, char **argv)
 	} else {
 		snprintf(distpath, sizeof(distpath), "%s/HTML", cwdpath);
 	}
-	{
-		static char buf[MAXBUFLEN];
-		snprintf(buf, sizeof(buf), "%s/global.cgi", script_alias);
-		saction = buf;
-	}
 	if (Sflag) {
+		static char saction[MAXBUFLEN];
+		static char completion_saction[MAXBUFLEN];
 		char path[MAXBUFLEN];
 		char *name = "sitekeys";
 		int fd;
 
+		snprintf(saction, sizeof(saction), "%s/global.cgi", script_alias);
 		action = saction;
+		snprintf(completion_saction, sizeof(completion_saction), "%s/completion.cgi", script_alias);
+		completion_action = completion_saction;
 		snprintf(path, sizeof(path), "%s/gtags", datadir);
 		if (!test("d", makepath(path, name, NULL))) {
 			setverbose();
@@ -1751,9 +1789,9 @@ main(int argc, char **argv)
 			message("Thank you for your cooperation.");
 			exit(0);
 		}
-		snprintf(path, sizeof(path), "%s/gtags/%s/%s", datadir, name, id_value);
+		snprintf(path, sizeof(path), "%s/gtags/%s/%s", datadir, name, id);
 		if (test("f", path) && overwrite_key == 0)
-			die("key '%s' is not unique. please change key or use --overwrite-key option.", id_value);
+			die("key '%s' is not unique. please change key or use --overwrite-key option.", id);
 		fd = creat(path, 644);
 		if (fd < 0)
 			die("cannot create file '%s'.", path);
@@ -1871,6 +1909,8 @@ main(int argc, char **argv)
 	if (!w32) {
 		/* UNDER CONSTRUCTION */
 	}
+	if (auto_completion)
+		jscode = loadfile("jscode");
 	/*
 	 * (0) make directories
 	 */
@@ -1883,7 +1923,7 @@ main(int argc, char **argv)
 	make_directory_in_distpath(SRCS);
 	make_directory_in_distpath(INCS);
 	make_directory_in_distpath(INCREFS);
-	make_file_in_distpath("sitekey", id_value);
+	make_file_in_distpath("sitekey", id);
 	if (!dynamic) {
 		make_directory_in_distpath(DEFS);
 		make_directory_in_distpath(REFS);
@@ -1907,6 +1947,11 @@ main(int argc, char **argv)
 			if (fflag || dynamic) {
 				makeprogram(cgidir, "global.cgi");
 				if (chmod(makepath(cgidir, "global.cgi", NULL), perm) < 0)
+					die("cannot chmod CGI program.");
+			}
+			if (auto_completion) {
+				makeprogram(cgidir, "completion.cgi");
+				if (chmod(makepath(cgidir, "completion.cgi", NULL), perm) < 0)
 					die("cannot chmod CGI program.");
 			}
 			if (cflag) {
@@ -2061,6 +2106,17 @@ main(int argc, char **argv)
 		snprintf(src, sizeof(src), "%s/gtags/style.css", datadir);
 		snprintf(dst, sizeof(dst), "%s/style.css", distpath);
 		copyfile(src, dst);
+	}
+	if (auto_completion) {
+		const char *files[] = {"jquery.js", "jquery.suggest.js", "jquery.suggest.css"};
+		int i, count = sizeof(files) / sizeof(char *);
+		char src[MAXPATHLEN], dst[MAXPATHLEN];
+		
+		for (i = 0; i < count; i++) {
+			snprintf(src, sizeof(src), "%s/gtags/%s", datadir, files[i]);
+			snprintf(dst, sizeof(dst), "%s/%s", distpath, files[i]);
+			copyfile(src, dst);
+		}
 	}
 	message("[%s] Done.", now());
 	if (vflag && !nocgi && (cflag || fflag || dynamic)) {

@@ -129,4 +129,12 @@ o Icon files by GNOME Foundation.
 	icons/n_right.png	stock_right_arrow.png
 	icons/n_top.png		stock_top.png
 
+o jQuery and Suggest plugin.
+  jQuery is due to John Resig and the Dojo Foundation.
+  Suggest plugin is due to Peter Vulgaris, Joern Zaefferer and Stefan Petre.
+
+	htags/jquery.js
+	htags/jquery.suggest.js
+	htags/jquery.suggest.css
+
 they are considered a separate package, not part of GLOBAL proper.

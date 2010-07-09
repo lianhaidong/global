@@ -219,6 +219,7 @@ setup_xhtml(void)
 static char current_path[MAXPATHLEN];
 static char current_dir[MAXPATHLEN];
 static char current_file[MAXPATHLEN];
+
 /*
  * save path infomation
  */
@@ -345,9 +346,11 @@ gen_insert_footer(int place)
  *			TOPDIR: this page is in the top directory
  *	i)	use_frameset
  *			use frameset document type or not
+ *	i)	header_item
+ *			item which should be inserted into the header
  */
 static const char *
-gen_page_generic_begin(const char *title, int place, int use_frameset)
+gen_page_generic_begin(const char *title, int place, int use_frameset, const char *header_item)
 {
 	STATIC_STRBUF(sb);
 	const char *dir = NULL;
@@ -399,6 +402,8 @@ gen_page_generic_begin(const char *title, int place, int use_frameset)
 		strbuf_sprintf(sb, "<meta http-equiv='Content-Style-Type' content='text/css'%s>\n", empty_element);
 		strbuf_sprintf(sb, "<link rel='stylesheet' type='text/css' href='%sstyle.css'%s>\n", dir, empty_element);
 	}
+	if (header_item)
+		strbuf_puts(sb, header_item);
 	strbuf_puts(sb, html_head_end);
 	return strbuf_value(sb);
 }
@@ -412,7 +417,18 @@ gen_page_generic_begin(const char *title, int place, int use_frameset)
 const char *
 gen_page_begin(const char *title, int place)
 {
-	return gen_page_generic_begin(title, place, 0);
+	return gen_page_generic_begin(title, place, 0, NULL);
+}
+/*
+ * beginning of normal page for index page
+ *
+ *	i)	title	title of this page
+ *	i)	header_item	an item which should be inserted into the header
+ */
+const char *
+gen_page_index_begin(const char *title, const char *header_item)
+{
+	return gen_page_generic_begin(title, TOPDIR, 0, header_item);
 }
 /*
  * Generate beginning of frameset page
@@ -422,7 +438,7 @@ gen_page_begin(const char *title, int place)
 const char *
 gen_page_frameset_begin(const char *title)
 {
-	return gen_page_generic_begin(title, TOPDIR, 1);
+	return gen_page_generic_begin(title, TOPDIR, 1, NULL);
 }
 /*
  * Generate end of page
@@ -800,7 +816,7 @@ gen_input_with_title_checked(const char *name, const char *value, const char *ty
 	if (type)
 		strbuf_sprintf(sb, " type='%s'", type);
 	if (name)
-		strbuf_sprintf(sb, " name='%s'", name);
+		strbuf_sprintf(sb, " name='%s' id='%s'", name, name);
 	if (value)
 		strbuf_sprintf(sb, " value='%s'", value);
 	if (checked) {

@@ -22,7 +22,7 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	HTAGS,1,March 2010,GNU Project
+@HEADER	HTAGS,1,July 2010,GNU Project
 @NAME	htags - generate a hypertext from a set of source files.
 @SYNOPSIS
 	@name{htags} [-acDfFghInosTvwx][-d @arg{dbpath}][-m @arg{name}][-S @arg{key}][-t @arg{title}][@arg{dir}]
@@ -48,6 +48,10 @@
 	@begin_itemize
 	@item{@option{-a}, @option{--alphabet}}
 		Make an alphabetical object index which is suitable for large projects.
+	@item{@option{--auto-completion}[=@arg{limit}]}
+		Enable auto completion facility for the input form.
+		If @arg{limit} is specified, the number of candidates is limited to the value.
+		Please note that this function requires javascript language in your browser.
 	@item{@option{--caution}}
 		Display a caution message on the top page.
 	@item{@option{--cflow} @arg{cflowfile}}

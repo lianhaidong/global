@@ -241,6 +241,7 @@ AC_CONFIG_FILES([Makefile
 	gtags.conf
 	libutil/langmap.h
 	htags/global.cgi.tmpl
+	htags/completion.cgi.tmpl
 	libutil/Makefile
 	gtags/Makefile
 	htags/Makefile

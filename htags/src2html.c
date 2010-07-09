@@ -358,8 +358,8 @@ put_anchor(char *name, int type, int lineno)
 		 * About the format of 'line', please see the head comment of cache.c.
 		 */
 		if (*line == ' ') {
-			const char *id = line + 1;
-			const char *count = nextstring(id);
+			const char *fid = line + 1;
+			const char *count = nextstring(fid);
 			const char *dir, *file, *suffix = NULL;
 
 			if (dynamic) {
@@ -373,7 +373,7 @@ put_anchor(char *name, int type, int lineno)
 				strbuf_puts(sb, quote_amp);
 				if (Sflag) {
 					strbuf_puts(sb, "id=");
-					strbuf_puts(sb, id_value);
+					strbuf_puts(sb, id);
 					strbuf_puts(sb, quote_amp);
 				}
 				strbuf_puts(sb, "type=");
@@ -392,7 +392,7 @@ put_anchor(char *name, int type, int lineno)
 					dir = upperdir(SYMS);
 				else	/* 'D', 'M' or 'T' */
 					dir = upperdir(REFS);
-				file = id;
+				file = fid;
 				suffix = HTML;
 			}
 			strbuf_puts(outbuf, gen_href_begin_with_title(dir, file, suffix, NULL, tooltip(type, -1, count)));
