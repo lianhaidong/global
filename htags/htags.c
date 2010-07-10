@@ -1684,6 +1684,8 @@ main(int argc, char **argv)
 		die("page header file '%s' not found.", insert_header);
 	if (insert_footer && !test("fr", insert_footer))
 		die("page footer file '%s' not found.", insert_footer);
+	if (!fflag)
+		auto_completion = 0;
         argc -= optind;
         argv += optind;
         if (!av)
