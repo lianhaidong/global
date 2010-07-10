@@ -13,3 +13,4 @@ htags.pl
 java.c
 php.c
 .libs
+completion.cgi.tmpl
