@@ -1912,7 +1912,7 @@ main(int argc, char **argv)
 		/* UNDER CONSTRUCTION */
 	}
 	if (auto_completion)
-		jscode = loadfile("jscode");
+		jscode = loadfile("jscode_suggest");
 	/*
 	 * (0) make directories
 	 */
@@ -2115,7 +2115,7 @@ main(int argc, char **argv)
 		char src[MAXPATHLEN], dst[MAXPATHLEN];
 		
 		for (i = 0; i < count; i++) {
-			snprintf(src, sizeof(src), "%s/gtags/%s", datadir, files[i]);
+			snprintf(src, sizeof(src), "%s/gtags/jquery/%s", datadir, files[i]);
 			snprintf(dst, sizeof(dst), "%s/%s", distpath, files[i]);
 			copyfile(src, dst);
 		}

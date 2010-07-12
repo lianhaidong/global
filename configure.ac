@@ -254,6 +254,7 @@ AC_CONFIG_FILES([Makefile
 	libglibc/Makefile
 	doc/Makefile
 	icons/Makefile
+	jquery/Makefile
 	libparser/Makefile
 	plugin-example/Makefile
 	libltdl/Makefile
