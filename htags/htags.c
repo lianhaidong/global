@@ -119,6 +119,7 @@ int dynamic;				/* --dynamic(-D) option		*/
 int symbol;				/* --symbol(-s) option          */
 int suggest;				/* --suggest option		*/
 int auto_completion;			/* --auto-completion		*/
+int tree_view;				/* --tree-view			*/
 char *auto_completion_limit = "0";	/* --auto-completion=limit	*/
 int statistics = STATISTICS_STYLE_NONE;	/* --statistics option		*/
 
@@ -290,6 +291,7 @@ static struct option const long_options[] = {
         {"statistics", no_argument, &statistics, STATISTICS_STYLE_TABLE},
         {"suggest", no_argument, &suggest, 1},
         {"table-list", no_argument, &table_list, 1},
+        {"tree-view", no_argument, &tree_view, 1},
         {"version", no_argument, &show_version, 1},
         {"help", no_argument, &show_help, 1},
 
@@ -744,7 +746,6 @@ static void
 makeindex(const char *file, const char *title, const char *index)
 {
 	FILE *op;
-	const char *header_item = auto_completion ? jscode : NULL;
 
 	op = fopen(makepath(distpath, file, NULL), "w");
 	if (!op)
@@ -774,7 +775,7 @@ makeindex(const char *file, const char *title, const char *index)
 		fputs_nl(gen_frameset_end(), op);
 		fputs_nl(gen_page_end(), op);
 	} else {
-		fputs_nl(gen_page_index_begin(title, header_item), op);
+		fputs_nl(gen_page_index_begin(title, jscode), op);
 		fputs_nl(body_begin, op);
 		if (insert_header)
 			fputs(gen_insert_header(TOPDIR), op);
@@ -797,12 +798,11 @@ static void
 makemainindex(const char *file, const char *index)
 {
 	FILE *op;
-	const char *header_item = auto_completion ? jscode : NULL;
 
 	op = fopen(makepath(distpath, file, NULL), "w");
 	if (!op)
 		die("cannot make file '%s'.", file);
-	fputs_nl(gen_page_index_begin(title, header_item), op);
+	fputs_nl(gen_page_index_begin(title, jscode), op);
 	fputs_nl(body_begin, op);
 	if (insert_header)
 		fputs(gen_insert_header(TOPDIR), op);
@@ -823,12 +823,11 @@ static void
 makesearchindex(const char *file)
 {
 	FILE *op;
-	const char *header_item = auto_completion ? jscode : NULL;
 
 	op = fopen(makepath(distpath, file, NULL), "w");
 	if (!op)
 		die("cannot create file '%s'.", file);
-	fputs_nl(gen_page_index_begin("SEARCH", header_item), op);
+	fputs_nl(gen_page_index_begin("SEARCH", jscode), op);
 	fputs_nl(body_begin, op);
 	fputs(makesearchpart("mains"), op);
 	fputs_nl(body_end, op);
@@ -937,14 +936,10 @@ makehtml(int total)
 /*
  * Load file.
  */
-static char *
-loadfile(const char *file)
+char *
+loadfile(const char *file, STRBUF *result)
 {
-	STATIC_STRBUF(result);
-
-	strbuf_reset(result);
 	load_with_replace(file, result, 0);
-	return strbuf_value(result);
 }
 /*
  * copy file.
@@ -1093,12 +1088,17 @@ makecommonpart(const char *title, const char *defines, const char *files)
 				strbuf_puts(sb, header_begin);
 				strbuf_puts(sb, title_file_index);
 				strbuf_puts_nl(sb, header_end);
-				if (table_flist)
+				if (tree_view) {
+					strbuf_puts_nl(sb, tree_control);
+					strbuf_puts_nl(sb, tree_begin);
+				} else if (table_flist)
 					strbuf_puts_nl(sb, flist_begin);
 				else if (!no_order_list)
 					strbuf_puts_nl(sb, list_begin);
 				strbuf_puts(sb, files);
-				if (table_flist)
+				if (tree_view)
+					strbuf_puts_nl(sb, tree_end);
+				else if (table_flist)
 					strbuf_puts_nl(sb, flist_end);
 				else if (!no_order_list)
 					strbuf_puts_nl(sb, list_end);
@@ -1911,8 +1911,16 @@ main(int argc, char **argv)
 	if (!w32) {
 		/* UNDER CONSTRUCTION */
 	}
-	if (auto_completion)
-		jscode = loadfile("jscode_suggest");
+	if (auto_completion || tree_view) {
+		STATIC_STRBUF(sb);
+		strbuf_clear(sb);
+		strbuf_puts_nl(sb, "<script type='text/javascript' src='jquery.js'></script>");
+		if (auto_completion)
+			loadfile("jscode_suggest", sb);
+		if (tree_view)
+			loadfile("jscode_treeview", sb);
+		jscode = strbuf_value(sb);
+	}
 	/*
 	 * (0) make directories
 	 */
@@ -2109,16 +2117,10 @@ main(int argc, char **argv)
 		snprintf(dst, sizeof(dst), "%s/style.css", distpath);
 		copyfile(src, dst);
 	}
-	if (auto_completion) {
-		const char *files[] = {"jquery.js", "jquery.suggest.js", "jquery.suggest.css"};
-		int i, count = sizeof(files) / sizeof(char *);
-		char src[MAXPATHLEN], dst[MAXPATHLEN];
-		
-		for (i = 0; i < count; i++) {
-			snprintf(src, sizeof(src), "%s/gtags/jquery/%s", datadir, files[i]);
-			snprintf(dst, sizeof(dst), "%s/%s", distpath, files[i]);
-			copyfile(src, dst);
-		}
+	if (auto_completion || tree_view) {
+		char com[MAXPATHLEN+32];
+		snprintf(com, sizeof(com), "cp -r %s/gtags/jquery/* %s", datadir, distpath);
+		system(com);
 	}
 	message("[%s] Done.", now());
 	if (vflag && !nocgi && (cflag || fflag || dynamic)) {

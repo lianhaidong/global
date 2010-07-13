@@ -84,6 +84,7 @@ extern int show_help;
 extern int show_version;
 extern int caution;
 extern int auto_completion;
+extern int tree_view;
 extern int dynamic;
 extern int symbol;
 extern int statistics;
@@ -106,6 +107,7 @@ extern const char *title;
 extern const char *xhtml_version;
 extern const char *insert_header;
 extern const char *insert_footer;
+extern const char *jscode;
 
 extern const char *title_define_index;
 extern const char *title_file_index;

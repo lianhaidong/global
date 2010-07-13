@@ -10,9 +10,12 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
-jquery_DATA = jquery.js jquery.suggest.css jquery.suggest.js \
-	jquery.treeview.css jquery.treeview.js
+images_DATA = file.gif folder-closed.gif folder.gif minus.gif plus.gif \
+	treeview-black-line.gif treeview-black.gif treeview-default-line.gif \
+	treeview-default.gif treeview-famfamfam-line.gif treeview-famfamfam.gif \
+	treeview-gray-line.gif treeview-gray.gif treeview-red-line.gif \
+	treeview-red.gif
 
-jquerydir = ${datadir}/gtags/jquery
+imagesdir = ${datadir}/gtags/jquery/images
 
-EXTRA_DIST = ${jquery_DATA}
+EXTRA_DIST = ${icons_DATA}
