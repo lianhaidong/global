@@ -416,7 +416,7 @@ print_directory(int level, char *basedir)
 			 * Print file.
 			 */
 			else {
-				char *file_name = print_file_name(level, path);
+				const char *file_name = print_file_name(level, path);
 
 				if (tree_view) {
 					int size = filesize(path);
@@ -675,7 +675,6 @@ print_directory_name(int level, const char *path, int count)
 int
 makefileindex(const char *file, STRBUF *a_files)
 {
-	char *loadfile(const char *, STRBUF *);
 	STATIC_STRBUF(sb);
 	FILE *filesop;
 	int flags = REG_EXTENDED;

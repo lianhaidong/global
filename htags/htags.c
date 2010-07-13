@@ -936,7 +936,7 @@ makehtml(int total)
 /*
  * Load file.
  */
-char *
+void
 loadfile(const char *file, STRBUF *result)
 {
 	load_with_replace(file, result, 0);
