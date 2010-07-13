@@ -150,7 +150,7 @@
 	@item{@option{--table-list}}
 		Use <table> tag to display the tag list.
 	@item{@option{--tree-view}}
-		Enable treeview facility for the file browser.
+		Use treeview for the file index.
 		Please note that this function requires javascript language in your browser.
 	@item{@option{-v}, @option{--verbose}}
 		Verbose mode.
