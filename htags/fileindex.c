@@ -416,6 +416,8 @@ print_directory(int level, char *basedir)
 			 * Print file.
 			 */
 			else {
+				char *file_name = print_file_name(level, path);
+
 				if (tree_view) {
 					int size = filesize(path);
 					char *target = (Fflag) ? "mains" : "_top";
@@ -432,7 +434,7 @@ print_directory(int level, char *basedir)
 						gen_href_end(),
 						file_end);
 				}
-				PUT(print_file_name(level, path));
+				PUT(file_name);
 				if (map_file)
 					fprintf(FILEMAP, "%s\t%s/%s.%s\n", removedotslash(path), SRCS, path2fid(path), HTML);
 				count++;
