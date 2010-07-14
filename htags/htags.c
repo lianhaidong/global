@@ -2114,13 +2114,12 @@ main(int argc, char **argv)
 	 * (11) style sheet file (style.css)
 	 */
 	if (enable_xhtml) {
-		char src[MAXPATHLEN], dst[MAXPATHLEN];
-		snprintf(src, sizeof(src), "%s/gtags/style.css", datadir);
-		snprintf(dst, sizeof(dst), "%s/style.css", distpath);
-		copyfile(src, dst);
+		char com[MAXPATHLEN*2+32];
+		snprintf(com, sizeof(com), "cp %s/gtags/style.css %s", datadir, distpath);
+		system(com);
 	}
 	if (auto_completion || tree_view) {
-		char com[MAXPATHLEN+32];
+		char com[MAXPATHLEN*2+32];
 		snprintf(com, sizeof(com), "cp -r %s/gtags/jquery/* %s/js", datadir, distpath);
 		system(com);
 	}
@@ -2139,7 +2138,7 @@ main(int argc, char **argv)
 		message(" Good luck!\n");
 	}
 	if (Iflag) {
-		char com[MAXPATHLEN+32];
+		char com[MAXPATHLEN*2+32];
 
 		snprintf(com, sizeof(com), "cp -r %s/gtags/icons %s", datadir, distpath);
 		system(com);
