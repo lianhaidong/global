@@ -1914,7 +1914,7 @@ main(int argc, char **argv)
 	if (auto_completion || tree_view) {
 		STATIC_STRBUF(sb);
 		strbuf_clear(sb);
-		strbuf_puts_nl(sb, "<script type='text/javascript' src='jquery.js'></script>");
+		strbuf_puts_nl(sb, "<script type='text/javascript' src='js/jquery.js'></script>");
 		if (auto_completion)
 			loadfile("jscode_suggest", sb);
 		if (tree_view)
@@ -1944,6 +1944,8 @@ main(int argc, char **argv)
 		make_directory_in_distpath("cgi-bin");
 	if (Iflag)
 		make_directory_in_distpath("icons");
+	if (auto_completion || tree_view)
+		 make_directory_in_distpath("js");
 	/*
 	 * (1) make CGI program
 	 */
@@ -2119,7 +2121,7 @@ main(int argc, char **argv)
 	}
 	if (auto_completion || tree_view) {
 		char com[MAXPATHLEN+32];
-		snprintf(com, sizeof(com), "cp -r %s/gtags/jquery/* %s", datadir, distpath);
+		snprintf(com, sizeof(com), "cp -r %s/gtags/jquery/* %s/js", datadir, distpath);
 		system(com);
 	}
 	message("[%s] Done.", now());
@@ -2137,16 +2139,10 @@ main(int argc, char **argv)
 		message(" Good luck!\n");
 	}
 	if (Iflag) {
-		char src[MAXPATHLEN], dst[MAXPATHLEN];
-		int i, count = sizeof(icon_files) / sizeof(char *);
+		char com[MAXPATHLEN+32];
 
-		for (i = 0; i < count; i++) {
-			snprintf(src, sizeof(src), "%s/gtags/icons/%s.%s", datadir, icon_files[i], icon_suffix);
-			snprintf(dst, sizeof(dst), "%s/icons/%s.%s", distpath, icon_files[i], icon_suffix);
-			if (!test("f", src))
-				die("Icon file '%s' not found.", src);
-			copyfile(src, dst);
-		}
+		snprintf(com, sizeof(com), "cp -r %s/gtags/icons %s", datadir, distpath);
+		system(com);
 	}
 	gpath_close();
 	/*
