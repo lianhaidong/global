@@ -140,7 +140,11 @@
 		Print statistics information.
 	@item{@option{--suggest}}
 		@name{Htags} chooses popular options on behalf of beginners.
-                It is equivalent to '-afghInosTxv --show-position' now.
+                It is equivalent to '-aghInosTxv --show-position' now.
+	@item{@option{--suggest2}}
+		@name{Htags} chooses popular options on behalf of beginners.
+		This option enables frame, AJAX and CGI facility in addition
+		to the facilities by the @option{--suggest} option.
 	@item{@option{-T}, @option{--table-flist}[=@arg{rows}]}
 		Use <table> tag to display the file index.
 		You can optionally specify the number of rows. The default is 5.

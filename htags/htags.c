@@ -118,6 +118,7 @@ int caution;				/* --caution option		*/
 int dynamic;				/* --dynamic(-D) option		*/
 int symbol;				/* --symbol(-s) option          */
 int suggest;				/* --suggest option		*/
+int suggest2;				/* --suggest2 option		*/
 int auto_completion;			/* --auto-completion		*/
 int tree_view;				/* --tree-view			*/
 char *auto_completion_limit = "0";	/* --auto-completion=limit	*/
@@ -290,6 +291,7 @@ static struct option const long_options[] = {
         {"show-position", no_argument, &show_position, 1},
         {"statistics", no_argument, &statistics, STATISTICS_STYLE_TABLE},
         {"suggest", no_argument, &suggest, 1},
+        {"suggest2", no_argument, &suggest2, 1},
         {"table-list", no_argument, &table_list, 1},
         {"tree-view", no_argument, &tree_view, 1},
         {"version", no_argument, &show_version, 1},
@@ -1656,18 +1658,17 @@ main(int argc, char **argv)
 	}
 	/*
 	 * Leaving everything to htags.
-	 * Htags selects the most popular options for you.
-	 * Htags likes busy screen but dislikes frameed screen.
-	 * You may want to invoke htags with "htags --leave --frame".
-	 * Htags also make tag files if not found.
+	 * Htags selects popular options for you.
 	 */
+	if (suggest2)
+		suggest = 1;
 	if (suggest) {
 		int gtags_not_found = 0;
 
-		aflag = fflag = Iflag = nflag = vflag = 1;
+		aflag = Iflag = nflag = vflag = 1;
 		setverbose();
 		definition_header = AFTER_HEADER;
-		other_files = symbol = enable_xhtml = show_position = table_flist = 1;
+		other_files = symbol = show_position = table_flist = 1;
 		if (arg_dbpath[0]) {
 			if (!test("f", makepath(arg_dbpath, dbname(GTAGS), NULL)))
 				gtags_not_found = 1;
@@ -1677,6 +1678,11 @@ main(int argc, char **argv)
 		}
 		if (gtags_not_found)
 			gflag = 1;
+	}
+	if (suggest2) {
+		Fflag = 1;				/* uses frame */
+		fflag = dynamic = 1;			/* needs a HTTP server */
+		auto_completion = tree_view = 1;	/* needs javascript */
 	}
 	if (cflow_file && !test("fr", cflow_file))
 		die("cflow file not found. '%s'", cflow_file);
@@ -2124,17 +2130,17 @@ main(int argc, char **argv)
 		system(com);
 	}
 	message("[%s] Done.", now());
-	if (vflag && !nocgi && (cflag || fflag || dynamic)) {
+	if (vflag && !nocgi && (cflag || fflag || dynamic || tree_view)) {
 		message("\n[Information]\n");
-		if (fflag || cflag || dynamic) {
-			message(" o Htags was invoked with the -f, -c or -D option. You should start HTTP");
-			message("   server so that cgi-bin/*.cgi is executed as a CGI script.");
+		if (cflag || fflag || dynamic || tree_view) {
+			message(" o Htags was invoked with the -f, -c, -D or --tree-view option. You should");
+			message("   start a http server so that cgi-bin/*.cgi is executed as a CGI script.");
 		}
 		if (cflag) {
-			message(" o Htags was invoked with the -c option. You should start HTTP server to");
+			message(" o Htags was invoked with the -c option. You should start a http server to");
 			message("   decompress *.%s files.", gzipped_suffix);
 		}
- 		message(" If you are using Apache, 'HTML/.htaccess' might be helpful for you.\n");
+ 		message("\n If you are using Apache, 'HTML/.htaccess' might be helpful for you.\n");
 		message(" Good luck!\n");
 	}
 	if (Iflag) {
