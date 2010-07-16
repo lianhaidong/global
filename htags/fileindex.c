@@ -728,10 +728,10 @@ makefileindex(const char *file, STRBUF *a_files)
 	fputs(title_file_index, filesop);
 	fputs(gen_href_end(), filesop);
 	fputs_nl(header_end, filesop);
-	fputs_nl(tree_control, filesop);
-	if (tree_view)
+	if (tree_view) {
+		fputs_nl(tree_control, filesop);
 		fputs_nl(tree_begin, filesop);
-	else if (table_flist)
+	} else if (table_flist)
 		fputs_nl(flist_begin, filesop);
 	else if (!no_order_list)
 		fputs_nl(list_begin, filesop);
