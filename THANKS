@@ -103,6 +103,7 @@ Philippe Defert		building on many plat-homes and the problem report.
 Ray Simard		detailed investigation about POSIX dirent(3).
 Richard Stallman	advice about gtags.el and GNU style packaging.
 Rob Fitzgerald		bug fix patch for global(1).
+Rohit Grover		bug report about GLOBAL's packaging.
 Ron Lee			Debian package, htmake(1) and many bug reports.
 Rongsong Shen		bug report about gtags(1).
 Rui Lopes		report about build error in *BSD and revision of term.
