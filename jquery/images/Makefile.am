@@ -18,4 +18,4 @@ images_DATA = file.gif folder-closed.gif folder.gif minus.gif plus.gif \
 
 imagesdir = ${datadir}/gtags/jquery/images
 
-EXTRA_DIST = ${icons_DATA}
+EXTRA_DIST = ${images_DATA}
