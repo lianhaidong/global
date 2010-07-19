@@ -1681,7 +1681,7 @@ main(int argc, char **argv)
 	}
 	if (suggest2) {
 		Fflag = 1;				/* uses frame */
-		fflag = dynamic = 1;			/* needs a HTTP server */
+		cflag = fflag = dynamic = 1;		/* needs a HTTP server */
 		auto_completion = tree_view = 1;	/* needs javascript */
 	}
 	if (cflow_file && !test("fr", cflow_file))
