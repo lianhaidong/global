@@ -21,6 +21,52 @@ ___________________________________
 GNU GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 5.9.1 - July 19 2010
+
+[CHANGES]
+New facilities:
+o gtags: New gtags.files file.
+
+  If a file called 'gtags.files' exists in the current directory,
+  gtags(1) treats it as a list of files which are candidates of the target.
+  The following two brings a same result.
+  
+  $ gtags -f files
+  $ gtags -i -f files
+  
+  $ cp files gtags.files
+  $ gtags
+  $ gtags -i
+
+The latter has an advantage that 'global -u' can use the mechanism too.
+
+o htags: New --auto-completion option.
+  Enables completion input method for the search form (requires http server).
+o htags: New --tree-view option.
+  Use tree view for the file index.
+o htags: New --suggest2 option
+  --suggest - use popular options without frame, CGI and javascript.
+  --suggest2 - use frame, CGI and javascript in addition to the --suggest.
+
+The --auto-completion and --tree-view option requires javascript language
+in your browser.  If your browser is one of the followings, it will work.
+
+        * GNOME web browser
+        * firefox
+        * chrome
+
+o global: Allows -I option for the -c command.
+
+[FIXED BUGS]
+o gtags.el: The following commands fail with a message 'Beginning of buffer'
+  when the cursor is at the head of the buffer.
+        gtags-find-tag, gtags-find-rtag, gtags-find-symbol,
+        gtags-find-tag-from-here, gtags-find-with-idutils, gtags-find-with-grep
+
+[INCOMPATIBLE CHANGES]
+o Safe-CGI mechanism was modified.
+  The parameter of the -S option was changed.
+
 Version 5.9 - June 8 2010
 
 			*** Caution ***
