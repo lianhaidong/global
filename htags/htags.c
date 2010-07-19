@@ -121,6 +121,7 @@ int suggest;				/* --suggest option		*/
 int suggest2;				/* --suggest2 option		*/
 int auto_completion;			/* --auto-completion		*/
 int tree_view;				/* --tree-view			*/
+const char *tree_view_type;		/* -- type-view=[type]		*/
 char *auto_completion_limit = "0";	/* --auto-completion=limit	*/
 int statistics = STATISTICS_STYLE_NONE;	/* --statistics option		*/
 
@@ -293,7 +294,6 @@ static struct option const long_options[] = {
         {"suggest", no_argument, &suggest, 1},
         {"suggest2", no_argument, &suggest2, 1},
         {"table-list", no_argument, &table_list, 1},
-        {"tree-view", no_argument, &tree_view, 1},
         {"version", no_argument, &show_version, 1},
         {"help", no_argument, &show_help, 1},
 
@@ -311,6 +311,7 @@ static struct option const long_options[] = {
 #define OPT_TABS		138
 #define OPT_CFLOW		139
 #define OPT_AUTO_COMPLETION	140
+#define OPT_TREE_VIEW		141
         {"action", required_argument, NULL, OPT_ACTION},
         {"auto-completion", optional_argument, NULL, OPT_AUTO_COMPLETION},
         {"cflow", required_argument, NULL, OPT_CFLOW},
@@ -324,6 +325,7 @@ static struct option const long_options[] = {
         {"insert-header", required_argument, NULL, OPT_INSERT_HEADER},
         {"item-order", required_argument, NULL, OPT_ITEM_ORDER},
 	{"tabs", required_argument, NULL, OPT_TABS},
+        {"tree-view",  optional_argument, NULL, OPT_TREE_VIEW},
         { 0 }
 };
 
@@ -1561,6 +1563,11 @@ main(int argc, char **argv)
 			else
 				die("--tabs option requires numeric value.");
                         break;
+		case OPT_TREE_VIEW:
+			tree_view = 1;
+			if (optarg)
+				tree_view_type = optarg;
+			break;
                 case 'a':
                         aflag++;
                         break;

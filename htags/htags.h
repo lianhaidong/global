@@ -66,6 +66,7 @@ extern char global_path[MAXFILLEN];
 extern int gtags_exist[GTAGLIM];
 extern const char *null_device;
 extern const char *tmpdir;
+extern const char *tree_view_type;
 
 extern int aflag;
 extern int cflag;

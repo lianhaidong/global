@@ -118,9 +118,9 @@ const char *noframes_begin	= "<noframes>";
 const char *noframes_end	= "</noframes>";
 
 /* jquery tag */
-/* const char *tree_begin		= "<ul id='tree' class='filetree'>"; */
 const char *tree_control	= "<div id='control'>All <a href='#'>close</a> | <a href='#'>open</a></div>";
 const char *tree_begin		= "<ul id='tree'>";
+const char *tree_begin_using	= "<ul id='tree' class='%s'>";
 const char *tree_end		= "</ul>";
 const char *dir_begin		= "<li><span class='folder'></span>";
 const char *dir_end		= "";

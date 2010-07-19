@@ -153,7 +153,7 @@
 		The default is the last component of the path of the current directory.
 	@item{@option{--table-list}}
 		Use <table> tag to display the tag list.
-	@item{@option{--tree-view}}
+	@item{@option{--tree-view}[=@arg{type}]}
 		Use treeview for the file index.
 		Please note that this function requires javascript language in your browser.
 	@item{@option{-v}, @option{--verbose}}
