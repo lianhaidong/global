@@ -2001,13 +2001,15 @@ main(int argc, char **argv)
 	/*
 	 * Save the suffix of compress format for the safe CGI script.
 	 */
-	if (cflag) {
+	{
 		const char *path = makepath(distpath, "compress", NULL);
 		FILE *op = fopen(path, "w");
 		if (op == NULL)
 			die("cannot make file '%s'.", path);
-		fputs(HTML, op);
-		fputc('\n', op);
+		if (cflag) {
+			fputs(HTML, op);
+			fputc('\n', op);
+		}
 		fclose(op);
 	}
 	if (av) {
