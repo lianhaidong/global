@@ -1807,14 +1807,14 @@ main(int argc, char **argv)
 		snprintf(path, sizeof(path), "%s/gtags/%s/%s", datadir, name, id);
 		if (test("f", path) && overwrite_key == 0)
 			die("key '%s' is not unique. please change key or use --overwrite-key option.", id);
-		fd = creat(path, 644);
+		fd = creat(path, 0644);
 		if (fd < 0)
 			die("cannot create file '%s'.", path);
 		write(fd, distpath, strlen(distpath));
 		write(fd, "\n", 1);
-		if (fchmod(fd, 0644) < 0)
-			die("cannot chmod file '%s'(errono = %d).", path, errno);
 		close(fd);
+		if (chmod(path, 0644) < 0)
+			die("cannot chmod file '%s'(errno = %d).", path, errno);
 	}
 	/* --action, --id overwrite Sflag's value. */
 	if (action_value) {
