@@ -404,6 +404,9 @@ getconfs(const char *name, STRBUF *sb)
 			strbuf_puts(sb, DATADIR);
 #endif
 			exist = 1;
+		} else if (!strcmp(name, "localstatedir")) {
+			strbuf_puts(sb, LOCALSTATEDIR);
+			exist = 1;
 		}
 	}
 	return exist;

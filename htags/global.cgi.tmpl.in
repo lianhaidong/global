@@ -99,7 +99,7 @@ if ($form{'other'} && ($flag eq 'g' || $flag eq 'P')) {
 	$oflag = 'o';
 }
 if ($form{'id'}) {
-	$sitekeys = "@DATADIR@/gtags/sitekeys/" . $form{'id'};
+	$sitekeys = "@LOCALSTATEDIR@/gtags/sitekeys/" . $form{'id'};
 	if (-f $sitekeys && open(KEY, $sitekeys)) {
 		$distpath = <KEY>;
 		chop($distpath);

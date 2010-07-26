@@ -78,6 +78,7 @@ char dbpath[MAXPATHLEN];
 char distpath[MAXPATHLEN];
 char gtagsconf[MAXPATHLEN];
 char datadir[MAXPATHLEN];
+char localstatedir[MAXPATHLEN];
 
 char gtags_path[MAXFILLEN];
 char global_path[MAXFILLEN];
@@ -460,6 +461,7 @@ load_with_replace(const char *file, STRBUF *result, int place)
 		{"@br@", br},
 		{"@HTML@", HTML},
 		{"@DATADIR@", datadir},
+		{"@LOCALSTATEDIR@", localstatedir},
 		{"@action@", action},
 		{"@completion_action@", completion_action},
 		{"@limit@", auto_completion_limit},
@@ -1206,6 +1208,10 @@ configuration(int argc, char *const *argv)
 	if (!getconfs("datadir", sb))
 		die("cannot get datadir directory name.");
 	strlimcpy(datadir, strbuf_value(sb), sizeof(datadir));
+	strbuf_reset(sb);
+	if (!getconfs("localstatedir", sb))
+		die("cannot get localstatedir directory name.");
+	strlimcpy(localstatedir, strbuf_value(sb), sizeof(localstatedir));
 	if (getconfn("ncol", &n)) {
 		if (n < 1 || n > 10)
 			warning("parameter 'ncol' ignored because the value (=%d) is too large or too small.", n);
@@ -1791,20 +1797,20 @@ main(int argc, char **argv)
 		action = saction;
 		snprintf(completion_saction, sizeof(completion_saction), "%s/completion.cgi", script_alias);
 		completion_action = completion_saction;
-		snprintf(path, sizeof(path), "%s/gtags", datadir);
+		snprintf(path, sizeof(path), "%s/gtags", localstatedir);
 		if (!test("d", makepath(path, name, NULL))) {
 			setverbose();
 			message("htags: cannot make sitekey file.");
 			message("\n[Information]\n");
 			message("Htags was invoked with the -S option. It is required a special site key directory.");
 			message("Please make it by the following command line:");
-			message(" $ mkdir %s/%s", path, name);
+			message(" $ mkdir -p %s/%s", path, name);
 			message(" $ chmod 773 %s/%s", path, name);
 			message("");
 			message("Thank you for your cooperation.");
 			exit(0);
 		}
-		snprintf(path, sizeof(path), "%s/gtags/%s/%s", datadir, name, id);
+		snprintf(path, sizeof(path), "%s/gtags/%s/%s", localstatedir, name, id);
 		if (test("f", path) && overwrite_key == 0)
 			die("key '%s' is not unique. please change key or use --overwrite-key option.", id);
 		fd = creat(path, 0644);

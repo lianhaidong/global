@@ -19,9 +19,9 @@
 #       $ cd /var/tmp/src/HTML
 #       $ sh bless.sh           <- OK. It will work well!
 #
-datadir=/usr/local/share
+localstatedir=@LOCALSTATEDIR@
 if [ ! -f sitekey -o ! -s sitekey ]; then
 	echo "This hypertext is not made using the -S option."
 	exit 1
 fi
-pwd >"$datadir/gtags/sitekeys/`cat sitekey`"
+pwd >"$localstatedir/gtags/sitekeys/`cat sitekey`"
