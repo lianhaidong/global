@@ -30,6 +30,7 @@
 #define W32	0
 #define NULL_DEVICE	"/dev/null"
 #endif
+#define SITEKEYDIRNAME "sitekeys"
 
 /*
  * definition_header
@@ -67,6 +68,7 @@ extern int gtags_exist[GTAGLIM];
 extern const char *null_device;
 extern const char *tmpdir;
 extern const char *tree_view_type;
+extern const char *sitekey;
 
 extern int aflag;
 extern int cflag;
@@ -96,9 +98,6 @@ extern int enable_grep;
 extern int enable_idutils;
 extern int enable_xhtml;
 
-extern const char *action_value;
-extern const char *id_value;
-extern const char *cgidir;
 extern const char *main_func;
 extern const char *cvsweb_url;
 extern int use_cvs_module;
@@ -142,8 +141,6 @@ extern const char *gzipped_suffix;
 extern const char *normal_suffix;
 extern const char *HTML;
 extern const char *action;
-extern const char *id;
-extern int cgi;
 extern int definition_header;
 extern const char *htags_options;
 extern const char *include_file_suffixes;

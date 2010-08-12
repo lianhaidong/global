@@ -11,7 +11,7 @@ $(function() {
 	$('#pattern').suggest('@completion_action@',{
 		extraParams : {
 			type:  function() { return getType(); },
-			id:  '@id@',
+			id:  '@sitekey@',
 			limit: '@limit@',
 			icase: function() { return getCheck('icase'); },
 			other: function() { return getCheck('other'); },

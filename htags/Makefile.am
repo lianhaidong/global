@@ -1,6 +1,6 @@
 ## Process this file with automake to create Makefile.in
 #
-# Copyright (c) 2000, 2001, 2003, 2004 Tama Communications Corporation
+# Copyright (c) 2000, 2001, 2003, 2004, 2010 Tama Communications Corporation
 #
 # This file is free software; as a special exception the author gives
 # unlimited permission to copy and/or distribute it, with or without
@@ -32,3 +32,9 @@ gtags_DATA = global.cgi.tmpl ghtml.cgi.tmpl completion.cgi.tmpl bless.sh.tmpl \
 	jscode_suggest.tmpl jscode_treeview.tmpl style.css
 EXTRA_DIST = $(man_MANS) $(gtags_DATA) manual.in global.cgi.tmpl.in completion.cgi.tmpl.in \
 		const.h c.l cpp.l java.l php.l asm.l
+install-data-hook:
+	dir="$(localstatedir)/gtags/sitekeys"; \
+	if [ ! -d $$dir ]; then \
+		$(MKDIR_P) $$dir; \
+		chmod 755 $$dir; \
+	fi

@@ -25,7 +25,7 @@
 @HEADER	HTAGS,1,July 2010,GNU Project
 @NAME	htags - generate a hypertext from a set of source files.
 @SYNOPSIS
-	@name{htags} [-acDfFghInosTvwx][-d @arg{dbpath}][-m @arg{name}][-S @arg{key}][-t @arg{title}][@arg{dir}]
+	@name{htags} [-acDfFghInosTvwx][-d @arg{dbpath}][-m @arg{name}][-t @arg{title}][@arg{dir}]
 @DESCRIPTION
 	@name{Htags} generates a hypertext from a set of source files of
 	C, C++, Yacc, Java, PHP and Assembly.
@@ -127,11 +127,12 @@
 	@item{@option{-o}, @option{--other}}
 		Pick up not only source files but also other files in the file index.
 	@item{@option{--overwrite-key}}
-		Allow the same key as the parameter of the @option{-S} option.
-	@item{@option{-S}, @option{--secure-cgi} @arg{key}}
-		Use the center CGI script. The @arg{key} must be a unique key in your site.
-		At the first time, you should copy the CGI script written by this command
-		into the center CGI directory.
+		Allow the same key as the parameter of the @option{--system-cgi} option.
+	@item{@option{--system-cgi} @arg{key}}
+		Use the system CGI script. The @arg{key} must be a unique key in your site.
+		At the first time, you should (1) copy the CGI script written by this command
+		into the system CGI directory, and (2) execute bless.sh script at the HTML directory
+		as a root user.
 	@item{@option{-s}, @option{--symbol}}
 		Make anchors not only for object definitions and references but also other symbols.
 	@item{@option{--show-position}}
@@ -278,7 +279,7 @@
 	@item{@code{reserved_end}(string)}
 		End tag for reserved word. The default is '</b>'.
 	@item{@code{script_alias}(string)}
-		Script alias for safe cgi script (@option{-S}).
+		Script alias for system cgi script (@option{--system-cgi}).
 	@item{@code{sharp_begin}(string)}
 		Begin tag for 'define'. The default is '<font color=darkred>'.
 	@item{@code{sharp_end}(string)}

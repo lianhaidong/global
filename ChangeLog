@@ -19,6 +19,16 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+Aug 12 2010, Shigio YAMAGUCHI
+
+	Modification of the -S option.
+
+	o Renamed from '-S(--secure-cgi)' to '--system-cgi' because the
+	  parameter is changed.
+	o Changed the site key directory from 'datadir' to 'localstatedir'
+	  because 'datadir' is for read-only data.
+	o Changed the permission of the site key directory from 773 to 775.
+
 June 27 2010, Shigo YAMAGUCHI
 
 	Modification of the -S option.
