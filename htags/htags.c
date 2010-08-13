@@ -1965,13 +1965,14 @@ main(int argc, char **argv)
 	 */
 	if (fflag || cflag || dynamic) {
 		char cgidir[MAXPATHLEN];
+		int perm;
 
 		snprintf(cgidir, sizeof(cgidir), "%s/cgi-bin", distpath);
 		message("[%s] (1) making CGI program ...", now());
 		/*
 		 * If the Sflag is specified, CGI script is invalidated.
 		 */
-		int perm = Sflag ? 0644 : 0755;
+		perm = Sflag ? 0644 : 0755;
 		if (fflag || dynamic) {
 			makeprogram(cgidir, "global.cgi");
 			if (chmod(makepath(cgidir, "global.cgi", NULL), perm) < 0)
