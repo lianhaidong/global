@@ -38,19 +38,21 @@ sub message {
 	"@message_begin@" . $_[0] . "@message_end@\n";
 }
 $basedir = "..";
-$url = $ENV{'HTTP_REFERER'};
-if (!$url) {
-	print header();
-	print error();
-	print message("Your browser doesn't send HTTP_REFERER. Please use another one.");
-	print tailer();
-	exit 0;
+if ($form{'id'}) {
+	$url = $ENV{'HTTP_REFERER'};
+	if (!$url) {
+		print header();
+		print error();
+		print message("Your browser doesn't send HTTP_REFERER. Please use another one.");
+		print tailer();
+		exit 0;
+	}
+	$basedir = $url;
+	$basedir =~ s!/[^\/]+$!!;		# remove file name.
+	$basedir =~ s!/defines$!!;
+	$basedir =~ s!/S$!!;
+	$basedir =~ s!/$!!;
 }
-$basedir = $url;
-$basedir =~ s!/[^\/]+$!!;		# remove file name.
-$basedir =~ s!/defines$!!;
-$basedir =~ s!/S$!!;
-$basedir =~ s!/$!!;
 sub error_and_exit {
 	print header();
 	print error();
