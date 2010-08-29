@@ -53,7 +53,7 @@ if ($form{'limit'}) {
 	$limit = $form{'limit'};
 }
 if ($form{'id'}) {
-	$sitekeys = "@localstatedir@/gtags/sitekeys/" . $form{'id'};
+	$sitekeys = "@LOCALSTATEDIR@/gtags/sitekeys/" . $form{'id'};
 	if (-f $sitekeys && open(KEY, $sitekeys)) {
 		$distpath = <KEY>;
 		chop($distpath);
