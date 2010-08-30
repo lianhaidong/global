@@ -21,6 +21,22 @@ ___________________________________
 GNU GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 5.9.2 - August 30 2010
+
+[CHANGES]
+New facilities:
+o gtags.vim: Added -m(--vim) option to the show command.
+             Added new use command.
+
+[INCOMPATIBLE CHANGES]
+o Renamed the -S(--secure-cgi) option to --system-cgi. This is because
+  the parameter of the --secure-cgi was changed in GLOBAL-5.9.1.
+o The site key directory for the --system-cgi option was moved from
+  datadir(/usr/local/share) to localstatedir(/usr/local/var) because
+  datadir should be used for read-only data.
+  By default, you must execute "cd HTML; sh bless.sh" as a root user,
+  since the site key directory can not be written except for root user.
+
 Version 5.9.1 - July 19 2010
 
 [CHANGES]
