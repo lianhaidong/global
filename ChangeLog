@@ -19,7 +19,12 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
-Aug 12 2010, Shigio YAMAGUCHI
+August 30 2010, Shigio YAMAGUCHI
+
+	Renamed the style sheet file in the source package from style.css to
+	style.css.tmpl, because to follow the custom of naming of other templates.
+
+August 12 2010, Shigio YAMAGUCHI
 
 	Modification of the -S option.
 
