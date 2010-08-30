@@ -2133,7 +2133,7 @@ main(int argc, char **argv)
 	 */
 	if (enable_xhtml) {
 		char com[MAXPATHLEN*2+32];
-		snprintf(com, sizeof(com), "cp %s/gtags/style.css %s", datadir, distpath);
+		snprintf(com, sizeof(com), "cp %s/gtags/style.css.tmpl %s/style.css", datadir, distpath);
 		system(com);
 	}
 	if (auto_completion || tree_view) {

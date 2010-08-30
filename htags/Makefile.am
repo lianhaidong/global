@@ -29,7 +29,7 @@ man_MANS = htags.1
 
 gtagsdir = ${datadir}/gtags
 gtags_DATA = global.cgi.tmpl ghtml.cgi.tmpl completion.cgi.tmpl bless.sh.tmpl \
-	jscode_suggest.tmpl jscode_treeview.tmpl style.css
+	jscode_suggest.tmpl jscode_treeview.tmpl style.css.tmpl
 EXTRA_DIST = $(man_MANS) $(gtags_DATA) manual.in global.cgi.tmpl.in completion.cgi.tmpl.in \
 		const.h c.l cpp.l java.l php.l asm.l
 install-data-hook:
