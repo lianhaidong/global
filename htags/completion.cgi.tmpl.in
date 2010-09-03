@@ -65,16 +65,6 @@ if ($form{'id'}) {
 	if ($?) {
 		error_and_exit("couldn't find tag directory in secure mode.");
 	}
-	if (-s "../sitekey" && open(KEY, "../sitekey")) {
-		$sitekey = <KEY>;
-		chop($sitekey);
-		close(KEY);
-	} else {
-		error_and_exit("couldn't open unique key file(2).");
-	}
-	unless ($sitekey eq $form{'id'}) {
-		error_and_exit("site key is not corresponding.");
-	}
 }
 if (-f "../GTAGSROOT" && open(GTAGSROOT, "../GTAGSROOT")) {
 	$gtagsroot = <GTAGSROOT>;

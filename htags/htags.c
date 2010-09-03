@@ -1947,6 +1947,9 @@ main(int argc, char **argv)
 	make_directory_in_distpath(SRCS);
 	make_directory_in_distpath(INCS);
 	make_directory_in_distpath(INCREFS);
+	/*
+	 * 'sitekey' file will be removed in near future, because it is not used.
+	 */
 	make_file_in_distpath("sitekey", sitekey);
 	if (!dynamic) {
 		make_directory_in_distpath(DEFS);
