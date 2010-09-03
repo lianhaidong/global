@@ -66,6 +66,7 @@ Jason Hood		port to DJGPP and Mingw32, and bug report about globash.rc.
 Jean-Marc Saffroy	idea to skip all files whoes first character of name is '.'.
 			profitable information about LFS(Large file support).
 Jeff Trawick		idea about -l option of htags(1).
+Jeroen Roovers		bug report about htags/Makefile.am.
 Jianbin Kang		bug report about segmentation fault of gtags(1).
 Jordan K. Hubbard	idea about supporting BSD's obj directory.
 Jos Backus		bug report about global.cgi.
