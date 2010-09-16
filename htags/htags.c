@@ -143,6 +143,7 @@ const char *title;
 const char *xhtml_version = "1.0";
 const char *insert_header;		/* --insert-header=<file>	*/
 const char *insert_footer;		/* --insert-footer=<file>	*/
+const char *html_header;		/* --html-header=<file>		*/
 const char *jscode;			/* javascript code		*/
 /*
  * Constant values.
@@ -307,12 +308,14 @@ static struct option const long_options[] = {
 #define OPT_CFLOW		137
 #define OPT_AUTO_COMPLETION	138
 #define OPT_TREE_VIEW		139
+#define OPT_HTML_HEADER		140
         {"auto-completion", optional_argument, NULL, OPT_AUTO_COMPLETION},
         {"cflow", required_argument, NULL, OPT_CFLOW},
         {"cvsweb", required_argument, NULL, OPT_CVSWEB},
         {"cvsweb-cvsroot", required_argument, NULL, OPT_CVSWEB_CVSROOT},
         {"gtagsconf", required_argument, NULL, OPT_GTAGSCONF},
         {"gtagslabel", required_argument, NULL, OPT_GTAGSLABEL},
+        {"html-header", required_argument,NULL, OPT_HTML_HEADER},
         {"ncol", required_argument, NULL, OPT_NCOL},
         {"insert-footer", required_argument, NULL, OPT_INSERT_FOOTER},
         {"insert-header", required_argument, NULL, OPT_INSERT_HEADER},
@@ -935,6 +938,18 @@ makehtml(int total)
  * Load file.
  */
 void
+loadfile_asis(const char *file, STRBUF *result)
+{
+	STRBUF *sb = strbuf_open(0);
+	FILE *ip = fopen(file, "r");
+	if (!ip)
+		die("file '%s' not found.", file);
+	while (strbuf_fgets(sb, ip, STRBUF_NOCRLF) != NULL)
+		strbuf_puts_nl(result, strbuf_value(sb));
+	fclose(ip);
+	strbuf_close(sb);
+}
+void
 loadfile(const char *file, STRBUF *result)
 {
 	load_with_replace(file, result, 0);
@@ -1545,6 +1560,15 @@ main(int argc, char **argv)
 			break;
 		case OPT_INSERT_HEADER:
 			insert_header = optarg;
+			break;
+		case OPT_HTML_HEADER:
+			{
+				STATIC_STRBUF(sb);
+				if (!test("r", optarg))
+					die("file '%s' not found.", optarg);
+				loadfile_asis(optarg, sb);
+				html_header = strbuf_value(sb);
+			}
 			break;
 		case OPT_ITEM_ORDER:
 			item_order = optarg;

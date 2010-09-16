@@ -107,6 +107,7 @@ extern const char *title;
 extern const char *xhtml_version;
 extern const char *insert_header;
 extern const char *insert_footer;
+extern const char *html_header;
 extern const char *jscode;
 
 extern const char *title_define_index;

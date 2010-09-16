@@ -413,7 +413,9 @@ gen_page_generic_begin(const char *title, int place, int use_frameset, const cha
 		strbuf_sprintf(sb, "<link rel='stylesheet' type='text/css' href='%sstyle.css'%s>\n", dir, empty_element);
 	}
 	if (header_item)
-		strbuf_puts(sb, header_item);
+		strbuf_puts(sb, header_item);		/* internal use */
+	if (html_header)
+		strbuf_puts(sb, html_header);		/* --html-header=file */
 	strbuf_puts(sb, html_head_end);
 	return strbuf_value(sb);
 }
