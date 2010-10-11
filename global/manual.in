@@ -188,7 +188,7 @@
 		If environment variable @var{GTAGSROOT} is not set
 		and file @file{GTAGSROOT} exists in the same directory with @file{GTAGS}
 		then @name{global} set the @var{GTAGSROOT} to the content of the file.
-	@item{@file{/etc/gtags.conf}, @file{$HOME/.globalrc}}
+	@item{@file{$HOME/.globalrc}, @file{/etc/gtags.conf}, @file{[sysconfdir]/gtags.conf}}
 		Configuration file.
 	@end_itemize
 @ENVIRONMENT

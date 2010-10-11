@@ -27,7 +27,7 @@ token.c usable.c version.c is_unixy.c abs2rel.c split.c strlimcpy.c linetable.c 
 env.c char.c date.c langmap.c varray.c idset.c strhash.c xargs.c \
 pathconvert.c compress.c checkalloc.c pool.c fileop.c statistics.c
 
-AM_CFLAGS = -DBINDIR='"$(bindir)"' -DDATADIR='"$(datadir)"' -DLOCALSTATEDIR='"$(localstatedir)"'
+AM_CFLAGS = -DBINDIR='"$(bindir)"' -DDATADIR='"$(datadir)"' -DLOCALSTATEDIR='"$(localstatedir)"' -DSYSCONFDIR='"$(sysconfdir)"'
 
 INCLUDES = @INCLUDES@
 

@@ -193,7 +193,7 @@
 		Tag file for object references.
 	@item{@file{GPATH}}
 		Tag file for files.
-	@item{@file{/etc/gtags.conf}, @file{$HOME/.globalrc}}
+	@item{@file{$HOME/.globalrc}, @file{/etc/gtags.conf}, @file{[sysconfdir]/gtags.conf}}
 		Configuration file.
 	@item{@file{HTML/index.html}}
 		Startup file.
