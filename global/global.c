@@ -181,6 +181,7 @@ setcom(int c)
 int
 decide_tag_by_context(const char *tag, const char *file, int lineno)
 {
+	STRBUF *sb = NULL;
 	char path[MAXPATHLEN], s_fid[MAXFIDLEN];
 	const char *tagline, *p;
 	DBOP *dbop;
@@ -202,66 +203,94 @@ decide_tag_by_context(const char *tag, const char *file, int lineno)
 	 * read btree records directly to avoid the overhead.
 	 */
 	dbop = dbop_open(makepath(dbpath, dbname(GTAGS), NULL), 0, 0, 0);
+	if (dbop == NULL)
+		die("cannot open GTAGS.");
 	if (dbop_getoption(dbop, COMPLINEKEY))
 		iscompline = 1;
 	tagline = dbop_first(dbop, tag, NULL, 0);
-	if (tagline)
+	if (tagline) {
 		db = GTAGS;
-	for (; tagline; tagline = dbop_next(dbop)) {
-		/*
-		 * examine whether the definition record include the context.
-		 */
-		p = locatestring(tagline, s_fid, MATCH_AT_FIRST);
-		if (p != NULL && *p == ' ') {
-			for (p++; *p && *p != ' '; p++)
-				;
-			if (*p++ != ' ' || !isdigit(*p))
-				die("Impossible! decide_tag_by_context(1)");
+		for (; tagline; tagline = dbop_next(dbop)) {
 			/*
-			 * Standard format	n <blank> <image>$
-			 * Compact format	d,d,d,d$
+			 * examine whether the definition record include the context.
 			 */
-			if (!iscompline) {			/* Standard format */
-				if (atoi(p) == lineno) {
-					db = GRTAGS;
-					goto finish;
-				}
-			} else {				/* Compact format */
-				int n, cur, last = 0;
-
-				do {
-					if (!isdigit(*p))
-						die("Impossible! decide_tag_by_context(2)");
-					NEXT_NUMBER(p);
-					cur = last + n;
-					if (cur == lineno) {
+			p = locatestring(tagline, s_fid, MATCH_AT_FIRST);
+			if (p != NULL && *p == ' ') {
+				for (p++; *p && *p != ' '; p++)
+					;
+				if (*p++ != ' ' || !isdigit(*p))
+					die("Impossible! decide_tag_by_context(1)");
+				/*
+				 * Standard format	n <blank> <image>$
+				 * Compact format	d,d,d,d$
+				 */
+				if (!iscompline) {			/* Standard format */
+					if (atoi(p) == lineno) {
 						db = GRTAGS;
 						goto finish;
 					}
-					last = cur;
-					if (*p == '-') {
-						if (!isdigit(*++p))
-							die("Impossible! decide_tag_by_context(3)");
+				} else {				/* Compact format */
+					int n, cur, last = 0;
+
+					do {
+						if (!isdigit(*p))
+							die("Impossible! decide_tag_by_context(2)");
 						NEXT_NUMBER(p);
 						cur = last + n;
-						if (lineno >= last && lineno <= cur) {
+						if (cur == lineno) {
 							db = GRTAGS;
 							goto finish;
 						}
 						last = cur;
-					}
-					if (*p) {
-						if (*p == ',')
-							p++;
-						else
-							die("Impossible! decide_tag_by_context(4)");
-					}
-				} while (*p);
+						if (*p == '-') {
+							if (!isdigit(*++p))
+								die("Impossible! decide_tag_by_context(3)");
+							NEXT_NUMBER(p);
+							cur = last + n;
+							if (lineno >= last && lineno <= cur) {
+								db = GRTAGS;
+								goto finish;
+							}
+							last = cur;
+						}
+						if (*p) {
+							if (*p == ',')
+								p++;
+							else
+								die("Impossible! decide_tag_by_context(4)");
+						}
+					} while (*p);
+				}
 			}
 		}
 	}
 finish:
-        dbop_close(dbop);
+	dbop_close(dbop);
+	if (db == GSYMS && getenv("GTAGSLIBPATH")) {
+		char libdbpath[MAXPATHLEN];
+		char *libdir = NULL, *nextp = NULL;
+
+		sb = strbuf_open(0);
+		strbuf_puts(sb, getenv("GTAGSLIBPATH"));
+		for (libdir = strbuf_value(sb); libdir; libdir = nextp) {
+			 if ((nextp = locatestring(libdir, PATHSEP, MATCH_FIRST)) != NULL)
+                                *nextp++ = 0;
+			if (!gtagsexist(libdir, libdbpath, sizeof(libdbpath), 0))
+				continue;
+			if (!strcmp(dbpath, libdbpath))
+				continue;
+			dbop = dbop_open(makepath(libdbpath, dbname(GTAGS), NULL), 0, 0, 0);
+			if (dbop == NULL)
+				continue;
+			tagline = dbop_first(dbop, tag, NULL, 0);
+			dbop_close(dbop);
+			if (tagline != NULL) {
+				db = GTAGS;
+				break;
+			}
+		}
+		strbuf_close(sb);
+	}
 	return db;
 }
 int
