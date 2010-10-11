@@ -164,7 +164,7 @@ function! s:GtagsCscope()
     let loaded_gtags_cscope = 1
 endfunction
 
-if GtagsCscope_Auto_Load == 1
+if g:GtagsCscope_Auto_Load == 1
     call s:GtagsCscope()
 endif
 command! -nargs=0 GtagsCscope call s:GtagsCscope()
