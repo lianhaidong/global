@@ -53,7 +53,7 @@ int main(int, char **);
 void completion(const char *, const char *, const char *);
 void completion_idutils(const char *, const char *, const char *);
 void idutils(const char *, const char *);
-void grep(const char *, const char *);
+void grep(char *const *, const char *);
 void pathlist(const char *, const char *);
 void parsefile(char *const *, const char *, const char *, const char *, int);
 int search(const char *, const char *, const char *, const char *, int);
@@ -607,7 +607,7 @@ main(int argc, char **argv)
 	 */
 	else if (gflag) {
 		chdir(root);
-		grep(av, dbpath);
+		grep(argv, dbpath);
 	}
 	/*
 	 * locate paths including the pattern.
@@ -901,13 +901,13 @@ idutils(const char *pattern, const char *dbpath)
  *	i)	pattern	POSIX regular expression
  */
 void
-grep(const char *pattern, const char *dbpath)
+grep(char *const *argv, const char *dbpath)
 {
 	FILE *fp;
 	CONVERT *cv;
 	GFIND *gp;
 	STRBUF *ib = strbuf_open(MAXBUFLEN);
-	const char *path;
+	const char *path, *pattern = *argv++;
 	char encoded_pattern[IDENTLEN];
 	const char *buffer;
 	int linenum, count;
@@ -933,8 +933,19 @@ grep(const char *pattern, const char *dbpath)
 	cv = convert_open(type, format, root, cwd, dbpath, stdout);
 	count = 0;
 
-	gp = gfind_open(dbpath, localprefix, target);
-	while ((path = gfind_read(gp)) != NULL) {
+	if (*argv)
+		args_open(argv);
+	else
+		args_open_gfind(gp = gfind_open(dbpath, localprefix, target));
+	while ((path = args_read()) != NULL) {
+		if (*argv) {
+			static char buf[MAXPATHLEN];
+
+			if (normalize(path, get_root_with_slash(), cwd, buf, sizeof(buf)) == NULL)
+				if (!qflag)
+					fprintf(stderr, "'%s' is out of source tree.\n", path);
+			path = buf;
+		}
 		if (!(fp = fopen(path, "r")))
 			die("'%s' not found. Please remake tag files by invoking gtags(1).", path);
 		linenum = 0;
@@ -946,13 +957,14 @@ grep(const char *pattern, const char *dbpath)
 					convert_put_path(cv, path);
 					break;
 				} else {
-					convert_put_using(cv, encoded_pattern, path, linenum, buffer, gp->dbop->lastdat);
+					convert_put_using(cv, encoded_pattern, path, linenum, buffer,
+						*argv ? NULL : gp->dbop->lastdat);
 				}
 			}
 		}
 		fclose(fp);
 	}
-	gfind_close(gp);
+	args_close();
 	convert_close(cv);
 	strbuf_close(ib);
 	regfree(&preg);

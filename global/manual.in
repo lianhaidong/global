@@ -28,7 +28,7 @@
 	@name{global} [-aGilnqrstTvx][-e] @arg{pattern}
 	@name{global} -c[iIqsv] @arg{prefix}
 	@name{global} -f[anqrstvx] @arg{files}
-	@name{global} -g[aGilnoOqtvx][-e] @arg{pattern}
+	@name{global} -g[aGilnoOqtvx][-e] @arg{pattern} [@arg{files}]
 	@name{global} -I[ailnqtvx][-e] @arg{pattern}
 	@name{global} -P[aGilnoOqtvx][-e] @arg{pattern}
 	@name{global} -p[qrv]
@@ -63,8 +63,9 @@
 	@item{@option{-f}, @option{--file} @arg{files}}
 		Print all objects in the @arg{files}.
 		This option implies the @option{-x} option.
-	@item{@option{-g}, @option{--grep} @arg{pattern}}
+	@item{@option{-g}, @option{--grep} @arg{pattern}} [@arg{files}]
 		Print all lines which match to the @arg{pattern}.
+		If @arg{files} is specified, this command searchs in the files.
 	@item{@option{--help}}
 		Show help.
 	@item{@option{-I}, @option{--idutils} @arg{pattern}}
