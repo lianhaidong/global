@@ -467,6 +467,7 @@ main(int argc, char **argv)
 		strbuf_puts(sb, "mkid");
 		if (vflag)
 			strbuf_puts(sb, " -v");
+		strbuf_sprintf(sb, " --file='%s/ID'", dbpath);
 		if (vflag) {
 #ifdef __DJGPP__
 			if (is_unixy())	/* test for 4DOS as well? */
