@@ -21,6 +21,7 @@
 #include <config.h>
 #endif
 #include <stdio.h>
+#include "die.h"
 #include "strbuf.h"
 #include "gpathop.h"
 
@@ -111,7 +112,7 @@ args_close(void)
 	case ARGS_ARGS:
 		break;
 	case ARGS_FILELIST:
-		if (ip != NULL & ip != stdin)
+		if (ip != NULL && ip != stdin)
 			fclose(ip);
 		ip = NULL;
 		break;

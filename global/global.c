@@ -914,7 +914,7 @@ grep(char *const *argv, const char *dbpath)
 {
 	FILE *fp;
 	CONVERT *cv;
-	GFIND *gp;
+	GFIND *gp = NULL;
 	STRBUF *ib = strbuf_open(MAXBUFLEN);
 	const char *path, *pattern = *argv++;
 	char encoded_pattern[IDENTLEN];
@@ -962,7 +962,7 @@ grep(char *const *argv, const char *dbpath)
 			int result = regexec(&preg, buffer, 0, 0, 0);
 
 			linenum++;
-			if (!Vflag && result == 0 || Vflag && result != 0) {
+			if ((!Vflag && result == 0) || (Vflag && result != 0)) {
 				count++;
 				if (format == FORMAT_PATH) {
 					convert_put_path(cv, path);
@@ -1038,7 +1038,7 @@ pathlist(const char *pattern, const char *dbpath)
 		if (pattern) {
 			int result = regexec(&preg, p, 0, 0, 0);
 
-			if (!Vflag && result != 0 || Vflag && result == 0)
+			if ((!Vflag && result != 0) || (Vflag && result == 0))
 				continue;
 		} else if (Vflag)
 			continue;
