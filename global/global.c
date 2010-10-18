@@ -81,6 +81,7 @@ int tflag;				/* [option]		*/
 int Tflag;				/* [option]		*/
 int uflag;				/* command		*/
 int vflag;				/* [option]		*/
+int Vflag;				/* [option]		*/
 int xflag;				/* [option]		*/
 int show_version;
 int show_help;
@@ -140,6 +141,7 @@ static struct option const long_options[] = {
 	{"through", no_argument, NULL, 'T'},
 	{"update", no_argument, NULL, 'u'},
 	{"verbose", no_argument, NULL, 'v'},
+	{"invert-match", optional_argument, NULL, 'V'},
 	{"cxref", no_argument, NULL, 'x'},
 
 	/* long name only */
@@ -301,7 +303,7 @@ main(int argc, char **argv)
 	int optchar;
 	int option_index = 0;
 
-	while ((optchar = getopt_long(argc, argv, "ace:ifgGIlnoOpPqrstTuvx", long_options, &option_index)) != EOF) {
+	while ((optchar = getopt_long(argc, argv, "ace:ifgGIlnoOpPqrstTuvVx", long_options, &option_index)) != EOF) {
 		switch (optchar) {
 		case 0:
 			break;
@@ -333,6 +335,9 @@ main(int argc, char **argv)
 			} else {
 				nofilter = BOTH_FILTER;
 			}
+			break;
+		case 'V':
+			Vflag++;
 			break;
 		case 'g':
 			gflag++;
@@ -950,8 +955,10 @@ grep(char *const *argv, const char *dbpath)
 			die("'%s' not found. Please remake tag files by invoking gtags(1).", path);
 		linenum = 0;
 		while ((buffer = strbuf_fgets(ib, fp, STRBUF_NOCRLF)) != NULL) {
+			int result = regexec(&preg, buffer, 0, 0, 0);
+
 			linenum++;
-			if (regexec(&preg, buffer, 0, 0, 0) == 0) {
+			if (!Vflag && result == 0 || Vflag && result != 0) {
 				count++;
 				if (format == FORMAT_PATH) {
 					convert_put_path(cv, path);
@@ -1024,7 +1031,12 @@ pathlist(const char *pattern, const char *dbpath)
 		 * skip localprefix because end-user doesn't see it.
 		 */
 		p = path + strlen(localprefix) - 1;
-		if (pattern && regexec(&preg, p, 0, 0, 0) != 0)
+		if (pattern) {
+			int result = regexec(&preg, p, 0, 0, 0);
+
+			if (!Vflag && result != 0 || Vflag && result == 0)
+				continue;
+		} else if (Vflag)
 			continue;
 		if (format == FORMAT_PATH)
 			convert_put_path(cv, path);
