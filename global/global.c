@@ -88,6 +88,7 @@ int show_help;
 int nofilter;
 int nosource;				/* undocumented command */
 int debug;
+int print0;				/* -print0 option	*/
 int format;
 int type;				/* path conversion type */
 char cwd[MAXPATHLEN];			/* current directory	*/
@@ -148,6 +149,7 @@ static struct option const long_options[] = {
 	{"encode-path", required_argument, NULL, ENCODE_PATH},
 	{"from-here", required_argument, NULL, FROM_HERE},
 	{"debug", no_argument, &debug, 1},
+	{"print0", no_argument, &print0, 1},
 	{"version", no_argument, &show_version, 1},
 	{"help", no_argument, &show_help, 1},
 	{"result", required_argument, NULL, RESULT},
@@ -484,6 +486,8 @@ main(int argc, char **argv)
 		xflag = 0;
 	if (nflag > 1)
 		nosource = 1;	/* to keep compatibility */
+	if (print0)
+		set_print0();
 	/*
 	 * remove leading blanks.
 	 */
