@@ -53,7 +53,7 @@ int main(int, char **);
 void completion(const char *, const char *, const char *);
 void completion_idutils(const char *, const char *, const char *);
 void idutils(const char *, const char *);
-void grep(char *const *, const char *);
+void grep(const char *, char *const *, const char *);
 void pathlist(const char *, const char *);
 void parsefile(char *const *, const char *, const char *, const char *, int);
 int search(const char *, const char *, const char *, const char *, int);
@@ -450,9 +450,15 @@ main(int argc, char **argv)
 	 * At first, we pickup pattern from -e option. If it is not found
 	 * then use argument which is not option.
 	 */
-	if (!av)
-		av = (argc > 0) ? *argv : NULL;
-
+	if (!av) {
+		av = *argv;
+		/*
+		 * global -g pattern [files ...]
+		 *           av      argv
+		 */
+		if (gflag && av)
+			argv++;
+	}
 	if (show_version)
 		version(av, vflag);
 	/*
@@ -614,7 +620,7 @@ main(int argc, char **argv)
 	 */
 	else if (gflag) {
 		chdir(root);
-		grep(argv, dbpath);
+		grep(av, argv, dbpath);
 	}
 	/*
 	 * locate paths including the pattern.
@@ -910,13 +916,13 @@ idutils(const char *pattern, const char *dbpath)
  *	i)	pattern	POSIX regular expression
  */
 void
-grep(char *const *argv, const char *dbpath)
+grep(const char *pattern, char *const *argv, const char *dbpath)
 {
 	FILE *fp;
 	CONVERT *cv;
 	GFIND *gp = NULL;
 	STRBUF *ib = strbuf_open(MAXBUFLEN);
-	const char *path, *pattern = *argv++;
+	const char *path;
 	char encoded_pattern[IDENTLEN];
 	const char *buffer;
 	int linenum, count;
