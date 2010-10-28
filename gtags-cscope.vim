@@ -92,14 +92,19 @@ endif
 if !exists("GtagsCscope_Auto_Map")
     let GtagsCscope_Auto_Map = 1
 endif
+if !exists("GtagsCscope_Quiet")
+    let GtagsCscope_Quiet = 0
+endif
 
 "
 " Display error message.
 "
 function! s:Error(msg)
-    echohl WarningMsg |
+    if (g:GtagsCscope_Quiet == 0)
+        echohl WarningMsg |
            \ echomsg 'Gtags-cscope: ' . a:msg |
            \ echohl None
+    endif
 endfunction
 
 function! s:GtagsCscope_GtagsRoot()
