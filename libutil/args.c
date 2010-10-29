@@ -25,9 +25,11 @@
 #include "strbuf.h"
 #include "gpathop.h"
 
+#define ARGS_NOP	0
 #define ARGS_ARGS	1
 #define ARGS_FILELIST	2
 #define ARGS_GFIND	3
+#define ARGS_BOTH	4
 
 int type;
 const char **argslist;
@@ -38,7 +40,6 @@ GFIND *gp;
  * args_open:
  *
  *	i)	args	args array
- *	i)	argc	args count
  */
 void
 args_open(const char **args)
@@ -65,6 +66,26 @@ args_open_filelist(const char *filename)
 	}
 }
 /*
+ * args_open_both: args_open like interface for argument and file list.
+ *
+ *	i)	args		args array
+ *	i)	filename	file including list of file names.
+ *				When "-" is specified, read from standard input.
+ */
+void
+args_open_both(const char **args, const char *filename)
+{
+	type = ARGS_BOTH;
+	argslist = args;
+	if (!strcmp(filename, "-")) {
+		ip = stdin;
+	} else {
+		ip = fopen(filename, "r");
+		if (ip == NULL)
+			die("cannot open '%s'.", filename);
+	}
+}
+/*
  * args_open_gfind: args_open like interface for handling output of gfind.
  *
  *	i)	agp	GFIND descriptor
@@ -75,10 +96,15 @@ args_open_gfind(GFIND *agp)
 	type = ARGS_GFIND;
 	gp = agp;
 }
+void
+args_open_nop()
+{
+	type = ARGS_NOP;
+}
 /*
  * args_read: read path From args.
  *
- *	r)		path
+ *	r)		path (NULL: end of argument)
  */
 const char *
 args_read(void)
@@ -88,6 +114,9 @@ args_read(void)
 
 	strbuf_clear(sb);
 	switch (type) {
+	case ARGS_NOP:
+		p = NULL;
+		break;
 	case ARGS_ARGS:
 		p = *argslist++;
 		break;
@@ -97,8 +126,14 @@ args_read(void)
 	case ARGS_GFIND:
 		p = gfind_read(gp);
 		break;
+	case ARGS_BOTH:
+		if (*argslist != NULL)
+			p = *argslist++;
+		else
+			p = strbuf_fgets(sb, ip, STRBUF_NOCRLF);
+		break;
 	default:
-		die("something wrong.");
+		die("args_read: illegal type.");
 	}
 	return p;
 }
@@ -109,9 +144,11 @@ void
 args_close(void)
 {
 	switch (type) {
+	case ARGS_NOP:
 	case ARGS_ARGS:
 		break;
 	case ARGS_FILELIST:
+	case ARGS_BOTH:
 		if (ip != NULL && ip != stdin)
 			fclose(ip);
 		ip = NULL;
