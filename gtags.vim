@@ -1,11 +1,11 @@
 " File: gtags.vim
 " Author: Tama Communications Corporation
-" Version: 0.3.1
-" Last Modified: Mar 9, 2008
+" Version: 0.3.2
+" Last Modified: Nov 2, 2010
 "
 " Copyright and licence
 " ---------------------
-" Copyright (c) 2004, 2008 Tama Communications Corporation
+" Copyright (c) 2004, 2008, 2010 Tama Communications Corporation
 "
 " This file is part of GNU GLOBAL.
 "
@@ -387,9 +387,9 @@ function! s:RunGlobal(line)
     " If no pattern supplied then get it from user.
     if pattern == '' && option !~ 'P'
         if option =~ 'f'
-            let line = input("Gtags for file: ", expand('%'))
+            let line = input("Gtags for file: ", expand('%'), 'file')
         else
-            let line = input("Gtags for pattern: ", expand('<cword>'))
+            let line = input("Gtags for pattern: ", expand('<cword>'), 'custom,Candidate')
         endif
         let pattern = s:Extract(line, 'pattern')
         if pattern == ''
