@@ -386,10 +386,11 @@ function! s:RunGlobal(line)
 
     " If no pattern supplied then get it from user.
     if pattern == '' && option !~ 'P'
+        let g:option = option
         if option =~ 'f'
             let line = input("Gtags for file: ", expand('%'), 'file')
         else
-            let line = input("Gtags for pattern: ", expand('<cword>'), 'custom,Candidate')
+            let line = input("Gtags for pattern: ", expand('<cword>'), 'custom,CandidateCore')
         endif
         let pattern = s:Extract(line, 'pattern')
         if pattern == ''
@@ -423,17 +424,21 @@ endfunction
 " Custom completion.
 "
 function Candidate(lead, line, pos)
-    let option = s:Extract(a:line, 'option')
-    if option =~ 'P' || option =~ 'f'
+    let g:option = s:Extract(a:line, 'option')
+    return CandidateCore(a:lead, a:line, a:pos)
+endfunction
+
+function CandidateCore(lead, line, pos)
+    if g:option =~ 'P' || g:option =~ 'f'
         let opt = '-P'
-        if option =~ 'O'
+        if g:option =~ 'O'
             let opt = opt . 'O'
-        elseif option =~ 'o'
+        elseif g:option =~ 'o'
             let opt = opt . 'o'
         endif
-    elseif option =~ 's'
+    elseif g:option =~ 's'
         let opt = '-cs'
-    elseif option =~ 'g'
+    elseif g:option =~ 'g'
         return ''
     else
         let opt = '-c'
