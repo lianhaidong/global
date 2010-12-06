@@ -1764,13 +1764,15 @@ main(int argc, char **argv)
 	/*
 	 * get dbpath.
 	 */
-	setupdbpath(0);				/* for parsers */
 	if (!getcwd(cwdpath, sizeof(cwdpath)))
 		die("cannot get current directory.");
-	if (arg_dbpath[0])
+	if (arg_dbpath[0]) {
 		strlimcpy(dbpath, arg_dbpath, sizeof(dbpath));
-	else
+		set_env("GTAGSROOT", cwdpath);
+		set_env("GTAGSDBPATH", dbpath);
+	} else
 		strlimcpy(dbpath, cwdpath, sizeof(dbpath));
+	setupdbpath(0);				/* for parsers */
 	if (cflag && !usable("gzip")) {
 		warning("'gzip' command not found. -c option ignored.");
 		cflag = 0;
