@@ -117,5 +117,5 @@
 @AUTHORS
 	Shigio YAMAGUCHI.
 @HISTORY
-	The @name{gozilla} command appeared in FreeBSD 2.2.2 but did not
+	The @name{gozilla} command appeared in FreeBSD 2.2.2 but was not
 	installed by default.

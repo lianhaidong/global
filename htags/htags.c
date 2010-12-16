@@ -2162,7 +2162,15 @@ main(int argc, char **argv)
 	 */
 	if (enable_xhtml) {
 		char com[MAXPATHLEN*2+32];
+#ifdef __DJGPP__
+		const char *template = "";
+		snprintf(com, sizeof(com), "%s/gtags/style.css.tmpl", datadir, distpath);
+		if (test("f", com))
+		       template = ".tmpl";
+		snprintf(com, sizeof(com), "cp %s/gtags/style.css%s %s/style.css", datadir, template, distpath);
+#else
 		snprintf(com, sizeof(com), "cp %s/gtags/style.css.tmpl %s/style.css", datadir, distpath);
+#endif
 		system(com);
 	}
 	if (auto_completion || tree_view) {

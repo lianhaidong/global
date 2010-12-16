@@ -23,7 +23,7 @@
 #	o texinfo format reference manual.
 #
 @HEADER	GTAGS-CSCOPE,1,May 2006,GNU Project
-@NAME	gtags-cscope - pseudo cscope which implements the line-oriented interface
+@NAME	gtags-cscope - pseudo cscope which implements the line-oriented interface.
 @SYNOPSIS
 	@name{gtags-cscope} [-Cqv]
 @DESCRIPTION
@@ -36,7 +36,7 @@
 	as cscope.
 
 	Command 2 is not available.
-	This command is used as a internal command for context search.
+	This command is used as an internal command for context search.
 @OPTIONS
         The following options are available:
         @begin_itemize

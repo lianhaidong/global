@@ -25,7 +25,7 @@
 @HEADER	GLOBASH,1,May 2010,GNU Project
 @NAME	globash - a special shell for GLOBAL using GNU bash.
 @SYNOPSIS
-	@name{blobash}
+	@name{globash}
 @DESCRIPTION
 	@name{Globash} is a special shell for GLOBAL using GNU bash.
 	You can use a lot of function to ease reading source code
@@ -60,4 +60,4 @@
 @AUTHOR
 	Shigio YAMAGUCHI.
 @HISTORY
-	The @name{global} command appeared in GLOBAL-4.1(2001).
+	The @name{globash} command appeared in GLOBAL-4.1(2001).

@@ -34,7 +34,7 @@
 	(@file{GTAGS}, @file{GRTAGS} and @file{GPATH}).
 
 	If @file{gtags.files} exists or the @option{-f} option is specified,
-	target files are limited by it. Lines starts with ". " are comments.
+	target files are limited by it. Lines starting with ". " are comments.
 
 	C, C++, yacc, java, PHP and Assembly source files are supported.
 	Files whose names end in @file{.c} or @file{.h} are assumed to be
@@ -80,7 +80,7 @@
 		If @file{$MAKEOBJDIRPREFIX} directory exists, @name{gtags} creates
 		@file{$MAKEOBJDIRPREFIX/<current directory>} directory and makes
 		tag files in it.
-		If @arg{dbpath} is specified, this options is ignored.
+		If @arg{dbpath} is specified, this option is ignored.
 	@item{@option{--single-update} @arg{file}}
 		Update tag files for single file.
 		It is considered that @arg{file} was updated, and other files were not
@@ -116,7 +116,7 @@
 	@item{@file{GPATH}}
 		Tag file for path of source files.
 	@item{@file{$HOME/.globalrc}, @file{/etc/gtags.conf}, @file{[sysconfdir]/gtags.conf}}
-		Configuration file.
+		Configuration files.
 	@item{@file{gtags.files}}
 		The list of candidates of target files.
 	@end_itemize
@@ -144,23 +144,23 @@
 	@begin_itemize
 	@item{@code{icase_path}(boolean)}
 		Ignore case distinctions in the path.
-		Suffixes check are affected by this capability.
+		Suffixes check is affected by this capability.
 	@item{@code{langmap}(comma separated list)}
 		Language mapping. Each comma-separated map consists of
 		the language name, a colon, and a list of file extensions.
-		As a special exception, @name{gtags} collect values from multiple @code{langmap} variables.
+		As a special exception, @name{gtags} collects values from multiple @code{langmap} variables.
 		Default mapping is 'c:.c.h,yacc:.y,asm:.s.S,java:.java,cpp:.c++.cc.cpp.cxx.hxx.hpp.C.H,php:.php.php3.phtml'.
 	@item{@code{gtags_parser}(comma separated list)}
 		Specify the mapping of funtion layer plugin parser.
 		Each part delimited by the comma consists of the language name, a colon,
 		the shared object path, an optional colon followed by a function name.
 		If the function name is not specified, 'parser' is assumed.
-		As a special exception, @name{gtags} collect values from multiple @code{gtags_parser} variables.
+		As a special exception, @name{gtags} collects values from multiple @code{gtags_parser} variables.
 	@item{@code{skip}(comma separated list)}
 		@name{Gtags} skips files which are listed in this list.
-		As a special exception, @name{gtags} collect values from multiple @code{skip} variables.
-		If the value ends with '/', it assumed as a directory and @name{gtags} skips all files under it.
-		If the value start with '/', it assumed relative path from the root of source directory.
+		As a special exception, @name{gtags} collects values from multiple @code{skip} variables.
+		If the value ends with '/', it is assumed as a directory and @name{gtags} skips all files under it.
+		If the value starts with '/', it is assumed a relative path from the root of source directory.
 	@end_itemize
 @DIAGNOSTICS
 	@name{Gtags} exits with a non 0 value if an error occurred, 0 otherwise.

@@ -33,7 +33,7 @@
 	In advance of using this command, you should execute @xref{gtags,1}
 	in the root directory of a source project.
 	Then you can execute @name{htags} in the same place.
-	@name{Htags} makes a directory named @file{HTML}, and put a hypertext in it.
+	@name{Htags} makes a directory named @file{HTML}, and puts a hypertext in it.
 	You can start browsing at @file{HTML/index.html}.
 
 	Since @name{htags} generates a static hypertext as long as the @option{-D} or @option{-f}
@@ -90,7 +90,7 @@
 		By default, use just the last component of a path.
 	@item{@option{-g}, @option{--gtags}}
 		Execute @xref{gtags,1} before starting job.
-		The @option{-v}, @option{-w} and @arg{dbpath} are passed to @name{gtags}.
+		The @option{-v}, @option{-w} and @arg{dbpath} options are passed to @name{gtags}.
 	@item{@option{--gtagsconf} @arg{file}}
 		Set the @var{GTAGSCONF} environment variable to @arg{file}.
 	@item{@option{--gtagslabel} @arg{label}}
@@ -113,10 +113,10 @@
 		Insert custom header derived from @arg{file} after <body> tag.
 	@item{@option{--item-order} @arg{spec}}
 		Specify the order of the items in the top page.
-		The @arg{spec} is a string consists of item signs in order.
+		The @arg{spec} is a string consisting of item signs in order.
 		Each sign means as follows:
-		@name{c}: caution, @name{s}: search form,
-		@name{m}: mains, @name{d}: definition, @name{f}: files, @name{t}: call tree.
+		@name{c}: caution; @name{s}: search form;
+		@name{m}: mains; @name{d}: definition; @name{f}: files; @name{t}: call tree.
 		The default is @arg{csmdf}.
 	@item{@option{-m}, @option{--main-func} @arg{name}}
 		Specify startup function name. The default is @arg{main}.
@@ -124,7 +124,7 @@
 		Print line numbers. By default, doesn't print line numbers.
 		The default value of @arg{columns} is 4.
 	@item{@option{--no-map-file}}
-		Stop generating file @file{MAP} and @file{FILEMAP}.
+		Stop generating files @file{MAP} and @file{FILEMAP}.
 		By default, @name{htags} generates them.
 	@item{@option{-o}, @option{--other}}
 		Pick up not only source files but also other files in the file index.
@@ -194,7 +194,7 @@
 	@item{@file{GPATH}}
 		Tag file for files.
 	@item{@file{$HOME/.globalrc}, @file{/etc/gtags.conf}, @file{[sysconfdir]/gtags.conf}}
-		Configuration file.
+		Configuration files.
 	@item{@file{HTML/index.html}}
 		Startup file.
 	@item{@file{HTML/MAP}}
@@ -208,8 +208,8 @@
 		Local configuration file for Apache. This file is generated when
 		the @option{-f}, @option{-D} or @option{-c} option is specified.
 	@item{@file{HTML/GTAGSROOT}}
-		If this file exists, CGI program @file{global.cgi} set
-		environment variable GTAGSROOT to the content of it.
+		If this file exists, CGI program @file{global.cgi} sets
+		environment variable GTAGSROOT to the contents of it.
 		If you move directory @file{HTML} from the original place,
 		please make this file.
 	@end_itemize

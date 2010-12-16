@@ -41,7 +41,7 @@
 	references and other symbols.
 
 	@name{Global} can treat a source tree, that is, a directory that
-	has sub-directories and source files as a project.
+	has sub-directories and source files, as a project.
 	In advance of using this command, you must execute @xref{gtags,1}
 	at the root directory of a project to make tag files.
 	Then you can execute this command anywhere in the project.
@@ -65,7 +65,7 @@
 		This option implies the @option{-x} option.
 	@item{@option{-g}, @option{--grep} @arg{pattern} [@arg{files}]}
 		Print all lines which match to the @arg{pattern}.
-		If @arg{files} is specified, this command searchs in the files.
+		If @arg{files} is specified, this command searches in the files.
 	@item{@option{--help}}
 		Show help.
 	@item{@option{-I}, @option{--idutils} @arg{pattern}}
@@ -119,7 +119,7 @@
 	@item{@option{-O}, @option{--only-other}}
 		Treat only text files other than source code like @file{README}.
 		This option is valid only with the @option{-g} or @option{-P} command.
-		This option override the @option{-o} option.
+		This option overrides the @option{-o} option.
 	@item{@option{-o}, @option{--other}}
 		Treat not only source files but also text files other than source code
 		like @file{README}.
@@ -137,7 +137,7 @@
 		The default is @arg{path}.
 		The @option{--result=ctags} and @option{--result=ctags-x} are
 		equivalent to the @option{-t} and @option{-x} respectively.
-		The @option{--result} option is given to priority more than the -t and -x option.
+		The @option{--result} option is given more priority than the -t and -x options.
 	@item{@option{-s}, @option{--symbol}}
 		Print locations of the specified symbol other than definitions.
 	@item{@option{-T}, @option{--through}}
@@ -151,7 +151,7 @@
 		Verbose mode.
 	@item{@option{-V}, @option{--invert-match}}
 		Invert the sense of matching, to select non-matching lines.
-		This option is valid in the @option{-g} and @option{-P} command.
+		This option is valid only with the @option{-g} or @option{-P} command.
 	@item{@option{-x}, @option{--cxref}}
 		Use standard ctags cxref (with the @arg{-x}) format.
 	@end_itemize
@@ -195,9 +195,9 @@
 	@item{@file{GTAGSROOT}}
 		If environment variable @var{GTAGSROOT} is not set
 		and file @file{GTAGSROOT} exists in the same directory with @file{GTAGS}
-		then @name{global} set the @var{GTAGSROOT} to the content of the file.
+		then @name{global} sets @var{GTAGSROOT} to the contents of the file.
 	@item{@file{$HOME/.globalrc}, @file{/etc/gtags.conf}, @file{[sysconfdir]/gtags.conf}}
-		Configuration file.
+		Configuration files.
 	@end_itemize
 @ENVIRONMENT
 	The following environment variables affect the execution of @name{global}:
