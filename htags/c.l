@@ -107,8 +107,10 @@ YACC_IDENTIFIER	({ALPHA}|\.)({ALPHANUM}|\.)*
 		 * #include|   <aaa/bbb.h>|
 		 *         ~~~~~~~~~~~~~~~~
 		 */
-		while ((c = input()) && c != '\n' && isspace(c))
+		while ((c = input()) && c != EOF && c != '\n' && isspace(c))
 			echoc(c);
+		if (c == EOF)
+			c = '\n';
 		if (c == '\n') {
 			unput(c);
 		} else if (c) {
@@ -122,9 +124,11 @@ YACC_IDENTIFIER	({ALPHA}|\.)({ALPHANUM}|\.)*
 			put_char(c);
 
 			/* pick up path name */
-			while ((c = input()) && c != '\n' && c != sep)
+			while ((c = input()) && c != EOF && c != '\n' && c != sep)
 				*p++ = c;
 			*p = '\0';
+			if (c == EOF)
+				c = '\n';
 			if (c == sep) {
 				struct data *inc;
 				const char *basename = locatestring(path, "/", MATCH_LAST);

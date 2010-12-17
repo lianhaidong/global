@@ -79,8 +79,10 @@ WORD		{ALPHA}{ALPHANUM}*
 		int c = 0;
 
 		put_reserved_word(LEXTEXT);
-		while ((c = input()) && c != '\n' && c != ';')
+		while ((c = input()) && c != EOF && c != '\n' && c != ';')
 			echoc(c);
+		if (c == EOF)
+			c = '\n';
 		if (c == '\n')
 			unput(c);
 		else if (c)

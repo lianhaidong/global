@@ -94,8 +94,10 @@ WORD		{ALPHA}{ALPHANUM}*
 		 * #include|   <aaa/bbb.h>|
 		 *         ~~~~~~~~~~~~~~~~
 		 */
-		while ((c = input()) && c != '\n' && isspace(c))
+		while ((c = input()) && c != EOF && c != '\n' && isspace(c))
 			echoc(c);
+		if (c == EOF)
+			c = '\n';
 		if (c == '\n') {
 			unput(c);
 		} else if (c) {
@@ -109,9 +111,11 @@ WORD		{ALPHA}{ALPHANUM}*
 			put_char(c);
 
 			/* pick up path name */
-			while ((c = input()) && c != sep && c != '\n')
+			while ((c = input()) && c != EOF && c != sep && c != '\n')
 				*p++ = c;
 			*p = '\0';
+			if (c == EOF)
+				c = '\n';
 			if (c == sep) {
 				struct data *inc;
 				const char *basename = locatestring(path, "/", MATCH_LAST);

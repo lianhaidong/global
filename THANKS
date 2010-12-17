@@ -138,6 +138,7 @@ Tom Tromey		GTAGS target in automake.
 Tomi Ollila		proposal of adding (provide 'gtags) to gtags.el.
 Toshiyasu Kojima	advice about deciding emacs version.
 Van Trinh		bug report about db(3) and patch information.
+Wes Wojtas		bug report about htags's segmentation fault.
 Whity Pig		bug fix patch for global(1) on Cygwin environment.
 Wolfgang Helbig		bug report about generating wrong path name.
 Yann Dirson		many bug reports and many valuable suggestions.
