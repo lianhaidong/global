@@ -38,6 +38,7 @@
 #include "xargs.h"
 
 #if !defined(ARG_MAX) && defined(_SC_ARG_MAX)
+/* FIXME: in theory sysconf() can return -1L for unlimited */
 #define ARG_MAX         sysconf(_SC_ARG_MAX)
 #endif
 
@@ -70,7 +71,7 @@ static XARGS *xargs_open_generic(const char *, int);
 static int
 exec_line_limit(int length)
 {
-	int limit = 0;
+	long limit = 0;
 
 #ifdef ARG_MAX
 	/*
@@ -105,7 +106,8 @@ exec_line_limit(int length)
 	limit = 2047 - length - 80;
 #endif
 	if (limit < 0)
-		limit = 0;
+               die("Negative exec line limit = %ld", limit);
+
 	return limit;
 }
 /*
