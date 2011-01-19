@@ -32,11 +32,9 @@ o write a tag to GTAGS
 
 	param->put(PARSER_DEF, <tag name>, <line no>, <file name>, <line image>, param->arg);
 
-o write a tag to GRTAGS or GSYMS
+o write a tag to GRTAGS
 
 	param->put(PARSER_REF_SYM, <tag name>, <line no>, <file name>, <line image>, param->arg);
 
 Note: 
-(1) Gtags always makes GRTAGS and GSYMS even if you don't use PARSER_REF_SYM.
-(2) When you use PARSER_REF_SYM, you cannot decide which to write tag in GRTAGS or GSYMS.
-    If the symbol is defined in GTAGS, tag is written to GRTAGS else to GSYMS.
+Gtags always makes GRTAGS even if you don't use PARSER_REF_SYM.
