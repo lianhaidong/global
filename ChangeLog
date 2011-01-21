@@ -34,6 +34,8 @@ August 12 2010, Shigio YAMAGUCHI
 	  because 'datadir' is for read-only data.
 	o Changed the permission of the site key directory from 773 to 775.
 
+	These most was suggested by Ron Lee.
+
 June 27 2010, Shigo YAMAGUCHI
 
 	Modification of the -S option.
@@ -111,6 +113,8 @@ May 20 2010, Shigo YAMAGUCHI
 
 	Note: In the new method, temporary file doesn't become unnecessary.
 	Because the external sort program also uses temporary files for its job.
+
+	This small work greatly depends on the big work by Hideki IWAMOTO on February 1 2010.
 
 April 27 2010, Shigo YAMAGUCHI
 
