@@ -2,6 +2,7 @@
 
 ;;
 ;; Copyright (c) 1997, 1998, 1999, 2000, 2006, 2007, 2008, 2009, 2010
+;;		2011
 ;;	Tama Communications Corporation
 ;;
 ;; This file is part of GNU GLOBAL.
@@ -22,7 +23,7 @@
 
 ;; GLOBAL home page is at: http://www.gnu.org/software/global/
 ;; Author: Tama Communications Corporation
-;; Version: 2.8
+;; Version: 2.9
 ;; Keywords: tools
 ;; Required version: GLOBAL 5.9 or later
 
@@ -32,7 +33,7 @@
 ;; Please copy this file into emacs lisp library directory or place it in
 ;; a directory (for example "~/lisp") and write $HOME/.emacs like this.
 ;;
-;;	(setq load-path (cons "~/lisp" load-path))
+;;	(setq load-path (cons "~/.emacs.d" load-path))
 ;;
 ;; If you hope gtags-mode is on in c-mode then please add c-mode-hook to your
 ;; $HOME/.emacs like this.
@@ -97,6 +98,11 @@
   :group 'gtags
   :type 'boolean)
 
+(defcustom gtags-disable-pushy-mouse-mapping nil
+  "*If non-nil, mouse key mapping is disabled."
+  :group 'gtags
+  :type 'boolean)
+
 ;; Variables
 (defvar gtags-current-buffer nil
   "Current buffer.")
@@ -142,22 +148,9 @@
 ;         (define-key gtags-mode-map "\ev" 'gtags-visit-rootdir)
 ; ))
 
-(if (not gtags-running-xemacs) nil
- (define-key gtags-mode-map 'button3 'gtags-pop-stack)
- (define-key gtags-mode-map 'button2 'gtags-find-tag-by-event))
-(if gtags-running-xemacs nil
- (define-key gtags-mode-map [mouse-3] 'gtags-pop-stack)
- (define-key gtags-mode-map [mouse-2] 'gtags-find-tag-by-event))
-
 (defvar gtags-select-mode-map (make-sparse-keymap)
   "Keymap used in gtags select mode.")
 (define-key gtags-select-mode-map "\e*" 'gtags-pop-stack)
-(if (not gtags-running-xemacs) nil
- (define-key gtags-select-mode-map 'button3 'gtags-pop-stack)
- (define-key gtags-select-mode-map 'button2 'gtags-select-tag-by-event))
-(if gtags-running-xemacs nil
- (define-key gtags-select-mode-map [mouse-3] 'gtags-pop-stack)
- (define-key gtags-select-mode-map [mouse-2] 'gtags-select-tag-by-event))
 (define-key gtags-select-mode-map "\^?" 'scroll-down)
 (define-key gtags-select-mode-map " " 'scroll-up)
 (define-key gtags-select-mode-map "\C-b" 'scroll-down)
@@ -678,7 +671,15 @@ with no args, if that value is non-nil."
   (setq gtags-mode
       (if (null forces) (not gtags-mode)
         (> (prefix-numeric-value forces) 0)))
-  (run-hooks 'gtags-mode-hook))
+  (run-hooks 'gtags-mode-hook)
+  ; Mouse key mapping
+  (if gtags-disable-pushy-mouse-mapping nil
+      (if (not gtags-running-xemacs) nil
+       (define-key gtags-mode-map 'button3 'gtags-pop-stack)
+       (define-key gtags-mode-map 'button2 'gtags-find-tag-by-event))
+      (if gtags-running-xemacs nil
+       (define-key gtags-mode-map [mouse-3] 'gtags-pop-stack)
+       (define-key gtags-mode-map [mouse-2] 'gtags-find-tag-by-event))))
 
 ;; make gtags select-mode
 (defun gtags-select-mode ()
@@ -703,7 +704,15 @@ Turning on Gtags-Select mode calls the value of the variable
   (setq gtags-current-buffer (current-buffer))
   (goto-char (point-min))
   (message "[GTAGS SELECT MODE] %d lines" (count-lines (point-min) (point-max)))
-  (run-hooks 'gtags-select-mode-hook))
+  (run-hooks 'gtags-select-mode-hook)
+  ; Mouse key mapping
+  (if gtags-disable-pushy-mouse-mapping nil
+      (if (not gtags-running-xemacs) nil
+          (define-key gtags-select-mode-map 'button3 'gtags-pop-stack)
+          (define-key gtags-select-mode-map 'button2 'gtags-select-tag-by-event))
+      (if gtags-running-xemacs nil
+          (define-key gtags-select-mode-map [mouse-3] 'gtags-pop-stack)
+          (define-key gtags-select-mode-map [mouse-2] 'gtags-select-tag-by-event))))
 
 (provide 'gtags)
 
