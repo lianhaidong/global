@@ -77,5 +77,4 @@ htags:\
 	:brace_begin=<font color='red'>:brace_end=</font>:\
 	:warned_line_begin=<span style='background-color\:yellow'>:warned_line_end=</span>:\
 	:reserved_begin=<b>:reserved_end=</b>:script_alias=/cgi-bin/:\
-	:ncol#4:tabs#8:normal_suffix=html:gzipped_suffix=ghtml:\
-	:definition_header=no:
+	:ncol#4:tabs#8:normal_suffix=html:gzipped_suffix=ghtml:
