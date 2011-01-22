@@ -228,7 +228,7 @@ int ncol = 4;				/* columns of line number	*/
 int tabs = 8;				/* tab skip			*/
 int flist_fields = 5;			/* fields number of file list	*/
 int full_path = 0;			/* file index format		*/
-int map_file = 1;			/* 1: create MAP file		*/
+int map_file = 0;			/* 0: create MAP file		*/
 int overwrite_key = 0;			/* 0: over write site key	*/
 const char *icon_suffix = "png";	/* icon suffix (jpg, png etc)	*/
 const char *icon_spec = "border='0' align='top'";/* parameter in IMG tag*/
@@ -285,7 +285,7 @@ static struct option const long_options[] = {
         {"disable-idutils", no_argument, &enable_idutils, 0},
         {"full-path", no_argument, &full_path, 1},
         {"html", no_argument, &enable_xhtml, 0},
-        {"no-map-file", no_argument, &map_file, 0},
+        {"map-file", no_argument, &map_file, 1},
         {"overwrite-key", no_argument, &overwrite_key, 1},
         {"show-position", no_argument, &show_position, 1},
         {"statistics", no_argument, &statistics, STATISTICS_STYLE_TABLE},
@@ -1704,7 +1704,7 @@ main(int argc, char **argv)
 	}
 	if (suggest2) {
 		Fflag = 1;				/* uses frame */
-		cflag = fflag = dynamic = 1;		/* needs a HTTP server */
+		fflag = dynamic = 1;			/* needs a HTTP server */
 		auto_completion = tree_view = 1;	/* needs javascript */
 	}
 	if (cflow_file && !test("fr", cflow_file))
