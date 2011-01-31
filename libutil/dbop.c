@@ -74,6 +74,7 @@
  */
 static void start_sort_process(DBOP *);
 static void terminate_sort_process(DBOP *);
+static char *sortnotfound = "POSIX sort program not found. If available, the program will be speed up.\nPlease see ./configure --help.";
 /*
  * 1. DJGPP
  */
@@ -119,7 +120,7 @@ start_sort_process(DBOP *dbop) {
 	path = strrchr(_pgmptr, '\\');
 	sprintf(sort, "%.*s\\sort.exe", path - _pgmptr, _pgmptr);
 	if (!test("fx", sort)) {
-		warning("POSIX sort program not found. If available, the program will be speed up.");
+		warning(sortnotfound);
 		informed = 1;
 		return;
 	}
@@ -182,7 +183,7 @@ start_sort_process(DBOP *dbop) {
 		static int informed;
 
 		if (!informed) {
-			warning("POSIX sort program not found. If available, the program will be speed up.");
+			warning(sortnotfound);
 			informed = 1;
 		}
 		return;
@@ -306,7 +307,7 @@ dbop_open(const char *path, int mode, int perm, int flags)
 	/*
 	 * Setup sorted writing.
 	 */
-	if (dbop->openflags & DBOP_SORTED_WRITE)
+	if (mode != 0 && dbop->openflags & DBOP_SORTED_WRITE)
 		start_sort_process(dbop);
 	return dbop;
 }
