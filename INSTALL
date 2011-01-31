@@ -4,7 +4,7 @@ ___________________________________
 |  |   |  |  |  |  |     |     |  |
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Copyright (c) 2000, 2002, 2003, 2004, 2006 Tama Communications Corporation
+ Copyright (c) 2000, 2002, 2003, 2004, 2006, 2011 Tama Communications Corporation
 
  This file is free software; as a special exception the author gives
  unlimited permission to copy and/or distribute it, with or without
@@ -43,6 +43,8 @@ o If you want to use the --form(-f) or --dynamic(-D) option of htags(1) then
 	$ ./configure
 	$ make
 	# make install
+
+	(You can see the options of configure by invoking './configure --help')
 
 3. Using GLOBAL with editors.
 
@@ -83,11 +85,7 @@ o Emacs
 	XEmacs:
 		http://www.xemacs.org
 
-   Please copy gtags.el file to emacs lisp library directory or place it in
-   a directory (for example "~/lisp") and write $HOME/.emacs like this.
-
-	+-----------------------------------------------
-	|(setq load-path (cons "~/lisp" load-path))
+   Installation procedure is written in gtags.el itself.
 
 o Elvis
 
