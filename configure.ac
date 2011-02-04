@@ -2,7 +2,8 @@ dnl
 dnl Configuration script for GLOBAL.
 dnl Process this file with autoconf to produce a configure script.
 dnl
-dnl Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2008, 2010
+dnl Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2008, 2010,
+dnl	2011
 dnl	Tama Communications Corporation
 dnl
 dnl This file is part of GNU GLOBAL.
@@ -205,13 +206,19 @@ AC_MSG_RESULT("$EXUBERANT_CTAGS")
 AC_SUBST(EXUBERANT_CTAGS)
 
 dnl
-dnl for POSIX sort program. By default, "/usr/bin/sort" is used.
+dnl for POSIX sort program.
 dnl
 AC_MSG_CHECKING(for POSIX sort program)
 AC_ARG_WITH(posix-sort,
 [  --with-posix-sort=PROGRAM  specify POSIX sort program ],
 [ POSIX_SORT="$withval" ],
-[ POSIX_SORT=/usr/bin/sort ])
+[ for d in `echo $PATH | sed -e 's/^:/.:/' -e 's/::/:.:/g' -e 's/:$/:./' -e 's/:/ /g'`
+do
+	if test -x $d/sort && (sh -c "$d/sort -t ':' -k 1,1" < /dev/null > /dev/null 2>&1); then
+		POSIX_SORT="$d/sort"
+		break
+	fi
+done ])
 AC_DEFINE_UNQUOTED(POSIX_SORT, "$POSIX_SORT", [POSIX sort program.])
 AC_MSG_RESULT("$POSIX_SORT")
 AC_SUBST(POSIX_SORT)
