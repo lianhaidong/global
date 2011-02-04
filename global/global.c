@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005, 2006,
- *	2007, 2008, 2010 Tama Communications Corporation
+ *	2007, 2008, 2010, 2011 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -196,7 +196,7 @@ decide_tag_by_context(const char *tag, const char *file, int lineno)
 	int iscompline = 0;
 
 	if (normalize(file, get_root_with_slash(), cwd, path, sizeof(path)) == NULL)
-		die("'%s' is out of source tree.", file);
+		die("'%s' is out of the source project.", file);
 	/*
 	 * get file id
 	 */
@@ -932,7 +932,7 @@ grep(const char *pattern, char *const *argv, const char *dbpath)
 	CONVERT *cv;
 	GFIND *gp = NULL;
 	STRBUF *ib = strbuf_open(MAXBUFLEN);
-	const char *path;
+	const char *path, *av;
 	char encoded_pattern[IDENTLEN];
 	const char *buffer;
 	int linenum, count;
@@ -969,19 +969,19 @@ grep(const char *pattern, char *const *argv, const char *dbpath)
 		args_open_gfind(gp = gfind_open(dbpath, localprefix, target));
 		user_specified = 0;
 	}
-	while ((path = args_read()) != NULL) {
+	while ((av = args_read()) != NULL) {
 		if (user_specified) {
 			static char buf[MAXPATHLEN];
 
-			if (normalize(path, get_root_with_slash(), cwd, buf, sizeof(buf)) == NULL)
+			if (normalize(av, get_root_with_slash(), cwd, buf, sizeof(buf)) == NULL)
 				if (!qflag)
-					fprintf(stderr, "'%s' is out of source tree.\n", path);
+					fprintf(stderr, "'%s' is out of the source project.\n", av);
 			if (!test("f", buf))
-				die("'%s' not found. Please remake tag files by invoking gtags(1).", path);
+				die("'%s' not found. Please remake tag files by invoking gtags(1).", av);
 			path = buf;
 		}
 		if (!(fp = fopen(path, "r")))
-			die("cannot open file '%s'.", path);
+			die("cannot open file '%s'.", av);
 		linenum = 0;
 		while ((buffer = strbuf_fgets(ib, fp, STRBUF_NOCRLF)) != NULL) {
 			int result = regexec(&preg, buffer, 0, 0, 0);
@@ -1166,7 +1166,6 @@ void
 parsefile(char *const *argv, const char *cwd, const char *root, const char *dbpath, int db)
 {
 	int count = 0;
-	int file_count = 0;
 	STRBUF *sb = strbuf_open(0);
 	char *langmap;
 	const char *plugin_parser, *av;
@@ -1214,40 +1213,41 @@ parsefile(char *const *argv, const char *cwd, const char *root, const char *dbpa
 		/*
 		 * convert the path into relative to the root directory of source tree.
 		 */
-		if (normalize(av, get_root_with_slash(), cwd, path, sizeof(path)) == NULL)
+		if (normalize(av, get_root_with_slash(), cwd, path, sizeof(path)) == NULL) {
 			if (!qflag)
-				fprintf(stderr, "'%s' is out of source tree.\n", path + 2);
+				die("'%s' is out of the source project.", av);
+			continue;
+		}
+		if (!test("f", makepath(root, path, NULL))) {
+			if (!qflag) {
+				if (test("d", NULL))
+					die("'%s' is not a source file.", av);
+				else
+					die("'%s' not found.", av);
+			}
+			continue;
+		}
 		/*
 		 * Memorize the file id of the path. This is used in put_syms().
 		 */
 		{
 			static char s_fid[MAXFIDLEN];
-			const char *p = gpath_path2fid(path, NULL);
+			int type = 0;
+			const char *p = gpath_path2fid(path, &type);
 
-			if (!p) {
+			if (!p || type != GPATH_SOURCE) {
 				if (!qflag)
-					fprintf(stderr, "'%s' not found in GPATH.\n", path + 2);
+					die("'%s' is not a source file.", av);
 				continue;
 			}
 			strlimcpy(s_fid, p, sizeof(s_fid));
 			data.fid = s_fid;
-		}
-		if (!test("f", makepath(root, path, NULL))) {
-			if (test("d", NULL)) {
-				if (!qflag)
-					fprintf(stderr, "'%s' is a directory.\n", av);
-			} else {
-				if (!qflag)
-					fprintf(stderr, "'%s' not found.\n", av);
-			}
-			continue;
 		}
 		if (lflag && !locatestring(path, localprefix, MATCH_AT_FIRST))
 			continue;
 		data.count = 0;
 		parse_file(path, 0, put_syms, &data);
 		count += data.count;
-		file_count++;
 	}
 	args_close();
 	parser_exit();

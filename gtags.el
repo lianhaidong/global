@@ -23,7 +23,7 @@
 
 ;; GLOBAL home page is at: http://www.gnu.org/software/global/
 ;; Author: Tama Communications Corporation
-;; Version: 2.9
+;; Version: 2.10
 ;; Keywords: tools
 ;; Required version: GLOBAL 5.9 or later
 
@@ -31,24 +31,25 @@
 ;; other major modes. Gtags-select mode is implemented as a major mode.
 ;;
 ;; Please copy this file into emacs lisp library directory or place it in
-;; a directory (for example "~/lisp") and write $HOME/.emacs like this.
+;; a directory (for example "~/.emacs.d") and write $HOME/.emacs like this.
 ;;
-;;	(setq load-path (cons "~/.emacs.d" load-path))
+;;	(add-to-list 'load-path "~/.emacs.d")
+;;	(autoload 'gtags-mode "gtags" "" t)
 ;;
 ;; If you hope gtags-mode is on in c-mode then please add c-mode-hook to your
 ;; $HOME/.emacs like this.
 ;;
-;;	(setq c-mode-hook
-;;	    '(lambda ()
-;;		(gtags-mode 1)
-;;	))
+;; (add-hook 'c-mode-hook
+;;    '(lambda ()
+;;       (gtags-mode 1)
+;; ))
 ;;
 ;; There are two hooks, gtags-mode-hook and gtags-select-mode-hook.
 ;; The usage of the hook is shown as follows.
 ;;
 ;; [Setting to reproduce old 'Gtags mode']
 ;;
-;; (setq gtags-mode-hook
+;; (add-hook 'gtags-mode-hook
 ;;   '(lambda ()
 ;;      (setq gtags-pop-delete t)
 ;;      (setq gtags-path-style 'absolute)
@@ -56,7 +57,7 @@
 ;;
 ;; [Setting to make 'Gtags select mode' easy to see]
 ;;
-;; (setq gtags-select-mode-hook
+;; (add-hook 'gtags-select-mode-hook
 ;;   '(lambda ()
 ;;      (setq hl-line-face 'underline)
 ;;      (hl-line-mode 1)
@@ -134,12 +135,13 @@
 ; If you hope old style key assignment. Please include following code
 ; to your $HOME/.emacs:
 ;
-; (setq gtags-mode-hook
+; (add-hook 'gtags-mode-hook
 ;   '(lambda ()
 ;         (define-key gtags-mode-map "\eh" 'gtags-display-browser)
 ;         (define-key gtags-mode-map "\C-]" 'gtags-find-tag-from-here)
 ;         (define-key gtags-mode-map "\C-t" 'gtags-pop-stack)
 ;         (define-key gtags-mode-map "\el" 'gtags-find-file)
+;         (define-key gtags-mode-map "\ef" 'gtags-parse-file)
 ;         (define-key gtags-mode-map "\eg" 'gtags-find-with-grep)
 ;         (define-key gtags-mode-map "\eI" 'gtags-find-with-idutils)
 ;         (define-key gtags-mode-map "\es" 'gtags-find-symbol)
@@ -382,14 +384,16 @@
     (gtags-goto-tag tagname "Po")))
 
 (defun gtags-parse-file ()
-  "Input file name, parse it and show object list."
+  "Input file name and show the list of tags in it."
   (interactive)
   (let (tagname prompt input)
-    (setq input (read-file-name "Parse file: "
-		nil nil t (file-name-nondirectory buffer-file-name)))
-    (if (not (equal "" input)) (setq tagname input))
-    (gtags-push-context)
-    (gtags-goto-tag tagname "f")))
+    (setq prompt "Parse file: ")
+    (setq input (read-file-name prompt buffer-file-name buffer-file-name t))
+    (if (or (equal "" input) (not (file-regular-p input)))
+        (message "Please specify an existing source file.")
+       (setq tagname input)
+       (gtags-push-context)
+       (gtags-goto-tag tagname "f"))))
 
 (defun gtags-find-tag-from-here ()
   "Get the expression as a tagname around here and move there."
@@ -509,6 +513,9 @@
       (setq prefix "(CONTEXT)"))
      ((char-equal flag-char ?P)
       (setq prefix "(P)"))
+     ((char-equal flag-char ?f)
+      (setq prefix "(f)"))
+      (setq option (concat option "q"))
      ((char-equal flag-char ?g)
       (setq prefix "(GREP)"))
      ((char-equal flag-char ?I)
@@ -649,6 +656,8 @@ Input pattern, search with idutils(1) and move to the locations.
 	\\[gtags-find-with-idutils]
 Input pattern and move to the top of the file.
 	\\[gtags-find-file]
+Input pattern and show the list of definitions of the file.
+	\\[gtags-parse-file]
 Get the expression as a tagname around here and move there.
 	\\[gtags-find-tag-from-here]
 Display current screen on hypertext browser.
