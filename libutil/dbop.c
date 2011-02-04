@@ -111,6 +111,8 @@ start_sort_process(DBOP *dbop) {
 	char* path;
 	static int informed;
 
+	if (!strcmp(POSIX_SORT, "no"))
+		return;
 	if (informed)
 		return;
 	/*
@@ -179,6 +181,8 @@ static void
 start_sort_process(DBOP *dbop) {
 	int opipe[2], ipipe[2];
 
+	if (!strcmp(POSIX_SORT, "no"))
+		return;
 	if (!test("fx", POSIX_SORT)) {
 		static int informed;
 

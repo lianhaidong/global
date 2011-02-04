@@ -211,16 +211,30 @@ dnl
 AC_MSG_CHECKING(for POSIX sort program)
 AC_ARG_WITH(posix-sort,
 [  --with-posix-sort=PROGRAM  specify POSIX sort program ],
-[ POSIX_SORT="$withval" ],
-[ for d in `echo $PATH | sed -e 's/^:/.:/' -e 's/::/:.:/g' -e 's/:$/:./' -e 's/:/ /g'`
-do
-	if test -x $d/sort && (sh -c "$d/sort -t ':' -k 1,1" < /dev/null > /dev/null 2>&1); then
-		POSIX_SORT="$d/sort"
-		break
+[
+	POSIX_SORT="$withval"
+        if test "$withval" = 'no'; then
+                AC_MSG_RESULT(no)
+	else
+                AC_MSG_RESULT([yes, using $POSIX_SORT])
 	fi
-done ])
+],
+[
+	for d in `echo $PATH | sed -e 's/^:/.:/' -e 's/::/:.:/g' -e 's/:$/:./' -e 's/:/ /g'`
+	do
+		if test -x $d/sort && (sh -c "$d/sort -t ':' -k 1,1" < /dev/null > /dev/null 2>&1); then
+			withval="$d/sort"
+			break
+		fi
+	done
+	if test "$withval" = ''; then
+		AC_MSG_RESULT(no)
+	else
+		POSIX_SORT="$withval"
+		AC_MSG_RESULT([using $POSIX_SORT])
+	fi
+])
 AC_DEFINE_UNQUOTED(POSIX_SORT, "$POSIX_SORT", [POSIX sort program.])
-AC_MSG_RESULT("$POSIX_SORT")
 AC_SUBST(POSIX_SORT)
 
 AC_SUBST(INCLUDES)
