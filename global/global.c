@@ -932,7 +932,7 @@ grep(const char *pattern, char *const *argv, const char *dbpath)
 	CONVERT *cv;
 	GFIND *gp = NULL;
 	STRBUF *ib = strbuf_open(MAXBUFLEN);
-	const char *path, *av;
+	const char *path;
 	char encoded_pattern[IDENTLEN];
 	const char *buffer;
 	int linenum, count;
@@ -969,19 +969,19 @@ grep(const char *pattern, char *const *argv, const char *dbpath)
 		args_open_gfind(gp = gfind_open(dbpath, localprefix, target));
 		user_specified = 0;
 	}
-	while ((av = args_read()) != NULL) {
+	while ((path = args_read()) != NULL) {
 		if (user_specified) {
 			static char buf[MAXPATHLEN];
 
-			if (normalize(av, get_root_with_slash(), cwd, buf, sizeof(buf)) == NULL)
+			if (normalize(path, get_root_with_slash(), cwd, buf, sizeof(buf)) == NULL)
 				if (!qflag)
-					fprintf(stderr, "'%s' is out of the source project.\n", av);
+					fprintf(stderr, "'%s' is out of the source project.\n", path);
 			if (!test("f", buf))
-				die("'%s' not found. Please remake tag files by invoking gtags(1).", av);
+				die("'%s' not found. Please remake tag files by invoking gtags(1).", path);
 			path = buf;
 		}
 		if (!(fp = fopen(path, "r")))
-			die("cannot open file '%s'.", av);
+			die("cannot open file '%s'.", path);
 		linenum = 0;
 		while ((buffer = strbuf_fgets(ib, fp, STRBUF_NOCRLF)) != NULL) {
 			int result = regexec(&preg, buffer, 0, 0, 0);
