@@ -104,6 +104,11 @@
   :group 'gtags
   :type 'boolean)
 
+(defcustom gtags-suggested-key-mapping nil
+  "*If non-nil, suggested key mapping is enabled."
+  :group 'gtags
+  :type 'boolean)
+
 ;; Variables
 (defvar gtags-current-buffer nil
   "Current buffer.")
@@ -130,17 +135,19 @@
 (define-key gtags-mode-map "\e." 'gtags-find-tag)
 (define-key gtags-mode-map "\C-x4." 'gtags-find-tag-other-window)
 ;
-; Old key assignment.
+; You can make key mappings using 'gtags-mode-hook in your $HOME/.emacs:
+; The following two brings the same result.
 ;
-; If you hope old style key assignment. Please include following code
-; to your $HOME/.emacs:
-;
+; (add-hook 'gtags-mode-hook
+;   '(lambda ()
+;         (setq gtags-suggested-key-mapping t)
+; ))
 ; (add-hook 'gtags-mode-hook
 ;   '(lambda ()
 ;         (define-key gtags-mode-map "\eh" 'gtags-display-browser)
 ;         (define-key gtags-mode-map "\C-]" 'gtags-find-tag-from-here)
 ;         (define-key gtags-mode-map "\C-t" 'gtags-pop-stack)
-;         (define-key gtags-mode-map "\el" 'gtags-find-file)
+;         (define-key gtags-mode-map "\eP" 'gtags-find-file)
 ;         (define-key gtags-mode-map "\ef" 'gtags-parse-file)
 ;         (define-key gtags-mode-map "\eg" 'gtags-find-with-grep)
 ;         (define-key gtags-mode-map "\eI" 'gtags-find-with-idutils)
@@ -514,8 +521,8 @@
      ((char-equal flag-char ?P)
       (setq prefix "(P)"))
      ((char-equal flag-char ?f)
-      (setq prefix "(f)"))
-      (setq option (concat option "q"))
+      (setq prefix "(F)")
+      (setq option (concat option "q")))
      ((char-equal flag-char ?g)
       (setq prefix "(GREP)"))
      ((char-equal flag-char ?I)
@@ -681,6 +688,21 @@ with no args, if that value is non-nil."
       (if (null forces) (not gtags-mode)
         (> (prefix-numeric-value forces) 0)))
   (run-hooks 'gtags-mode-hook)
+  ; Suggested key mapping
+  (if gtags-suggested-key-mapping
+      (progn
+        (define-key gtags-mode-map "\eh" 'gtags-display-browser)
+        (define-key gtags-mode-map "\C-]" 'gtags-find-tag-from-here)
+        (define-key gtags-mode-map "\C-t" 'gtags-pop-stack)
+        (define-key gtags-mode-map "\eP" 'gtags-find-file)
+        (define-key gtags-mode-map "\ef" 'gtags-parse-file)
+        (define-key gtags-mode-map "\eg" 'gtags-find-with-grep)
+        (define-key gtags-mode-map "\eI" 'gtags-find-with-idutils)
+        (define-key gtags-mode-map "\es" 'gtags-find-symbol)
+        (define-key gtags-mode-map "\er" 'gtags-find-rtag)
+        (define-key gtags-mode-map "\et" 'gtags-find-tag)
+        (define-key gtags-mode-map "\ev" 'gtags-visit-rootdir))
+      nil)
   ; Mouse key mapping
   (if gtags-disable-pushy-mouse-mapping nil
       (if (not gtags-running-xemacs) nil
