@@ -1,7 +1,7 @@
 " File: gtags.vim
 " Author: Tama Communications Corporation
-" Version: 0.3.2
-" Last Modified: Nov 2, 2010
+" Version: 0.3.3
+" Last Modified: Feb 8, 2011
 "
 " Copyright and licence
 " ---------------------
@@ -386,7 +386,7 @@ function! s:RunGlobal(line)
 
     " If no pattern supplied then get it from user.
     if pattern == '' && option !~ 'P'
-        let g:option = option
+        let s:option = option
         if option =~ 'f'
             let line = input("Gtags for file: ", expand('%'), 'file')
         else
@@ -424,21 +424,21 @@ endfunction
 " Custom completion.
 "
 function Candidate(lead, line, pos)
-    let g:option = s:Extract(a:line, 'option')
+    let s:option = s:Extract(a:line, 'option')
     return CandidateCore(a:lead, a:line, a:pos)
 endfunction
 
 function CandidateCore(lead, line, pos)
-    if g:option =~ 'P' || g:option =~ 'f'
+    if s:option =~ 'P' || s:option =~ 'f'
         let opt = '-P'
-        if g:option =~ 'O'
+        if s:option =~ 'O'
             let opt = opt . 'O'
-        elseif g:option =~ 'o'
+        elseif s:option =~ 'o'
             let opt = opt . 'o'
         endif
-    elseif g:option =~ 's'
+    elseif s:option =~ 's'
         let opt = '-cs'
-    elseif g:option =~ 'g'
+    elseif s:option =~ 'g'
         return ''
     else
         let opt = '-c'
