@@ -39,7 +39,7 @@ if ($type eq 'definition' || $type eq 'reference') {
 } elsif ($type eq 'idutils') {
 	$flags = 'cI';
 } elsif ($type eq 'grep') {
-	$flags = 'crs';
+	exit(0);	# Ignored because completion for grep is groundless.
 } else {
 	error_and_exit("invalid type name.");
 }
