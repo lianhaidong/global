@@ -390,7 +390,7 @@ function! s:RunGlobal(line)
         if option =~ 'f'
             let line = input("Gtags for file: ", expand('%'), 'file')
         else
-            let line = input("Gtags for pattern: ", expand('<cword>'), 'custom,CandidateCore')
+            let line = input("Gtags for pattern: ", expand('<cword>'), 'custom,GtagsCandidateCore')
         endif
         let pattern = s:Extract(line, 'pattern')
         if pattern == ''
@@ -423,12 +423,12 @@ endfunction
 "
 " Custom completion.
 "
-function Candidate(lead, line, pos)
+function GtagsCandidate(lead, line, pos)
     let s:option = s:Extract(a:line, 'option')
-    return CandidateCore(a:lead, a:line, a:pos)
+    return GtagsCandidateCore(a:lead, a:line, a:pos)
 endfunction
 
-function CandidateCore(lead, line, pos)
+function GtagsCandidateCore(lead, line, pos)
     if s:option =~ 'P' || s:option =~ 'f'
         let opt = '-P'
         if s:option =~ 'O'
@@ -447,7 +447,7 @@ function CandidateCore(lead, line, pos)
 endfunction
 
 " Define the set of Gtags commands
-command! -nargs=* -complete=custom,Candidate Gtags call s:RunGlobal(<q-args>)
+command! -nargs=* -complete=custom,GtagsCandidate Gtags call s:RunGlobal(<q-args>)
 command! -nargs=0 GtagsCursor call s:GtagsCursor()
 command! -nargs=0 Gozilla call s:Gozilla()
 " Suggested map:
