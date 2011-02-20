@@ -123,9 +123,8 @@
 	@item{@option{-n}, @option{--line-number}[=@arg{columns}]}
 		Print line numbers. By default, doesn't print line numbers.
 		The default value of @arg{columns} is 4.
-	@item{@option{--no-map-file}}
-		Stop generating files @file{MAP} and @file{FILEMAP}.
-		By default, @name{htags} generates them.
+	@item{@option{--map-file}}
+		Generate files @file{MAP} and @file{FILEMAP}.
 	@item{@option{-o}, @option{--other}}
 		Pick up not only source files but also other files in the file index.
 	@item{@option{--overwrite-key}}

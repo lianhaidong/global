@@ -26,9 +26,10 @@ in the hypertext.
 
 [How does this kit do?]
 
-Htags(1) generates a mapping file named 'FILEMAP' as part of the output.
+Htags(1) with the --map-file option generates a mapping file named 'FILEMAP'
+as part of the output.
 
-$ htags -sanog
+$ htags -sanog --map-file
 $ ls HTML
 D        I  MAP  S  defines       files       help.html   mains.html
 FILEMAP  J  R    Y  defines.html  files.html  index.html  rebuild.sh
