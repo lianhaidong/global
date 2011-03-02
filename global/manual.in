@@ -1,6 +1,6 @@
 #
 # Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2006
-#	2008, 2009 Tama Communications Corporation
+#	2008, 2009, 2011 Tama Communications Corporation
 #
 # This file is part of GNU GLOBAL.
 #
@@ -22,10 +22,10 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	GLOBAL,1,March 2010,GNU Project
+@HEADER	GLOBAL,2,March 2011,GNU Project
 @NAME	global - print locations of the specified object.
 @SYNOPSIS
-	@name{global} [-aGilnqrstTvx][-e] @arg{pattern}
+	@name{global} [-adGilnqrstTvx][-e] @arg{pattern}
 	@name{global} -c[iIqsv] @arg{prefix}
 	@name{global} -f[anqrstvx][-L file-list] @arg{files}
 	@name{global} -g[aGilnoOqtvVx][-L file-list][-e] @arg{pattern} [@arg{files}]
@@ -91,6 +91,8 @@
 	@begin_itemize
 	@item{@option{-a}, @option{--absolute}}
 		Print absolute path name. By default, print relative path name.
+	@item{@option{-d}, @option{--definition}}
+		Print locations of object definitions.
 	@item{@option{--from-here} @arg{context}}
 		Decide tag type by the @arg{context}. The @arg{context} must be 'lineno:path'.
 		If this option is specified then the @option{-s} and @option{-r}

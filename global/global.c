@@ -63,6 +63,7 @@ void encode(char *, int, const char *);
 const char *localprefix;		/* local prefix		*/
 int aflag;				/* [option]		*/
 int cflag;				/* command		*/
+int dflag;				/* command		*/
 int fflag;				/* command		*/
 int gflag;				/* command		*/
 int Gflag;				/* [option]		*/
@@ -124,6 +125,7 @@ help(void)
 static struct option const long_options[] = {
 	{"absolute", no_argument, NULL, 'a'},
 	{"completion", no_argument, NULL, 'c'},
+	{"definition", no_argument, NULL, 'd'},
 	{"regexp", required_argument, NULL, 'e'},
 	{"file", no_argument, NULL, 'f'},
 	{"local", no_argument, NULL, 'l'},
@@ -308,7 +310,7 @@ main(int argc, char **argv)
 	int optchar;
 	int option_index = 0;
 
-	while ((optchar = getopt_long(argc, argv, "ace:ifgGIlL:noOpPqrstTuvVx", long_options, &option_index)) != EOF) {
+	while ((optchar = getopt_long(argc, argv, "acde:ifgGIlL:noOpPqrstTuvVx", long_options, &option_index)) != EOF) {
 		switch (optchar) {
 		case 0:
 			break;
@@ -317,6 +319,10 @@ main(int argc, char **argv)
 			break;
 		case 'c':
 			cflag++;
+			setcom(optchar);
+			break;
+		case 'd':
+			dflag++;
 			setcom(optchar);
 			break;
 		case 'e':
@@ -590,7 +596,9 @@ main(int argc, char **argv)
 			die_with_code(2, "regular expression is not allowed with the --from-here option.");
 		db = decide_tag_by_context(av, context_file, atoi(context_lineno));
 	} else {
-		if (rflag && sflag)
+		if (dflag)
+			db = GTAGS;
+		else if (rflag && sflag)
 			db = GRTAGS + GSYMS;
 		else
 			db = (rflag) ? GRTAGS : ((sflag) ? GSYMS : GTAGS);
