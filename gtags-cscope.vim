@@ -1,11 +1,11 @@
 " File: gtags-cscope.vim
 " Author: Tama Communications Corporation
 " Version: 0.2
-" Last Modified: Feb 5, 2010
+" Last Modified: March 3, 2011
 "
 " Copyright and lisence
 " ---------------------
-" Copyright (c) 2010 Tama Communications Corporation
+" Copyright (c) 2010, 2011 Tama Communications Corporation
 "
 " This file is part of GNU GLOBAL.
 "
@@ -47,11 +47,17 @@
 " -------------
 " Then you can use cs commands except for the 'd'(2) command.
 " Profitable commands are assigned to keys like follows:
-"	Find definition		<C-\>t :cs find g
-"	Find reference		<C-\>r :cs find c
-"	Find other symbol	<C-\>s :cs find s
-"	Find egrep pattern	<C-\>g :cs find e
-"	Find path		<C-\>P :cs find f
+"
+"	explanation		command			mapped key
+"	----------------------------------------------------------
+"	Find symbol		:cs find 0 or s		<C-\>s
+"	Find definition		:cs find 1 or g		<C-\>t 
+"	Find functions called by this function	(not implemented)
+"	Find reference		:cs find 3 or c		<C-\>r 
+"	Find text string	:cs find 4 or t
+"	Find egrep pattern	:cs find 6 or e		<C-\>g 
+"	Find path		:cs find 7 or f		<C-\>P 
+"	Find include file	:cs find 8 or i
 "
 " You can move tag list using:
 "	Go to the next tag	<C-\><C-n> :tn
@@ -142,21 +148,21 @@ function! s:GtagsCscope()
         " Context search. See the --from-here option of global(1).
         :map <C-\><C-\><C-]> :cs find d <C-R>=expand("<cword>")<CR>:<C-R>=line('.')<CR>:%<CR>
         " normal command
+        :nmap <C-\>s :cs find s <C-R>=expand("<cword>")<CR>
         :nmap <C-\>t :cs find g <C-R>=expand("<cword>")<CR>
         :nmap <C-\>r :cs find c <C-R>=expand("<cword>")<CR>
-        :nmap <C-\>s :cs find s <C-R>=expand("<cword>")<CR>
         :nmap <C-\>g :cs find e <C-R>=expand("<cword>")<CR>
         :nmap <C-\>P :cs find f 
         " Using 'CTRL-spacebar', the result is displayed in new horizontal window.
+        :nmap <C-@>s :scs find s <C-R>=expand("<cword>")<CR>
         :nmap <C-@>t :scs find g <C-R>=expand("<cword>")<CR>
         :nmap <C-@>r :scs find c <C-R>=expand("<cword>")<CR>
-        :nmap <C-@>s :scs find s <C-R>=expand("<cword>")<CR>
         :nmap <C-@>g :scs find e <C-R>=expand("<cword>")<CR>
         :nmap <C-@>P :scs find f 
         " Hitting CTRL-space *twice*, the result is displayed in new vertical window.
+        :nmap <C-@><C-@>s :vert scs find s <C-R>=expand("<cword>")<CR>
         :nmap <C-@><C-@>t :vert scs find g <C-R>=expand("<cword>")<CR>
         :nmap <C-@><C-@>r :vert scs find c <C-R>=expand("<cword>")<CR>
-        :nmap <C-@><C-@>s :vert scs find s <C-R>=expand("<cword>")<CR>
         :nmap <C-@><C-@>g :vert scs find e <C-R>=expand("<cword>")<CR>
         :nmap <C-@><C-@>P :vert scs find f 
 	" tag command
