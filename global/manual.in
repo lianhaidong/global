@@ -22,7 +22,7 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	GLOBAL,2,March 2011,GNU Project
+@HEADER	GLOBAL,1,March 2011,GNU Project
 @NAME	global - print locations of the specified object.
 @SYNOPSIS
 	@name{global} [-adGilnqrstTvx][-e] @arg{pattern}
