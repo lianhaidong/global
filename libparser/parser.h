@@ -52,6 +52,8 @@ struct parser_param {
 	int (*isnotfunction)(const char *);
 	const char *langmap;
 	void (*die)(const char *, ...);
+	void (*warning)(const char *, ...);
+	void (*message)(const char *, ...);
 };
 
 #endif

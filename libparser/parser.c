@@ -344,6 +344,8 @@ parse_file(const char *path, int flags, PARSER_CALLBACK put, void *arg)
 	param.isnotfunction = isnotfunction;
 	param.langmap = langmap_saved;
 	param.die = die;
+	param.warning = warning;
+	param.message = message;
 	ent->parser(&param);
 }
 

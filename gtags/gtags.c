@@ -778,6 +778,8 @@ updatetags(const char *dbpath, const char *root, IDSET *deleteset, STRBUF *addli
 		data.gtop[GTAGS]->flags |= GTAGS_EXTRACTMETHOD;
 	data.gtop[GRTAGS]->flags = data.gtop[GTAGS]->flags;
 	flags = 0;
+	if (vflag)
+		flags |= PARSER_VERBOSE;
 	if (debug)
 		flags |= PARSER_DEBUG;
 	if (wflag)
@@ -833,6 +835,8 @@ createtags(const char *dbpath, const char *root)
 	data.gtop[GRTAGS] = gtags_open(dbpath, root, GRTAGS, GTAGS_CREATE, openflags);
 	data.gtop[GRTAGS]->flags = data.gtop[GTAGS]->flags;
 	flags = 0;
+	if (vflag)
+		flags |= PARSER_VERBOSE;
 	if (debug)
 		flags |= PARSER_DEBUG;
 	if (wflag)
