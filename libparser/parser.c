@@ -326,7 +326,7 @@ parse_file(const char *path, int flags, PARSER_CALLBACK put, void *arg)
 	lang = decide_lang(suffix);
 	if (lang == NULL)
 		return;
-	if (flags & PARSER_VERBOSE)
+	if (flags & PARSER_DEBUG)
 		fprintf(stderr, "suffix '%s' assumed language '%s'.\n", suffix, lang);
 	/*
 	 * Select parser.
