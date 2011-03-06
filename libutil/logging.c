@@ -33,17 +33,17 @@ Logging utility:
 +------------------------------------
 |main(int argc, char **argv)
 |{
-|	logging_printf("Start");
+|	logging_printf("Start\n");
 |	logging_arguments(argc, argv);
 |	...
 
 % setenv GTAGSLOGGING /tmp/log
 % global -x main
 % cat /tmp/log
+Start
 0: |global|
-1: |--result=ctags|
-2: |die|
-3: |--from-here|
+1: |-x|
+2: |main|
 % _
 
 */
