@@ -1,11 +1,11 @@
 " File: gtags.vim
 " Author: Tama Communications Corporation
-" Version: 0.3.3
-" Last Modified: Feb 8, 2011
+" Version: 0.3.4
+" Last Modified: March 6, 2011
 "
 " Copyright and licence
 " ---------------------
-" Copyright (c) 2004, 2008, 2010 Tama Communications Corporation
+" Copyright (c) 2004, 2008, 2010, 2011 Tama Communications Corporation
 "
 " This file is part of GNU GLOBAL.
 "
@@ -213,6 +213,9 @@ if !exists("Gtags_Single_Quote_Char")
         let Gtags_Double_Quote_Char = '"'
     endif
 endif
+if !exists("Gtags_Use_Tags_Format")
+    let Gtags_Use_Tags_Format = 0
+endif
 
 "
 " Display error message.
@@ -322,7 +325,12 @@ function! s:ExecLoad(option, long_option, pattern)
     if a:long_option != ''
         let option = a:long_option . ' '
     endif
-    let option = option . '-qx' . s:TrimOption(a:option)
+    if g:Gtags_Use_Tags_Format == 1
+	let option = option . '-qt'
+    else
+	let option = option . '-qx'
+    endif
+    let option = option . s:TrimOption(a:option)
     if isfile == 1
         let cmd = 'global ' . option . ' ' . a:pattern
     else
@@ -360,9 +368,13 @@ function! s:ExecLoad(option, long_option, pattern)
 "        topleft vertical copen
         botright copen
     endif
-    " Parse the output of 'global -x' and show in the quickfix window.
+    " Parse the output of 'global -x or -t' and show in the quickfix window.
     let efm_org = &efm
-    let &efm="%*\\S%*\\s%l%\\s%f%\\s%m"
+    if g:Gtags_Use_Tags_Format == 1
+        let &efm = "%*\\S\t%f\t%l"
+    else
+        let &efm = "%*\\S%*\\s%l%\\s%f%\\s%m"
+    endif
     cexpr! result
     let &efm = efm_org
 endfunction
@@ -406,7 +418,7 @@ endfunction
 "
 function! s:GtagsCursor()
     let pattern = expand("<cword>")
-    let option = "--from-here=" . line('.') . ":" . expand("%")
+    let option = "--from-here=\"" . line('.') . ":" . expand("%") . "\""
     call s:ExecLoad('', option, pattern)
 endfunction
 
