@@ -310,6 +310,7 @@ main(int argc, char **argv)
 	int optchar;
 	int option_index = 0;
 
+	logging_arguments(argc, argv);
 	while ((optchar = getopt_long(argc, argv, "acde:ifgGIlL:noOpPqrstTuvVx", long_options, &option_index)) != EOF) {
 		switch (optchar) {
 		case 0:
