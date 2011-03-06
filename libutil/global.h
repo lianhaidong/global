@@ -44,6 +44,7 @@
 #include "langmap.h"
 #include "linetable.h"
 #include "locatestring.h"
+#include "logging.h"
 #include "makepath.h"
 #include "path.h"
 #include "pathconvert.h"
