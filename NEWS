@@ -5,7 +5,7 @@ ___________________________________
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009,
-	2010
+	2010, 2011
 	Tama Communications Corporation
 
  This file is free software; as a special exception the author gives
@@ -20,6 +20,25 @@ ___________________________________
 
 GNU GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
+
+Version 5.9.4 - March 8 2011
+
+[CHANGES]
+o gtags.el: New custom variables: 'gtags-disable-pushy-mouse-mapping'
+  and 'gtags-suggested-key-mapping'.
+o gtags.el: Command gtags-parse-file was rewritten.
+o gtags.vim: New custom variable Gtags_Use_Tags_Format.
+
+[INCOMPATIBLE CHANGES]
+o htags: Ceases making ID database arbitrarily when the -g option is specified.
+o htags: The --no-map-file option was removed. Instead, new --map-file option
+  was added. Htags doesn't make the mapping files (FILEMAP, MAP) any longer.
+o htags: The -c (--compact) option was deleted from the option list of the
+  --suggest2 option.
+
+[FIXED BUGS]
+o htags: A certain kind of files which does not end with newline bring
+  segmentation fault.
 
 Version 5.9.3 - December 6 2010
 
