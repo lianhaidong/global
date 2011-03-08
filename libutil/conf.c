@@ -51,9 +51,9 @@ static FILE *fp;
 static STRBUF *ib;
 static char *confline;
 /*
- * 8 level nested tc= or include= is allowed.
+ * 32 level nested tc= or include= is allowed.
  */
-static int allowed_nest_level = 8;
+static int allowed_nest_level = 32;
 static int opened;
 
 static void trim(char *);
