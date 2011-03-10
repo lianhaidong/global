@@ -982,10 +982,11 @@ grep(const char *pattern, char *const *argv, const char *dbpath)
 		if (user_specified) {
 			static char buf[MAXPATHLEN];
 
-			if (normalize(path, get_root_with_slash(), cwd, buf, sizeof(buf)) == NULL)
+			if (normalize(path, get_root_with_slash(), cwd, buf, sizeof(buf)) == NULL) {
 				if (!qflag)
 					fprintf(stderr, "'%s' is out of the source project.\n", path);
 				continue;
+			}
 			if (!test("f", buf))
 				die("'%s' not found. Please remake tag files by invoking gtags(1).", path);
 			path = buf;
