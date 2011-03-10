@@ -36,6 +36,7 @@
 #include "format.h"
 #include "gparam.h"
 #include "gpathop.h"
+#include "gtagsop.h"
 #include "pathconvert.h"
 #include "strbuf.h"
 #include "strlimcpy.h"
@@ -184,9 +185,11 @@ convert_pathname(CONVERT *cv, const char *path)
  *	i)	cwd	current directory
  *	i)	dbpath	dbpath directory
  *	i)	op	output file
+ *	i)	db	tag type (GTAGS, GRTAGS, GSYMS, GPATH, NOTAGS)
+ *			only for cscope format
  */
 CONVERT *
-convert_open(int type, int format, const char *root, const char *cwd, const char *dbpath, FILE *op)
+convert_open(int type, int format, const char *root, const char *cwd, const char *dbpath, FILE *op, int db)
 {
 	CONVERT *cv = (CONVERT *)check_calloc(sizeof(CONVERT), 1);
 	/*
@@ -205,6 +208,7 @@ convert_open(int type, int format, const char *root, const char *cwd, const char
 	cv->type = type;
 	cv->format = format;
 	cv->op = op;
+	cv->db = db;
 	/*
 	 * open GPATH.
 	 */
@@ -320,13 +324,19 @@ convert_put(CONVERT *cv, const char *ctags_x)
 	case FORMAT_CSCOPE:
 		fputs(convert_pathname(cv, path), cv->op);
 		fputc(' ', cv->op);
-		fputs(tag, cv->op);
+		if (cv->db == GTAGS)
+			fputs(tag, cv->op);
+		else
+			fputs("<unknown>", cv->op);
 		fputc(' ', cv->op);
 		fputs(lineno, cv->op);
 		fputc(' ', cv->op);
 		for (; *rest && isspace(*rest); rest++)
 			;
-		fputs(rest, cv->op);
+		if (*rest)
+			fputs(rest, cv->op);
+		else
+			fputs("<unknown>", cv->op);
 		break;
 	default:
 		die("unknown format type.");
@@ -394,13 +404,19 @@ convert_put_using(CONVERT *cv, const char *tag, const char *path, int lineno, co
 	case FORMAT_CSCOPE:
 		fputs(convert_pathname(cv, path), cv->op);
 		fputc(' ', cv->op);
-		fputs(tag, cv->op);
+		if (cv->db == GTAGS)
+			fputs(tag, cv->op);
+		else
+			fputs("<unknown>", cv->op);
 		fputc(' ', cv->op);
 		fprintf(cv->op, "%d", lineno);
 		fputc(' ', cv->op);
 		for (; *rest && isspace(*rest); rest++)
 			;
-		fputs(rest, cv->op);
+		if (*rest)
+			fputs(rest, cv->op);
+		else
+			fputs("<unknown>", cv->op);
 		break;
 	default:
 		die("unknown format type.");

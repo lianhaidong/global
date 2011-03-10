@@ -877,7 +877,7 @@ idutils(const char *pattern, const char *dbpath)
 		fprintf(stderr, "idutils: %s\n", strbuf_value(ib));
 	if (!(ip = popen(strbuf_value(ib), "r")))
 		die("cannot execute '%s'.", strbuf_value(ib));
-	cv = convert_open(type, format, root, cwd, dbpath, stdout);
+	cv = convert_open(type, format, root, cwd, dbpath, stdout, NOTAGS);
 	count = 0;
 	strcpy(path, "./");
 	while ((grep = strbuf_fgets(ib, ip, STRBUF_NOCRLF)) != NULL) {
@@ -965,7 +965,7 @@ grep(const char *pattern, char *const *argv, const char *dbpath)
 		flags |= REG_ICASE;
 	if (regcomp(&preg, pattern, flags) != 0)
 		die("invalid regular expression.");
-	cv = convert_open(type, format, root, cwd, dbpath, stdout);
+	cv = convert_open(type, format, root, cwd, dbpath, stdout, NOTAGS);
 	count = 0;
 
 	if (*argv && file_list)
@@ -985,6 +985,7 @@ grep(const char *pattern, char *const *argv, const char *dbpath)
 			if (normalize(path, get_root_with_slash(), cwd, buf, sizeof(buf)) == NULL)
 				if (!qflag)
 					fprintf(stderr, "'%s' is out of the source project.\n", path);
+				continue;
 			if (!test("f", buf))
 				die("'%s' not found. Please remake tag files by invoking gtags(1).", path);
 			path = buf;
@@ -1060,7 +1061,7 @@ pathlist(const char *pattern, const char *dbpath)
 	}
 	if (!localprefix)
 		localprefix = "./";
-	cv = convert_open(type, format, root, cwd, dbpath, stdout);
+	cv = convert_open(type, format, root, cwd, dbpath, stdout, GPATH);
 	count = 0;
 
 	gp = gfind_open(dbpath, localprefix, target);
@@ -1195,7 +1196,7 @@ parsefile(char *const *argv, const char *cwd, const char *root, const char *dbpa
 		plugin_parser = strbuf_value(sb);
 	else
 		plugin_parser = NULL;
-	data.cv = convert_open(type, format, root, cwd, dbpath, stdout);
+	data.cv = convert_open(type, format, root, cwd, dbpath, stdout, db);
 	if (gpath_open(dbpath, 0) < 0)
 		die("GPATH not found.");
 	if (data.target == TARGET_REF || data.target == TARGET_SYM) {
@@ -1310,7 +1311,7 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 	 * open tag file.
 	 */
 	gtop = gtags_open(dbpath, root, db, GTAGS_READ, 0);
-	cv = convert_open(type, format, root, cwd, dbpath, stdout);
+	cv = convert_open(type, format, root, cwd, dbpath, stdout, db);
 	/*
 	 * search through tag file.
 	 */

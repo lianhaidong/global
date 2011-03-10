@@ -166,6 +166,7 @@ main(int argc, char **argv)
 	int option_index = 0;
 	STATISTICS_TIME *tim;
 
+	logging_arguments(argc, argv);
 	while ((optchar = getopt_long(argc, argv, "cd:f:iIn:oOqvwse", long_options, &option_index)) != EOF) {
 		switch (optchar) {
 		case 0:
@@ -298,7 +299,7 @@ main(int argc, char **argv)
 
 		if (argc < 3)
 			die("gtags --path: 3 arguments needed.");
-		cv = convert_open(convert_type, FORMAT_CTAGS_X, argv[0], argv[1], argv[2], stdout);
+		cv = convert_open(convert_type, FORMAT_CTAGS_X, argv[0], argv[1], argv[2], stdout, NOTAGS);
 		while ((ctags_x = strbuf_fgets(ib, stdin, STRBUF_NOCRLF)) != NULL)
 			convert_put(cv, ctags_x);
 		convert_close(cv);

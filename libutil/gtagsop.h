@@ -35,6 +35,7 @@
 #define COMPLINEKEY	" __.COMPLINE"
 #define COMPNAMEKEY	" __.COMPNAME"
 
+#define NOTAGS		-1
 #define GPATH		0
 #define GTAGS		1
 #define GRTAGS		2

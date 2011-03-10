@@ -30,13 +30,14 @@ typedef struct {
 	STRBUF *abspath;
 	char basedir[MAXPATHLEN];
 	int start_point;
+	int db;			/* for gtags-cscope */
 
 } CONVERT;
 
 void set_encode_chars(const unsigned char *);
 void set_print0();
 char *decode_path(const unsigned char *);
-CONVERT *convert_open(int, int, const char *, const char *, const char *, FILE *);
+CONVERT *convert_open(int, int, const char *, const char *, const char *, FILE *, int);
 void convert_put(CONVERT *, const char *);
 void convert_put_path(CONVERT *, const char *);
 void convert_put_using(CONVERT *, const char *, const char *, int, const char *, const char *);
