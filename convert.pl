@@ -155,56 +155,6 @@ sub gen {
 }
 #------------------------------------------------------------------
 #
-# Perl package.
-#
-#------------------------------------------------------------------
-package perl;
-sub convert {
-	local($arg) = '[^},]+';
-	while (s/\@file\{($arg)\}/'$1'/) {
-		;
-	}
-	&c'convert();
-}
-sub gen {
-	local($help_const) = 0;
-	print "# This part is generated automatically by $'com from $'infile.\n";
-	while (&'getline()) {
-		if (/^\@NAME\s+(.*)\s+-/) {
-			print "\$program = '$1';\n";
-		} elsif (/^\@SYNOPSIS$/) {
-			&'getline();
-			convert();
-			print "\$usage_const = \"Usage: $_\";\n";
-		} elsif (/^\@OPTIONS$/) {
-			print "\$help_const = \"\$usage_const\\\nOptions:\\\n";
-			while (&'getline()) {
-				if (/^\@/) {
-					&'ungetline();
-					last;
-				}
-				convert();
-				if (/^\@begin_itemize$/) {
-					$itemize = 1;
-				} elsif (/^\@end_itemize$/) {
-					$itemize = 0;
-				} elsif ($itemize) {
-					if (/^\@item\{(.*)\}$/) {
-						print $1;
-					} else {
-						print "       ";
-						print;
-					}
-					print "\\\n";
-				}
-			}
-		}
-	}
-	print "\";\n";
-	print "# end of generated part.\n";
-}
-#------------------------------------------------------------------
-#
 # Man package.
 #
 #------------------------------------------------------------------
@@ -259,22 +209,26 @@ sub gen {
 			}
 		} elsif (/^\@(.*)$/) {
 			$type = $1;
-			local($varbatim) = ($type =~ /^(EXAMPLES|FORMAT)$/) ? 1 : 0;
 			if ($type =~ /\s+/) {
 				$type = "\"$type\"";
 			}
 			print ".SH $type\n";
-			print ".nf\n" if ($varbatim);
 			local($itemize) = 0;
+			local($verbatim) = 0;
 			while (&'getline()) {
-				if (/^\@/) {
+				if (/^\s*\@begin_verbatim\s*$/) {
+					$verbatim = 1;
+					print ".nf\n";
+					next;
+				} elsif (/^\s*\@end_verbatim\s*$/) {
+					$verbatim = 0;
+					print ".fi\n";
+					next;
+				} elsif (/^\@/) {
 					&'ungetline();
 					last;
 				} elsif (/^$/) {
 					print ".PP\n";
-					next;
-				} elsif ($varbatim) {
-					print;
 					next;
 				}
 				convert();
@@ -288,7 +242,6 @@ sub gen {
 					print;
 				}
 			}
-			print ".fi\n" if ($varbatim);
 		}
 	}
 }
@@ -322,7 +275,6 @@ sub gen {
 			print "$name\n";
 		} elsif (/^\@(SYNOPSIS)$/) {
 			print "\@unnumberedsubsec $1\n";
-			print "\@noindent\n";
 			print "\@quotation\n";
 			while (&'getline()) {
 				if (/^\@/) {
@@ -339,20 +291,27 @@ sub gen {
 			print "\@end quotation\n";
 		} elsif (/^\@(.*)$/) {
 			$type = $1;
-			local($varbatim) = ($type =~ /^(EXAMPLES|FORMAT)$/) ? 1 : 0;
 			print "\@unnumberedsubsec $type\n";
-			print "\@example\n" if ($varbatim);
 			local($itemize) = 0;
+			local($verbatim) = 0;
 			while (&'getline()) {
-				if (/^\@/) {
+				if (/^\s*\@begin_verbatim\s*$/) {
+					$verbatim = 1;
+					print "\@example\n";
+					next;
+				} elsif (/^\s*\@end_verbatim\s*$/) {
+					$verbatim = 0;
+					print "\@end example\n";
+					next;
+				} elsif ($verbatim) {
+					s/\{/@\{/g;
+					s/\}/@\}/g;
+					print;
+					next;
+				} elsif (/^\@/) {
 					&'ungetline();
 					last;
 				} elsif (/^$/) {
-					print;
-					next;
-				} elsif ($varbatim) {
-					s/\{/@\{/g;
-					s/\}/@\}/g;
 					print;
 					next;
 				}
@@ -369,7 +328,6 @@ sub gen {
 					print "$_\n";
 				}
 			}
-			print "\@end example\n" if ($varbatim);
 		}
 	}
 }

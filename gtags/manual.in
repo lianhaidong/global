@@ -102,11 +102,13 @@
 		The default is the current directory.
 	@end_itemize
 @EXAMPLES
+	@begin_verbatim
 	$ ls -F
 	Makefile      src/    lib/
 	$ gtags -v
 	$ global -x main
 	main              10 src/main.c  main (argc, argv) {
+	@end_verbatim
 @FILES
 	@begin_itemize
 	@item{@file{GTAGS}}

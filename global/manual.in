@@ -158,6 +158,7 @@
 		Use standard ctags cxref (with the @arg{-x}) format.
 	@end_itemize
 @EXAMPLES
+	@begin_verbatim
 	$ ls -F
 	Makefile      src/    lib/
 	$ gtags
@@ -186,6 +187,7 @@
 	$ GTAGSLIBPATH=/usr/src/lib:/usr/src/sys
 	$ global strlen
 	../../../usr/src/lib/libc/string/strlen.c
+	@end_verbatim
 @FILES
 	@begin_itemize
 	@item{@file{GTAGS}}

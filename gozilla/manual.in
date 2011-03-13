@@ -86,6 +86,7 @@
 		Browser to use. By default, it is assumed @name{mozilla}.
 	@end_itemize
 @EXAMPLES
+	@begin_verbatim
 	$ gtags
 	$ htags
 	$ global -x main
@@ -96,7 +97,7 @@
 
 	$ firefox &
 	$ gozilla -b firefox +82 ctags.c
-
+	@end_verbatim
 @DIAGNOSTICS
 	@name{Gozilla} exits with a non 0 value if an error occurred, 0 otherwise.
 @SEE ALSO

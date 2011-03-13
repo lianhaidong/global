@@ -48,6 +48,7 @@
                 Verbose mode.
         @end_itemize
 @EXAMPLES
+	@begin_verbatim
 	$ gtags-cscope
 	>> help
 	0<arg>: Find this C symbol
@@ -75,6 +76,7 @@
 	libglibc/getopt1.c main 93 main (argc, argv)
 	>> q
 	$ _
+	@end_verbatim
 @DIAGNOSTICS
 	@name{Gtags-cscope} exits with a non 0 value if an error occurred, 0 otherwise.
 @SEE ALSO
