@@ -1,492 +1,605 @@
-/*
- * Copyright (c) 2006, 2008
- *	Tama Communications Corporation
+/*===========================================================================
+ Copyright (c) 1998-2000, The Santa Cruz Operation 
+ All rights reserved.
+ 
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are met:
+
+ *Redistributions of source code must retain the above copyright notice,
+ this list of conditions and the following disclaimer.
+
+ *Redistributions in binary form must reproduce the above copyright notice,
+ this list of conditions and the following disclaimer in the documentation
+ and/or other materials provided with the distribution.
+
+ *Neither name of The Santa Cruz Operation nor the names of its contributors
+ may be used to endorse or promote products derived from this software
+ without specific prior written permission. 
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ``AS
+ IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE
+ LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ INTERRUPTION)
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
+ DAMAGE. 
+ =========================================================================*/
+
+
+/*	cscope - interactive C symbol cross-reference
  *
- * This file is part of GNU GLOBAL.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *	main functions
  */
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <errno.h>
+#include "global-cscope.h"
 
-#include <ctype.h>
-#include <stdio.h>
-#ifdef STDC_HEADERS
-#include <stdlib.h>
-#endif
-#ifdef HAVE_STRING_H
-#include <string.h>
-#else
-#include <strings.h>
-#endif
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-#include "getopt.h"
+#include "build.h"
+#include "version-cscope.h"	/* FILEVERSION and FIXVERSION */
 
-#include "global.h"
+/* for libutil */
+#include "env.h"
+#include "gparam.h"
+#include "test.h"
+#include "version.h"
+/* usage */
 #include "const.h"
 
-/* static void usage(void); */
-static void help(void);
-static void check_dbpath(void);
-static void get_global_path(void);
-int main(int, char **);
-static char *get_line(void);
-static void update(void);
-static void print_case_distinction(void);
-static char *include_pattern(const char *);
-static void command_help(void);
-static void command_loop(void);
-static int execute_command(STRBUF *, const int, const int, const char *);
-static void search(int, char *);
+#include <stdlib.h>	/* atoi */
+#include <unistd.h>
+#if defined(USE_NCURSES) && !defined(RENAMED_NCURSES)
+#include <ncurses.h>
+#else
+#include <curses.h>
+#endif
+#include <sys/types.h>	/* needed by stat.h */
+#include <sys/stat.h>	/* stat */
+#include <signal.h>
 
-int show_version;
-int show_help;
-int qflag;
-int vflag;
+/* defaults for unset environment variables */
+#define	EDITOR	"vi"
+#define HOME	"/"	/* no $HOME --> use root directory */
+#define	SHELL	"sh"
+#define LINEFLAG "+%s"	/* default: used by vi and emacs */
+#define TMPDIR	"/tmp"
 
-#define NA	-1
-#define FROM_HERE -2
+static char const rcsid[] = "$Id$";
 
-/*
-static void
-usage(void)
+char	*editor, *shell, *lineflag;	/* environment variables */
+char	*home;			/* Home directory */
+BOOL	lineflagafterfile;
+char	*argv0;			/* command name */
+int	dispcomponents = 1;	/* file path components to display */
+#if CCS
+BOOL	displayversion;		/* display the C Compilation System version */
+#endif
+BOOL	editallprompt = YES;	/* prompt between editing files */
+BOOL	incurses = NO;		/* in curses */
+BOOL	isuptodate;		/* consider the crossref up-to-date */
+BOOL	linemode = NO;		/* use line oriented user interface */
+BOOL	verbosemode = NO;	/* print extra information on line mode */
+BOOL	ogs;			/* display OGS book and subsystem names */
+char	*prependpath;		/* prepend path to file names */
+FILE	*refsfound;		/* references found file */
+char	temp1[PATHLEN + 1];	/* temporary file name */
+char	temp2[PATHLEN + 1];	/* temporary file name */
+char	tempdirpv[PATHLEN + 1];	/* private temp directory */
+char	tempstring[TEMPSTRING_LEN + 1]; /* use this as a buffer, instead of 'yytext', 
+				 * which had better be left alone */
+char	*tmpdir;		/* temporary directory */
+
+static	BOOL	onesearch;		/* one search only in line mode */
+static	char	*reflines;		/* symbol reference lines file */
+
+/* Internal prototypes: */
+static	void	longusage(void);
+static	void	usage(void);
+int	qflag;
+
+#ifdef HAVE_FIXKEYPAD
+void	fixkeypad();
+#endif
+
+#if defined(KEY_RESIZE) && !defined(__DJGPP__)
+void 
+sigwinch_handler(int sig, siginfo_t *info, void *unused)
 {
-	fputs(usage_const, stderr);
-	exit(2);
+    (void) sig;
+    (void) info;
+    (void) unused;
+    if(incurses == YES)
+        ungetch(KEY_RESIZE);
 }
-*/
-static void
-help(void)
-{
-	fputs(usage_const, stdout);
-	fputs(help_const, stdout);
-	exit(0);
-}
-
-static struct option const long_options[] = {
-	{"ignore-case", no_argument, NULL, 'C'},
-	{"quiet", no_argument, NULL, 'q'},
-	{"verbose", no_argument, NULL, 'v'},
-	{"version", no_argument, &show_version, 1},
-	{"help", no_argument, &show_help, 1},
-	{ 0 }
-};
-
-char global_path[MAXFILLEN];
-char *context;
-int ignore_case;
-
-/*
- * Check whether or not GTAGS exist.
- *
- * If GTAGS not found, this function abort with a message.
- */
-static void
-check_dbpath(void)
-{
-	char cwd[MAXPATHLEN];
-	char root[MAXPATHLEN];
-	char dbpath[MAXPATHLEN];
-
-	getdbpath(cwd, root, dbpath, vflag);
-}
-/*
- * Get global(1)'s path.
- */
-static void
-get_global_path(void)
-{
-	const char *p;
-
-	if (!(p = usable("global")))
-		die("global command required but not found.");
-	strlimcpy(global_path, p, sizeof(global_path));
-}
+#endif
 
 int
 main(int argc, char **argv)
 {
-	const char *av = NULL;
-	int optchar;
-	int option_index = 0;
-
-	while ((optchar = getopt_long(argc, argv, "bCcdeF:f:hI:i:kLlp:qRs:TUuVv0123456789", long_options, &option_index)) != EOF) {
-		switch (optchar) {
-		case 0:
-			break;
-		case 'C':
-			ignore_case = 1;
-			break;
-		case 'q':
-			qflag++;
-			break;
-		case 'v':
-			vflag++;
-			break;
-		default:
-			break;
-		}
-	}
-	if (show_help)
-		help();
-	argc -= optind;
-	argv += optind;
-	if (!av)
-		av = (argc > 0) ? *argv : NULL;
-	if (show_version)
-		version(av, vflag);
-	/*
-	 * Get global(1)'s path. If not found, abort with a message.
-	 */
-	get_global_path();
-	/*
-	 * Check dbpath. If dbpath not found, abort with a message.
-	 */
-	check_dbpath();
-	/*
-	 * Command loop
-	 */
-	command_loop();
-	return 0;
-}
-/*
- * Read line with a prompt.
- *
- * This is part of cscope protocol.
- */
-static char *
-get_line(void)
-{
-	STATIC_STRBUF(sb);
-
-	/* Prompt */
-	fputs(">> ", stdout);
-	fflush(stdout);
-	if (strbuf_fgets(sb, stdin, STRBUF_NOCRLF) == NULL)
-		return NULL;
-	return strbuf_value(sb);
-}
-/*
- * Update tag files.
- */
-static void
-update(void)
-{
-	STATIC_STRBUF(command);
-
-	strbuf_clear(command);
-	strbuf_sprintf(command, "%s -u", global_path);
-	if (vflag) {
-		strbuf_putc(command, 'v');
-		fprintf(stderr, "gscope: %s\n", strbuf_value(command));
-	}
-	system(strbuf_value(command));
-}
-/*
- * print verbose message about case distinction.
- */
-static void
-print_case_distinction(void)
-{
-	if (vflag) {
-		const char *msg = ignore_case ? 
-			"ignore letter case when searching" :
-			"use letter case when searching";
-		fprintf(stderr, "gscope: %s\n", msg);
-	}
-}
-/*
- * get pattern which match to #include lines.
- *
- *	i)	arg	include file name
- *	r)		pattern which match to #include lines
- */
-static char *
-include_pattern(const char *arg)
-{
-#if defined(_WIN32)
-#define INCLUDE "^[ \t]*#[ \t]*include[ \t].*[\\\"\"</\\]%s[\\\"\">]"
-#elif defined(__DJGPP__)
-#define INCLUDE "^[ \t]*#[ \t]*include[ \t].*[\"</\\]%s[\">]"
-#else
-#define INCLUDE "^[ \t]*#[ \t]*include[ \t].*[\"</]%s[\">]"
+    char path[PATHLEN + 1];	/* file path */
+    char *s;
+    int c;
+    pid_t pid;
+    struct stat	stat_buf;
+    mode_t orig_umask;
+#if defined(KEY_RESIZE) && !defined(__DJGPP__)
+    struct sigaction winch_action;
 #endif
-	STATIC_STRBUF(pat);
+	
+    /* save the command name for messages */
+    argv0 = argv[0];
 
-	strbuf_clear(pat);
-	strbuf_sprintf(pat, INCLUDE, quote_string(arg));
-	return strbuf_value(pat);
-}
-/*
- * show help message.
- */
-static void
-command_help(void)
-{
-	fprintf(stdout, "0<arg>: Find this C symbol\n");
-	fprintf(stdout, "1<arg>: Find this definition\n");
-	fprintf(stdout, "2<arg>: Find functions called by this function\n");
-	fprintf(stdout, "        (Not implemented yet.)\n");
-	fprintf(stdout, "3<arg>: Find functions calling this function\n");
-	fprintf(stdout, "4<arg>: Find this text string\n");
-	fprintf(stdout, "6<arg>: Find this egrep pattern\n");
-	fprintf(stdout, "7<arg>: Find this file\n");
-	fprintf(stdout, "8<arg>: Find files #including this file\n");
-	fprintf(stdout, "c: Toggle ignore/use letter case\n");
-	fprintf(stdout, "r: Rebuild the database\n");
-	fprintf(stdout, "q: Quit the session\n");
-	fprintf(stdout, "h: Show help\n");
-}
-/*
- * command loop.
- *
- * This is the main body of gtags-cscope.
- */
-void
-command_loop(void)
-{
-	int com = 0;
-	char *line;
-
-	print_case_distinction();
-	while ((line = get_line()) != NULL) {
-		switch (com = *line++) {	
-		/*
-		 * Control command
-		 */
-		case 'c':		/* c: ignore case or not */
-			ignore_case ^= 1;
-			print_case_distinction();
-			break;
-		case 'q':		/* q: quit the program */
-			return;
-		case 'r':		/* r: update tag file */
-			update();
-			break;
-		case 'h':		/* h: show help */
-			command_help();
-			break;
-		/*
-		 * Search command
-		 */
-		case '0':
-		case '1':
-		case '2':
-		case '3':
-		case '4':
-		case '6':
-		case '7':
-		case '8':
-			search(com, line);
-			break;
-		default:
-			fputs("cscope: 0 lines\n", stdout);
-			fflush(stdout);
-			break;
-		}
+    /* set the options */
+    while (--argc > 0 && (*++argv)[0] == '-') {
+	/* HBB 20030814: add GNU-style --help and --version options */
+	if (strequal(argv[0], "--help")
+	    || strequal(argv[0], "-h")) {
+	    longusage();
+	    myexit(0);
 	}
-}
-/*
- * Execute global(1) and write the output to the 'sb' string buffer.
- *
- *	o)	sb	output
- *	i)	com	cscope command (0-8)
- *	i)	opt	option for global(1)
- *	i)	arg	argument for global(1)
- *	r)		number of output
- */
-static int
-execute_command(STRBUF *sb, const int com, const int opt, const char *arg)
-{
-#ifdef _WIN32
-#define QUOTE '"'
+	if (strequal(argv[0], "--version")
+	    || strequal(argv[0], "-V")) {
+#if CCS
+	    displayversion = YES;
 #else
-#define QUOTE '\''
+	    fprintf(stderr, "%s: %s (based on version %d%s)\n", argv0, get_version(),
+		    FILEVERSION, FIXVERSION);
+	    myexit(0);
 #endif
-	STATIC_STRBUF(command);
-	STATIC_STRBUF(ib);
-	FILE *ip;
-	int count = 0;
-
-	strbuf_clear(command);
-	strbuf_puts(command, global_path);
-	strbuf_puts(command, " --result=cscope");
-	if (opt == FROM_HERE) {
-		strbuf_puts(command, " --from-here=");
-		strbuf_puts(command, context);
-	} else if (opt) {
-		strbuf_puts(command, " -");
-		strbuf_putc(command, opt);
 	}
-	if (ignore_case)
-		strbuf_puts(command, " --ignore-case");
-	strbuf_putc(command, ' ');
-	strbuf_putc(command, QUOTE);
-	strbuf_puts(command, arg);
-	strbuf_putc(command, QUOTE);
-	if (!(ip = popen(strbuf_value(command), "r")))
-		die("cannot execute '%s'.", strbuf_value(command));
-	if (vflag)
-		fprintf(stderr, "gscope: %s\n", strbuf_value(command));
-	/*
-	 * Copy records with little modification.
-	 */
-	strbuf_clear(ib);
-	while (strbuf_fgets(ib, ip, 0)) {
-		count++;
-		if (opt == 0) {
-			strbuf_puts(sb, strbuf_value(ib));
+
+	for (s = argv[0] + 1; *s != '\0'; s++) {
+			
+	    /* look for an input field number */
+	    if (isdigit((unsigned char) *s)) {
+		field = *s - '0';
+		if (field > 8) {
+		    field = 8;
+		}
+		if (*++s == '\0' && --argc > 0) {
+		    s = *++argv;
+		}
+		if (strlen(s) > PATLEN) {
+		    postfatal("\
+gtags-cscope: pattern too long, cannot be > %d characters\n", PATLEN);
+		    /* NOTREACHED */
+		}
+		strcpy(Pattern, s);
+		goto nextarg;
+	    }
+	    switch (*s) {
+	    case '-':	/* end of options */
+		--argc;
+		++argv;
+		goto lastarg;
+	    case 'b':	/* only build the cross-reference */
+		buildonly = YES;
+		linemode  = YES;
+		break;
+	    case 'c':	/* ASCII characters only in crossref */
+		/* N/A */
+		break;
+	    case 'C':	/* turn on caseless mode for symbol searches */
+		caseless = YES;
+		break;
+	    case 'd':	/* consider crossref up-to-date */
+		isuptodate = YES;
+		break;
+	    case 'e':	/* suppress ^E prompt between files */
+		editallprompt = NO;
+		break;
+	    case 'k':	/* ignore DFLT_INCDIR */
+		/* N/A */
+		break;
+	    case 'L':
+		onesearch = YES;
+		/* FALLTHROUGH */
+	    case 'l':
+		linemode = YES;
+		break;
+	    case 'v':
+		verbosemode = YES;
+		break;
+	    case 'o':	/* display OGS book and subsystem names */
+		ogs = YES;
+		break;
+	    case 'q':	/* quick search */
+		/* N/A */
+		break;
+	    case 'T':	/* truncate symbols to 8 characters */
+		/* N/A */
+		break;
+	    case 'u':	/* unconditionally build the cross-reference */
+		/* N/A */
+		break;
+	    case 'U':	/* assume some files have changed */
+		/* N/A */
+		break;
+	    case 'R':
+		usage();
+		break;
+	    case 'f':	/* alternate cross-reference file */
+	    case 'F':	/* symbol reference lines file */
+	    case 'i':	/* file containing file names */
+	    case 'I':	/* #include file directory */
+	    case 'p':	/* file path components to display */
+	    case 'P':	/* prepend path to file names */
+	    case 's':	/* additional source file directory */
+	    case 'S':
+		c = *s;
+		if (*++s == '\0' && --argc > 0) {
+		    s = *++argv;
+		}
+		if (*s == '\0') {
+		    fprintf(stderr, "%s: -%c option: missing or empty value\n", 
+			    argv0, c);
+		    goto usage;
+		}
+		switch (c) {
+		case 'f':	/* alternate cross-reference file (default: cscope.out) */
+		    /* N/A */
+		    break;
+		case 'F':	/* symbol reference lines file */
+		    reflines = s;
+		    break;
+		case 'i':	/* file containing file names (default: cscope.files) */
+		    /* N/A */
+		    break;
+		case 'I':	/* #include file directory */
+		    /* N/A */
+		    break;
+		case 'p':	/* file path components to display */
+		    if (*s < '0' || *s > '9' ) {
+			fprintf(stderr, "\
+%s: -p option: missing or invalid numeric value\n", 
+				argv0);
+			goto usage;
+		    }
+		    dispcomponents = atoi(s);
+		    break;
+		case 'P':	/* prepend path to file names */
+		    /* N/A */
+		    break;
+		case 's':	/* additional source directory */
+		case 'S':
+		    /* N/A */
+		    break;
+		}
+		goto nextarg;
+	    default:
+		fprintf(stderr, "%s: unknown option: -%c\n", argv0, 
+			*s);
+	    usage:
+		usage();
+		fprintf(stderr, "Try the -h option for more information.\n");
+		myexit(1);
+	    } /* switch(option letter) */
+	} /* for(option) */
+    nextarg:	
+	;
+    } /* while(argv) */
+
+ lastarg:
+    /* read the environment */
+    editor = mygetenv("EDITOR", EDITOR);
+    editor = mygetenv("VIEWER", editor); /* use viewer if set */
+    editor = mygetenv("CSCOPE_EDITOR", editor);	/* has last word */
+    home = mygetenv("HOME", HOME);
+    shell = mygetenv("SHELL", SHELL);
+    lineflag = mygetenv("CSCOPE_LINEFLAG", LINEFLAG);
+    lineflagafterfile = getenv("CSCOPE_LINEFLAG_AFTER_FILE") ? 1 : 0;
+    tmpdir = mygetenv("TMPDIR", TMPDIR);
+
+    /* make sure that tmpdir exists */
+    if (lstat (tmpdir, &stat_buf)) {
+	fprintf (stderr, "\
+cscope: Temporary directory %s does not exist or cannot be accessed\n", 
+		 tmpdir);
+	fprintf (stderr, "\
+cscope: Please create the directory or set the environment variable\n\
+cscope: TMPDIR to a valid directory\n");
+	myexit(1);
+    }
+
+    /* create the temporary file names */
+    orig_umask = umask(S_IRWXG|S_IRWXO);
+    pid = getpid();
+    snprintf(tempdirpv, sizeof(tempdirpv), "%s/cscope.%d", tmpdir, pid);
+    if(mkdir(tempdirpv,S_IRWXU)) {
+	fprintf(stderr, "\
+cscope: Could not create private temp dir %s\n",
+		tempdirpv);
+	myexit(1);
+    }
+    umask(orig_umask);
+
+    snprintf(temp1, sizeof(temp1), "%s/cscope.1", tempdirpv);
+    snprintf(temp2, sizeof(temp2), "%s/cscope.2", tempdirpv);
+
+    /* if running in the foreground */
+    if (signal(SIGINT, SIG_IGN) != SIG_IGN) {
+	/* cleanup on the interrupt and quit signals */
+	signal(SIGINT, myexit);
+	signal(SIGQUIT, myexit);
+    }
+    /* cleanup on the hangup signal */
+    signal(SIGHUP, myexit);
+
+    /* ditto the TERM signal */
+    signal(SIGTERM, myexit);
+
+    if (linemode == NO) {
+	signal(SIGINT, SIG_IGN);	/* ignore interrupts */
+	signal(SIGPIPE, SIG_IGN);/* | command can cause pipe signal */
+
+#if defined(KEY_RESIZE) && !defined(__DJGPP__)
+	winch_action.sa_sigaction = sigwinch_handler;
+	sigemptyset(&winch_action.sa_mask);
+	winch_action.sa_flags = SA_SIGINFO;
+	sigaction(SIGWINCH,&winch_action,NULL);
+#endif
+
+	/* initialize the curses display package */
+	initscr();	/* initialize the screen */
+	entercurses();
+#if TERMINFO
+	keypad(stdscr, TRUE);	/* enable the keypad */
+# ifdef HAVE_FIXKEYPAD
+	fixkeypad();	/* fix for getch() intermittently returning garbage */
+# endif
+#endif /* TERMINFO */
+#if UNIXPC
+	standend();	/* turn off reverse video */
+#endif
+	dispinit();	/* initialize display parameters */
+	setfield();	/* set the initial cursor position */
+	clearmsg();	/* clear any build progress message */
+	display();	/* display the version number and input fields */
+    }
+
+    /* if the cross-reference is to be considered up-to-date */
+    if (isuptodate == YES) {
+	if (execute("global", "global", "-p", NULL) != 0) {
+	    postfatal("gtags-cscope: GTAGS not found. Please invoke again without -d option.\n");
+            /* NOTREACHED */
+	}
+    } else {
+	char buf[MAXPATHLEN];
+
+	if (linemode == NO || verbosemode == YES)    /* display if verbose as well */
+	    postmsg("Building cross-reference...");                 
+	rebuild();
+	if (linemode == NO )
+            clearmsg(); /* clear any build progress message */
+	if (buildonly == YES) {
+	    myexit(0);
+	}
+	set_env("GTAGSROOT", getcwd(buf, sizeof(buf)));
+    }
+
+    /* opendatabase(); */
+
+    /* if using the line oriented user interface so cscope can be a 
+       subprocess to emacs or samuel */
+    if (linemode == YES) {
+	if (*Pattern != '\0') {		/* do any optional search */
+	    if (search() == YES) {
+		/* print the total number of lines in
+		 * verbose mode */
+		if (verbosemode == YES)
+		    printf("cscope: %d lines\n",
+			   totallines);
+
+		while ((c = getc(refsfound)) != EOF)
+		    putchar(c);
+	    }
+	}
+	if (onesearch == YES)
+	    myexit(0);
+		
+	for (;;) {
+	    char buf[PATLEN + 2];
+			
+	    printf(">> ");
+	    fflush(stdout);
+	    if (fgets(buf, sizeof(buf), stdin) == NULL) {
+		myexit(0);
+	    }
+	    /* remove any trailing newline character */
+	    if (*(s = buf + strlen(buf) - 1) == '\n') {
+		*s = '\0';
+	    }
+	    switch (*buf) {
+	    case '0':
+	    case '1':
+	    case '2':
+	    case '3':
+	    case '4':
+	    case '5':
+	    case '6':
+	    case '7':
+	    case '8':
+		field = *buf - '0';
+		strcpy(Pattern, buf + 1);
+		search();
+		printf("cscope: %d lines\n", totallines);
+		while ((c = getc(refsfound)) != EOF) {
+		    putchar(c);
+		}
+		break;
+
+	    case 'c':	/* toggle caseless mode */
+	    case ctrl('C'):
+		if (caseless == NO) {
+		    caseless = YES;
 		} else {
-			char *p = strbuf_value(ib);
-
-			/* path name */
-			while (*p && *p != ' ')
-				strbuf_putc(sb, *p++);
-			if (*p != ' ')
-				die("illegal cscope format. (%s)", strbuf_value(ib));
-			strbuf_putc(sb, *p++);
-
-			/* replace pattern with "<unknown>" or "<global>" */
-			while (*p && *p != ' ')
-				p++;
-			if (*p != ' ')
-				die("illegal cscope format. (%s)", strbuf_value(ib));
-			if (com == '8')
-				strbuf_puts(sb, "<global>");
-			else
-				strbuf_puts(sb, "<unknown>");
-			strbuf_putc(sb, *p++);
-
-			/* line number */
-			while (*p && *p != ' ')
-				strbuf_putc(sb, *p++);
-			if (*p != ' ')
-				die("illegal cscope format. (%s)", strbuf_value(ib));
-			strbuf_putc(sb, *p++);
-
-			/* line image */
-			if (*p == '\n')
-				strbuf_puts(sb, "<unknown>\n");
-			else
-				strbuf_puts(sb, p);
+		    caseless = NO;
 		}
-	}
-	if (pclose(ip) < 0)
-		die("terminated abnormally.");
-	return count;
-}
-/*
- * Execute retrieval command.
- *
- *	i)	command		0: Find this C symbol
- *				1: Find this definition
- *				2: Find functions called by this function (not supported)
- *				3: Find functions calling this function
- *				4: Find this text string
- *				6: Find this egrep pattern
- *				7: Find this file
- *				8: Find files #including this file
- *	i)	arg		argument
- *
- * Unsupported command prints "cscope: 0 lines\n".
- */
-static void
-search(int com, char *arg)
-{
-	static STRBUF *sb;
-	char buf[1024], *p;
-	int count = 0, opt = 0;
+		break;
 
-	if (sb == NULL)
-		sb = strbuf_open(1024 * 1024);
-	else
-		strbuf_reset(sb);
-	/*
-	 * Convert from cscope command to global command.
-	 */
-	switch (com) {
-	case '0':		/* Find this C symbol */
-	case '1':		/* Find this definition */
+	    case 'r':	/* rebuild database cscope style */
+	    case ctrl('R'):
+		rebuild();
+		putchar('\n');
 		break;
-	case '2':		/* Find functions called by this function */
-		/*
-		 * <symbol>:<line number>:<path>
-		 */
-		for (p = arg; *p && *p != ':'; p++)
-			;
-		*p++ = '\0';
-		context = p;
-		opt = FROM_HERE;
+
+	    case 'C':	/* clear file names */
+		/* N/A */
+		putchar('\n');
 		break;
-	case '3':		/* Find functions calling this function */
-		opt = 'r';
+
+	    case 'F':	/* add a file name */
+		/* N/A */
+		putchar('\n');
 		break;
-	case '4':		/* Find this text string */
-		opt = 'g';
-		strlimcpy(buf, quote_string(arg), sizeof(buf));
-		arg = buf;
+
+	    case 'q':	/* quit */
+	    case ctrl('D'):
+	    case ctrl('Z'):
+		myexit(0);
+
+	    default:
+		fprintf(stderr, "gtags-cscope: unknown command '%s'\n", buf);
 		break;
-	case '5':		/* Change this text string */
-		opt = NA;
-		break;
-	case '6':		/* Find this egrep pattern */
-		opt = 'g';
-		break;
-	case '7':		/* Find this file */
-		opt = 'P';
-		break;
-	case '8':		/* Find files #including this file */
-		opt = 'g';
-		arg = include_pattern(arg);
-		break;
+	    }
 	}
-	/*
-	 * Execute global(1).
-	 */
-	if (opt == NA) {
-		fprintf(stdout, "cscope: 0 lines\n");
-		return;
+	/* NOTREACHED */
+    }
+    /* do any optional search */
+    if (*Pattern != '\0') {
+	atfield();		/* move to the input field */
+	command(ctrl('Y'));	/* search */
+    } else if (reflines != NULL) {
+	/* read any symbol reference lines file */
+	readrefs(reflines);
+    }
+    display();		/* update the display */
+
+    for (;;) {
+	if (!selecting)
+	    atfield();	/* move to the input field */
+
+	/* exit if the quit command is entered */
+	if ((c = mygetch()) == EOF || c == ctrl('D') || c == ctrl('Z')) {
+	    break;
 	}
-	if (com == '0') {
-		count += execute_command(sb, com, 0, arg);
-		count += execute_command(sb, com, (count > 0) ? 'r' : 's', arg);
-	} else {
-		count += execute_command(sb, com, opt, arg);
+	/* execute the commmand, updating the display if necessary */
+	if (command(c) == YES) {
+	    display();
 	}
-	/*
-	 * Output format:
-	 * cscope: <n> lines
-	 * ******************		... 1
-	 * ******************		... 2
-	 * ...
-	 * ******************		... n
-	 * 
-	 * Example:
-	 * cscope: 3 lines
-	 * global/global.c main 158 main(int argc, char **argv)
-	 * gozilla/gozilla.c main 155 main(int argc, char **argv)
-	 * gscope/gscope.c main 108 main(int argc, char **argv)
-	 */
-	fprintf(stdout, "cscope: %d lines\n", count);
-	if (count > 0)
-		fwrite(strbuf_value(sb), 1, strbuf_getlen(sb), stdout);
+
+	if (selecting) {
+	    move(displine[curdispline], 0);
+	    refresh();
+	}
+    }
+    /* cleanup and exit */
+    myexit(0);
+    /* NOTREACHED */
+    return 0;		/* avoid warning... */
+}
+
+void
+cannotopen(char *file)
+{
+    posterr("Cannot open file %s", file);
+}
+
+/* FIXME MTE - should use postfatal here */
+void
+cannotwrite(char *file)
+{
+    char	msg[MSGLEN + 1];
+
+    snprintf(msg, sizeof(msg), "Removed file %s because write failed", file);
+    myperror(msg);	/* display the reason */
+
+#if !HAVE_SNPRINTF
+    free(msg);
+#endif
+
+    unlink(file);
+    myexit(1);	/* calls exit(2), which closes files */
+}
+
+/* enter curses mode */
+void
+entercurses(void)
+{
+    incurses = YES;
+#ifndef __MSDOS__ /* HBB 20010313 */
+    nonl();		    /* don't translate an output \n to \n\r */
+#endif
+    raw();			/* single character input */
+    noecho();			/* don't echo input characters */
+    clear();			/* clear the screen */
+    mouseinit();		/* initialize any mouse interface */
+    drawscrollbar(topline, nextline);
+}
+
+
+/* exit curses mode */
+void
+exitcurses(void)
+{
+	/* clear the bottom line */
+	move(LINES - 1, 0);
+	clrtoeol();
+	refresh();
+
+	/* exit curses and restore the terminal modes */
+	endwin();
+	incurses = NO;
+
+	/* restore the mouse */
+	mousecleanup();
 	fflush(stdout);
+}
+
+
+/* normal usage message */
+static void
+usage(void)
+{
+	fputs(usage_const, stderr);
+}
+
+
+/* long usage message */
+static void
+longusage(void)
+{
+	fputs(usage_const, stdout);
+        fputs(help_const, stdout);
+}
+
+/* cleanup and exit */
+
+void
+myexit(int sig)
+{
+	/* HBB 20010313; close file before unlinking it. Unix may not care
+	 * about that, but DOS absolutely needs it */
+	if (refsfound != NULL)
+		fclose(refsfound);
+	
+	/* remove any temporary files */
+	if (temp1[0] != '\0') {
+		unlink(temp1);
+		unlink(temp2);
+		rmdir(tempdirpv);
+	}
+	/* restore the terminal to its original mode */
+	if (incurses == YES) {
+		exitcurses();
+	}
+	/* dump core for debugging on the quit signal */
+	if (sig == SIGQUIT) {
+		abort();
+	}
+	/* HBB 20000421: be nice: free allocated data */
+	exit(sig);
 }

@@ -1,6 +1,6 @@
 ## Process this file with automake to create Makefile.in
 #
-# Copyright (c) 2006 Tama Communications Corporation
+# Copyright (c) 2011 Tama Communications Corporation
 #
 # This file is free software; as a special exception the author gives
 # unlimited permission to copy and/or distribute it, with or without
@@ -10,14 +10,23 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
-bin_PROGRAMS= gtags-cscope
+bin_PROGRAMS = gtags-cscope
+
+gtags_cscope_SOURCES = gtags-cscope.c alloc.c alloc.h basename.c build.c \
+	build.h command.c constants.h display.c edit.c   \
+	exec.c find.c global-cscope.h help.c history.c input.c library.h \
+	logdir.c mouse.c mygetenv.c mypopen.c  version-cscope.h
 
 INCLUDES = @INCLUDES@
 
 LDADD = @LDADD@
 
-gtags_cscope_DEPENDENCIES = $(LDADD)
+gtags_cscope_LDADD = $(LDADD) $(LIBLTDL) $(CURSES_LIBS)
+
+gtags_cscope_DEPENDENCIES = $(LDADD) $(LTDLDEPS) $(CURSES_LIBS)
 
 man_MANS = gtags-cscope.1
+
+AM_CPPFLAGS = $(CURSES_INCLUDEDIR)
 
 EXTRA_DIST = $(man_MANS) const.h manual.in
