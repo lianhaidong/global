@@ -20,6 +20,35 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+March 15 2011, Shigio YAMAGUCHI
+
+	Included cscope's source code.
+
+	[Added source files]		[cscope-15.7]
+	m4/check_curses.m4		configure.in
+	gtags-cscope/manual.in		doc/cscope.1
+	gtags-cscope/alloc.c		src/alloc.c
+	gtags-cscope/alloc.h		src/alloc.h
+	gtags-cscope/basename.c		src/basename.c
+	gtags-cscope/build.c		src/build.c
+	gtags-cscope/build.h		src/build.h
+	gtags-cscope/command.c		src/command.c
+	gtags-cscope/constants.h	src/constants.h
+	gtags-cscope/display.c		src/display.c
+	gtags-cscope/edit.c		src/edit.c
+	gtags-cscope/exec.c		src/exec.c
+	gtags-cscope/global-cscope.h	src/global.h
+	gtags-cscope/gtags-cscope.c	src/main.c
+	gtags-cscope/help.c		src/help.c
+	gtags-cscope/history.c		src/history.c
+	gtags-cscope/input.c		src/input.c
+	gtags-cscope/library.h		src/library.h
+	gtags-cscope/logdir.c		src/logdir.c
+	gtags-cscope/mouse.c		src/mouse.c
+	gtags-cscope/mygetenv.c		src/mygetenv.c
+	gtags-cscope/mypopen.c		src/mypopen.c
+	gtags-cscope/version-cscope.h	src/version.h
+
 February 4 2011, Shigio YAMAGUCHI
 
 	Configure.ac was modified to detect POSIX sort program automatically.

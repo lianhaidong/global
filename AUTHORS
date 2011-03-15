@@ -141,4 +141,37 @@ o jQuery, Suggest plugin and TreeView plugin
 	jquery/jquery.treeview.css
 	jquery/images/*.gif
 
+o cscope-15.7 by Joe Steffen and others:
+  Hans-Bernhard Broeker, Petr Sorfa, Simon Cozens, garp, jens persson, Edgar Toernig,
+  Martin Kraemer, Joshua Uziel, Mike Hopkirk, Darrylo Okahata, Brent Verner,
+  Thomas Klausner, Andrew Sharpe, Carl Mascott, Rich Salz, Stephane Fritsch, Andy Newman,
+  Sascha Blank, Bruce Frost, Chuck Marco, Wilfredo Sanchez, Jason Duell, Tom Hull,
+  Donald Slutz, OGAWA Hirofumi, Garret Hade, Nick Dixon, Triet H. Lai, Steven Elliott,
+  Ragho Mahalingam, Dmitry Obukhov, David Cohrs, Valentin Podlovchenko, Neil Horman
+
+					[cscope-15.7]
+	m4/check_curses.m4		configure.in
+	gtags-cscope/manual.in		doc/cscope.1
+	gtags-cscope/alloc.c		src/alloc.c
+	gtags-cscope/alloc.h		src/alloc.h
+	gtags-cscope/basename.c		src/basename.c
+	gtags-cscope/build.c		src/build.c
+	gtags-cscope/build.h		src/build.h
+	gtags-cscope/command.c		src/command.c
+	gtags-cscope/constants.h	src/constants.h
+	gtags-cscope/display.c		src/display.c
+	gtags-cscope/edit.c		src/edit.c
+	gtags-cscope/exec.c		src/exec.c
+	gtags-cscope/global-cscope.h	src/global.h
+	gtags-cscope/gtags-cscope.c	src/main.c
+	gtags-cscope/help.c		src/help.c
+	gtags-cscope/history.c		src/history.c
+	gtags-cscope/input.c		src/input.c
+	gtags-cscope/library.h		src/library.h
+	gtags-cscope/logdir.c		src/logdir.c
+	gtags-cscope/mouse.c		src/mouse.c
+	gtags-cscope/mygetenv.c		src/mygetenv.c
+	gtags-cscope/mypopen.c		src/mypopen.c
+	gtags-cscope/version-cscope.h	src/version.h
+
 they are considered a separate package, not part of GLOBAL proper.

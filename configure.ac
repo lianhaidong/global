@@ -108,11 +108,48 @@ AC_FUNC_ALLOCA
 AC_FUNC_MEMCMP
 AC_TYPE_SIGNAL
 AC_FUNC_STRFTIME
-AC_CHECK_FUNCS(getcwd putenv lstat snprintf)
+AC_CHECK_FUNCS(getcwd putenv)
 AC_CHECK_FUNCS(index rindex bzero bcmp bcopy strchr strrchr memset memcmp memmove)
 AC_CHECK_FUNCS(putc_unlocked getc_unlocked)
 AC_CHECK_FUNCS(gettimeofday getrusage)
-AG_DJGPP
+AC_DJGPP
+
+dnl #### begin of gtags-cscope ###
+AC_CHECK_CURSES
+AM_CONDITIONAL(HAS_CURSES, test "$has_curses" = true)
+
+dnl Checks for libraries.
+dnl Replace `main' with a function in -lcurses:
+dnl AC_CHECK_LIB(curses, main)
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_TYPE_MODE_T
+AC_TYPE_PID_T
+AC_TYPE_SIZE_T
+AC_CHECK_TYPE(sighandler_t,[],[],[
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif])
+dnl This test was ripped from gnuplot's configure.in:
+AC_MSG_CHECKING(for sigsetjmp)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <setjmp.h>]], [[jmp_buf env; sigsetjmp(env, 1);]])],[AC_MSG_RESULT(yes)
+   AC_DEFINE(HAVE_SIGSETJMP,1,
+             [ Define if we have sigsetjmp(). ])],[AC_MSG_RESULT(no)])
+
+dnl Checks for library functions.
+AC_CHECK_FUNCS(fixkeypad strerror)
+AC_FUNC_LSTAT
+
+dnl case "$host_os" in
+dnl 	linux*)
+dnl 		AC_DEFINE(Linux, 1, [We're using some variant of Linux])
+dnl 	;;
+dnl 	netbsd*|freebsd*|darwin*)
+dnl 		AC_DEFINE(BSD, 1, [We're using a BSD-flavoured Unix])
+dnl 	;;
+dnl esac
+dnl #### end of gtags-cscope ###
 
 INCLUDES='-I$(top_srcdir)/libparser $(LTDLINCL) -I$(top_srcdir)/libutil -I$(top_srcdir)/libdb -I$(top_srcdir)/libglibc -I../libutil'
 DBLIBRARY='../libdb/libglodb.a'

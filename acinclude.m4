@@ -1,6 +1,6 @@
 # Local additions to Autoconf macros.
 #
-# Copyright (c) 2000, 2001 Tama Communications Corporation
+# Copyright (c) 2000, 2001, 2011 Tama Communications Corporation
 #
 # This file is part of GNU GLOBAL.
 #
@@ -17,12 +17,5 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-AC_DEFUN([AG_DJGPP],
-[AC_CACHE_CHECK([whether we are using the GNU DJGPP compiler], ac_cv_djgpp,
-[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[#ifdef __DJGPP__
-int a;
-#else
-XXXXXX
-#endif]])],[ac_cv_djgpp=yes],[ac_cv_djgpp=no])])
-AM_CONDITIONAL(DJGPP, test $ac_cv_djgpp = yes)
-])
+m4_include([m4/check_djgpp.m4])
+m4_include([m4/check_curses.m4])
