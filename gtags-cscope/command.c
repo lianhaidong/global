@@ -65,6 +65,8 @@ char	Pattern[PATLEN + 1];	/* symbol or text pattern */
 static	char	appendprompt[] = "Append to file: ";
 static	char	pipeprompt[] = "Pipe to shell command: ";
 static	char	readprompt[] = "Read from file: ";
+static	char	globalprompt[] = "Read from: ";
+static	char	globalprefix[] = "global --result=cscope ";
 static	char	toprompt[] = "To: ";
 
 
@@ -333,8 +335,12 @@ command(int commandc)
     case '<':	/* read lines from a file */
 	move(PRLINE, 0);
 	addstr(readprompt);
-	if (mygetline("", newpat, COLS - sizeof(readprompt),
-		      '\0', NO) > 0) {
+	if ((c = mygetch()) == '>') {
+            move(PRLINE, 0);
+            addstr(globalprompt);
+            c = '\0';
+	}
+	if (c != '\r' && mygetline("", newpat, COLS - sizeof(globalprompt), c, NO) > 0) {
 	    clearprompt();
 	    shellpath(filename, sizeof(filename), newpat);
 	    if (readrefs(filename) == NO) {
@@ -389,6 +395,32 @@ cscope: cannot open pipe to shell command: %s\n", newpat);
 	}
 	askforreturn();
 	entercurses();
+	break;
+    case ctrl('G'):	/* read from the result of global command */
+	/* get the shell command */
+	move(PRLINE, 0);
+	addstr(globalprompt);
+	addstr(globalprefix);
+	if (mygetline(globalprefix, newpat,
+		COLS - sizeof(globalprompt) - sizeof(globalprefix), '\0', NO) == 0 ||
+		strncmp(newpat, globalprefix, strlen(newpat)) == 0) {
+	    clearprompt();
+	    return(NO);
+	}
+	strcat(strcat(newpat, ">"), temp2);
+	remove(temp2);
+	postmsg("Searching ...");
+	if (system(newpat) != 0) {
+	    postmsg("Ignoring failed output of global command");
+	    clearprompt();
+	    return(NO);
+	}
+	if (readrefs(temp2) == NO) {
+	    postmsg("Ignoring empty output of global command");
+	    clearprompt();
+	    return(NO);
+	}
+	return(YES);
 	break;
 #if defined(KEY_RESIZE) && !defined(__DJGPP__)
     case KEY_RESIZE:
