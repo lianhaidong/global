@@ -164,7 +164,7 @@ display(void)
 	    printw("cscope");
 	}
 #else
-	printw("Gtags-cscope (based on version %d%s)", FILEVERSION, FIXVERSION);
+	printw("Gtags-cscope (based on cscope version %d%s)", FILEVERSION, FIXVERSION);
 #endif
 	move(0, COLS - (int) sizeof(helpstring));
 	addstr(helpstring);
@@ -413,7 +413,6 @@ search(void)
 {
 	char	*findresult = NULL;	/* find function output */
 	BOOL	funcexist = YES;		/* find "function" error */
-	FINDINIT rc = NOERROR;		/* findinit return code */
 	sighandler_t savesig;		/* old value of signal */
 	FP	f;			/* searching function */
 	int	c;
@@ -447,18 +446,8 @@ search(void)
 	/* see if it is empty */
 	if ((c = getc(refsfound)) == EOF) {
 		if (findresult != NULL) {
-			(void) snprintf(lastmsg, sizeof(lastmsg), "Egrep %s in this pattern: %s", 
-				       findresult, Pattern);
-		} else if (rc == NOTSYMBOL) {
-			(void) snprintf(lastmsg, sizeof(lastmsg), "This is not a C symbol: %s", 
-				       Pattern);
-		} else if (rc == REGCMPERROR) {
-			(void) snprintf(lastmsg, sizeof(lastmsg), "Error in this regcomp(3) regular expression: %s", 
-				       Pattern);
-			
-		} else if (funcexist == NO) {
-			(void) snprintf(lastmsg, sizeof(lastmsg), "Function definition does not exist: %s", 
-				       Pattern);
+			(void) snprintf(lastmsg, sizeof(lastmsg), "Could not find the %s: %s [%s]",
+				       fields[field].text2, Pattern, findresult);
 		} else {
 			(void) snprintf(lastmsg, sizeof(lastmsg), "Could not find the %s: %s", 
 				       fields[field].text2, Pattern);

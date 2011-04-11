@@ -1,7 +1,7 @@
 @HEADER GTAGS-CSCOPE,1,March 2011,GNU Project
 @NAME   gtags-cscope - interactively examine a C program
 @SYNOPSIS
-	@name{gtags-cscope} [-bCcdehkLlqRTUuVv][-F symfile ][-0123456789 @arg{pattern}][-p n]
+	@name{gtags-cscope} [-bCdehLlVv][-F symfile ][-0123456789 @arg{pattern}][-p n]
 @DESCRIPTION
 	@name{gtags-cscope} is an interactive, screen-oriented tool that allows the user to
 	browse through C source files for specified elements of code.
@@ -311,6 +311,6 @@
 @HISTORY
 	@name{Cscope} was originally developed at Bell Labs in the early 1980's,
 	and was released as free software under the BSD license in April 2000.
-	@name{Gtags-cscope} is a derivative of cscope to use GLOBAL as a back-end.
+	@name{Gtags-cscope} is a derivative of cscope to use GLOBAL as the back-end.
 	Its line-oriented interface was originally written in 2006, and was
 	re-implemented in 2011 using cscope itself.

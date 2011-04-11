@@ -44,7 +44,11 @@ void
 rebuild(void)
 {
 	if (execute("gtags", "gtags", "-i", NULL) != 0)
-	    postfatal("cscope: gtags -i failed.\n");
+		postfatal("gtags-cscope: gtags -i failed.\n");
+	if (refsfound != NULL) {
+		fclose(refsfound);
+		refsfound = NULL;
+	}
 }
 
 /* build the cross-reference */
@@ -52,5 +56,9 @@ void
 build(void)
 {
 	if (execute("gtags", "gtags", NULL) != 0)
-	    postfatal("cscope: gtags failed.\n");
+		postfatal("gtags-cscope: gtags failed.\n");
+	if (refsfound != NULL) {
+		fclose(refsfound);
+		refsfound = NULL;
+	}
 }

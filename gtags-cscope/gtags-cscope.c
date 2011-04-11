@@ -145,7 +145,7 @@ main(int argc, char **argv)
 #if CCS
 	    displayversion = YES;
 #else
-	    fprintf(stderr, "%s: %s (based on version %d%s)\n", argv0, get_version(),
+	    fprintf(stderr, "%s: %s (based on cscope version %d%s)\n", argv0, get_version(),
 		    FILEVERSION, FIXVERSION);
 	    myexit(0);
 #endif

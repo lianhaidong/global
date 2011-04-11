@@ -21,6 +21,7 @@
 #include "gparam.h"
 
 #define COMMON (caseless == YES) ? "global --result=cscope -i" : "global --result=cscope"
+#define FAILED "global command failed."
 
 static char comline[MAXFILLEN];
 
@@ -35,7 +36,8 @@ findsymbol(char *pattern)
 	snprintf(comline, sizeof(comline), "%s -d '%s' > %s", COMMON, pattern, temp1);
 	system(comline);
 	snprintf(comline, sizeof(comline), "%s -rs '%s' >> %s", COMMON, pattern, temp1);
-	system(comline);
+	if (system(comline) != 0)
+		return FAILED;
 	return NULL;
 }
 
@@ -48,7 +50,8 @@ char *
 finddef(char *pattern)
 {
 	snprintf(comline, sizeof(comline), "%s -d '%s' > %s", COMMON, pattern, temp1);
-	system(comline);
+	if (system(comline) != 0)
+		return FAILED;
 	return NULL;
 }
 
@@ -72,7 +75,8 @@ findcalledby(char *pattern)
 		;
 	*p++ = '\0';
 	snprintf(comline, sizeof(comline), "%s --from-here='%s' '%s' > %s", COMMON, p, pattern, temp1);
-	system(comline);
+	if (system(comline) != 0)
+		return FAILED;
 	return NULL;
 }
 
@@ -85,7 +89,8 @@ char *
 findcalling(char *pattern)
 {
 	snprintf(comline, sizeof(comline), "%s -r '%s' > %s", COMMON, pattern, temp1);
-	system(comline);
+	if (system(comline) != 0)
+		return FAILED;
 	return NULL;
 }
 
@@ -98,7 +103,8 @@ char *
 findstring(char *pattern)
 {
 	snprintf(comline, sizeof(comline), "%s -g '%s' > %s", COMMON, quote_string(pattern), temp1);
-	system(comline);
+	if (system(comline) != 0)
+		return FAILED;
 	return NULL;
 }
 
@@ -116,7 +122,8 @@ char *
 findregexp(char *pattern)
 {
 	snprintf(comline, sizeof(comline), "%s -g '%s' > %s", COMMON, pattern, temp1);
-	system(comline);
+	if (system(comline) != 0)
+		return FAILED;
 	return NULL;
 }
 
@@ -129,7 +136,8 @@ char *
 findfile(char *pattern)
 {
 	snprintf(comline, sizeof(comline), "%s -P '%s' > %s", COMMON, pattern, temp1);
-	system(comline);
+	if (system(comline) != 0)
+		return FAILED;
 	return NULL;
 }
 
@@ -143,6 +151,7 @@ findinclude(char *pattern)
 {
 	snprintf(comline, sizeof(comline), "global --result=cscope -g '^[ \t]*#[ \t]*include[ \t].*[\"</]%s[\">]' | sed 's/<unknown>/<global>/' > %s", 
 		quote_string(pattern), temp1);
-	system(comline);
+	if (system(comline) != 0)
+		return FAILED;
 	return NULL;
 }
