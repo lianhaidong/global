@@ -108,7 +108,7 @@ AC_FUNC_ALLOCA
 AC_FUNC_MEMCMP
 AC_TYPE_SIGNAL
 AC_FUNC_STRFTIME
-AC_CHECK_FUNCS(getcwd putenv snprintf)
+AC_CHECK_FUNCS(getcwd putenv lstat snprintf)
 AC_CHECK_FUNCS(index rindex bzero bcmp bcopy strchr strrchr memset memcmp memmove)
 AC_CHECK_FUNCS(putc_unlocked getc_unlocked)
 AC_CHECK_FUNCS(gettimeofday getrusage)
@@ -139,7 +139,6 @@ AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <setjmp.h>]], [[jmp_buf env; sigsetjm
 
 dnl Checks for library functions.
 AC_CHECK_FUNCS(fixkeypad strerror)
-AC_FUNC_LSTAT
 
 dnl case "$host_os" in
 dnl 	linux*)
