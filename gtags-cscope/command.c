@@ -420,6 +420,7 @@ cscope: cannot open pipe to shell command: %s\n", newpat);
 	    clearprompt();
 	    return(NO);
 	}
+	curdispline = 0;
 	return(YES);
 	break;
 #if defined(KEY_RESIZE) && !defined(__DJGPP__)
