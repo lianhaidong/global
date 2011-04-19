@@ -1579,6 +1579,12 @@ main(int argc, char **argv)
 			else
 				die("--tabs option requires numeric value.");
                         break;
+		case OPT_NCOL:
+			if (atoi(optarg) > 0)
+				ncol = atoi(optarg);
+			else
+				die("--ncol option requires numeric value.");
+                        break;
 		case OPT_TREE_VIEW:
 			tree_view = 1;
 			if (optarg)
