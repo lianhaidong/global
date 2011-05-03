@@ -238,9 +238,19 @@ prepare_skip(void)
 	 * construct regular expression.
 	 */
 	strbuf_putc(reg, '(');	/* ) */
+	/*
+	 * Hard coded skip files:
+	 * (1) files which start with '.'
+	 * (2) tag files
+	 */
 	/* skip files which start with '.' e.g. .cvsignore */
 	strbuf_puts(reg, "/\\.[^/]+$|");
 	strbuf_puts(reg, "/\\.[^/]+/|");
+	/* skip tag files */
+	strbuf_puts(reg, "/GTAGS$|");
+	strbuf_puts(reg, "/GRTAGS$|");
+	strbuf_puts(reg, "/GSYMS$|");
+	strbuf_puts(reg, "/GPATH$|");
 	for (p = skiplist; p; ) {
 		char *skipf = p;
 		if ((p = locatestring(p, ",", MATCH_FIRST)) != NULL)
