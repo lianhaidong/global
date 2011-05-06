@@ -412,7 +412,6 @@ BOOL
 search(void)
 {
 	char	*findresult = NULL;	/* find function output */
-	BOOL	funcexist = YES;		/* find "function" error */
 	sighandler_t savesig;		/* old value of signal */
 	FP	f;			/* searching function */
 	int	c;

@@ -119,7 +119,6 @@ sigwinch_handler(int sig, siginfo_t *info, void *unused)
 int
 main(int argc, char **argv)
 {
-    char path[PATHLEN + 1];	/* file path */
     char *s;
     int c;
     pid_t pid;
