@@ -1846,7 +1846,7 @@ main(int argc, char **argv)
 		else if (!strcmp(distpath, strbuf_value(sb)))
 			; /* nothing to do */
 		else if (overwrite_key == 0)
-			die("The site key '%s' is not unique. please change it or use --overwrite-key option.", sitekey);
+			die("The site key '%s' is not unique, please change it or use --overwrite-key option.", sitekey);
 		else	/* New key value without --overwrite-key option */
 			try_writing = 1;
 		/*
@@ -2027,12 +2027,13 @@ main(int argc, char **argv)
 		if (chmod(makepath(distpath, ".htaccess", NULL), 0644) < 0)
 			die("cannot chmod .htaccess skeleton.");
 		/*
-		 * Always make bless.sh.
 		 * Don't grant execute permission to bless script.
 		 */
-		makebless("bless.sh");
-		if (chmod(makepath(distpath, "bless.sh", NULL), 0640) < 0)
-			die("cannot chmod bless script.");
+		if (Sflag) {
+			makebless("bless.sh");
+			if (chmod(makepath(distpath, "bless.sh", NULL), 0640) < 0)
+				die("cannot chmod bless script.");
+		}
 	} else {
 		message("[%s] (1) making CGI program ...(skipped)", now());
 	}
