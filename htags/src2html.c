@@ -702,10 +702,7 @@ src2html(const char *src, const char *html, int notsource)
 	out = get_descripter(fileop_out);
 	strbuf_clear(outbuf);
 
-	if (Fflag)
-		snprintf(indexlink, sizeof(indexlink), "../files.%s", normal_suffix);
-	else
-		snprintf(indexlink, sizeof(indexlink), "../mains.%s", normal_suffix);
+	snprintf(indexlink, sizeof(indexlink), "../mains.%s", normal_suffix);
 	fputs_nl(gen_page_begin(src, SUBDIR), out);
 	fputs_nl(body_begin, out);
 	/*
