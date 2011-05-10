@@ -1002,7 +1002,7 @@ makecommonpart(const char *title, const char *defines, const char *files)
 	strbuf_puts(sb, title_begin);
 	strbuf_puts(sb, title);
 	strbuf_puts_nl(sb, title_end);
-	strbuf_puts_nl(sb, gen_div_begin("right"));
+	strbuf_puts_nl(sb, gen_poweredby_begin());
 	strbuf_sprintf(sb, "Last updated %s%s\n", now(), br);
 	if (Iflag) {
 		snprintf(buf, sizeof(buf), "Powered by GLOBAL-%s.", get_version());
@@ -1017,7 +1017,7 @@ makecommonpart(const char *title, const char *defines, const char *files)
 			gen_href_end(),
 			br);
 	}
-	strbuf_puts_nl(sb, gen_div_end());
+	strbuf_puts_nl(sb, gen_poweredby_end());
 	strbuf_puts_nl(sb, hr);
 	/*
 	 * Print items according to the value of variable 'item_order'.

@@ -733,36 +733,30 @@ gen_list_end(void)
 	return table_list ? table_end : verbatim_end;
 }
 /*
- * Generate div begin tag.
- *
- *	i)	align	right,left,center
+ * Generate 'powered by' begin tag.
  */
 const char *
-gen_div_begin(const char *align)
+gen_poweredby_begin()
 {
 	STATIC_STRBUF(sb);
 
 	if (strbuf_empty(sb)) {
 		strbuf_clear(sb);
-		if (align) {
-			/*
-			 * In XHTML, alignment is defined in the file 'style.css'.
-			 */
-			if (enable_xhtml)
-				strbuf_sprintf(sb, "<div class='%s'>", align);
-			else
-				strbuf_sprintf(sb, "<div align='%s'>", align);
-		} else {
-			strbuf_puts(sb, "<div>");
-		}
+		/*
+		 * In XHTML, alignment is defined in the file 'style.css'.
+		 */
+		if (enable_xhtml)
+			strbuf_sprintf(sb, "<div class='poweredby'>");
+		else
+			strbuf_sprintf(sb, "<div align='right'>");
 	}
 	return strbuf_value(sb);
 }
 /*
- * Generate div end tag.
+ * Generate 'powered by' end tag.
  */
 const char *
-gen_div_end(void)
+gen_poweredby_end(void)
 {
 	return "</div>";
 }
