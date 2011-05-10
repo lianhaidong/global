@@ -465,6 +465,7 @@ static void
 print_directory_header(FILE *op, int level, const char *dir)
 {
 	STATIC_STRBUF(sb);
+	const char *top = (Fflag && !tree_view) ? "../files" : "../mains";
 
 	if (level == 0)
 		die("print_directory_header: internal error.");
@@ -475,7 +476,7 @@ print_directory_header(FILE *op, int level, const char *dir)
 	fputs_nl(body_begin, op);
 
 	strbuf_clear(sb);
- 	strbuf_sprintf(sb, "%s%sroot%s/", header_begin, gen_href_begin(NULL, indexlink, normal_suffix, NULL), gen_href_end());
+ 	strbuf_sprintf(sb, "%s%sroot%s/", header_begin, gen_href_begin(NULL, top, normal_suffix, NULL), gen_href_end());
 	fputs(strbuf_value(sb), op);
 	{
 		char path[MAXPATHLEN];
@@ -507,7 +508,7 @@ print_directory_header(FILE *op, int level, const char *dir)
 
 		(void)dirpart(dir, parentdir);
 		if (level == 1) {
-			parent = indexlink;
+			parent = top;
 			suffix = normal_suffix;
 		} else {
 			parent = path2fid(parentdir);
@@ -541,12 +542,13 @@ print_directory_footer(FILE *op, int level, const char *dir)
 {
 	const char *parent, *suffix;
 	char parentdir[MAXPATHLEN];
+	const char *top = (Fflag && !tree_view) ? "../files" : "../mains";
 
 	if (level == 0)
 		die("print_directory_footer: internal error.");
 	(void)dirpart(dir, parentdir);
 	if (level == 1) {
-		parent = indexlink;
+		parent = top;
 		suffix = normal_suffix;
 	} else {
 		parent = path2fid(parentdir);
