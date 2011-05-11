@@ -419,6 +419,25 @@ put_anchor(char *name, int type, int lineno)
 	}
 }
 /*
+ * put_anchor_force: output HTML anchor without warning.
+ *
+ *	i)	name	tag
+ *	i)	type	tag type
+ *	i)	lineno	current line no
+ */
+void
+put_anchor_force(char *name, int length, int lineno)
+{
+	STATIC_STRBUF(sb);
+	int saveflag = wflag;
+
+	strbuf_clear(sb);
+	strbuf_nputs(sb, name, length);
+	wflag = 0;
+	put_anchor(strbuf_value(sb), 'R', lineno);
+	wflag = saveflag;
+}
+/*
  * put_include_anchor: output HTML anchor.
  *
  *	i)	inc	inc structure

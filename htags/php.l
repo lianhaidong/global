@@ -205,6 +205,13 @@ WORD		{ALPHA}{ALPHANUM}*
 			if (brace)
 				echoc('}');
 			a->done = 1;
+		} else if (grtags_is_empty) {
+			echoc('$');
+			if (brace)
+				echoc('{');
+			put_anchor_force(LEXTEXT, LEXLENG, LINENO);
+			if (brace)
+				echoc('}');
 		} else {
 			ECHO;
 		}
@@ -218,6 +225,8 @@ WORD		{ALPHA}{ALPHANUM}*
 			if (a) {
 				put_anchor(gettag(a), a->type, LINENO);
 				a->done = 1;
+			} else if (grtags_is_empty) {
+				put_anchor_force(LEXTEXT, LEXLENG, LINENO);
 			} else {
 				ECHO;
 			}

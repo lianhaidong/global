@@ -165,6 +165,8 @@ WORD		{ALPHA}{ALPHANUM}*
 			if (a) {
 				put_anchor(gettag(a), a->type, LINENO);
 				a->done = 1;
+			} else if (grtags_is_empty) {
+				put_anchor_force(LEXTEXT, LEXLENG, LINENO);
 			} else {
 				ECHO;
 			}

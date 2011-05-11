@@ -249,6 +249,7 @@ int definition_header=NO_HEADER;	/* (NO|BEFORE|RIGHT|AFTER)_HEADER */
 const char *htags_options = NULL;
 const char *include_file_suffixes = "h,hxx,hpp,H,inc.php";
 static const char *langmap = DEFAULTLANGMAP;
+int grtags_is_empty = 0;
 
 static struct option const long_options[] = {
 	/*
@@ -1891,6 +1892,13 @@ main(int argc, char **argv)
 		 */
 		gtop = gtags_open(dbpath, cwdpath, GTAGS, GTAGS_READ, 0);
 		gtags_close(gtop);
+		/*
+		 * Check whether GRTAGS is empty.
+		 */
+		gtop = gtags_open(dbpath, cwdpath, GRTAGS, GTAGS_READ, 0);
+		if (gtags_first(gtop, NULL, 0) == NULL)
+			grtags_is_empty = 1;
+		gtags_close(gtop);
 	}
 	/*
 	 * make dbpath absolute.
@@ -1951,7 +1959,9 @@ main(int argc, char **argv)
 	 * (#) check if GTAGS, GRTAGS is the latest.
 	 */
 	if (get_dbpath())
-		message(" Using %s/GTAGS", get_dbpath());
+		message(" Using %s/GTAGS.", get_dbpath());
+	if (grtags_is_empty)
+		message(" GRTAGS is empty.");
 	if (gpath_open(get_dbpath(), 0) < 0)
 		die("GPATH not found.");
 	if (!w32) {

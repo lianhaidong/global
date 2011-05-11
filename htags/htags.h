@@ -145,5 +145,6 @@ extern const char *action;
 extern int definition_header;
 extern const char *htags_options;
 extern const char *include_file_suffixes;
+extern int grtags_is_empty;
 
 #endif /* _HTAGS_H_ */
