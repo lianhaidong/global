@@ -61,6 +61,8 @@ const char *title_begin		= "<h1><font color='#cc0000'>";
 const char *title_end		= "</font></h1>";
 const char *header_begin	= "<h2>";
 const char *header_end		= "</h2>";
+const char *poweredby_begin	= "<div align='right'>";
+const char *poweredby_end	= "</div>";
 const char *cvslink_begin	= "<font size='-1'>";
 const char *cvslink_end		= "</font>";
 const char *caution_begin	= "<center>\n<blockquote>";
@@ -167,6 +169,8 @@ setup_xhtml(void)
 	title_end		= "</h1>";
 	header_begin		= "<h2 class='header'>";
 	header_end		= "</h2>";
+	poweredby_begin		= "<div class='poweredby'>";
+	poweredby_end		= "</div>";
 	cvslink_begin		= "<span class='cvs'>";
 	cvslink_end		= "</span>";
 	caution_begin		= "<div class='caution'>";
@@ -731,34 +735,6 @@ const char *
 gen_list_end(void)
 {
 	return table_list ? table_end : verbatim_end;
-}
-/*
- * Generate 'powered by' begin tag.
- */
-const char *
-gen_poweredby_begin()
-{
-	STATIC_STRBUF(sb);
-
-	if (strbuf_empty(sb)) {
-		strbuf_clear(sb);
-		/*
-		 * In XHTML, alignment is defined in the file 'style.css'.
-		 */
-		if (enable_xhtml)
-			strbuf_sprintf(sb, "<div class='poweredby'>");
-		else
-			strbuf_sprintf(sb, "<div align='right'>");
-	}
-	return strbuf_value(sb);
-}
-/*
- * Generate 'powered by' end tag.
- */
-const char *
-gen_poweredby_end(void)
-{
-	return "</div>";
 }
 /*
  * Generate beginning of form
