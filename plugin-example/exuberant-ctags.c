@@ -91,7 +91,7 @@ start_ctags(const struct parser_param *param)
 {
 	int opipe[2], ipipe[2];
 
-	if (stlen(EXUBERANT_CTAGS) == 0 || !strcmp(EXUBERANT_CTAGS, "no"))
+	if (strlen(EXUBERANT_CTAGS) == 0 || !strcmp(EXUBERANT_CTAGS, "no"))
 		param->die(ctagsnotfound);
 	argv[1] = malloc(sizeof(LANGMAP_OPTION) + strlen(param->langmap));
 	if (argv[1] == NULL)
