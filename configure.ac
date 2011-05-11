@@ -235,10 +235,30 @@ dnl
 AC_MSG_CHECKING(for exuberant ctags program)
 AC_ARG_WITH(exuberant-ctags,
 [  --with-exuberant-ctags=PROGRAM  specify Exuberant Ctags program ],
-[ EXUBERANT_CTAGS="$withval" ],
-[ EXUBERANT_CTAGS=/usr/local/bin/ctags-exuberant ])
+[
+	EXUBERANT_CTAGS="$withval"
+        if test "$withval" = 'no'; then
+                AC_MSG_RESULT(no)
+	else
+                AC_MSG_RESULT([using $EXUBERANT_CTAGS])
+	fi
+],
+[
+	for d in `echo $PATH | sed -e 's/^:/.:/' -e 's/::/:.:/g' -e 's/:$/:./' -e 's/:/ /g'`
+	do
+		if test -x $d/ctags && (sh -c "$d/ctags --version" | grep "Exuberant Ctags") > /dev/null 2>&1; then
+			withval="$d/ctags"
+			break
+		fi
+	done
+	if test "$withval" = ''; then
+		AC_MSG_RESULT(no)
+	else
+		EXUBERANT_CTAGS="$withval"
+		AC_MSG_RESULT([using $EXUBERANT_CTAGS])
+	fi
+])
 AC_DEFINE_UNQUOTED(EXUBERANT_CTAGS, "$EXUBERANT_CTAGS", [Exuberant Ctags program.])
-AC_MSG_RESULT("$EXUBERANT_CTAGS")
 AC_SUBST(EXUBERANT_CTAGS)
 
 dnl
@@ -252,13 +272,13 @@ AC_ARG_WITH(posix-sort,
         if test "$withval" = 'no'; then
                 AC_MSG_RESULT(no)
 	else
-                AC_MSG_RESULT([yes, using $POSIX_SORT])
+                AC_MSG_RESULT([using $POSIX_SORT])
 	fi
 ],
 [
 	for d in `echo $PATH | sed -e 's/^:/.:/' -e 's/::/:.:/g' -e 's/:$/:./' -e 's/:/ /g'`
 	do
-		if test -x $d/sort && (sh -c "$d/sort -t ':' -k 1,1" < /dev/null > /dev/null 2>&1); then
+		if test -x $d/sort && (sh -c "$d/sort -t ':' -k 1,1" < /dev/null) > /dev/null 2>&1; then
 			withval="$d/sort"
 			break
 		fi

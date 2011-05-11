@@ -41,7 +41,7 @@ gtags:\
 #
 # plugin parser
 #
-plugin-example|Example of function layer plugin parser:\
+exuberant-ctags|plugin-example|Example of function layer plugin parser:\
 	:tc=common:extractmethod:\
 	:langmap=@DEFAULTLANGMAP_QUOTED@:\
 	:langmap=fortran\:.f.for.f77.f90.f95,pascal\:.p.pas,c#\:.cs,lisp\:.l.el.lisp,scheme\:.scm:\
