@@ -33,6 +33,7 @@
 #endif
 
 #include "gparam.h"
+#include "char.h"
 #include "checkalloc.h"
 #include "conf.h"
 #include "die.h"

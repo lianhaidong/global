@@ -139,7 +139,7 @@ prepare_source(void)
 {
 	STRBUF *sb = strbuf_open(0);
 	char *sufflist = NULL;
-	const char *langmap = NULL;
+	char *langmap = NULL;
 	int flags = REG_EXTENDED;
 
 	/*
