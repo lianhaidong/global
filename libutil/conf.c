@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 1999, 2000, 2001, 2002, 2005, 2010
+ * Copyright (c) 1998, 1999, 2000, 2001, 2002, 2005, 2010, 2011
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -294,21 +294,9 @@ openconf(void)
 	strbuf_puts(sb, confline);
 	strbuf_unputc(sb, ':');
 
-	if (!getconfs("suffixes", NULL)) {
-		STRBUF *tmp = strbuf_open(0);
-		const char *langmap = NULL;
-
-		/*
-		 * Variable 'suffixes' is obsolete. But it is generated
-		 * internally from the value of variable 'langmap'.
-		 */
-		if (getconfs("langmap", tmp))
-			langmap = strbuf_value(tmp);
-		else
-			langmap = DEFAULTLANGMAP;
-		strbuf_puts(sb, ":suffixes=");
-		make_suffixes(langmap, sb);
-		strbuf_close(tmp);
+	if (!getconfs("langmap", NULL)) {
+		strbuf_puts(sb, ":langmap=");
+		strbuf_puts(sb, quote_chars(DEFAULTLANGMAP, ':'));
 	}
 	if (!getconfs("skip", NULL)) {
 		strbuf_puts(sb, ":skip=");
@@ -362,8 +350,7 @@ getconfs(const char *name, STRBUF *sb)
 
 	if (!opened)
 		openconf();
-	if (!strcmp(name, "suffixes") || !strcmp(name, "skip")
-	 || !strcmp(name, "gtags_parser") || !strcmp(name, "langmap"))
+	if (!strcmp(name, "skip") || !strcmp(name, "gtags_parser") || !strcmp(name, "langmap"))
 		all = 1;
 	snprintf(buf, sizeof(buf), ":%s=", name);
 	p = confline;

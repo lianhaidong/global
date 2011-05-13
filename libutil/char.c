@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003 Tama Communications Corporation
+ * Copyright (c) 2003, 2011 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -64,7 +64,7 @@ isregex(const char *s)
 /*
  * quote string.
  *
- *	'aaa' => \'\a\a\a\'
+ *	'a:a,a' => 'a\:a\,a'
  */
 const char *
 quote_string(const char *s)
@@ -74,6 +74,24 @@ quote_string(const char *s)
 	strbuf_clear(sb);
 	for (; *s; s++) {
 		if (!isalnum((unsigned char)*s))
+			strbuf_putc(sb, '\\');
+		strbuf_putc(sb, *s);
+	}
+	return strbuf_value(sb);
+}
+/*
+ * quote characters in the string.
+ *
+ *	quote_char('a:a,a', :) => 'a\:a,a'
+ */
+const char *
+quote_chars(const char *s, unsigned int c)
+{
+	STATIC_STRBUF(sb);
+
+	strbuf_clear(sb);
+	for (; *s; s++) {
+		if ((unsigned char)*s == c)
 			strbuf_putc(sb, '\\');
 		strbuf_putc(sb, *s);
 	}

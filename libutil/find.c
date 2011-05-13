@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2005, 2006, 2008,
- *	2009 Tama Communications Corporation
+ *	2009, 2011 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -54,6 +54,7 @@
 #include "die.h"
 #include "find.h"
 #include "is_unixy.h"
+#include "langmap.h"
 #include "locatestring.h"
 #include "makepath.h"
 #include "path.h"
@@ -138,6 +139,7 @@ prepare_source(void)
 {
 	STRBUF *sb = strbuf_open(0);
 	char *sufflist = NULL;
+	const char *langmap = NULL;
 	int flags = REG_EXTENDED;
 
 	/*
@@ -148,9 +150,15 @@ prepare_source(void)
 #if defined(_WIN32) || defined(__DJGPP__)
 	flags |= REG_ICASE;
 #endif
+	/*
+	 * make suffix list.
+	 */
 	strbuf_reset(sb);
-	if (!getconfs("suffixes", sb))
-		die("cannot get suffixes data.");
+	if (getconfs("langmap", sb)) {
+		langmap =  check_strdup(strbuf_value(sb));
+	}
+	strbuf_reset(sb);
+	make_suffixes(langmap ? langmap : DEFAULTLANGMAP, sb);
 	sufflist = check_strdup(strbuf_value(sb));
 	trim(sufflist);
 	{
@@ -186,6 +194,8 @@ prepare_source(void)
 			die("cannot compile regular expression.");
 	}
 	strbuf_close(sb);
+	if (langmap)
+		free(langmap);
 	if (sufflist)
 		free(sufflist);
 }

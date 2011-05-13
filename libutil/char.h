@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003 Tama Communications Corporation
+ * Copyright (c) 2003, 2011 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -38,5 +38,6 @@ extern const unsigned char chartype[256];
 
 int isregex(const char *);
 const char *quote_string(const char *);
+const char *quote_chars(const char *, unsigned int);
 
 #endif /* ! _CHAR_H_ */
