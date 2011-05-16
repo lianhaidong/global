@@ -118,6 +118,8 @@
 	@begin_itemize
 	@item{<Return>}
 		Move to next input field.
+	@item{^g}
+		Read lines from the result of the execution of specified command.
 	@item{^n}
 		Move to next input field.
 	@item{^p}
@@ -251,7 +253,7 @@
 		is not in the standard terminfo directory, see curses
 		and terminfo for how to make your own terminal description.
 	@item{@var{TMPDIR}}
-		Temporary file directory, which defaults to /var/tmp.
+		Temporary file directory, which defaults to /tmp.
 	@item{@var{VIEWER}}
 		Preferred file display program (such as less), which overrides
 		EDITOR (see above).
