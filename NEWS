@@ -21,6 +21,24 @@ ___________________________________
 GNU GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 5.9.5 - May 16 2011
+
+[CHANGES]
+o gtags-cscope: re-implemented using cscope's code.
+  Now, it is almost compatible with cscope itself.
+
+o Config variable 'suffixes' was completely removed.
+  Instead, config variable 'langmap' was actualized.
+
+[INCOMPATIBLE CHANGES]
+Removed GPATH,GTAGS,GRTAGS,GSYMS and html/ from the skip variable
+in gtags.conf file.
+From now on, gtags unconditionally ignore the tag files.
+Though 'html/' was added for Windows, it brought troubles for UNIX.
+
+[FIXED BUGS]
+o The processing of the --ncol option was missing.
+
 Version 5.9.4 - March 8 2011
 
 [CHANGES]
