@@ -35,8 +35,13 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/types.h>
-#include <sys/wait.h>
 #include "global-cscope.h"	/* pid_t, RETSIGTYPE, shell, and mybasename() */
+
+#if defined(__DJGPP__) || (defined(_WIN32) && !defined(__CYGWIN__))
+#define MS_OS
+#else
+#include <sys/wait.h>
+#endif
 
 #define	tst(a,b) (*mode == 'r'? (b) : (a))
 #define	RDR	0
@@ -76,15 +81,15 @@ myopen(char *path, int flag, int mode)
     else
 	fd = open(path, flag);
 
-#ifdef __DJGPP__		/* FIXME: test feature, not platform */
+#ifdef MS_OS			/* FIXME: test feature, not platform */
     /* HBB 20010312: DOS GCC doesn't have FD_CLOEXEC (yet), so it 
      * always fails this call. Have to skip that step */
     if(fd != -1)
 	return(fd);
-#endif
+#else
     if(fd != -1 && (fcntl(fd, F_SETFD, CLOSE_ON_EXEC) != -1))
 	return(fd);
-
+#endif
     else
 	{
 	    /* Ensure that if the fcntl fails and fd is valid, then
@@ -113,7 +118,7 @@ myfopen(char *path, char *mode)
     }
 #endif /* SETMODE */
 	
-#ifdef __DJGPP__ /* FIXME: test feature, not platform */
+#ifdef MS_OS	 /* FIXME: test feature, not platform */
     /* HBB 20010312: DOS GCC doesn't have FD_CLOEXEC (yet), so it 
      * always fails this call. Have to skip that step */
     if(fp)
@@ -129,7 +134,7 @@ myfopen(char *path, char *mode)
 FILE *
 mypopen(char *cmd, char *mode)
 {
-#ifdef __DJGPP__
+#ifdef MS_OS
 	/* HBB 20010312: Has its own implementation of popen(), which
 	 * is better suited to the platform than cscope's */
 	return (popen)(cmd, mode);
@@ -170,7 +175,7 @@ mypopen(char *cmd, char *mode)
 	popen_pid[myside] = pid;
 	(void) close(yourside);
 	return(fdopen(myside, mode));
-#endif /* DJGPP */
+#endif /* MS_OS */
 }
 
 /* HBB 20010705: renamed from 'pclose', which would collide with
@@ -183,7 +188,7 @@ mypclose(FILE *ptr)
 	int status;
 	sighandler_t hstat, istat, qstat;
 
-#ifdef __DJGPP__ 
+#ifdef MS_OS
 	/* HBB 20010705: This system has its own pclose(), which we
 	 * don't want to replace */
 	return (pclose)(ptr);
@@ -204,5 +209,5 @@ mypclose(FILE *ptr)
 	/* mark this pipe closed */
 	popen_pid[f] = 0;
 	return(status);
-#endif /* DJGPP */
+#endif /* MS_OS */
 }

@@ -23,7 +23,7 @@ LDADD = @LDADD@
 
 gtags_cscope_LDADD = $(LDADD) $(LIBLTDL) $(CURSES_LIBS)
 
-gtags_cscope_DEPENDENCIES = $(LDADD) $(LTDLDEPS) $(CURSES_LIBS)
+gtags_cscope_DEPENDENCIES = $(LDADD) $(LTDLDEPS)
 
 man_MANS = gtags-cscope.1
 

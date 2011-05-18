@@ -38,7 +38,6 @@
 #include <unistd.h>
 #include "global-cscope.h"
 #include <stdarg.h>
-#include <sys/wait.h>
 #include <sys/types.h>      /* pid_t */
 #ifdef __DJGPP__
 #include <process.h>
@@ -49,13 +48,20 @@
 #include <curses.h>
 #endif
 
+#if defined(__MSDOS__) || (defined(_WIN32) && !defined(__CYGWIN__))
+#define HAVE_FORK 0
+#else
+#include <sys/wait.h>
+#define HAVE_FORK 1
+#endif
+
 static char const rcsid[] = "$Id$";
 
 static	sighandler_t oldsigquit; /* old value of quit signal */
 static	sighandler_t oldsighup; /* old value of hangup signal */
 static	sighandler_t oldsigtstp; /* old value of SIGTSTP */
 
-#ifndef __MSDOS__ /* none of these is needed, there */
+#if HAVE_FORK /* none of these is needed, there */
 static	int	join(pid_t p);
 static	int	myexecvp(char *a, char **args);
 static	pid_t	myfork(void);
@@ -81,7 +87,7 @@ execute(char *a, ...)	/* note: "exec" is already defined on u370 */
 	va_start(ap, a);
 	for (p = 0; (argv[p] = va_arg(ap, char *)) != 0; p++)
 		;
-#ifdef __MSDOS__
+#if !HAVE_FORK
 	/* HBB 20010313: in MSDOG, everything is completely different.
 	 * No fork()/exec()/wait(), but rather a single libc call: */
         exitcode = spawnvp(P_WAIT, a, argv);
@@ -108,7 +114,7 @@ execute(char *a, ...)	/* note: "exec" is already defined on u370 */
 	return(exitcode);
 }
 
-#ifndef __MSDOS__ /* None of the following functions is used there */
+#if HAVE_FORK /* None of the following functions is used there */
 
 /* myexecvp is an interface to the execvp system call to
  * modify argv[0] to reference the last component of its path-name.

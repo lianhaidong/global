@@ -60,8 +60,18 @@
 #include <sys/stat.h>	/* stat */
 #include <signal.h>
 
+#if defined(_WIN32) && !defined(__CYGWIN__)
+#define S_IRWXG 0070
+#define S_IRWXO 0007
+#define mkdir(path,mode) mkdir(path)
+#endif
+
 /* defaults for unset environment variables */
-#define	EDITOR	"vi"
+#if defined(__DJGPP__) || (defined(_WIN32) && !defined(__CYGWIN__))
+#define EDITOR	"tde"
+#else
+#define EDITOR	"vi"
+#endif
 #define HOME	"/"	/* no $HOME --> use root directory */
 #define	SHELL	"sh"
 #define LINEFLAG "+%s"	/* default: used by vi and emacs */
@@ -104,7 +114,7 @@ int	qflag;
 void	fixkeypad();
 #endif
 
-#if defined(KEY_RESIZE) && !defined(__DJGPP__)
+#if defined(KEY_RESIZE) && defined(SIGWINCH)
 void 
 sigwinch_handler(int sig, siginfo_t *info, void *unused)
 {
@@ -124,7 +134,7 @@ main(int argc, char **argv)
     pid_t pid;
     struct stat	stat_buf;
     mode_t orig_umask;
-#if defined(KEY_RESIZE) && !defined(__DJGPP__)
+#if defined(KEY_RESIZE) && defined(SIGWINCH)
     struct sigaction winch_action;
 #endif
 	
@@ -287,10 +297,17 @@ gtags-cscope: pattern too long, cannot be > %d characters\n", PATLEN);
     editor = mygetenv("VIEWER", editor); /* use viewer if set */
     editor = mygetenv("CSCOPE_EDITOR", editor);	/* has last word */
     home = mygetenv("HOME", HOME);
+#if defined(_WIN32) || defined(__DJGPP__)
+    shell = mygetenv("COMSPEC", SHELL);
+    shell = mygetenv("SHELL", shell);
+    tmpdir = mygetenv("TMP", TMPDIR);
+    tmpdir = mygetenv("TMPDIR", tmpdir);
+#else
     shell = mygetenv("SHELL", SHELL);
+    tmpdir = mygetenv("TMPDIR", TMPDIR);
+#endif
     lineflag = mygetenv("CSCOPE_LINEFLAG", LINEFLAG);
     lineflagafterfile = getenv("CSCOPE_LINEFLAG_AFTER_FILE") ? 1 : 0;
-    tmpdir = mygetenv("TMPDIR", TMPDIR);
 
     /* make sure that tmpdir exists */
     if (lstat (tmpdir, &stat_buf)) {
@@ -322,19 +339,25 @@ cscope: Could not create private temp dir %s\n",
     if (signal(SIGINT, SIG_IGN) != SIG_IGN) {
 	/* cleanup on the interrupt and quit signals */
 	signal(SIGINT, myexit);
+#ifdef SIGQUIT
 	signal(SIGQUIT, myexit);
+#endif
     }
     /* cleanup on the hangup signal */
+#ifdef SIGHUP
     signal(SIGHUP, myexit);
+#endif
 
     /* ditto the TERM signal */
     signal(SIGTERM, myexit);
 
     if (linemode == NO) {
 	signal(SIGINT, SIG_IGN);	/* ignore interrupts */
+#ifdef SIGPIPE
 	signal(SIGPIPE, SIG_IGN);/* | command can cause pipe signal */
+#endif
 
-#if defined(KEY_RESIZE) && !defined(__DJGPP__)
+#if defined(KEY_RESIZE) && defined(SIGWINCH)
 	winch_action.sa_sigaction = sigwinch_handler;
 	sigemptyset(&winch_action.sa_mask);
 	winch_action.sa_flags = SA_SIGINFO;
@@ -516,10 +539,6 @@ cannotwrite(char *file)
     snprintf(msg, sizeof(msg), "Removed file %s because write failed", file);
     myperror(msg);	/* display the reason */
 
-#if !HAVE_SNPRINTF
-    free(msg);
-#endif
-
     unlink(file);
     myexit(1);	/* calls exit(2), which closes files */
 }
@@ -596,9 +615,11 @@ myexit(int sig)
 		exitcurses();
 	}
 	/* dump core for debugging on the quit signal */
+#ifdef SIGQUIT
 	if (sig == SIGQUIT) {
 		abort();
 	}
+#endif
 	/* HBB 20000421: be nice: free allocated data */
 	exit(sig);
 }
