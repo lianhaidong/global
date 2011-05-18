@@ -228,8 +228,9 @@ int ncol = 4;				/* columns of line number	*/
 int tabs = 8;				/* tab skip			*/
 int flist_fields = 5;			/* fields number of file list	*/
 int full_path = 0;			/* file index format		*/
-int map_file = 0;			/* 0: create MAP file		*/
-int overwrite_key = 0;			/* 0: over write site key	*/
+int map_file = 0;			/* 1: create MAP file		*/
+int filemap_file = 1;			/* 1: create FILEMAP file	*/
+int overwrite_key = 0;			/* 1: over write site key	*/
 const char *icon_suffix = "png";	/* icon suffix (jpg, png etc)	*/
 const char *icon_spec = "border='0' align='top'";/* parameter in IMG tag*/
 const char *prolog_script = NULL;	/* include script at first	*/

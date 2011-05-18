@@ -435,7 +435,7 @@ print_directory(int level, char *basedir)
 						file_end);
 				}
 				PUT(file_name);
-				if (map_file)
+				if (filemap_file)
 					fprintf(FILEMAP, "%s\t%s/%s.%s\n", removedotslash(path), SRCS, path2fid(path), HTML);
 				count++;
 			}
@@ -743,7 +743,7 @@ makefileindex(const char *file, STRBUF *a_files)
 	else if (!no_order_list)
 		fputs_nl(list_begin, filesop);
 	FILEMAP = NULL;
-	if (map_file) {
+	if (filemap_file) {
 		if (!(FILEMAP = fopen(makepath(distpath, "FILEMAP", NULL), "w")))
                         die("cannot open '%s'.", makepath(distpath, "FILEMAP", NULL));
 	}
@@ -757,7 +757,7 @@ makefileindex(const char *file, STRBUF *a_files)
 	if (tree_view)
 		strbuf_puts(files, tree_end);
 
-	if (map_file)
+	if (filemap_file)
 		fclose(FILEMAP);
 	gfind_close(gp);
 	regfree(&is_include_file);

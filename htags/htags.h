@@ -129,6 +129,7 @@ extern int tabs;
 extern int flist_fields;
 extern int full_path;
 extern int map_file;
+extern int filemap_file;
 extern const char *icon_suffix;
 extern const char *icon_spec;
 extern const char *prolog_script;
