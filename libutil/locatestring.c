@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2004
+ * Copyright (c) 1997, 1998, 1999, 2000, 2004, 2011
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -114,7 +114,6 @@ strincmp(const char *string, const char *pattern, size_t len)
 char *
 locatestring(const char *string, const char *pattern, int flag)
 {
-	int c = *pattern;
 	int plen = strlen(pattern);
 	const char *p = NULL;
 	int slen;
@@ -136,12 +135,11 @@ locatestring(const char *string, const char *pattern, int flag)
 	if (flag == MATCH_AT_LAST && (slen = strlen(string)) > plen)
 		string += (slen - plen);
 	for (; *string; string++) {
-		if (*string == c)
-			if (!(*cmpfunc)(string, pattern, plen)) {
-				p = string;
-				if (flag == MATCH_FIRST)
-					break;
-			}
+		if (!(*cmpfunc)(string, pattern, plen)) {
+			p = string;
+			if (flag == MATCH_FIRST)
+				break;
+		}
 		if (flag == MATCH_AT_FIRST || flag == MATCH_AT_LAST)
 			break;
 	}

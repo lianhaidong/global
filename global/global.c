@@ -961,13 +961,18 @@ grep(const char *pattern, char *const *argv, const char *dbpath)
 		target = GPATH_BOTH;
 	if (Oflag)
 		target = GPATH_OTHER;
-	if (!Gflag)
-		flags |= REG_EXTENDED;
-	if (iflag)
-		flags |= REG_ICASE;
-	if (literal == 0)
+	if (literal) {
+		flags = MATCH_FIRST;
+		if (iflag)
+			flags |= IGNORE_CASE;
+	} else {
+		if (!Gflag)
+			flags |= REG_EXTENDED;
+		if (iflag)
+			flags |= REG_ICASE;
 		if (regcomp(&preg, pattern, flags) != 0)
 			die("invalid regular expression.");
+	}
 	cv = convert_open(type, format, root, cwd, dbpath, stdout, NOTAGS);
 	count = 0;
 
@@ -1001,7 +1006,7 @@ grep(const char *pattern, char *const *argv, const char *dbpath)
 			int result;
 
 			if (literal) {
-				result = locatestring(buffer, pattern, MATCH_FIRST) ? 0 : -1;
+				result = locatestring(buffer, pattern, flags) ? 0 : -1;
 			} else {
 				result = regexec(&preg, buffer, 0, 0, 0);
 			}
