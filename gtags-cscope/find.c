@@ -104,7 +104,7 @@ findcalling(char *pattern)
 char *
 findstring(char *pattern)
 {
-	snprintf(comline, sizeof(comline), "%s -g \"%s\" > %s", COMMON, quote_string(pattern), temp1);
+	snprintf(comline, sizeof(comline), "%s -g --literal %s > %s", COMMON, quote_shell(pattern), temp1);
 	if (system(comline) != 0)
 		return FAILED;
 	return NULL;
