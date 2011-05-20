@@ -97,3 +97,37 @@ quote_chars(const char *s, unsigned int c)
 	}
 	return strbuf_value(sb);
 }
+#if defined(__DJGPP__) || (defined(_WIN32) && !defined(__CYGWIN__))
+#define SHELL_QUOTE '"'
+#else
+#define SHELL_QUOTE '\''
+#endif
+/*
+ * quote for shell.
+ *
+ *	aaa => 'aaa'
+ *	a'a => 'a'\''aa'
+ */
+const char *
+quote_shell(const char *s)
+{
+	STATIC_STRBUF(sb);
+
+	strbuf_clear(sb);
+	strbuf_putc(sb, SHELL_QUOTE);
+#if defined(__DJGPP__) || (defined(_WIN32) && !defined(__CYGWIN__))
+	strbuf_puts(s);
+#else
+	for (; *s; s++) {
+		if (*s == SHELL_QUOTE) {
+			strbuf_putc(sb, SHELL_QUOTE);
+			strbuf_putc(sb, '\\');
+			strbuf_putc(sb, SHELL_QUOTE);
+			strbuf_putc(sb, SHELL_QUOTE);
+		} else
+			strbuf_putc(sb, *s);
+	}
+#endif
+	strbuf_putc(sb, SHELL_QUOTE);
+	return strbuf_value(sb);
+}

@@ -39,5 +39,6 @@ extern const unsigned char chartype[256];
 int isregex(const char *);
 const char *quote_string(const char *);
 const char *quote_chars(const char *, unsigned int);
+const char *quote_shell(const char *);
 
 #endif /* ! _CHAR_H_ */
