@@ -116,6 +116,9 @@
 		Print only objects which exist under the current directory.
 	@item{@option{-L}, @option{--file-list} @arg{file-list}}
 		Obtain files from @arg{file-list} in addition to the arguments.
+	@item{@option{--literal}}
+		Execute literal search instead of regular expression search.
+		This option is only valid when the @option{-g} command is specified.
 	@item{@option{-n}, @option{--nofilter}}
 		Suppress sort filter and path conversion filter.
 	@item{@option{-O}, @option{--only-other}}

@@ -90,6 +90,7 @@ int show_help;
 int nofilter;
 int nosource;				/* undocumented command */
 int debug;
+int literal;				/* 1: literal search	*/
 int print0;				/* -print0 option	*/
 int format;
 int type;				/* path conversion type */
@@ -154,6 +155,7 @@ static struct option const long_options[] = {
 	{"encode-path", required_argument, NULL, ENCODE_PATH},
 	{"from-here", required_argument, NULL, FROM_HERE},
 	{"debug", no_argument, &debug, 1},
+	{"literal", no_argument, &literal, 1},
 	{"print0", no_argument, &print0, 1},
 	{"version", no_argument, &show_version, 1},
 	{"help", no_argument, &show_help, 1},
@@ -963,8 +965,9 @@ grep(const char *pattern, char *const *argv, const char *dbpath)
 		flags |= REG_EXTENDED;
 	if (iflag)
 		flags |= REG_ICASE;
-	if (regcomp(&preg, pattern, flags) != 0)
-		die("invalid regular expression.");
+	if (literal == 0)
+		if (regcomp(&preg, pattern, flags) != 0)
+			die("invalid regular expression.");
 	cv = convert_open(type, format, root, cwd, dbpath, stdout, NOTAGS);
 	count = 0;
 
@@ -995,8 +998,13 @@ grep(const char *pattern, char *const *argv, const char *dbpath)
 			die("cannot open file '%s'.", path);
 		linenum = 0;
 		while ((buffer = strbuf_fgets(ib, fp, STRBUF_NOCRLF)) != NULL) {
-			int result = regexec(&preg, buffer, 0, 0, 0);
+			int result;
 
+			if (literal) {
+				result = locatestring(buffer, pattern, MATCH_FIRST) ? 0 : -1;
+			} else {
+				result = regexec(&preg, buffer, 0, 0, 0);
+			}
 			linenum++;
 			if ((!Vflag && result == 0) || (Vflag && result != 0)) {
 				count++;
@@ -1014,7 +1022,8 @@ grep(const char *pattern, char *const *argv, const char *dbpath)
 	args_close();
 	convert_close(cv);
 	strbuf_close(ib);
-	regfree(&preg);
+	if (literal == 0)
+		regfree(&preg);
 	if (vflag) {
 		print_count(count);
 		fprintf(stderr, " (no index used).\n");
