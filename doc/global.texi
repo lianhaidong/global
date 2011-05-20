@@ -541,22 +541,6 @@ In Bash:
 
 @end example
 
-In Tcsh:
-@example
-
-    % set funcs=(`global -c`)
-    % complete global 'n/*/$funcs/'
-    % global kmem_@kbd{TAB}
-    kmem_alloc          kmem_free_wakeup
-    kmem_alloc_pageable kmem_init
-    kmem_alloc_wait     kmem_malloc
-    kmem_free           kmem_suballoc
-    % global kmem_s@kbd{TAB}
-    % global kmem_suballoc
-    ../vm/vm_kern.c
-
-@end example
-
 If you like input completion, you had better try globash(@pxref{GloBash}).
 It support you in a suitable way without any preparation.
 
