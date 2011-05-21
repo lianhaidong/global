@@ -28,6 +28,7 @@
 #include <strings.h>
 #endif
 
+#include "die.h"
 #include "locatestring.h"
 
 /*
