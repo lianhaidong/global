@@ -264,8 +264,6 @@ fixed_guide_link_format(int ref[A_LIMIT], const char *anchors)
 	strbuf_puts(sb, guide_begin);
 	strbuf_putc(sb, '\n');
 	for (i = 0; i < A_LIMIT; i++) {
-		char value[64];
-
 		if (i == A_PREV || i == A_NEXT)
 			continue;
 		strbuf_puts(sb, guide_unit_begin);
