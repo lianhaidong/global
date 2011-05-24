@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005,
- *      2006, 2007, 2008, 2010 Tama Communications Corporation
+ *      2006, 2007, 2008, 2010, 2011 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -124,6 +124,7 @@ int suggest;				/* --suggest option		*/
 int suggest2;				/* --suggest2 option		*/
 int auto_completion;			/* --auto-completion		*/
 int tree_view;				/* --tree-view			*/
+int fixed_guide;			/* --fixed-guide		*/
 const char *tree_view_type;		/* -- type-view=[type]		*/
 char *auto_completion_limit = "0";	/* --auto-completion=limit	*/
 int statistics = STATISTICS_STYLE_NONE;	/* --statistics option		*/
@@ -286,6 +287,7 @@ static struct option const long_options[] = {
         {"disable-grep", no_argument, &enable_grep, 0},
         {"disable-idutils", no_argument, &enable_idutils, 0},
         {"full-path", no_argument, &full_path, 1},
+        {"fixed-guide",  no_argument, &fixed_guide, 1},
         {"html", no_argument, &enable_xhtml, 0},
         {"map-file", no_argument, &map_file, 1},
         {"overwrite-key", no_argument, &overwrite_key, 1},
@@ -1699,7 +1701,7 @@ main(int argc, char **argv)
 		aflag = Iflag = nflag = vflag = 1;
 		setverbose();
 		definition_header = AFTER_HEADER;
-		other_files = symbol = show_position = table_flist = 1;
+		other_files = symbol = show_position = table_flist = fixed_guide = 1;
 		if (arg_dbpath[0]) {
 			if (!test("f", makepath(arg_dbpath, dbname(GTAGS), NULL)))
 				gtags_not_found = 1;
@@ -1715,6 +1717,8 @@ main(int argc, char **argv)
 		fflag = dynamic = 1;			/* needs a HTTP server */
 		auto_completion = tree_view = 1;	/* needs javascript */
 	}
+	if (!enable_xhtml && (tree_view || auto_completion || fixed_guide))
+		die("The --html option cannot accept the --tree-view, --auto-completion and --fixed-guide option.");
 	if (cflow_file && !test("fr", cflow_file))
 		die("cflow file not found. '%s'", cflow_file);
 	if (insert_header && !test("fr", insert_header))
@@ -1737,11 +1741,6 @@ main(int argc, char **argv)
 	}
 	if (!cflag && !fflag && !dynamic)
 		Sflag = 0;
-	/*
-	 * If the --xhtml option is specified then all HTML tags which
-	 * are defined in configuration file are ignored. Instead, you can
-	 * customize XHTML tag using style sheet (See 'style.css').
-	 */
 	if (enable_xhtml)
 		setup_xhtml();
         if (show_version)

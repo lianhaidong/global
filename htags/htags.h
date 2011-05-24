@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003
+ * Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2011
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -88,6 +88,7 @@ extern int show_version;
 extern int caution;
 extern int auto_completion;
 extern int tree_view;
+extern int fixed_guide;
 extern int dynamic;
 extern int symbol;
 extern int statistics;

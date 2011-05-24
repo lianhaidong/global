@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2010 Tama Communications Corporation
+ * Copyright (c) 2005, 2010, 2011 Tama Communications Corporation
  *
  * This file is free software; as a special exception the author gives
  * unlimited permission to copy and/or distribute it, with or without
@@ -8,6 +8,9 @@
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
  * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ */
+/*
+ * Souce code
  */
 body		{ color: #191970; background-color: #f5f5dc; }
 a.visited	{ color: gray; }
@@ -33,3 +36,32 @@ em.position	{ color: gray; font-style: italic; }
 em.warned	{ background-color: yellow; }
 em.string	{ text-decoration: underline; }
 strong.reserved	{ font-weight: bold; }
+/*
+ * Fixed guide (--fixed-guide)
+ */
+#guide {
+	height: 35px;
+	position: fixed;
+	bottom:0px; left:0px; right:0px;
+	background: #f5f5dc;
+	border: 1px solid #ccc;
+}
+#guide ul {
+	height: 25px;
+	margin: 5px;
+	width: 90%;
+}
+#guide ul li {
+	float: left;
+	display: inline;
+	margin: 1px 1px;
+}
+#guide a {
+	line-height: 24px;
+}
+#guide ul li.standout span {
+	margin: 0px 4px;
+	font-size: 115%;
+	font-weight: bold;
+}
+/* end of FIXED GUIDE */

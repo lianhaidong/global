@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005,
- *		2006, 2008, 2010
+ *		2006, 2008, 2010, 2011
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -181,26 +181,23 @@ fill_anchor(const char *root, const char *path)
 			*p = '\0';
 	limit = p;
 
-	strbuf_sprintf(sb, "%sroot%s/", gen_href_begin_simple(root), gen_href_end());
-	{
-		const char *next;
+	if (root != NULL)
+		strbuf_sprintf(sb, "%sroot%s/", gen_href_begin_simple(root), gen_href_end());
+	for (p = buf; p < limit; p += strlen(p) + 1) {
+		const char *path = buf;
+		const char *unit = p;
+		const char *next = p + strlen(p) + 1;
 
-		for (p = buf; p < limit; p += strlen(p) + 1) {
-			const char *path = buf;
-			const char *unit = p;
-
-			next = p + strlen(p) + 1;
-			if (next > limit) {
-				strbuf_puts(sb, unit);
-				break;
-			}
-			if (p > buf)
-				*(p - 1) = sep;
-			strbuf_puts(sb, gen_href_begin("../files", path2fid(path), HTML, NULL));
+		if (next > limit) {
 			strbuf_puts(sb, unit);
-			strbuf_puts(sb, gen_href_end());
-			strbuf_putc(sb, '/');
+			break;
 		}
+		if (p > buf)
+			*(p - 1) = sep;
+		strbuf_puts(sb, gen_href_begin("../files", path2fid(path), HTML, NULL));
+		strbuf_puts(sb, unit);
+		strbuf_puts(sb, gen_href_end());
+		strbuf_putc(sb, '/');
 	}
         return strbuf_value(sb);
 }
@@ -248,6 +245,74 @@ link_format(int ref[A_SIZE])
 			strbuf_puts(sb, gen_href_end());
 	}
         return strbuf_value(sb);
+}
+/*
+ * fixed_guide_link_format: make fixed guide
+ *
+ *	i)	(previous, next, first, last, top, bottom)
+ *		-1: top, -2: bottom, other: line number
+ *	r)	HTML
+ */
+const char *
+fixed_guide_link_format(int ref[A_LIMIT], const char *anchors)
+{
+	int i = 0;
+	STATIC_STRBUF(sb);
+
+	strbuf_clear(sb);
+	strbuf_puts(sb, "<!-- beginning of fixed guide -->\n");
+	strbuf_puts(sb, guide_begin);
+	strbuf_putc(sb, '\n');
+	for (i = 0; i < A_LIMIT; i++) {
+		char value[64];
+
+		if (i == A_PREV || i == A_NEXT)
+			continue;
+		strbuf_puts(sb, guide_unit_begin);
+		switch (i) {
+		case A_FIRST:
+		case A_LAST:
+			if (ref[i] == 0)
+				strbuf_puts(sb, gen_href_begin(NULL, NULL, NULL, (i == A_FIRST) ? "TOP" : "BOTTOM"));
+			else {
+				char lineno[32];
+				snprintf(lineno, sizeof(lineno), "%d", ref[i]);
+				strbuf_puts(sb, gen_href_begin(NULL, NULL, NULL, lineno));
+			}
+			break;
+		case A_TOP:
+			strbuf_puts(sb, gen_href_begin(NULL, NULL, NULL, "TOP"));
+			break;
+		case A_BOTTOM:
+			strbuf_puts(sb, gen_href_begin(NULL, NULL, NULL, "BOTTOM"));
+			break;
+		case A_INDEX:
+			strbuf_puts(sb, gen_href_begin("..", "mains", normal_suffix, NULL));
+			break;
+		case A_HELP:
+			strbuf_puts(sb, gen_href_begin("..", "help", normal_suffix, NULL));
+			break;
+		default:
+			die("fixed_guide_link_format: something is wrong.(%d)", i);
+			break;
+		}
+		if (Iflag)
+			strbuf_puts(sb, gen_image(PARENT, anchor_icons[i], anchor_label[i]));
+		else
+			strbuf_sprintf(sb, "[%s]", anchor_label[i]);
+		strbuf_puts(sb, gen_href_end());
+		strbuf_puts(sb, guide_unit_end);
+		strbuf_putc(sb, '\n');
+	}
+	strbuf_puts(sb, guide_path_begin);
+	strbuf_puts(sb, anchors);
+	strbuf_puts(sb, guide_path_end);
+	strbuf_putc(sb, '\n');
+	strbuf_puts(sb, guide_end);
+	strbuf_putc(sb, '\n');
+	strbuf_puts(sb, "<!-- end of fixed guide -->\n");
+
+	return strbuf_value(sb);
 }
 /*
  * generate_guide: generate guide string for definition line.
@@ -724,6 +789,11 @@ src2html(const char *src, const char *html, int notsource)
 	snprintf(indexlink, sizeof(indexlink), "../mains.%s", normal_suffix);
 	fputs_nl(gen_page_begin(src, SUBDIR), out);
 	fputs_nl(body_begin, out);
+	/*
+         * print fixed guide
+         */
+	if (fixed_guide)
+		fputs(fixed_guide_link_format(anchor_getlinks(0), fill_anchor(NULL, src)), out);
 	/*
          * print the header
          */

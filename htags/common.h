@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2008 Tama Communications Corporation
+ * Copyright (c) 2004, 2008, 2011 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -108,6 +108,13 @@ extern const char *dir_begin;
 extern const char *dir_end;
 extern const char *file_begin;
 extern const char *file_end;
+
+extern const char *guide_begin;
+extern const char *guide_end;
+extern const char *guide_unit_begin;
+extern const char *guide_unit_end;
+extern const char *guide_path_begin;
+extern const char *guide_path_end;
 
 int fputs_nl(const char *, FILE *);
 void setup_xhtml(void);

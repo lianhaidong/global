@@ -85,6 +85,8 @@
 	@item{@option{-f}, @option{--form}}
 		Add a search form using CGI program.
 		You need to start up HTTP server for it.
+	@item{@option{--fixed-guide}}
+		Put a fixed guide at the bottom of the source code.
 	@item{@option{--full-path}}
 		Use full path name in the file index.
 		By default, use just the last component of a path.
@@ -142,7 +144,7 @@
 		Print statistics information.
 	@item{@option{--suggest}}
 		@name{Htags} chooses popular options on behalf of beginners.
-                It is equivalent to '-aghInosTxv --show-position' now.
+                It is equivalent to '-aghInosTxv --show-position --fixed-guide' now.
 	@item{@option{--suggest2}}
 		@name{Htags} chooses popular options on behalf of beginners.
 		This option enables frame, AJAX and CGI facility in addition
