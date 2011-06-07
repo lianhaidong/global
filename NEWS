@@ -21,6 +21,18 @@ ___________________________________
 GNU GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 5.9.6 - June 7 2011
+
+[CHANGES]
+global: New option --literal.
+htags: New --fixed-guide option.
+
+[FIXED BUGS]
+htags: didn't make FILEMAP file which is referred by Doxgen.
+       version 5.9.4 and 5.9.5 didn't this file.
+gtags-cscope: 'Find this text string:' didn't work correctly in some cases.
+gtags-cscope/Makefile: setting of gtags_cscope_DEPENDENCIES was wrong.
+
 Version 5.9.5 - May 16 2011
 
 [CHANGES]
