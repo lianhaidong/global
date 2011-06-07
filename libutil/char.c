@@ -116,7 +116,7 @@ quote_shell(const char *s)
 	strbuf_clear(sb);
 	strbuf_putc(sb, SHELL_QUOTE);
 #if defined(__DJGPP__) || (defined(_WIN32) && !defined(__CYGWIN__))
-	strbuf_puts(s);
+	strbuf_puts(sb, s);
 #else
 	for (; *s; s++) {
 		if (*s == SHELL_QUOTE) {
