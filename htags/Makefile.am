@@ -13,11 +13,10 @@
 bin_PROGRAMS= htags
 
 htags_SOURCES = htags.c defineindex.c dupindex.c fileindex.c cflowindex.c src2html.c \
-		anchor.c cache.c common.c incop.c assoc.c path2url.c \
+		anchor.c cache.c common.c incop.c path2url.c \
 		c.c cpp.c java.c php.c asm.c
 
-noinst_HEADERS = htags.h anchor.h cache.h common.h incop.h assoc.h path2url.h \
-		lexcommon.h
+noinst_HEADERS = htags.h anchor.h cache.h common.h incop.h path2url.h lexcommon.h
 
 INCLUDES = @INCLUDES@ -I$(srcdir)
 

@@ -25,7 +25,6 @@
 
 #include "checkalloc.h"
 #include "die.h"
-#include "htags.h"
 #include "assoc.h"
 
 /*
