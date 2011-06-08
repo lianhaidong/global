@@ -112,7 +112,15 @@ A4. If your GNU system supports 64-bit file offset then please try the
 	$ ./configure CFLAGS='-D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64'
 
 ----------------------------------------------------------------------------
-Q5. Deleted.
+Q5. When there is a looping symbolic link, gtags falls into an infinite loop.
+    Any workaround?
+
+A5. Until this bug is fixed, you need to manually build a file list, and use it.
+    Please try this:
+
+	$ find . -type f -print >gtags.files
+	$ gtags
+
 ----------------------------------------------------------------------------
 Q6. It seems that gtags(1) cannot treat files which include blanks in the path.
     Why?
