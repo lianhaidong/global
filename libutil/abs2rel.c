@@ -35,7 +35,6 @@
 #include "locatestring.h"
 #include "strlimcpy.h"
 #include "path.h"
-
 /*
 
 NAME
@@ -200,8 +199,16 @@ normalize(const char *path, const char *root, const char *cwd, char *result, con
 	 *      path     /a/b/c/d.c -> c/d.c -> ./c/d.c
 	 */
 	p = locatestring(abs, root, MATCH_AT_FIRST);
-	if (p == NULL)
-		return NULL;
+	if (p == NULL) {
+		p = locatestring(root, abs, MATCH_AT_FIRST);
+		/*
+		 * abs == /usr/src should be considered to be equal to root == /usr/src/.
+		 */
+		if (p && !strcmp(p, "/"))
+			result[0] = '\0';
+		else
+			return NULL;
+	}
 	strlimcpy(result, "./", size);
 	strlimcpy(result + 2, p, size - 2);
 	return result;
