@@ -523,7 +523,8 @@ __gtags_locate_tag() {
 	local command less tag
 	command=$1
 	case $command in
-	x|r|s|g|I|P)	;;
+	d|r|s|rs|g|I|P)
+		;;
 	*)	echo "Unknown command '$command'."
 		return 1;;
 	esac
@@ -558,9 +559,11 @@ __gtags_locate_tag() {
 		fi
 	fi
 }
-x() { __gtags_locate_tag x $*; }
+x() { __gtags_locate_tag d $*; }
+d() { __gtags_locate_tag d $*; }
 r() { __gtags_locate_tag r $*; }
 s() { __gtags_locate_tag s $*; }
+rs() {__gtags_locate_tag rs $*; }
 g() { __gtags_locate_tag g $*; }
 I() { __gtags_locate_tag I $*; }
 P() { __gtags_locate_tag P $*; }
