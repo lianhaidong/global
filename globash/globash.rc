@@ -563,7 +563,7 @@ x() { __gtags_locate_tag d $*; }
 d() { __gtags_locate_tag d $*; }
 r() { __gtags_locate_tag r $*; }
 s() { __gtags_locate_tag s $*; }
-rs() {__gtags_locate_tag rs $*; }
+rs() { __gtags_locate_tag rs $*; }
 g() { __gtags_locate_tag g $*; }
 I() { __gtags_locate_tag I $*; }
 P() { __gtags_locate_tag P $*; }
