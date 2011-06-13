@@ -217,6 +217,7 @@ __gtags_prompt() {
 	local root=`global -pr 2>/dev/null`
 	local ps
 
+	trap '' 2
 	if [ "$root" ] && echo $cwd | grep "^$root" >/dev/null; then
 		local path=`echo $cwd | sed "s!^$root!!"`
 		ps="[$root]$path"
@@ -250,6 +251,7 @@ __gtags_prompt() {
 		__gtags_filter="gtags --encode-path=' ' --path=relative '$root' '$cwd' '$dbpath'"
 		__gtags_prev_root=$root
 	fi
+	trap 2
 }
 __gtags_parse() {
        while case $1 in
