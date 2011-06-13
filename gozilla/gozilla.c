@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2002, 2003, 2004, 2006
+ * Copyright (c) 1997, 1998, 1999, 2000, 2002, 2003, 2004, 2006, 2011
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -189,7 +189,7 @@ locate_HTMLdir(void)
 		/* Doxygen makes HTML in doxygen's html directory. */
 		strlimcpy(htmldir, makepath(root, "html/HTML", NULL), sizeof(htmldir));
 	else
-		die("hypertext not found. See htags(1).");
+		return NULL;
 	if (vflag)
 		fprintf(stdout, "HTML directory '%s'.\n", htmldir);
 	return (const char *)htmldir;
@@ -281,20 +281,43 @@ main(int argc, char **argv)
 	/*
 	 * Get URL.
 	 */
-	if (!definition && isprotocol(strbuf_value(arg))) {
-		strbuf_puts(URL, strbuf_value(arg));
-	} else {
-		int status = setupdbpath(0);
+	{
+		char *argument = strbuf_value(arg);
+		int status = 0;
 
-		if (status < 0)
+		/*
+		 * Protocol (xxx://...)
+		 */
+		if (!definition && isprotocol(argument)) {
+			strbuf_puts(URL, argument);
+		}
+		/*
+		 * Normal case.
+		 */
+		else if ((status = setupdbpath(0)) == 0 && locate_HTMLdir() != NULL) {
+			cwd = get_cwd();
+			root = get_root();
+			dbpath = get_dbpath();
+			if (definition)
+				getdefinitionURL(definition, URL);
+			else
+				getURL(argument, URL);
+		}
+		/*
+		 * GTAGS or HTML not found.
+		 */
+		else if (test("fr", argument) || test("dr", argument)) {
+			char cwd[MAXPATHLEN];
+			char result[MAXPATHLEN];
+			if (getcwd(cwd, sizeof(cwd)) == NULL)
+				die("cannot get current directory.");
+			if (rel2abs(argument, cwd, result, sizeof(result)) == NULL)
+				die("rel2abs failed.");
+			strbuf_puts(URL, "file://");
+			strbuf_puts(URL, result);
+		} else {
 			die_with_code(-status, gtags_dbpath_error);
-		cwd = get_cwd();
-		root = get_root();
-		dbpath = get_dbpath();
-		if (definition)
-			getdefinitionURL(definition, URL);
-		else
-			getURL(strbuf_value(arg), URL);
+		}
 	}
 	if (pflag) {
 		fprintf(stdout, "%s\n", strbuf_value(URL));
@@ -326,8 +349,10 @@ getdefinitionURL(const char *arg, STRBUF *URL)
 	const char *htmldir = locate_HTMLdir();
 	const char *path = makepath(htmldir, "MAP", NULL);
 
+	if (htmldir == NULL)
+		die("hypertext not found. See htags(1).");
 	if (!test("f", path))
-		die("'%s' not found. Please reconstruct hypertext using the latest htags(1).", path);
+		die("'%s' not found. Please invoke htags(1) with the --map-file option.", path);
 	fp = fopen(path, "r");
 	if (!fp)
 		die("cannot open '%s'.", path);
@@ -364,10 +389,12 @@ getURL(const char *file, STRBUF *URL)
 	STRBUF *sb = strbuf_open(0);
 	const char *htmldir = locate_HTMLdir();
 
+	if (htmldir == NULL)
+		die("hypertext not found. See htags(1).");
 	if (!test("f", file) && !test("d", file))
 		die("path '%s' not found.", file);
 	p = normalize(file, get_root_with_slash(), cwd, buf, sizeof(buf));
-	if (convertpath(dbpath, htmldir, p, sb) == 0)
+	if (p != NULL && convertpath(dbpath, htmldir, p, sb) == 0)
 		makefileurl(strbuf_value(sb), linenumber, URL);
 	else
 		makefileurl(realpath(file, buf), 0, URL);
@@ -540,14 +567,11 @@ show_page_by_url(const char *browser, const char *url)
 	 * Browsers which have openURL() command.
 	 */
 	if (locatestring(browser, "mozilla", MATCH_AT_LAST) ||
+	    locatestring(browser, "firefox", MATCH_AT_LAST) ||
 	    locatestring(browser, "netscape", MATCH_AT_LAST) ||
 	    locatestring(browser, "netscape-remote", MATCH_AT_LAST))
 	{
-		char *path;
-
-		if (!(path = usable(browser)))
-			die("%s not found in your path.", browser);
-		snprintf(com, sizeof(com), "%s -remote \"openURL(%s)\"", path, url);
+		snprintf(com, sizeof(com), "%s -remote \"openURL(%s)\"", browser, url);
 	}
 	/*
 	 * Generic browser.
