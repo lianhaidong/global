@@ -94,9 +94,7 @@ int literal;				/* 1: literal search	*/
 int print0;				/* -print0 option	*/
 int format;
 int type;				/* path conversion type */
-char cwd[MAXPATHLEN];			/* current directory	*/
-char root[MAXPATHLEN];			/* root of source tree	*/
-char dbpath[MAXPATHLEN];		/* dbpath directory	*/
+const char *cwd, *root, *dbpath;
 char *context_file;
 char *context_lineno;
 char *file_list;
@@ -526,9 +524,16 @@ main(int argc, char **argv)
 	 *	o root of source tree
 	 *	o dbpath directory
 	 *
-	 * if GTAGS not found, getdbpath doesn't return.
+	 * if GTAGS not found, exit with an error message.
 	 */
-	getdbpath(cwd, root, dbpath, (pflag && vflag));
+	{
+		int status = setupdbpath(pflag && vflag);
+		if (status < 0)
+			die_with_code(-status, gtags_dbpath_error);
+		cwd = get_cwd();
+		root = get_root();
+		dbpath = get_dbpath();
+	}
 	/*
 	 * print dbpath or rootdir.
 	 */
@@ -577,7 +582,7 @@ main(int argc, char **argv)
 
 		strbuf_putc(sb, '.');
 		if (strcmp(root, cwd) != 0) {
-			char *p = cwd + strlen(root);
+			const char *p = cwd + strlen(root);
 			if (*p != '/')
 				strbuf_putc(sb, '/');
 			strbuf_puts(sb, p);

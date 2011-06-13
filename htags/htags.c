@@ -1779,7 +1779,11 @@ main(int argc, char **argv)
 		set_env("GTAGSDBPATH", dbpath);
 	} else
 		strlimcpy(dbpath, cwdpath, sizeof(dbpath));
-	setupdbpath(0);				/* for parsers */
+	{
+		int status = setupdbpath(0);			/* for parsers */
+		if (status < 0)
+			die_with_code(-status, gtags_dbpath_error);
+	}
 	if (cflag && !usable("gzip")) {
 		warning("'gzip' command not found. -c option ignored.");
 		cflag = 0;

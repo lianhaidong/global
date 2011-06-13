@@ -65,9 +65,7 @@ void show_page_by_url(const char *, const char *);
 #define isblank(c)	((c) == ' ' || (c) == '\t')
 #endif
 
-char cwd[MAXPATHLEN];
-char root[MAXPATHLEN];
-char dbpath[MAXPATHLEN];
+const char *cwd, *root, *dbpath;
 
 int bflag;
 int pflag;
@@ -286,7 +284,13 @@ main(int argc, char **argv)
 	if (!definition && isprotocol(strbuf_value(arg))) {
 		strbuf_puts(URL, strbuf_value(arg));
 	} else {
-		getdbpath(cwd, root, dbpath, 0);
+		int status = setupdbpath(0);
+
+		if (status < 0)
+			die_with_code(-status, gtags_dbpath_error);
+		cwd = get_cwd();
+		root = get_root();
+		dbpath = get_dbpath();
 		if (definition)
 			getdefinitionURL(definition, URL);
 		else

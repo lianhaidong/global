@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2002, 2008
+ * Copyright (c) 1997, 1998, 1999, 2000, 2002, 2008, 2011
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -55,6 +55,7 @@
 
 static const char *makeobjdirprefix;	/* obj partition		*/
 static const char *makeobjdir;		/* obj directory		*/
+char const *gtags_dbpath_error;		/* error message */
 
 /*
  * setupvariables: load variables regard to BSD OBJ directory.
@@ -190,79 +191,66 @@ static char root[MAXPATHLEN];
 static char root_with_slash[MAXPATHLEN];
 static char cwd[MAXPATHLEN];
 /*
- * getdbpath: get dbpath directory
- *
- *	o)	a_cwd	current directory
- *	o)	a_root	root of source tree
- *	o)	a_dbpath directory which GTAGS exist
- *	i)	verbose	verbose mode 1: on, 0: off
- *
- * root and dbpath assumed as
- *	char	cwd[MAXPATHLEN];
- *	char	root[MAXPATHLEN];
- *	char	dbpath[MAXPATHLEN];
- *
- * At first, getdbpath locate GTAGS file in the current directory.
- * If not found, it move up to the parent directory and locate GTAGS again.
- * It repeat above behavior until GTAGS file is found or reach the system's
- * root directory '/'. If reached to '/' then getdbpath print "GTAGS not found."
- * and exit.
- */
-void
-getdbpath(char *a_cwd, char *a_root, char *a_dbpath, int verbose)
-{
-	/*
-	 * get the values.
-	 */
-	setupdbpath(verbose);
-	/*
-	 * return the values.
-	 */
-	strlimcpy(a_dbpath, dbpath, MAXPATHLEN);
-	strlimcpy(a_root, root, MAXPATHLEN);
-	strlimcpy(a_cwd, cwd, MAXPATHLEN);
-}
-/*
  * setupdbpath: setup dbpath directory
  *
  *	go)	cwd	current directory
  *	go)	root	root of source tree
  *	go)	dbpath directory which GTAGS exist
  *	i)	verbose	verbose mode 1: on, 0: off
+ *	go)	gtags_dbpath_error: set if status < 0
+ *	r)	0: normal, 0<: error
  */
-void
+int
 setupdbpath(int verbose)
 {
 	struct stat sb;
 	char *p;
+	static char msg[1024];
 
-	if (!getcwd(cwd, MAXPATHLEN))
-		die("cannot get current directory.");
+	if (!getcwd(cwd, MAXPATHLEN)) {
+		gtags_dbpath_error = "cannot get current directory.";
+		return -1;
+	}
 	canonpath(cwd);
 
 	if ((p = getenv("GTAGSROOT")) != NULL) {
 		if (verbose)
 			fprintf(stderr, "GTAGSROOT is set to '%s'.\n", p);
-		if (!isabspath(p))
-			die("GTAGSROOT must be an absolute path.");
-		if (stat(p, &sb) || !S_ISDIR(sb.st_mode))
-			die("directory '%s' not found.", p);
-		if (realpath(p, root) == NULL)
-			die("cannot get real path of '%s'.", p);
+		if (!isabspath(p)) {
+			gtags_dbpath_error = "GTAGSROOT must be an absolute path.";
+			return -1;
+		}
+		if (stat(p, &sb) || !S_ISDIR(sb.st_mode)) {
+			snprintf(msg, sizeof(msg), "directory '%s' not found.", p);
+			gtags_dbpath_error = msg;
+			return -1;
+		}
+		if (realpath(p, root) == NULL) {
+			snprintf(msg, sizeof(msg), "cannot get real path of '%s'.", p);
+			gtags_dbpath_error = msg;
+			return -1;
+		}
 		/*
 		 * GTAGSDBPATH is meaningful only when GTAGSROOT exist.
 		 */
 		if ((p = getenv("GTAGSDBPATH")) != NULL) {
 			if (verbose)
 				fprintf(stderr, "GTAGSDBPATH is set to '%s'.\n", p);
-			if (!isabspath(p))
-				die("GTAGSDBPATH must be an absolute path.");
-			if (stat(p, &sb) || !S_ISDIR(sb.st_mode))
-				die("directory '%s' not found.", p);
+			if (!isabspath(p)) {
+				gtags_dbpath_error = "GTAGSDBPATH must be an absolute path.";
+				return -1;
+			}
+			if (stat(p, &sb) || !S_ISDIR(sb.st_mode)) {
+				snprintf(msg, sizeof(msg), "directory '%s' not found.", p);
+				gtags_dbpath_error = msg;
+				return -1;
+			}
 			strlimcpy(dbpath, getenv("GTAGSDBPATH"), MAXPATHLEN);
 		} else {
-			if (!gtagsexist(root, dbpath, MAXPATHLEN, verbose))
-				die_with_code(3, "GTAGS not found.");
+			if (!gtagsexist(root, dbpath, MAXPATHLEN, verbose)) {
+				gtags_dbpath_error = "GTAGS not found.";
+				return -3;
+			}
 		}
 	} else {
 		if (verbose && getenv("GTAGSDBPATH"))
@@ -283,8 +271,10 @@ setupdbpath(int verbose)
 				p++;
 			*p = 0;
 		}
-		if (*(root+ROOT) == 0)
-			die_with_code(3, "GTAGS not found.");
+		if (*(root+ROOT) == 0) {
+			gtags_dbpath_error = "GTAGS not found.";
+			return -3;
+		}
 		/*
 		 * If file 'GTAGSROOT' found without environment variable
 		 * GTAGSDBPATH, use the value of it as GTAGSROOT.
@@ -327,6 +317,7 @@ setupdbpath(int verbose)
 		strlimcpy(root_with_slash, root, sizeof(root_with_slash));
 	else
 		snprintf(root_with_slash, sizeof(root_with_slash), "%s/", root);
+	return 0;
 }
 /*
  * return saved values.
