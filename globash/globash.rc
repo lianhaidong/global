@@ -21,7 +21,7 @@
 #
 # GLOBAL home page is at: http://www.gnu.org/software/global/
 # Author: Tama Communications Corporation
-  version=0.5
+  __gtags_version=0.5
 # Usage:
 # $ bash --rcfile <this file>
 #	or
@@ -35,9 +35,9 @@
 # in PLD Linux/GNU. Globash obey this method if the variable defined.
 #
 if [ -n "$HOME_ETC" ]; then
-        GHOME="$HOME_ETC/.globash"
+        __gtags_GHOME="$HOME_ETC/.globash"
 else
-        GHOME="$HOME/.globash"
+        __gtags_GHOME="$HOME/.globash"
 fi
 #
 # Less-370 or later can treat GLOBAL as tag system if environment variable
@@ -47,18 +47,18 @@ export LESSGLOBALTAGS=global
 #
 # Initialize
 #
-prompt="Do you create '$GHOME'? ([y]/n)"
-if [ ! -d "$GHOME" ]; then
-	echo -n "GloBash needs a working directory. $prompt"
+__gtags_prompt="Do you create '$__gtags_GHOME'? ([y]/n)"
+if [ ! -d "$__gtags_GHOME" ]; then
+	echo -n "GloBash needs a working directory. $__gtags_prompt"
 	while read ans; do
 		case $ans in
 		YES|Yes|yes|Y|y|"")
 			echo -n "Creating..."
-			if mkdir "$GHOME"; then
+			if mkdir "$__gtags_GHOME"; then
 				echo "Done."
 				break
 			else
-				echo " ERROR: Cannot make '$GHOME' directory."
+				echo " ERROR: Cannot make '$__gtags_GHOME' directory."
 				exit 1
 			fi
 			;;
@@ -66,7 +66,7 @@ if [ ! -d "$GHOME" ]; then
 			echo "Bye ..."
 			exit 1;;
 		esac
-		echo -n "$prompt"
+		echo -n "$__gtags_prompt"
 	done
 	echo
 	echo "___________________________________________"
@@ -85,18 +85,18 @@ fi
 # When exiting shell, temporary files are removed.
 # We should be careful not to remove other files.
 #
-declare -r XREF="$GHOME/xref-$$"		# global's output
-declare -r STACK="$GHOME/stack-$$"		# stack for tags command
-declare -r MARKER="$GHOME/marker-$$"		# marker
-declare -r TMP1="$GHOME/tmp1-$$"		# temporary file
+declare -r __gtags_XREF="$__gtags_GHOME/xref-$$"		# global's output
+declare -r __gtags_STACK="$__gtags_GHOME/stack-$$"		# stack for tags command
+declare -r __gtags_MARKER="$__gtags_GHOME/marker-$$"		# marker
+declare -r __gtags_TMP1="$__gtags_GHOME/tmp1-$$"		# temporary file
 __gtags_clean() {
-	rm -f "$XREF" "$STACK" "$MARKER" "$TMP1"
+	rm -f "$__gtags_XREF" "$__gtags_STACK" "$__gtags_MARKER" "$__gtags_TMP1"
 }
 builtin trap 'status=$?; __gtags_clean; exit $status' 0
-cp /dev/null "$XREF"
-cp /dev/null "$STACK"
-cp /dev/null "$MARKER"
-cp /dev/null "$TMP1"
+cp /dev/null "$__gtags_XREF"
+cp /dev/null "$__gtags_STACK"
+cp /dev/null "$__gtags_MARKER"
+cp /dev/null "$__gtags_TMP1"
 __gtags_stack=()			# tag stack
 __gtags_lasttag=			# last tag
 __gtags_lastcom=			# last command
@@ -106,7 +106,7 @@ __gtags_prev_file=
 __gtags_prev_root=
 
 ### Cookie management
-declare -r COOKIE="$GHOME/cookie"	# cookie in file
+declare -r COOKIE="$__gtags_GHOME/cookie"	# cookie in file
 #cp /dev/null "$COOKIE" # Cookie file is used over sessions. Don't clean.
 __gtags_cookie=()			# cookie in memory
 
@@ -126,8 +126,8 @@ __gtags_decode() {
 ###########################################################################
 __gtags_init_stack()
 {
-	cp /dev/null "$XREF"
-	cp /dev/null "$STACK"
+	cp /dev/null "$__gtags_XREF"
+	cp /dev/null "$__gtags_STACK"
 	__gtags_stack=()			# tag stack
 	__gtags_lasttag=
 	__gtags_lastcom=
@@ -147,8 +147,8 @@ __gtags_resume()
 __gtags_push_stack()
 {
 	local IFS=''
-	local file=`cat "$XREF" | sed -n "${__gtags_current}p" | cat - "$STACK"`
-	echo $file > $STACK
+	local file=`cat "$__gtags_XREF" | sed -n "${__gtags_current}p" | cat - "$__gtags_STACK"`
+	echo $file > $__gtags_STACK
 	__gtags_stack=( "${__gtags_lastcom}|${__gtags_lasttag}|${__gtags_current}" "${__gtags_stack[@]}" )
 	return 0
 }
@@ -177,14 +177,14 @@ __gtags_pop_stack()
 	(( pop = count - 1 ))
 	__gtags_resume "${__gtags_stack[$pop]}"
 	__gtags_stack=( ${__gtags_stack[@]:$count} )
-	if [ -s "$STACK" ]; then
+	if [ -s "$__gtags_STACK" ]; then
 		(( size -= count ))
 		if (( size > 0 )); then
 			local IFS=''
-			local file=`tail -$size "$STACK"`
-			echo $file > "$STACK"
+			local file=`tail -$size "$__gtags_STACK"`
+			echo $file > "$__gtags_STACK"
 		elif (( size == 0 )); then
-			cp /dev/null "$STACK"
+			cp /dev/null "$__gtags_STACK"
 		fi
 	fi
 	return 0
@@ -244,7 +244,7 @@ __gtags_prompt() {
 			esac
 		done
 		__gtags_init_stack
-		cp /dev/null "$MARKER"
+		cp /dev/null "$__gtags_MARKER"
 	fi
 	PS1="$ps "
 	if [ "$root" != "" ] && [ "$cwd" != "" ] && [ "$dbpath" != "" ]; then
@@ -396,8 +396,8 @@ warp() {
 ###########################################################################
 __gtags_edit_marked_file()
 {
-	if [ -s "$MARKER" ] && __gtags_is_num $1; then
-		com="cat '$MARKER' | $__gtags_filter | sed -n '${1}p'"
+	if [ -s "$__gtags_MARKER" ] && __gtags_is_num $1; then
+		com="cat '$__gtags_MARKER' | $__gtags_filter | sed -n '${1}p'"
 		line=$( eval $com )
 		if [ "$line" != "" ]; then
 			set $line
@@ -412,8 +412,8 @@ __gtags_add_maker()
 		echo "No current tag."
 		return 1
 	fi
-	if [ -s "$XREF" ]; then
-		cat "$XREF" | sed -n "${__gtags_current}p" >> "$MARKER"
+	if [ -s "$__gtags_XREF" ]; then
+		cat "$__gtags_XREF" | sed -n "${__gtags_current}p" >> "$__gtags_MARKER"
 	fi
 	return 0
 }
@@ -421,13 +421,13 @@ mark()
 {
 	case $1 in
 	-list|-lis|-li|-l)
-		if [ -s "$MARKER" ]; then
-			com="cat '$MARKER' | $__gtags_filter | cat -n"
+		if [ -s "$__gtags_MARKER" ]; then
+			com="cat '$__gtags_MARKER' | $__gtags_filter | cat -n"
 			eval $com
 		fi
 		;;
 	-edit|-edi|-ed|-e)
-		${EDITOR-vi} "$MARKER";;
+		${EDITOR-vi} "$__gtags_MARKER";;
 	"")
 		__gtags_add_maker;;
 	*)
@@ -489,9 +489,9 @@ __gtags_gen_xref()
 			__gtags_lasttag="$2"
 		fi
 		if [ "$__gtags_lasttag" != "" ]; then
-			com="global --encode-path=' ' --nofilter=path -x$__gtags_lastcom '$__gtags_lasttag' >'$XREF'"
+			com="global --encode-path=' ' --nofilter=path -x$__gtags_lastcom '$__gtags_lasttag' >'$__gtags_XREF'"
 			eval $com
-			__gtags_count=`wc -l < "$XREF" | sed 's/ //g'`
+			__gtags_count=`wc -l < "$__gtags_XREF" | sed 's/ //g'`
 		else
 			echo "tag not specified."
 			return 1
@@ -502,10 +502,10 @@ __gtags_gen_xref()
 }
 __gtags_list_xref()
 {
-	if [ ! -s "$XREF" ]; then
+	if [ ! -s "$__gtags_XREF" ]; then
 		return 1
 	fi
-	com="cat '$XREF' | $__gtags_filter | cat -n | sed '${__gtags_current}s/^ />/'"
+	com="cat '$__gtags_XREF' | $__gtags_filter | cat -n | sed '${__gtags_current}s/^ />/'"
 	if (( __gtags_count > LINES - 1 )); then
 		local pager=${PAGER-more}
 
@@ -552,13 +552,13 @@ __gtags_locate_tag() {
 		fi
 		tag="$__gtags_lasttag"
 	fi
-	global --encode-path=' ' --nofilter=path -$command --result=ctags-x $option "$tag" >"$TMP1"
-	local count=`wc -l < "$TMP1" | sed 's/ //g'`
+	global --encode-path=' ' --nofilter=path -$command --result=ctags-x $option "$tag" >"$__gtags_TMP1"
+	local count=`wc -l < "$__gtags_TMP1" | sed 's/ //g'`
 	if (( $count > 0 )); then
-		if [ -s "$XREF" ]; then
+		if [ -s "$__gtags_XREF" ]; then
 			__gtags_push_stack
 		fi
-		mv "$TMP1" "$XREF"
+		mv "$__gtags_TMP1" "$__gtags_XREF"
 		__gtags_lastcom="$command"
 		__gtags_lasttag="$tag"
 		__gtags_prev_file=		# invalidate
@@ -597,13 +597,13 @@ f() {
 			absolute="$absolute `__gtags_pwd`/$f"
 		done
 	fi
-	global --encode-path=' ' --nofilter=path -f --result=ctags-x $option $absolute >"$TMP1"
-	local count=`wc -l < "$TMP1" | sed 's/ //g'`
+	global --encode-path=' ' --nofilter=path -f --result=ctags-x $option $absolute >"$__gtags_TMP1"
+	local count=`wc -l < "$__gtags_TMP1" | sed 's/ //g'`
 	if (( $count > 0 )); then
-		if [ -s "$XREF" ]; then
+		if [ -s "$__gtags_XREF" ]; then
 			__gtags_push_stack
 		fi
-		mv "$TMP1" "$XREF"
+		mv "$__gtags_TMP1" "$__gtags_XREF"
 		__gtags_lastcom=f
 		__gtags_prev_file="$absolute"
 		__gtags_lasttag=		# invalidate
@@ -618,7 +618,7 @@ list() {
 tags() {
 	if [ "$__gtags_current" != '' ]; then
 		local IFS=''
-		file=`sed -n "${__gtags_current}p" < "$XREF"; cat "$STACK"`
+		file=`sed -n "${__gtags_current}p" < "$__gtags_XREF"; cat "$__gtags_STACK"`
 		com="echo '$file' | $__gtags_filter | cat -n | sed '1s/^ />/'"
 		eval $com
 	fi
@@ -646,7 +646,7 @@ pop()
 	return 0
 }
 __gtags_view_tag() {
-	if [ ! -s "$XREF" ]; then
+	if [ ! -s "$__gtags_XREF" ]; then
 		echo "Tag entry not found in this group."
 		return 1
 	fi
@@ -706,7 +706,7 @@ __gtags_view_tag() {
 	if [ "${EDITOR}" = "noedit" ]; then
 		return 0
 	fi
-	local com="sed -n '${__gtags_current}p' '$XREF' | $__gtags_filter"
+	local com="sed -n '${__gtags_current}p' '$__gtags_XREF' | $__gtags_filter"
 	local line=$( eval $com )
 	set $line
 	${EDITOR-vi} +$2 "`__gtags_decode $3`"
