@@ -520,7 +520,7 @@ __gtags_list_xref()
 }
 __gtags_locate_tag() {
 	local GTAGSLIBPATH=
-	local command less tag
+	local command option tag
 	command=$1
 	case $command in
 	d|r|s|rs|g|I|P)
@@ -529,11 +529,22 @@ __gtags_locate_tag() {
 		return 1;;
 	esac
 	shift
-	if [ "$1" = "-l" ]; then
-		less=1
+	while true; do
+		case $1 in
+		-e)	if [ "$2" != "" ]; then
+				tag=$2
+				shift
+			fi
+			;;
+		-*)     option="$option $1"
+			;;
+		*)      break;;
+		esac
 		shift
-	fi
-	tag="$1"
+	done
+	case $tag in
+	'')	tag=$1;;
+	esac
 	if [ "$tag" = "" ]; then
 		if [ "$__gtags_lasttag" = "" ]; then
 			echo "tag not specified."
@@ -541,22 +552,19 @@ __gtags_locate_tag() {
 		fi
 		tag="$__gtags_lasttag"
 	fi
-	if [ "$less" = "1" ]; then
-		global -x$command "$tag" | less -T-
-	else
-		global --encode-path=' ' --nofilter=path -x$command "$tag" >"$TMP1"
-		local count=`wc -l < "$TMP1" | sed 's/ //g'`
-		if (( $count > 0 )); then
-			if [ -s "$XREF" ]; then
-				__gtags_push_stack
-			fi
-			mv "$TMP1" "$XREF"
-			__gtags_lastcom="$command"
-			__gtags_lasttag="$tag"
-			__gtags_count=$count
-			__gtags_current=1
-			__gtags_list_xref
+	global --encode-path=' ' --nofilter=path -$command --result=ctags-x $option "$tag" >"$TMP1"
+	local count=`wc -l < "$TMP1" | sed 's/ //g'`
+	if (( $count > 0 )); then
+		if [ -s "$XREF" ]; then
+			__gtags_push_stack
 		fi
+		mv "$TMP1" "$XREF"
+		__gtags_lastcom="$command"
+		__gtags_lasttag="$tag"
+		__gtags_prev_file=		# invalidate
+		__gtags_count=$count
+		__gtags_current=1
+		__gtags_list_xref
 	fi
 }
 x() { __gtags_locate_tag d $*; }
@@ -568,12 +576,16 @@ g() { __gtags_locate_tag g $*; }
 I() { __gtags_locate_tag I $*; }
 P() { __gtags_locate_tag P $*; }
 f() {
-	local less absolute
+	local less absolute option
 
-	if [ "$1" = "-l" ]; then
-		less=1
+	while true; do
+		case $1 in
+		-*)     option="$option $1"
+			;;
+		*)      break;;
+		esac
 		shift
-	fi
+	done
 	if [ "$1" = "" ]; then
 		if [ "$__gtags_prev_file" = "" ]; then
 			echo "file not specified."
@@ -581,29 +593,23 @@ f() {
 		fi
 		absolute="$__gtags_prev_file"
 	else
-		absolute="`__gtags_pwd`/$1"
+		for f in $*; do
+			absolute="$absolute `__gtags_pwd`/$f"
+		done
 	fi
-	if [ ! -f "$absolute" ]; then
-		echo "file not found."
-		return 1
-	fi
-	if [ "$less" = "1" ]; then
-		global -xf "$absolute" | less -T-
-	else
-		global --encode-path=' ' --nofilter=path -f "$absolute" >"$TMP1"
-		local count=`wc -l < "$TMP1" | sed 's/ //g'`
-		if (( $count > 0 )); then
-			if [ -s "$XREF" ]; then
-				__gtags_push_stack
-			fi
-			mv "$TMP1" "$XREF"
-			__gtags_lastcom=f
-			__gtags_prev_file="$absolute"
-			__gtags_lasttag="$absolute"
-			__gtags_count=$count
-			__gtags_current=1
-			__gtags_list_xref
+	global --encode-path=' ' --nofilter=path -f --result=ctags-x $option $absolute >"$TMP1"
+	local count=`wc -l < "$TMP1" | sed 's/ //g'`
+	if (( $count > 0 )); then
+		if [ -s "$XREF" ]; then
+			__gtags_push_stack
 		fi
+		mv "$TMP1" "$XREF"
+		__gtags_lastcom=f
+		__gtags_prev_file="$absolute"
+		__gtags_lasttag=		# invalidate
+		__gtags_count=$count
+		__gtags_current=1
+		__gtags_list_xref
 	fi
 }
 list() {
@@ -795,13 +801,14 @@ ghelp() {
 	echo
 	echo " - Tag search command:"
 	echo "  (-l: use less(1) instead of tag stack.)"
-	echo "	x [option][pattern] - locate function definitions."
-	echo "	r [option][pattern] - locate function references."
+	echo "	d [option][pattern] - locate definitions."
+	echo "	r [option][pattern] - locate references."
 	echo "	s [option][pattern] - locate other symbols."
-	echo "	g [option][pattern] - locate pattern using grep(1)."
-	echo "	P [option][pattern] - locate file include pattern."
+	echo "	rs [option][pattern] - locate references and other symbols."
+	echo "	g [option][pattern] - locate pattern using reglar expression."
+	echo "	P [option][pattern] - locate file including pattern."
 	echo "	I [option][pattern] - locate pattern using idutils(1)."
-	echo "	f [option][file]    - locate function definitions in a file."
+	echo "	f [option][files]    - locate definitions in files."
 	echo "	(By default, the previous value is used for pattern and file.)"
 	echo "	list		- print tag list."
 	echo "	tags		- print tag stack."
