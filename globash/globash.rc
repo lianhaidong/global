@@ -45,6 +45,10 @@ fi
 #
 export LESSGLOBALTAGS=global
 #
+# Vim server name
+#
+gtags_vimserver=vim
+#
 # Initialize
 #
 __gtags_prompt="Do you create '$__gtags_GHOME'? ([y]/n)"
@@ -743,7 +747,7 @@ show()	{
 		-v|-vi)		local EDITOR=vi; shift;;
 		-l|-less)	local EDITOR=less; shift;;
 		-e|-emacs)	local EDITOR='emacsclient --no-wait'; shift;;
-		-m|-vim)	local EDITOR='vim --remote'; shift;;
+		-m|-vim)	local EDITOR="vim --servername $gtags_vimserver --remote"; shift;;
 		-g|-gozilla)	local EDITOR=gozilla; shift;;
 		-n|-noedit)	local EDITOR=noedit; shift;;
 		*)		echo "invalid option $1."
@@ -764,7 +768,7 @@ use()	{
 		-v|-vi)		export EDITOR=vi;;
 		-l|-less)	export EDITOR=less;;
 		-e|-emacs)	export EDITOR='emacsclient --no-wait';;
-		-m|-vim)	export EDITOR='vim --remote';;
+		-m|-vim)	export EDITOR="vim --servername $gtags_vimserver --remote";;
 		-g|-gozilla)	export EDITOR=gozilla;;
 		-n|-noedit)	export EDITOR=noedit;;
 		*)		echo "invalid option $1."
