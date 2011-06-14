@@ -727,13 +727,13 @@ last()	{
 next()	{
 	case $1 in
 	-*)	show $1 next $2;;
-	*)	show next $2;;
+	*)	show next $1;;
 	esac
 }
 prev()	{
 	case $1 in
 	-*)	show $1 prev $2;;
-	*)	show prev $2;;
+	*)	show prev $1;;
 	esac
 }
 show()	{
