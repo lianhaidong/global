@@ -51,11 +51,11 @@ gtags_vimserver=vim
 #
 # Initialize
 #
-__gtags_prompt="Do you create '$__gtags_GHOME'? ([y]/n)"
+__gtags_v_prompt="Do you create '$__gtags_GHOME'? ([y]/n)"
 if [ ! -d "$__gtags_GHOME" ]; then
-	echo -n "GloBash needs a working directory. $__gtags_prompt"
-	while read ans; do
-		case $ans in
+	echo -n "GloBash needs a working directory. $__gtags_v_prompt"
+	while read __gtags_ans; do
+		case $__gtags_ans in
 		YES|Yes|yes|Y|y|"")
 			echo -n "Creating..."
 			if mkdir "$__gtags_GHOME"; then
@@ -70,7 +70,7 @@ if [ ! -d "$__gtags_GHOME" ]; then
 			echo "Bye ..."
 			exit 1;;
 		esac
-		echo -n "$__gtags_prompt"
+		echo -n "$__gtags_v_prompt"
 	done
 	echo
 	echo "___________________________________________"
@@ -110,8 +110,8 @@ __gtags_prev_file=
 __gtags_prev_root=
 
 ### Cookie management
-declare -r COOKIE="$__gtags_GHOME/cookie"	# cookie in file
-#cp /dev/null "$COOKIE" # Cookie file is used over sessions. Don't clean.
+declare -r __gtags_COOKIE="$__gtags_GHOME/cookie"	# cookie in file
+#cp /dev/null "$__gtags_COOKIE" # Cookie file is used over sessions. Don't clean.
 __gtags_cookie=()			# cookie in memory
 
 ### Utilities
@@ -160,6 +160,7 @@ __gtags_pop_stack()
 {
 	local size=${#__gtags_stack[@]}
 	local count=$1
+	local pop
 
 	if (( $size == 0 )) && [ "$__gtags_lastcom" != "" ]; then
 		if (( $count > 1 )); then
@@ -195,6 +196,7 @@ __gtags_pop_stack()
 }
 dump()
 {
+	local i
 	echo "*** Current"
 	echo "__gtags_lasttag	= $__gtags_lasttag"
 	echo "__gtags_lastcom	= $__gtags_lastcom"
@@ -210,15 +212,24 @@ dump()
 # Directory manager
 ###########################################################################
 ### Customized cd
-__gtags_pwd() {
+__gtags_get_cwd() {
 	# always use /bin/pwd to ignore symbolic links.
 	/bin/pwd
 }
+__gtags_get_rootdir() {
+	global -pr 2>/dev/null
+}
+__gtags_get_dbpath() {
+	global -p 2>/dev/null
+}
+#
+# $1: warning is 0: unnecessary, 1: necessary
+#
 __gtags_prompt() {
 	local ps
-	local cwd=`__gtags_pwd`
-	local dbpath=`global -p 2>/dev/null`
-	local root=`global -pr 2>/dev/null`
+	local cwd="`__gtags_get_cwd`"
+	local dbpath="`__gtags_get_dbpath`"
+	local root="`__gtags_get_rootdir`"
 	local ps
 
 	trap '' 2
@@ -231,13 +242,13 @@ __gtags_prompt() {
 		ps=$cwd
 	fi
 	# We cannot keep context (except for cookies) across projects.
-	if [ "$__gtags_prev_root" ] && [ "$__gtags_prev_root" != "$root" ]; then
-		msg="You are going to get out of the current project."
-		yesno="Tag stack and marker will be removed. Sure? ([y]/n) "
+	if [ "$1" == 1 ] && [ "$__gtags_prev_root" ] && [ "$__gtags_prev_root" != "$root" ]; then
+		local msg="You are going to get out of the current project."
+		local yesno="The tags stack and marker will be removed. Sure? ([y]/n) "
 		echo $msg
 		echo -n $yesno
-		while read ans; do
-			case $ans in
+		while read __gtags_ans; do
+			case $__gtags_ans in
 			""|Y|y)
 				break;;
 			N|n)
@@ -257,64 +268,80 @@ __gtags_prompt() {
 	fi
 	trap 2
 }
+#
+# o) __gtags_options
+# o) __gtags_args
+#
 __gtags_parse() {
        while case $1 in
                 -*)     true;;
                 *)      false;;
                 esac
         do
-                __gtags_optionargs="$option $1"
+                __gtags_options="$option $1"
                 shift
         done
-	__gtags_fistarg="$*"
+	__gtags_args="$*"
 }
 cd() {
+	local prjroot="`__gtags_get_rootdir`"
+	local warning
+
+	case $prjroot in
+	'')	warning=0;;
+	*)	warning=1;;
+	esac
 	__gtags_parse $*
-	case $__gtags_fistarg in
-	'')	dir=`global -pr 2>/dev/null`;;
-	*)	dir="$__gtags_fistarg";;
-	esac
-	case $__gtags_optionargs in
-	'')	builtin cd "$dir";;
-	*)	builtin cd $__gtags_optionargs "$dir";;
-	esac
-	__gtags_prompt
+	if [ "$__gtags_args" = '' ] && [ "$prjroot" != '' ]; then
+		builtin cd $__gtags_options $prjroot
+	else
+		builtin cd $*
+	fi
+	__gtags_prompt $warning
 }
 pushd() {
-	__gtags_parse $*
-	case $__gtags_fistarg in
-	'')	dir=`global -pr 2>/dev/null`;;
-	*)	dir="$__gtags_fistarg";;
+	local prjroot="`__gtags_get_rootdir`"
+	local warning
+
+	case $prjroot in
+	'')	warning=0;;
+	*)	warning=1;;
 	esac
-	case $__gtags_optionargs in
-	'')	builtin pushd "$dir";;
-	*)	builtin pushd $__gtags_optionargs "$dir";;
-	esac
-	__gtags_prompt
+	builtin pushd $*
+	__gtags_prompt $warning
 }
 popd() {
+	local prjroot="`__gtags_get_rootdir`"
+	local warning
+
+	case $prjroot in
+	'')	warning=0;;
+	*)	warning=1;;
+	esac
 	builtin popd $*
-	__gtags_prompt
+	__gtags_prompt $warning
 }
 ###########################################################################
 # Cookie manager
 ###########################################################################
 __gtags_load_cookie()
 {
-	if [ -s "$COOKIE" ]; then
-		__gtags_cookie=( $(cat "$COOKIE") )
+	if [ -s "$__gtags_COOKIE" ]; then
+		__gtags_cookie=( $(cat "$__gtags_COOKIE") )
 	else
 		__gtags_cookie=()
 	fi
 }
 __gtags_save_cookie()
 {
+	local dir
 	for dir in ${__gtags_cookie[@]}; do
 		echo $dir
-	done > "$COOKIE"
+	done > "$__gtags_COOKIE"
 }
 __gtags_add_cookie()
 {
+	local a
 	__gtags_load_cookie
 	for a in ${__gtags_cookie[@]}; do
 		if [ "$a" = "$1" ]; then
@@ -327,11 +354,11 @@ __gtags_add_cookie()
 __gtags_select_cookie() {
 	local selection
 
-	if [ ! -s "$COOKIE" ]; then
+	if [ ! -s "$__gtags_COOKIE" ]; then
 		echo "Cookie not found."
 		return 1
 	fi
-	select selection in `cat "$COOKIE"`; do
+	select selection in `cat "$__gtags_COOKIE"`; do
 		if [ "$selection" ]; then
 			break
 		else
@@ -373,13 +400,13 @@ __gtags_warp_cookie() {
 cookie() {
 	case $1 in
 	-list|-lis|-li|-l)
-		if [ -s "$COOKIE" ]; then
-			cat -n "$COOKIE"
+		if [ -s "$__gtags_COOKIE" ]; then
+			cat -n "$__gtags_COOKIE"
 		fi;;
 	-edit|-edi|-ed|-e)
-		${EDITOR-vi} "$COOKIE"
-		case `cat "$COOKIE"` in
-		'')	cp /dev/null "$COOKIE";;
+		${EDITOR-vi} "$__gtags_COOKIE"
+		case `cat "$__gtags_COOKIE"` in
+		'')	cp /dev/null "$__gtags_COOKIE";;
 		esac
 		;;
 	-menu|-men|-me|-m)
@@ -387,7 +414,7 @@ cookie() {
 	-warp|-war|-wa|-w)
 		__gtags_warp_cookie $2;;
 	"")	# Drop cookie.
-		__gtags_add_cookie "`__gtags_pwd`";;
+		__gtags_add_cookie "`__gtags_get_cwd`";;
 	*)	# Jump to the place where you dropped cookie.
 		__gtags_warp_cookie $1;;
 	esac
@@ -400,6 +427,7 @@ warp() {
 ###########################################################################
 __gtags_edit_marked_file()
 {
+	local com line
 	if [ -s "$__gtags_MARKER" ] && __gtags_is_num $1; then
 		com="cat '$__gtags_MARKER' | $__gtags_filter | sed -n '${1}p'"
 		line=$( eval $com )
@@ -423,6 +451,7 @@ __gtags_add_maker()
 }
 mark()
 {
+	local com
 	case $1 in
 	-list|-lis|-li|-l)
 		if [ -s "$__gtags_MARKER" ]; then
@@ -483,6 +512,7 @@ complete -F __gtags_completion P
 ###########################################################################
 __gtags_gen_xref()
 {
+	local com
 	#
 	# Globash doesn't refer GTAGSLIBPATH environment variable.
 	#
@@ -506,6 +536,7 @@ __gtags_gen_xref()
 }
 __gtags_list_xref()
 {
+	local com
 	if [ ! -s "$__gtags_XREF" ]; then
 		return 1
 	fi
@@ -598,7 +629,7 @@ f() {
 		absolute="$__gtags_prev_file"
 	else
 		for f in $*; do
-			absolute="$absolute `__gtags_pwd`/$f"
+			absolute="$absolute `__gtags_get_cwd`/$f"
 		done
 	fi
 	global --encode-path=' ' --nofilter=path -f --result=ctags-x $option $absolute >"$__gtags_TMP1"
@@ -622,8 +653,8 @@ list() {
 tags() {
 	if [ "$__gtags_current" != '' ]; then
 		local IFS=''
-		file=`sed -n "${__gtags_current}p" < "$__gtags_XREF"; cat "$__gtags_STACK"`
-		com="echo '$file' | $__gtags_filter | cat -n | sed '1s/^ />/'"
+		local file=`sed -n "${__gtags_current}p" < "$__gtags_XREF"; cat "$__gtags_STACK"`
+		local com="echo '$file' | $__gtags_filter | cat -n | sed '1s/^ />/'"
 		eval $com
 	fi
 }
@@ -785,7 +816,7 @@ ghelp() {
 	echo
 	echo "GloBash --- A special shell for GLOBAL using GNU bash."
 	echo
-	echo "Copyright (c) 2001, 2002, 2004, 2006, 2010 Tama Communications Corporation"
+	echo "Copyright (c) 2001, 2002, 2004, 2006, 2010, 2011 Tama Communications Corporation"
 	echo "GLOBAL WWW: http://www.gnu.org/software/global/"
 	echo
 	echo "GloBash is nothing other than Bash with special commands for GLOBAL."
@@ -814,15 +845,15 @@ ghelp() {
 	echo "	I [option][pattern] - locate pattern using idutils(1)."
 	echo "	f [option][files]    - locate definitions in files."
 	echo "	(By default, the previous value is used for pattern and file.)"
-	echo "	list		- print tag list."
-	echo "	tags		- print tag stack."
+	echo "	list		- print the tags list."
+	echo "	tags		- print the tags stack."
 	echo
 	echo "	* The x, r and s command doesn't refer to GTAGSLIBPATH."
 	echo "	  Use global -x, -r or -s, instead."
 	echo
 	echo " - Tag selection command:"
-	echo "	You can specify a editor statically by EDITOR environment"
-	echo "	variable or temporarily by option."
+	echo "	You can specify an editor statically by EDITOR environment"
+	echo "	variable or temporarily by options."
 	echo "	(-l: less, -v: vi, -e: emacs, -g:gozilla, -n: no editor)"
 	echo "	show [-l|-v|-e|-m|-g|-n][<no>|first|last]"
 	echo "			- view specified (default=current) tag."
@@ -837,7 +868,7 @@ ghelp() {
 	echo "	prev  [-l|-v|-e|-g|-n][<no>]"
 	echo "			- view nth (default=1) previous tag."
 	echo
-	echo " - Tag marker command:"
+	echo " - Tags marker command:"
 	echo "	You can move to the marked tag even if there is no stack."
 	echo "	mark		- mark current tag."
 	echo "	mark -l		- print marker list."
@@ -845,7 +876,8 @@ ghelp() {
 	echo "	mark <no>	- edit marked file."
 	echo
 	echo " - Cookie command:"
-	echo "	Once you drop cookie, you can warp to the place at any time."
+	echo "	Once you drop cookies, you can warp to the place specified by"
+	echo "  a cookie at any time."
 	echo "	cookie		- drop cookie."
 	echo "	cookie -l	- print cookie list."
 	echo "	cookie -e	- edit cookie list."
@@ -867,27 +899,27 @@ ghelp() {
 #
 # Make Globash prompt.
 #
-__gtags_prompt
+__gtags_prompt 0
 #
 # Run private command script.
 #
 gtags_aliases=1
 if [ -n "$HOME_ETC" ]; then
-	home=$HOME_ETC
+	__gtags_home=$HOME_ETC
 else
-	home=$HOME
+	__gtags_home=$HOME
 fi
-if [ -f $home/.globashrc ]; then
-	source $home/.globashrc
+if [ -f $__gtags_home/.globashrc ]; then
+	source $__gtags_home/.globashrc
 fi
 #
 # Aliases
 #
 if [ "$gtags_aliases" = "1" ]; then
-	n=1
-	while (( n < 1000 )); do
-		alias $n="show $n"
-		(( n++ ))
+	__gtags_n=1
+	while (( __gtags_n < 1000 )); do
+		alias $__gtags_n="show $__gtags_n"
+		(( __gtags_n++ ))
 	done
 	alias ..='cd ..'
 	alias ..1='cd ..'
