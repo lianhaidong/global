@@ -813,7 +813,8 @@ use()	{
 				return 1;;
 		esac
 		;;
-	'')	unset __gtags_EDITOR;;
+	'')	echo "$__gtags_EDITOR";;
+	*)	__gtags_EDITOR="$1";;
 	esac
 }
 ###########################################################################
@@ -864,8 +865,8 @@ ghelp() {
 	echo "	(-l: less, -v: vi, -e: emacs, -g:gozilla, -n: no editor)"
 	echo "	show [-l|-v|-e|-m|-g|-n][<no>|first|last]"
 	echo "			- view specified (default=current) tag."
-	echo "	use [-l|-v|-e|-m|-g|-n]"
-	echo "			- select specified viewer (default=unselect)."
+	echo "	use [-l|-v|-e|-m|-g|-n] [editor]"
+	echo "			- select specified viewer (default=show the current value)."
 	echo "	first [-l|-v|-e|-g|-n]"
 	echo "			- view the first tag."
 	echo "	last  [-l|-v|-e|-g|-n]"
