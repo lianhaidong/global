@@ -428,12 +428,15 @@ warp() {
 __gtags_edit_marked_file()
 {
 	local com line
+	case $__gtags_EDITOR in
+	'')	local __gtags_EDITOR=${EDITOR-vi};;
+	esac
 	if [ -s "$__gtags_MARKER" ] && __gtags_is_num $1; then
 		com="cat '$__gtags_MARKER' | $__gtags_filter | sed -n '${1}p'"
 		line=$( eval $com )
 		if [ "$line" != "" ]; then
 			set $line
-			${EDITOR-vi} +$2 "`__gtags_decode $3`"
+			$__gtags_EDITOR +$2 "`__gtags_decode $3`"
 		fi
 	fi
 	return 0
@@ -738,13 +741,16 @@ __gtags_view_tag() {
 		esac
 	fi
 	# 'show -n 1' doesn't invoke any editor.
-	if [ "${EDITOR}" = "noedit" ]; then
+	if [ "${__gtags_EDITOR}" = "noedit" ]; then
 		return 0
 	fi
 	local com="sed -n '${__gtags_current}p' '$__gtags_XREF' | $__gtags_filter"
 	local line=$( eval $com )
 	set $line
-	${EDITOR-vi} +$2 "`__gtags_decode $3`"
+	case $__gtags_EDITOR in
+	'')	local __gtags_EDITOR=${EDITOR-vi};;
+	esac
+	$__gtags_EDITOR +$2 "`__gtags_decode $3`"
 	return 0
 }
 first()	{
@@ -775,15 +781,16 @@ show()	{
 	case $1 in
 	-*)
 		case $1 in
-		-v|-vi)		local EDITOR=vi; shift;;
-		-l|-less)	local EDITOR=less; shift;;
-		-e|-emacs)	local EDITOR='emacsclient --no-wait'; shift;;
-		-m|-vim)	local EDITOR="vim --servername $gtags_vimserver --remote"; shift;;
-		-g|-gozilla)	local EDITOR=gozilla; shift;;
-		-n|-noedit)	local EDITOR=noedit; shift;;
+		-v|-vi)		local __gtags_EDITOR=vi;;
+		-l|-less)	local __gtags_EDITOR=less;;
+		-e|-emacs)	local __gtags_EDITOR='emacsclient --no-wait';;
+		-m|-vim)	local __gtags_EDITOR="vim --servername $gtags_vimserver --remote";;
+		-g|-gozilla)	local __gtags_EDITOR=gozilla;;
+		-n|-noedit)	local __gtags_EDITOR=noedit;;
 		*)		echo "invalid option $1."
 				return 1;;
 		esac
+		shift
 		;;
 	esac
 	case $1 in
@@ -796,17 +803,17 @@ use()	{
 	case $1 in
 	-*)
 		case $1 in
-		-v|-vi)		export EDITOR=vi;;
-		-l|-less)	export EDITOR=less;;
-		-e|-emacs)	export EDITOR='emacsclient --no-wait';;
-		-m|-vim)	export EDITOR="vim --servername $gtags_vimserver --remote";;
-		-g|-gozilla)	export EDITOR=gozilla;;
-		-n|-noedit)	export EDITOR=noedit;;
+		-v|-vi)		__gtags_EDITOR=vi;;
+		-l|-less)	__gtags_EDITOR=less;;
+		-e|-emacs)	__gtags_EDITOR='emacsclient --no-wait';;
+		-m|-vim)	__gtags_EDITOR="vim --servername $gtags_vimserver --remote";;
+		-g|-gozilla)	__gtags_EDITOR=gozilla;;
+		-n|-noedit)	__gtags_EDITOR=noedit;;
 		*)		echo "invalid option $1."
 				return 1;;
 		esac
 		;;
-	'')	unset EDITOR;;
+	'')	unset __gtags_EDITOR;;
 	esac
 }
 ###########################################################################
