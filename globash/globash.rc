@@ -1,7 +1,7 @@
 #
 # GloBash --- Global facility for Bash
 #
-# Copyright (c) 2001, 2002, 2004, 2006, 2009, 2010
+# Copyright (c) 2001, 2002, 2004, 2006, 2009, 2010, 2011
 #	Tama Communications Corporation
 #
 # This file is part of GNU GLOBAL.
@@ -21,7 +21,7 @@
 #
 # GLOBAL home page is at: http://www.gnu.org/software/global/
 # Author: Tama Communications Corporation
-  __gtags_version=0.5
+__gtags_version=0.9
 # Usage:
 # $ bash --rcfile <this file>
 #	or
