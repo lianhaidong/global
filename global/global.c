@@ -50,7 +50,7 @@ static void help(void);
 static void setcom(int);
 int decide_tag_by_context(const char *, const char *, int);
 int main(int, char **);
-void completion(const char *, const char *, const char *);
+void completion(const char *, const char *, const char *, int);
 void completion_idutils(const char *, const char *, const char *);
 void idutils(const char *, const char *);
 void grep(const char *, char *const *, const char *);
@@ -324,7 +324,6 @@ main(int argc, char **argv)
 			break;
 		case 'd':
 			dflag++;
-			setcom(optchar);
 			break;
 		case 'e':
 			av = optarg;
@@ -564,13 +563,28 @@ main(int argc, char **argv)
 		exit(0);
 	}
 	/*
+	 * decide tag type.
+	 */
+	if (context_file) {
+		if (isregex(av))
+			die_with_code(2, "regular expression is not allowed with the --from-here option.");
+		db = decide_tag_by_context(av, context_file, atoi(context_lineno));
+	} else {
+		if (dflag)
+			db = GTAGS;
+		else if (rflag && sflag)
+			db = GRTAGS + GSYMS;
+		else
+			db = (rflag) ? GRTAGS : ((sflag) ? GSYMS : GTAGS);
+	}
+	/*
 	 * complete function name
 	 */
 	if (cflag) {
 		if (Iflag)
 			completion_idutils(dbpath, root, av);
 		else
-			completion(dbpath, root, av);
+			completion(dbpath, root, av, db);
 		exit(0);
 	}
 	/*
@@ -595,21 +609,6 @@ main(int argc, char **argv)
 		fprintf(stderr, "cwd=%s\n", cwd);
 		fprintf(stderr, "localprefix=%s\n", localprefix);
 #endif
-	}
-	/*
-	 * decide tag type.
-	 */
-	if (context_file) {
-		if (isregex(av))
-			die_with_code(2, "regular expression is not allowed with the --from-here option.");
-		db = decide_tag_by_context(av, context_file, atoi(context_lineno));
-	} else {
-		if (dflag)
-			db = GTAGS;
-		else if (rflag && sflag)
-			db = GRTAGS + GSYMS;
-		else
-			db = (rflag) ? GRTAGS : ((sflag) ? GSYMS : GTAGS);
 	}
 	/*
 	 * decide format.
@@ -675,12 +674,13 @@ main(int argc, char **argv)
  *	i)	dbpath	dbpath directory
  *	i)	root	root directory
  *	i)	prefix	prefix of primary key
+ *	i)	db	GTAGS,GRTAGS,GSYMS
  */
 void
-completion(const char *dbpath, const char *root, const char *prefix)
+completion(const char *dbpath, const char *root, const char *prefix, int db)
 {
 	int flags = GTOP_KEY;
-	GTOP *gtop = gtags_open(dbpath, root, (sflag) ? GSYMS : GTAGS, GTAGS_READ, 0);
+	GTOP *gtop = gtags_open(dbpath, root, db, GTAGS_READ, 0);
 	GTP *gtp;
 
 	if (prefix && *prefix == 0)	/* In the case global -c '' */
