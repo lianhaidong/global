@@ -473,43 +473,66 @@ mark()
 ###########################################################################
 # Completion manager
 ###########################################################################
+__gtags_generate_icase_pattern()
+{
+	echo $1 | awk '{
+		len = length($0);
+		for (i = 1; i <= len; i++) {
+			c = substr($0, i, 1);
+			printf "[%s%s]", tolower(c), toupper(c);
+		}
+		print "\n";
+	}'
+
+}
 __gtags_completion()
 {
-	local cur Pflag sflag xflag
+	local prefix flags i
 
-	cur=${COMP_WORDS[COMP_CWORD]}
-	Pflag=0
-	sflag=0
+	prefix="${COMP_WORDS[COMP_CWORD]}"
 	case $1 in
-	P)	Pflag=1;;
-	s)	sflag=1;;
-	global)
-		for (( i=0; i < ${#COMP_WORDS[@]}; i++ )); do
-			case ${COMP_WORDS[i]} in
-			--path)		Pflag=1;;
-			--symbol)	sflag=1;;
-			--*)		;;
-			-*P*)		Pflag=1;;
-			-*s*)		sflag=1;;
+	x)	flags=d;;
+	d)	flags=d;;
+	r)	flags=r;;
+	s)	flags=s;;
+	rs)	flags=rs;;
+	I)	flags=I;;
+	P)	flags=n;;
+	esac
+	for (( i=0; i < ${#COMP_WORDS[@]}; i++ )); do
+		local opt=${COMP_WORDS[i]}
+		case $opt in
+		--ignore-case)	flags="i$flags";;
+		--other)	flags="o$flags";;
+		--only-other)	flags="O$flags";;
+		--*)		;;
+		-*)	
+			case  $opt in
+			-*i*)	flags="i$flags";;
 			esac
-		done
+			case  $opt in
+			-*o*)	flags="o$flags";;
+			esac
+			case  $opt in
+			-*O*)	flags="O$flags";;
+			esac
+		esac
+	done
+	COMPREPLY=()
+	case $1 in
+	P)	local pattern
+		case $flags in
+		*i*)	pattern="`__gtags_generate_icase_pattern $prefix`";;
+		*)	pattern="$prefix";;
+		esac
+		COMPREPLY=(`global -P$flags $prefix 2>/dev/null | sed -e "s!./!!" -e "s!.*\($pattern\)!\1!"`)
+		;;
+	*)	COMPREPLY=(`global -c$flags $prefix 2>/dev/null`)
 		;;
 	esac
-	COMPREPLY=()
-	if [ $Pflag = 1 ]; then
-		COMPREPLY=(`global -Pon $cur 2>/dev/null | sed "s!./!!"`)
-	elif [ $sflag = 1 ]; then
-		COMPREPLY=(`global -cs $cur 2>/dev/null`)
-	else
-		COMPREPLY=(`global -c $cur 2>/dev/null`)
-	fi
 	return 0
 }
-complete -F __gtags_completion global
-complete -F __gtags_completion x
-complete -F __gtags_completion r
-complete -F __gtags_completion s
-complete -F __gtags_completion P
+complete -F __gtags_completion x d r s rs P I
 ###########################################################################
 # Main
 ###########################################################################
