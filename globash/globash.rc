@@ -295,7 +295,7 @@ cd() {
 	if [ "$__gtags_args" = '' ] && [ "$prjroot" != '' ]; then
 		builtin cd $__gtags_options $prjroot
 	else
-		builtin cd $*
+		builtin cd "$@"
 	fi
 	__gtags_prompt $warning
 }
@@ -307,7 +307,7 @@ pushd() {
 	'')	warning=0;;
 	*)	warning=1;;
 	esac
-	builtin pushd $*
+	builtin pushd "$@"
 	__gtags_prompt $warning
 }
 popd() {
@@ -318,7 +318,7 @@ popd() {
 	'')	warning=0;;
 	*)	warning=1;;
 	esac
-	builtin popd $*
+	builtin popd "$@"
 	__gtags_prompt $warning
 }
 ###########################################################################
@@ -628,14 +628,14 @@ __gtags_locate_tag() {
 		__gtags_list_xref
 	fi
 }
-x() { __gtags_locate_tag d $*; }
-d() { __gtags_locate_tag d $*; }
-r() { __gtags_locate_tag r $*; }
-s() { __gtags_locate_tag s $*; }
-rs() { __gtags_locate_tag rs $*; }
-g() { __gtags_locate_tag g $*; }
-I() { __gtags_locate_tag I $*; }
-P() { __gtags_locate_tag P $*; }
+x() { __gtags_locate_tag d "$@"; }
+d() { __gtags_locate_tag d "$@"; }
+r() { __gtags_locate_tag r "$@"; }
+s() { __gtags_locate_tag s "$@"; }
+rs() { __gtags_locate_tag rs "$@"; }
+g() { __gtags_locate_tag g "$@"; }
+I() { __gtags_locate_tag I "$@"; }
+P() { __gtags_locate_tag P "$@"; }
 f() {
 	local less absolute option
 
