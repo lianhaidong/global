@@ -93,22 +93,19 @@ declare -r __gtags_XREF="$__gtags_GHOME/xref-$$"		# global's output
 declare -r __gtags_STACK="$__gtags_GHOME/stack-$$"		# stack for tags command
 declare -r __gtags_MARKER="$__gtags_GHOME/marker-$$"		# marker
 declare -r __gtags_TMP1="$__gtags_GHOME/tmp1-$$"		# temporary file
-declare -r __gtags_TMP2="$__gtags_GHOME/tmp2-$$"		# temporary file
 __gtags_clean() {
-	rm -f "$__gtags_XREF" "$__gtags_STACK" "$__gtags_MARKER" "$__gtags_TMP1" "$__gtags_TMP2"
+	rm -f "$__gtags_XREF" "$__gtags_STACK" "$__gtags_MARKER" "$__gtags_TMP1"
 }
 builtin trap 'status=$?; __gtags_clean; exit $status' 0
 cp /dev/null "$__gtags_XREF"
 cp /dev/null "$__gtags_STACK"
 cp /dev/null "$__gtags_MARKER"
 cp /dev/null "$__gtags_TMP1"
-cp /dev/null "$__gtags_TMP2"
 __gtags_stack=()			# tag stack
 __gtags_lasttag=			# last tag
 __gtags_lastcom=			# last command
 __gtags_current=			# current tag number
-
-__gtags_prev_file=
+__gtags_lastfiles=()
 __gtags_prev_root=
 
 ### Cookie management
@@ -138,7 +135,6 @@ __gtags_init_stack()
 	__gtags_lasttag=
 	__gtags_lastcom=
 	__gtags_current=
-	__gtags_prev_file=
 }
 __gtags_resume()
 {
@@ -532,11 +528,11 @@ __gtags_completion()
 		*)	pattern="$prefix";;
 		esac
 		(( i = 0 ))
-		global -P$flags "$prefix" 2>/dev/null | sed -e "s!./!!" -e "s!.*\($pattern\)!\1!" >"$__gtags_TMP2"
+		global -P$flags "$prefix" 2>/dev/null | sed -e "s!./!!" -e "s!.*\($pattern\)!\1!" >"$__gtags_TMP1"
 		while read line; do
 			COMPREPLY[i]="$line"
 			(( i++ ))
-		done < "$__gtags_TMP2"
+		done < "$__gtags_TMP1"
 		;;
 	*)	COMPREPLY=(`global -c$flags $prefix 2>/dev/null`)
 		;;
@@ -638,7 +634,6 @@ __gtags_locate_tag() {
 		mv "$__gtags_TMP1" "$__gtags_XREF"
 		__gtags_lastcom="$command"
 		__gtags_lasttag="$tag"
-		__gtags_prev_file=		# invalidate
 		__gtags_count=$count
 		__gtags_current=1
 		__gtags_list_xref
@@ -653,7 +648,7 @@ g() { __gtags_locate_tag g "$@"; }
 I() { __gtags_locate_tag I "$@"; }
 P() { __gtags_locate_tag P "$@"; }
 f() {
-	local less absolute option
+	local i f less absolute option
 
 	while true; do
 		case $1 in
@@ -663,18 +658,19 @@ f() {
 		esac
 		shift
 	done
-	if [ "$1" = "" ]; then
-		if [ "$__gtags_prev_file" = "" ]; then
-			echo "file not specified."
-			return 1
-		fi
-		absolute="$__gtags_prev_file"
-	else
-		for f in $*; do
-			absolute="$absolute `__gtags_get_cwd`/$f"
+	case $1 in
+	'')	;;				# use the previous one
+	*)	__gtags_lastfiles=()
+		(( i = 0 ))
+		for f in "$@"; do
+			__gtags_lastfiles[i]="`__gtags_get_cwd`/$f"
+			(( i++ ))
 		done
-	fi
-	global --encode-path=' ' --nofilter=path -f --result=ctags-x $option $absolute >"$__gtags_TMP1"
+		;;
+	esac
+	for (( i=0; i < ${#__gtags_lastfiles[@]}; i++ )); do
+		echo ${__gtags_lastfiles[i]}
+	done | global --encode-path=' ' --nofilter=path -f -L- --result=ctags-x $option >"$__gtags_TMP1"
 	local count=`wc -l < "$__gtags_TMP1" | sed 's/ //g'`
 	if (( $count > 0 )); then
 		if [ -s "$__gtags_XREF" ]; then
@@ -682,8 +678,6 @@ f() {
 		fi
 		mv "$__gtags_TMP1" "$__gtags_XREF"
 		__gtags_lastcom=f
-		__gtags_prev_file="$absolute"
-		__gtags_lasttag=		# invalidate
 		__gtags_count=$count
 		__gtags_current=1
 		__gtags_list_xref
