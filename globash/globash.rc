@@ -324,56 +324,53 @@ popd() {
 ###########################################################################
 __gtags_load_cookie()
 {
+	local i line
+	__gtags_cookie=()
 	if [ -s "$__gtags_COOKIE" ]; then
-		__gtags_cookie=( $(cat "$__gtags_COOKIE") )
-	else
-		__gtags_cookie=()
+		(( i = 0 ))
+		while read line; do
+			__gtags_cookie[i]=$line
+			(( i++ ))
+		done < "$__gtags_COOKIE"
 	fi
-}
-__gtags_save_cookie()
-{
-	local dir
-	for dir in ${__gtags_cookie[@]}; do
-		echo $dir
-	done > "$__gtags_COOKIE"
 }
 __gtags_add_cookie()
 {
-	local a
-	__gtags_load_cookie
-	for a in ${__gtags_cookie[@]}; do
-		if [ "$a" = "$1" ]; then
-			return 1
-		fi
-	done
-	__gtags_cookie=( `__gtags_encode "$1"` ${__gtags_cookie[@]} )
-	__gtags_save_cookie
+	local line="`__gtags_get_cwd`"
+	if grep "^$line$" "$__gtags_COOKIE" >/dev/null; then
+		return 1
+	else
+		echo "$line" | cat - "$__gtags_COOKIE" >"$__gtags_TMP1" && mv "$__gtags_TMP1" "$__gtags_COOKIE"
+	fi
 }
 __gtags_select_cookie() {
-	local selection
+	local line
 
 	if [ ! -s "$__gtags_COOKIE" ]; then
 		echo "Cookie not found."
 		return 1
 	fi
-	select selection in `cat "$__gtags_COOKIE"`; do
-		if [ "$selection" ]; then
+	__gtags_load_cookie
+	select line in "${__gtags_cookie[@]}"; do
+		if [ "$line" ]; then
 			break
 		else
 			echo "Invalid selection."
 			return 1
 		fi
 	done
-	cd `__gtags_decode "$selection"`
-	return 0
+	cd "$line"
 }
 __gtags_warp_cookie() {
-	__gtags_load_cookie
-	local size=${#__gtags_cookie[@]}
-	local n
+	local size n
 
+	if [ -s "$__gtags_COOKIE" ]; then
+		size=`wc -l <"$__gtags_COOKIE"`
+	else
+		size=0
+	fi
 	if __gtags_is_num $1; then
-		if [ $1 -gt 0 -a $1 -le $size ]; then
+		if (( $1 > 0 && $1 <= $size )); then
 			n=$1
 		else
 			echo "Out of range."
@@ -391,9 +388,7 @@ __gtags_warp_cookie() {
 			;;
 		esac
 	fi
-	(( --n ))
-	cd "`__gtags_decode \"${__gtags_cookie[$n]}\"`"
-	return 0
+	cd "`sed -n ${n}p \"$__gtags_COOKIE\"`"
 }
 cookie() {
 	case $1 in
@@ -412,7 +407,7 @@ cookie() {
 	-warp|-war|-wa|-w)
 		__gtags_warp_cookie $2;;
 	"")	# Drop cookie.
-		__gtags_add_cookie "`__gtags_get_cwd`";;
+		__gtags_add_cookie;;
 	*)	# Jump to the place where you dropped cookie.
 		__gtags_warp_cookie $1;;
 	esac
@@ -489,9 +484,10 @@ __gtags_generate_icase_pattern()
 }
 __gtags_completion()
 {
-	local prefix flags i
+	local flags i
+	local prefix="${COMP_WORDS[COMP_CWORD]}"
 
-	prefix="${COMP_WORDS[COMP_CWORD]}"
+	COMPREPLY=()
 	case $1 in
 	x)	flags=d;;
 	d)	flags=d;;
@@ -520,7 +516,6 @@ __gtags_completion()
 			esac
 		esac
 	done
-	COMPREPLY=()
 	case $1 in
 	P)	local pattern line
 		case $flags in
@@ -537,14 +532,9 @@ __gtags_completion()
 	*)	COMPREPLY=(`global -c$flags $prefix 2>/dev/null`)
 		;;
 	esac
-#	echo "================================"
-#	for (( i=0; i < ${#COMPREPLY[@]}; i++ )); do
-#		echo ${COMPREPLY[i]};
-#	done
-#	echo "================================"
 	return 0
 }
-complete -F __gtags_completion x d r s rs P I
+complete -F __gtags_completion x d r s rs I P
 ###########################################################################
 # Main
 ###########################################################################
