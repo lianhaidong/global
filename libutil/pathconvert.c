@@ -82,12 +82,12 @@ set_print0()
  *	r)		decoded path name
  */
 char *
-decode_path(const unsigned char *path)
+decode_path(const char *path)
 {
 	STATIC_STRBUF(sb);
-	const unsigned char *p;
+	const char *p;
 
-	if (strchr((const char *)path, '%') == NULL)
+	if (strchr(path, '%') == NULL)
 		return (char *)path;
 	strbuf_clear(sb);
 	for (p = path; *p; p++) {
@@ -284,7 +284,7 @@ convert_put(CONVERT *cv, const char *ctags_x)
 	/*
 	 * The path name has already been encoded.
 	 */
-	path = decode_path((unsigned char *)path);
+	path = decode_path(path);
 	switch (cv->format) {
 	case FORMAT_CTAGS:
 		fputs(tag, cv->op);

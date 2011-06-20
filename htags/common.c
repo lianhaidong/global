@@ -667,7 +667,7 @@ gen_list_body(const char *srcdir, const char *ctags_x, const char *fid)	/* virtu
 		recover(&ptable);
 		die("too small number of parts in list_body().\n'%s'", ctags_x);
 	}
-	strlimcpy(path, decode_path((unsigned char *)ptable.part[PART_PATH].start + 2), sizeof(path));
+	strlimcpy(path, decode_path(ptable.part[PART_PATH].start + 2), sizeof(path));
 	if (fid == NULL)
 		fid = path2fid(path);
 	if (table_list) {
