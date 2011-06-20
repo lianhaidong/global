@@ -290,33 +290,38 @@ main(int argc, char **argv)
 		 */
 		if (!definition && isprotocol(argument)) {
 			strbuf_puts(URL, argument);
-		}
-		/*
-		 * Normal case.
-		 */
-		else if ((status = setupdbpath(0)) == 0 && locate_HTMLdir() != NULL) {
-			cwd = get_cwd();
-			root = get_root();
-			dbpath = get_dbpath();
-			if (definition)
-				getdefinitionURL(definition, URL);
-			else
-				getURL(argument, URL);
-		}
-		/*
-		 * GTAGS or HTML not found.
-		 */
-		else if (test("fr", argument) || test("dr", argument)) {
-			char cwd[MAXPATHLEN];
-			char result[MAXPATHLEN];
-			if (getcwd(cwd, sizeof(cwd)) == NULL)
-				die("cannot get current directory.");
-			if (rel2abs(argument, cwd, result, sizeof(result)) == NULL)
-				die("rel2abs failed.");
-			strbuf_puts(URL, "file://");
-			strbuf_puts(URL, result);
 		} else {
-			die_with_code(-status, gtags_dbpath_error);
+			status = setupdbpath(0);
+			if (status == 0) {
+				cwd = get_cwd();
+				root = get_root();
+				dbpath = get_dbpath();
+			} 
+			/*
+			 * Make a URL of hypertext from the argument.
+			 */
+			if (status == 0 && locate_HTMLdir() != NULL) {
+				if (definition)
+					getdefinitionURL(definition, URL);
+				else
+					getURL(argument, URL);
+			}
+			/*
+			 * Make a file URL.
+			 */
+			else if (test("fr", argument) || test("dr", argument)) {
+				char cwd[MAXPATHLEN];
+				char result[MAXPATHLEN];
+
+				if (getcwd(cwd, sizeof(cwd)) == NULL)
+					die("cannot get current directory.");
+				if (rel2abs(argument, cwd, result, sizeof(result)) == NULL)
+					die("rel2abs failed.");
+				strbuf_puts(URL, "file://");
+				strbuf_puts(URL, result);
+			} else {
+				die_with_code(-status, gtags_dbpath_error);
+			}
 		}
 	}
 	if (pflag) {
