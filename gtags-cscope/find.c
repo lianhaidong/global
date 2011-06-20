@@ -20,7 +20,7 @@
 #include "char.h"
 #include "gparam.h"
 
-#define COMMON (caseless == YES) ? "global --result=cscope -i" : "global --result=cscope"
+#define COMMON (caseless == YES) ? "global --encode-path=\" \t\" --result=cscope -i" : "global --encode-path=\" \t\" --result=cscope"
 #define FAILED "global command failed"
 
 static char comline[MAXFILLEN];

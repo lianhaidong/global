@@ -36,6 +36,8 @@
  */
 
 #include "global-cscope.h"
+#include "gparam.h"
+#include "pathconvert.h"
 #include "build.h"		/* for rebuild() */
 #include "alloc.h"
 
@@ -65,8 +67,9 @@ char	Pattern[PATLEN + 1];	/* symbol or text pattern */
 static	char	appendprompt[] = "Append to file: ";
 static	char	pipeprompt[] = "Pipe to shell command: ";
 static	char	readprompt[] = "Read from file: ";
-static	char	globalprompt[] = "Read from: ";
-static	char	globalprefix[] = "global --result=cscope ";
+static	char	globalprompt[] = "Read from: global --result=cscope ";
+static	char	globalprefix[] = "global --encode-path=\" \t\" --result=cscope ";
+static	char	globalcommand[MAXFILLEN];
 static	char	toprompt[] = "To: ";
 
 
@@ -335,12 +338,8 @@ command(int commandc)
     case '<':	/* read lines from a file */
 	move(PRLINE, 0);
 	addstr(readprompt);
-	if ((c = mygetch()) == '>') {
-            move(PRLINE, 0);
-            addstr(globalprompt);
-            c = '\0';
-	}
-	if (c != '\r' && mygetline("", newpat, COLS - sizeof(globalprompt), c, NO) > 0) {
+	if (mygetline("", newpat, COLS - sizeof(readprompt),
+		      '\0', NO) > 0) {
 	    clearprompt();
 	    shellpath(filename, sizeof(filename), newpat);
 	    if (readrefs(filename) == NO) {
@@ -400,17 +399,15 @@ cscope: cannot open pipe to shell command: %s\n", newpat);
 	/* get the shell command */
 	move(PRLINE, 0);
 	addstr(globalprompt);
-	addstr(globalprefix);
-	if (mygetline(globalprefix, newpat,
-		COLS - sizeof(globalprompt) - sizeof(globalprefix), '\0', NO) == 0 ||
-		strncmp(newpat, globalprefix, strlen(newpat)) == 0) {
+	/* addstr(globalprefix);*/
+	if (mygetline("", newpat, COLS - sizeof(globalprompt), '\0', NO) == 0) {
 	    clearprompt();
 	    return(NO);
 	}
-	strcat(strcat(newpat, ">"), temp2);
+	snprintf(globalcommand, sizeof(globalcommand), "%s %s > %s", globalprefix, newpat, temp2);
 	remove(temp2);
 	postmsg("Searching ...");
-	if (system(newpat) != 0) {
+	if (system(globalcommand) != 0) {
 	    postmsg("Ignoring failed output of global command");
 	    clearprompt();
 	    return(NO);
