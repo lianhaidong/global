@@ -757,6 +757,7 @@ changestring(void)
     for (i = 0; 
 	 fscanf(refsfound, "%" PATHLEN_STR "s%*s%" NUMLEN_STR "s%*[^\n]", newfile, linenum) == 2;
 	 ++i) {
+	strcpy(newfile, decode_path(newfile));
 	/* see if the line is to be changed */
 	if (change[i] == YES) {
 	    anymarked = YES;
