@@ -1,5 +1,5 @@
 #
-# Copyright (c) 1998, 1999, 2000, 2001, 2002, 2003, 2010
+# Copyright (c) 1998, 1999, 2000, 2001, 2002, 2003, 2010, 2011
 #	Tama Communications Corporation
 #
 # This file is part of GNU GLOBAL.
@@ -23,10 +23,6 @@
 # 'default' is default target.
 # You can specify target with GTAGSLABEL environment variable.
 #
-# Variable 'suffixes' is obsoleted but is acceptable because it is needed
-# for plugged-in parser. If you use gtags-parser(1) then you should use
-# variable 'langmap' instead.
-#
 default:\
 	:tc=gtags:tc=htags:
 #---------------------------------------------------------------------
@@ -39,30 +35,88 @@ gtags:\
 	:tc=common:\
 	:langmap=@DEFAULTLANGMAP_QUOTED@:
 #
-# plugin parser
+# plug-in parser (for Exuberant Ctags 5.8)
 #
 exuberant-ctags|plugin-example|Example of function layer plugin parser:\
-	:tc=common:extractmethod:\
-	:langmap=@DEFAULTLANGMAP_QUOTED@:\
-	:langmap=fortran\:.f.for.f77.f90.f95,pascal\:.p.pas,c#\:.cs,lisp\:.l.el.lisp,scheme\:.scm:\
-	:langmap=awk\:.awk,ruby\:.rb,perl\:.pl,python\:.py,vim\:.vim,sh\:.sh:\
-	:gtags_parser=c\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=yacc\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=asm\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=java\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=cpp\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=php\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=fortran\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=pascal\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=c#\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=lisp\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=scheme\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=awk\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=ruby\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=perl\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=python\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=vim\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=sh\:@prefix@/lib/gtags/exuberant-ctags.la:
+	:tc=common:\
+	:langmap=Asm\:.asm.ASM.s.S:\
+	:langmap=Asp\:.asp.asa:\
+	:langmap=Awk\:.awk.gawk.mawk:\
+	:langmap=Basic\:.bas.bi.bb.pb:\
+	:langmap=BETA\:.bet:\
+	:langmap=C\:.c:\
+	:langmap=C++\:.c++.cc.cp.cpp.cxx.h.h++.hh.hp.hpp.hxx.C.H:\
+	:langmap=C#\:.cs:\
+	:langmap=Cobol\:.cbl.cob.CBL.COB:\
+	:langmap=DosBatch\:.bat.cmd:\
+	:langmap=Eiffel\:.e:\
+	:langmap=Erlang\:.erl.ERL.hrl.HRL:\
+	:langmap=Flex\:.as.mxml:\
+	:langmap=Fortran\:.f.for.ftn.f77.f90.f95.F.FOR.FTN.F77.F90.F95:\
+	:langmap=HTML\:.htm.html:\
+	:langmap=Java\:.java:\
+	:langmap=JavaScript\:.js:\
+	:langmap=Lisp\:.cl.clisp.el.l.lisp.lsp:\
+	:langmap=Lua\:.lua:\
+	:langmap=MatLab\:.m:\
+	:langmap=OCaml\:.ml.mli:\
+	:langmap=Pascal\:.p.pas:\
+	:langmap=Perl\:.pl.pm.plx.perl:\
+	:langmap=PHP\:.php.php3.phtml:\
+	:langmap=Python\:.py.pyx.pxd.pxi.scons:\
+	:langmap=REXX\:.cmd.rexx.rx:\
+	:langmap=Ruby\:.rb.ruby:\
+	:langmap=Scheme\:.SCM.SM.sch.scheme.scm.sm:\
+	:langmap=Sh\:.sh.SH.bsh.bash.ksh.zsh:\
+	:langmap=SLang\:.sl:\
+	:langmap=SML\:.sml.sig:\
+	:langmap=SQL\:.sql:\
+	:langmap=Tcl\:.tcl.tk.wish.itcl:\
+	:langmap=Tex\:.tex:\
+	:langmap=Vera\:.vr.vri.vrh:\
+	:langmap=Verilog\:.v:\
+	:langmap=VHDL\:.vhdl.vhd:\
+	:langmap=Vim\:.vim:\
+	:langmap=YACC\:.y:\
+	:gtags_parser=Asm\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Asp\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Awk\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Basic\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=BETA\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=C\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=C++\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=C#\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Cobol\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=DosBatch\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Eiffel\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Erlang\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Flex\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Fortran\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=HTML\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Java\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=JavaScript\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Lisp\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Lua\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=MatLab\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=OCaml\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Pascal\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Perl\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=PHP\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Python\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=REXX\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Ruby\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Scheme\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Sh\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=SLang\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=SML\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=SQL\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Tcl\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Tex\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Vera\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Verilog\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=VHDL\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Vim\:@prefix@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=YACC\:@prefix@/lib/gtags/exuberant-ctags.la:
 #---------------------------------------------------------------------
 # Configuration for htags(1)
 # Let's paint hypertext with your favorite colors!
