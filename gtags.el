@@ -99,6 +99,7 @@
   :group 'gtags
   :type 'boolean)
 
+; This has not been used any longer.
 (defcustom gtags-disable-pushy-mouse-mapping nil
   "*If non-nil, mouse key mapping is disabled."
   :group 'gtags
@@ -691,6 +692,7 @@ with no args, if that value is non-nil."
   ; Suggested key mapping
   (if gtags-suggested-key-mapping
       (progn
+        ; Key mapping.
         (define-key gtags-mode-map "\eh" 'gtags-display-browser)
         (define-key gtags-mode-map "\C-]" 'gtags-find-tag-from-here)
         (define-key gtags-mode-map "\C-t" 'gtags-pop-stack)
@@ -701,16 +703,16 @@ with no args, if that value is non-nil."
         (define-key gtags-mode-map "\es" 'gtags-find-symbol)
         (define-key gtags-mode-map "\er" 'gtags-find-rtag)
         (define-key gtags-mode-map "\et" 'gtags-find-tag)
-        (define-key gtags-mode-map "\ev" 'gtags-visit-rootdir))
-      nil)
-  ; Mouse key mapping
-  (if gtags-disable-pushy-mouse-mapping nil
-      (if (not gtags-running-xemacs) nil
-       (define-key gtags-mode-map 'button3 'gtags-pop-stack)
-       (define-key gtags-mode-map 'button2 'gtags-find-tag-by-event))
-      (if gtags-running-xemacs nil
-       (define-key gtags-mode-map [mouse-3] 'gtags-pop-stack)
-       (define-key gtags-mode-map [mouse-2] 'gtags-find-tag-by-event))))
+        (define-key gtags-mode-map "\ev" 'gtags-visit-rootdir)
+        ; Mouse key mapping
+        (if (not gtags-running-xemacs) nil
+            (define-key gtags-mode-map 'button3 'gtags-pop-stack)
+            (define-key gtags-mode-map 'button2 'gtags-find-tag-by-event))
+        (if gtags-running-xemacs nil
+            (define-key gtags-mode-map [mouse-3] 'gtags-pop-stack)
+            (define-key gtags-mode-map [mouse-2] 'gtags-find-tag-by-event)))
+  )
+)
 
 ;; make gtags select-mode
 (defun gtags-select-mode ()
@@ -737,13 +739,16 @@ Turning on Gtags-Select mode calls the value of the variable
   (message "[GTAGS SELECT MODE] %d lines" (count-lines (point-min) (point-max)))
   (run-hooks 'gtags-select-mode-hook)
   ; Mouse key mapping
-  (if gtags-disable-pushy-mouse-mapping nil
-      (if (not gtags-running-xemacs) nil
-          (define-key gtags-select-mode-map 'button3 'gtags-pop-stack)
-          (define-key gtags-select-mode-map 'button2 'gtags-select-tag-by-event))
-      (if gtags-running-xemacs nil
-          (define-key gtags-select-mode-map [mouse-3] 'gtags-pop-stack)
-          (define-key gtags-select-mode-map [mouse-2] 'gtags-select-tag-by-event))))
+  (if gtags-suggested-key-mapping
+      (progn
+        (if (not gtags-running-xemacs) nil
+            (define-key gtags-select-mode-map 'button3 'gtags-pop-stack)
+            (define-key gtags-select-mode-map 'button2 'gtags-select-tag-by-event))
+        (if gtags-running-xemacs nil
+            (define-key gtags-select-mode-map [mouse-3] 'gtags-pop-stack)
+            (define-key gtags-select-mode-map [mouse-2] 'gtags-select-tag-by-event)))
+  )
+)
 
 (provide 'gtags)
 
