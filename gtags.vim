@@ -180,47 +180,47 @@
 "
 "	% info global
 "
-if exists("loaded_gtags") || &cp
+if exists("g:loaded_gtags") || &cp
     finish
 endif
-let loaded_gtags = 1
+let g:loaded_gtags = 1
 
 " Open the Gtags output window.  Set this variable to zero, to not open
 " the Gtags output window by default.  You can open it manually by using
 " the :cwindow command.
 " (This code was drived from 'grep.vim'.)
-if !exists("Gtags_OpenQuickfixWindow")
-    let Gtags_OpenQuickfixWindow = 1
+if !exists("g:Gtags_OpenQuickfixWindow")
+    let g:Gtags_OpenQuickfixWindow = 1
 endif
 
 " Character to use to quote patterns and file names before passing to global.
 " (This code was drived from 'grep.vim'.)
-if !exists("Gtags_Shell_Quote_Char")
+if !exists("g:Gtags_Shell_Quote_Char")
     if has("win32") || has("win16") || has("win95")
-        let Gtags_Shell_Quote_Char = '"'
+        let g:Gtags_Shell_Quote_Char = '"'
     else
-        let Gtags_Shell_Quote_Char = "'"
+        let g:Gtags_Shell_Quote_Char = "'"
     endif
 endif
-if !exists("Gtags_Single_Quote_Char")
+if !exists("g:Gtags_Single_Quote_Char")
     if has("win32") || has("win16") || has("win95")
-        let Gtags_Single_Quote_Char = "'"
-        let Gtags_Double_Quote_Char = '\"'
+        let g:Gtags_Single_Quote_Char = "'"
+        let g:Gtags_Double_Quote_Char = '\"'
     else
-        let sq = "'"
-        let dq = '"'
-        let Gtags_Single_Quote_Char = sq . dq . sq . dq . sq
-        let Gtags_Double_Quote_Char = '"'
+        let s:sq = "'"
+        let s:dq = '"'
+        let g:Gtags_Single_Quote_Char = s:sq . s:dq . s:sq . s:dq . s:sq
+        let g:Gtags_Double_Quote_Char = '"'
     endif
 endif
-if !exists("Gtags_Use_Tags_Format")
-    let Gtags_Use_Tags_Format = 0
+if !exists("g:Gtags_Use_Tags_Format")
+    let g:Gtags_Use_Tags_Format = 0
 endif
 
 "
 " Display error message.
 "
-function s:Error(msg)
+function! s:Error(msg)
     echohl WarningMsg |
            \ echomsg 'Error: ' . a:msg |
            \ echohl None
@@ -228,62 +228,62 @@ endfunction
 "
 " Extract pattern or option string.
 "
-function s:Extract(line, target)
-    let option = ''
-    let pattern = ''
-    let force_pattern = 0
-    let length = strlen(a:line)
-    let i = 0
+function! s:Extract(line, target)
+    let l:option = ''
+    let l:pattern = ''
+    let l:force_pattern = 0
+    let l:length = strlen(a:line)
+    let l:i = 0
 
     " skip command name.
     if a:line =~ '^Gtags'
-        let i = 5
+        let l:i = 5
     endif
-    while i < length && a:line[i] == ' '
-       let i = i + 1
+    while l:i < l:length && a:line[l:i] == ' '
+       let l:i = l:i + 1
     endwhile 
-    while i < length
-        if a:line[i] == "-" && force_pattern == 0
-            let i = i + 1
+    while l:i < l:length
+        if a:line[l:i] == "-" && l:force_pattern == 0
+            let l:i = l:i + 1
             " Ignore long name option like --help.
-            if i < length && a:line[i] == '-'
-                while i < length && a:line[i] != ' '
-                   let i = i + 1
+            if l:i < l:length && a:line[l:i] == '-'
+                while l:i < l:length && a:line[l:i] != ' '
+                   let l:i = l:i + 1
                 endwhile 
             else
-                while i < length && a:line[i] != ' '
-                    let c = a:line[i]
-                    let option = option . c
-                    let i = i + 1
+                while l:i < l:length && a:line[l:i] != ' '
+                    let l:c = a:line[l:i]
+                    let l:option = l:option . l:c
+                    let l:i = l:i + 1
                 endwhile 
-                if c == 'e'
-                    let force_pattern = 1
+                if l:c == 'e'
+                    let l:force_pattern = 1
                 endif
             endif
         else
-            let pattern = ''
+            let l:pattern = ''
             " allow pattern includes blanks.
-            while i < length
-                 if a:line[i] == "'"
-                     let pattern = pattern . g:Gtags_Single_Quote_Char
-                 elseif a:line[i] == '"'
-                     let pattern = pattern . g:Gtags_Double_Quote_Char
+            while l:i < l:length
+                 if a:line[l:i] == "'"
+                     let l:pattern = l:pattern . g:Gtags_Single_Quote_Char
+                 elseif a:line[l:i] == '"'
+                     let l:pattern = l:pattern . g:Gtags_Double_Quote_Char
                  else
-                     let pattern = pattern . a:line[i]
+                     let l:pattern = l:pattern . a:line[l:i]
                  endif
-                let i = i + 1
+                let l:i = l:i + 1
             endwhile 
             if a:target == 'pattern'
-                return pattern
+                return l:pattern
             endif
         endif
         " Skip blanks.
-        while i < length && a:line[i] == ' '
-               let i = i + 1
+        while l:i < l:length && a:line[l:i] == ' '
+               let l:i = l:i + 1
         endwhile 
     endwhile 
     if a:target == 'option'
-        return option
+        return l:option
     endif
     return ''
 endfunction
@@ -292,18 +292,18 @@ endfunction
 " Trim options to avoid errors.
 "
 function! s:TrimOption(option)
-    let option = ''
-    let length = strlen(a:option)
-    let i = 0
+    let l:option = ''
+    let l:length = strlen(a:option)
+    let l:i = 0
 
-    while i < length
-        let c = a:option[i]
-        if c !~ '[cenpquv]'
-            let option = option . c
+    while l:i < l:length
+        let l:c = a:option[l:i]
+        if l:c !~ '[cenpquv]'
+            let l:option = l:option . l:c
         endif
-        let i = i + 1
+        let l:i = l:i + 1
     endwhile
-    return option
+    return l:option
 endfunction
 
 "
@@ -311,33 +311,33 @@ endfunction
 "
 function! s:ExecLoad(option, long_option, pattern)
     " Execute global(1) command and write the result to a temporary file.
-    let isfile = 0
-    let option = ''
-    let result = ''
+    let l:isfile = 0
+    let l:option = ''
+    let l:result = ''
 
     if a:option =~ 'f'
-        let isfile = 1
+        let l:isfile = 1
         if filereadable(a:pattern) == 0
             call s:Error('File ' . a:pattern . ' not found.')
             return
         endif
     endif
     if a:long_option != ''
-        let option = a:long_option . ' '
+        let l:option = a:long_option . ' '
     endif
     if g:Gtags_Use_Tags_Format == 1
-	let option = option . '-qt'
+	let l:option = l:option . '-qt'
     else
-	let option = option . '-qx'
+	let l:option = l:option . '-qx'
     endif
-    let option = option . s:TrimOption(a:option)
-    if isfile == 1
-        let cmd = 'global ' . option . ' ' . a:pattern
+    let l:option = l:option . s:TrimOption(a:option)
+    if l:isfile == 1
+        let l:cmd = 'global ' . l:option . ' ' . a:pattern
     else
-        let cmd = 'global ' . option . 'e ' . g:Gtags_Shell_Quote_Char . a:pattern . g:Gtags_Shell_Quote_Char 
+        let l:cmd = 'global ' . l:option . 'e ' . g:Gtags_Shell_Quote_Char . a:pattern . g:Gtags_Shell_Quote_Char 
     endif
 
-    let result = system(cmd)
+    let l:result = system(l:cmd)
     if v:shell_error != 0
         if v:shell_error != 0
             if v:shell_error == 2
@@ -345,17 +345,17 @@ function! s:ExecLoad(option, long_option, pattern)
             elseif v:shell_error == 3
                 call s:Error('GTAGS not found.')
             else
-                call s:Error('global command failed. command line: ' . cmd)
+                call s:Error('global command failed. command line: ' . l:cmd)
             endif
         endif
         return
     endif
-    if result == '' 
-        if option =~ 'f'
+    if l:result == '' 
+        if l:option =~ 'f'
             call s:Error('Tag not found in ' . a:pattern . '.')
-        elseif option =~ 'P'
+        elseif l:option =~ 'P'
             call s:Error('Path which matches to ' . a:pattern . ' not found.')
-        elseif option =~ 'g'
+        elseif l:option =~ 'g'
             call s:Error('Line which matches to ' . a:pattern . ' not found.')
         else
             call s:Error('Tag which matches to ' . g:Gtags_Shell_Quote_Char . a:pattern . g:Gtags_Shell_Quote_Char . ' not found.')
@@ -369,57 +369,57 @@ function! s:ExecLoad(option, long_option, pattern)
         botright copen
     endif
     " Parse the output of 'global -x or -t' and show in the quickfix window.
-    let efm_org = &efm
+    let l:efm_org = &efm
     if g:Gtags_Use_Tags_Format == 1
         let &efm = "%*\\S\t%f\t%l"
     else
         let &efm = "%*\\S%*\\s%l%\\s%f%\\s%m"
     endif
-    cexpr! result
-    let &efm = efm_org
+    cexpr! l:result
+    let &efm = l:efm_org
 endfunction
 
 "
 " RunGlobal()
 "
 function! s:RunGlobal(line)
-    let pattern = s:Extract(a:line, 'pattern')
+    let l:pattern = s:Extract(a:line, 'pattern')
 
-    if pattern == '%'
-        let pattern = expand('%')
-    elseif pattern == '#'
-        let pattern = expand('#')
+    if l:pattern == '%'
+        let l:pattern = expand('%')
+    elseif l:pattern == '#'
+        let l:pattern = expand('#')
     endif
-    let option = s:Extract(a:line, 'option')
-    if option =~ 's' && option =~ 'r'
+    let l:option = s:Extract(a:line, 'option')
+    if l:option =~ 's' && l:option =~ 'r'
         call s:Error('Both of -s and -r are not allowed.')
         return
     endif
 
     " If no pattern supplied then get it from user.
-    if pattern == '' && option !~ 'P'
-        let s:option = option
-        if option =~ 'f'
-            let line = input("Gtags for file: ", expand('%'), 'file')
+    if l:pattern == '' && l:option !~ 'P'
+        let s:option = l:option
+        if l:option =~ 'f'
+            let l:line = input("Gtags for file: ", expand('%'), 'file')
         else
-            let line = input("Gtags for pattern: ", expand('<cword>'), 'custom,GtagsCandidateCore')
+            let l:line = input("Gtags for pattern: ", expand('<cword>'), 'custom,GtagsCandidateCore')
         endif
-        let pattern = s:Extract(line, 'pattern')
-        if pattern == ''
+        let l:pattern = s:Extract(l:line, 'pattern')
+        if l:pattern == ''
             call s:Error('Pattern not specified.')
             return
         endif
     endif
-    call s:ExecLoad(option, '', pattern)
+    call s:ExecLoad(l:option, '', l:pattern)
 endfunction
 
 "
 " Execute RunGlobal() depending on the current position.
 "
 function! s:GtagsCursor()
-    let pattern = expand("<cword>")
-    let option = "--from-here=\"" . line('.') . ":" . expand("%") . "\""
-    call s:ExecLoad('', option, pattern)
+    let l:pattern = expand("<cword>")
+    let l:option = "--from-here=\"" . line('.') . ":" . expand("%") . "\""
+    call s:ExecLoad('', l:option, l:pattern)
 endfunction
 
 "
@@ -427,15 +427,15 @@ endfunction
 " (You need to execute htags(1) in your source directory.)
 "
 function! s:Gozilla()
-    let lineno = line('.')
-    let filename = expand("%")
-    let result = system('gozilla +' . lineno . ' ' . filename)
+    let l:lineno = line('.')
+    let l:filename = expand("%")
+    let l:result = system('gozilla +' . l:lineno . ' ' . l:filename)
 endfunction
 
 "
 " Custom completion.
 "
-function GtagsCandidate(lead, line, pos)
+function! GtagsCandidate(lead, line, pos)
     let s:option = s:Extract(a:line, 'option')
     return GtagsCandidateCore(a:lead, a:line, a:pos)
 endfunction
