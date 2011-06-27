@@ -23,9 +23,9 @@
 
 ;; GLOBAL home page is at: http://www.gnu.org/software/global/
 ;; Author: Tama Communications Corporation
-;; Version: 2.10
+;; Version: 3.0
 ;; Keywords: tools
-;; Required version: GLOBAL 5.9 or later
+;; Required version: GLOBAL 5.9.7 or later
 
 ;; Gtags-mode is implemented as a minor mode so that it can work with any
 ;; other major modes. Gtags-select mode is implemented as a major mode.
@@ -233,14 +233,17 @@
   (gtags-completing 'gsyms string predicate code))
 (defun gtags-completing-files (string predicate code)
   (gtags-completing 'files string predicate code))
+(defun gtags-completing-idutils (string predicate code)
+  (gtags-completing 'idutils string predicate code))
 ;; common part of completing-XXXX
 ;;   flag: 'gtags or 'gsyms or 'files
 (defun gtags-completing (flag string predicate code)
   ; The purpose of using the -n option for the -P command is to exclude
   ; dependence on the execution directory.
-  (let ((option (cond ((eq flag 'files) "-Pon")
-                      ((eq flag 'gsyms)  "-cs")
-                      (t                "-c")))
+  (let ((option (cond ((eq flag 'files)   "-cPo")
+                      ((eq flag 'gsyms)   "-cs")
+                      ((eq flag 'idutils) "-cI")
+                      (t                  "-c")))
         (complete-list (make-vector 63 0))
         (prev-buffer (current-buffer)))
     ; build completion list
@@ -252,17 +255,10 @@
     ; The completion for symbols matches only to the head of the symbol. But the completion
     ; for files matches any part of the path.
     ;
-    (if (eq flag 'files)
-        ; extract input string and the following part.
-        (let ((match-string (if (equal "" string) "\./\\(.*\\)" (concat ".*\\(" string ".*\\)"))))
-          (while (not (eobp))
-            (looking-at match-string)
-            (intern (gtags-match-string 1) complete-list)
-            (forward-line)))
-      (while (not (eobp))
-        (looking-at gtags-symbol-regexp)
-        (intern (gtags-match-string 0) complete-list)
-        (forward-line)))
+    (while (not (eobp))
+      (looking-at ".*")
+      (intern (gtags-match-string 0) complete-list)
+      (forward-line))
     (kill-buffer (current-buffer))
     ; recover current buffer
     (set-buffer prev-buffer)
@@ -373,12 +369,29 @@
 (defun gtags-find-with-grep ()
   "Input pattern, search with grep(1) and move to the locations."
   (interactive)
-  (gtags-find-with "g"))
+  (let (tagname prompt input)
+    (setq tagname (gtags-current-token))
+    (if tagname
+        (setq prompt (concat "Find pattern: (default " tagname ") "))
+      (setq prompt "Find pattern: "))
+    (setq input (read-from-minibuffer prompt nil nil nil gtags-history-list))
+    (if (not (equal "" input)) (setq tagname input))
+    (gtags-push-context)
+    (gtags-goto-tag tagname "g")))
 
 (defun gtags-find-with-idutils ()
   "Input pattern, search with idutils(1) and move to the locations."
   (interactive)
-  (gtags-find-with "I"))
+  (let (tagname prompt input)
+    (setq tagname (gtags-current-token))
+    (if tagname
+        (setq prompt (concat "Find token: (default " tagname ") "))
+      (setq prompt "Find token: "))
+    (setq input (completing-read prompt 'gtags-completing-idutils
+                  nil nil nil gtags-history-list))
+    (if (not (equal "" input)) (setq tagname input))
+    (gtags-push-context)
+    (gtags-goto-tag tagname "I")))
 
 (defun gtags-find-file ()
   "Input pattern and move to the top of the file."
@@ -492,19 +505,6 @@
 ;;
 ;; common function
 ;;
-
-;; find with grep or idutils.
-(defun gtags-find-with (flag)
-  (let (tagname prompt input)
-    (setq tagname (gtags-current-token))
-    (if tagname
-        (setq prompt (concat "Find pattern: (default " tagname ") "))
-      (setq prompt "Find pattern: "))
-    (setq input (completing-read prompt 'gtags-completing-gtags
-                 nil nil nil gtags-history-list))
-    (if (not (equal "" input)) (setq tagname input))
-    (gtags-push-context)
-    (gtags-goto-tag tagname flag)))
 
 ;; goto tag's point
 (defun gtags-goto-tag (tagname flag &optional other-win)
