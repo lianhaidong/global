@@ -534,7 +534,7 @@ main(int argc, char **argv)
 	if (!Iflag && !gflag && av)
 		for (; *av == ' ' || *av == '\t'; av++)
 			;
-	if (cflag && av && isregex(av))
+	if (cflag && !Pflag && av && isregex(av))
 		die_with_code(2, "only name char is allowed with -c option.");
 	/*
 	 * get path of following directories.
