@@ -1,7 +1,7 @@
 " File: gtags.vim
 " Author: Tama Communications Corporation
-" Version: 0.3.4
-" Last Modified: March 6, 2011
+" Version: 0.5
+" Last Modified: June 27, 2011
 "
 " Copyright and licence
 " ---------------------
@@ -440,22 +440,23 @@ function! GtagsCandidate(lead, line, pos)
     return GtagsCandidateCore(a:lead, a:line, a:pos)
 endfunction
 
-function GtagsCandidateCore(lead, line, pos)
-    if s:option =~ 'P' || s:option =~ 'f'
-        let opt = '-P'
-        if s:option =~ 'O'
-            let opt = opt . 'O'
-        elseif s:option =~ 'o'
-            let opt = opt . 'o'
-        endif
-    elseif s:option =~ 's'
-        let opt = '-cs'
-    elseif s:option =~ 'g'
+function! GtagsCandidateCore(lead, line, pos)
+    if s:option == 'g'
         return ''
-    else
-        let opt = '-c'
+    elseif s:option == 'f'
+        if isdirectory(a:lead)
+            if a:lead =~ '/$'
+                let l:pattern = a:lead . '*'
+            else
+                let l:pattern = a:lead . '/*'
+            endif
+        else
+            let l:pattern = a:lead . '*'
+        endif
+        return glob(l:pattern)
+    else 
+        return system('global ' . '-c' . s:option . ' ' . a:lead)
     endif
-    return system('global' . ' ' . opt . ' ' . a:lead)
 endfunction
 
 " Define the set of Gtags commands
