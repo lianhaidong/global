@@ -52,6 +52,7 @@ int decide_tag_by_context(const char *, const char *, int);
 int main(int, char **);
 void completion(const char *, const char *, const char *, int);
 void completion_idutils(const char *, const char *, const char *);
+void completion_path(const char *, const char *);
 void idutils(const char *, const char *);
 void grep(const char *, char *const *, const char *);
 void pathlist(const char *, const char *);
@@ -94,6 +95,7 @@ int literal;				/* 1: literal search	*/
 int print0;				/* -print0 option	*/
 int format;
 int type;				/* path conversion type */
+int match_part;				/* match part only	*/
 const char *cwd, *root, *dbpath;
 char *context_file;
 char *context_lineno;
@@ -117,9 +119,13 @@ help(void)
 #define RESULT		128
 #define FROM_HERE	129
 #define ENCODE_PATH	130
+#define MATCH_PART	131
 #define SORT_FILTER     1
 #define PATH_FILTER     2
 #define BOTH_FILTER     (SORT_FILTER|PATH_FILTER)
+#define MATCH_PART_FIRST 1
+#define MATCH_PART_LAST  2
+#define MATCH_PART_ALL   3
 
 static struct option const long_options[] = {
 	{"absolute", no_argument, NULL, 'a'},
@@ -154,6 +160,7 @@ static struct option const long_options[] = {
 	{"from-here", required_argument, NULL, FROM_HERE},
 	{"debug", no_argument, &debug, 1},
 	{"literal", no_argument, &literal, 1},
+	{"match-part", required_argument, NULL, MATCH_PART},
 	{"print0", no_argument, &print0, 1},
 	{"version", no_argument, &show_version, 1},
 	{"help", no_argument, &show_help, 1},
@@ -168,9 +175,9 @@ setcom(int c)
 {
 	if (command == 0)
 		command = c;
-	else if (c == 'c' && command == 'I')
+	else if (c == 'c' && (command == 'I' || command == 'P'))
 		command = c;
-	else if (c == 'I' && command == 'c')
+	else if (command == 'c' && (c == 'I' || c == 'P'))
 		;
 	else if (command != c)
 		usage();
@@ -430,6 +437,16 @@ main(int argc, char **argv)
 			context_file = p;
 			}
 			break;
+		case MATCH_PART:
+			if (!strcmp(optarg, "first"))
+				match_part = MATCH_PART_FIRST;
+			else if (!strcmp(optarg, "last"))
+				match_part = MATCH_PART_LAST;
+			else if (!strcmp(optarg, "all"))
+				match_part = MATCH_PART_ALL;
+			else
+				die_with_code(2, "unknown part type for the --match-part option.");
+			break;
 		case RESULT:
 			if (!strcmp(optarg, "ctags-x"))
 				format = FORMAT_CTAGS_X;
@@ -509,6 +526,8 @@ main(int argc, char **argv)
 		nosource = 1;	/* to keep compatibility */
 	if (print0)
 		set_print0();
+	if (cflag && match_part == 0)
+		match_part = MATCH_PART_ALL;
 	/*
 	 * remove leading blanks.
 	 */
@@ -583,6 +602,8 @@ main(int argc, char **argv)
 	if (cflag) {
 		if (Iflag)
 			completion_idutils(dbpath, root, av);
+		else if (Pflag)
+			completion_path(dbpath, av);
 		else
 			completion(dbpath, root, av, db);
 		exit(0);
@@ -790,6 +811,57 @@ completion_idutils(const char *dbpath, const char *root, const char *prefix)
 	}
 	fclose(ip);
 	strbuf_close(sb);
+}
+/*
+ * completion_path: print candidate path list.
+ *
+ *	i)	dbpath	dbpath directory
+ *	i)	prefix	prefix of primary key
+ */
+void
+completion_path(const char *dbpath, const char *prefix)
+{
+	GFIND *gp;
+	const char *localprefix = "./";
+	FILE *op = popen("sort | uniq", "w");
+	const char *path;
+	int prefix_length;
+	int target = GPATH_SOURCE;
+	int flags = (match_part == MATCH_PART_LAST) ? MATCH_LAST : MATCH_FIRST;
+
+	if (prefix && *prefix == 0)	/* In the case global -c '' */
+		prefix = NULL;
+	prefix_length = (prefix == NULL) ? 0 : strlen(prefix);
+	if (oflag)
+		target = GPATH_BOTH;
+	if (Oflag)
+		target = GPATH_OTHER;
+	if (iflag)
+		flags |= IGNORE_CASE;
+	gp = gfind_open(dbpath, localprefix, target);
+	while ((path = gfind_read(gp)) != NULL) {
+		path += 2;				/* skip './'*/
+		if (prefix == NULL) {
+			fputs(path, op);
+			fputc('\n', op);
+		} else if (match_part == MATCH_PART_ALL) {
+			const char *p = path;
+
+			while ((p = locatestring(p, prefix, flags)) != NULL) {
+				fputs(p, op);
+				fputc('\n', op);
+				p += prefix_length;
+			}
+		} else {
+			const char *p = locatestring(path, prefix, flags);
+			if (p != NULL) {
+				fputs(p, op);
+				fputc('\n', op);
+			}
+		}
+	}
+	gfind_close(gp);
+	pclose(op);
 }
 /*
  * Output filter

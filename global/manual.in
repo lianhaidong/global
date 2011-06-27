@@ -26,7 +26,7 @@
 @NAME	global - print locations of the specified object.
 @SYNOPSIS
 	@name{global} [-adGilnqrstTvx][-e] @arg{pattern}
-	@name{global} -c[diIqrsv] @arg{prefix}
+	@name{global} -c[diIoOPqrsv] @arg{prefix}
 	@name{global} -f[adnqrstvx][-L file-list] @arg{files}
 	@name{global} -g[aGilnoOqtvVx][-L file-list][-e] @arg{pattern} [@arg{files}]
 	@name{global} -I[ailnqtvx][-e] @arg{pattern}
