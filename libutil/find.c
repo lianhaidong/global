@@ -370,11 +370,11 @@ static int current_entry;			/* current entry of the stack */
 char *
 getrealpath(const char *dir)
 {
-        char real[PATH_MAX], *p, *q;
+	char real[PATH_MAX];
 
-        if (realpath(dir, real) == NULL)
-                die("cannot get real path of '%s'.", trimpath(dir));
-        return check_strdup(real);
+	if (realpath(dir, real) == NULL)
+		die("cannot get real path of '%s'.", trimpath(dir));
+	return check_strdup(real);
 }
 /*
  * has_symlinkloop: whether or not dir has a symbolic link loops.
