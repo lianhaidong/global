@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2004, 2008
+ * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2004, 2008, 2011
  *	Tama Communications Corporation
  * #ifdef __DJGPP__
  * Contributed by Jason Hood <jadoxa@yahoo.com.au>, 2001.
@@ -228,4 +228,14 @@ makedirectories(const char *base, const char *rest, int verbose)
 	}
 	strbuf_close(sb);
 	return 0;
+}
+/*
+ * trimpath: trim path name
+ */
+const char *
+trimpath(const char *path)
+{
+	if (*path == '.' && *(path + 1) == '/')
+		path += 2;
+	return path;
 }

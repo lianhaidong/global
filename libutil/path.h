@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2008
+ * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2008, 2011
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -42,5 +42,6 @@ char *canonpath(char *);
 char *realpath(const char *, char *);
 #endif
 int makedirectories(const char *, const char *, int);
+const char *trimpath(const char *);
 
 #endif /* ! _PATH_H_ */

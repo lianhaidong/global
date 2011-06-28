@@ -53,6 +53,7 @@
 #include "conf.h"
 #include "die.h"
 #include "find.h"
+#include "getdbpath.h"
 #include "is_unixy.h"
 #include "langmap.h"
 #include "locatestring.h"
@@ -95,7 +96,7 @@ static int list_count;
 static char **listarray;		/* list for skipping full path */
 static FILE *ip;
 static FILE *temp;
-static char rootdir[MAXPATHLEN];
+static char rootdir[PATH_MAX];
 static char cwddir[MAXPATHLEN];
 static int find_mode;
 static int find_eof;
@@ -186,10 +187,6 @@ prepare_source(void)
 		 * compile regular expression.
 		 */
 		retval = regcomp(suff, strbuf_value(sb), flags);
-#ifdef DEBUG
-		if (debug)
-			fprintf(stderr, "find regex: %s\n", strbuf_value(sb));
-#endif
 		if (retval != 0)
 			die("cannot compile regular expression.");
 	}
@@ -292,10 +289,6 @@ prepare_skip(void)
 		 */
 		skip = &skip_area;
 		retval = regcomp(skip, strbuf_value(reg), flags);
-#ifdef DEBUG
-		if (debug)
-			fprintf(stderr, "skip regex: %s\n", strbuf_value(reg));
-#endif
 		if (retval != 0)
 			die("cannot compile regular expression.");
 	} else {
@@ -305,25 +298,10 @@ prepare_skip(void)
 		int i;
 		listarray = (char **)check_malloc(sizeof(char *) * list_count);
 		p = strbuf_value(list);
-#ifdef DEBUG
-		if (debug)
-			fprintf(stderr, "skip list: ");
-#endif
 		for (i = 0; i < list_count; i++) {
-#ifdef DEBUG
-			if (debug) {
-				fprintf(stderr, "%s", p);
-				if (i + 1 < list_count)
-					fputc(',', stderr);
-			}
-#endif
 			listarray[i] = p;
 			p += strlen(p) + 1;
 		}
-#ifdef DEBUG
-		if (debug)
-			fputc('\n', stderr);
-#endif
 	}
 	strbuf_close(reg);
 	free(skiplist);
@@ -348,11 +326,6 @@ skipthisfile(const char *path)
 	 * unit check.
 	 */
 	if (skip && regexec(skip, path, 0, 0, 0) == 0) {
-#ifdef DEBUG
-		if (debug)
-			fprintf(stderr, "skipthisfile(1): %s\n", path);
-#endif
-/* fprintf(stderr, "skipthisfile: skip %s\n", path);*/
 		return 1;
 	}
 	/*
@@ -368,18 +341,10 @@ skipthisfile(const char *path)
 		 */
 		if (*(last - 1) == '/') {	/* it's a directory */
 			if (!STRNCMP(path + 1, first, last - first)) {
-#ifdef DEBUG
-				if (debug)
-					fprintf(stderr, "skipthisfile(2): %s\n", path);
-#endif
 				return 1;
 			}
 		} else {
 			if (!STRCMP(path + 1, first)) {
-#ifdef DEBUG
-				if (debug)
-					fprintf(stderr, "skipthisfile(3): %s\n", path);
-#endif
 				return 1;
 			}
 		}
@@ -394,20 +359,59 @@ static char dir[MAXPATHLEN];			/* directory path */
 static VARRAY *stack;				/* dynamic allocated array */
 struct stack_entry {
 	STRBUF *sb;
+	char *real;
 	char *dirp, *start, *end, *p;
 };
 static int current_entry;			/* current entry of the stack */
 
 /*
+ * getrealpath: return realpath of dir using allocated area.
+ */
+char *
+getrealpath(const char *dir)
+{
+        char real[PATH_MAX], *p, *q;
+
+        if (realpath(dir, real) == NULL)
+                die("cannot get real path of '%s'.", trimpath(dir));
+        return check_strdup(real);
+}
+/*
+ * has_symlinkloop: whether or not dir has symbolic link loops.
+ *
+ *	i)	dir	directory (should end by '/')
+ *	r)		1: has a loop, 0: no problem
+ */
+int
+has_symlinkloop(const char *dir)
+{
+	struct stack_entry *sp;
+	char real[PATH_MAX];
+	int i;
+
+	if (!strcmp(dir, "./"))
+		return 0;
+	if (realpath(dir, real) == NULL)
+		die("cannot get real path of '%s'.", trimpath(dir));
+	if (locatestring(rootdir, real, MATCH_AT_FIRST))
+		return 1;
+	sp = varray_assign(stack, 0, 0);
+	for (i = current_entry; i >= 0; i--) {
+		if (!strcmp(sp[i].real, real))
+			return 1;
+	}
+	return 0;
+}
+/*
  * getdirs: get directory list
  *
- *	i)	dir	directory
+ *	i)	dir	directory (should end by '/')
  *	o)	sb	string buffer
  *	r)		-1: error, 0: normal
  *
  * format of directory list:
- * |ddir1\0ffile1\0llink\0|
- * means directory 'dir1', file 'file1' and symbolic link 'link'.
+ * |ddir1\0ffile1\0|
+ * means directory 'dir1', file 'file1'.
  */
 static int
 getdirs(const char *dir, STRBUF *sb)
@@ -416,15 +420,21 @@ getdirs(const char *dir, STRBUF *sb)
 	struct dirent *dp;
 	struct stat st;
 
-	if ((dirp = opendir(dir)) == NULL)
+	if (has_symlinkloop(dir)) {
+		warning("symbolic link detected. '%s'. ignored.", trimpath(dir));
 		return -1;
+	}
+	if ((dirp = opendir(dir)) == NULL) {
+		warning("cannot open directory '%s'. ignored.", trimpath(dir));
+		return -1;
+	}
 	while ((dp = readdir(dirp)) != NULL) {
 		if (!strcmp(dp->d_name, "."))
 			continue;
 		if (!strcmp(dp->d_name, ".."))
 			continue;
 		if (stat(makepath(dir, dp->d_name, NULL), &st) < 0) {
-			warning("cannot stat '%s'. (Ignored)", dp->d_name);
+			warning("cannot stat '%s'. ignored.", trimpath(dp->d_name));
 			continue;
 		}
 		if (S_ISDIR(st.st_mode))
@@ -459,6 +469,8 @@ find_open(const char *start)
 		allow_blank = 1;
 	if (!start)
 		start = "./";
+        if (realpath(start, rootdir) == NULL)
+                die("cannot get real path of '%s'.", trimpath(dir));
 	/*
 	 * setup stack.
 	 */
@@ -468,11 +480,12 @@ find_open(const char *start)
 	strlimcpy(dir, start, sizeof(dir));
 	curp->dirp = dir + strlen(dir);
 	curp->sb = strbuf_open(0);
+	curp->real = getrealpath(dir);
 	if (getdirs(dir, curp->sb) < 0)
-		die("cannot open '.' directory.");
+		die("Work is given up.");
 	curp->start = curp->p = strbuf_value(curp->sb);
 	curp->end   = curp->start + strbuf_getlen(curp->sb);
-
+	strlimcpy(cwddir, get_root(), sizeof(cwddir));
 	/*
 	 * prepare regular expressions.
 	 */
@@ -514,7 +527,7 @@ find_open_filelist(const char *filename, const char *root)
 	} else {
 		ip = fopen(filename, "r");
 		if (ip == NULL)
-			die("cannot open '%s'.", filename);
+			die("cannot open '%s'.", trimpath(filename));
 	}
 	/*
 	 * rootdir always ends with '/'.
@@ -588,9 +601,9 @@ find_read_traverse(void)
 				 */
 				if (!test("f", path)) {
 					if (test("d", path))
-						warning("'%s' is a directory. (Ignored)", path);
+						warning("'%s' is a directory. ignored.", trimpath(path));
 					else
-						warning("'%s' not found. (Ignored)", path);
+						warning("'%s' not found. ignored.", trimpath(path));
 					continue;
 				}
 				/*
@@ -598,7 +611,7 @@ find_read_traverse(void)
 				 * It will be improved in the future.
 				 */
 				if (!allow_blank && locatestring(path, " ", MATCH_FIRST)) {
-					warning("'%s' ignored, because it includes blank.", &path[2]);
+					warning("'%s' ignored, because it includes blank.", trimpath(path));
 					continue;
 				}
 				/*
@@ -619,11 +632,9 @@ find_read_traverse(void)
 			if (type == 'd') {
 				STRBUF *sb = strbuf_open(0);
 				char *dirp = curp->dirp;
-
 				strcat(dirp, unit);
 				strcat(dirp, "/");
 				if (getdirs(dir, sb) < 0) {
-					warning("cannot open directory '%s'. (Ignored)", dir);
 					strbuf_close(sb);
 					*(curp->dirp) = 0;
 					continue;
@@ -633,6 +644,7 @@ find_read_traverse(void)
 				 */
 				curp = varray_assign(stack, ++current_entry, 1);
 				curp->dirp = dirp + strlen(dirp);
+				curp->real = getrealpath(dir);
 				curp->sb = sb;
 				curp->start = curp->p = strbuf_value(sb);
 				curp->end   = curp->start + strbuf_getlen(sb);
@@ -640,6 +652,8 @@ find_read_traverse(void)
 		}
 		strbuf_close(curp->sb);
 		curp->sb = NULL;
+		free(curp->real);
+		curp->real = NULL;
 		if (current_entry == 0)
 			break;
 		/*
@@ -688,9 +702,9 @@ find_read_filelist(void)
 		 */
 		if (!test("f", path)) {
 			if (test("d", path))
-				warning("'%s' is a directory. (Ignored)", path);
+				warning("'%s' is a directory. ignored.", trimpath(path));
 			else
-				warning("'%s' not found. (Ignored)", path);
+				warning("'%s' not found. ignored.", trimpath(path));
 			continue;
 		}
 		/*
@@ -700,7 +714,7 @@ find_read_filelist(void)
 		 *	buf      /a/b/c/d.c -> c/d.c -> ./c/d.c
 		 */
 		if (normalize(path, rootdir, cwddir, buf, sizeof(buf)) == NULL) {
-			warning("'%s' is out of source tree. (Ignored)", path);
+			warning("'%s' is out of source tree. ignored.", trimpath(path));
 			continue;
 		}
 		path = buf;
@@ -709,7 +723,7 @@ find_read_filelist(void)
 		 * It will be improved in the future.
 		 */
 		if (!allow_blank && locatestring(path, " ", MATCH_LAST)) {
-			warning("'%s' ignored, because it includes blank.", path + 2);
+			warning("'%s' ignored, because it includes blank.", trimpath(path));
 			continue;
 		}
 		if (skipthisfile(path))
