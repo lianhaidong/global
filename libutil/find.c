@@ -365,7 +365,7 @@ struct stack_entry {
 static int current_entry;			/* current entry of the stack */
 
 /*
- * getrealpath: return realpath of dir using allocated area.
+ * getrealpath: return a real path of dir using allocated area.
  */
 char *
 getrealpath(const char *dir)
@@ -377,10 +377,10 @@ getrealpath(const char *dir)
         return check_strdup(real);
 }
 /*
- * has_symlinkloop: whether or not dir has symbolic link loops.
+ * has_symlinkloop: whether or not dir has a symbolic link loops.
  *
  *	i)	dir	directory (should end by '/')
- *	r)		1: has a loop, 0: no problem
+ *	r)		1: has a loop, 0: don't have a loop
  */
 int
 has_symlinkloop(const char *dir)
@@ -421,7 +421,7 @@ getdirs(const char *dir, STRBUF *sb)
 	struct stat st;
 
 	if (has_symlinkloop(dir)) {
-		warning("symbolic link detected. '%s'. ignored.", trimpath(dir));
+		warning("symbolic link loop detected. '%s'. ignored.", trimpath(dir));
 		return -1;
 	}
 	if ((dirp = opendir(dir)) == NULL) {
