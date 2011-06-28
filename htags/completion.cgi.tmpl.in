@@ -35,7 +35,7 @@ if ($type eq 'definition' || $type eq 'reference') {
 } elsif ($type eq 'symbol') {
 	$flags = 'cs';
 } elsif ($type eq 'path') {
-	$flags = 'P';
+	$flags = 'cP';
 } elsif ($type eq 'idutils') {
 	$flags = 'cI';
 } elsif ($type eq 'grep') {
