@@ -386,22 +386,39 @@ int
 has_symlinkloop(const char *dir)
 {
 	struct stack_entry *sp;
-	char real[PATH_MAX];
+	char real[PATH_MAX], *p;
 	int i;
 
 	if (!strcmp(dir, "./"))
 		return 0;
 	if (realpath(dir, real) == NULL)
 		die("cannot get real path of '%s'.", trimpath(dir));
-	if (locatestring(rootdir, real, MATCH_AT_FIRST))
+#ifdef SLOOPDEBUG
+	fprintf(stderr, "======== has_symlinkloop ======\n");
+	fprintf(stderr, "dir = '%s', real path = '%s'\n", dir, real);
+	fprintf(stderr, "TEST-1\n");
+	fprintf(stderr, "\tcheck '%s' < '%s'\n", real, rootdir);
+#endif
+	p = locatestring(rootdir, real, MATCH_AT_FIRST);
+	if (p && (*p == '/' || *p == '\0' || !strcmp(real, "/")))
 		return 1;
 	sp = varray_assign(stack, 0, 0);
+#ifdef SLOOPDEBUG
+	fprintf(stderr, "TEST-2\n");
+#endif
 	for (i = current_entry; i >= 0; i--) {
+#ifdef SLOOPDEBUG
+		fprintf(stderr, "%d:\tcheck '%s' == '%s'\n", i, real, sp[i].real);
+#endif
 		if (!strcmp(sp[i].real, real))
 			return 1;
 	}
+#ifdef SLOOPDEBUG
+	fprintf(stderr, "===============================\n");
+#endif
 	return 0;
 }
+
 /*
  * getdirs: get directory list
  *
