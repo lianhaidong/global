@@ -112,6 +112,7 @@ extern int qflag;
 extern int debug;
 #endif
 int allow_blank = 0;
+int check_looplink = 0;
 /*
  * trim: remove blanks and '\'.
  */
@@ -437,7 +438,7 @@ getdirs(const char *dir, STRBUF *sb)
 	struct dirent *dp;
 	struct stat st;
 
-	if (has_symlinkloop(dir)) {
+	if (check_looplink && has_symlinkloop(dir)) {
 		warning("symbolic link loop detected. '%s'. ignored.", trimpath(dir));
 		return -1;
 	}
@@ -482,8 +483,10 @@ find_open(const char *start)
 	/*
 	 * This is temporary measures. It doesn't decide how to become final.
 	 */
-	if (getenv("GTAGSALLOWBLANK"))
+	if (getenv("GTAGSTESTING")) {
 		allow_blank = 1;
+		check_looplink = 1;
+	}
 	if (!start)
 		start = "./";
         if (realpath(start, rootdir) == NULL)
@@ -525,8 +528,10 @@ find_open_filelist(const char *filename, const char *root)
 	/*
 	 * This is temporary measures. It doesn't decide how to become final.
 	 */
-	if (getenv("GTAGSALLOWBLANK"))
+	if (getenv("GTAGSTESTING")) {
 		allow_blank = 1;
+		check_looplink = 1;
+	}
 	if (!strcmp(filename, "-")) {
 		/*
 		 * If the filename is '-', copy standard input onto
