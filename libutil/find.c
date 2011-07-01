@@ -487,6 +487,8 @@ find_open(const char *start)
 		allow_blank = 1;
 		check_looplink = 1;
 	}
+	if (getenv("GTAGSALLOWBLANK"))
+		allow_blank = 1;
 	if (!start)
 		start = "./";
         if (realpath(start, rootdir) == NULL)
@@ -532,6 +534,8 @@ find_open_filelist(const char *filename, const char *root)
 		allow_blank = 1;
 		check_looplink = 1;
 	}
+	if (getenv("GTAGSALLOWBLANK"))
+		allow_blank = 1;
 	if (!strcmp(filename, "-")) {
 		/*
 		 * If the filename is '-', copy standard input onto
