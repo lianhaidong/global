@@ -21,6 +21,40 @@ ___________________________________
 GNU GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 5.9.7 - July 1 2011
+
+[CHANGES]
+New facilities:
+o global: the -c command accepts new -P and -r option.
+o gozilla: Now support firefox.
+o globash: Added two commands: d and rs.
+
+[INCOMPATIBLE CHANGES]
+o globash: The -l option in each search command was removed.
+o gtags.el: Removed the default mouse key mapping in gtags-mode and gtags-select-mode.
+  If gtags-suggested-key-mapping is true, the old mouse key mapping is available.
+
+        [$HOME/.emacs]
+        +------------------------------------------------
+        |...
+        |(add-hook 'gtags-mode-hook
+        |  '(lambda ()
+        |    (setq gtags-suggested-key-mapping t)
+        |   )
+        |)
+
+[NEW FACILITIES IN TESTING STAGE]
+You can use the following facilities by setting GTAGSTESTING environment variable.
+Please try:
+        $ export GTAGSTESTING=  (in sh)
+or
+        % setenv GTAGSTESTING   (in csh)
+
+o gtags: Now gtags detects looping symbolic link.(testing stage)
+o gtags: Now treat blanks in a path correctly.(testing stage)
+
+If you find a bug, please send a bug report to bug-global@gnu.org. Thank you.
+
 Version 5.9.6 - June 7 2011
 
 [CHANGES]
