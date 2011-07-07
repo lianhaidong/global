@@ -50,6 +50,7 @@ static void help(void);
 static void setcom(int);
 int decide_tag_by_context(const char *, const char *, int);
 int main(int, char **);
+int completion_tags(const char *, const char *, const char *, int);
 void completion(const char *, const char *, const char *, int);
 void completion_idutils(const char *, const char *, const char *);
 void completion_path(const char *, const char *);
@@ -690,22 +691,22 @@ main(int argc, char **argv)
 	return 0;
 }
 /*
- * completion: print completion list of specified prefix
+ * completion_tags: print completion list of specified prefix
  *
  *	i)	dbpath	dbpath directory
  *	i)	root	root directory
  *	i)	prefix	prefix of primary key
  *	i)	db	GTAGS,GRTAGS,GSYMS
+ *	r)		number of words
  */
-void
-completion(const char *dbpath, const char *root, const char *prefix, int db)
+int
+completion_tags(const char *dbpath, const char *root, const char *prefix, int db)
 {
 	int flags = GTOP_KEY;
 	GTOP *gtop = gtags_open(dbpath, root, db, GTAGS_READ, 0);
 	GTP *gtp;
+	int count = 0;
 
-	if (prefix && *prefix == 0)	/* In the case global -c '' */
-		prefix = NULL;
 	if (prefix && isalpha(*prefix) && iflag) {
 		/*
 		 * If the -i option is specified, we use both of regular
@@ -745,6 +746,7 @@ completion(const char *dbpath, const char *root, const char *prefix, int db)
 				if (regexec(&preg, gtp->tag, 0, 0, 0) == 0) {
 					fputs(gtp->tag, stdout);
 					fputc('\n', stdout);
+					count++;
 				}
 			}
 		}
@@ -756,9 +758,60 @@ completion(const char *dbpath, const char *root, const char *prefix, int db)
 		for (gtp = gtags_first(gtop, prefix, flags); gtp; gtp = gtags_next(gtop)) {
 			fputs(gtp->tag, stdout);
 			fputc('\n', stdout);
+			count++;
 		}
 	}
 	gtags_close(gtop);
+	return count;
+}
+/*
+ * completion: print completion list of specified prefix
+ *
+ *	i)	dbpath	dbpath directory
+ *	i)	root	root directory
+ *	i)	prefix	prefix of primary key
+ *	i)	db	GTAGS,GRTAGS,GSYMS
+ */
+void
+completion(const char *dbpath, const char *root, const char *prefix, int db)
+{
+	int count, total = 0;
+	char libdbpath[MAXPATHLEN];
+
+	if (prefix && *prefix == 0)	/* In the case global -c '' */
+		prefix = NULL;
+	count = completion_tags(dbpath, root, prefix, db);
+	/*
+	 * search in library path.
+	 */
+	if (db == GTAGS && getenv("GTAGSLIBPATH") && (count == 0 || Tflag) && !lflag) {
+		STRBUF *sb = strbuf_open(0);
+		char *libdir, *nextp = NULL;
+
+		strbuf_puts(sb, getenv("GTAGSLIBPATH"));
+		/*
+		* search for each tree in the library path.
+		*/
+		for (libdir = strbuf_value(sb); libdir; libdir = nextp) {
+			if ((nextp = locatestring(libdir, PATHSEP, MATCH_FIRST)) != NULL)
+				*nextp++ = 0;
+			if (!gtagsexist(libdir, libdbpath, sizeof(libdbpath), 0))
+				continue;
+			if (!strcmp(dbpath, libdbpath))
+				continue;
+			if (!test("f", makepath(libdbpath, dbname(db), NULL)))
+				continue;
+			/*
+			 * search again
+			 */
+			count = completion_tags(libdbpath, libdir, prefix, db);
+			total += count;
+			if (count > 0 && !Tflag)
+				break;
+		}
+		strbuf_close(sb);
+	}
+	/* return total; */
 }
 /*
  * completion_idutils: print completion list of specified prefix
