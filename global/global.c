@@ -408,6 +408,7 @@ main(int argc, char **argv)
 			break;
 		case 'v':
 			vflag++;
+			setverbose();
 			break;
 		case 'V':
 			Vflag++;
@@ -1321,12 +1322,22 @@ void
 parsefile(char *const *argv, const char *cwd, const char *root, const char *dbpath, int db)
 {
 	int count = 0;
+	int flags = 0;
 	STRBUF *sb = strbuf_open(0);
 	char *langmap;
 	const char *plugin_parser, *av;
 	char path[MAXPATHLEN];
 	struct parsefile_data data;
 
+	flags = 0;
+	if (vflag)
+		flags |= PARSER_VERBOSE;
+	if (debug)
+		flags |= PARSER_DEBUG;
+	/*
+	if (wflag)
+		flags |= PARSER_WARNING;
+	*/
 	if (db == GRTAGS + GSYMS)
 		data.target = TARGET_REF|TARGET_SYM;
 	else
@@ -1401,7 +1412,7 @@ parsefile(char *const *argv, const char *cwd, const char *root, const char *dbpa
 		if (lflag && !locatestring(path, localprefix, MATCH_AT_FIRST))
 			continue;
 		data.count = 0;
-		parse_file(path, 0, put_syms, &data);
+		parse_file(path, flags, put_syms, &data);
 		count += data.count;
 	}
 	args_close();

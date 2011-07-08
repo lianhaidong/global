@@ -241,6 +241,7 @@ main(int argc, char **argv)
 			break;
 		case 'v':
 			vflag++;
+			setverbose();
 			break;
 		default:
 			usage();

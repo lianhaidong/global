@@ -1667,6 +1667,7 @@ main(int argc, char **argv)
                         break;
                 case 'q':
                         qflag++;
+			setquiet();
                         break;
                 case 'v':
                         vflag++;
