@@ -340,8 +340,7 @@ parse_file(const char *path, int flags, PARSER_CALLBACK put, void *arg)
 	 */
 	ent = get_lang_entry(lang);
 	if (flags & PARSER_DEBUG) {
-		fprintf(stderr, "[parse_file() in libparser/parser.c]\n");
-		/* fprintf(stderr, "\tpath:     %s\n", path);*/
+		fprintf(stderr, "File '%s' is handled as follows:\n", path);
 		fprintf(stderr, "\tsuffix:   |%s|\n", suffix);
 		fprintf(stderr, "\tlanguage: |%s|\n", lang);
 		fprintf(stderr, "\tparser:   |%s|\n", ent->parser_name);
