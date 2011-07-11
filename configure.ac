@@ -334,7 +334,7 @@ AC_CONFIG_FILES([Makefile
 	jquery/Makefile
 	jquery/images/Makefile
 	libparser/Makefile
-	plugin-example/Makefile
+	plugin-factory/Makefile
 	libltdl/Makefile
 ])
 AC_OUTPUT
