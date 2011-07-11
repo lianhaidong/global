@@ -116,7 +116,7 @@ static const char *
 readrecord(const char *label)
 {
 	char *p;
-	int flag = STRBUF_NOCRLF;
+	int flag = STRBUF_NOCRLF|STRBUF_SHARPSKIP;
 	int count = 0;
 
 	rewind(fp);
@@ -126,7 +126,7 @@ readrecord(const char *label)
 		 * ignore \<new line>.
 		 */
 		flag &= ~STRBUF_APPEND;
-		if (*p == '#' || *p == '\0')
+		if (*p == '\0')
 			continue;
 		if (strbuf_unputc(ib, '\\')) {
 			flag |= STRBUF_APPEND;

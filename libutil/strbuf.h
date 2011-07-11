@@ -46,8 +46,9 @@
 #define EXPANDSIZE 80
 
 /* for strbuf_fgets() */
-#define STRBUF_APPEND	1
-#define STRBUF_NOCRLF	2
+#define STRBUF_APPEND		1
+#define STRBUF_NOCRLF		2
+#define STRBUF_SHARPSKIP	4
 
 typedef struct _strbuf {
 	char *name;

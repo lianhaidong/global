@@ -325,6 +325,7 @@ strbuf_trim(STRBUF *sb)
  *	i)	flags	flags
  *			STRBUF_NOCRLF	remove last '\n' if exist.
  *			STRBUF_APPEND	append next record to existing data
+ *			STRBUF_SHARPSKIP skip lines which start with '#'
  *	r)		record buffer (NULL at end of file)
  *
  * Returned buffer has whole record.
@@ -348,6 +349,8 @@ strbuf_fgets(STRBUF *sb, FILE *ip, int flags)
 				return NULL;
 			break;
 		}
+		if (flags & STRBUF_SHARPSKIP && *(sb->curp) == '#')
+			continue;
 		sb->curp += strlen(sb->curp);
 		if (sb->curp > sb->sbuf && *(sb->curp - 1) == '\n')
 			break;
