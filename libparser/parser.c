@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 1999, 2000, 2001, 2002, 2003, 2005, 2010
+ * Copyright (c) 1998, 1999, 2000, 2001, 2002, 2003, 2005, 2010, 2011
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -112,6 +112,8 @@ isnotfunction(const char *name)
 struct lang_entry {
 	const char *lang_name;
 	void (*parser)(const struct parser_param *);	/* parser procedure */
+	const char *parser_name;
+	const char *lt_dl_name;
 };
 
 struct plugin_entry {
@@ -138,7 +140,7 @@ static void
 load_plugin_parser(const char *pluginspec)
 {
 	char *p, *q;
-	const char *dso_name, *func;
+	const char *lt_dl_name, *parser_name;
 	struct plugin_entry *pent;
 
 	pluginspec_saved = check_strdup(pluginspec);
@@ -154,25 +156,27 @@ load_plugin_parser(const char *pluginspec)
 		*p++ = '\0';
 		if (*p == '\0')
 			die_with_code(2, "syntax error in pluginspec '%s'.", pluginspec);
-		dso_name = p;
+		lt_dl_name = p;
 		p = strchr(p, ',');
 		if (p != NULL)
 			*p++ = '\0';
-		q = strchr(dso_name, ':');
+		q = strchr(lt_dl_name, ':');
 		if (q == NULL) {
-			func = "parser";
+			parser_name = "parser";
 		} else {
 			*q++ = '\0';
 			if (*q == '\0')
 				die_with_code(2, "syntax error in pluginspec '%s'.", pluginspec);
-			func = q;
+			parser_name = q;
 		}
-		pent->handle = lt_dlopen(dso_name);
+		pent->handle = lt_dlopen(lt_dl_name);
 		if (pent->handle == NULL)
-			die_with_code(2, "cannot open shared object '%s'.", dso_name);
-		pent->entry.parser = lt_dlsym(pent->handle, func);
+			die_with_code(2, "cannot open shared object '%s'.", lt_dl_name);
+		pent->entry.lt_dl_name = lt_dl_name;
+		pent->entry.parser = lt_dlsym(pent->handle, parser_name);
 		if (pent->entry.parser == NULL)
-			die_with_code(2, "cannot find symbol '%s' in '%s'.", func, dso_name);
+			die_with_code(2, "cannot find symbol '%s' in '%s'.", parser_name, lt_dl_name);
+		pent->entry.parser_name = parser_name;
 		SLIST_INSERT_HEAD(&plugin_list, pent, next);
 		if (p == NULL)
 			break;
@@ -203,13 +207,14 @@ unload_plugin_parser(void)
  * The first entry is default language.
  */
 static const struct lang_entry lang_switch[] = {
-	/* lang_name    parser_proc	*/
-	{"c",		C},			/* DEFAULT */
-	{"yacc",	yacc},
-	{"cpp",		Cpp},
-	{"java",	java},
-	{"php",		php},
-	{"asm",		assembly}
+	/* lang_name    parser_proc	parser_name	lt_dl_name,	*/
+	/*				(for debug)	(for debug)	*/
+	{"c",		C,		"C",		"builtin"},	/* DEFAULT */
+	{"yacc",	yacc,		"yacc",		"builtin"},
+	{"cpp",		Cpp,		"Cpp",		"builtin"},
+	{"java",	java,		"java",		"builtin"},
+	{"php",		php,		"php",		"builtin"},
+	{"asm",		assembly,	"assembly",	"builtin"}
 };
 #define DEFAULT_ENTRY &lang_switch[0]
 /*
@@ -224,20 +229,23 @@ get_lang_entry(const char *lang)
 	int i, size = sizeof(lang_switch) / sizeof(struct lang_entry);
 	struct plugin_entry *pent;
 
-	/*
-	 * if language not specified, it assumes default language.
-	 */
 	if (lang == NULL)
-		return DEFAULT_ENTRY;
+		die("get_lang_entry: something is wrong.");
+	/*
+	 * Priority 1: locates in the plugin parser list.
+	 */
 	SLIST_FOREACH(pent, &plugin_list, next) {
 		if (strcmp(lang, pent->entry.lang_name) == 0)
 			return &pent->entry;
 	}
+	/*
+	 * Priority 2: locates in the built-in parser list.
+	 */
 	for (i = 0; i < size; i++)
 		if (!strcmp(lang, lang_switch[i].lang_name))
 			return &lang_switch[i];
 	/*
-	 * if specified language not found, it assumes default language.
+	 * if specified language not found, it assumes default language, that is C.
 	 */
 	return DEFAULT_ENTRY;
 }
@@ -326,13 +334,19 @@ parse_file(const char *path, int flags, PARSER_CALLBACK put, void *arg)
 	lang = decide_lang(suffix);
 	if (lang == NULL)
 		return;
-	if (flags & PARSER_DEBUG)
-		fprintf(stderr, "suffix '%s' assumed language '%s'.\n", suffix, lang);
 	/*
 	 * Select parser.
 	 * If lang == NULL then default parser is selected.
 	 */
 	ent = get_lang_entry(lang);
+	if (flags & PARSER_DEBUG) {
+		fprintf(stderr, "[parse_file() in libparser/parser.c]\n");
+		/* fprintf(stderr, "\tpath:     %s\n", path);*/
+		fprintf(stderr, "\tsuffix:   |%s|\n", suffix);
+		fprintf(stderr, "\tlanguage: |%s|\n", lang);
+		fprintf(stderr, "\tparser:   |%s|\n", ent->parser_name);
+		fprintf(stderr, "\tlibrary:  |%s|\n", ent->lt_dl_name ? ent->lt_dl_name : "builtin library");
+	}
 	/*
 	 * call language specific parser.
 	 */

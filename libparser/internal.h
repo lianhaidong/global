@@ -30,10 +30,14 @@
 	param->put(type, tag, lno, curfile, line, param->arg);		\
 } while (0)
 
+#ifdef DEBUG
 #define DBG_PRINT(level, a) do {					\
 	if (param->flags & PARSER_DEBUG)				\
 		dbg_print(level, a);					\
 } while (0)
+#else
+#define DBG_PRINT(level, a) do {} while (0)
+#endif
 
 /* parser procedures */
 void C(const struct parser_param *);

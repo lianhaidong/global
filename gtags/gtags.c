@@ -799,8 +799,6 @@ updatetags(const char *dbpath, const char *root, IDSET *deleteset, STRBUF *addli
 			die("GPATH is corrupted.('%s' not found)", path);
 		if (vflag)
 			fprintf(stderr, " [%d/%d] extracting tags of %s\n", ++seqno, total, path + 2);
-		if (debug)
-			fprintf(stderr, "[%s]\n", path + 2);
 		parse_file(path, flags, put_syms, &data);
 		gtags_flush(data.gtop[GTAGS], data.fid);
 		if (data.gtop[GRTAGS] != NULL)
@@ -865,8 +863,6 @@ createtags(const char *dbpath, const char *root)
 		seqno++;
 		if (vflag)
 			fprintf(stderr, " [%d] extracting tags of %s\n", seqno, path + 2);
-		if (debug)
-			fprintf(stderr, "[%s]\n", path + 2);
 		parse_file(path, flags, put_syms, &data);
 		gtags_flush(data.gtop[GTAGS], data.fid);
 		gtags_flush(data.gtop[GRTAGS], data.fid);
