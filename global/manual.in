@@ -119,6 +119,10 @@
 	@item{@option{--literal}}
 		Execute literal search instead of regular expression search.
 		This option is only valid when the @option{-g} command is specified.
+	@item{@option{--match-part @arg{part}}}
+		Specify the matched part of path name.
+		This option is valid only with the @option{-c} command with the @option{-P} option,
+		The default is @arg{all}.
 	@item{@option{-n}, @option{--nofilter}}
 		Suppress sort filter and path conversion filter.
 	@item{@option{-O}, @option{--only-other}}
