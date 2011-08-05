@@ -894,7 +894,7 @@ completion_path(const char *dbpath, const char *prefix)
 		flags |= IGNORE_CASE;
 	gp = gfind_open(dbpath, localprefix, target);
 	while ((path = gfind_read(gp)) != NULL) {
-		path += 2;				/* skip './'*/
+		path++;					/* skip '.'*/
 		if (prefix == NULL) {
 			fputs(path, op);
 			fputc('\n', op);
