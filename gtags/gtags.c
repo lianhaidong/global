@@ -352,6 +352,9 @@ main(int argc, char **argv)
 		else if (!test("r", file_list))
 			die("'%s' is not readable.", file_list);
 	}
+	if (!getcwd(cwd, MAXPATHLEN))
+		die("cannot get current directory.");
+	canonpath(cwd);
 	/*
 	 * Regularize the path name for single updating (--single-update).
 	 */
@@ -361,17 +364,22 @@ main(int argc, char **argv)
 		
 		if (!test("f", p))
 			die("'%s' not found.", p);
-		if (isabspath(p))
-			die("--single-update requires relative path name.");
-		if (!(p[0] == '.' && p[1] == '/')) {
-			snprintf(regular_path_name, MAXPATHLEN, "./%s", p);
-			p = regular_path_name;
+		if (isabspath(p)) {
+			char *q = locatestring(p, cwd, MATCH_AT_FIRST);
+
+			if (q && *q == '/')
+				snprintf(regular_path_name, MAXPATHLEN, "./%s", q + 1);
+			else
+				die("path '%s' is out of the project.", p);
+
+		} else {
+			if (p[0] == '.' && p[1] == '/')
+				snprintf(regular_path_name, MAXPATHLEN, "%s", p);
+			else
+				snprintf(regular_path_name, MAXPATHLEN, "./%s", p);
 		}
-		single_update = p;
+		single_update = regular_path_name;
 	}
-	if (!getcwd(cwd, MAXPATHLEN))
-		die("cannot get current directory.");
-	canonpath(cwd);
 	/*
 	 * Decide directory (dbpath) in which gtags make tag files.
 	 *
