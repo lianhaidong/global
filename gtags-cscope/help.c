@@ -82,6 +82,7 @@ help(void)
 		*tp++ = "<\t\tRead lines from a file.\n";
 		*tp++ = "^\t\tFilter all lines through a shell command.\n";
 		*tp++ = "|\t\tPipe all lines to a shell command.\n";
+		*tp++ = "^G\t\tRead lines from the result of the execution of global(1).\n";
 		if (!mouse) {
 			*tp++ = "\nAt any time you can use these single-character commands:\n\n";
 			*tp++ = "TAB\t\tSwap positions between input and output areas.\n";

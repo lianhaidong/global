@@ -112,14 +112,14 @@
 	@item{|}
 		Pipe all lines to a shell command and display them without
 		changing them.
+	@item{^g}
+		Read lines from the result of the execution of global(1).
 	@end_itemize
 
 	At any time these single-character commands can also be used:
 	@begin_itemize
 	@item{<Return>}
 		Move to next input field.
-	@item{^g}
-		Read lines from the result of the execution of specified command.
 	@item{^n}
 		Move to next input field.
 	@item{^p}
