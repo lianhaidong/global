@@ -470,6 +470,8 @@ main(int argc, char **argv)
 			break;
 		}
 	}
+	if (getenv("GTAGSTHROUGH"))
+		Tflag++;
 	if (qflag)
 		vflag = 0;
 	if (show_help)

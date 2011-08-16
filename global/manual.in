@@ -231,6 +231,8 @@
 	@item{@var{MAKEOBJDIRPREFIX}}
 		If this variable is set, @file{$MAKEOBJDIRPREFIX} is used as the prefix
 		of BSD-style objdir. The default is @file{/usr/obj}.
+	@item{@var{GTAGSTHROUGH}}
+		If this variable is set, the @option{-T} option is specified.
 	@end_itemize
 @CONFIGURATION
 	The following configuration variables affect the execution of @name{global}:
