@@ -152,6 +152,7 @@ const char *jscode;			/* javascript code		*/
 const char *title_define_index = "DEFINITIONS";
 const char *title_file_index = "FILES";
 const char *title_call_tree = "CALL TREE";
+const char *title_callee_tree = "CALLEE TREE";
 const char *title_included_from = "INCLUDED FROM";
 /*
  * Function header items.
@@ -236,7 +237,8 @@ const char *icon_suffix = "png";	/* icon suffix (jpg, png etc)	*/
 const char *icon_spec = "border='0' align='top'";/* parameter in IMG tag*/
 const char *prolog_script = NULL;	/* include script at first	*/
 const char *epilog_script = NULL;	/* include script at last	*/
-const char *cflow_file = NULL;		/* file name of cflow output	*/
+const char *call_file = NULL;		/* file name of cflow output	*/
+const char *callee_file = NULL;		/* file name of cflow output	*/
 int show_position = 0;			/* show current position	*/
 int table_list = 0;			/* tag list using table tag	*/
 int table_flist = 0;			/* file list using table tag	*/
@@ -313,7 +315,11 @@ static struct option const long_options[] = {
 #define OPT_AUTO_COMPLETION	138
 #define OPT_TREE_VIEW		139
 #define OPT_HTML_HEADER		140
+#define OPT_CALL_TREE		141
+#define OPT_CALLEE_TREE		142
         {"auto-completion", optional_argument, NULL, OPT_AUTO_COMPLETION},
+        {"call-tree", required_argument, NULL, OPT_CALL_TREE},
+        {"callee-tree", required_argument, NULL, OPT_CALLEE_TREE},
         {"cflow", required_argument, NULL, OPT_CFLOW},
         {"cvsweb", required_argument, NULL, OPT_CVSWEB},
         {"cvsweb-cvsroot", required_argument, NULL, OPT_CVSWEB_CVSROOT},
@@ -1051,11 +1057,20 @@ makecommonpart(const char *title, const char *defines, const char *files)
 			}
 			break;
 		case 't':
-			if (cflow_file) {
+			if (call_file || callee_file) {
 				strbuf_puts(sb, header_begin);
-				strbuf_puts(sb, gen_href_begin(NULL, "cflow", normal_suffix, NULL));
-				strbuf_puts(sb, title_call_tree);
-				strbuf_puts(sb, gen_href_end());
+				if (call_file) {
+					strbuf_puts(sb, gen_href_begin(NULL, "call", normal_suffix, NULL));
+					strbuf_puts(sb, title_call_tree);
+					strbuf_puts(sb, gen_href_end());
+				}
+				if (call_file && callee_file)
+					strbuf_puts(sb, " / ");
+				if (callee_file) {
+					strbuf_puts(sb, gen_href_begin(NULL, "callee", normal_suffix, NULL));
+					strbuf_puts(sb, title_callee_tree);
+					strbuf_puts(sb, gen_href_end());
+				}
 				strbuf_puts_nl(sb, header_end);
 				strbuf_puts_nl(sb, hr);
 			}
@@ -1548,7 +1563,13 @@ main(int argc, char **argv)
 			}
 			break;
 		case OPT_CFLOW:
-			cflow_file = optarg;
+			call_file = optarg;
+			break;
+		case OPT_CALL_TREE:
+			call_file = optarg;
+			break;
+		case OPT_CALLEE_TREE:
+			callee_file = optarg;
 			break;
 		case OPT_CVSWEB:
 			cvsweb_url = optarg;
@@ -1720,8 +1741,10 @@ main(int argc, char **argv)
 	}
 	if (!enable_xhtml && (tree_view || auto_completion || fixed_guide))
 		die("The --html option cannot accept the --tree-view, --auto-completion and --fixed-guide option.");
-	if (cflow_file && !test("fr", cflow_file))
-		die("cflow file not found. '%s'", cflow_file);
+	if (call_file && !test("fr", call_file))
+		die("cflow file not found. '%s'", call_file);
+	if (callee_file && !test("fr", callee_file))
+		die("cflow file not found. '%s'", callee_file);
 	if (insert_header && !test("fr", insert_header))
 		die("page header file '%s' not found.", insert_header);
 	if (insert_footer && !test("fr", insert_footer))
@@ -2129,11 +2152,15 @@ main(int argc, char **argv)
 		/*
 		 * (7) make call tree using cflow(1)'s output (cflow.html)
 		 */
-		if (cflow_file) {
+		if (call_file || callee_file) {
 			message("[%s] (7) making cflow index ...", now());
 			tim = statistics_time_start("Time of making cflow index");
-			if (makecflowindex("cflow.html", cflow_file) < 0)
-				cflow_file = NULL;
+			if (call_file)
+				if (makecflowindex("call.html", call_file) < 0)
+					call_file = NULL;
+			if (callee_file)
+				if (makecflowindex("callee.html", callee_file) < 0)
+					callee_file = NULL;
 			statistics_time_end(tim);
 		}
 		/*

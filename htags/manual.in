@@ -56,8 +56,18 @@
 		Display a caution message on the top page.
 	@item{@option{--cflow} @arg{cflowfile}}
 		Add a call tree by @xref{cflow,1}. @arg{cflowfile} must be posix format.
-		If you use GNU cflow, invoke the command at the root directory of the project
-		with the @option{--format=posix} option. See EXAMPLES.
+		If you use GNU cflow, invoke the command at the project root directory
+		with the @option{--format=posix} option.
+		This option is deprecated. Please use the @option{--call-tree} or
+		@option{--callee-tree} instead.
+	@item{@option{--call-tree} @arg{callfile}}
+		Add a call tree by @xref{cflow,1}. @arg{callfile} must be posix format.
+		If you use GNU cflow, invoke the command at the project root directory
+		with the @option{--format=posix} option.
+	@item{@option{--callee-tree} @arg{calleefile}}
+		Add a callee tree by @xref{cflow,1}. @arg{calleefile} must be posix format.
+		If you use GNU cflow, invoke the command at the project root directory
+		with the @option{--format=posix} and @option{--reverse} option.
 	@item{@option{-c}, @option{--compact}}
 		Compress html files by @xref{gzip,1}.
 		You need to configure HTTP server so that @xref{gzip,1}
@@ -183,9 +193,6 @@
 	$ firefox HTML/index.html
 
 	$ htags --suggest
-
-	$ cflow --tree --format=posix *.[ch] >cflow.out
-	$ htags --cflow=cflow.out
 	@end_verbatim
 @FILES
 	@begin_itemize

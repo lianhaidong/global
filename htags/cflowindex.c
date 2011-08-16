@@ -44,6 +44,7 @@ makecflowindex(const char *output, const char *cflow_file)
 	char *cflow_posix, *p;
 	const char *m0 = "Gave up making call-tree because of illegal POSIX cflow format.";
 	const char *m1 = "";
+	const char *title = locatestring(output, "callee", MATCH_AT_FIRST) ? title_callee_tree : title_call_tree;
 	int line = 0;
 	int status = 0;
 #define ERROR	do { warning("%s\n%s:%d %s.", m0, cflow_file, line, m1); status = -1; goto finish; } while(0)
@@ -61,11 +62,12 @@ makecflowindex(const char *output, const char *cflow_file)
 		fclose(ip);
 		return -1;
 	}
-	fputs_nl(gen_page_begin(title_call_tree, TOPDIR), op);
+	fputs_nl(gen_page_begin(title, TOPDIR), op);
         fputs_nl(body_begin, op);
         fputs(header_begin, op);
-        fputs(gen_href_begin(NULL, "cflow", normal_suffix, NULL), op);
-        fputs(title_call_tree, op);
+	fputs(gen_href_begin_simple(output), op);
+        /* fputs(gen_href_begin(NULL, "cflow", normal_suffix, NULL), op);*/
+        fputs(title, op);
         fputs(gen_href_end(), op);
         fputs_nl(header_end, op);
         fputs_nl(verbatim_begin, op);
