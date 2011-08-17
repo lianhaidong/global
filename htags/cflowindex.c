@@ -107,8 +107,17 @@ makecflowindex(const char *output, const char *cflow_file)
 		if (!*p || !isspace(*p))
 			ERROR;
 		anchor_end = p;
-		for (; *p && !isalpha(*p); p++)
-			;
+		/* seek to the function name */
+		for (; *p; p++) {
+			/* skip special characters of HTML like '&#09500;'*/
+			if (*p == '&') {
+				for (p++; *p && *p != ';'; p++)
+					;
+				if (*p != ';')
+					ERROR;
+			} else if (isalpha(*p) || *p == '_')
+				break;
+		}
 		m1 = "function name not found";
 		if (!*p || !isalpha(*p))
 			ERROR;
