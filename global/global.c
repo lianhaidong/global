@@ -456,6 +456,8 @@ main(int argc, char **argv)
 				format = FORMAT_CTAGS_XID;
 			else if (!strcmp(optarg, "ctags"))
 				format = FORMAT_CTAGS;
+			else if (!strcmp(optarg, "ctags-mod"))
+				format = FORMAT_CTAGS_MOD;
 			else if (!strcmp(optarg, "path"))
 				format = FORMAT_PATH;
 			else if (!strcmp(optarg, "grep"))
