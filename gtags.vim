@@ -1,7 +1,7 @@
 " File: gtags.vim
 " Author: Tama Communications Corporation
-" Version: 0.5
-" Last Modified: June 27, 2011
+" Version: 0.6
+" Last Modified: August 23, 2011
 "
 " Copyright and licence
 " ---------------------
@@ -193,6 +193,29 @@ if !exists("g:Gtags_OpenQuickfixWindow")
     let g:Gtags_OpenQuickfixWindow = 1
 endif
 
+if !exists("g:Gtags_VerticalWindow")
+    let g:Gtags_VerticalWindow = 0
+endif
+
+" -- ctags-x format 
+" let Gtags_Result = "ctags-x"
+" let Gtags_Efm = "%*\\S%*\\s%l%\\s%f%\\s%m"
+"
+" -- ctags format 
+" let Gtags_Result = "ctags"
+" let Gtags_Efm = "%m\t%f\t%l"
+"
+" Gtags_Use_Tags_Format is obsoleted.
+if exists("g:Gtags_Use_Tags_Format")
+    let g:Gtags_Result = "ctags"
+    let g:Gtags_Efm = "%m\t%f\t%l"
+endif
+if !exists("g:Gtags_Result")
+    let g:Gtags_Result = "ctags-mod"
+endif
+if !exists("g:Gtags_Efm")
+    let g:Gtags_Efm = "%f\t%l\t%m"
+endif
 " Character to use to quote patterns and file names before passing to global.
 " (This code was drived from 'grep.vim'.)
 if !exists("g:Gtags_Shell_Quote_Char")
@@ -212,9 +235,6 @@ if !exists("g:Gtags_Single_Quote_Char")
         let g:Gtags_Single_Quote_Char = s:sq . s:dq . s:sq . s:dq . s:sq
         let g:Gtags_Double_Quote_Char = '"'
     endif
-endif
-if !exists("g:Gtags_Use_Tags_Format")
-    let g:Gtags_Use_Tags_Format = 0
 endif
 
 "
@@ -325,14 +345,10 @@ function! s:ExecLoad(option, long_option, pattern)
     if a:long_option != ''
         let l:option = a:long_option . ' '
     endif
-    if g:Gtags_Use_Tags_Format == 1
-	let l:option = l:option . '-qt'
-    else
-	let l:option = l:option . '-qx'
-    endif
+    let l:option = l:option . '--result=' . g:Gtags_Result . ' -q'
     let l:option = l:option . s:TrimOption(a:option)
     if l:isfile == 1
-        let l:cmd = 'global ' . l:option . ' ' . a:pattern
+        let l:cmd = 'global ' . l:option . ' ' . g:Gtags_Shell_Quote_Char . a:pattern . g:Gtags_Shell_Quote_Char
     else
         let l:cmd = 'global ' . l:option . 'e ' . g:Gtags_Shell_Quote_Char . a:pattern . g:Gtags_Shell_Quote_Char 
     endif
@@ -365,16 +381,15 @@ function! s:ExecLoad(option, long_option, pattern)
 
     " Open the quickfix window
     if g:Gtags_OpenQuickfixWindow == 1
-"        topleft vertical copen
-        botright copen
+        if g:Gtags_VerticalWindow == 1
+            topleft vertical copen
+        else
+            botright copen
+        endif
     endif
     " Parse the output of 'global -x or -t' and show in the quickfix window.
     let l:efm_org = &efm
-    if g:Gtags_Use_Tags_Format == 1
-        let &efm = "%*\\S\t%f\t%l"
-    else
-        let &efm = "%*\\S%*\\s%l%\\s%f%\\s%m"
-    endif
+    let &efm = g:Gtags_Efm
     cexpr! l:result
     let &efm = l:efm_org
 endfunction
@@ -391,13 +406,8 @@ function! s:RunGlobal(line)
         let l:pattern = expand('#')
     endif
     let l:option = s:Extract(a:line, 'option')
-    if l:option =~ 's' && l:option =~ 'r'
-        call s:Error('Both of -s and -r are not allowed.')
-        return
-    endif
-
     " If no pattern supplied then get it from user.
-    if l:pattern == '' && l:option !~ 'P'
+    if l:pattern == ''
         let s:option = l:option
         if l:option =~ 'f'
             let l:line = input("Gtags for file: ", expand('%'), 'file')
@@ -464,7 +474,9 @@ command! -nargs=* -complete=custom,GtagsCandidate Gtags call s:RunGlobal(<q-args
 command! -nargs=0 GtagsCursor call s:GtagsCursor()
 command! -nargs=0 Gozilla call s:Gozilla()
 " Suggested map:
+"map <F1> :Gtags<SPACE>
+"map <F2> :Gtags -f %<CR>
+"map <F3> :GtagsCursor<CR>
 "map <C-g> :Gozilla<CR>
-"map <C-\> :Gozilla<CR>
 "map <C-n> :cn<CR>
 "map <C-p> :cp<CR>

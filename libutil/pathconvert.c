@@ -314,6 +314,13 @@ convert_put(CONVERT *cv, const char *ctags_x)
 		fputc(' ', cv->op);
 		fputs(rest, cv->op);
 		break;
+	case FORMAT_CTAGS_MOD:
+		fputs(convert_pathname(cv, path), cv->op);
+		fputc('\t', cv->op);
+		fputs(lineno, cv->op);
+		fputc('\t', cv->op);
+		fputs(rest, cv->op);
+		break;
 	case FORMAT_GREP:
 		fputs(convert_pathname(cv, path), cv->op);
 		fputc(':', cv->op);
@@ -393,6 +400,13 @@ convert_put_using(CONVERT *cv, const char *tag, const char *path, int lineno, co
 	case FORMAT_CTAGS_X:
 		fprintf(cv->op, "%-16s %4d %-16s %s",
 			tag, lineno, convert_pathname(cv, path), rest);
+		break;
+	case FORMAT_CTAGS_MOD:
+		fputs(convert_pathname(cv, path), cv->op);
+		fputc('\t', cv->op);
+		fprintf(cv->op, "%d", lineno);
+		fputc('\t', cv->op);
+		fputs(rest, cv->op);
 		break;
 	case FORMAT_GREP:
 		fputs(convert_pathname(cv, path), cv->op);
