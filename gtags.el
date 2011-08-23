@@ -23,7 +23,7 @@
 
 ;; GLOBAL home page is at: http://www.gnu.org/software/global/
 ;; Author: Tama Communications Corporation
-;; Version: 3.0
+;; Version: 3.1
 ;; Keywords: tools
 ;; Required version: GLOBAL 5.9.7 or later
 
@@ -107,6 +107,11 @@
 
 (defcustom gtags-suggested-key-mapping nil
   "*If non-nil, suggested key mapping is enabled."
+  :group 'gtags
+  :type 'boolean)
+
+(defcustom gtags-grep-all-text-files nil
+  "*If non-nil, gtags-find-with-grep command searchs all text files."
   :group 'gtags
   :type 'boolean)
 
@@ -379,7 +384,7 @@
     (setq input (read-from-minibuffer prompt nil nil nil gtags-history-list))
     (if (not (equal "" input)) (setq tagname input))
     (gtags-push-context)
-    (gtags-goto-tag tagname "g")))
+    (gtags-goto-tag tagname (if gtags-grep-all-text-files "go" "g"))))
 
 (defun gtags-find-with-idutils ()
   "Input pattern, search with idutils(1) and move to the locations."
@@ -692,7 +697,6 @@ with no args, if that value is non-nil."
   (setq gtags-mode
       (if (null forces) (not gtags-mode)
         (> (prefix-numeric-value forces) 0)))
-  (run-hooks 'gtags-mode-hook)
   ; Suggested key mapping
   (if gtags-suggested-key-mapping
       (progn
@@ -716,6 +720,7 @@ with no args, if that value is non-nil."
             (define-key gtags-mode-map [mouse-3] 'gtags-pop-stack)
             (define-key gtags-mode-map [mouse-2] 'gtags-find-tag-by-event)))
   )
+  (run-hooks 'gtags-mode-hook)
 )
 
 ;; make gtags select-mode
@@ -741,7 +746,6 @@ Turning on Gtags-Select mode calls the value of the variable
   (setq gtags-current-buffer (current-buffer))
   (goto-char (point-min))
   (message "[GTAGS SELECT MODE] %d lines" (count-lines (point-min) (point-max)))
-  (run-hooks 'gtags-select-mode-hook)
   ; Mouse key mapping
   (if gtags-suggested-key-mapping
       (progn
@@ -752,6 +756,7 @@ Turning on Gtags-Select mode calls the value of the variable
             (define-key gtags-select-mode-map [mouse-3] 'gtags-pop-stack)
             (define-key gtags-select-mode-map [mouse-2] 'gtags-select-tag-by-event)))
   )
+  (run-hooks 'gtags-select-mode-hook)
 )
 
 (provide 'gtags)
