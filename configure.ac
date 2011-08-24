@@ -117,6 +117,9 @@ AC_DJGPP
 dnl #### begin of gtags-cscope ###
 AC_CHECK_CURSES
 AM_CONDITIONAL(HAS_CURSES, test "$has_curses" = true)
+if test "$has_curses" = false; then
+	AC_MSG_ERROR([curses library is required but not found.])
+fi
 
 dnl Checks for libraries.
 dnl Replace `main' with a function in -lcurses:
@@ -304,7 +307,7 @@ dnl DEFAULTSKIP: You need not list files whoes first character of name is '.'.
 dnl		Such files are skipped even in case of not being in the list.
 dnl
 DEFAULTSKIP='HTML/,HTML.pub/,tags,TAGS,ID,y.tab.c,y.tab.h,cscope.out,cscope.po.out,cscope.in.out,SCCS/,RCS/,CVS/,CVSROOT/,{arch}/,autom4te.cache/'
-DEFAULTLANGMAP='c:.c.h,yacc:.y,asm:.s.S,java:.java,cpp:.c++.cc.cpp.cxx.hxx.hpp.C.H,php:.php.php3.phtml'
+DEFAULTLANGMAP='c:.c.h,yacc:.y,asm:.s.S,java:.java,cpp:.c++.cc.hh.cpp.cxx.hxx.hpp.C.H,php:.php.php3.phtml'
 AC_SUBST(DEFAULTSKIP)
 AC_SUBST(DEFAULTLANGMAP)
 
