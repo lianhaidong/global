@@ -589,7 +589,7 @@ print_file_name(int level, const char *path)
 	 * as a candidate of include file.
 	 *
 	 * C: .h
-	 * C++: .hxx, .hpp, .H
+	 * C++: .hxx, .hpp, .H, .hh
 	 * PHP: .inc.php
 	 */
 	if (regexec(&is_include_file, path, 0, 0, 0) == 0)

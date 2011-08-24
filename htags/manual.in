@@ -272,11 +272,11 @@
 		Default options for @name{htags}. This value is inserted into
 		the head of arguments.
 	@item{@code{include_file_suffixes}(comma separated list)}
-		Suffixes of include files. The default is 'h,hxx,hpp,H,inc.php'.
+		Suffixes of include files. The default is 'h,hh,hxx,hpp,H,inc.php'.
 	@item{@code{langmap}(comma separated list)}
 		Language mapping. Each comma-separated map consists of
 		the language name, a colon, and a list of file extensions.
-		Default mapping is 'c:.c.h,yacc:.y,asm:.s.S,java:.java,cpp:.c++.cc.cpp.cxx.hxx.hpp.C.H,php:.php.php3.phtml'.
+		Default mapping is 'c:.c.h,yacc:.y,asm:.s.S,java:.java,cpp:.c++.cc.hh.cpp.cxx.hxx.hpp.C.H,php:.php.php3.phtml'.
 	@item{@code{ncol}(number)}
 		Columns of line number. The default is 4.
 	@item{@code{normal_suffix}(string)}

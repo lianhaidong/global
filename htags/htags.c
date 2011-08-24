@@ -251,7 +251,7 @@ const char *action = "cgi-bin/global.cgi";/* default action		*/
 const char *completion_action = "cgi-bin/completion.cgi";
 int definition_header=NO_HEADER;	/* (NO|BEFORE|RIGHT|AFTER)_HEADER */
 const char *htags_options = NULL;
-const char *include_file_suffixes = "h,hxx,hpp,H,inc.php";
+const char *include_file_suffixes = "h,hh,hxx,hpp,H,inc.php";
 static const char *langmap = DEFAULTLANGMAP;
 int grtags_is_empty = 0;
 

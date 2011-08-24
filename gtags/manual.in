@@ -39,7 +39,7 @@
 	C, C++, yacc, java, PHP and Assembly source files are supported.
 	Files whose names end in @file{.c} or @file{.h} are assumed to be
 	C source files.
-	Files whose names end in @file{.c++} @file{.cc} @file{.cpp} @file{.cxx}
+	Files whose names end in @file{.c++} @file{.cc} @file{.cpp} @file{.cxx} @file{.hh}
 	@file{.hxx} @file{.hpp} @file{.C} @file{.H} are assumed to be C++ source files.
 	Files whose names end in @file{.y} are assumed to be YACC source files.
 	Files whose names end in @file{.java} are assumed to be Java source files.
@@ -151,7 +151,7 @@
 		Language mapping. Each comma-separated map consists of
 		the language name, a colon, and a list of file extensions.
 		As a special exception, @name{gtags} collects values from multiple @code{langmap} variables.
-		Default mapping is 'c:.c.h,yacc:.y,asm:.s.S,java:.java,cpp:.c++.cc.cpp.cxx.hxx.hpp.C.H,php:.php.php3.phtml'.
+		Default mapping is 'c:.c.h,yacc:.y,asm:.s.S,java:.java,cpp:.c++.cc.hh.cpp.cxx.hxx.hpp.C.H,php:.php.php3.phtml'.
 	@item{@code{gtags_parser}(comma separated list)}
 		Specify the mapping of funtion layer plugin parser.
 		Each part delimited by the comma consists of the language name, a colon,
