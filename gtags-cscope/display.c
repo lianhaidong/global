@@ -119,7 +119,7 @@ static	struct	{		/* text of input fields */
 	{"Find this", "C symbol",			findsymbol},
 	{"Find this", "global definition",		finddef},
 	{"Find", "functions called by this function (N/A)",	findcalledby},
-	{"Find", "functions calling this function",	findcalling},
+	{"Find", "locations calling this function",	findcalling},
 	{"Find this", "text string",			findstring},
 	{"Change this", "text string",			findstring},
 	{"Find this", "egrep pattern",			findregexp},

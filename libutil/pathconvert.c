@@ -331,10 +331,7 @@ convert_put(CONVERT *cv, const char *ctags_x)
 	case FORMAT_CSCOPE:
 		fputs(convert_pathname(cv, path), cv->op);
 		fputc(' ', cv->op);
-		if (cv->db == GTAGS)
-			fputs(tag, cv->op);
-		else
-			fputs("<unknown>", cv->op);
+		fputs(tag, cv->op);
 		fputc(' ', cv->op);
 		fputs(lineno, cv->op);
 		fputc(' ', cv->op);
@@ -418,10 +415,7 @@ convert_put_using(CONVERT *cv, const char *tag, const char *path, int lineno, co
 	case FORMAT_CSCOPE:
 		fputs(convert_pathname(cv, path), cv->op);
 		fputc(' ', cv->op);
-		if (cv->db == GTAGS)
-			fputs(tag, cv->op);
-		else
-			fputs("<unknown>", cv->op);
+		fputs(tag, cv->op);
 		fputc(' ', cv->op);
 		fprintf(cv->op, "%d", lineno);
 		fputc(' ', cv->op);
