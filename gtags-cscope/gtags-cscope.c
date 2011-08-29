@@ -92,6 +92,7 @@ BOOL	incurses = NO;		/* in curses */
 BOOL	isuptodate;		/* consider the crossref up-to-date */
 BOOL	linemode = NO;		/* use line oriented user interface */
 BOOL	verbosemode = NO;	/* print extra information on line mode */
+BOOL	absolutepath = NO;	/* print absolute path name */
 BOOL	ogs;			/* display OGS book and subsystem names */
 char	*prependpath;		/* prepend path to file names */
 FILE	*refsfound;		/* references found file */
@@ -184,6 +185,9 @@ gtags-cscope: pattern too long, cannot be > %d characters\n", PATLEN);
 		--argc;
 		++argv;
 		goto lastarg;
+	    case 'a':	/* absolute path name */
+		absolutepath = YES;
+		break;
 	    case 'b':	/* only build the cross-reference */
 		buildonly = YES;
 		linemode  = YES;

@@ -20,11 +20,18 @@
 #include "char.h"
 #include "gparam.h"
 
-#define COMMON (caseless == YES) ? "global --encode-path=\" \t\" --result=cscope -i" : "global --encode-path=\" \t\" --result=cscope"
 #define FAILED "global command failed"
 
 static char comline[MAXFILLEN];
 
+static char *
+common()
+{
+	static char com[80];
+	snprintf(com, sizeof(com), "global --encode-path=\" \t\" --result=cscope%s%s",
+		(caseless == YES) ? " -i" : "", (absolutepath == YES) ? " -a" : ""); 
+	return com;
+}
 /*
  * [display.c]
  *
@@ -33,10 +40,10 @@ static char comline[MAXFILLEN];
 char *
 findsymbol(char *pattern)
 {
-	snprintf(comline, sizeof(comline), "%s -d %s > %s", COMMON, quote_shell(pattern), temp1);
+	snprintf(comline, sizeof(comline), "%s -d %s > %s", common(), quote_shell(pattern), temp1);
 	if (system(comline) != 0)
 		return FAILED;
-	snprintf(comline, sizeof(comline), "%s -rs %s >> %s", COMMON, quote_shell(pattern), temp1);
+	snprintf(comline, sizeof(comline), "%s -rs %s >> %s", common(), quote_shell(pattern), temp1);
 	if (system(comline) != 0)
 		return FAILED;
 	return NULL;
@@ -50,7 +57,7 @@ findsymbol(char *pattern)
 char *
 finddef(char *pattern)
 {
-	snprintf(comline, sizeof(comline), "%s -d %s > %s", COMMON, quote_shell(pattern), temp1);
+	snprintf(comline, sizeof(comline), "%s -d %s > %s", common(), quote_shell(pattern), temp1);
 	if (system(comline) != 0)
 		return FAILED;
 	return NULL;
@@ -76,7 +83,7 @@ findcalledby(char *pattern)
 	for (p = pattern; *p && *p != ':'; p++)
 		;
 	*p++ = '\0';
-	snprintf(comline, sizeof(comline), "%s --from-here=\"%s\" %s > %s", COMMON, p, quote_shell(pattern), temp1);
+	snprintf(comline, sizeof(comline), "%s --from-here=\"%s\" %s > %s", common(), p, quote_shell(pattern), temp1);
 	if (system(comline) != 0)
 		return FAILED;
 	return NULL;
@@ -90,7 +97,7 @@ findcalledby(char *pattern)
 char *
 findcalling(char *pattern)
 {
-	snprintf(comline, sizeof(comline), "%s -r %s > %s", COMMON, quote_shell(pattern), temp1);
+	snprintf(comline, sizeof(comline), "%s -r %s > %s", common(), quote_shell(pattern), temp1);
 	if (system(comline) != 0)
 		return FAILED;
 	return NULL;
@@ -104,7 +111,7 @@ findcalling(char *pattern)
 char *
 findstring(char *pattern)
 {
-	snprintf(comline, sizeof(comline), "%s -g --literal %s > %s", COMMON, quote_shell(pattern), temp1);
+	snprintf(comline, sizeof(comline), "%s -g --literal %s > %s", common(), quote_shell(pattern), temp1);
 	if (system(comline) != 0)
 		return FAILED;
 	return NULL;
@@ -123,7 +130,7 @@ findstring(char *pattern)
 char *
 findregexp(char *pattern)
 {
-	snprintf(comline, sizeof(comline), "%s -g %s > %s", COMMON, quote_shell(pattern), temp1);
+	snprintf(comline, sizeof(comline), "%s -g %s > %s", common(), quote_shell(pattern), temp1);
 	if (system(comline) != 0)
 		return FAILED;
 	return NULL;
@@ -137,7 +144,7 @@ findregexp(char *pattern)
 char *
 findfile(char *pattern)
 {
-	snprintf(comline, sizeof(comline), "%s -P %s > %s", COMMON, quote_shell(pattern), temp1);
+	snprintf(comline, sizeof(comline), "%s -P %s > %s", common(), quote_shell(pattern), temp1);
 	if (system(comline) != 0)
 		return FAILED;
 	return NULL;
@@ -159,7 +166,7 @@ findinclude(char *pattern)
 #define INCLUDE "'^[ \t]*#[ \t]*include[ \t].*[\"</]%s[\">]'"
 #endif
 	snprintf(comline, sizeof(comline), "%s -g " INCLUDE " | sed \"s/<unknown>/<global>/\" > %s",
-		COMMON, quote_string(pattern), temp1);
+		common(), quote_string(pattern), temp1);
 	if (system(comline) != 0)
 		return FAILED;
 	return NULL;

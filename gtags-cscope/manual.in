@@ -30,6 +30,8 @@
 
 	The following options can appear in any combination:
 	@begin_itemize
+	@item{@option{-a}}
+		Print absolute path name.
 	@item{@option{-b}}
 		Build the cross-reference only.
 	@item{@option{-C}}
