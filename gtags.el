@@ -23,7 +23,7 @@
 
 ;; GLOBAL home page is at: http://www.gnu.org/software/global/
 ;; Author: Tama Communications Corporation
-;; Version: 3.1
+;; Version: 3.2
 ;; Keywords: tools
 ;; Required version: GLOBAL 5.9.7 or later
 
@@ -51,8 +51,8 @@
 ;;
 ;; (add-hook 'gtags-mode-hook
 ;;   '(lambda ()
-;;      (setq gtags-pop-delete t)
-;;      (setq gtags-path-style 'absolute)
+;;      (define-key gtags-mode-map "\C-f" 'scroll-up)
+;;      (define-key gtags-mode-map "\C-b" 'scroll-down)
 ;; ))
 ;;
 ;; [Setting to make 'Gtags select mode' easy to see]
@@ -713,12 +713,8 @@ with no args, if that value is non-nil."
         (define-key gtags-mode-map "\et" 'gtags-find-tag)
         (define-key gtags-mode-map "\ev" 'gtags-visit-rootdir)
         ; Mouse key mapping
-        (if (not gtags-running-xemacs) nil
-            (define-key gtags-mode-map 'button3 'gtags-pop-stack)
-            (define-key gtags-mode-map 'button2 'gtags-find-tag-by-event))
-        (if gtags-running-xemacs nil
-            (define-key gtags-mode-map [mouse-3] 'gtags-pop-stack)
-            (define-key gtags-mode-map [mouse-2] 'gtags-find-tag-by-event)))
+        (define-key gtags-mode-map [mouse-3] 'gtags-pop-stack)
+        (define-key gtags-mode-map [mouse-2] 'gtags-find-tag-by-event))
   )
   (run-hooks 'gtags-mode-hook)
 )
@@ -749,12 +745,8 @@ Turning on Gtags-Select mode calls the value of the variable
   ; Mouse key mapping
   (if gtags-suggested-key-mapping
       (progn
-        (if (not gtags-running-xemacs) nil
-            (define-key gtags-select-mode-map 'button3 'gtags-pop-stack)
-            (define-key gtags-select-mode-map 'button2 'gtags-select-tag-by-event))
-        (if gtags-running-xemacs nil
-            (define-key gtags-select-mode-map [mouse-3] 'gtags-pop-stack)
-            (define-key gtags-select-mode-map [mouse-2] 'gtags-select-tag-by-event)))
+        (define-key gtags-select-mode-map [mouse-3] 'gtags-pop-stack)
+        (define-key gtags-select-mode-map [mouse-2] 'gtags-select-tag-by-event))
   )
   (run-hooks 'gtags-select-mode-hook)
 )
