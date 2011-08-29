@@ -67,7 +67,7 @@ char	Pattern[PATLEN + 1];	/* symbol or text pattern */
 static	char	appendprompt[] = "Append to file: ";
 static	char	pipeprompt[] = "Pipe to shell command: ";
 static	char	readprompt[] = "Read from file: ";
-static	char	globalprompt[] = "Read from: global --result=cscope ";
+static	char	globalprompt[] = "Read from: global ";
 static	char	globalprefix[] = "global --encode-path=\" \t\" --result=cscope ";
 static	char	globalcommand[MAXFILLEN];
 static	char	toprompt[] = "To: ";
