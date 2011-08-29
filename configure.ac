@@ -308,8 +308,10 @@ dnl		Such files are skipped even in case of not being in the list.
 dnl
 DEFAULTSKIP='HTML/,HTML.pub/,tags,TAGS,ID,y.tab.c,y.tab.h,cscope.out,cscope.po.out,cscope.in.out,SCCS/,RCS/,CVS/,CVSROOT/,{arch}/,autom4te.cache/'
 DEFAULTLANGMAP='c:.c.h,yacc:.y,asm:.s.S,java:.java,cpp:.c++.cc.hh.cpp.cxx.hxx.hpp.C.H,php:.php.php3.phtml'
+DEFAULTINCLUDEFILESUFFIXES='h,hh,hxx,hpp,H,inc.php'
 AC_SUBST(DEFAULTSKIP)
 AC_SUBST(DEFAULTLANGMAP)
+AC_SUBST(DEFAULTINCLUDEFILESUFFIXES)
 
 dnl
 dnl Quoted langmap. It is only for gtags.conf.

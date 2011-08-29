@@ -54,23 +54,104 @@ if ($menu) {
 exit 0;
 #------------------------------------------------------------------
 #
+# Generate langmap statement.
+#
+#------------------------------------------------------------------
+#
+# Get a value from configure.ac file by name.
+#
+sub getvalue {
+	my($name) = @_;
+	my $value;
+	#
+	# A value should be defined as:
+	# NAME='VALUE'
+	#
+	my $line=`grep '$name=' configure.ac`;
+	($value) = $line =~ /^$name='(.*)'$/;
+	unless ($value) {
+		print STDERR "$name not found.\n";
+		exit(1);
+	}
+	$value;
+}
+#
+# Generate statements about the langmap variable.
+#
+sub langmapstatement {
+	my($maps) = getvalue('DEFAULTLANGMAP');
+	my(@statement);
+	%name = (
+		'c'	=> 'C',
+		'yacc'	=> 'yacc',
+		'asm'	=> 'Assembly',
+		'java'	=> 'Java',
+		'cpp'	=> 'C++',
+		'php'	=> 'PHP',
+	);
+	$line = '';
+	@maps = split(/,/, $maps);
+	for ($i = 0; $i < @maps; $i++) {
+		$_ = $maps[$i];
+		my($lang, $suffixes) = /([^:]+):(.*)/;
+		if ($i > 0) {
+			if ($i + 1 == @maps) {		# last
+				$line .= ' and ';
+			} else {
+				$line .= ', ';
+			}
+		}
+		$line .= $name{$lang};
+	}
+	$line .= " source files are supported.\n";
+	unshift(@statement, $line);
+	foreach (@maps) {
+		my($lang, $suffixes) = /([^:]+):(.*)/;
+		unless ($name{$lang}) {
+			print STDERR "ERROR: $lang not defined.\n";
+			exit(1);
+		}
+		$suffixes =~ s/^\.//;
+		my(@suffixes) = split(/\./, $suffixes);
+		$line = 'Files whose names end in ';
+		for ($i = 0; $i < @suffixes; $i++) {
+			my $sx = $suffixes[$i];
+			$line .= ', ' if ($i > 0);
+			$line .= "\@file{.$sx}";
+		}
+		$line .= " are assumed to be $name{$lang} source files.\n";
+		unshift(@statement, $line);
+	}
+	@statement;
+}
+#------------------------------------------------------------------
+#
 # Read line.
 #
 #------------------------------------------------------------------
-$lastline = '';
+@lines = ();
 sub getline {
-	if ($lastline) {
-		$_ = $lastline;
-		$lastline = '';
+	if (@lines > 0) {
+		$_ = pop(@lines);
 	} else {
 		while (<INFILE>) {
+			if (/\@LANGMAPSTATEMENT\@/) {
+				@lines = &'langmapstatement();
+				$_ = pop(@lines);
+			} elsif (/\@DEFAULTLANGMAP\@/) {
+				my $value = &'getvalue('DEFAULTLANGMAP');
+				s/\@DEFAULTLANGMAP\@/$value/;
+			} elsif (/\@DEFAULTINCLUDEFILESUFFIXES\@/) {
+				my $value = &'getvalue('DEFAULTINCLUDEFILESUFFIXES');
+				s/\@DEFAULTINCLUDEFILESUFFIXES\@/$value/;
+			}
 			last unless (/^#/);
 		}
 	}
 	($_) ? 1 : 0;
 }
 sub ungetline {
-	$lastline = $_;
+	push(@lines, $_);
 }
 #------------------------------------------------------------------
 #
