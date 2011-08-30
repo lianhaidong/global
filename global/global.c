@@ -881,12 +881,14 @@ completion_path(const char *dbpath, const char *prefix)
 {
 	GFIND *gp;
 	const char *localprefix = "./";
-	FILE *op = popen("sort | uniq", "w");
+	DBOP *dbop = dbop_open(NULL, 1, 0600, DBOP_RAW);
 	const char *path;
 	int prefix_length;
 	int target = GPATH_SOURCE;
 	int flags = (match_part == MATCH_PART_LAST) ? MATCH_LAST : MATCH_FIRST;
 
+	if (dbop == NULL)
+		die("cannot open temporary file.");
 	if (prefix && *prefix == 0)	/* In the case global -c '' */
 		prefix = NULL;
 	prefix_length = (prefix == NULL) ? 0 : strlen(prefix);
@@ -900,26 +902,26 @@ completion_path(const char *dbpath, const char *prefix)
 	while ((path = gfind_read(gp)) != NULL) {
 		path++;					/* skip '.'*/
 		if (prefix == NULL) {
-			fputs(path, op);
-			fputc('\n', op);
+			dbop_put(dbop, path, "");
 		} else if (match_part == MATCH_PART_ALL) {
 			const char *p = path;
 
 			while ((p = locatestring(p, prefix, flags)) != NULL) {
-				fputs(p, op);
-				fputc('\n', op);
+				dbop_put(dbop, p, "");
 				p += prefix_length;
 			}
 		} else {
 			const char *p = locatestring(path, prefix, flags);
 			if (p != NULL) {
-				fputs(p, op);
-				fputc('\n', op);
+				dbop_put(dbop, p, "");
 			}
 		}
 	}
 	gfind_close(gp);
-	pclose(op);
+	for (path = dbop_first(dbop, NULL, NULL, DBOP_KEY); path != NULL; path = dbop_next(dbop)) {
+		fputs(path, stdout);
+		fputc('\n', stdout);
+	}
 }
 /*
  * Output filter
