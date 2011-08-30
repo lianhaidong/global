@@ -81,7 +81,7 @@ sub getvalue {
 sub langmapstatement {
 	my($maps) = getvalue('DEFAULTLANGMAP');
 	my(@statement);
-	%name = (
+	my %name = (
 		'c'	=> 'C',
 		'yacc'	=> 'yacc',
 		'asm'	=> 'Assembly',
@@ -89,8 +89,8 @@ sub langmapstatement {
 		'cpp'	=> 'C++',
 		'php'	=> 'PHP',
 	);
-	$line = '';
-	@maps = split(/,/, $maps);
+	my $line = '';
+	my @maps = split(/,/, $maps);
 	for ($i = 0; $i < @maps; $i++) {
 		$_ = $maps[$i];
 		my($lang, $suffixes) = /([^:]+):(.*)/;
