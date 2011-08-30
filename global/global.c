@@ -902,7 +902,7 @@ completion_path(const char *dbpath, const char *prefix)
 	while ((path = gfind_read(gp)) != NULL) {
 		path++;					/* skip '.'*/
 		if (prefix == NULL) {
-			dbop_put(dbop, path, "");
+			dbop_put(dbop, path + 1, "");
 		} else if (match_part == MATCH_PART_ALL) {
 			const char *p = path;
 
@@ -922,6 +922,7 @@ completion_path(const char *dbpath, const char *prefix)
 		fputs(path, stdout);
 		fputc('\n', stdout);
 	}
+	dbop_close(dbop);
 }
 /*
  * Output filter
