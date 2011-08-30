@@ -11,13 +11,13 @@
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
 plugindir = ${libdir}/gtags
-plugin_LTLIBRARIES = exuberant-ctags.la plugins.la
+plugin_LTLIBRARIES = exuberant-ctags.la user-custom.la
 
 exuberant_ctags_la_SOURCES = exuberant-ctags.c
 exuberant_ctags_la_LDFLAGS = -module -avoid-version
 
 # skeleton
-plugins_la_SOURCES = skeleton.c
-plugins_la_LDFLAGS = -module -avoid-version
+user_custom_la_SOURCES = user-custom.c
+user_custom_la_LDFLAGS = -module -avoid-version
 
 INCLUDES = @INCLUDES@
