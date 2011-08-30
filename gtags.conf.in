@@ -25,19 +25,33 @@
 #
 default:\
 	:tc=gtags:tc=htags:
+ctags:\
+	:tc=exuberant-ctags:tc=htags:
+user:\
+	:tc=user-custom:tc=htags:
 #---------------------------------------------------------------------
 # Configuration for gtags(1)
 # See gtags(1).
 #---------------------------------------------------------------------
 common:\
 	:skip=@DEFAULTSKIP@:
+#
+# Built-in parsers.
+#
 gtags:\
 	:tc=common:\
 	:langmap=@DEFAULTLANGMAP_QUOTED@:
 #
-# plug-in parser (for Exuberant Ctags 5.8)
+# skeleton for a plug-in parser.
 #
-exuberant-ctags|plugin-example|Example of function layer plugin parser:\
+user-custom|User custom plugin parser:\
+	:tc=common:\
+	:langmap=c\:.c.h:\
+	:gtags_parser=c\:@prefix@/lib/gtags/user-custom.la:
+#
+# Plug-in parser to use Exuberant Ctags.
+#
+exuberant-ctags|plugin-example|setting to use Exuberant Ctags plug-in parser:\
 	:tc=common:\
 	:langmap=Asm\:.asm.ASM.s.S:\
 	:langmap=Asp\:.asp.asa:\
