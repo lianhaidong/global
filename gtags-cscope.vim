@@ -1,7 +1,7 @@
 " File: gtags-cscope.vim
 " Author: Tama Communications Corporation
-" Version: 0.2
-" Last Modified: March 3, 2011
+" Version: 0.3
+" Last Modified: August 24, 2011
 "
 " Copyright and lisence
 " ---------------------
@@ -39,24 +39,27 @@
 " to make tag files. Assuming that your source directory is '/var/src',
 " it is neccessary to execute the following commands.
 "
+" [Load vim]
 "	$ cd /var/src
 "	$ gtags
 "	$ vim
+" [Load gtags-cscope]
+"	:GtagsCscope <ENTER>            (in vim command line)
 "
 " Basic command
 " -------------
 " Then you can use cs commands except for the 'd'(2) command.
 " Profitable commands are assigned to keys like follows:
 "
-"	explanation		command			mapped key
+"	explanation		command	
 "	----------------------------------------------------------
-"	Find symbol		:cs find 0 or s		<C-\>s
-"	Find definition		:cs find 1 or g		<C-\>t 
+"	Find symbol		:cs find 0 or s
+"	Find definition		:cs find 1 or g
 "	Find functions called by this function	(not implemented)
-"	Find reference		:cs find 3 or c		<C-\>r 
+"	Find reference		:cs find 3 or c
 "	Find text string	:cs find 4 or t
-"	Find egrep pattern	:cs find 6 or e		<C-\>g 
-"	Find path		:cs find 7 or f		<C-\>P 
+"	Find egrep pattern	:cs find 6 or e
+"	Find path		:cs find 7 or f
 "	Find include file	:cs find 8 or i
 "
 " You can move tag list using:
@@ -79,10 +82,10 @@
 " ---------
 " To avoid pushy key and mouse mappings:
 "	let GtagsCscope_Auto_Map = 0	(in .vimrc)
-" To avoid auto loading:
-"	let GtagsCscope_Auto_Load = 0	(in .vimrc)
-" To load gtagscscope by hand:
-"	:GtagsCscope <ENTER>		(in vim command line)
+" To ignore letter case when searching:
+"	let GtagsCscope_Ignore_Case = 1	(in .vimrc)
+" If you hope auto loading:
+"	let GtagsCscope_Auto_Load = 1	(in .vimrc)
 " To use 'vim -t ', ':tag' and '<C-]>'
 "	set cscopetag			(in .vimrc or vim command line)
 "
@@ -90,16 +93,26 @@ if exists("loaded_gtags_cscope")
     finish
 endif
 if !has("cscope")
+    call Error('This vim does not include cscope support.')
     finish
 endif
 if !exists("GtagsCscope_Auto_Load")
-    let GtagsCscope_Auto_Load = 1
+    let GtagsCscope_Auto_Load = 0
 endif
 if !exists("GtagsCscope_Auto_Map")
-    let GtagsCscope_Auto_Map = 1
+    let GtagsCscope_Auto_Map = 0
+endif
+if !exists("GtagsCscope_Use_Old_Key_Map")
+    let GtagsCscope_Use_Old_Key_Map = 0
 endif
 if !exists("GtagsCscope_Quiet")
     let GtagsCscope_Quiet = 0
+endif
+if !exists("GtagsCscope_Ignore_Case")
+    let GtagsCscope_Ignore_Case = 0
+endif
+if !exists("GtagsCscope_Absolute_Path")
+    let GtagsCscope_Absolute_Path = 0
 endif
 
 "
@@ -139,43 +152,97 @@ function! s:GtagsCscope()
     " Load gtags-cscope.
     "
     set csprg=gtags-cscope
-    exe "cs add " . gtagsroot . "/GTAGS"
-    set csto=0
+    let s:command = "cs add " . gtagsroot . "/GTAGS"
+    let s:option = ''
+    if g:GtagsCscope_Ignore_Case == 1
+        let s:option = s:option . 'C'
+    endif
+    if g:GtagsCscope_Absolute_Path == 1
+        let s:option = s:option . 'a'
+    endif
+    if s:option != ''
+        let s:command = s:command . ' . -' . s:option
+    endif
+    set nocscopeverbose
+    exe s:command
+    set cscopeverbose
     "
     " Key mapping
     "
     if g:GtagsCscope_Auto_Map == 1
-        " Context search. See the --from-here option of global(1).
-        :map <C-\><C-\><C-]> :cs find d <C-R>=expand("<cword>")<CR>:<C-R>=line('.')<CR>:%<CR>
-        " normal command
-        :nmap <C-\>s :cs find s <C-R>=expand("<cword>")<CR>
-        :nmap <C-\>t :cs find g <C-R>=expand("<cword>")<CR>
-        :nmap <C-\>r :cs find c <C-R>=expand("<cword>")<CR>
-        :nmap <C-\>g :cs find e <C-R>=expand("<cword>")<CR>
-        :nmap <C-\>P :cs find f 
-        " Using 'CTRL-spacebar', the result is displayed in new horizontal window.
-        :nmap <C-@>s :scs find s <C-R>=expand("<cword>")<CR>
-        :nmap <C-@>t :scs find g <C-R>=expand("<cword>")<CR>
-        :nmap <C-@>r :scs find c <C-R>=expand("<cword>")<CR>
-        :nmap <C-@>g :scs find e <C-R>=expand("<cword>")<CR>
-        :nmap <C-@>P :scs find f 
-        " Hitting CTRL-space *twice*, the result is displayed in new vertical window.
-        :nmap <C-@><C-@>s :vert scs find s <C-R>=expand("<cword>")<CR>
-        :nmap <C-@><C-@>t :vert scs find g <C-R>=expand("<cword>")<CR>
-        :nmap <C-@><C-@>r :vert scs find c <C-R>=expand("<cword>")<CR>
-        :nmap <C-@><C-@>g :vert scs find e <C-R>=expand("<cword>")<CR>
-        :nmap <C-@><C-@>P :vert scs find f 
+        if g:GtagsCscope_Use_Old_Key_Map == 1
+            " normal command
+            :nmap <C-\>s :cs find s <C-R>=expand("<cword>")<CR>
+            :nmap <C-\>t :cs find g <C-R>=expand("<cword>")<CR>
+            :nmap <C-\>r :cs find c <C-R>=expand("<cword>")<CR>
+            :nmap <C-\>g :cs find e <C-R>=expand("<cword>")<CR>
+            :nmap <C-\>P :cs find f 
+            " Using 'CTRL-spacebar', the result is displayed in new horizontal window.
+            :nmap <C-@>s :scs find s <C-R>=expand("<cword>")<CR>
+            :nmap <C-@>t :scs find g <C-R>=expand("<cword>")<CR>
+            :nmap <C-@>r :scs find c <C-R>=expand("<cword>")<CR>
+            :nmap <C-@>g :scs find e <C-R>=expand("<cword>")<CR>
+            :nmap <C-@>P :scs find f 
+            " Hitting CTRL-space *twice*, the result is displayed in new vertical window.
+            :nmap <C-@><C-@>s :vert scs find s <C-R>=expand("<cword>")<CR>
+            :nmap <C-@><C-@>t :vert scs find g <C-R>=expand("<cword>")<CR>
+            :nmap <C-@><C-@>r :vert scs find c <C-R>=expand("<cword>")<CR>
+            :nmap <C-@><C-@>g :vert scs find e <C-R>=expand("<cword>")<CR>
+            :nmap <C-@><C-@>P :vert scs find f 
+        else
+            "
+            " The following key mappings are derived from 'cscope_maps.vim'.
+            " (The 'd' command is not implemented in gtags-cscope.)
+            "
+            " normal command
+            :nmap <C-\>s :cs find s <C-R>=expand("<cword>")<CR><CR>
+            :nmap <C-\>g :cs find g <C-R>=expand("<cword>")<CR><CR>
+            :nmap <C-\>c :cs find c <C-R>=expand("<cword>")<CR><CR>
+            :nmap <C-\>t :cs find t <C-R>=expand("<cword>")<CR><CR>
+            :nmap <C-\>e :cs find e <C-R>=expand("<cword>")<CR><CR>
+            :nmap <C-\>f :cs find f <C-R>=expand("<cfile>")<CR><CR>
+            :nmap <C-\>i :cs find i <C-R>=expand("<cfile>")<CR><CR>
+            ":nmap <C-\>d :cs find d <C-R>=expand("<cword>")<CR><CR>
+            " Using 'CTRL-spacebar', the result is displayed in new horizontal window.
+            :nmap <C-@>s :scs find s <C-R>=expand("<cword>")<CR><CR>
+            :nmap <C-@>g :scs find g <C-R>=expand("<cword>")<CR><CR>
+            :nmap <C-@>c :scs find c <C-R>=expand("<cword>")<CR><CR>
+            :nmap <C-@>t :scs find t <C-R>=expand("<cword>")<CR><CR>
+            :nmap <C-@>e :scs find e <C-R>=expand("<cword>")<CR><CR>
+            :nmap <C-@>f :scs find f <C-R>=expand("<cfile>")<CR><CR>
+            :nmap <C-@>i :scs find i <C-R>=expand("<cfile>")<CR><CR>
+            ":nmap <C-@>d :scs find d <C-R>=expand("<cword>")<CR><CR>
+            " Hitting CTRL-space *twice*, the result is displayed in new vertical window.
+            :nmap <C-@><C-@>s :vert scs find s <C-R>=expand("<cword>")<CR><CR>
+            :nmap <C-@><C-@>g :vert scs find g <C-R>=expand("<cword>")<CR><CR>
+            :nmap <C-@><C-@>c :vert scs find c <C-R>=expand("<cword>")<CR><CR>
+            :nmap <C-@><C-@>t :vert scs find t <C-R>=expand("<cword>")<CR><CR>
+            :nmap <C-@><C-@>e :vert scs find e <C-R>=expand("<cword>")<CR><CR>
+            :nmap <C-@><C-@>f :vert scs find f <C-R>=expand("<cfile>")<CR><CR>
+            :nmap <C-@><C-@>i :vert scs find i <C-R>=expand("<cfile>")<CR><CR>
+            ":nmap <C-@><C-@>d :vert scs find d <C-R>=expand("<cword>")<CR><CR>
+	endif
 	" tag command
 	:nmap <C-\><C-n> :tn<CR>
 	:nmap <C-\><C-p> :tp<CR>
-        " mouse event
-	set mouse=a
-        :nmap <2-LeftMouse> :cs find d <C-R>=expand("<cword>")<CR>:<C-R>=line('.')<CR>:%<CR>
+	:nmap <C-n> :cn<CR>
+	:nmap <C-p> :cp<CR>
+	" Context search. See the --from-here option of global(1).
+	:nmap <C-\><C-\><C-]> :cs find d <C-R>=expand("<cword>")<CR>:<C-R>=line('.')<CR>:%<CR>
+	:nmap g<LeftMouse>    :cs find d <C-R>=expand("<cword>")<CR>:<C-R>=line('.')<CR>:%<CR>
+	:nmap <C-LeftMouse>   :cs find d <C-R>=expand("<cword>")<CR>:<C-R>=line('.')<CR>:%<CR>
+	" Short cut key
+	:nmap <C-\><SPACE> :cs find<SPACE>
+	:nmap <C-@><SPACE> :scs find<SPACE>
+	:nmap <C-@><C-@><SPACE> :vert scs find<SPACE>
+	:nmap <F2> :copen<CR>
+	:nmap <F3> :cs find d <C-R>=expand("<cword>")<CR>:<C-R>=line('.')<CR>:%<CR>
+	:nmap <F4> :cclose<CR>
     endif
-    let loaded_gtags_cscope = 1
 endfunction
 
 if g:GtagsCscope_Auto_Load == 1
     call s:GtagsCscope()
 endif
 command! -nargs=0 GtagsCscope call s:GtagsCscope()
+let loaded_gtags_cscope = 1

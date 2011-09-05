@@ -595,6 +595,11 @@ main(int argc, char **argv)
 	 * decide tag type.
 	 */
 	if (context_file) {
+		static char buf[MAXPATHLEN];
+
+		if (realpath(context_file, buf) == NULL)
+			die("cannot get real path name.");
+		context_file = buf;
 		if (isregex(av))
 			die_with_code(2, "regular expression is not allowed with the --from-here option.");
 		db = decide_tag_by_context(av, context_file, atoi(context_lineno));

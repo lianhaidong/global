@@ -21,6 +21,56 @@ ___________________________________
 GNU GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 6.0 - September ? 2011
+
+[CHANGES]
+New facilities:
+o Now GLOBAL allows path names which include blanks.
+o Now GLOBAL refuses looping symbolic links.
+o global: the -c command accepts -T option.
+o global: the -c command locates symbols in the directories in GTAGSLIBPATH.
+o global: New --match-part option.
+o global: New environment variable GTAGSTHROUGH. If this variable is set,
+  the -T option is specified.
+o global: New output format 'ctags-mod'. It is used in gtags.vim.
+o htags: Changed the cflow loader to accept "_' and HTML special chars (&XXXX;).
+o gtags.vim: Now allows the use of the -s and -r option at the same time.
+o gtags.el: New custom variable 'gtags-grep-all-text-files'.
+o gtags-cscope: New -a option.
+
+[INCOMPATIBLE CHANGES]
+o gtags.vim: Changed the -P subcommand not to accept NULL input.
+  Please input '/' instead.
+o gtags.el: Xemacs mouse key mapping was removed.
+o gtags-cscope.vim: The default value of the 'GtagsCscope_Auto_Map' was changed to 0.
+  Additionally, the default key mapping was changed to the one derived from 'cscope_maps.vim'
+  that was made by the cscope team.
+  If you hope older environment, please write the followings to your '.vimrc' file.
+        let GtagsCscope_Auto_Map = 1
+        let GtagsCscope_Use_Old_Key_Map
+o gtags-cscope: Title changed.
+  Find this C symbol: -> Find this symbol
+  Find functions calling this function: -> Find locations calling this function:
+
+o gtags.el: Now each gtags-find-xxx command follows 'case-fold-search' variable.
+o gtags.el: Mouse key mappings for xemacs is not done any longer.
+o gtags.conf: The lines which start with a '#' on the continuation lines is considered
+  to be a comment line.
+
+  [example]
+        :langmap=C\:.c:\
+#       :langmap=C#\:.cs:\
+        :langmap=Java\:.java:
+
+  [old]
+  considered as:|      :langmap=C\:.c:#        :langmap=C#\:.cs:        :langmap=Java\:.java:|
+  [new]
+  considered as:|      :langmap=C\:.c:        :langmap=Java\:.java:|
+
+[BUG FIXED]
+o gtags.el: gtags-mode-hook and gtags-select-mode-hook were not the last thing run
+  when entering the mode. It has been fixed.
+
 Version 5.9.7 - July 1 2011
 
 [CHANGES]
@@ -36,12 +86,7 @@ o gtags.el: Removed the default mouse key mapping in gtags-mode and gtags-select
 
         [$HOME/.emacs]
         +------------------------------------------------
-        |...
-        |(add-hook 'gtags-mode-hook
-        |  '(lambda ()
-        |    (setq gtags-suggested-key-mapping t)
-        |   )
-        |)
+        |(setq gtags-suggested-key-mapping t)
 
 [NEW FACILITIES IN TESTING STAGE]
 You can use the following facilities by setting GTAGSTESTING environment variable.
