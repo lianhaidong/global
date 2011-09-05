@@ -101,6 +101,7 @@ const char *cwd, *root, *dbpath;
 char *context_file;
 char *context_lineno;
 char *file_list;
+char *encode_chars;
 
 static void
 usage(void)
@@ -417,11 +418,7 @@ main(int argc, char **argv)
 			xflag++;
 			break;
 		case ENCODE_PATH:
-			if (strlen(optarg) > 255)
-				die("too many encode chars.");
-			if (strchr(optarg, '/') || strchr(optarg, '.'))
-				die("cannot encode '/' and '.' in the path.");
-			set_encode_chars((unsigned char *)optarg);
+			encode_chars = optarg;
 			break;
 		case FROM_HERE:
 			{
@@ -471,6 +468,13 @@ main(int argc, char **argv)
 			usage();
 			break;
 		}
+	}
+	if (encode_chars) {
+		if (strlen(encode_chars) > 255)
+			die("too many encode chars.");
+		if (strchr(encode_chars, '/') || strchr(encode_chars, '.'))
+			warning("cannot encode '/' and '.' in the path. Ignored.");
+		set_encode_chars((unsigned char *)encode_chars);
 	}
 	if (getenv("GTAGSTHROUGH"))
 		Tflag++;

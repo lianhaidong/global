@@ -57,13 +57,15 @@ set_encode_chars(const unsigned char *chars)
 	/* clean the table */
 	memset(encode, 0, sizeof(encode));
 	/* set bits */
-	encoding = 0;
 	for (i = 0; chars[i]; i++) {
 		encode[(unsigned char)chars[i]] = 1;
-		encoding = 1;
 	}
+	/* You cannot encode '.' and '/'. */
+	encode['.'] = 0;
+	encode['/'] = 0;
 	/* '%' is always encoded when encode is enable. */
 	encode['%'] = 1;
+	encoding = 1;
 }
 /*
  * set_print0: change newline to '\0'.
