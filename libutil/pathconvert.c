@@ -76,7 +76,7 @@ set_print0()
 	newline = '\0';
 }
 #define outofrange(c)	(c < '0' || c > 'f')
-#define h2int(c) (c >= 'a' ? c - 'a' : c - '0')
+#define h2int(c) (c >= 'a' ? c - 'a' + 10 : c - '0')
 /*
  * decode_path: decode encoded path name.
  *
