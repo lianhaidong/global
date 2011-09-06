@@ -1,7 +1,7 @@
 " File: gtags-cscope.vim
 " Author: Tama Communications Corporation
 " Version: 0.3
-" Last Modified: August 24, 2011
+" Last Modified: September 6, 2011
 "
 " Copyright and lisence
 " ---------------------
@@ -63,9 +63,9 @@
 "	Find include file	:cs find 8 or i
 "
 " You can move tag list using:
-"	Go to the next tag	<C-\><C-n> :tn
-"	Go to the previous tag	<C-\><C-p> :tp
-"	Pop tag stack		<C-t> :pop
+"	Go to the next tag	 :tn
+"	Go to the previous tag	 :tp
+"	Pop tag stack		 :pop
 "
 " About the other tag command, you can see the help like this:
 "
@@ -80,14 +80,18 @@
 "
 " Configure
 " ---------
-" To avoid pushy key and mouse mappings:
-"	let GtagsCscope_Auto_Map = 0	(in .vimrc)
+" You can use the following variables in $HOME/.vimrc.
+"
+" To use the default key/mouse mapping:
+"	let GtagsCscope_Auto_Map = 1
 " To ignore letter case when searching:
-"	let GtagsCscope_Ignore_Case = 1	(in .vimrc)
+"	let GtagsCscope_Ignore_Case = 1
+" To use absolute path name:
+"       let GtagsCscope_Absolute_Path = 1
 " If you hope auto loading:
-"	let GtagsCscope_Auto_Load = 1	(in .vimrc)
+"	let GtagsCscope_Auto_Load = 1
 " To use 'vim -t ', ':tag' and '<C-]>'
-"	set cscopetag			(in .vimrc or vim command line)
+"	set cscopetag
 "
 if exists("loaded_gtags_cscope")
     finish
@@ -229,8 +233,12 @@ function! s:GtagsCscope()
 	:nmap <C-p> :cp<CR>
 	" Context search. See the --from-here option of global(1).
 	:nmap <C-\><C-\><C-]> :cs find d <C-R>=expand("<cword>")<CR>:<C-R>=line('.')<CR>:%<CR>
+	:nmap <2-LeftMouse>   :cs find d <C-R>=expand("<cword>")<CR>:<C-R>=line('.')<CR>:%<CR>
 	:nmap g<LeftMouse>    :cs find d <C-R>=expand("<cword>")<CR>:<C-R>=line('.')<CR>:%<CR>
 	:nmap <C-LeftMouse>   :cs find d <C-R>=expand("<cword>")<CR>:<C-R>=line('.')<CR>:%<CR>
+	" The following mappings are unnecessary, because you can use the default mapping.
+	":nmap g<RightMouse>   <C-t>
+	":nmap <C-RightMouse>  <C-t>
 	" Short cut key
 	:nmap <C-\><SPACE> :cs find<SPACE>
 	:nmap <C-@><SPACE> :scs find<SPACE>

@@ -110,6 +110,11 @@
   :group 'gtags
   :type 'boolean)
 
+(defcustom gtags-use-old-key-map nil
+  "*If non-nil, old key mapping is enabled."
+  :group 'gtags
+  :type 'boolean)
+
 (defcustom gtags-grep-all-text-files nil
   "*If non-nil, gtags-find-with-grep command searchs all text files."
   :group 'gtags
@@ -140,28 +145,6 @@
 (define-key gtags-mode-map "\e*" 'gtags-pop-stack)
 (define-key gtags-mode-map "\e." 'gtags-find-tag)
 (define-key gtags-mode-map "\C-x4." 'gtags-find-tag-other-window)
-;
-; You can make key mappings using 'gtags-mode-hook in your $HOME/.emacs:
-; The following two brings the same result.
-;
-; (add-hook 'gtags-mode-hook
-;   '(lambda ()
-;         (setq gtags-suggested-key-mapping t)
-; ))
-; (add-hook 'gtags-mode-hook
-;   '(lambda ()
-;         (define-key gtags-mode-map "\eh" 'gtags-display-browser)
-;         (define-key gtags-mode-map "\C-]" 'gtags-find-tag-from-here)
-;         (define-key gtags-mode-map "\C-t" 'gtags-pop-stack)
-;         (define-key gtags-mode-map "\eP" 'gtags-find-file)
-;         (define-key gtags-mode-map "\ef" 'gtags-parse-file)
-;         (define-key gtags-mode-map "\eg" 'gtags-find-with-grep)
-;         (define-key gtags-mode-map "\eI" 'gtags-find-with-idutils)
-;         (define-key gtags-mode-map "\es" 'gtags-find-symbol)
-;         (define-key gtags-mode-map "\er" 'gtags-find-rtag)
-;         (define-key gtags-mode-map "\et" 'gtags-find-tag)
-;         (define-key gtags-mode-map "\ev" 'gtags-visit-rootdir)
-; ))
 
 (defvar gtags-select-mode-map (make-sparse-keymap)
   "Keymap used in gtags select mode.")
@@ -699,22 +682,41 @@ with no args, if that value is non-nil."
         (> (prefix-numeric-value forces) 0)))
   ; Suggested key mapping
   (if gtags-suggested-key-mapping
-      (progn
-        ; Key mapping.
-        (define-key gtags-mode-map "\eh" 'gtags-display-browser)
-        (define-key gtags-mode-map "\C-]" 'gtags-find-tag-from-here)
-        (define-key gtags-mode-map "\C-t" 'gtags-pop-stack)
-        (define-key gtags-mode-map "\eP" 'gtags-find-file)
-        (define-key gtags-mode-map "\ef" 'gtags-parse-file)
-        (define-key gtags-mode-map "\eg" 'gtags-find-with-grep)
-        (define-key gtags-mode-map "\eI" 'gtags-find-with-idutils)
-        (define-key gtags-mode-map "\es" 'gtags-find-symbol)
-        (define-key gtags-mode-map "\er" 'gtags-find-rtag)
-        (define-key gtags-mode-map "\et" 'gtags-find-tag)
-        (define-key gtags-mode-map "\ev" 'gtags-visit-rootdir)
-        ; Mouse key mapping
-        (define-key gtags-mode-map [mouse-3] 'gtags-pop-stack)
-        (define-key gtags-mode-map [mouse-2] 'gtags-find-tag-by-event))
+      (if gtags-use-old-key-map
+          (progn
+            ; Key mapping.
+            (define-key gtags-mode-map "\eh" 'gtags-display-browser)
+            (define-key gtags-mode-map "\C-]" 'gtags-find-tag-from-here)
+            (define-key gtags-mode-map "\C-t" 'gtags-pop-stack)
+            (define-key gtags-mode-map "\eP" 'gtags-find-file)
+            (define-key gtags-mode-map "\ef" 'gtags-parse-file)
+            (define-key gtags-mode-map "\eg" 'gtags-find-with-grep)
+            (define-key gtags-mode-map "\eI" 'gtags-find-with-idutils)
+            (define-key gtags-mode-map "\es" 'gtags-find-symbol)
+            (define-key gtags-mode-map "\er" 'gtags-find-rtag)
+            (define-key gtags-mode-map "\et" 'gtags-find-tag)
+            (define-key gtags-mode-map "\ev" 'gtags-visit-rootdir)
+            ; Mouse key mapping
+            (define-key gtags-mode-map [mouse-3] 'gtags-pop-stack)
+            (define-key gtags-mode-map [mouse-2] 'gtags-find-tag-by-event))
+          (progn
+            ; Key mapping.
+            (define-key gtags-mode-map "\C-ch" 'gtags-display-browser)
+            (define-key gtags-mode-map "\C-]" 'gtags-find-tag-from-here)
+            (define-key gtags-mode-map "\C-t" 'gtags-pop-stack)
+            (define-key gtags-mode-map "\C-cP" 'gtags-find-file)
+            (define-key gtags-mode-map "\C-cf" 'gtags-parse-file)
+            (define-key gtags-mode-map "\C-cg" 'gtags-find-with-grep)
+            (define-key gtags-mode-map "\C-cI" 'gtags-find-with-idutils)
+            (define-key gtags-mode-map "\C-cs" 'gtags-find-symbol)
+            (define-key gtags-mode-map "\C-cr" 'gtags-find-rtag)
+            (define-key gtags-mode-map "\C-ct" 'gtags-find-tag)
+            (define-key gtags-mode-map "\C-cv" 'gtags-visit-rootdir)
+            ; Mouse key mapping
+            (define-key gtags-mode-map [mouse-3] 'gtags-pop-stack)
+            (define-key gtags-mode-map [mouse-2] 'gtags-find-tag-by-event))
+      )
+
   )
   (run-hooks 'gtags-mode-hook)
 )
