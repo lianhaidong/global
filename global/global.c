@@ -469,6 +469,29 @@ main(int argc, char **argv)
 			break;
 		}
 	}
+	/*
+	 * decide format.
+	 * The --result option is given to priority more than the -t and -x option.
+	 */
+	if (format == 0) {
+		if (tflag) { 			/* ctags format */
+			format = FORMAT_CTAGS;
+		} else if (xflag) {		/* print details */
+			format = FORMAT_CTAGS_X;
+		} else {			/* print just a file name */
+			format = FORMAT_PATH;
+		}
+	}
+	/*
+	 * GTAGSBLANKENCODE will be used in less(1).
+	 */
+	switch (format) {
+	case FORMAT_CTAGS_X:
+	case FORMAT_CTAGS_XID:
+		if (encode_chars == NULL && getenv("GTAGSBLANKENCODE"))
+			encode_chars = " \t";
+		break;
+	}
 	if (encode_chars) {
 		if (strlen(encode_chars) > 255)
 			die("too many encode chars.");
@@ -645,19 +668,6 @@ main(int argc, char **argv)
 		fprintf(stderr, "cwd=%s\n", cwd);
 		fprintf(stderr, "localprefix=%s\n", localprefix);
 #endif
-	}
-	/*
-	 * decide format.
-	 * The --result option is given to priority more than the -t and -x option.
-	 */
-	if (format == 0) {
-		if (tflag) { 			/* ctags format */
-			format = FORMAT_CTAGS;
-		} else if (xflag) {		/* print details */
-			format = FORMAT_CTAGS_X;
-		} else {			/* print just a file name */
-			format = FORMAT_PATH;
-		}
 	}
 	/*
 	 * decide path conversion type.

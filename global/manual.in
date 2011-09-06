@@ -22,7 +22,7 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	GLOBAL,1,March 2011,GNU Project
+@HEADER	GLOBAL,1,September 2011,GNU Project
 @NAME	global - print locations of the specified object.
 @SYNOPSIS
 	@name{global} [-adGilnqrstTvx][-e] @arg{pattern}
@@ -233,6 +233,8 @@
 		of BSD-style objdir. The default is @file{/usr/obj}.
 	@item{@var{GTAGSTHROUGH}}
 		If this variable is set, the @option{-T} option is specified.
+	@item{@var{GTAGSBLANKENCODE}}
+		If this variable is set, the --encode=" <TAB>" option is specified.
 	@end_itemize
 @CONFIGURATION
 	The following configuration variables affect the execution of @name{global}:
