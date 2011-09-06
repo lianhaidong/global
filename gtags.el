@@ -421,7 +421,11 @@
 (defun gtags-display-browser ()
   "Display current screen on hypertext browser."
   (interactive)
-  (call-process "gozilla"  nil nil nil (concat "+" (number-to-string (gtags-current-lineno))) buffer-file-name))
+  (if (= (gtags-current-lineno) 0)
+      (message "This is a null file.")
+      (if (not buffer-file-name)
+          (message "This buffer doesn't have the file name.")
+          (call-process "gozilla"  nil nil nil (concat "+" (number-to-string (gtags-current-lineno))) buffer-file-name))))
 
 ; Private event-point
 ; (If there is no event-point then we use this version.
