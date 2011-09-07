@@ -21,7 +21,7 @@ ___________________________________
 GNU GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
-Version 6.0 - September ? 2011
+Version 6.0 - September 7 2011
 
 [CHANGES]
 New facilities:
@@ -33,27 +33,43 @@ o global: New --match-part option.
 o global: New environment variable GTAGSTHROUGH. If this variable is set,
   the -T option is specified.
 o global: New output format 'ctags-mod'. It is used in gtags.vim.
+o global: New environment variable GTAGSBLANKENCODE.
 o htags: Changed the cflow loader to accept "_' and HTML special chars (&XXXX;).
 o gtags.vim: Now allows the use of the -s and -r option at the same time.
+o gtags.vim: Now custom variables: 'Gtags_Auto_Map' (default 0).
 o gtags.el: New custom variable 'gtags-grep-all-text-files'.
 o gtags-cscope: New -a option.
+o gtags-cscope.vim: New custom variables: 'GtagsCscope_Use_Old_Key_Map',
+  'GtagsCscope_Ignore_Case', 'GtagsCscope_Absolute_Path'.
 
 [INCOMPATIBLE CHANGES]
-o gtags.vim: Changed the -P subcommand not to accept NULL input.
-  Please input '/' instead.
-o gtags.el: Xemacs mouse key mapping was removed.
-o gtags-cscope.vim: The default value of the 'GtagsCscope_Auto_Map' was changed to 0.
-  Additionally, the default key mapping was changed to the one derived from 'cscope_maps.vim'
-  that was made by the cscope team.
+o gtags.el: Now each gtags-find-xxx command follows 'case-fold-search' variable.
+o gtags.el: Mouse key mappings for xemacs is not done any longer.
+o gtags.el: Changed the prefix character of the commands from 'ESC' to 'Ctrl-c'
+  to avoid the collisions with the default key mapping. If you want to use the old
+  key mapping, please write the followings in your '.emacs' file.
+
+	(setq gtags-suggested-key-mapping t)
+	(setq gtags-use-old-key-map t)
+
+o gtags.el: New policy of key mapping:
+  - If 'gtags-suggested-key-mapping' is false, any key mapping is not done.
+  - If 'gtags-disable-pushy-mouse-mapping' is true, any mouse mapping is not done.
+o gtags-cscope.vim: The default value of the 'GtagsCscope_Auto_Map' and
+  'GtagsCscope_Auto_Load' was changed to 0. Additionally, the default key mapping
+  was changed to the one derived from 'cscope_maps.vim' that was made
+  by the cscope team.
   If you hope older environment, please write the followings to your '.vimrc' file.
+
+        let GtagsCscope_Auto_Load = 1
         let GtagsCscope_Auto_Map = 1
-        let GtagsCscope_Use_Old_Key_Map
+        let GtagsCscope_Use_Old_Key_Map = 1
+
+o gtags.vim: Changed the -P sub-command not to accept NULL input.
+  Please input '/' instead.
 o gtags-cscope: Title changed.
   Find this C symbol: -> Find this symbol
   Find functions calling this function: -> Find locations calling this function:
-
-o gtags.el: Now each gtags-find-xxx command follows 'case-fold-search' variable.
-o gtags.el: Mouse key mappings for xemacs is not done any longer.
 o gtags.conf: The lines which start with a '#' on the continuation lines is considered
   to be a comment line.
 
