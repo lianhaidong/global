@@ -68,7 +68,7 @@ static	char	appendprompt[] = "Append to file: ";
 static	char	pipeprompt[] = "Pipe to shell command: ";
 static	char	readprompt[] = "Read from file: ";
 static	char	globalprompt[] = "Read from: global ";
-static	char	globalprefix[] = "global --encode-path=\" \t\" --result=cscope ";
+static	char	globaloption[] = "--encode-path=\" \t\" --result=cscope";
 static	char	globalcommand[MAXFILLEN];
 static	char	toprompt[] = "To: ";
 
@@ -399,12 +399,12 @@ cscope: cannot open pipe to shell command: %s\n", newpat);
 	/* get the shell command */
 	move(PRLINE, 0);
 	addstr(globalprompt);
-	/* addstr(globalprefix);*/
+	/* addstr(globaloption);*/
 	if (mygetline("", newpat, COLS - sizeof(globalprompt), '\0', NO) == 0) {
 	    clearprompt();
 	    return(NO);
 	}
-	snprintf(globalcommand, sizeof(globalcommand), "%s %s > %s", globalprefix, newpat, temp2);
+	snprintf(globalcommand, sizeof(globalcommand), "%s %s %s > %s", global_command, globaloption, newpat, temp2);
 	remove(temp2);
 	postmsg("Searching ...");
 	if (system(globalcommand) != 0) {

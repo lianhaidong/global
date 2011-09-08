@@ -28,8 +28,8 @@ static char *
 common()
 {
 	static char com[80];
-	snprintf(com, sizeof(com), "global --encode-path=\" \t\" --result=cscope%s%s",
-		(caseless == YES) ? " -i" : "", (absolutepath == YES) ? " -a" : ""); 
+	snprintf(com, sizeof(com), "%s --encode-path=\" \t\" --result=cscope%s%s",
+		global_command, (caseless == YES) ? " -i" : "", (absolutepath == YES) ? " -a" : ""); 
 	return com;
 }
 /*

@@ -80,6 +80,8 @@
 static char const rcsid[] = "$Id$";
 
 char	*editor, *shell, *lineflag;	/* environment variables */
+char	*global_command;	/* "global" by default */
+char	*gtags_command;		/* "gtags" by default */
 char	*home;			/* Home directory */
 BOOL	lineflagafterfile;
 char	*argv0;			/* command name */
@@ -212,6 +214,7 @@ gtags-cscope: pattern too long, cannot be > %d characters\n", PATLEN);
 		/* FALLTHROUGH */
 	    case 'l':
 		linemode = YES;
+		isuptodate = YES;
 		break;
 	    case 'v':
 		verbosemode = YES;
@@ -301,6 +304,8 @@ gtags-cscope: pattern too long, cannot be > %d characters\n", PATLEN);
     editor = mygetenv("VIEWER", editor); /* use viewer if set */
     editor = mygetenv("CSCOPE_EDITOR", editor);	/* has last word */
     home = mygetenv("HOME", HOME);
+    global_command = mygetenv("GTAGSGLOBAL", "global");
+    gtags_command = mygetenv("GTAGSGTAGS", "gtags");
 #if defined(_WIN32) || defined(__DJGPP__)
     shell = mygetenv("COMSPEC", SHELL);
     shell = mygetenv("SHELL", shell);
@@ -388,7 +393,7 @@ cscope: Could not create private temp dir %s\n",
 
     /* if the cross-reference is to be considered up-to-date */
     if (isuptodate == YES) {
-	if (execute("global", "global", "-p", NULL) != 0) {
+	if (execute(global_command, global_command, "-p", NULL) != 0) {
 	    postfatal("gtags-cscope: GTAGS not found. Please invoke again without -d option.\n");
             /* NOTREACHED */
 	}
