@@ -1,0 +1,17 @@
+#!/bin/sh
+#
+# client program for gtags, global, htags
+#
+host=${GTAGSREMOTEHOST}
+shell=${GTAGSREMOTESHELL-ssh}
+if [ x$host = x ]; then
+	echo "Remote host is not specified."
+	exit 1
+fi
+# Make command line.
+command=`basename $0 | sed 's/-client//'`
+arg=
+for a in "$@"; do
+	arg=$arg" '${a}'"
+done
+$shell -q $host "cd `pwd` && $command $arg"

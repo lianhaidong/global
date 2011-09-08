@@ -100,6 +100,13 @@ if !has("cscope")
     call Error('This vim does not include cscope support.')
     finish
 endif
+"
+" global command name
+"
+let s:global_command = $GTAGSGLOBAL
+if s:global_command == ''
+        let s:global_command = "global"
+endif
 if !exists("GtagsCscope_Auto_Load")
     let GtagsCscope_Auto_Load = 0
 endif
@@ -131,7 +138,7 @@ function! s:Error(msg)
 endfunction
 
 function! s:GtagsCscope_GtagsRoot()
-    let cmd = "global -pq"
+    let cmd = s:global_command . " -pq"
     let cmd_output = system(cmd)
     if v:shell_error != 0
         if v:shell_error == 3

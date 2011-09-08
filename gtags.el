@@ -145,6 +145,13 @@
   "Whether we are running XEmacs/Lucid Emacs")
 (defvar gtags-rootdir nil
   "Root directory of source tree.")
+(defvar gtags-global-command nil
+  "Command name of global.")
+
+;; Set global's command name
+(setq gtags-global-command (getenv "GTAGSGLOBAL"))
+(if (or (not gtags-global-command) (equal gtags-global-command ""))
+    (setq gtags-global-command "global"))
 
 ;; Key mapping of gtags-mode.
 (if gtags-suggested-key-mapping
@@ -291,7 +298,7 @@
         (setq option (concat option "i")))
     ; build completion list
     (set-buffer (generate-new-buffer "*Completions*"))
-    (call-process "global" nil t nil option string)
+    (call-process gtags-global-command nil t nil option string)
     (goto-char (point-min))
     ;
     ; The specification of the completion for files is different from that for symbols.
@@ -319,7 +326,7 @@
     (save-excursion
       (setq buffer (generate-new-buffer (generate-new-buffer-name "*rootdir*")))
       (set-buffer buffer)
-      (setq n (call-process "global" nil t nil "-pr"))
+      (setq n (call-process gtags-global-command nil t nil "-pr"))
       (if (= n 0)
         (setq path (file-name-as-directory (buffer-substring (point-min)(1- (point-max))))))
       (kill-buffer buffer))
@@ -627,8 +634,8 @@
         (if rootdir (cd rootdir)))))
     (message "Searching %s ..." tagname)
     (if (not (= 0 (if (equal flag "C")
-                      (call-process "global" nil t nil option "--encode-path=\" \t\"" context tagname)
-                      (call-process "global" nil t nil option "--encode-path=\" \t\"" tagname))))
+                      (call-process gtags-global-command nil t nil option "--encode-path=\" \t\"" context tagname)
+                      (call-process gtags-global-command nil t nil option "--encode-path=\" \t\"" tagname))))
 	(progn (message (buffer-substring (point-min)(1- (point-max))))
                (gtags-pop-context))
       (goto-char (point-min))

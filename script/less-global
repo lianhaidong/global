@@ -1,0 +1,14 @@
+#!/bin/sh
+#
+# global command for less
+#
+command=${GTAGSGLOBAL-global}
+case $2 in
+-*\ *)
+	opt=`echo $2 | sed -n 's/ .*//p'`
+	arg=`echo $2 | sed -n 's/^[^ ]* //p'`
+	$command $1 $opt "$arg"
+	;;
+*)      $command $1 "$2"
+	;;
+esac

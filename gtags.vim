@@ -179,6 +179,13 @@ if exists("loaded_gtags")
     finish
 endif
 
+"
+" global command name
+"
+let s:global_command = $GTAGSGLOBAL
+if s:global_command == ''
+        let s:global_command = "global"
+endif
 " Open the Gtags output window.  Set this variable to zero, to not open
 " the Gtags output window by default.  You can open it manually by using
 " the :cwindow command.
@@ -346,9 +353,9 @@ function! s:ExecLoad(option, long_option, pattern)
     let l:option = l:option . '--result=' . g:Gtags_Result . ' -q'
     let l:option = l:option . s:TrimOption(a:option)
     if l:isfile == 1
-        let l:cmd = 'global ' . l:option . ' ' . g:Gtags_Shell_Quote_Char . a:pattern . g:Gtags_Shell_Quote_Char
+        let l:cmd = s:global_command . ' ' . l:option . ' ' . g:Gtags_Shell_Quote_Char . a:pattern . g:Gtags_Shell_Quote_Char
     else
-        let l:cmd = 'global ' . l:option . 'e ' . g:Gtags_Shell_Quote_Char . a:pattern . g:Gtags_Shell_Quote_Char 
+        let l:cmd = s:global_command . ' ' . l:option . 'e ' . g:Gtags_Shell_Quote_Char . a:pattern . g:Gtags_Shell_Quote_Char 
     endif
 
     let l:result = system(l:cmd)
@@ -463,7 +470,7 @@ function! GtagsCandidateCore(lead, line, pos)
         endif
         return glob(l:pattern)
     else 
-        return system('global ' . '-c' . s:option . ' ' . a:lead)
+        return system(s:global_command . ' ' . '-c' . s:option . ' ' . a:lead)
     endif
 endfunction
 

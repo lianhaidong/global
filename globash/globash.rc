@@ -40,10 +40,15 @@ else
         __gtags_GHOME="$HOME/.globash"
 fi
 #
+# global command name
+#
+__gtags_global_command=${GTAGSGLOBAL-global}
+__gtags_gtags_command=${GTAGSGTAGS-gtags}
+#
 # Less-370 or later can treat GLOBAL as tag system if environment variable
 # LESSGLOBALTAGS is set.
 #
-export LESSGLOBALTAGS=global
+export LESSGLOBALTAGS=$__gtags_global_command
 #
 # Vim server name
 #
@@ -215,10 +220,10 @@ __gtags_get_cwd() {
 	/bin/pwd
 }
 __gtags_get_rootdir() {
-	global -pr 2>/dev/null
+	$__gtags_global_command -pr 2>/dev/null
 }
 __gtags_get_dbpath() {
-	global -p 2>/dev/null
+	$__gtags_global_command -p 2>/dev/null
 }
 #
 # $1: warning is 0: unnecessary, 1: necessary
@@ -261,7 +266,7 @@ __gtags_prompt() {
 	fi
 	PS1="$ps "
 	if [ "$root" != "" ] && [ "$cwd" != "" ] && [ "$dbpath" != "" ]; then
-		__gtags_filter="gtags --encode-path=' ' --path=relative '$root' '$cwd' '$dbpath'"
+		__gtags_filter="$__gtags_gtags_command --encode-path=' ' --path=relative '$root' '$cwd' '$dbpath'"
 		__gtags_prev_root=$root
 	fi
 	trap 2
@@ -500,7 +505,7 @@ __gtags_completion()
 			esac
 		esac
 	done
-	COMPREPLY=(`global -c$flags $prefix 2>/dev/null`)
+	COMPREPLY=(`$__gtags_global_command -c$flags $prefix 2>/dev/null`)
 	return 0
 }
 complete -F __gtags_completion x d r s rs I P
@@ -520,7 +525,7 @@ __gtags_gen_xref()
 			__gtags_lasttag="$2"
 		fi
 		if [ "$__gtags_lasttag" != "" ]; then
-			com="global --encode-path=' ' --nofilter=path -x$__gtags_lastcom '$__gtags_lasttag' >'$__gtags_XREF'"
+			com="$__gtags_global_command --encode-path=' ' --nofilter=path -x$__gtags_lastcom '$__gtags_lasttag' >'$__gtags_XREF'"
 			eval $com
 			__gtags_count=`wc -l < "$__gtags_XREF" | sed 's/ //g'`
 		else
@@ -584,7 +589,7 @@ __gtags_locate_tag() {
 		fi
 		tag="$__gtags_lasttag"
 	fi
-	global --encode-path=' ' --nofilter=path -$command --result=ctags-x $option "$tag" >"$__gtags_TMP1"
+	$__gtags_global_command --encode-path=' ' --nofilter=path -$command --result=ctags-x $option "$tag" >"$__gtags_TMP1"
 	local count=`wc -l < "$__gtags_TMP1" | sed 's/ //g'`
 	if (( $count > 0 )); then
 		if [ -s "$__gtags_XREF" ]; then
@@ -629,7 +634,7 @@ f() {
 	esac
 	for (( i=0; i < ${#__gtags_lastfiles[@]}; i++ )); do
 		echo ${__gtags_lastfiles[i]}
-	done | global --encode-path=' ' --nofilter=path -f -L- --result=ctags-x $option >"$__gtags_TMP1"
+	done | $__gtags_global_command --encode-path=' ' --nofilter=path -f -L- --result=ctags-x $option >"$__gtags_TMP1"
 	local count=`wc -l < "$__gtags_TMP1" | sed 's/ //g'`
 	if (( $count > 0 )); then
 		if [ -s "$__gtags_XREF" ]; then

@@ -338,6 +338,7 @@ AC_CONFIG_FILES([Makefile
 	icons/Makefile
 	jquery/Makefile
 	jquery/images/Makefile
+	script/Makefile
 	libparser/Makefile
 	plugin-factory/Makefile
 	libltdl/Makefile

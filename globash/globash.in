@@ -32,6 +32,11 @@ if [ -n "$HOME_ETC" ]; then
 else
         GHOME="$HOME/.globash"
 fi
+#
+# global command name
+#
+__gtags_global_command=${GTAGSGLOBAL-global}
+__gtags_gtags_command=${GTAGSGTAGS-gtags}
 prompt="Do you create '$GHOME'? ([y]/n)"
 if [ ! -d "$GHOME" ]; then
 	echo -n "GloBash needs a working directory. $prompt"
@@ -68,12 +73,12 @@ if [ ! -d "$GHOME" ]; then
 	echo
 fi
 prompt="Do you create tag files in the current directory? ([y]/n)"
-if [ "`global -p 2>/dev/null`" = "" ]; then
+if [ "`$__gtags_global_command -p 2>/dev/null`" = "" ]; then
 	echo -n "GTAGS not found. $prompt"
 	while read ans; do
 		case $ans in
 		Y|y|"")	echo -n "Creating..."
-			gtags
+			$__gtags_gtags_command
 			echo "Done."
 			break;;
 		N|n)	echo "Please make tag files using gtags(1) before starting this command. Bye."
