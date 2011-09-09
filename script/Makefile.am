@@ -19,6 +19,6 @@ EXTRA_DIST = ${script_DATA}
 install-data-hook:
 	if cd $(DESTDIR)$(datadir)/gtags/script; then \
 		chmod 755 less-global global-client; \
-		ln global-client gtags-client; \
-		ln global-client htags-client; \
+		ln -f global-client gtags-client; \
+		ln -f global-client htags-client; \
 	fi
