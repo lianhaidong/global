@@ -50,6 +50,7 @@
 		-num pattern option.
 	@item{@option{-l}}
 		Line-oriented interface (see ``Line-Oriented Interface'' below).
+		This option implies the -d option.
 	@item{@option{-[0-9]} @arg{pattern}}
 		Go to input field @arg{num} (counting from 0) and find 
 		@arg{pattern}.
