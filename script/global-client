@@ -3,6 +3,7 @@
 # client program for gtags, global, htags
 #
 host=${GTAGSREMOTEHOST}
+user=${GTAGSREMOTEUSER}
 shell=${GTAGSREMOTESHELL-ssh}
 if [ x$host = x ]; then
 	echo "Remote host is not specified."
@@ -14,4 +15,8 @@ arg=
 for a in "$@"; do
 	arg=$arg" '${a}'"
 done
-$shell -q $host "cd `pwd` && $command $arg"
+commandline="cd '`pwd`' && $command $arg"
+case $user in
+'')	$shell -q $host $commandline;;
+*)	$shell -q -l $user $host $commandline;;
+esac
