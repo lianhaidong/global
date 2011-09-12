@@ -1,0 +1,5 @@
+#!/bin/sh
+#
+# global command for less
+#
+${GTAGSGLOBAL-global} --result=ctags "$@"
