@@ -5,10 +5,10 @@
 host=${GTAGSREMOTEHOST}
 user=${GTAGSREMOTEUSER}
 shell=${GTAGSREMOTESHELL-ssh}
-if [ x$host = x ]; then
-	echo "Remote host is not specified."
-	exit 1
-fi
+case $host in
+'')	echo "Remote host is not specified."
+	exit 1;;
+esac
 # Make command line.
 command=`basename $0 | sed 's/-client//'`
 arg=

@@ -21,23 +21,30 @@ Usage of server-side GLOBAL
 If the following conditions are met, you can use GLOBAL's facilities
 without installing GLOBAL in your machine.
 
-o You have a server machine in which GLOBAL is installed. 
-o You have to be able to log in the server without pass word using ssh.
-o You have to be able to access the same project in both your machine
-  and the server by the same path name. (maybe using network file system)
+1. You have a server machine in which GLOBAL is installed. 
+2. You can log in the server without pass word using ssh.
+3. You can access the same project in both your machine and the server
+   by the same path name.
+4. You can access to the scripts in the '/usr/local/share/gtags/script'
+   in the server.
+
+Though 3. and 4. assumed network file system like NFS, copying files is also OK.
 
 How to use server-site GLOBAL.
 
-1. Copy some scripts in the /usr/local/share/gtags/script in the server
-   to your machine and make them executable.
+1. Set the server name to 'GTAGSREMOTEHOST' environment variable. If your
+   user id in the server is different from the local machine, set the user id
+   to 'GTAGSREMOTEUSER'.  And you can use gtags-client, global-client and
+   htags-client instead of gtags, global and htags respectively.
 
-2. Set the server name to 'GTAGSREMOTEHOST' environment variable, and you can
-   use gtags-client and global-client instead of gtags and global respectively.
-
-3. To use the various environments which GLOBAL supports, please set the
+2. To use the various environments which GLOBAL supports, please set the
    following variables like follows:
 	GTAGSGTAGS=gtags-client
 	GTAGSGLOBAL=global-client
-	LESSGLOBALTAGS=less-global (if you use less)
+	LESSGLOBALTAGS=less-global	(if you use less)
+
+	[$HOME/.elvisrc]		(if you use elvis)
+	+----------------------------
+	|set tagprg="elvis-global $1"
 
 Good luck!
