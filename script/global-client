@@ -13,6 +13,7 @@ esac
 command=`basename $0 | sed 's/-client//'`
 arg=
 for a in "$@"; do
+	a=`echo "$a" | sed "s/'/'\"'\"'/g"`
 	arg=$arg" '${a}'"
 done
 commandline="cd '`pwd`' && $command $arg"
