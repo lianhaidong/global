@@ -10,7 +10,7 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
-script_DATA = less-global global-client README
+script_DATA = less-global elvis-global global-client README
 
 scriptdir = ${datadir}/gtags/script
 
@@ -18,7 +18,7 @@ EXTRA_DIST = ${script_DATA}
 
 install-data-hook:
 	if cd $(DESTDIR)$(datadir)/gtags/script; then \
-		chmod 755 less-global global-client; \
+		chmod 755 less-global elvis-global global-client; \
 		ln -f global-client gtags-client; \
 		ln -f global-client htags-client; \
 	fi
