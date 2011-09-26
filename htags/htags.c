@@ -1739,6 +1739,8 @@ main(int argc, char **argv)
 		fflag = dynamic = 1;			/* needs a HTTP server */
 		auto_completion = tree_view = 1;	/* needs javascript */
 	}
+	if (strchr(sitekey, '.') || strchr(sitekey, '/'))
+		die("site key must not include '.' and '/'.");
 	if (!enable_xhtml && (tree_view || auto_completion || fixed_guide))
 		die("The --html option cannot accept the --tree-view, --auto-completion and --fixed-guide option.");
 	if (call_file && !test("fr", call_file))
