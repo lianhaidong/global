@@ -439,7 +439,7 @@ getdirs(const char *dir, STRBUF *sb)
 	struct stat st;
 
 	if (check_looplink && has_symlinkloop(dir)) {
-		warning("symbolic link loop detected. '%s'. ignored.", trimpath(dir));
+		warning("symbolic link loop detected. '%s' is ignored.", trimpath(dir));
 		return -1;
 	}
 	if ((dirp = opendir(dir)) == NULL) {
