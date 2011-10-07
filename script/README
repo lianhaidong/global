@@ -18,26 +18,27 @@ ___________________________________
 
 Usage of server-side GLOBAL
 
-If the following conditions are met, you can use GLOBAL's facilities
-without installing GLOBAL in your machine.
+If the following conditions are met, you can use server-side GLOBAL facilities
+without installing GLOBAL in your client machine.
 
 1. You have a server machine in which GLOBAL is installed. 
-2. You can log in the server without pass word using ssh.
-3. You can access the same project in both your machine and the server
-   by the same path name.
-4. You can access to the scripts in the '/usr/local/share/gtags/script'
-   in the server.
-
-Though 3. and 4. assumed network file system like NFS, copying files is also OK.
+   (called the "server" below)
+2. You can log in the server without pass word using ssh from your
+   machine(called the "client" below)
+3. You can access the same project of the both sides of the server and
+   client by the same path name. (probably by a network file system like NFS)
 
 How to use server-site GLOBAL.
 
-1. Set the server name to 'GTAGSREMOTEHOST' environment variable. If your
-   user id in the server is different from the local machine, set the user id
-   to 'GTAGSREMOTEUSER'.  And you can use gtags-client, global-client and
-   htags-client instead of gtags, global and htags respectively.
+1. Make some shell scripts (global-client, gtags-client, htags-client) available
+   by copying or network mounting. These are in /usr/local/share/gtags/scripts
+   on the server.
+2. Set the server name to 'GTAGSREMOTEHOST' environment variable. If your
+   user id on the server is different from the one on the client, set the user id
+   to 'GTAGSREMOTEUSER'.  And you can use above scripts instead of global, gtags
+   and htags respectively.
 
-2. To use the various environments which GLOBAL supports, please set the
+3. To use the various environments which GLOBAL supports, please set the
    following variables like follows:
 	GTAGSGTAGS=gtags-client
 	GTAGSGLOBAL=global-client
