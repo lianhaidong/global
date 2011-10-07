@@ -23,10 +23,10 @@ without installing GLOBAL in your client machine.
 
 1. You have a server machine in which GLOBAL is installed. 
    (called the "server" below)
-2. You can log in the server without pass word using ssh from your
-   machine(called the "client" below)
-3. You can access the same project of the both sides of the server and
-   client by the same path name. (probably by a network file system like NFS)
+2. You can log in the server without pass word using ssh from your machine.
+   (called the "client" below)
+3. You can access the same project of the both sides (client and server)
+   by the same path name probably using Network File System(NFS).
 
 How to use server-site GLOBAL.
 
