@@ -21,6 +21,25 @@ ___________________________________
 GNU GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 6.1 - October 7 2011
+
+[CHANGES]
+New facility:
+o Server side GLOBAL
+  You can use some shell scripts instead of global, gtags and htags.
+  By this facility, you need not install GLOBAL in your client machine.
+
+  Client machine       Network         Server machine
+  +--------------+                    +---------------+
+  |gtags-client  |-------- SSH ------>|    gtags      |-->GTAGS,GRTAGS,GPATH
+  |              |                    |               |     |
+  |global-client |<------- SSH ------>|    global     |<----+
+  |              |                    |               |
+  | vi, emacs    |<------- NFS ------>| project files |
+  +--------------+                    +---------------+
+
+  Please read script/README for the details.
+
 Version 6.0 - September 7 2011
 
 [CHANGES]
