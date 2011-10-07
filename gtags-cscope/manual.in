@@ -10,8 +10,7 @@
 	the source files for the program being browsed. On a subsequent invocation, 
 	@name{gtags-cscope} rebuilds the cross-reference only if a source file
 	has changed or the list of source files is different. When the
-	cross-reference is rebuilt, the data for the unchanged files are
-	copied from the old cross-reference, which makes rebuilding faster
+	cross-reference is rebuilt, it is updated incrementally, which makes rebuilding faster
 	than the initial build.
 @OPTIONS
 	Some command line arguments can only occur as the only argument in
@@ -58,8 +57,7 @@
 		Display the last @arg{n} file path components instead of
 		the default (1). Use @arg{0} not to display the file name at all.
 	@item{@option{-v}}
-		Be more verbose in line-oriented mode.  Output progress updates during
-		database building and searches.
+		Be more verbose in line-oriented mode.
 	@end_itemize
 @Requesting the initial search
 	After the cross-reference is ready, @name{gtags-cscope} will display this menu:
@@ -168,7 +166,7 @@
 		Display next set of lines.
 	@item{-}
 		Display previous set of lines.
-	@item{a}
+	@item{^a}
 		Mark or unmark all lines to be changed.
 	@item{^d}
 		Change the marked lines and exit.
