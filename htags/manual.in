@@ -244,21 +244,6 @@
 	Instead, you can customize the appearance using style sheet file
 	(@file{style.css}).
 	@begin_itemize
-	@item{@code{body_begin}(string)}
-		Begin tag for body. The default is '<body text=#191970 bgcolor=#f5f5dc vlink=gray>'.
-	@item{@code{body_end}(string)}
-		End tag for body. The default is '</body>'.
-	@item{@code{brace_begin}(string)}
-		Begin tag for brace. The default is '<font color=red>'.
-	@item{@code{brace_end}(string)}
-		End tag for brace. The default is '</font>'.
-	@item{@code{colorize_warned_line}(boolean)}
-		Colorize warned line using @code{warned_line_begin} and @code{warned_line_end}.
-		The default is false.
-	@item{@code{comment_begin}(string)}
-		Begin tag for comments. The default is '<i><font color=green>'.
-	@item{@code{comment_end}(string)}
-		End tag for comments. The default is '</font></i>'.
 	@item{@code{datadir}(string)}
 		Shared data directory. The default is '/usr/local/share' but
 		you can change the value using configure script.
@@ -266,8 +251,6 @@
 		in this data directory.
 	@item{@code{gzipped_suffix}(string)}
 		Suffix for compressed html file. The default is 'ghtml'.
-	@item{@code{hr}(string)}
-		Horizontal rules. The default is '<hr>'.
 	@item{@code{htags_options}(string)}
 		Default options for @name{htags}. This value is inserted into
 		the head of arguments.
@@ -281,34 +264,10 @@
 		Columns of line number. The default is 4.
 	@item{@code{normal_suffix}(string)}
 		Suffix for normal html file. The default is 'html'.
-	@item{@code{position_begin}(string)}
-		Begin tag for position mark. The default is '<font color=gray>'.
-	@item{@code{position_end}(string)}
-		End tag for position mark. The default is '</font>'.
-	@item{@code{reserved_begin}(string)}
-		Begin tag for reserved word. The default is '<b>'.
-	@item{@code{reserved_end}(string)}
-		End tag for reserved word. The default is '</b>'.
 	@item{@code{script_alias}(string)}
 		Script alias for system cgi script (@option{--system-cgi}).
-	@item{@code{sharp_begin}(string)}
-		Begin tag for 'define'. The default is '<font color=darkred>'.
-	@item{@code{sharp_end}(string)}
-		End tag for 'define'. The default is '</font>'.
-	@item{@code{table_begin}(string)}
-		Begin tag for table. The default is '<table>'.
-	@item{@code{table_end}(string)}
-		End tag for table. The default is '</table>'.
 	@item{@code{tabs}(number)}
 		Tab stop. The default is 8.
-	@item{@code{title_begin}(string)}
-		Begin tag for Title. The default is '<h1><font color=#cc0000>'.
-	@item{@code{title_end}(string)}
-		End tag for Title. The default is '</font></h1>'.
-	@item{@code{warned_line_begin}(string)}
-		Begin tag for line which htags warned. The default is '<span style="background-color:yellow">'.
-	@item{@code{warned_line_end}(string)}
-		End tag for line which htags warned. The default is '</span>'.
 	@item{@code{xhtml_version}(1.0|1.1)}
 		XHTML version. 1.0 and 1.1 are acceptable. The default is 1.0.
 	@end_itemize

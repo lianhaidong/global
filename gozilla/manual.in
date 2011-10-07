@@ -110,8 +110,6 @@
 
 	GNU GLOBAL source code tag system@br
 	(http://www.gnu.org/software/global/).
-@NOTES
-	@name{Gozilla} means 'Global for mozilla'.
 @BUGS
 	@name{Gozilla} can accept not only source files but also text files,
 	directories, HTML files and even URLs, because it is omnivorous.

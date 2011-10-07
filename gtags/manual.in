@@ -73,14 +73,12 @@
 		If @arg{dbpath} is specified, this option is ignored.
 	@item{@option{--single-update} @arg{file}}
 		Update tag files for single file.
-		It is considered that @arg{file} was updated, and other files were not
-		updated.  The @arg{file} must be relative path name from the current directory.
+		It is considered that @arg{file} was updated, and other files were not updated.
 		This option implies the -i option.
 		If the @arg{file} is new then @option{--single-update} is ignored,
 		and the processing is automatically switched to normal incremental updating.
 	@item{@option{--statistics}}
 		Print statistics information.
-		This option is valid only for normal creation of tag files.
 	@item{@option{-q}, @option{--quiet}}
 		Quiet mode.
 	@item{@option{-v}, @option{--verbose}}
@@ -106,7 +104,7 @@
 	@item{@file{GRTAGS}}
 		Tag file for object references.
 	@item{@file{GPATH}}
-		Tag file for path of source files.
+		Tag file for path names.
 	@item{@file{$HOME/.globalrc}, @file{/etc/gtags.conf}, @file{[sysconfdir]/gtags.conf}}
 		Configuration files.
 	@item{@file{gtags.files}}
@@ -143,7 +141,7 @@
 		As a special exception, @name{gtags} collects values from multiple @code{langmap} variables.
 		Default mapping is '@DEFAULTLANGMAP@'.
 	@item{@code{gtags_parser}(comma separated list)}
-		Specify the mapping of funtion layer plugin parser.
+		Specify the mapping of language names and plugin parsers.
 		Each part delimited by the comma consists of the language name, a colon,
 		the shared object path, an optional colon followed by a function name.
 		If the function name is not specified, 'parser' is assumed.
