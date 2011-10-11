@@ -43,8 +43,8 @@ BOOL	buildonly = NO;		/* only build the database */
 void
 rebuild(void)
 {
-	if (execute("gtags", "gtags", "-i", NULL) != 0)
-		postfatal("gtags-cscope: gtags -i failed.\n");
+	if (execute(gtags_command, gtags_command, "-i", NULL) != 0)
+		postfatal("gtags-cscope: %s -i failed.\n", gtags_command);
 	if (refsfound != NULL) {
 		fclose(refsfound);
 		refsfound = NULL;
@@ -55,8 +55,8 @@ rebuild(void)
 void
 build(void)
 {
-	if (execute("gtags", "gtags", NULL) != 0)
-		postfatal("gtags-cscope: gtags failed.\n");
+	if (execute(gtags_command, gtags_command, NULL) != 0)
+		postfatal("gtags-cscope: %s failed.\n", gtags_command);
 	if (refsfound != NULL) {
 		fclose(refsfound);
 		refsfound = NULL;
