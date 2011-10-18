@@ -778,14 +778,14 @@ show()	{
 	case $1 in
 	-*)
 		case $1 in
-		-v|-vi)		local __gtags_EDITOR=vi;;
-		-l|-less)	local __gtags_EDITOR=less;;
-		-e|-emacs)	local __gtags_EDITOR='emacsclient --no-wait';;
-		-m|-vim)	local __gtags_EDITOR="vim --servername $gtags_vimserver --remote";;
-		-g|-gozilla)	local __gtags_EDITOR=gozilla;;
-		-n|-noedit)	local __gtags_EDITOR=noedit;;
-		*)		echo "invalid option $1."
-				return 1;;
+		-v|-vi|--vi)		local __gtags_EDITOR=vi;;
+		-l|-less|--less)	local __gtags_EDITOR=less;;
+		-e|-emacs|--emacs)	local __gtags_EDITOR='emacsclient --no-wait';;
+		-m|-vim|--vim)		local __gtags_EDITOR="vim --servername $gtags_vimserver --remote";;
+		-g|-gozilla|--gozilla)	local __gtags_EDITOR=gozilla;;
+		-n|-noedit|--noedit)	local __gtags_EDITOR=noedit;;
+		*)	echo "invalid option $1."
+			return 1;;
 		esac
 		shift
 		;;
@@ -800,14 +800,14 @@ use()	{
 	case $1 in
 	-*)
 		case $1 in
-		-v|-vi)		__gtags_EDITOR=vi;;
-		-l|-less)	__gtags_EDITOR=less;;
-		-e|-emacs)	__gtags_EDITOR='emacsclient --no-wait';;
-		-m|-vim)	__gtags_EDITOR="vim --servername $gtags_vimserver --remote";;
-		-g|-gozilla)	__gtags_EDITOR=gozilla;;
-		-n|-noedit)	__gtags_EDITOR=noedit;;
-		*)		echo "invalid option $1."
-				return 1;;
+		-v|-vi|--vi)		__gtags_EDITOR=vi;;
+		-l|-less|--less)	__gtags_EDITOR=less;;
+		-e|-emacs|--emacs)	__gtags_EDITOR='emacsclient --no-wait';;
+		-m|-vim|--vim)		__gtags_EDITOR="vim --servername $gtags_vimserver --remote";;
+		-g|-gozilla|--gozilla)	__gtags_EDITOR=gozilla;;
+		-n|-noedit|--noedit)	__gtags_EDITOR=noedit;;
+		*)	echo "invalid option $1."
+			return 1;;
 		esac
 		;;
 	'')	echo "$__gtags_EDITOR";;
