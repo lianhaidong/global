@@ -101,6 +101,7 @@ editall(void)
 void
 edit(char *file, char *linenum)
 {
+	char	com[PATHLEN + 81];
 	char	msg[MSGLEN + 1];	/* message */
 	char	plusnum[NUMLEN + 20];	/* line number option: allow space for wordy line# flag */
 	char	*s;
@@ -117,10 +118,12 @@ edit(char *file, char *linenum)
 		(void) execute(editor, editor, plusnum, file, "/dev/null", NULL);
 	}
 	else if (lineflagafterfile) {
-		(void) execute(editor, editor, file, plusnum, NULL);
+		(void) snprintf(com, sizeof(com), "%s %s '%s'", editor, file, plusnum);
+		system(com);
 	}
 	else {
-		(void) execute(editor, editor, plusnum, file, NULL);
+		(void) snprintf(com, sizeof(com), "%s %s '%s'", editor, plusnum, file);
+		system(com);
 	}
 	clear();	/* redisplay screen */
 }
