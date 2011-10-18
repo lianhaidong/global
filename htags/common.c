@@ -578,7 +578,7 @@ gen_href_begin_with_title_target(const char *dir, const char *file, const char *
 		strbuf_puts(sb, key);
 	}
 	strbuf_putc(sb, '\'');
-	if (target)
+	if (Fflag && target)
 		strbuf_sprintf(sb, " target='%s'", target);
 	if (title)
 		strbuf_sprintf(sb, " title='%s'", title);
@@ -757,7 +757,7 @@ gen_form_begin(const char *target)
 
 	strbuf_clear(sb);
 	strbuf_sprintf(sb, "<form method='get' action='%s'", action);
-	if (target)
+	if (Fflag && target)
 		strbuf_sprintf(sb, " target='%s'", target);
 	strbuf_puts(sb, ">");
 	return strbuf_value(sb);
