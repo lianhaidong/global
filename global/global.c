@@ -915,7 +915,7 @@ completion_path(const char *dbpath, const char *prefix)
 		target = GPATH_BOTH;
 	if (Oflag)
 		target = GPATH_OTHER;
-	if (iflag)
+	if (iflag || getconfb("icase_path"))
 		flags |= IGNORE_CASE;
 	gp = gfind_open(dbpath, localprefix, target);
 	while ((path = gfind_read(gp)) != NULL) {
