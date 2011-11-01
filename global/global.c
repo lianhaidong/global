@@ -1156,6 +1156,8 @@ grep(const char *pattern, char *const *argv, const char *dbpath)
 				die("'%s' not found. Please remake tag files by invoking gtags(1).", path);
 			path = buf;
 		}
+		if (lflag && !locatestring(path, localprefix, MATCH_AT_FIRST))
+			continue;
 		if (!(fp = fopen(path, "r")))
 			die("cannot open file '%s'.", path);
 		linenum = 0;
