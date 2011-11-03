@@ -117,13 +117,13 @@ struct lang_entry {
 };
 
 struct plugin_entry {
-	SLIST_ENTRY(plugin_entry) next;
+	STAILQ_ENTRY(plugin_entry) next;
 	lt_dlhandle handle;
 	struct lang_entry entry;
 };
 
-static SLIST_HEAD(plugin_list, plugin_entry)
-	plugin_list = SLIST_HEAD_INITIALIZER(plugin_list);
+static STAILQ_HEAD(plugin_list, plugin_entry)
+	plugin_list = STAILQ_HEAD_INITIALIZER(plugin_list);
 static char *langmap_saved, *pluginspec_saved;
 
 /*
@@ -177,7 +177,7 @@ load_plugin_parser(const char *pluginspec)
 		if (pent->entry.parser == NULL)
 			die_with_code(2, "cannot find symbol '%s' in '%s'.", parser_name, lt_dl_name);
 		pent->entry.parser_name = parser_name;
-		SLIST_INSERT_HEAD(&plugin_list, pent, next);
+		STAILQ_INSERT_TAIL(&plugin_list, pent, next);
 		if (p == NULL)
 			break;
 	}
@@ -193,10 +193,10 @@ unload_plugin_parser(void)
 
 	if (pluginspec_saved == NULL)
 		return;
-	while (!SLIST_EMPTY(&plugin_list)) {
-		pent = SLIST_FIRST(&plugin_list);
+	while (!STAILQ_EMPTY(&plugin_list)) {
+		pent = STAILQ_FIRST(&plugin_list);
 		lt_dlclose(pent->handle);
-		SLIST_REMOVE_HEAD(&plugin_list, next);
+		STAILQ_REMOVE_HEAD(&plugin_list, next);
 		free(pent);
 	}
 	lt_dlexit();
@@ -234,7 +234,7 @@ get_lang_entry(const char *lang)
 	/*
 	 * Priority 1: locates in the plugin parser list.
 	 */
-	SLIST_FOREACH(pent, &plugin_list, next) {
+	STAILQ_FOREACH(pent, &plugin_list, next) {
 		if (strcmp(lang, pent->entry.lang_name) == 0)
 			return &pent->entry;
 	}
