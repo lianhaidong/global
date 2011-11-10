@@ -261,8 +261,13 @@ main(int argc, char **argv)
 		browser = getenv("BROWSER");
 	if (!browser && alias("BROWSER"))
 		browser = alias("BROWSER");
+	/*
+	 * In DOS & Windows, let the file: association handle it.
+	 */
+#if !(_WIN32 || __DJGPP__)
 	if (!browser)
 		browser = "mozilla";
+#endif
 
 	/*
 	 * Replace alias name.
@@ -536,8 +541,16 @@ makefileurl(const char *path, int line, STRBUF *url)
 void
 show_page_by_url(const char *browser, const char *url)
 {
-	if (ShellExecute(NULL, NULL, browser, url, NULL, SW_SHOWNORMAL) <= (HINSTANCE)32)
-		die("Cannot load %s (error = 0x%04x).", browser, GetLastError());
+	const char *lpFile, *lpParameters;
+	if (browser) {
+		lpFile = browser;
+		lpParameters = url;
+	} else {
+		lpFile = url;
+		lpParameters = NULL;
+	}
+	if (ShellExecute(NULL, NULL, lpFile, lpParameters, NULL, SW_SHOWNORMAL) <= (HINSTANCE)32)
+		die("Cannot load %s (error = 0x%04x).", lpFile, GetLastError());
 }
 #elif defined(__DJGPP__)
 /* DJGPP version */
@@ -547,6 +560,9 @@ show_page_by_url(const char *browser, const char *url)
 	char com[MAXFILLEN];
 	char *path;
 
+	if (!browser) {
+		browser = "";
+	}
 	/*
 	 * assume a Windows browser if it's not on the path.
 	 */
@@ -555,7 +571,7 @@ show_page_by_url(const char *browser, const char *url)
 		 * START is an internal command in XP, external in 9X.
 		 */
 		if (!(path = usable("start")))
-			path = "cmd /c start";
+			path = "cmd /c start \"\"";
 		snprintf(com, sizeof(com), "%s %s \"%s\"", path, browser, url);
 	} else {
 		snprintf(com, sizeof(com), "%s \"%s\"", path, url);
