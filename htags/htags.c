@@ -2114,9 +2114,9 @@ main(int argc, char **argv)
 	 * (3) make function entries (D/ and R/)
 	 *     MAKING TAG CACHE
 	 */
-	message("[%s] (3) making duplicate entries ...", now());
+	message("[%s] (3) making tag lists ...", now());
 	cache_open();
-	tim = statistics_time_start("Time of making duplicate entries");
+	tim = statistics_time_start("Time of making tag lists");
 	func_total = makedupindex();
 	statistics_time_end(tim);
 	message("Total %d functions.", func_total);
@@ -2132,11 +2132,11 @@ main(int argc, char **argv)
 		STRBUF *files = strbuf_open(0);
 
 		/*
-		 * (5) make function index (defines.html and defines/)
+		 * (5) make definition index (defines.html and defines/)
 		 *     PRODUCE @defines
 		 */
-		message("[%s] (5) making function index ...", now());
-		tim = statistics_time_start("Time of making function index");
+		message("[%s] (5) making definition index ...", now());
+		tim = statistics_time_start("Time of making definition index");
 		func_total = makedefineindex("defines.html", func_total, defines);
 		statistics_time_end(tim);
 		message("Total %d functions.", func_total);
