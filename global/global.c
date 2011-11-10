@@ -1148,12 +1148,17 @@ grep(const char *pattern, char *const *argv, const char *dbpath)
 			static char buf[MAXPATHLEN];
 
 			if (normalize(path, get_root_with_slash(), cwd, buf, sizeof(buf)) == NULL) {
-				if (!qflag)
-					fprintf(stderr, "'%s' is out of the source project.\n", path);
+				warning("'%s' is out of the source project.", path);
 				continue;
 			}
-			if (!test("f", buf))
-				die("'%s' not found. Please remake tag files by invoking gtags(1).", path);
+			if (test("d", buf)) {
+				warning("'%s' is a directory. Ignored.", path);
+				continue;
+			}
+			if (!test("f", buf)) {
+				warning("'%s' not found. Ignored.", path);
+				continue;
+			}
 			path = buf;
 		}
 		if (lflag && !locatestring(path, localprefix, MATCH_AT_FIRST))
