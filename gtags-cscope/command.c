@@ -107,10 +107,9 @@ command(int commandc)
 	    postmsg("The -d option prevents rebuilding the symbol database");
 	    return(NO);
 	}
-	exitcurses();
+	postmsg("Rebuilding cross-reference...");
 	rebuild();
-	entercurses();
-	clearmsg();		/* clear any previous message */
+	postmsg("");
 	totallines = 0;
 	disprefs = 0;	
 	topline = nextline = 1;
