@@ -327,6 +327,12 @@ popd() {
 ###########################################################################
 # Cookie manager
 ###########################################################################
+__gtags_cookie_init()
+{
+	if [ ! -f "$__gtags_COOKIE" ]; then
+		cp /dev/null "$__gtags_COOKIE"
+	fi
+}
 __gtags_load_cookie()
 {
 	local i line
@@ -369,11 +375,11 @@ __gtags_select_cookie() {
 __gtags_warp_cookie() {
 	local size n
 
-	if [ -s "$__gtags_COOKIE" ]; then
-		size=`wc -l <"$__gtags_COOKIE"`
-	else
-		size=0
+	if [ ! -s "$__gtags_COOKIE" ]; then
+		echo "Cookie not found."
+		return 1
 	fi
+	size=`wc -l <"$__gtags_COOKIE"`
 	if __gtags_is_num $1; then
 		if (( $1 > 0 && $1 <= $size )); then
 			n=$1
@@ -396,6 +402,7 @@ __gtags_warp_cookie() {
 	cd "`sed -n ${n}p \"$__gtags_COOKIE\"`"
 }
 cookie() {
+	__gtags_cookie_init
 	case $1 in
 	-list|-lis|-li|-l)
 		if [ -s "$__gtags_COOKIE" ]; then
@@ -403,9 +410,6 @@ cookie() {
 		fi;;
 	-edit|-edi|-ed|-e)
 		${EDITOR-vi} "$__gtags_COOKIE"
-		case `cat "$__gtags_COOKIE"` in
-		'')	cp /dev/null "$__gtags_COOKIE";;
-		esac
 		;;
 	-menu|-men|-me|-m)
 		__gtags_select_cookie;;
@@ -418,6 +422,7 @@ cookie() {
 	esac
 }
 warp() {
+	__gtags_cookie_init
 	__gtags_warp_cookie $1
 }
 ###########################################################################
