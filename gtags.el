@@ -277,6 +277,8 @@
 ;; completsion function for completing-read.
 (defun gtags-completing-gtags (string predicate code)
   (gtags-completing 'gtags string predicate code))
+(defun gtags-completing-grtags (string predicate code)
+  (gtags-completing 'grtags string predicate code))
 (defun gtags-completing-gsyms (string predicate code)
   (gtags-completing 'gsyms string predicate code))
 (defun gtags-completing-files (string predicate code)
@@ -289,6 +291,7 @@
   ; The purpose of using the -n option for the -P command is to exclude
   ; dependence on the execution directory.
   (let ((option (cond ((eq flag 'files)   "-cPo")
+                      ((eq flag 'grtags)  "-cr")
                       ((eq flag 'gsyms)   "-cs")
                       ((eq flag 'idutils) "-cI")
                       (t                  "-c")))
@@ -390,7 +393,7 @@
    (if tagname
      (setq prompt (concat "Find tag (reference): (default " tagname ") "))
     (setq prompt "Find tag (reference): "))
-   (setq input (completing-read prompt 'gtags-completing-gtags
+   (setq input (completing-read prompt 'gtags-completing-grtags
                  nil nil nil gtags-history-list))
    (if (not (equal "" input))
      (setq tagname input))
