@@ -167,6 +167,7 @@
       (define-key gtags-mode-map "\C-cs" 'gtags-find-symbol)
       (define-key gtags-mode-map "\C-cr" 'gtags-find-rtag)
       (define-key gtags-mode-map "\C-ct" 'gtags-find-tag)
+      (define-key gtags-mode-map "\C-cd" 'gtags-find-tag)
       (define-key gtags-mode-map "\C-cv" 'gtags-visit-rootdir)
       ; common
       (define-key gtags-mode-map "\e*" 'gtags-pop-stack)
