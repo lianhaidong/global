@@ -488,6 +488,7 @@ __gtags_completion()
 	r)	flags=r;;
 	s)	flags=s;;
 	rs)	flags=rs;;
+	g)	return 0;;
 	I)	flags=I;;
 	P)	flags=P;;
 	esac
@@ -513,7 +514,8 @@ __gtags_completion()
 	COMPREPLY=(`$__gtags_global_command -c$flags $prefix 2>/dev/null`)
 	return 0
 }
-complete -F __gtags_completion x d r s rs I P
+# The f command use the default completion.
+complete -F __gtags_completion x d g r s rs I P
 ###########################################################################
 # Main
 ###########################################################################
