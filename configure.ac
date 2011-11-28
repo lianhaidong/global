@@ -174,10 +174,11 @@ AC_ARG_WITH(db185-compat,
 				AC_MSG_ERROR([header $withval/include/db_185.h not found.])
 			fi
 			INCLUDES="$INCLUDES -I$withval/include"
-			LDFLAGS="$LDFLAGS -L$withval/lib"
+			#LDFLAGS="$LDFLAGS -L$withval/lib"
 			;;
 		esac
-		DBLIBRARY='-ldb'
+		DBLIBRARY="$withval/lib/libdb.a"
+		#DBLIBRARY='-ldb'
 		AC_DEFINE(USE_DB185_COMPAT,1,[Define if you use DB1.85 compatible API.])
 	fi
 ],[ with_db185_compat='no' ])
