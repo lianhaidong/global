@@ -24,11 +24,13 @@
 # You can specify target with GTAGSLABEL environment variable.
 #
 default:\
+	:tc=native:
+native:\
 	:tc=gtags:tc=htags:
-ctags:\
-	:tc=exuberant-ctags:tc=htags:
 user:\
 	:tc=user-custom:tc=htags:
+ctags:\
+	:tc=exuberant-ctags:tc=htags:
 #---------------------------------------------------------------------
 # Configuration for gtags(1)
 # See gtags(1).
@@ -40,9 +42,11 @@ common:\
 #
 gtags:\
 	:tc=common:\
+	:tc=builtin-parser:
+builtin-parser:\
 	:langmap=@DEFAULTLANGMAP_QUOTED@:
 #
-# skeleton for a plug-in parser.
+# skeleton for user's custom parser.
 #
 user-custom|User custom plugin parser:\
 	:tc=common:\
