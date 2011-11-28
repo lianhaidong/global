@@ -20,15 +20,11 @@ a.visited	{ color: gray; }
 .cvs		{ font-size: 90%; }
 .caution	{ text-align: center; margin: 1em 40px; }
 img.icon	{ vertical-align: top; border: 0; }
-th, td		{ white-space: nowrap; }
-.tag		{ text-align: left; }
-.line		{ text-align: right; }
-.code		{ text-align: left; }
 .curline:hover	{ background-color:lightgray; }
-th.file		{ text-align: center; }
-td.file		{ text-align: left; }
 table.flist	{ border-spacing: 2px; width: 100%; }
-em		{ font-style: normal; }
+/*
+ * Parts
+ */
 em.comment	{ color: green; font-style: italic; }
 em.sharp	{ color: #8b0000; }
 em.brace	{ color: red; }
@@ -36,6 +32,19 @@ em.position	{ color: gray; font-style: italic; }
 em.warned	{ background-color: yellow; }
 em.string	{ text-decoration: underline; }
 strong.reserved	{ font-weight: bold; }
+/*
+ * Tag list using table (--table-list)
+ */
+th, td		{ white-space: nowrap; }
+th.tag		{ text-align: left; }
+th.line		{ text-align: right; }
+th.file		{ text-align: left; }
+th.code		{ text-align: left; }
+td.tag		{ text-align: left; }
+td.line		{ text-align: right; }
+td.file		{ text-align: left; }
+td.code		{ text-align: left; }
+/* end of TAG LIST */
 /*
  * Fixed guide (--fixed-guide)
  */
