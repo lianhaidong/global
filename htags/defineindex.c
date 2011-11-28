@@ -97,7 +97,7 @@ makedefineindex(const char *file, int total, STRBUF *defines)
 	 * map DEFINES to STDOUT.
 	 */
 	STDOUT = DEFINES;
-	snprintf(command, sizeof(command), "%s -c", global_path);
+	snprintf(command, sizeof(command), "%s -c", quote_shell(global_path));
 	if ((TAGS = popen(command, "r")) == NULL)
 		die("cannot fork.");
 	alpha[0] = '\0';

@@ -1078,7 +1078,7 @@ makecommonpart(const char *title, const char *defines, const char *files)
 		case 'm':
 			strbuf_sprintf(sb, "%sMAINS%s\n", header_begin, header_end);
 
-			snprintf(buf, sizeof(buf), "%s --result=ctags-xid --encode-path=\" \t\" --nofilter=path %s", global_path, main_func);
+			snprintf(buf, sizeof(buf), "%s --result=ctags-xid --encode-path=\" \t\" --nofilter=path %s", quote_shell(global_path), main_func);
 			ip = popen(buf, "r");
 			if (!ip)
 				die("cannot execute command '%s'.", buf);
@@ -1415,7 +1415,7 @@ save_environment(int argc, char *const *argv)
 	/*
 	 * save config values.
 	 */
-	snprintf(command, sizeof(command), "%s --config", gtags_path);
+	snprintf(command, sizeof(command), "%s --config", quote_shell(gtags_path));
 	if ((ip = popen(command, "r")) == NULL)
 		die("cannot execute '%s'.", command);
 	while (strbuf_fgets(sb, ip, STRBUF_NOCRLF) != NULL) {

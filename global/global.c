@@ -597,13 +597,13 @@ main(int argc, char **argv)
 	 */
 	if (uflag) {
 		STRBUF	*sb = strbuf_open(0);
-		char *gtags = usable("gtags");
+		char *gtags_path = usable("gtags");
 
-		if (!gtags)
+		if (!gtags_path)
 			die("gtags command not found.");
 		if (chdir(root) < 0)
 			die("cannot change directory to '%s'.", root);
-		strbuf_puts(sb, gtags);
+		strbuf_puts(sb, quote_shell(gtags_path));
 		strbuf_puts(sb, " -i");
 		if (vflag)
 			strbuf_putc(sb, 'v');
