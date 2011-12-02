@@ -9,6 +9,8 @@ function getCheck(name) {
 }
 $(function() {
 	$('#pattern').suggest('@completion_action@',{
+		minchars: 2,
+		delay: 100,
 		extraParams : {
 			type:  function() { return getType(); },
 			id:  '@sitekey@',
