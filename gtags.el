@@ -228,6 +228,11 @@
 ;;
 ;; TRAMP support
 ;;
+;
+; TRAMP style default-directory.
+; /<method>:[<user id>@]<host name>:<directory>
+; Ex: /ssh:remoteuser@remotehost:/usr/src/sys/
+;
 (defconst gtags-tramp-path-regexp "^/\\([^:]+\\):\\([^:]+\\):\\(.*\\)"
   "Regexp matching tramp path name.")
 (defconst gtags-tramp-user-host-regexp "^\\([^@]+\\)@\\(.*\\)"
@@ -275,11 +280,12 @@
               (if (and shell host cwd)
                   (progn
                     (setq gtags-tramp-active t)
-                    ; Use 'global-client even if environment variable GTAGSGLOBAL is set.
                     (setq gtags-tramp-saved-global-command gtags-global-command)
-                    (setq gtags-global-command (getenv "GTAGSGLOBAL"))
-                    (if (or (not gtags-global-command) (equal gtags-global-command ""))
-                        (setq gtags-global-command "global-client"))
+                    ; Use 'global-client even if environment variable GTAGSGLOBAL is set.
+                    ;(setq gtags-global-command (getenv "GTAGSGLOBAL"))
+                    ;(if (or (not gtags-global-command) (equal gtags-global-command ""))
+                        (setq gtags-global-command "global-client")
+                    ;)
                     (push (concat "GTAGSREMOTESHELL=" shell) process-environment)
                     (push (concat "GTAGSREMOTEHOST="   host) process-environment)
                     (push (concat "GTAGSREMOTEUSER="   user) process-environment)
