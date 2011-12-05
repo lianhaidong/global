@@ -5,9 +5,13 @@
 host=${GTAGSREMOTEHOST}
 user=${GTAGSREMOTEUSER}
 shell=${GTAGSREMOTESHELL-ssh}
+cwd=${GTAGSREMOTECWD}	# for TRAMP support
 case $host in
 '')	echo "Remote host is not specified."
 	exit 1;;
+esac
+case $cwd in
+'')	cwd=`pwd`;;
 esac
 # Make command line.
 command=`basename $0 | sed 's/-client//'`
@@ -16,7 +20,7 @@ for a in "$@"; do
 	a=`echo "$a" | sed "s/'/'\"'\"'/g"`
 	arg=$arg" '${a}'"
 done
-commandline="cd '`pwd`' && $command $arg"
+commandline="cd '$cwd' && $command $arg"
 case $user in
 '')	$shell -q $host $commandline;;
 *)	$shell -q -l $user $host $commandline;;
