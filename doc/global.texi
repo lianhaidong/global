@@ -173,7 +173,7 @@ please move to the source directory and invoke gtags(1).
 
 @end example
 
-Gtags traverses sub-directories, picks up source files and makes four tag files
+Gtags traverses sub-directories, picks up source files and makes three tag files
 at the current directory.
 After this, the whole files under this directory is treated as a project.
 
