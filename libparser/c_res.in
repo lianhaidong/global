@@ -13,19 +13,25 @@
 ;
 ; C reserved word list.
 ;
-__P			word
+__P					word
 __attribute__,__attribute		word
 __extension__				word
-__thread				word
 asm,__asm,__asm__			word
 const,__const,__const__			word
 inline,__inline,__inline__		word
 restrict,__restrict,__restrict__	word
 signed,__signed,__signed__		word
 volatile,__volatile,__volatile__	word
-_Bool			word
-_Complex		word
-_Imaginary		word
+_Alignas				word
+_Alignof,__alignof,__alignof__		word
+_Atomic					word
+_Bool					word
+_Complex,__complex,__complex__		word
+_Generic				word
+_Imaginary				word
+_Noreturn				word
+_Static_assert				word
+_Thread_local,__thread			word
 auto			word
 break			word
 case			word
