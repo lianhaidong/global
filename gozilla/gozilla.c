@@ -55,8 +55,8 @@ STRHASH *sh;
 static void load_alias(void);
 static const char *alias(const char *);
 int main(int, char **);
-void getdefinitionURL(const char *, STRBUF *);
-void getURL(const char *, STRBUF *);
+void getdefinitionURL(const char *, const char *, STRBUF *);
+void getURL(const char *, const char *, STRBUF *);
 int isprotocol(const char *);
 int convertpath(const char *, const char *, const char *, STRBUF *);
 void makefileurl(const char *, int, STRBUF *);
@@ -289,7 +289,6 @@ main(int argc, char **argv)
 	 */
 	{
 		char *argument = strbuf_value(arg);
-		int status = 0;
 
 		/*
 		 * Protocol (xxx://...)
@@ -297,20 +296,22 @@ main(int argc, char **argv)
 		if (!definition && isprotocol(argument)) {
 			strbuf_puts(URL, argument);
 		} else {
-			status = setupdbpath(0);
-			if (status == 0) {
+			const char *HTMLdir = NULL;
+
+			if (setupdbpath(0) == 0) {
 				cwd = get_cwd();
 				root = get_root();
 				dbpath = get_dbpath();
+				HTMLdir = locate_HTMLdir();
 			} 
 			/*
 			 * Make a URL of hypertext from the argument.
 			 */
-			if (status == 0 && locate_HTMLdir() != NULL) {
+			if (HTMLdir != NULL) {
 				if (definition)
-					getdefinitionURL(definition, URL);
+					getdefinitionURL(definition, HTMLdir, URL);
 				else
-					getURL(argument, URL);
+					getURL(argument, HTMLdir, URL);
 			}
 			/*
 			 * Make a file URL.
@@ -326,7 +327,7 @@ main(int argc, char **argv)
 				strbuf_puts(URL, "file://");
 				strbuf_puts(URL, result);
 			} else {
-				die_with_code(-status, gtags_dbpath_error);
+				die_with_code(1, "file '%s' not found.", argument);
 			}
 		}
 	}
@@ -347,21 +348,19 @@ main(int argc, char **argv)
  * getdefinitionURL: get URL includes specified definition.
  *
  *	i)	arg	definition name
+ *	i)	htmldir HTML directory
  *	o)	URL	URL begin with 'file:'
  */
 void
-getdefinitionURL(const char *arg, STRBUF *URL)
+getdefinitionURL(const char *arg, const char *htmldir, STRBUF *URL)
 {
 	FILE *fp;
 	char *p;
 	SPLIT ptable;
 	int status = -1;
 	STRBUF *sb = strbuf_open(0);
-	const char *htmldir = locate_HTMLdir();
 	const char *path = makepath(htmldir, "MAP", NULL);
 
-	if (htmldir == NULL)
-		die("hypertext not found. See htags(1).");
 	if (!test("f", path))
 		die("'%s' not found. Please invoke htags(1) with the --map-file option.", path);
 	fp = fopen(path, "r");
@@ -390,20 +389,18 @@ getdefinitionURL(const char *arg, STRBUF *URL)
  * getURL: get URL of the specified file.
  *
  *	i)	file	file name
+ *	i)	htmldir HTML directory
  *	o)	URL	URL begin with 'file:'
  */
 void
-getURL(const char *file, STRBUF *URL)
+getURL(const char *file, const char *htmldir, STRBUF *URL)
 {
 	char *p;
 	char buf[MAXPATHLEN];
 	STRBUF *sb = strbuf_open(0);
-	const char *htmldir = locate_HTMLdir();
 
-	if (htmldir == NULL)
-		die("hypertext not found. See htags(1).");
 	if (!test("f", file) && !test("d", file))
-		die("path '%s' not found.", file);
+		die("file '%s' not found.", file);
 	p = normalize(file, get_root_with_slash(), cwd, buf, sizeof(buf));
 	if (p != NULL && convertpath(dbpath, htmldir, p, sb) == 0)
 		makefileurl(strbuf_value(sb), linenumber, URL);
