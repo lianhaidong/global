@@ -132,23 +132,15 @@ load_alias(void)
 			flag |= STRBUF_APPEND;
 			continue;
 		}
-		while (*p && isblank(*p))	/* skip spaces */
+		while (*p && isblank(*p))				/* skip spaces */
 			p++;
 		name = p;
-		while (*p && isalnum(*p))	/* get name */
+		while (*p && !isblank(*p) && *p != '=' && *p != ':')	/* get name */
 			p++;
 		*p++ = 0;
-		while (*p && isblank(*p))	/* skip spaces */
+		while (*p && (isblank(*p) || *p == '=' || *p == ':'))
 			p++;
-		if (*p == '=' || *p == ':') {
-			p++;
-			while (*p && isblank(*p))/* skip spaces */
-				p++;
-		}
-		value = p;
-		while (*p && !isblank(*p))	/* get value */
-			p++;
-		*p = 0;
+		value = p;						/* get value */
 		ent = strhash_assign(sh, name, 1);
 		if (ent->value)
 			(void)free(ent->value);
