@@ -404,16 +404,17 @@ __gtags_warp_cookie() {
 cookie() {
 	__gtags_cookie_init
 	case $1 in
-	-list|-lis|-li|-l)
+	--list|-list|-lis|-li|-l)
 		if [ -s "$__gtags_COOKIE" ]; then
 			cat -n "$__gtags_COOKIE"
 		fi;;
-	-edit|-edi|-ed|-e)
+	--edit|-edit|-edi|-ed|-e)
 		${EDITOR-vi} "$__gtags_COOKIE"
+		sed '/^$/d' < "$__gtags_COOKIE" > "$__gtags_TMP1" && mv "$__gtags_TMP1" "$__gtags_COOKIE"
 		;;
-	-menu|-men|-me|-m)
+	--menu|-menu|-men|-me|-m)
 		__gtags_select_cookie;;
-	-warp|-war|-wa|-w)
+	--warp|-warp|-war|-wa|-w)
 		__gtags_warp_cookie $2;;
 	"")	# Drop cookie.
 		__gtags_add_cookie;;
@@ -459,14 +460,16 @@ mark()
 {
 	local com
 	case $1 in
-	-list|-lis|-li|-l)
+	--list|-list|-lis|-li|-l)
 		if [ -s "$__gtags_MARKER" ]; then
 			com="cat '$__gtags_MARKER' | $__gtags_filter | cat -n"
 			eval $com
 		fi
 		;;
-	-edit|-edi|-ed|-e)
-		${EDITOR-vi} "$__gtags_MARKER";;
+	--edit|-edit|-edi|-ed|-e)
+		${EDITOR-vi} "$__gtags_MARKER"
+		sed '/^$/d' < "$__gtags_MARKER" > "$__gtags_TMP1" && mv "$__gtags_TMP1" "$__gtags_MARKER"
+		;;
 	"")
 		__gtags_add_maker;;
 	*)
