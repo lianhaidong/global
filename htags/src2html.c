@@ -363,7 +363,7 @@ tooltip(int type, int lno, const char *opt)
 		else if (type == 'Y')
 			strbuf_puts(sb, "Used at");
 		else
-			strbuf_puts(sb, "Refered from");
+			strbuf_puts(sb, "Referred from");
 		strbuf_putc(sb, ' ');
 		strbuf_putn(sb, lno);
 		if (opt) {
@@ -379,7 +379,7 @@ tooltip(int type, int lno, const char *opt)
 		else if (type == 'Y')
 			strbuf_puts(sb, "used in");
 		else
-			strbuf_puts(sb, "refered from");
+			strbuf_puts(sb, "referred from");
 		strbuf_putc(sb, ' ');
 		strbuf_puts(sb, opt);
 		strbuf_putc(sb, ' ');
