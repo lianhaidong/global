@@ -44,6 +44,8 @@
 		(A symbol reference file is created by > and >>,
 		and can also be read using the < command,
 		described under ``Issuing Subsequent Requests'', below.)
+	@item{@option{-i}}
+		Ignore SIGINT signal in line-oriented mode.
 	@item{@option{-L}}
 		Do a single search with line-oriented output when used with the
 		-num pattern option.

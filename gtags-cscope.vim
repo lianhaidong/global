@@ -1,7 +1,7 @@
 " File: gtags-cscope.vim
 " Author: Tama Communications Corporation
-" Version: 0.3
-" Last Modified: September 6, 2011
+" Version: 0.4
+" Last Modified: January 16, 2011
 "
 " Copyright and lisence
 " ---------------------
@@ -88,6 +88,8 @@
 "	let GtagsCscope_Ignore_Case = 1
 " To use absolute path name:
 "       let GtagsCscope_Absolute_Path = 1
+" To deterring interruption:
+"	let GtagsCscope_Keep_Alive = 1
 " If you hope auto loading:
 "	let GtagsCscope_Auto_Load = 1
 " To use 'vim -t ', ':tag' and '<C-]>'
@@ -124,6 +126,9 @@ if !exists("GtagsCscope_Ignore_Case")
 endif
 if !exists("GtagsCscope_Absolute_Path")
     let GtagsCscope_Absolute_Path = 0
+endif
+if !exists("GtagsCscope_Keep_Alive")
+    let GtagsCscope_Keep_Alive = 0
 endif
 
 "
@@ -170,6 +175,9 @@ function! s:GtagsCscope()
     endif
     if g:GtagsCscope_Absolute_Path == 1
         let s:option = s:option . 'a'
+    endif
+    if g:GtagsCscope_Keep_Alive == 1
+        let s:option = s:option . 'i'
     endif
     if s:option != ''
         let s:command = s:command . ' . -' . s:option

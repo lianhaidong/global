@@ -95,6 +95,7 @@ BOOL	isuptodate;		/* consider the crossref up-to-date */
 BOOL	linemode = NO;		/* use line oriented user interface */
 BOOL	verbosemode = NO;	/* print extra information on line mode */
 BOOL	absolutepath = NO;	/* print absolute path name */
+BOOL	ignoresigint = NO;	/* ignore SIGINT signal */
 BOOL	ogs;			/* display OGS book and subsystem names */
 char	*prependpath;		/* prepend path to file names */
 FILE	*refsfound;		/* references found file */
@@ -206,6 +207,9 @@ gtags-cscope: pattern too long, cannot be > %d characters\n", PATLEN);
 	    case 'e':	/* suppress ^E prompt between files */
 		editallprompt = NO;
 		break;
+	    case 'i':	/* ignore SIGINT signal */
+		ignoresigint = YES;
+		break;
 	    case 'k':	/* ignore DFLT_INCDIR */
 		/* N/A */
 		break;
@@ -238,7 +242,7 @@ gtags-cscope: pattern too long, cannot be > %d characters\n", PATLEN);
 		break;
 	    case 'f':	/* alternate cross-reference file */
 	    case 'F':	/* symbol reference lines file */
-	    case 'i':	/* file containing file names */
+/*	    case 'i':	/* file containing file names */
 	    case 'I':	/* #include file directory */
 	    case 'p':	/* file path components to display */
 	    case 'P':	/* prepend path to file names */
@@ -344,7 +348,7 @@ cscope: Could not create private temp dir %s\n",
     snprintf(temp2, sizeof(temp2), "%s/cscope.2", tempdirpv);
 
     /* if running in the foreground */
-    if (signal(SIGINT, SIG_IGN) != SIG_IGN) {
+    if (signal(SIGINT, SIG_IGN) != SIG_IGN && ignoresigint == NO) {
 	/* cleanup on the interrupt and quit signals */
 	signal(SIGINT, myexit);
 #ifdef SIGQUIT
