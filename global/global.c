@@ -23,6 +23,7 @@
 #endif
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/params.h>
 #include <errno.h>
 
 #include <ctype.h>
@@ -668,6 +669,16 @@ main(int argc, char **argv)
 		fprintf(stderr, "cwd=%s\n", cwd);
 		fprintf(stderr, "localprefix=%s\n", localprefix);
 #endif
+	}
+	/*
+	 * convert the file-list path into an absolute path.
+	 */
+	if (file_list && *file_list != '/') {
+		static char buf[MAXPATHLEN];
+
+		if (realpath(file_list, buf) == NULL)
+			die("cannot get real path name.");
+		file_list = buf;
 	}
 	/*
 	 * decide path conversion type.
