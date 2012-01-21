@@ -1,0 +1,41 @@
+"
+" An example of .elvisrc for GLOBAL.
+"
+set tagprg="elvis-global $1"
+alias gtagscontext {
+	eval ("tag" current("word") "--from-here" current("line"):filename)
+}
+alias gtagsbcontext {
+	eval ("browse" current("word") "--from-here" current("line"):filename)
+}
+alias gtagscontexts {
+	eval ("stag" current("word") "--from-here" current("line"):filename)
+}
+alias gtagsbcontexts {
+	eval ("sbrowse" current("word") "--from-here" current("line"):filename)
+}
+alias gtagstagf {
+	eval ("tag -f" filename)
+}
+alias gtagsbtagf {
+	eval ("browse -f" filename)
+}
+alias gtagstagfs {
+	eval ("stag -f" filename)
+}
+alias gtagsbtagfs {
+	eval ("sbrowse -f" filename)
+}
+alias gozilla {
+	eval ("!gozilla " +current("line") " " filename)
+}
+map <C-n>	:tag<Enter>
+map <C-g>	:gozilla<Enter>
+map <F3>	:gtagscontext<Enter>
+map <F4>	:gtagsbcontext<Enter>
+map <C-w><F3>	:gtagscontexts<Enter>
+map <C-w><F4>	:gtagsbcontexts<Enter>
+map <F6>	:gtagstagf<Enter>
+map <F7>	:gtagsbtagf<Enter>
+map <C-w><F6>	:gtagstagfs<Enter>
+map <C-w><F7>	:gtagsbtagfs<Enter>

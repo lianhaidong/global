@@ -20,7 +20,7 @@ SUBDIRS += global gozilla gtags htags htags-refkit gtags-cscope globash \
 gtagsdir = ${datadir}/gtags
 gtags_DATA = AUTHORS COPYING ChangeLog FAQ INSTALL LICENSE NEWS README THANKS \
         gtags.conf gtags.el gtags.pl gtags.vim gtags-cscope.vim \
-	BOKIN_MODEL BOKIN_MODEL_FAQ DONORS
+	BOKIN_MODEL BOKIN_MODEL_FAQ DONORS elvis.rc elvis-2.2_0.patch
 
 EXTRA_DIST = ${gtags_DATA} reconf.sh convert.pl
 
