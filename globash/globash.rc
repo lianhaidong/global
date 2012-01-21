@@ -21,7 +21,7 @@
 #
 # GLOBAL home page is at: http://www.gnu.org/software/global/
 # Author: Tama Communications Corporation
-__gtags_version=0.9
+__gtags_version=1.0
 # Usage:
 # $ bash --rcfile <this file>
 #	or
