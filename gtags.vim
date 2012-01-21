@@ -1,7 +1,7 @@
 " File: gtags.vim
 " Author: Tama Communications Corporation
-" Version: 0.6
-" Last Modified: September 6, 2011
+" Version: 0.6.1
+" Last Modified: January 21, 2012
 "
 " Copyright and licence
 " ---------------------
@@ -30,7 +30,7 @@
 " Installation
 " ------------
 " Drop the file in your plug-in directory or source it from your vimrc.
-" To use this script, you need the GNU GLOBAL-5.7 or later installed
+" To use this script, you need the GNU GLOBAL-6.0 or later installed
 " in your machine.
 "
 " Usage
@@ -362,7 +362,7 @@ function! s:ExecLoad(option, long_option, pattern)
     if v:shell_error != 0
         if v:shell_error != 0
             if v:shell_error == 2
-                call s:Error('invalid arguments. (gtags.vim requires GLOBAL 5.7 or later)')
+                call s:Error('invalid arguments. please use the latest GLOBAL.')
             elseif v:shell_error == 3
                 call s:Error('GTAGS not found.')
             else
