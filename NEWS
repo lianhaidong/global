@@ -21,6 +21,29 @@ ___________________________________
 GNU GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 6.2 - January 21 2012
+
+[CHANGES]
+New facilities:
+o gtags.el: Added support for TRAMP. Now gtags.el works almost transparently with TRAMP.
+  Please send a bug report to the bug mailing list.
+o gtags-cscope: Enables an environment variable EDITOR allow options.
+o gtags-cscope: New -i option.
+o gtags-cscope.vim: New custom variable GtagsCscope_Kepp_Alive.
+o globash: Added long name options:
+  use, show, first, last, next, prev:   --vi, --less, --emacs, --vim, --gozilla, --noedit
+  mark: --list, --edit
+  cookie: --list, --edit, --menu, --warp
+o gtags: Add keywords introduced in ISO/IEC 9899:2011.
+  _Alignas _Alignof _Atomic _Generic _Noreturn _Static_assert _Thread_local
+
+[INCOMPATIBLE CHANGES]
+o less-global: Quoting is required for the pattern which should be interpreted by the shell.
+
+[BUG FIXED]
+The icase_path config variable didn't affect the -c command with the -P option of global.
+Now it works.
+
 Version 6.1 - October 7 2011
 
 [CHANGES]
