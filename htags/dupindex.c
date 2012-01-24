@@ -78,6 +78,9 @@ makedupindex(void)
 		 * construct command line.
 		 */
 		strbuf_reset(command);
+#if defined(_WIN32) && !defined(__CYGWIN__)
+		strbuf_putc(command, '"');
+#endif
 		strbuf_sprintf(command, "%s -x%s --result=ctags-xid --encode-path=\" \t\" --nofilter=path", quote_shell(global_path), option);
 		/*
 		 * Optimization when the --dynamic option is specified.
@@ -88,6 +91,9 @@ makedupindex(void)
 				strbuf_puts(command, " --nofilter=sort");
 		}
 		strbuf_puts(command, " \".*\"");
+#if defined(_WIN32) && !defined(__CYGWIN__)
+		strbuf_putc(command, '"');
+#endif
 		if ((ip = popen(strbuf_value(command), "r")) == NULL)
 			die("cannot execute command '%s'.", strbuf_value(command));
 		while ((ctags_xid = strbuf_fgets(sb, ip, STRBUF_NOCRLF)) != NULL) {

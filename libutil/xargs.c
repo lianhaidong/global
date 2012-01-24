@@ -189,6 +189,14 @@ execute_command(XARGS *xp)
 	FILE *pipe = NULL;
 	char *p, *meta_p;
 
+#if defined(_WIN32) && !defined(__CYGWIN__)
+	/*
+	 * If the command starts with a quote, CMD.EXE requires the entire
+	 * command line to be quoted.
+	 */
+	if (*xp->command == '"')
+		strbuf_putc(comline, '"');
+#endif
 	/*
 	 * Copy the part before '%s' of the command skeleton.
 	 * The '%s' in the skeleton is replaced with given arguments.
@@ -242,6 +250,10 @@ execute_command(XARGS *xp)
 		strbuf_putc(comline, ' ');
 		strbuf_puts(comline, meta_p + 2);
 	}
+#if defined(_WIN32) && !defined(__CYGWIN__)
+	if (*xp->command == '"')
+		strbuf_putc(comline, '"');
+#endif
 	if (count > 0) {
 		pipe = popen(strbuf_value(comline), "r");
 		if (pipe == NULL)

@@ -798,7 +798,7 @@ makeincludeindex(void)
 	 * Unlike Perl regular expression, POSIX regular expression doesn't support C-style escape sequence.
 	 * Therefore, we can not use "\\t" here.
 	 */
-	snprintf(command, sizeof(command), "%s -gnx --encode-path=\" \t\" \"^[ \t]*(#[ \t]*(import|include)|include[ \t]*\\()\"", quote_shell(global_path));
+	snprintf(command, sizeof(command), PQUOTE "%s -gnx --encode-path=\" \t\" \"^[ \t]*(#[ \t]*(import|include)|include[ \t]*\\()\"" PQUOTE, quote_shell(global_path));
 	if ((PIPE = popen(command, "r")) == NULL)
 		die("cannot fork.");
 	strbuf_reset(input);

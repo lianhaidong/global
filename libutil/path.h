@@ -26,12 +26,14 @@
 #endif
 
 /*
- * PATHSEP - Define OS-specific directory and path seperators
+ * PATHSEP - Define OS-specific directory and path separators
  */
 #if (defined(_WIN32) && !defined(__CYGWIN__)) || defined(__DJGPP__)
 #define PATHSEP ";"
+#define NULL_DEVICE "NUL"
 #else
 #define PATHSEP ":"
+#define NULL_DEVICE "/dev/null"
 #endif
 
 #define isdrivechar(x) (((x) >= 'A' && (x) <= 'Z') || ((x) >= 'a' && (x) <= 'z'))

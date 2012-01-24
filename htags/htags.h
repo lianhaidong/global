@@ -25,12 +25,19 @@
 
 #if defined(_WIN32) || defined(__DJGPP__)
 #define W32	1
-#define NULL_DEVICE	"NUL"
 #else
 #define W32	0
-#define NULL_DEVICE	"/dev/null"
 #endif
 #define SITEKEYDIRNAME "sitekeys"
+
+/*
+ * dumb CMD.EXE requires the entire popen command to be quoted
+ */
+#if defined(_WIN32) && !defined(__CYGWIN__)
+#define PQUOTE "\""
+#else
+#define PQUOTE
+#endif
 
 /*
  * definition_header

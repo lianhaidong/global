@@ -484,7 +484,7 @@ main(int argc, char **argv)
 #endif
 			strbuf_puts(sb, " 1>&2");
 		} else {
-			strbuf_puts(sb, " >/dev/null");
+			strbuf_puts(sb, " >" NULL_DEVICE);
 		}
 		if (debug)
 			fprintf(stderr, "executing mkid like: %s\n", strbuf_value(sb));
