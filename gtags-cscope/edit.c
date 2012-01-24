@@ -41,6 +41,7 @@
 #else
 #include <curses.h>
 #endif
+#include "path.h"
 #include "pathconvert.h"
 
 static char const rcsid[] = "$Id$";
@@ -115,14 +116,14 @@ edit(char *file, char *linenum)
 		
 		/* get it to pause after displaying a file smaller than the screen
 		   length */
-		(void) execute(editor, editor, plusnum, file, "/dev/null", NULL);
+		(void) execute(editor, editor, plusnum, file, NULL_DEVICE, NULL);
 	}
 	else if (lineflagafterfile) {
-		(void) snprintf(com, sizeof(com), "%s %s '%s'", editor, file, plusnum);
+		(void) snprintf(com, sizeof(com), "%s %s \"%s\"", editor, file, plusnum);
 		system(com);
 	}
 	else {
-		(void) snprintf(com, sizeof(com), "%s %s '%s'", editor, plusnum, file);
+		(void) snprintf(com, sizeof(com), "%s %s \"%s\"", editor, plusnum, file);
 		system(com);
 	}
 	clear();	/* redisplay screen */

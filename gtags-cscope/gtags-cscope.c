@@ -44,6 +44,7 @@
 /* for libutil */
 #include "env.h"
 #include "gparam.h"
+#include "path.h"
 #include "test.h"
 #include "version.h"
 /* usage */
@@ -397,7 +398,7 @@ cscope: Could not create private temp dir %s\n",
     /* if the cross-reference is to be considered up-to-date */
     if (isuptodate == YES) {
 	char com[80];
-	snprintf(com, sizeof(com), "%s -p >/dev/null", global_command);
+	snprintf(com, sizeof(com), "%s -p >" NULL_DEVICE, global_command);
 	if (system(com) != 0) {
 	    postfatal("gtags-cscope: GTAGS not found. Please invoke again without -d option.\n");
             /* NOTREACHED */
