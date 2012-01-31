@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2005, 2006, 2008,
- *	2009, 2011 Tama Communications Corporation
+ *	2009, 2011, 2012 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -113,6 +113,7 @@ extern int debug;
 #endif
 static const int allow_blank = 1;
 static const int check_looplink = 1;
+static int accept_dotfiles = 0;
 /*
  * trim: remove blanks and '\'.
  */
@@ -252,8 +253,10 @@ prepare_skip(void)
 	 * (2) tag files
 	 */
 	/* skip files which start with '.' e.g. .cvsignore */
-	strbuf_puts(reg, "/\\.[^/]+$|");
-	strbuf_puts(reg, "/\\.[^/]+/|");
+	if (!accept_dotfiles) {
+		strbuf_puts(reg, "/\\.[^/]+$|");
+		strbuf_puts(reg, "/\\.[^/]+/|");
+	}
 	/* skip tag files */
 	strbuf_puts(reg, "/GTAGS$|");
 	strbuf_puts(reg, "/GRTAGS$|");
@@ -466,6 +469,14 @@ getdirs(const char *dir, STRBUF *sb)
 	}
 	(void)closedir(dirp);
 	return 0;
+}
+/*
+ * set_accept_dotfiles: make find to accept dot files and dot directries.
+ */
+void
+set_accept_dotfiles()
+{
+	accept_dotfiles = 1;
 }
 /*
  * find_open: start iterator without GPATH.

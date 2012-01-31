@@ -131,19 +131,21 @@ static struct option const long_options[] = {
 	/*
 	 * The following are long name only.
 	 */
-	/* flag value */
-	{"debug", no_argument, &debug, 1},
-	{"statistics", no_argument, &statistics, STATISTICS_STYLE_TABLE},
-	{"version", no_argument, &show_version, 1},
-	{"help", no_argument, &show_help, 1},
-
-	/* accept value */
 #define OPT_CONFIG		128
 #define OPT_GTAGSCONF		129
 #define OPT_GTAGSLABEL		130
 #define OPT_PATH		131
 #define OPT_SINGLE_UPDATE	132
 #define OPT_ENCODE_PATH		133
+#define OPT_ACCEPT_DOTFILES	134
+	/* flag value */
+	{"accept-dotfiles", no_argument, NULL, OPT_ACCEPT_DOTFILES},
+	{"debug", no_argument, &debug, 1},
+	{"statistics", no_argument, &statistics, STATISTICS_STYLE_TABLE},
+	{"version", no_argument, &show_version, 1},
+	{"help", no_argument, &show_help, 1},
+
+	/* accept value */
 	{"config", optional_argument, NULL, OPT_CONFIG},
 	{"encode-path", required_argument, NULL, OPT_ENCODE_PATH},
 	{"gtagsconf", required_argument, NULL, OPT_GTAGSCONF},
@@ -204,6 +206,9 @@ main(int argc, char **argv)
 			if (strchr(optarg, '/') || strchr(optarg, '.'))
 				die("cannot encode '/' and '.' in the path.");
 			set_encode_chars((unsigned char *)optarg);
+			break;
+		case OPT_ACCEPT_DOTFILES:
+			set_accept_dotfiles();
 			break;
 		case 'c':
 			cflag++;
