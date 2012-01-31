@@ -262,6 +262,11 @@ AC_ARG_WITH(exuberant-ctags,
 		AC_MSG_RESULT([using $EXUBERANT_CTAGS])
 	fi
 ])
+AC_ARG_ENABLE(gtagscscope,
+[  --disable-gtagscscope   omit gtags-cscope],,
+enable_gtagscscope=yes)
+AM_CONDITIONAL([USE_GTAGSCSCOPE], [test "$enable_gtagscscope" != no])
+
 AC_DEFINE_UNQUOTED(EXUBERANT_CTAGS, "$EXUBERANT_CTAGS", [Exuberant Ctags program.])
 AC_SUBST(EXUBERANT_CTAGS)
 
