@@ -244,9 +244,11 @@
 
 ; The substitute of buffer-file-name
 (defun gtags-buffer-file-name ()
-  (if (string-match gtags-tramp-path-regexp buffer-file-name)
-      (match-string 3 buffer-file-name)
-      buffer-file-name))
+  (if buffer-file-name
+      (if (string-match gtags-tramp-path-regexp buffer-file-name)
+          (match-string 3 buffer-file-name)
+          buffer-file-name)
+      nil))
 
 (defun gtags-push-tramp-environment ()
     (let ((tramp-path default-directory))
