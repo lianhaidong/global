@@ -1,6 +1,6 @@
 #
 # Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005
-#	2007, 2008, 2009, 2010 Tama Communications Corporation
+#	2007, 2008, 2009, 2010, 2012 Tama Communications Corporation
 #
 # This file is part of GNU GLOBAL.
 #
@@ -22,7 +22,7 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	GTAGS,1,March 2010,GNU Project
+@HEADER	GTAGS,1,February 2012,GNU Project
 @NAME	gtags - create tag files for global.
 @SYNOPSIS
 	@name{gtags} [-ciIOqvw][-d @arg{tag-file}][-f @arg{file}][@arg{dbpath}]
@@ -41,6 +41,8 @@
 @OPTIONS
 	The following options are available:
 	@begin_itemize
+	@item{@option{--accept-dotfiles}}
+		Accept dot files and dot directories. By default, @name{gtags} ignore them.
 	@item{@option{-c}, @option{--compact}}
 		Make GTAGS in compact format.
 		This option does not influence GRTAGS,
