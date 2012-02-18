@@ -410,8 +410,11 @@ Cpp(const struct parser_param *param)
 						}
 						c = nexttoken(interest_enum, cpp_reserved_word);
 					}
-					if (c == '{' /* } */ && c_ == CPP_ENUM) {
-						c = enumerator_list(param);
+					if (c_ == CPP_ENUM) {
+						if (c == '{') /* } */
+							c = enumerator_list(param);
+						else
+							pushbacktoken();
 					} else {
 						for (; c != EOF; c = nexttoken(interest_enum, cpp_reserved_word)) {
 							switch (c) {

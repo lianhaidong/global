@@ -362,8 +362,11 @@ C_family(const struct parser_param *param, int type)
 						c = nexttoken(interest_enum, c_reserved_word);
 					}
 				
-					if (c == '{' /* } */ && c_ == C_ENUM) {
-						c = enumerator_list(param);
+					if (c_ == C_ENUM) {
+						if (c == '{') /* } */
+							c = enumerator_list(param);
+						else
+							pushbacktoken();
 					} else {
 						for (; c != EOF; c = nexttoken(interest_enum, c_reserved_word)) {
 							switch (c) {
