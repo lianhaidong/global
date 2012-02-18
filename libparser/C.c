@@ -39,6 +39,7 @@ static void C_family(const struct parser_param *, int);
 static void process_attribute(const struct parser_param *);
 static int function_definition(const struct parser_param *, char *);
 static void condition_macro(const struct parser_param *, int);
+static int enumerator_list(const struct parser_param *);
 
 #define IS_TYPE_QUALIFIER(c)	((c) == C_CONST || (c) == C_RESTRICT || (c) == C_VOLATILE)
 
@@ -305,30 +306,7 @@ C_family(const struct parser_param *param, int type)
 				c = nexttoken(interested, c_reserved_word);
 			}
 			if (c == '{' /* } */ && cc == C_ENUM) {
-				int savelevel = level;
-
-				for (; c != EOF; c = nexttoken(interested, c_reserved_word)) {
-					switch (c) {
-					case SHARP_IFDEF:
-					case SHARP_IFNDEF:
-					case SHARP_IF:
-					case SHARP_ELIF:
-					case SHARP_ELSE:
-					case SHARP_ENDIF:
-						condition_macro(param, c);
-						continue;
-					default:
-						break;
-					}
-					if (c == '{')
-						level++;
-					else if (c == '}') {
-						if (--level == savelevel)
-							break;
-					} else if (c == SYMBOL) {
-						PUT(PARSER_DEF, token, lineno, sp);
-					}
-				}
+				enumerator_list(param);
 			} else {
 				pushbacktoken();
 			}
@@ -374,7 +352,7 @@ C_family(const struct parser_param *param, int type)
 					int c_ = c;
 
 					c = nexttoken(interest_enum, c_reserved_word);
-					/* read enum name if exist */
+					/* read tag name if exist */
 					if (c == SYMBOL) {
 						if (peekc(0) == '{') /* } */ {
 							PUT(PARSER_DEF, token, lineno, sp);
@@ -383,48 +361,42 @@ C_family(const struct parser_param *param, int type)
 						}
 						c = nexttoken(interest_enum, c_reserved_word);
 					}
-					for (; c != EOF; c = nexttoken(interest_enum, c_reserved_word)) {
-						switch (c) {
-						case SHARP_IFDEF:
-						case SHARP_IFNDEF:
-						case SHARP_IF:
-						case SHARP_ELIF:
-						case SHARP_ELSE:
-						case SHARP_ENDIF:
-							condition_macro(param, c);
-							continue;
-						default:
-							break;
-						}
-						if (c == ';' && level == typedef_savelevel) {
-							if (savetok[0])
-								PUT(PARSER_DEF, savetok, savelineno, sp);
-							break;
-						} else if (c == '{')
-							level++;
-						else if (c == '}') {
-							if (--level == typedef_savelevel)
+				
+					if (c == '{' /* } */ && c_ == C_ENUM) {
+						c = enumerator_list(param);
+					} else {
+						for (; c != EOF; c = nexttoken(interest_enum, c_reserved_word)) {
+							switch (c) {
+							case SHARP_IFDEF:
+							case SHARP_IFNDEF:
+							case SHARP_IF:
+							case SHARP_ELIF:
+							case SHARP_ELSE:
+							case SHARP_ENDIF:
+								condition_macro(param, c);
+								continue;
+							default:
 								break;
-						} else if (c == SYMBOL) {
-							if (c_ == C_ENUM) {
-								if (level > typedef_savelevel)
-									PUT(PARSER_DEF, token, lineno, sp);
-								else if (level == typedef_savelevel)
-									PUT(PARSER_REF_SYM, token, lineno, sp);
-							} else {
-								if (level > typedef_savelevel) {
-									PUT(PARSER_REF_SYM, token, lineno, sp);
-								} else {
-									PUT(PARSER_REF_SYM, token, lineno, sp);
-								}
+							}
+							if (c == ';' && level == typedef_savelevel) {
+								if (savetok[0])
+									PUT(PARSER_DEF, savetok, savelineno, sp);
+								break;
+							} else if (c == '{')
+								level++;
+							else if (c == '}') {
+								if (--level == typedef_savelevel)
+									break;
+							} else if (c == SYMBOL) {
+								PUT(PARSER_REF_SYM, token, lineno, sp);
 								/* save lastest token */
 								strlimcpy(savetok, token, sizeof(savetok));
 								savelineno = lineno;
 							}
 						}
+						if (c == ';')
+							break;
 					}
-					if (c == ';')
-						break;
 					if ((param->flags & PARSER_WARNING) && c == EOF) {
 						warning("unexpected eof. [+%d %s]", lineno, curfile);
 						break;
@@ -662,4 +634,54 @@ condition_macro(const struct parser_param *param, int cc)
 		if (cc == SYMBOL && strcmp(token, "defined") != 0)
 			PUT(PARSER_REF_SYM, token, lineno, sp);
 	}
+}
+
+/*
+ * enumerator_list: process "symbol (= expression), ... }"
+ */
+static int
+enumerator_list(const struct parser_param *param)
+{
+	int savelevel = level;
+	int in_expression = 0;
+	int c = '{';
+
+	for (; c != EOF; c = nexttoken("{}(),=", c_reserved_word)) {
+		switch (c) {
+		case SHARP_IFDEF:
+		case SHARP_IFNDEF:
+		case SHARP_IF:
+		case SHARP_ELIF:
+		case SHARP_ELSE:
+		case SHARP_ENDIF:
+			condition_macro(param, c);
+			break;
+		case SYMBOL:
+			if (in_expression)
+				PUT(PARSER_REF_SYM, token, lineno, sp);
+			else
+				PUT(PARSER_DEF, token, lineno, sp);
+			break;
+		case '{':
+		case '(':
+			level++;
+			break;
+		case '}':
+		case ')':
+			if (--level == savelevel)
+				return c;
+			break;
+		case ',':
+			if (level == savelevel + 1)
+				in_expression = 0;
+			break;
+		case '=':
+			in_expression = 1;
+			break;
+		default:
+			break;
+		}
+	}
+
+	return c;
 }
