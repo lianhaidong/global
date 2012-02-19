@@ -3,7 +3,7 @@
 ;(setq debug-on-error t)
 ;;
 ;; Copyright (c) 1997, 1998, 1999, 2000, 2006, 2007, 2008, 2009, 2010
-;;		2011
+;;		2011, 2012
 ;;	Tama Communications Corporation
 ;;
 ;; This file is part of GNU GLOBAL.
@@ -24,7 +24,7 @@
 
 ;; GLOBAL home page is at: http://www.gnu.org/software/global/
 ;; Author: Tama Communications Corporation
-;; Version: 3.3
+;; Version: 3.4
 ;; Keywords: tools
 ;; Required version: GLOBAL 5.9.7 or later.
 
@@ -125,6 +125,11 @@
   :group 'gtags
   :type 'boolean)
 
+(defcustom gtags-prefix-key "\C-c"
+  "*If non-nil, it is used for the prefix key of gtags-xxx command."
+  :group 'gtags
+  :type 'string)
+
 ;; Variables
 (defvar gtags-current-buffer nil
   "Current buffer.")
@@ -158,18 +163,18 @@
 (if gtags-suggested-key-mapping
     (progn
       ; Current key mapping.
-      (define-key gtags-mode-map "\C-ch" 'gtags-display-browser)
+      (define-key gtags-mode-map (concat gtags-prefix-key "h") 'gtags-display-browser)
       (define-key gtags-mode-map "\C-]" 'gtags-find-tag-from-here)
       (define-key gtags-mode-map "\C-t" 'gtags-pop-stack)
-      (define-key gtags-mode-map "\C-cP" 'gtags-find-file)
-      (define-key gtags-mode-map "\C-cf" 'gtags-parse-file)
-      (define-key gtags-mode-map "\C-cg" 'gtags-find-with-grep)
-      (define-key gtags-mode-map "\C-cI" 'gtags-find-with-idutils)
-      (define-key gtags-mode-map "\C-cs" 'gtags-find-symbol)
-      (define-key gtags-mode-map "\C-cr" 'gtags-find-rtag)
-      (define-key gtags-mode-map "\C-ct" 'gtags-find-tag)
-      (define-key gtags-mode-map "\C-cd" 'gtags-find-tag)
-      (define-key gtags-mode-map "\C-cv" 'gtags-visit-rootdir)
+      (define-key gtags-mode-map (concat gtags-prefix-key "P") 'gtags-find-file)
+      (define-key gtags-mode-map (concat gtags-prefix-key "f") 'gtags-parse-file)
+      (define-key gtags-mode-map (concat gtags-prefix-key "g") 'gtags-find-with-grep)
+      (define-key gtags-mode-map (concat gtags-prefix-key "I") 'gtags-find-with-idutils)
+      (define-key gtags-mode-map (concat gtags-prefix-key "s") 'gtags-find-symbol)
+      (define-key gtags-mode-map (concat gtags-prefix-key "r") 'gtags-find-rtag)
+      (define-key gtags-mode-map (concat gtags-prefix-key "t") 'gtags-find-tag)
+      (define-key gtags-mode-map (concat gtags-prefix-key "d") 'gtags-find-tag)
+      (define-key gtags-mode-map (concat gtags-prefix-key "v") 'gtags-visit-rootdir)
       ; common
       (define-key gtags-mode-map "\e*" 'gtags-pop-stack)
       (define-key gtags-mode-map "\e." 'gtags-find-tag)
@@ -203,6 +208,9 @@
 )
 
 ;; Key mapping of gtags-select-mode.
+; The map of key "\C-t" and "\C-m" is always carried out..
+(define-key gtags-select-mode-map "\C-t" 'gtags-pop-stack)
+(define-key gtags-select-mode-map "\C-m" 'gtags-select-tag)
 (if gtags-suggested-key-mapping
     (progn
       (define-key gtags-select-mode-map "\e*" 'gtags-pop-stack)
@@ -216,8 +224,6 @@
       (define-key gtags-select-mode-map "n" 'next-line)
       (define-key gtags-select-mode-map "q" 'gtags-pop-stack)
       (define-key gtags-select-mode-map "u" 'gtags-pop-stack)
-      (define-key gtags-select-mode-map "\C-t" 'gtags-pop-stack)
-      (define-key gtags-select-mode-map "\C-m" 'gtags-select-tag)
       (define-key gtags-select-mode-map "\C-o" 'gtags-select-tag-other-window)
       (define-key gtags-select-mode-map "\e." 'gtags-select-tag)
       (if gtags-disable-pushy-mouse-mapping nil
