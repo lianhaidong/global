@@ -21,6 +21,35 @@ ___________________________________
 GNU GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 6.2.1 - February 24 2012
+
+[CHANGES]
+New facilities:
+o gtags: New --accept-dotfiles option.
+o configure: New --disable-gtagscscope option.
+o gtags.el: Key mapping was changed to follow "Key binding conventions" of Emacs Lisp.
+  - The prefix character "\C-c" for suggested key mapping became customizable.
+    If you want to invoke 'gtags-find-tag by "\C-xt", please write your .emacs file
+    like follows:
+
+        [$HOME/.emacs]
+        (setq gtags-suggested-key-mapping t)
+        (setq gtags-prefix-key "\C-x")
+
+[INCOMPATIBLE CHANGES]
+o gtags.el: Key mapping was changed to follow "Key binding conventions" of Emacs Lisp.
+  - Policy of key mapping was changed.
+  [Old] If 'gtags-suggested-key-mapping' is false, any key mapping is not done.
+  [New] If 'gtags-suggested-key-mapping' is false, almost key mapping is not done.
+        But "\C-m" and "\C-t" in 'Gtags select mode' are always enabled.
+
+[BUG FIXED]
+global: The -L option with '-' didn't work. Now it works.
+Built-in parser:
+- Pick up symbols in expression in enumerator-list as "reference or other symbol".
+- C/C++ parser couldn't handle typedef of the form of 'typedef enum tag_name TYPEDEF_NAME;'
+  correctly. Now, it works.
+
 Version 6.2 - January 21 2012
 
 [CHANGES]
