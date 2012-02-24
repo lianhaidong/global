@@ -906,6 +906,17 @@ makehtml(int total)
 	 * Create anchor stream for anchor_load().
 	 */
 	anchor_stream = tmpfile();
+#if defined(_WIN32) && !defined(__CYGWIN__)
+	/*
+	 * tmpfile is created in the root, which user's can't write on Vista+.
+	 * Use _tempnam and open it directly.
+	 */
+	if (anchor_stream == NULL) {
+		char *name = _tempnam(tmpdir, "htags");
+		anchor_stream = fopen(name, "w+bD");
+		free(name);
+	}
+#endif
 	gp = gfind_open(dbpath, NULL, other_files ? GPATH_BOTH : GPATH_SOURCE);
 	while ((path = gfind_read(gp)) != NULL) {
 		if (gp->type == GPATH_OTHER)

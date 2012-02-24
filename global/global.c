@@ -672,7 +672,7 @@ main(int argc, char **argv)
 	/*
 	 * convert the file-list path into an absolute path.
 	 */
-	if (file_list && strcmp(file_list, "-") && *file_list != '/') {
+	if (file_list && strcmp(file_list, "-") && !isabspath(file_list)) {
 		static char buf[MAXPATHLEN];
 
 		if (realpath(file_list, buf) == NULL)
