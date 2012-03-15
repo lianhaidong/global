@@ -114,10 +114,15 @@ AC_CHECK_FUNCS(putc_unlocked getc_unlocked)
 AC_CHECK_FUNCS(gettimeofday getrusage)
 AC_DJGPP
 
+AC_ARG_ENABLE(gtagscscope,
+[  --disable-gtagscscope   omit gtags-cscope],,
+enable_gtagscscope=yes)
+AM_CONDITIONAL([USE_GTAGSCSCOPE], [test "$enable_gtagscscope" != no])
+
 dnl #### begin of gtags-cscope ###
 AC_CHECK_CURSES
 AM_CONDITIONAL(HAS_CURSES, test "$has_curses" = true)
-if test "$has_curses" = false; then
+if test "$has_curses" = false && test "$enable_gtagscscope" = yes; then
 	AC_MSG_ERROR([curses library is required but not found.])
 fi
 
@@ -262,11 +267,6 @@ AC_ARG_WITH(exuberant-ctags,
 		AC_MSG_RESULT([using $EXUBERANT_CTAGS])
 	fi
 ])
-AC_ARG_ENABLE(gtagscscope,
-[  --disable-gtagscscope   omit gtags-cscope],,
-enable_gtagscscope=yes)
-AM_CONDITIONAL([USE_GTAGSCSCOPE], [test "$enable_gtagscscope" != no])
-
 AC_DEFINE_UNQUOTED(EXUBERANT_CTAGS, "$EXUBERANT_CTAGS", [Exuberant Ctags program.])
 AC_SUBST(EXUBERANT_CTAGS)
 
