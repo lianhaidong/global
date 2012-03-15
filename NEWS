@@ -5,7 +5,7 @@ ___________________________________
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009,
-	2010, 2011
+	2010, 2011, 2012
 	Tama Communications Corporation
 
  This file is free software; as a special exception the author gives
@@ -20,6 +20,15 @@ ___________________________________
 
 GNU GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
+
+Version 6.2.2 - March 15 2012
+
+[BUG FIXED]
+o configure: The --disable-gtagscscope option didn't avoid building gtags-cscope
+  completely. So, ./configure failed when there is no curses library.
+  Now it avoids building gtags-cscope completely.
+o htags: Imported a patch to fix htags on Windows Vista+ (tmpfile wants to create
+  its file in the root directory, which is not writable by normal users).
 
 Version 6.2.1 - February 24 2012
 
