@@ -1,20 +1,25 @@
-This is an example of plug-in parser for gtags(1).
+___________________________________
+|      |  |  |     |  _  |     |  |
+|  |___|  |  |  |  |    _|  |  |  |    GNU GLOBAL source code tag system
+|  |   |  |  |  |  |     |     |  |
+|  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Copyright (c) 2011 Tama Communications Corporation
 
-This parser is built as a shared library, and is installed to
-/usr/local/lib/gtags by default.
+ This file is free software; as a special exception the author gives
+ unlimited permission to copy and/or distribute it, with or without
+ modifications, as long as this notice is preserved.
 
-How to use a plug-in parser
-===========================
+ This program is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
+ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-To use this plug-in parser, please do like follows:
-(It assumed that Exuberant ctags exists in "/usr/local/bin".)
+                ----------------------------------
 
-	$ ./configure --with-exuberant-ctags=/usr/local/bin/ctags
-	$ make install
-	$ gtags --gtagsconf=/usr/local/share/gtags/gtags.conf --gtagslabel=plugin-example
+This directory is a factory of plug-in parsers.
 
-How to write a plug-in parser
-=============================
+How to write a plug-in parser?
+==============================
 
 You should write a parser function like follows:
 
@@ -38,3 +43,17 @@ o write a tag to GRTAGS
 
 Note: 
 Gtags always makes GRTAGS even if you don't use PARSER_REF_SYM.
+This is an example of plug-in parser for gtags(1).
+
+How to use Exuberant Ctags parser?
+==================================
+
+The parser 'exuberant-ctags.la' is built as a shared library, and is installed to
+/usr/local/lib/gtags by default.
+
+To use this parser, please do like follows:
+(It assumed that Exuberant ctags exists in "/usr/local/bin".)
+
+	$ ./configure --with-exuberant-ctags=/usr/local/bin/ctags
+	$ make install
+	$ gtags --gtagsconf=/usr/local/share/gtags/gtags.conf --gtagslabel=ctags
