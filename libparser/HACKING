@@ -16,6 +16,8 @@ ___________________________________
 
                 ----------------------------------
 
+This directory includes built-in parsers.
+
 1. Required programs.
 
 To build the parser, you need to have the following package installed:
