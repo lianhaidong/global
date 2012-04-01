@@ -132,7 +132,7 @@ start_sort_process(DBOP *dbop) {
 	sa.lpSecurityDescriptor = NULL;
 	if (!CreatePipe(&opipe[0], &opipe[1], &sa, 0) ||
 	    !CreatePipe(&ipipe[0], &ipipe[1], &sa, 0))
-		die("cannot create pipe.");
+		die("CreatePipe failed.");
 	SetHandleInformation(opipe[1], HANDLE_FLAG_INHERIT, 0);
 	SetHandleInformation(ipipe[0], HANDLE_FLAG_INHERIT, 0);
 	ZeroMemory(&si, sizeof(si));
@@ -201,14 +201,14 @@ start_sort_process(DBOP *dbop) {
 	 *	(dbop->sortin)  ipipe[0] <===== ipipe[1] (stdout)
 	 */
 	if (pipe(opipe) < 0 || pipe(ipipe) < 0)
-		fprintf(stderr, "cannot create pipe.");
+		die("pipe(2) failed.");
 	dbop->pid = fork();
 	if (dbop->pid == 0) {
 		/* child process */
 		close(opipe[1]);
 		close(ipipe[0]);
 		if (dup2(opipe[0], 0) < 0 || dup2(ipipe[1], 1) < 0)
-			die("dup2 failed.");
+			die("dup2(2) failed.");
 		close(opipe[0]);
 		close(ipipe[1]);
 		/*
@@ -218,7 +218,7 @@ start_sort_process(DBOP *dbop) {
 		set_env("LC_ALL", "C");
 		execvp(POSIX_SORT, argv);
 	} else if (dbop->pid < 0)
-		die("fork failed.");
+		die("fork(2) failed.");
 	/* parent process */
 	close(opipe[0]);
 	close(ipipe[1]);
@@ -227,7 +227,7 @@ start_sort_process(DBOP *dbop) {
 	dbop->sortout = fdopen(opipe[1], "w");
 	dbop->sortin = fdopen(ipipe[0], "r");
 	if (dbop->sortout == NULL || dbop->sortin == NULL)
-		die("fdopen failed.");
+		die("fdopen(3) failed.");
 }
 static void
 terminate_sort_process(DBOP *dbop) {
@@ -339,7 +339,7 @@ dbop_get(DBOP *dbop, const char *name)
 	case RET_SUCCESS:
 		break;
 	case RET_ERROR:
-		die("cannot read from database.");
+		die("dbop_get failed.");
 	case RET_SPECIAL:
 		return (NULL);
 	}
@@ -383,7 +383,7 @@ dbop_put(DBOP *dbop, const char *name, const char *data)
 		break;
 	case RET_ERROR:
 	case RET_SPECIAL:
-		die(dbop->put_errmsg ? dbop->put_errmsg : "cannot write to database.");
+		die(dbop->put_errmsg ? dbop->put_errmsg : "dbop_put failed.");
 	}
 }
 /*
@@ -419,7 +419,7 @@ dbop_put_withlen(DBOP *dbop, const char *name, const char *data, int length)
 		break;
 	case RET_ERROR:
 	case RET_SPECIAL:
-		die(dbop->put_errmsg ? dbop->put_errmsg : "cannot write to database.");
+		die(dbop->put_errmsg ? dbop->put_errmsg : "dbop_put_withlen failed.");
 	}
 }
 /*
@@ -442,7 +442,7 @@ dbop_delete(DBOP *dbop, const char *path)
 	} else
 		status = (*db->del)(db, &key, R_CURSOR);
 	if (status == RET_ERROR)
-		die("cannot delete record.");
+		die("dbop_delete failed.");
 }
 /*
  * dbop_update: update record.
@@ -746,7 +746,7 @@ dbop_close(DBOP *dbop)
 #endif
 	if (dbop->dbname[0] != '\0') {
 		if (dbop->perm && chmod(dbop->dbname, dbop->perm) < 0)
-			die("cannot change file mode.");
+			die("chmod(2) failed.");
 	}
 	(void)free(dbop);
 }
