@@ -24,9 +24,8 @@
 
 ;; GLOBAL home page is at: http://www.gnu.org/software/global/
 ;; Author: Tama Communications Corporation
-;; Version: 3.4
+;; Version: 3.5
 ;; Keywords: tools
-;; Required version: GLOBAL 5.9.7 or later.
 
 ;; Gtags-mode is implemented as a minor mode so that it can work with any
 ;; other major modes. Gtags-select mode is implemented as a major mode.
@@ -88,6 +87,13 @@
   :type '(choice (const :tag "Relative from the root of the current project" root)
                  (const :tag "Relative from the current directory" relative)
                  (const :tag "Absolute" absolute))
+  :group 'gtags)
+
+(defcustom gtags-ignore-case 'follow-case-fold-search
+  "*Controls whether or not ignore case in each search."
+  :type '(choice (const :tag "Follows case-fold-search variable" follow-case-fold-search)
+                 (const :tag "Ignore case" t)
+                 (const :tag "Distinguish case" nil))
   :group 'gtags)
 
 (defcustom gtags-read-only nil
@@ -255,7 +261,6 @@
           (match-string 3 buffer-file-name)
           buffer-file-name)
       nil))
-
 (defun gtags-push-tramp-environment ()
     (let ((tramp-path default-directory))
       (if (string-match gtags-tramp-path-regexp tramp-path)
@@ -314,6 +319,12 @@
 ;;
 ;; utility
 ;;
+;; Ignore case or not.
+(defun gtags-ignore-casep ()
+    (if (equal gtags-ignore-case 'follow-case-fold-search)
+	case-fold-search
+        gtags-ignore-case))
+
 (defun gtags-match-string (n)
   (buffer-substring (match-beginning n) (match-end n)))
 
@@ -384,7 +395,7 @@
                       (t                  "-c")))
         (complete-list (make-vector 63 0))
         (prev-buffer (current-buffer)))
-    (if case-fold-search
+    (if (gtags-ignore-casep)
         (setq option (concat option "i")))
     ; build completion list
     (set-buffer (generate-new-buffer "*Completions*"))
@@ -659,7 +670,7 @@
     (setq flag-char (string-to-char flag))
     ; Use always ctags-x format.
     (setq option "-x")
-    (if case-fold-search
+    (if (gtags-ignore-casep)
         (setq option (concat option "i")))
     (if (char-equal flag-char ?C)
         (setq context (concat "--from-here=" (number-to-string (gtags-current-lineno)) ":" (gtags-buffer-file-name)))
