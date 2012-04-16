@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005, 2006,
- *	2007, 2008, 2010, 2011 Tama Communications Corporation
+ *	2007, 2008, 2010, 2011, 2012 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -102,6 +102,7 @@ char *context_file;
 char *context_lineno;
 char *file_list;
 char *encode_chars;
+char *single_update;
 
 static void
 usage(void)
@@ -122,6 +123,7 @@ help(void)
 #define FROM_HERE	129
 #define ENCODE_PATH	130
 #define MATCH_PART	131
+#define SINGLE_UPDATE	132
 #define SORT_FILTER     1
 #define PATH_FILTER     2
 #define BOTH_FILTER     (SORT_FILTER|PATH_FILTER)
@@ -168,6 +170,7 @@ static struct option const long_options[] = {
 	{"help", no_argument, &show_help, 1},
 	{"result", required_argument, NULL, RESULT},
 	{"nosource", no_argument, &nosource, 1},
+	{"single-update", required_argument, NULL, SINGLE_UPDATE},
 	{ 0 }
 };
 
@@ -464,6 +467,9 @@ main(int argc, char **argv)
 			else
 				die_with_code(2, "unknown format type for the --result option.");
 			break;
+		case SINGLE_UPDATE:
+			single_update = optarg;
+			break;
 		default:
 			usage();
 			break;
@@ -523,6 +529,14 @@ main(int argc, char **argv)
 	}
 	if (show_version)
 		version(av, vflag);
+	if (single_update) {
+		if (command == 0) {
+			uflag++;
+			command = 'u';
+		} else if (command != 'u') {
+			;	/* ignored */
+		}
+	}
 	/*
 	 * only -c, -u, -P and -p allows no argument.
 	 */
@@ -606,7 +620,18 @@ main(int argc, char **argv)
 		strbuf_puts(sb, quote_shell(gtags_path));
 		strbuf_puts(sb, " -i");
 		if (vflag)
-			strbuf_putc(sb, 'v');
+			strbuf_puts(sb, " -v");
+		if (single_update) {
+			if (!isabspath(single_update)) {
+				static char regular_path_name[MAXPATHLEN];
+
+				if (rel2abs(single_update, cwd, regular_path_name, sizeof(regular_path_name)) == NULL)
+					die("rel2abs failed.");
+				single_update = regular_path_name;
+			}
+			strbuf_puts(sb, " --single-update=");
+			strbuf_puts(sb, single_update);
+		}
 		strbuf_putc(sb, ' ');
 		strbuf_puts(sb, dbpath);
 		if (system(strbuf_value(sb)))
