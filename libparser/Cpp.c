@@ -308,7 +308,8 @@ Cpp(const struct parser_param *param)
 		case CPP_STRUCT:
 		case CPP_ENUM:
 		case CPP_UNION:
-			c = nexttoken(interested, cpp_reserved_word);
+			while ((c = nexttoken(interested, cpp_reserved_word)) == CPP___ATTRIBUTE__)
+				process_attribute(param);
 			if (c == SYMBOL) {
 				if (peekc(0) == '{') /* } */ {
 					PUT(PARSER_DEF, token, lineno, sp);
@@ -400,7 +401,8 @@ Cpp(const struct parser_param *param)
 					char *interest_enum = "{},;";
 					int c_ = c;
 
-					c = nexttoken(interest_enum, cpp_reserved_word);
+					while ((c = nexttoken(interest_enum, cpp_reserved_word)) == CPP___ATTRIBUTE__)
+						process_attribute(param);
 					/* read tag name if exist */
 					if (c == SYMBOL) {
 						if (peekc(0) == '{') /* } */ {
