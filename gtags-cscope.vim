@@ -3,7 +3,7 @@
 " Version: 0.4
 " Last Modified: January 16, 2011
 "
-" Copyright and lisence
+" Copyright and license
 " ---------------------
 " Copyright (c) 2010, 2011 Tama Communications Corporation
 "
