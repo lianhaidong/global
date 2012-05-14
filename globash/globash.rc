@@ -599,7 +599,7 @@ __gtags_locate_tag() {
 		fi
 		tag="$__gtags_lasttag"
 	fi
-	$__gtags_global_command --encode-path=' ' --nofilter=path -$command --result=ctags-x $option "$tag" >"$__gtags_TMP1"
+	$__gtags_global_command --encode-path=' ' --nofilter=path -$command $option --result=ctags-x "$tag" >"$__gtags_TMP1"
 	local count=`wc -l < "$__gtags_TMP1" | sed 's/ //g'`
 	if (( $count > 0 )); then
 		if [ -s "$__gtags_XREF" ]; then
@@ -644,7 +644,7 @@ f() {
 	esac
 	for (( i=0; i < ${#__gtags_lastfiles[@]}; i++ )); do
 		echo ${__gtags_lastfiles[i]}
-	done | $__gtags_global_command --encode-path=' ' --nofilter=path -f -L- --result=ctags-x $option >"$__gtags_TMP1"
+	done | $__gtags_global_command --encode-path=' ' --nofilter=path -f -L- $option --result=ctags-x >"$__gtags_TMP1"
 	local count=`wc -l < "$__gtags_TMP1" | sed 's/ //g'`
 	if (( $count > 0 )); then
 		if [ -s "$__gtags_XREF" ]; then
