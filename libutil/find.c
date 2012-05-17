@@ -236,7 +236,7 @@ prepare_skip(void)
 	 */
 	if (!getconfs("skip", reg)) {
 		strbuf_close(reg);
-		return;
+		return NULL;
 	}
 	skiplist = check_strdup(strbuf_value(reg));
 	trim(skiplist);

@@ -583,7 +583,6 @@ incremental(const char *dbpath, const char *root)
 			total++;
 		}
 	} else {
-normal_update:
 		if (file_list)
 			find_open_filelist(file_list, root);
 		else
