@@ -87,10 +87,8 @@
  *	find_close();
  *
  */
-static regex_t skip_area;
 static regex_t *skip;			/* regex for skipping units */
-static regex_t suff_area;
-static regex_t *suff = &suff_area;	/* regex for suffixes */
+static regex_t *suff;			/* regex for suffixes */
 static STRBUF *list;
 static int list_count;
 static char **listarray;		/* list for skipping full path */
@@ -135,11 +133,12 @@ trim(char *s)
  * prepare_source: preparing regular expression.
  *
  *	i)	flags	flags for regcomp.
- *	go)	suff	regular expression for source files.
+ *	r)	compiled regular expression for source files.
  */
-static void
+static regex_t *
 prepare_source(void)
 {
+	static regex_t suff_area;
 	STRBUF *sb = strbuf_open(0);
 	char *sufflist = NULL;
 	char *langmap = NULL;
@@ -166,7 +165,6 @@ prepare_source(void)
 	trim(sufflist);
 	{
 		const char *suffp;
-		int retval;
 
 		strbuf_reset(sb);
 		strbuf_puts(sb, "\\.(");       /* ) */
@@ -188,8 +186,7 @@ prepare_source(void)
 		/*
 		 * compile regular expression.
 		 */
-		retval = regcomp(suff, strbuf_value(sb), flags);
-		if (retval != 0)
+		if (regcomp(&suff_area, strbuf_value(sb), flags) != 0)
 			die("cannot compile regular expression.");
 	}
 	strbuf_close(sb);
@@ -197,20 +194,21 @@ prepare_source(void)
 		free(langmap);
 	if (sufflist)
 		free(sufflist);
+	return &suff_area;
 }
 /*
  * prepare_skip: prepare skipping files.
  *
- *	go)	skip	regular expression for skip files.
+ *	r)	compiled regular expression for skip files.
  *	go)	listarry[] skip list.
  *	go)	list_count count of skip list.
  */
-static void
+static regex_t *
 prepare_skip(void)
 {
+	static regex_t skip_area;
 	char *skiplist;
 	STRBUF *reg = strbuf_open(0);
-	int reg_count = 0;
 	char *p, *q;
 	int flags = REG_EXTENDED|REG_NEWLINE;
 
@@ -270,7 +268,6 @@ prepare_skip(void)
 			list_count++;
 			strbuf_puts0(list, skipf);
 		} else {
-			reg_count++;
 			strbuf_putc(reg, '/');
 			for (q = skipf; *q; q++) {
 				if (isregexchar(*q))
@@ -285,19 +282,11 @@ prepare_skip(void)
 	}
 	strbuf_unputc(reg, '|');
 	strbuf_putc(reg, ')');
-	if (reg_count > 0) {
-		int retval;
-
-		/*
-		 * compile regular expression.
-		 */
-		skip = &skip_area;
-		retval = regcomp(skip, strbuf_value(reg), flags);
-		if (retval != 0)
-			die("cannot compile regular expression.");
-	} else {
-		skip = (regex_t *)0;
-	}
+	/*
+	 * compile regular expression.
+	 */
+	if (regcomp(&skip_area, strbuf_value(reg), flags) != 0)
+		die("cannot compile regular expression.");
 	if (list_count > 0) {
 		int i;
 		listarray = (char **)check_malloc(sizeof(char *) * list_count);
@@ -309,6 +298,26 @@ prepare_skip(void)
 	}
 	strbuf_close(reg);
 	free(skiplist);
+
+	return &skip_area;
+}
+/*
+ * issourcefile: check whether or not a source file.
+ *
+ *	i)	path	path name (must start with ./)
+ *	r)		1: source file, 0: other file
+ */
+int
+issourcefile(const char *path)
+{
+	if (suff == NULL) {
+		suff = prepare_source();
+		if (suff == NULL)
+			die("prepare_source failed.");
+	}
+	if (regexec(suff, path, 0, 0, 0) == 0)
+		return 1;
+	return 0;
 }
 /*
  * skipthisfile: check whether or not we accept this file.
@@ -320,7 +329,7 @@ prepare_skip(void)
  * o Path must start with "./".
  * o Directory path name must end with "/".
  */
-static int
+int
 skipthisfile(const char *path)
 {
 	const char *first, *last;
@@ -329,9 +338,13 @@ skipthisfile(const char *path)
 	/*
 	 * unit check.
 	 */
-	if (skip && regexec(skip, path, 0, 0, 0) == 0) {
-		return 1;
+	if (skip == NULL) {
+		skip = prepare_skip();
+		if (skip == NULL)
+			die("prepare_skip failed.");
 	}
+	if (regexec(skip, path, 0, 0, 0) == 0)
+		return 1;
 	/*
 	 * list check.
 	 */
@@ -510,11 +523,6 @@ find_open(const char *start)
 	curp->start = curp->p = strbuf_value(curp->sb);
 	curp->end   = curp->start + strbuf_getlen(curp->sb);
 	strlimcpy(cwddir, get_root(), sizeof(cwddir));
-	/*
-	 * prepare regular expressions.
-	 */
-	prepare_source();
-	prepare_skip();
 }
 /*
  * find_open_filelist: find_open like interface for handling output of find(1).
@@ -556,11 +564,6 @@ find_open_filelist(const char *filename, const char *root)
 	else
 		snprintf(rootdir, sizeof(rootdir), "%s/", root);
 	strlimcpy(cwddir, root, sizeof(cwddir));
-	/*
-	 * prepare regular expressions.
-	 */
-	prepare_skip();
-	prepare_source();
 }
 /*
  * find_read: read path without GPATH.
@@ -637,8 +640,7 @@ find_read_traverse(void)
 				 * A blank at the head of path means
 				 * other than source file.
 				 */
-				if (regexec(suff, path, 0, 0, 0) == 0) {
-					/* source file */
+				if (issourcefile(path)) {
 					strlimcpy(val, path, sizeof(val));
 				} else {
 					/* other file like 'Makefile' */

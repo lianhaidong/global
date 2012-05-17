@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005, 2006, 2008,
- *	2009, 2010 Tama Communications Corporation
+ *	2009, 2010, 2012 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -541,7 +541,7 @@ incremental(const char *dbpath, const char *root)
 		die("stat failed '%s'.", path);
 	gtags_mtime = statp.st_mtime;
 
-	if (gpath_open(dbpath, 0) < 0)
+	if (gpath_open(dbpath, 2) < 0)
 		die("GPATH not found.");
 	/*
 	 * deleteset:
@@ -558,24 +558,28 @@ incremental(const char *dbpath, const char *root)
 	 */
 	if (single_update) {
 		int type;
-		const char *fid = gpath_path2fid(single_update, &type);
-		/*
-		 * The --single-update=file supports only updating.
-		 * If it is new file, this option is ignored, and the processing is
-		 * automatically switched to the normal procedure.
-		 */
+		const char *fid;
+
+		if (skipthisfile(single_update))
+			goto exit;
+		if (test("b", single_update))
+			goto exit;
+		fid = gpath_path2fid(single_update, &type);
 		if (fid == NULL) {
-			if (vflag)
-				fprintf(stderr, " --single-update option ignored, because '%s' is new file.\n", single_update);
-			goto normal_update;
-		}
-		/*
-		 * If type != GPATH_SOURCE then we have nothing to do, and you will see
-		 * a message 'Global databases are up to date.'.
-		 */
-		if (type == GPATH_SOURCE) {
-			strbuf_puts0(addlist, single_update);
+			/* new file */
+			type = issourcefile(single_update) ? GPATH_SOURCE : GPATH_OTHER;
+			if (type == GPATH_OTHER)
+				strbuf_puts0(addlist_other, single_update);
+			else {
+				strbuf_puts0(addlist, single_update);
+				total++;
+			}
+		} else {
+			/* update file */
+			if (type == GPATH_OTHER)
+				goto exit;
 			idset_add(deleteset, atoi(fid));
+			strbuf_puts0(addlist, single_update);
 			total++;
 		}
 	} else {
@@ -647,7 +651,6 @@ normal_update:
 			}
 		}
 	}
-	gpath_close();
 	statistics_time_end(tim);
 	/*
 	 * execute updating.
@@ -656,7 +659,6 @@ normal_update:
 	    (strbuf_getlen(deletelist) + strbuf_getlen(addlist_other) > 0))
 	{
 		int db;
-
 		updated = 1;
 		tim = statistics_time_start("Time of updating %s and %s.", dbname(GTAGS), dbname(GRTAGS));
 		if (!idset_empty(deleteset) || strbuf_getlen(addlist) > 0)
@@ -666,7 +668,7 @@ normal_update:
 
 			if (vflag)
 				fprintf(stderr, "[%s] Updating '%s'.\n", now(), dbname(GPATH));
-			gpath_open(dbpath, 2);
+			/* gpath_open(dbpath, 2); */
 			if (strbuf_getlen(deletelist) > 0) {
 				start = strbuf_value(deletelist);
 				end = start + strbuf_getlen(deletelist);
@@ -678,10 +680,11 @@ normal_update:
 				start = strbuf_value(addlist_other);
 				end = start + strbuf_getlen(addlist_other);
 
-				for (p = start; p < end; p += strlen(p) + 1)
+				for (p = start; p < end; p += strlen(p) + 1) {
 					gpath_put(p, GPATH_OTHER);
+				}
 			}
-			gpath_close();
+			/* gpath_close(); */
 		}
 		/*
 		 * Update modification time of tag files
@@ -691,6 +694,7 @@ normal_update:
 			utime(makepath(dbpath, dbname(db), NULL), NULL);
 		statistics_time_end(tim);
 	}
+exit:
 	if (vflag) {
 		if (updated)
 			fprintf(stderr, " Global databases have been modified.\n");
@@ -701,6 +705,7 @@ normal_update:
 	strbuf_close(addlist);
 	strbuf_close(deletelist);
 	strbuf_close(addlist_other);
+	gpath_close();
 	idset_close(deleteset);
 	idset_close(findset);
 

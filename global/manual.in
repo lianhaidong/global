@@ -22,7 +22,7 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	GLOBAL,1,April 2012,GNU Project
+@HEADER	GLOBAL,1,May 2012,GNU Project
 @NAME	global - print locations of the specified object.
 @SYNOPSIS
 	@name{global} [-adGilnqrstTvx][-e] @arg{pattern}
@@ -149,7 +149,8 @@
 		The @option{--result} option is given more priority than the -t and -x options.
 	@item{@option{--single-update} @arg{file}}
 		Update tag files incrementally using @option{--single-update} option.
-                It is considered that @arg{file} was updated, and other files were not updated.
+		It is considered that @arg{file} was added or updated,
+		and there is no change in other files.
                 This option implies the @option{-u} option.
 	@item{@option{-s}, @option{--symbol}}
 		Print locations of the specified symbol other than definitions.
