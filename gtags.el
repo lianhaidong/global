@@ -24,7 +24,7 @@
 
 ;; GLOBAL home page is at: http://www.gnu.org/software/global/
 ;; Author: Tama Communications Corporation
-;; Version: 3.5
+;; Version: 3.6
 ;; Keywords: tools
 
 ;; Gtags-mode is implemented as a minor mode so that it can work with any
@@ -135,6 +135,11 @@
   "*If non-nil, it is used for the prefix key of gtags-xxx command."
   :group 'gtags
   :type 'string)
+
+(defcustom gtags-auto-update nil
+  "*If non-nil, tag files are updated whenever a file is saved."
+  :type 'boolean
+  :group 'gtags)
 
 ;; Variables
 (defvar gtags-current-buffer nil
@@ -316,6 +321,12 @@
 
 ;; End of TRAMP support
 
+;;
+;; Invoked on saving a file.
+;;
+(defun gtags-auto-update ()
+    (if (and gtags-mode gtags-auto-update buffer-file-name)
+        (call-process gtags-global-command nil nil nil (concat "--single-update=" buffer-file-name))))
 ;;
 ;; utility
 ;;
@@ -851,6 +862,9 @@ with no args, if that value is non-nil."
   (setq gtags-mode
       (if (null forces) (not gtags-mode)
         (> (prefix-numeric-value forces) 0)))
+  (if gtags-mode
+      (add-hook 'after-save-hook 'gtags-auto-update)
+      (remove-hook 'after-save-hook 'gtags-auto-update))
   (run-hooks 'gtags-mode-hook)
 )
 
