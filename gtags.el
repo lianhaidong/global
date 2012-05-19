@@ -326,7 +326,10 @@
 ;;
 (defun gtags-auto-update ()
     (if (and gtags-mode gtags-auto-update buffer-file-name)
-        (call-process gtags-global-command nil nil nil (concat "--single-update=" buffer-file-name))))
+        (progn
+          (gtags-push-tramp-environment)
+          (call-process gtags-global-command nil nil nil "-u" (concat "--single-update=" (gtags-buffer-file-name)))
+          (gtags-pop-tramp-environment))))
 ;;
 ;; utility
 ;;
