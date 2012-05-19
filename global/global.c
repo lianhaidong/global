@@ -630,7 +630,9 @@ main(int argc, char **argv)
 				single_update = regular_path_name;
 			}
 			strbuf_puts(sb, " --single-update=");
+			strbuf_putc(sb, '"');
 			strbuf_puts(sb, single_update);
+			strbuf_putc(sb, '"');
 		}
 		strbuf_putc(sb, ' ');
 		strbuf_puts(sb, dbpath);
