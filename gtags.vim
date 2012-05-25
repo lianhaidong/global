@@ -488,6 +488,7 @@ endfunction
 command! -nargs=* -complete=custom,GtagsCandidate Gtags call s:RunGlobal(<q-args>)
 command! -nargs=0 GtagsCursor call s:GtagsCursor()
 command! -nargs=0 Gozilla call s:Gozilla()
+command! -nargs=0 GtagsUpdate call s:GtagsAutoUpdate()
 if g:Gtags_Auto_Update == 1
 	:autocmd! BufWritePost * call s:GtagsAutoUpdate()
 endif
