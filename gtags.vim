@@ -1,7 +1,7 @@
 " File: gtags.vim
 " Author: Tama Communications Corporation
-" Version: 0.6.1
-" Last Modified: January 21, 2012
+" Version: 0.6.2
+" Last Modified: May 25, 2012
 "
 " Copyright and licence
 " ---------------------
@@ -198,8 +198,12 @@ if !exists("g:Gtags_VerticalWindow")
     let g:Gtags_VerticalWindow = 0
 endif
 
-if !exists("Gtags_Auto_Map")
+if !exists("g:Gtags_Auto_Map")
     let Gtags_Auto_Map = 0
+endif
+
+if !exists("Gtags_Auto_Update")
+    let Gtags_Auto_Update = 0
 endif
 
 " -- ctags-x format 
@@ -446,6 +450,12 @@ function! s:Gozilla()
     let l:filename = expand("%")
     let l:result = system('gozilla +' . l:lineno . ' ' . l:filename)
 endfunction
+"
+" Auto update of tag files using incremental update facility.
+"
+function! s:GtagsAutoUpdate()
+    let l:result = system("global -u --single-update=\"" . expand("%") . "\"")
+endfunction
 
 "
 " Custom completion.
@@ -478,6 +488,9 @@ endfunction
 command! -nargs=* -complete=custom,GtagsCandidate Gtags call s:RunGlobal(<q-args>)
 command! -nargs=0 GtagsCursor call s:GtagsCursor()
 command! -nargs=0 Gozilla call s:Gozilla()
+if g:Gtags_Auto_Update == 1
+	:autocmd! BufWritePost * call s:GtagsAutoUpdate()
+endif
 " Suggested map:
 if g:Gtags_Auto_Map == 1
 	:nmap <F2> :copen<CR>
