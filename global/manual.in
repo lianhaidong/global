@@ -148,7 +148,7 @@
 		equivalent to the @option{-t} and @option{-x} respectively.
 		The @option{--result} option is given more priority than the -t and -x options.
 	@item{@option{--single-update} @arg{file}}
-		Update tag files incrementally using @option{--single-update} option.
+		Update tag files incrementally using @xref{gtags,1} with @option{--single-update} option.
 		It is considered that @arg{file} was added or updated,
 		and there is no change in other files.
                 This option implies the @option{-u} option.
