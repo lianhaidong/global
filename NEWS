@@ -21,6 +21,22 @@ ___________________________________
 GNU GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 6.2.3 - May 26 2012
+
+[BUG FIXED]
+o Built-in parser: When attribute specifier appeared immediately after the
+  `struct', `union' or `enum' keyword, GLOBAL could not pick up tag name.
+  Now it works correctly.
+
+[CHANGES]
+New facilities:
+o gtags: --single-update option support addition of a file.
+o global: New --single-update option.
+o gtags.el: New custom variables:
+  - gtags-ignore-case
+  - gtags-auto-update.
+o gtags.vim: New custom variables 'Gtags_Auto_Update' (default 0).
+
 Version 6.2.2 - March 15 2012
 
 [BUG FIXED]
