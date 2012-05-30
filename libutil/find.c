@@ -753,7 +753,7 @@ find_read_filelist(void)
 		 * A blank at the head of path means
 		 * other than source file.
 		 */
-		if (regexec(suff, path, 0, 0, 0) != 0)
+		if (!issourcefile(path))
 			*--path = ' ';
 		return path;
 	}
@@ -778,7 +778,8 @@ find_close(void)
 	} else {
 		die("find_close: internal error.");
 	}
-	regfree(suff);
+	if (suff)
+		regfree(suff);
 	if (skip)
 		regfree(skip);
 	find_eof = find_mode = 0;
