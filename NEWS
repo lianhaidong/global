@@ -21,6 +21,12 @@ ___________________________________
 GNU GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 6.2.4 - May 30 2012
+
+[BUG FIXED]
+Gtags with the -f option brings segmentation fault. Now it works.
+This bug exists only in GLOBAL-6.2.3.
+
 Version 6.2.3 - May 26 2012
 
 [BUG FIXED]
