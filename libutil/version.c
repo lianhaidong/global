@@ -57,7 +57,7 @@ version(const char *name, const int verbose)
 	if (qflag)
 		fprintf(stdout, "%s\n", VERSION);
 	else {
-		fprintf(stdout, "%s - %s\n", name, PACKAGE_STRING);
+		fprintf(stdout, "%s (%s) %s\n", name, PACKAGE_NAME, VERSION);
 		fprintf(stdout, "%s", copy);
 	}
 	exit(0);
