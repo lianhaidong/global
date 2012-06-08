@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (c) 2001, 2003 Tama Communications Corporation
+# Copyright (c) 2001, 2003, 2012 Tama Communications Corporation
 #
 # This file is part of GNU GLOBAL.
 #
@@ -25,7 +25,7 @@ case $1 in
 --help)	echo "Usage: sh reconf.sh [--configure|--make|--install]"
 	exit 0;;
 esac
-prog='autoreconf flex gperf perl bison'	# required programs
+prog='autoconf automake bison flex gperf libtool m4 perl'	# required programs
 file='convert.pl configure.ac Makefile.am libparser/reserved.pl'	# required files
 
 echo "- File existent checking..."
@@ -38,6 +38,13 @@ for f in `echo $file`; do
 	echo "+ $f"
 done
 
+#
+# Software tools which was used for making this package is written to 'BUILD_TOOLS' file.
+#
+cat <<! >BUILD_TOOLS
+This software was made using the following build tools:
+
+!
 echo "- Program existent checking..."
 for p in `echo $prog`; do
 	found=0
@@ -54,6 +61,10 @@ for p in `echo $prog`; do
 	0)	echo "*** Program '$p' not found."
 		echo "Please install `echo $p | sed 's/autoreconf/automake and autoconf/'`."
 		exit 1;;
+	esac
+	case $p in
+	perl)	;;
+	*)	$p --version | head -1 >>BUILD_TOOLS;;
 	esac
 done
 
