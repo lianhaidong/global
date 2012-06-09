@@ -64,7 +64,7 @@ for p in `echo $prog`; do
 	esac
 	case $p in
 	perl)	;;
-	*)	$p --version | head -1 >>BUILD_TOOLS;;
+	*)	$p --version | head -n 1 >>BUILD_TOOLS;;
 	esac
 done
 

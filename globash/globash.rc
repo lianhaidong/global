@@ -189,7 +189,7 @@ __gtags_pop_stack()
 		(( size -= count ))
 		if (( size > 0 )); then
 			local IFS=''
-			local file=`tail -$size "$__gtags_STACK"`
+			local file=`tail -n $size "$__gtags_STACK"`
 			echo $file > "$__gtags_STACK"
 		elif (( size == 0 )); then
 			cp /dev/null "$__gtags_STACK"
