@@ -80,12 +80,18 @@ strincmp(const char *string, const char *pattern, size_t len)
 	unsigned char s, p;
 
 	while (len--) {
-		s = tolower((unsigned char)*string++);
-		p = tolower((unsigned char)*pattern++);
+		/*
+		 * In some systems, tolower() are #define macros,
+		 * where the argument gets evaluated more than once.
+		 */
+		s = tolower((unsigned char)*string);
+		p = tolower((unsigned char)*pattern);
 		if (s != p)
 			return s - p;
 		if (s == 0)
 			break;
+		string++;
+		pattern++;
 	}
 	return 0;
 }

@@ -36,7 +36,13 @@ strtolower(const char *s)
 	do {
 		if (t == end)
 			die("name is too long.");
-	} while ((*t++ = tolower((unsigned char)*s++)) != '\0');
+		/*
+		 * In some systems, tolower() are #define macros,
+		 * where the argument gets evaluated more than once.
+		 */
+		*t = tolower((unsigned char)*s);
+		s++;
+	} while (*t++ != '\0');
 
 	return lower;
 }
