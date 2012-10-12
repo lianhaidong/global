@@ -1,11 +1,11 @@
 " File: gtags.vim
 " Author: Tama Communications Corporation
-" Version: 0.6.2
-" Last Modified: May 25, 2012
+" Version: 0.6.3
+" Last Modified: Oct 13, 2012
 "
 " Copyright and licence
 " ---------------------
-" Copyright (c) 2004, 2008, 2010, 2011 Tama Communications Corporation
+" Copyright (c) 2004, 2008, 2010, 2011, 2012 Tama Communications Corporation
 "
 " This file is part of GNU GLOBAL.
 "
@@ -199,11 +199,15 @@ if !exists("g:Gtags_VerticalWindow")
 endif
 
 if !exists("g:Gtags_Auto_Map")
-    let Gtags_Auto_Map = 0
+    let g:Gtags_Auto_Map = 0
 endif
 
-if !exists("Gtags_Auto_Update")
-    let Gtags_Auto_Update = 0
+if !exists("g:Gtags_Auto_Update")
+    let g:Gtags_Auto_Update = 0
+endif
+
+if !exists("g:Dont_Jump_Automatically")
+    let g:Dont_Jump_Automatically = 0
 endif
 
 " -- ctags-x format 
@@ -399,7 +403,11 @@ function! s:ExecLoad(option, long_option, pattern)
     " Parse the output of 'global -x or -t' and show in the quickfix window.
     let l:efm_org = &efm
     let &efm = g:Gtags_Efm
-    cexpr! l:result
+    if g:Dont_Jump_Automatically == 1
+        cgete l:result
+    else
+        cexpr! l:result
+    endif
     let &efm = l:efm_org
 endfunction
 
