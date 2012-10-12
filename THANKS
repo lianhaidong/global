@@ -118,6 +118,7 @@ Sergio Talens-Oliag	writing on-line manual for systags(1).
 Shankar Chakkere	useful method to use vim editor with GLOBAL.
 Shigeyuki Yamano	idea about -h option of htags(1).
 Silas S. Brown		proofreading about manuals.
+Simon Dommett		bug report and fix patch on the usage of tolower().
 Sven Verdoolaege	support for gtags.pl(nvi-1.81.5).
 Steve Kirkendall	two commands of Elvis for external tag system.
 Takao Yamashita		advice about assembly parsing.
@@ -125,6 +126,7 @@ Takeshi Hojo		idea about compact format of gtags(1).
 Tero Saarni		bug report about long line problem of htags(1).
 Thomas Gerigk		bug report about skip variable in gtags.conf.
 Thomas Klausner		report about groff's command error of *.1.
+Thomas Viehweger	patch for gtags.el to support XEmacs.
 Tim Vanderhoek		GLOBAL tag support on more(1).
 Tobias Polzin		suggestion about correct treatment of CVS repository in htags.
 			He also changed gtags.el to leave visited files after 'gtags-pop-stack'.
