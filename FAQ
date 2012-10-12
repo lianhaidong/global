@@ -4,7 +4,7 @@ ___________________________________
 |  |   |  |  |  |  |     |     |  |
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Copyright (c) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010
+ Copyright (c) 2000, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2012
 	Tama Communications Corporation
 
  This file is free software; as a special exception the author gives
@@ -112,7 +112,19 @@ A4. If your GNU system supports 64-bit file offset then please try the
 	$ ./configure CFLAGS='-D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64'
 
 ----------------------------------------------------------------------------
-Q5. Deleted.
+Q5. What is the message? What should I do?
+    'configure: error: curses library is required but not found."
+
+A5. gtags-cscope(1) requires curses library. There are two choices of yours.
+
+    If you use gtags-cscope(1)
+	Please install curses library. You can get it here:
+	http://www.gnu.org/software/ncurses/
+    else 
+	You can install GLOBAL without gtags-cscope(1) like follows:
+	$ ./configure --disable-gtagscscope
+	$ make
+
 ----------------------------------------------------------------------------
 Q6. Deleted.
 ----------------------------------------------------------------------------
