@@ -44,15 +44,14 @@ static char sccsid[] = "@(#)bt_conv.c	8.5 (Berkeley) 8/17/94";
 
 static void mswap(PAGE *);
 
-/*
- * __BT_BPGIN, __BT_BPGOUT --
+/**
+ * __BT_BPGIN --
  *	Convert host-specific number layout to/from the host-independent
  *	format stored on disk.
  *
- * Parameters:
- *	t:	tree
- *	pg:	page number
- *	h:	page to convert
+ *	@param t	tree
+ *	@param pg	page number
+ *	@param pp	page to convert
  */
 void
 __bt_pgin(t, pg, pp)
@@ -122,6 +121,15 @@ __bt_pgin(t, pg, pp)
 		}
 }
 
+/**
+ * __BT_BPGOUT --
+ *	Convert host-specific number layout to/from the host-independent
+ *	format stored on disk.
+ *
+ *	@param t	tree
+ *	@param pg	page number
+ *	@param pp	page to convert
+ */
 void
 __bt_pgout(t, pg, pp)
 	void *t;
@@ -190,11 +198,10 @@ __bt_pgout(t, pg, pp)
 	M_16_SWAP(h->upper);
 }
 
-/*
+/**
  * MSWAP -- Actually swap the bytes on the meta page.
  *
- * Parameters:
- *	p:	page to convert
+ *	@param pg	page to convert
  */
 static void
 mswap(pg)

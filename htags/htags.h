@@ -39,23 +39,27 @@
 #define PQUOTE
 #endif
 
-/*
- * definition_header
+/**
+ * @name definition_header
  */
+/** @{ */
 #define NO_HEADER	0
 #define BEFORE_HEADER	1
 #define RIGHT_HEADER	2
 #define AFTER_HEADER	3
+/** @} */
 
-/*
- * Directory names.
+/**
+ * @name Directory names.
  */
+/** @{ */
 #define SRCS	"S"
 #define DEFS	"D"
 #define REFS	"R"
 #define INCS	"I"
 #define INCREFS "J"
 #define SYMS	"Y"
+/** @} */
 
 extern int w32;
 extern const char *www;

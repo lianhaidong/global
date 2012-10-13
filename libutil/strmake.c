@@ -28,17 +28,19 @@
 #include "strbuf.h"
 #include "strmake.h"
 
-/*
+/**
  * strmake: make string from original string with limit character.
  *
- *	i)	p	original string.
- *	i)	lim	limitter
- *	r)		result string
+ *	@param[in]	p	original string.
+ *	@param[in]	lim	limitter
+ *	@return		result string
  *
- * Usage:
+ * @par Usage:
+ * @code
  *	strmake("aaa:bbb", ":/=")	=> "aaa"
+ * @endcode
  *
- * Note: The result string area is function local. So, following call
+ * @note The result string area is function local. So, following call
  *	 to this function may destroy the area.
  */
 const char *
@@ -58,25 +60,27 @@ end:
 	return strbuf_value(sb);
 }
 
-/*
+/**
  * strtrim: make string from original string with deleting blanks.
  *
- *	i)	p	original string.
- *	i)	flag	TRIM_HEAD	from only head
- *			TRIM_TAIL	from only tail
- *			TRIM_BOTH	from head and tail
- *			TRIM_ALL	from all
- *	o)	len	length of result string
- *			if len == NULL then nothing returned.
- *	r)		result string
+ *	@param[in]	p	original string.
+ *	@param[in]	flag	#TRIM_HEAD:	from only head <br>
+ *			#TRIM_TAIL:	from only tail <br>
+ *			#TRIM_BOTH:	from head and tail <br>
+ *			#TRIM_ALL:	from all
+ *	@param[out]	len	length of result string <br>
+ *			if @CODE{len == NULL} then nothing returned.
+ *	@return		result string
  *
- * Usage:
+ * @par Usage:
+ * @code
  *	strtrim(" # define ", TRIM_HEAD, NULL)	=> "# define "
  *	strtrim(" # define ", TRIM_TAIL, NULL)	=> " # define"
  *	strtrim(" # define ", TRIM_BOTH, NULL)	=> "# define"
  *	strtrim(" # define ", TRIM_ALL, NULL)	=> "#define"
+ * @endcode
  *
- * Note: The result string area is function local. So, following call
+ * @note The result string area is function local. So, following call
  *	 to this function may destroy the area.
  */
 const char *
@@ -115,19 +119,21 @@ strtrim(const char *p, int flag, int *len)
 		*len = strbuf_getlen(sb);
 	return strbuf_value(sb);
 }
-/*
+/**
  * strcmp with terminate character.
  *
- *	i)	s1	string1
- *	i)	s2	string2
- *	i)	term	terminate character
- *	r)		==0: equal, !=0: not equal
+ *	@param[in]	s1	string1
+ *	@param[in]	s2	string2
+ *	@param[in]	term	terminate character
+ *	@return		==0: equal, !=0: not equal
  *
- * Usage:
+ * @par Usage:
+ * @code
  *	strcmp_withterm("aaa", "aaa", ':')		=> 0
  *	strcmp_withterm("aaa:bbb", "aaa", ':')		=> 0
  *	strcmp_withterm("aaa:bbb", "aaa:ccc", ':')	=> 0
  *	strcmp_withterm("aaa/bbb", "aaa/ccc", ':')	=> -1
+ * @endcode
  */
 int
 strcmp_withterm(const char *s1, const char *s2, int term)
@@ -146,14 +152,14 @@ strcmp_withterm(const char *s1, const char *s2, int term)
 
 	return c1 - c2;
 }
-/*
+/**
  * strcpy with terminate character.
  *
- *	i)	b	buffer
- *	i)	s	string
- *	i)	size	buffer size
- *	i)	term	terminate character
- *	r)		terminator's position
+ *	@param[in]	b	buffer
+ *	@param[in]	s	string
+ *	@param[in]	size	buffer size
+ *	@param[in]	term	terminate character
+ *	@return		terminator's position
  */
 const char *
 strcpy_withterm(char *b, const char *s, int size, int term)

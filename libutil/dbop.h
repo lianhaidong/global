@@ -38,51 +38,69 @@ typedef void* HANDLE;
 #define VERSIONKEY	" __.VERSION"
 
 typedef	struct {
-	/*
-	 * (1) COMMON PART
+	/**
+	 * @name (1) COMMON PART
 	 */
-	int mode;			/* 0:read, 1:create, 2:modify */
-	int openflags;			/* flags of xxxx_open() */
-	int ioflags;			/* flags of xxxx_first() */
-	char *lastdat;			/* the data of last located record */
-	int lastsize;			/* the size of the lastdat */
-	char *lastkey;			/* the key of last located record */
-	int lastkeysize;		/* the size of the key */
-	regex_t	*preg;			/* compiled regular expression */
-	int unread;			/* leave record to read again */
-	const char *put_errmsg;		/* error message for put_xxx() */
-	/*
-	 * (2) DB185 PART
+	/** @{ */
+	int mode;			/**< 0:read, 1:create, 2:modify */
+	int openflags;			/**< flags of @NAME{xxxx_open()} */
+	int ioflags;			/**< flags of @NAME{xxxx_first()} */
+	char *lastdat;			/**< the data of last located record */
+	int lastsize;			/**< the size of the lastdat */
+	char *lastkey;			/**< the key of last located record */
+	int lastkeysize;		/**< the size of the key */
+	regex_t	*preg;			/**< compiled regular expression */
+	int unread;			/**< leave record to read again */
+	const char *put_errmsg;		/**< error message for @NAME{put_xxx()} */
+	/** @} */
+
+	/**
+	 * @name (2) DB185 PART
 	 */
-	DB *db;				/* descripter of DB */
-	char dbname[MAXPATHLEN];	/* dbname */
-	char key[MAXKEYLEN];		/* key */
-	int keylen;			/* key length */
-	char prev[MAXKEYLEN];		/* previous key value */
-	int perm;			/* file permission */
-	/*
-	 * (3) sorted write
+	/** @{ */
+	DB *db;				/**< descripter of DB */
+	char dbname[MAXPATHLEN];	/**< dbname */
+	char key[MAXKEYLEN];		/**< key */
+	int keylen;			/**< key length */
+	char prev[MAXKEYLEN];		/**< previous key value */
+	int perm;			/**< file permission */
+	/** @} */
+
+	/**
+	 * @name (3) sorted write
 	 */
-	FILE *sortout;			/* write to sort command */
-	FILE *sortin;			/* read from sort command */
+	/** @{ */
+	FILE *sortout;			/**< write to sort command */
+	FILE *sortin;			/**< read from sort command */
 #if defined(_WIN32) && !defined(__CYGWIN__)
 	HANDLE pid;
 #else
-	int pid;			/* sort process id */
+	int pid;			/**< sort process id */
 #endif
+	/** @} */
 } DBOP;
 
-/*
- * openflags
+/**
+ * @name openflags
  */
-#define	DBOP_DUP	1		/* allow duplicate records	*/
-/*
- * ioflags
+/** @{ */
+		/** allow duplicate records	*/
+#define	DBOP_DUP	1
+/** @} */
+
+/**
+ * @name ioflags
  */
-#define DBOP_KEY		1	/* read key part		*/
-#define DBOP_PREFIX		2	/* prefixed read		*/
-#define DBOP_RAW		4	/* raw read			*/
-#define DBOP_SORTED_WRITE	8	/* sorted write			*/
+/** @{ */
+			/** read key part */
+#define DBOP_KEY		1
+			/** prefixed read */
+#define DBOP_PREFIX		2
+			/** raw read */
+#define DBOP_RAW		4
+			/** sorted write */
+#define DBOP_SORTED_WRITE	8
+/** @} */
 
 DBOP *dbop_open(const char *, int, int, int);
 const char *dbop_get(DBOP *, const char *);

@@ -38,11 +38,13 @@
 
 extern char **environ;
 
-/*
+/**
  * set_env: put environment variable.
  *
- *	i)	var	environment variable
- *	i)	val	value
+ *	@param[in]	var	environment variable
+ *	@param[in]	val	value
+ *
+ * Machine independent version of @XREF{setenv,3}.
  */
 void
 set_env(const char *var, const char *val)
@@ -60,10 +62,10 @@ set_env(const char *var, const char *val)
 	setenv(var, val, 1);
 #endif
 }
-/*
+/**
  * get_home_directory: get environment dependent home directory.
  *
- *	r)	home directory
+ *	@return	home directory
  */
 char *
 get_home_directory(void)
@@ -75,7 +77,7 @@ get_home_directory(void)
 #endif
 }
 
-/*
+/**
  * env_size: calculate the size of area used by environment.
  */
 int

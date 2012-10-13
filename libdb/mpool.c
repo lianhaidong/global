@@ -64,9 +64,14 @@ static BKT *mpool_bkt(MPOOL *);
 static BKT *mpool_look(MPOOL *, pgno_t);
 static int  mpool_write(MPOOL *, BKT *);
 
-/*
+/**
  * mpool_open --
  *	Initialize a memory pool.
+ *
+ *	@param key
+ *	@param fd
+ *	@param pagesize
+ *	@param maxcache
  */
 MPOOL *
 mpool_open(key, fd, pagesize, maxcache)
@@ -104,9 +109,14 @@ mpool_open(key, fd, pagesize, maxcache)
 	return (mp);
 }
 
-/*
+/**
  * mpool_filter --
  *	Initialize input/output filters.
+ *
+ *	@param mp
+ *	@param pgin
+ *	@param pgout
+ *	@param pgcookie
  */
 void
 mpool_filter(mp, pgin, pgout, pgcookie)
@@ -120,9 +130,12 @@ mpool_filter(mp, pgin, pgout, pgcookie)
 	mp->pgcookie = pgcookie;
 }
 	
-/*
+/**
  * mpool_new --
  *	Get a new page of memory.
+ *
+ *	@param mp
+ *	@param pgnoaddr
  */
 void *
 mpool_new(mp, pgnoaddr)
@@ -155,9 +168,13 @@ mpool_new(mp, pgnoaddr)
 	return (bp->page);
 }
 
-/*
+/**
  * mpool_get
  *	Get a page.
+ *
+ *	@param mp
+ *	@param pgno
+ *	@param flags
  */
 void *
 mpool_get(mp, pgno, flags)
@@ -248,9 +265,13 @@ mpool_get(mp, pgno, flags)
 	return (bp->page);
 }
 
-/*
+/**
  * mpool_put
  *	Return a page.
+ *
+ *	@param mp
+ *	@param page
+ *	@param flags
  */
 int
 mpool_put(mp, page, flags)
@@ -276,9 +297,11 @@ mpool_put(mp, page, flags)
 	return (RET_SUCCESS);
 }
 
-/*
+/**
  * mpool_close
  *	Close the buffer pool.
+ *
+ *	@param mp
  */
 int
 mpool_close(mp)
@@ -297,9 +320,11 @@ mpool_close(mp)
 	return (RET_SUCCESS);
 }
 
-/*
+/**
  * mpool_sync
  *	Sync the pool to disk.
+ *
+ *	@param mp
  */
 int
 mpool_sync(mp)
@@ -318,9 +343,11 @@ mpool_sync(mp)
 	return (fsync(mp->fd) ? RET_ERROR : RET_SUCCESS);
 }
 
-/*
+/**
  * mpool_bkt
  *	Get a page from the cache (or create one).
+ *
+ *	@param mp
  */
 static BKT *
 mpool_bkt(mp)
@@ -376,9 +403,12 @@ new:	if ((bp = (BKT *)malloc(sizeof(BKT) + mp->pagesize)) == NULL)
 	return (bp);
 }
 
-/*
+/**
  * mpool_write
  *	Write a page to disk.
+ *
+ *	@param mp
+ *	@param bp
  */
 static int
 mpool_write(mp, bp)
@@ -410,9 +440,12 @@ mpool_write(mp, bp)
 	return (RET_SUCCESS);
 }
 
-/*
+/**
  * mpool_look
  *	Lookup a page in the cache.
+ *
+ *	@param mp
+ *	@param pgno
  */
 static BKT *
 mpool_look(mp, pgno)
@@ -437,9 +470,11 @@ mpool_look(mp, pgno)
 }
 
 #ifdef STATISTICS
-/*
+/**
  * mpool_stat
  *	Print out cache statistics.
+ *
+ *	@param mp
  */
 void
 mpool_stat(mp)

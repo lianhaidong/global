@@ -26,9 +26,9 @@ extern char const *gtags_dbpath_error;
 char *getobjdir(const char *, int);
 int gtagsexist(const char *, char *, int, int);
 int setupdbpath(int);
-const char *get_dbpath();
-const char *get_root();
-const char *get_root_with_slash();
-const char *get_cwd();
+const char *get_dbpath(void);
+const char *get_root(void);
+const char *get_root_with_slash(void);
+const char *get_cwd(void);
 
 #endif /* ! _GETDBPATH_H_ */

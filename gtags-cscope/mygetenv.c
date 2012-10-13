@@ -36,7 +36,7 @@ static char const rcsid[] = "$Id$";
 
 #include <stdlib.h>
 
-/* return the non-null environment value or the default argument */
+/** return the @EMPH{non-null} environment value or the default argument */
 
 char	*
 mygetenv(char *variable, char *deflt)

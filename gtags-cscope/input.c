@@ -30,9 +30,10 @@
  DAMAGE. 
  =========================================================================*/
 
-/*	cscope - interactive C symbol cross-reference
- *
+/** @file
  *	terminal input functions
+ *
+ *	cscope - interactive C symbol cross-reference
  */
 
 #include "global-cscope.h"
@@ -50,13 +51,13 @@
 
 static char const rcsid[] = "$Id$";
 
-static	jmp_buf	env;		/* setjmp/longjmp buffer */
-static	int	prevchar;	/* previous, ungotten character */
+static	jmp_buf	env;		/**< setjmp/longjmp buffer */
+static	int	prevchar;	/**< previous, ungotten character */
 
 /* Internal prototypes: */
 static RETSIGTYPE catchint(int sig);
 
-/* catch the interrupt signal */
+/** catch the interrupt signal */
 
 /*ARGSUSED*/
 static RETSIGTYPE
@@ -68,14 +69,14 @@ catchint(int sig)
 	longjmp(env, 1);
 }
 
-/* unget a character */
+/** unget a character */
 void
 myungetch(int c)
 {
 	prevchar = c;
 }
 
-/* get a character from the terminal */
+/** get a character from the terminal */
 int
 mygetch(void)
 {
@@ -107,7 +108,7 @@ mygetch(void)
 }
 
 
-/* get a line from the terminal in non-canonical mode */
+/** get a line from the terminal in non-canonical mode */
 int
 mygetline(char p[], char s[], unsigned size, int firstchar, BOOL iscaseless)
 {
@@ -239,7 +240,7 @@ mygetline(char p[], char s[], unsigned size, int firstchar, BOOL iscaseless)
     return(i);
 }
 
-/* ask user to enter a character after reading the message */
+/** ask user to enter a character after reading the message */
 
 void
 askforchar(void)
@@ -248,7 +249,7 @@ askforchar(void)
     mygetch();
 }
 
-/* ask user to press the RETURN key after reading the message */
+/** ask user to press the @NAME{RETURN} key after reading the message */
 
 void
 askforreturn(void)
@@ -261,7 +262,7 @@ askforreturn(void)
     }
 }
 
-/* expand the ~ and $ shell meta characters in a path */
+/** expand the @CODE{~} and @CODE{\$} shell meta characters in a path */
 
 void
 shellpath(char *out, int limit, char *in) 

@@ -32,7 +32,7 @@
 
 static DBOP *dbop = NULL;
 
-/*
+/**
  * Tag command that supports referenced tag must call this function
  * to decide whether or not the tag is defined.
  */

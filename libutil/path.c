@@ -43,11 +43,11 @@
 #include "test.h"
 
 
-/*
+/**
  * isabspath: whether absolute path or not
  *
- *	i)	path	path
- *	r)		1: absolute, 0: not absolute
+ *	@param[in]	p	path
+ *	@return		1: absolute, 0: not absolute
  */
 int
 isabspath(const char *p)
@@ -63,13 +63,13 @@ isabspath(const char *p)
 	return 0;
 }
 
-/*
+/**
  * canonpath: make canonical path name.
  *
- *	io)	path	path
- *	r)		path
+ *	@param[in,out]	path	path
+ *	@return		path
  *
- * Note: canonpath rewrite argument buffer.
+ * @attention canonpath() rewrite argument buffer.
  */
 char *
 canonpath(char *path)
@@ -152,7 +152,7 @@ canonpath(char *path)
 }
 
 #if (defined(_WIN32) && !defined(__CYGWIN__)) || defined(__DJGPP__)
-/*
+/**
  * realpath: get the complete path
  */
 char *
@@ -179,15 +179,15 @@ realpath(const char *in_path, char *out_path)
 
 #define SEP '/'
 
-/*
- * makedirectories: make directories on the path like mkdir(1) with the -p option.
+/**
+ * makedirectories: make directories on the path like @XREF{mkdir,1} with the @OPTION{-p} option.
  *
- *	i)	base	base directory
- *	i)	rest	path from the base
- *	i)	verbose 1: verbose mode, 0: not verbose mode
- *	r)		0: success
- *			-1: base directory not found
- *			-2: permission error
+ *	@param[in]	base	base directory
+ *	@param[in]	rest	path from the base
+ *	@param[in]	verbose 1: verbose mode, 0: not verbose mode
+ *	@return		0: success <br>
+ *			-1: base directory not found <br>
+ *			-2: permission error <br>
  *			-3: cannot make directory
  */
 int
@@ -229,7 +229,7 @@ makedirectories(const char *base, const char *rest, int verbose)
 	strbuf_close(sb);
 	return 0;
 }
-/*
+/**
  * trimpath: trim path name
  */
 const char *

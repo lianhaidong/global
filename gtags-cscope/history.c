@@ -30,9 +30,10 @@
  DAMAGE. 
  =========================================================================*/
 
-/*	cscope - interactive C symbol or text cross-reference
- *
+/** @file
  *	command history
+ *
+ *	cscope - interactive C symbol or text cross-reference
  */
 
 #include "global-cscope.h"
@@ -43,9 +44,14 @@ static char const rcsid[] = "$Id$";
 
 static	struct cmd *tail, *current;
 
-/* add a cmd to the history list */
+/**
+ *	add a cmd to the history list
+ *
+ *	@param[in]	f	field number
+ *	@param[in]	s	command text
+ */
 void
-addcmd(int f, char *s)		/* field number and command text */
+addcmd(int f, char *s)
 {
 	struct cmd *h;
 
@@ -64,7 +70,7 @@ addcmd(int f, char *s)		/* field number and command text */
 	current = 0;
 }
 
-/* return previous history item */
+/** return previous history item */
 struct cmd *
 prevcmd(void)
 {
@@ -79,7 +85,7 @@ prevcmd(void)
 		return NULL;
 }
 
-/* return next history item */
+/** return next history item */
 struct cmd *
 nextcmd(void)
 {
@@ -91,7 +97,7 @@ nextcmd(void)
 	} else 
 		return NULL;
 }
-/* reset current to tail */
+/** reset current to tail */
 void
 resetcmd(void)
 {

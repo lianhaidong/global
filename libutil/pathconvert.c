@@ -46,7 +46,7 @@ static int encoding;
 static int newline = '\n';
 
 #define required_encode(c) encode[(unsigned char)c]
-/*
+/**
  * set_encode_chars: stores chars to be encoded.
  */
 void
@@ -67,21 +67,21 @@ set_encode_chars(const unsigned char *chars)
 	encode['%'] = 1;
 	encoding = 1;
 }
-/*
- * set_print0: change newline to '\0'.
+/**
+ * set_print0: change newline to @CODE{'\0'}.
  */
 void
-set_print0()
+set_print0(void)
 {
 	newline = '\0';
 }
 #define outofrange(c)	(c < '0' || c > 'f')
 #define h2int(c) (c >= 'a' ? c - 'a' + 10 : c - '0')
-/*
+/**
  * decode_path: decode encoded path name.
  *
- *	i)	path	encoded path name
- *	r)		decoded path name
+ *	@param[in]	path	encoded path name
+ *	@return		decoded path name
  */
 char *
 decode_path(const char *path)
@@ -105,8 +105,8 @@ decode_path(const char *path)
 	}
 	return strbuf_value(sb);
 }
-/*
- * Path filter for the output of global(1).
+/**
+ * Path filter for the output of @XREF{global,1}.
  */
 static const char *
 convert_pathname(CONVERT *cv, const char *path)
@@ -178,17 +178,17 @@ convert_pathname(CONVERT *cv, const char *path)
 	}
 	return (const char *)path;
 }
-/*
+/**
  * convert_open: open convert filter
  *
- *	i)	type	PATH_ABSOLUTE, PATH_RELATIVE, PATH_THROUGH
- *	i)	format	tag record format
- *	i)	root	root directory of source tree
- *	i)	cwd	current directory
- *	i)	dbpath	dbpath directory
- *	i)	op	output file
- *	i)	db	tag type (GTAGS, GRTAGS, GSYMS, GPATH, NOTAGS)
- *			only for cscope format
+ *	@param[in]	type	#PATH_ABSOLUTE, #PATH_RELATIVE, #PATH_THROUGH
+ *	@param[in]	format	tag record format
+ *	@param[in]	root	root directory of source tree
+ *	@param[in]	cwd	current directory
+ *	@param[in]	dbpath	dbpath directory
+ *	@param[in]	op	output file
+ *	@param[in]	db	tag type (#GTAGS, #GRTAGS, #GSYMS, #GPATH, #NOTAGS) <br>
+ *			only for @NAME{cscope} format
  */
 CONVERT *
 convert_open(int type, int format, const char *root, const char *cwd, const char *dbpath, FILE *op, int db)
@@ -218,13 +218,13 @@ convert_open(int type, int format, const char *root, const char *cwd, const char
 		die("GPATH not found.");
 	return cv;
 }
-/*
+/**
  * convert_put: convert path into relative or absolute and print.
  *
- *	i)	cv	CONVERT structure
- *	i)	ctags_x	tag record (ctags-x format)
+ *	@param[in]	cv	#CONVERT structure
+ *	@param[in]	ctags_x	tag record (@NAME{ctags-x} format)
  *
- * Note: This function is only called by gtags with the --path option.
+ * @note This function is only called by @NAME{gtags} with the @OPTION{--path} option.
  */
 void
 convert_put(CONVERT *cv, const char *ctags_x)
@@ -349,11 +349,11 @@ convert_put(CONVERT *cv, const char *ctags_x)
 	}
 	(void)fputc(newline, cv->op);
 }
-/*
- * convert_put_path: convert path into relative or absolute and print.
+/**
+ * convert_put_path: convert @a path into relative or absolute and print.
  *
- *	i)	cv	CONVERT structure
- *	i)	path	path name
+ *	@param[in]	cv	#CONVERT structure
+ *	@param[in]	path	path name
  */
 void
 convert_put_path(CONVERT *cv, const char *path)
@@ -363,15 +363,15 @@ convert_put_path(CONVERT *cv, const char *path)
 	fputs(convert_pathname(cv, path), cv->op);
 	(void)fputc(newline, cv->op);
 }
-/*
- * convert_put_using: convert path into relative or absolute and print.
+/**
+ * convert_put_using: convert @a path into relative or absolute and print.
  *
- *	i)	cv	CONVERT structure
- *      i)      tag     tag name
- *      i)      path    path name
- *      i)      lineno  line number
- *      i)      line    line image
- *	i)	fid	file id (only when fid != NULL)
+ *	@param[in]	cv	#CONVERT structure
+ *      @param[in]      tag     tag name
+ *      @param[in]      path    path name
+ *      @param[in]      lineno  line number
+ *      @param[in]      rest    line image
+ *	@param[in]	fid	file id (only when @CODE{fid != NULL})
  */
 void
 convert_put_using(CONVERT *cv, const char *tag, const char *path, int lineno, const char *rest, const char *fid)

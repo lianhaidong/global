@@ -35,7 +35,9 @@
 #include "locatestring.h"
 #include "strlimcpy.h"
 #include "path.h"
-/*
+
+/** @file
+@verbatim
 
 NAME
      abs2rel - make a relative path name from an absolute path
@@ -166,17 +168,21 @@ EXAMPLE
          path1 == "/usr/src/sys"
          path2 == "/usr/src/sys"
 
+@endverbatim
 */
-/*
+/**
+ * @details
  * normalize: normalize path name
  *
- *	i)	path	path name
- *	i)	root	root of project (must be end with a '/')
- *	i)	cwd	current directory
- *	o)	result	normalized path name
- *	i)	size	size of the result
- *	r)		==NULL: error
- *			!=NULL: result
+ *	@param[in]	path	path name
+ *	@param[in]	root	root of project (@STRONG{must be end with a '/'})
+ *	@param[in]	cwd	current directory
+ *	@param[out]	result	normalized path name
+ *	@param[in]	size	size of the @a result
+ *	@return		==NULL: error <br>
+ *			!=NULL: @a result
+ *
+ *	@note Calls die() if the result path name is too long (#MAXPATHLEN).
  */
 char *
 normalize(const char *path, const char *root, const char *cwd, char *result, const int size)
@@ -215,17 +221,18 @@ normalize(const char *path, const char *root, const char *cwd, char *result, con
 toolong:
 	die("path name is too long.");
 }
-/*
+/**
+ * @details
  * normalize_pathname: normalize relative path name.
  *
- *	i)	path	relative path name
- *	o)	result	result buffer
- *	i)	size	size of result buffer
- *	r)		!= NULL: normalized path name
- *			== NULL: error
+ *	@param[in]	path	relative path name
+ *	@param[out]	result	result buffer
+ *	@param[in]	size	size of @a result buffer
+ *	@return		!= NULL: normalized path name <br>
+ *			== NULL: error (ERANGE)
  *
- * [examples]
- *
+ * @par Examples:
+ * @code
  * path			result
  * ---------------------------
  * /a			/a
@@ -236,6 +243,7 @@ toolong:
  * a/../b/../c/../d	d
  * a/../../d		../d
  * /a/../../d		/d
+ * @endcode
  */
 char *
 normalize_pathname(const char *path, char *result, const int size)
@@ -312,15 +320,16 @@ erange:
 	errno = ERANGE;
 	return NULL;
 }
-/*
+/**
+ * @details
  * abs2rel: convert an absolute path name into relative.
  *
- *	i)	path	absolute path
- *	i)	base	base directory (must be absolute path)
- *	o)	result	result buffer
- *	i)	size	size of result buffer
- *	r)		!= NULL: relative path
- *			== NULL: error
+ *	@param[in]	path	absolute path
+ *	@param[in]	base	base directory (@STRONG{must be absolute path})
+ *	@param[out]	result	result buffer
+ *	@param[in]	size	size of @a result buffer
+ *	@return		!= NULL: relative path <br>
+ *			== NULL: error (ERANGE or EINVAL)
  */
 char *
 abs2rel(const char *path, const char *base, char *result, const int size)
@@ -392,15 +401,16 @@ erange:
 	errno = ERANGE;
 	return (NULL);
 }
-/*
+/**
+ * @details
  * rel2abs: convert an relative path name into absolute.
  *
- *	i)	path	relative path
- *	i)	base	base directory (must be absolute path)
- *	o)	result	result buffer
- *	i)	size	size of result buffer
- *	r)		!= NULL: absolute path
- *			== NULL: error
+ *	@param[in]	path	relative path
+ *	@param[in]	base	base directory (@STRONG{must be absolute path})
+ *	@param[out]	result	result buffer
+ *	@param[in]	size	size of @a result buffer
+ *	@return		!= NULL: absolute path <br>
+ *			== NULL: error (ERANGE or EINVAL)
  */
 char *
 rel2abs(const char *path, const char *base, char *result, const int size)

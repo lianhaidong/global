@@ -38,13 +38,15 @@
 #ifndef isblank
 #define isblank(c)	((c) == ' ' || (c) == '\t')
 #endif
-/*
+/**
+ @file
 
 String buffer: usage and memory status
 
-					[xxx]: string buffer
+					[xxx]: string buffer <br>
 					'v': current pointer
 
+@code
 Function call                           Memory status
 ----------------------------------------------------------
                                         (not exist)
@@ -74,7 +76,7 @@ char *s = strbuf_fgets(sb, fp, 0)       [root:*:0:0:Charlie &:/root:/bin/csh\0]
 fclose(fp)				s == "root:*:0:0:Charlie &:/root:/bin/csh"
 
 strbuf_close(sb);                       (not exist)
-
+@endcode
 */
 
 static void print_and_abort (void);
@@ -86,11 +88,11 @@ print_and_abort(void)
 	die("short of memory.");
 }
 
-/*
+/**
  * __strbuf_expandbuf: expand buffer so that afford to the length data at least.
  *
- *	i)	sb	STRBUF structure
- *	i)	length	required room
+ *	@param[in]	sb	#STRBUF structure
+ *	@param[in]	length	required room
  */
 void
 __strbuf_expandbuf(STRBUF *sb, int length)
@@ -108,12 +110,12 @@ __strbuf_expandbuf(STRBUF *sb, int length)
 	sb->curp = sb->sbuf + count;
 	sb->endp = sb->sbuf + sb->sbufsize;
 }
-/*
+/**
  * strbuf_open: open string buffer.
  *
- *	i)	init	initial buffer size
- *			if 0 is specified then use default value.
- *	r)	sb	STRBUF structure
+ *	@param[in]	init	initial buffer size <br>
+ *			if 0 (zero) is specified then use default value (#INITIALSIZE).
+ *	@return	sb	#STRBUF structure
  */
 STRBUF *
 strbuf_open(int init)
@@ -127,10 +129,10 @@ strbuf_open(int init)
 
 	return sb;
 }
-/*
+/**
  * strbuf_reset: reset string buffer.
  *
- *	i)	sb	string buffer
+ *	@param[in]	sb	string buffer
  */
 void
 strbuf_reset(STRBUF *sb)
@@ -138,13 +140,13 @@ strbuf_reset(STRBUF *sb)
 	sb->curp = sb->sbuf;
 	sb->alloc_failed = 0;
 }
-/*
+/**
  * strbuf_clear: clear static string buffer.
  *
- *	i)	sb	statically defined string buffer
+ *	@param[in]	sb	statically defined string buffer
  *
  * This function is used for the initializing of static string buffer.
- * For the detail, see 'STATIC_STRBUF(sb)' macro in strbuf.h.
+ * For the detail, see STATIC_STRBUF(sb) macro in @FILE{strbuf.h}.
  */
 void
 strbuf_clear(STRBUF *sb)
@@ -160,12 +162,12 @@ strbuf_clear(STRBUF *sb)
 		strbuf_reset(sb);
 	}
 }
-/*
+/**
  * strbuf_nputs: Put string with length
  *
- *	i)	sb	string buffer
- *	i)	s	string
- *	i)	len	length of string
+ *	@param[in]	sb	string buffer
+ *	@param[in]	s	string
+ *	@param[in]	len	length of string
  */
 void
 strbuf_nputs(STRBUF *sb, const char *s, int len)
@@ -177,12 +179,14 @@ strbuf_nputs(STRBUF *sb, const char *s, int len)
 			*sb->curp++ = *s++;
 	}
 }
-/*
- * strbuf_nputc: Put characters with length
+/**
+ * strbuf_nputc: Put a character, @a len (number) times
  *
- *	i)	sb	string buffer
- *	i)	c	character
- *	i)	len	length of string
+ *	@param[in]	sb	string buffer
+ *	@param[in]	c	character
+ *	@param[in]	len	number of times to put @a c
+ *
+ *	@see strbuf_putc()
  */
 void
 strbuf_nputc(STRBUF *sb, int c, int len)
@@ -194,11 +198,11 @@ strbuf_nputc(STRBUF *sb, int c, int len)
 			*sb->curp++ = c;
 	}
 }
-/*
+/**
  * strbuf_puts: Put string
  *
- *	i)	sb	string buffer
- *	i)	s	string
+ *	@param[in]	sb	string buffer
+ *	@param[in]	s	string
  */
 void
 strbuf_puts(STRBUF *sb, const char *s)
@@ -211,13 +215,13 @@ strbuf_puts(STRBUF *sb, const char *s)
 		}
 	}
 }
-/*
+/**
  * strbuf_puts_withterm: Put string until the terminator
  *
- *	i)	sb	string buffer
- *	i)	s	string
- *	i)	c	terminator
- *	r)		pointer to the terminator
+ *	@param[in]	sb	string buffer
+ *	@param[in]	s	string
+ *	@param[in]	c	terminator
+ *	@return		pointer to the terminator
  */
 void
 strbuf_puts_withterm(STRBUF *sb, const char *s, int c)
@@ -230,11 +234,11 @@ strbuf_puts_withterm(STRBUF *sb, const char *s, int c)
 		}
 	}
 }
-/*
+/**
  * strbuf_puts_nl: Put string with a new line
  *
- *	i)	sb	string buffer
- *	i)	s	string
+ *	@param[in]	sb	string buffer
+ *	@param[in]	s	string
  */
 void
 strbuf_puts_nl(STRBUF *sb, const char *s)
@@ -250,11 +254,11 @@ strbuf_puts_nl(STRBUF *sb, const char *s)
 		*sb->curp++ = '\n';
 	}
 }
-/*
+/**
  * strbuf_putn: put digit string at the last of buffer.
  *
- *	i)	sb	STRBUF structure
- *	i)	n	number
+ *	@param[in]	sb	#STRBUF structure
+ *	@param[in]	n	number
  */
 void
 strbuf_putn(STRBUF *sb, int n)
@@ -275,12 +279,12 @@ strbuf_putn(STRBUF *sb, int n)
 			strbuf_putc(sb, num[i]);
 	}
 }
-/*
+/**
  * strbuf_unputc: remove specified char from the last of buffer
  *
- *	i)	sb	STRBUF structure
- *	i)	c	character
- *	r)		0: do nothing, 1: removed
+ *	@param[in]	sb	#STRBUF structure
+ *	@param[in]	c	character
+ *	@return		0: do nothing, 1: removed
  */
 int
 strbuf_unputc(STRBUF *sb, int c)
@@ -291,11 +295,11 @@ strbuf_unputc(STRBUF *sb, int c)
 	}
 	return 0;
 }
-/*
+/**
  * strbuf_value: return the content of string buffer.
  *
- *	i)	sb	STRBUF structure
- *	r)		string
+ *	@param[in]	sb	#STRBUF structure
+ *	@return		string
  */
 char *
 strbuf_value(STRBUF *sb)
@@ -303,10 +307,10 @@ strbuf_value(STRBUF *sb)
 	*sb->curp = 0;
 	return sb->sbuf;
 }
-/*
+/**
  * strbuf_trim: trim following blanks.
  *
- *	i)	sb	STRBUF structure
+ *	@param[in]	sb	#STRBUF structure
  */
 void
 strbuf_trim(STRBUF *sb)
@@ -317,20 +321,20 @@ strbuf_trim(STRBUF *sb)
 		*--p = 0;
 	sb->curp = p;
 }
-/*
+/**
  * strbuf_fgets: read whole record into string buffer
  *
- *	o)	sb	string buffer
- *	i)	ip	input stream
- *	i)	flags	flags
- *			STRBUF_NOCRLF	remove last '\n' if exist.
- *			STRBUF_APPEND	append next record to existing data
- *			STRBUF_SHARPSKIP skip lines which start with '#'
- *	r)		record buffer (NULL at end of file)
+ *	@param[out]	sb	string buffer
+ *	@param[in]	ip	input stream
+ *	@param[in]	flags	flags <br>
+ *			#STRBUF_NOCRLF:	remove last @CODE{'\\n'} and/or @CODE{'\\r'} if exist. <br>
+ *			#STRBUF_APPEND:	append next record to existing data <br>
+ *			#STRBUF_SHARPSKIP: skip lines which start with @CODE{'\#'}
+ *	@return		record buffer (@VAR{NULL} at end of file)
  *
- * Returned buffer has whole record.
- * The buffer end with '\0'.If STRBUF_NOCRLF is set then buffer doesn't
- * include '\r' and '\n'.
+ * Returned buffer has whole record. <br>
+ * The buffer end with @CODE{'\\0'}. If #STRBUF_NOCRLF is set then buffer doesn't
+ * include @CODE{'\\r'} and @CODE{'\\n'}.
  */
 char *
 strbuf_fgets(STRBUF *sb, FILE *ip, int flags)
@@ -369,13 +373,13 @@ strbuf_fgets(STRBUF *sb, FILE *ip, int flags)
 	}
 	return sb->sbuf;
 }
-/*
- * strbuf_sprintf: do sprintf into string buffer.
+/**
+ * strbuf_sprintf: do @NAME{sprintf} into string buffer.
  *
- *	i)	sb	STRBUF structure
- *	i)	s	similar to sprintf()
- *			Currently the following format is supported.
- *			%s, %d, %<number>d, %<number>s, %-<number>d, %-<number>s
+ *	@param[in]	sb	#STRBUF structure
+ *	@param[in]	s	similar to @NAME{sprintf()} <br>
+ *			Currently the following format is supported. <br>
+ *			@CODE{\%s, \%d, \%\<number\>d, \%\<number\>s, \%-\<number\>d, \%-\<number\>s}
  */
 void
 strbuf_sprintf(STRBUF *sb, const char *s, ...)
@@ -386,13 +390,14 @@ strbuf_sprintf(STRBUF *sb, const char *s, ...)
 	strbuf_vsprintf(sb, s, ap);
 	va_end(ap);
 }
-/*
- * strbuf_vsprintf: do sprintf into string buffer.
+/**
+ * strbuf_vsprintf: do @NAME{vsprintf} into string buffer.
  *
- *	i)	sb	STRBUF structure
- *	i)	s	similar to vsprintf()
- *			Currently the following format is supported.
- *			%s, %d, %<number>d, %<number>s, %-<number>d, %-<number>s
+ *	@param[in]	sb	#STRBUF structure
+ *	@param[in]	s	similar to @NAME{vsprintf()} <br>
+ *			Currently the following format is supported. <br>
+ *			@CODE{\%s, \%d, \%\<number\>d, \%\<number\>s, \%-\<number\>d, \%-\<number\>s}
+ *	@param[in]	ap	 <br>
  */
 void
 strbuf_vsprintf(STRBUF *sb, const char *s, va_list ap)
@@ -458,10 +463,10 @@ strbuf_vsprintf(STRBUF *sb, const char *s, va_list ap)
 		}
 	}
 }
-/*
+/**
  * strbuf_close: close string buffer.
  *
- *	i)	sb	STRBUF structure
+ *	@param[in]	sb	#STRBUF structure
  */
 void
 strbuf_close(STRBUF *sb)
@@ -471,19 +476,23 @@ strbuf_close(STRBUF *sb)
 	(void)free(sb->sbuf);
 	(void)free(sb);
 }
-/*
+/**
+ * @fn STRBUF *strbuf_open_tempbuf(void)
+ *
  * Temporary string buffer for general purpose.
  *
- * Usage:
+ * @par Usage:
  *
+ * @code
  *	STRBUF *sbt = strbuf_open_tempbuf();
  *	....
  *	strbuf_puts(sbtemp, "xxx");
  *	...
  *	strbuf_release_tempbuf(sbt);
+ * @endcode
  *
  */
-int used = 0;
+static int used = 0;
 
 STRBUF *
 strbuf_open_tempbuf(void)

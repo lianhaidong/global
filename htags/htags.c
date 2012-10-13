@@ -51,6 +51,11 @@
 #include "path2url.h"
 #include "const.h"
 
+/**
+ * @file
+ * @NAME{htags} - generate hypertext (XHTML or HTML) pages from a set of source files.
+ */
+
 void src2html(const char *, const char *, int);
 int makedupindex(void);
 int makedefineindex(const char *, int, STRBUF *);
@@ -66,7 +71,7 @@ int makecflowindex(const char *, const char *);
 /*
  * Global data.
  */
-int w32 = W32;				/* Windows32 environment	*/
+int w32 = W32;				/**< Windows32 environment	*/
 const char *www = "http://www.gnu.org/software/global/";
 int html_count = 0;
 int sep = '/';
@@ -88,52 +93,53 @@ const char *null_device = NULL_DEVICE;
 const char *tmpdir = "/tmp";
 const char *sitekey = "";
 
-/*
+/**
+ * @details
  * Order of items in the top page (This should be customisable variable in the future).
  *
- * 'c': caution
- * 's': search form
- * 'm': mains
- * 'd': definitions
- * 'f': files
- * 't': call tree
+ * @CODE{'c'}: caution <br>
+ * @CODE{'s'}: search form <br>
+ * @CODE{'m'}: mains <br>
+ * @CODE{'d'}: definitions <br>
+ * @CODE{'f'}: files <br>
+ * @CODE{'t'}: call tree
  */
 char *item_order = "csmdft";
 /*
  * options
  */
-int aflag;				/* --alphabet(-a) option	*/
-int cflag;				/* --compact(-c) option		*/
-int fflag;				/* --form(-f) option		*/
-int Fflag;				/* --frame(-F) option		*/
-int gflag;				/* --gtags(-g) option		*/
-int Iflag;				/* --icon(-I) option		*/
-int nflag;				/* --line-number(-n) option	*/
-int Sflag;				/* --system-cgi option		*/
+int aflag;				/**< @OPTION{--alphabet(-a)} option	*/
+int cflag;				/**< @OPTION{--compact(-c)} option		*/
+int fflag;				/**< @OPTION{--form(-f)} option		*/
+int Fflag;				/**< @OPTION{--frame(-F)} option		*/
+int gflag;				/**< @OPTION{--gtags(-g)} option		*/
+int Iflag;				/**< @OPTION{--icon(-I)} option		*/
+int nflag;				/**< @OPTION{--line-number(-n)} option	*/
+int Sflag;				/**< @OPTION{--system-cgi} option		*/
 int qflag;
-int vflag;				/* --verbose(-v) option		*/
-int wflag;				/* --warning(-w) option		*/
-int debug;				/* --debug option		*/
+int vflag;				/**< @OPTION{--verbose(-v)} option		*/
+int wflag;				/**< @OPTION{--warning(-w)} option		*/
+int debug;				/**< @OPTION{--debug} option		*/
 
-int show_help;				/* --help command		*/
-int show_version;			/* --version command		*/
-int caution;				/* --caution option		*/
-int dynamic;				/* --dynamic(-D) option		*/
-int symbol;				/* --symbol(-s) option          */
-int suggest;				/* --suggest option		*/
-int suggest2;				/* --suggest2 option		*/
-int auto_completion;			/* --auto-completion		*/
-int tree_view;				/* --tree-view			*/
-int fixed_guide;			/* --fixed-guide		*/
-const char *tree_view_type;		/* -- type-view=[type]		*/
-char *auto_completion_limit = "0";	/* --auto-completion=limit	*/
-int statistics = STATISTICS_STYLE_NONE;	/* --statistics option		*/
+int show_help;				/**< @OPTION{--help} command		*/
+int show_version;			/**< @OPTION{--version} command		*/
+int caution;				/**< @OPTION{--caution} option		*/
+int dynamic;				/**< @OPTION{--dynamic(-D)} option		*/
+int symbol;				/**< @OPTION{--symbol(-s)} option          */
+int suggest;				/**< @OPTION{--suggest} option		*/
+int suggest2;				/**< @OPTION{--suggest2} option		*/
+int auto_completion;			/**< @OPTION{--auto-completion}		*/
+int tree_view;				/**< @OPTION{--tree-view}			*/
+int fixed_guide;			/**< @OPTION{--fixed-guide}		*/
+const char *tree_view_type;		/**< @OPTION{--type-view=[type]}		*/
+char *auto_completion_limit = "0";	/**< @OPTION{--auto-completion=limit}	*/
+int statistics = STATISTICS_STYLE_NONE;	/**< @OPTION{--statistics} option		*/
 
-int no_order_list;			/* 1: doesn't use order list	*/
-int other_files;			/* 1: list other files		*/
-int enable_grep = 1;			/* 1: enable grep		*/
-int enable_idutils = 1;			/* 1: enable idutils		*/
-int enable_xhtml = 1;			/* 1: enable XHTML		*/
+int no_order_list;			/**< 1: doesn't use order list	*/
+int other_files;			/**< 1: list other files		*/
+int enable_grep = 1;			/**< 1: enable grep		*/
+int enable_idutils = 1;			/**< 1: enable idutils		*/
+int enable_xhtml = 1;			/**< 1: enable XHTML		*/
 
 const char *main_func = "main";
 const char *cvsweb_url;
@@ -142,18 +148,20 @@ const char *cvsweb_cvsroot;
 const char *gtagslabel;
 const char *title;
 const char *xhtml_version = "1.0";
-const char *insert_header;		/* --insert-header=<file>	*/
-const char *insert_footer;		/* --insert-footer=<file>	*/
-const char *html_header;		/* --html-header=<file>		*/
-const char *jscode;			/* javascript code		*/
-/*
- * Constant values.
+const char *insert_header;		/**< @OPTION{--insert-header=\<file\>}	*/
+const char *insert_footer;		/**< @OPTION{--insert-footer=\<file\>}	*/
+const char *html_header;		/**< @OPTION{--html-header=\<file\>}		*/
+const char *jscode;			/**< javascript code		*/
+/**
+ * @name Constant values.
  */
+/** @{ */
 const char *title_define_index = "DEFINITIONS";
 const char *title_file_index = "FILES";
 const char *title_call_tree = "CALL TREE";
 const char *title_callee_tree = "CALLEE TREE";
 const char *title_included_from = "INCLUDED FROM";
+/** @} */
 /*
  * Function header items.
  */
@@ -223,37 +231,39 @@ const char *icon_files[] = {
 	"text",
 	"pglobe"
 };
-/*
- * Configuration parameters.
+/**
+ * @name Configuration parameters.
  */
-int ncol = 4;				/* columns of line number	*/
-int tabs = 8;				/* tab skip			*/
-int flist_fields = 5;			/* fields number of file list	*/
-int full_path = 0;			/* file index format		*/
-int map_file = 0;			/* 1: create MAP file		*/
-int filemap_file = 1;			/* 1: create FILEMAP file	*/
-int overwrite_key = 0;			/* 1: over write site key	*/
-const char *icon_suffix = "png";	/* icon suffix (jpg, png etc)	*/
-const char *icon_spec = "border='0' align='top'";/* parameter in IMG tag*/
-const char *prolog_script = NULL;	/* include script at first	*/
-const char *epilog_script = NULL;	/* include script at last	*/
-const char *call_file = NULL;		/* file name of cflow output	*/
-const char *callee_file = NULL;		/* file name of cflow output	*/
-int show_position = 0;			/* show current position	*/
-int table_list = 0;			/* tag list using table tag	*/
-int table_flist = 0;			/* file list using table tag	*/
-int colorize_warned_line = 0;		/* colorize warned line		*/
-const char *script_alias = "/cgi-bin";	/* script alias of WWW server	*/
-const char *gzipped_suffix = "ghtml";	/* suffix of gzipped html file	*/
-const char *normal_suffix = "html";	/* suffix of normal html file	*/
-const char *HTML;
-const char *action = "cgi-bin/global.cgi";/* default action		*/
-const char *completion_action = "cgi-bin/completion.cgi";
-int definition_header=NO_HEADER;	/* (NO|BEFORE|RIGHT|AFTER)_HEADER */
-const char *htags_options = NULL;
-const char *include_file_suffixes = DEFAULTINCLUDEFILESUFFIXES;
-static const char *langmap = DEFAULTLANGMAP;
-int grtags_is_empty = 0;
+/** @{ */
+int ncol = 4;				/**< columns of line number	*/
+int tabs = 8;				/**< tab skip			*/
+int flist_fields = 5;			/**< fields number of file list	*/
+int full_path = 0;			/**< file index format		*/
+int map_file = 0;			/**< 1: create MAP file		*/
+int filemap_file = 1;			/**< 1: create FILEMAP file	*/
+int overwrite_key = 0;			/**< 1: over write site key	*/
+const char *icon_suffix = "png";	/**< icon suffix (jpg, png etc)	*/
+const char *icon_spec = "border='0' align='top'"; /**< parameter in IMG tag*/
+const char *prolog_script = NULL;	/**< include script at first	*/
+const char *epilog_script = NULL;	/**< include script at last	*/
+const char *call_file = NULL;		/**< file name of cflow output	*/
+const char *callee_file = NULL;		/**< file name of cflow output	*/
+int show_position = 0;			/**< show current position	*/
+int table_list = 0;			/**< tag list using table tag	*/
+int table_flist = 0;			/**< file list using table tag	*/
+int colorize_warned_line = 0;		/**< colorize warned line		*/
+const char *script_alias = "/cgi-bin";	/**< script alias of WWW server	*/
+const char *gzipped_suffix = "ghtml";	/**< suffix of gzipped html file	*/
+const char *normal_suffix = "html";	/**< suffix of normal html file	*/
+const char *HTML;					/**< HTML */
+const char *action = "cgi-bin/global.cgi"; /**< default action		*/
+const char *completion_action = "cgi-bin/completion.cgi";	/**< completion_action */
+int definition_header=NO_HEADER;	/**< (NO|BEFORE|RIGHT|AFTER)_HEADER */
+const char *htags_options = NULL;	/**< htags_options */
+const char *include_file_suffixes = DEFAULTINCLUDEFILESUFFIXES;	/**< include_file_suffixes */
+static const char *langmap = DEFAULTLANGMAP;	/**< langmap */
+int grtags_is_empty = 0;						/**< grtags_is_empty */
+/** @} */
 
 static struct option const long_options[] = {
 	/*
@@ -349,7 +359,7 @@ help(void)
         fputs(help_const, stdout);
         exit(0);
 }
-/*
+/**
  * Htags catch signal even if the parent ignore it.
  */
 void
@@ -358,7 +368,7 @@ clean(void)
 	unload_gpath();
 	cache_close();
 }
-/*
+/**
  * Signal handler.
  *
  * This handler is set up in signal_setup().
@@ -372,8 +382,11 @@ suddenly(int signo)
 	exit(1);
 }
 
-/*
+/**
  * Setup signal hander.
+ *
+ * Makes signals @CODE{SIGINT}, @CODE{SIGTERM}, @CODE{SIGHUP} and @CODE{SIGQUIT}
+ * call suddenly() if triggered.
  */
 static void
 signal_setup(void)
@@ -388,8 +401,14 @@ signal_setup(void)
 #endif
 }
 
-/*
- * make directory in the dist directory.
+/**
+ * make directory in the dist (#distpath) directory.
+ *
+ *     @param[in]      name    name of directory to create.
+ *
+ * Creates a file called @FILE{index.html} in the new directory.
+ *
+ * @remark @NAME{mkdir()} creates the directory in mode @CODE{0775}, if doesn't exist.
  */
 static void
 make_directory_in_distpath(const char *name)
@@ -412,8 +431,8 @@ make_directory_in_distpath(const char *name)
 	fputc('\n', op);
 	fclose(op);
 }
-/*
- * make file in the dist directory.
+/**
+ * make file in the dist (#distpath) directory.
  */
 static void
 make_file_in_distpath(const char *name, const char *data)
@@ -548,12 +567,12 @@ load_with_replace(const char *file, STRBUF *result, int place)
 	strbuf_close(sb);
 	regfree(&preg);
 }
-/*
+/**
  * generate_file: generate file with replacing macro.
  *
- *	i)	dist	directory where the file should be created
- *	i)	file	file name
- *	i)	place	TOPDIR, SUBDIR, CGIDIR
+ *	@param[in]	dist	directory where the file should be created
+ *	@param[in]	file	file name
+ *	@param[in]	place	#TOPDIR, #SUBDIR, #CGIDIR
  */
 static void
 generate_file(const char *dist, const char *file, int place)
@@ -570,34 +589,34 @@ generate_file(const char *dist, const char *file, int place)
 	html_count++;
 	strbuf_close(result);
 }
-/*
- * makeprogram: make CGI program
+/**
+ * makeprogram: make @NAME{CGI} program
  */
 static void
 makeprogram(const char *cgidir, const char *file)
 {
 	generate_file(cgidir, file, CGIDIR);
 }
-/*
- * makebless: make bless.sh file.
+/**
+ * makebless: make @FILE{bless.sh} file.
  */
 static void
 makebless(const char *file)
 {
 	generate_file(distpath, file, SUBDIR);
 }
-/*
- * makeghtml: make ghtml.cgi file.
+/**
+ * makeghtml: make @FILE{ghtml.cgi} file.
  *
- *	i)	cgidir	directory where the file should be created
- *	i)	file	file name
+ *	@param[in]	cgidir	directory where the file should be created
+ *	@param[in]	file	file name
  */
 static void
 makeghtml(const char *cgidir, const char *file)
 {
 	generate_file(cgidir, file, SUBDIR);
 }
-/*
+/**
  * makerebuild: make rebuild script
  */
 static void
@@ -618,7 +637,7 @@ makerebuild(const char *file)
 	fprintf(op, "cd %s && GTAGSCONF='%s' htags%s\n", cwdpath, save_config, save_argv);
         fclose(op);
 }
-/*
+/**
  * makehelp: make help file
  */
 static void
@@ -684,11 +703,11 @@ makehelp(const char *file)
 	fclose(op);
 	html_count++;
 }
-/*
+/**
  * makesearchpart: make search part
  *
- *	i)	$target	target
- *	r)		html
+ *	@param[in]	target	\$target
+ *	@return		html
  */
 static char *
 makesearchpart(const char *target)
@@ -746,12 +765,12 @@ makesearchpart(const char *target)
 	strbuf_puts_nl(sb, gen_form_end());
 	return strbuf_value(sb);
 }
-/*
+/**
  * makeindex: make index file
  *
- *	i)	file	file name
- *	i)	title	title of index file
- *	i)	index	common part
+ *	@param[in]	file	file name
+ *	@param[in]	title	title of index file
+ *	@param[in]	index	common part
  */
 static void
 makeindex(const char *file, const char *title, const char *index)
@@ -799,11 +818,11 @@ makeindex(const char *file, const char *title, const char *index)
 	fclose(op);
 	html_count++;
 }
-/*
+/**
  * makemainindex: make main index
  *
- *	i)	file	file name
- *	i)	index	common part
+ *	@param[in]	file	file name
+ *	@param[in]	index	common part
  */
 static void
 makemainindex(const char *file, const char *index)
@@ -825,10 +844,10 @@ makemainindex(const char *file, const char *index)
 	fclose(op);
 	html_count++;
 }
-/*
+/**
  * makesearchindex: make search html
  *
- *	i)	file	file name
+ *	@param[in]	file	file name
  */
 static void
 makesearchindex(const char *file)
@@ -846,8 +865,8 @@ makesearchindex(const char *file)
 	fclose(op);
 	html_count++;
 }
-/*
- * makehtaccess: make .htaccess skeleton file.
+/**
+ * makehtaccess: make @FILE{.htaccess} skeleton file.
  */
 static void
 makehtaccess(const char *cgidir, const char *file)
@@ -889,10 +908,10 @@ makehtaccess(const char *cgidir, const char *file)
 	}
 	fclose(op);
 }
-/*
+/**
  * makehtml: make html files
  *
- *	i)	total	number of files.
+ *	@param[in]	total	number of files.
  */
 static void
 makehtml(int total)
@@ -955,7 +974,7 @@ makehtml(int total)
 	}
 	gfind_close(gp);
 }
-/*
+/**
  * Load file.
  */
 void
@@ -975,7 +994,7 @@ loadfile(const char *file, STRBUF *result)
 {
 	load_with_replace(file, result, 0);
 }
-/*
+/**
  * copy file.
  */
 static void
@@ -1002,13 +1021,13 @@ copyfile(const char *from, const char *to)
 	close(op);
 	close(ip);
 }
-/*
- * makecommonpart: make a common part for mains.html and index.html
+/**
+ * makecommonpart: make a common part for @FILE{mains.html} and @FILE{index.html}
  *
- *	i)	title
- *	i)	defines
- *	i)	files
- *	r)	index	common part
+ *	@param[in]	title
+ *	@param[in]	defines
+ *	@param[in]	files
+ *	@return	index	common part
  */
 static char *
 makecommonpart(const char *title, const char *defines, const char *files)
@@ -1160,7 +1179,7 @@ makecommonpart(const char *title, const char *defines, const char *files)
 	return strbuf_value(sb);
 	/* doesn't close string buffer */
 }
-/*
+/**
  * basic check.
  */
 static void
@@ -1185,7 +1204,7 @@ basic_check(void)
 	if (p != NULL && test("d", p))
 		tmpdir = p;
 }
-/*
+/**
  * load configuration variables.
  */
 static void
@@ -1409,7 +1428,7 @@ configuration(int argc, char *const *argv)
 		htags_options = check_strdup(strbuf_value(sb));
 	strbuf_close(sb);
 }
-/*
+/**
  * save_environment: save configuration data and arguments.
  */
 static void

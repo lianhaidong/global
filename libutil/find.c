@@ -77,21 +77,24 @@
 #define ROOT 0
 #endif
 
-/*
+/**
+ * @file
  * usage of find_xxx()
  *
+ * @code
  *	find_open(NULL);
  *	while (path = find_read()) {
  *		...
  *	}
  *	find_close();
+ * @endcode
  *
  */
-static regex_t *skip;			/* regex for skipping units */
-static regex_t *suff;			/* regex for suffixes */
+static regex_t *skip;			/**< regex for skipping units */
+static regex_t *suff;			/**< regex for suffixes */
 static STRBUF *list;
 static int list_count;
-static char **listarray;		/* list for skipping full path */
+static char **listarray;		/**< list for skipping full path */
 static FILE *ip;
 static FILE *temp;
 static char rootdir[PATH_MAX];
@@ -112,8 +115,8 @@ extern int debug;
 static const int allow_blank = 1;
 static const int check_looplink = 1;
 static int accept_dotfiles = 0;
-/*
- * trim: remove blanks and '\'.
+/**
+ * trim: remove blanks and @CODE{'\\'}.
  */
 static void
 trim(char *s)
@@ -129,11 +132,11 @@ trim(char *s)
 	}
 	*p = 0;
 }
-/*
+/**
  * prepare_source: preparing regular expression.
  *
- *	i)	flags	flags for regcomp.
- *	r)	compiled regular expression for source files.
+ *	<!-- @param[in]	flags	flags for regcomp. -->
+ *	@return	compiled regular expression for source files.
  */
 static regex_t *
 prepare_source(void)
@@ -196,12 +199,14 @@ prepare_source(void)
 		free(sufflist);
 	return &suff_area;
 }
-/*
+/**
  * prepare_skip: prepare skipping files.
  *
- *	r)	compiled regular expression for skip files.
- *	go)	listarry[] skip list.
- *	go)	list_count count of skip list.
+ *	@par Globals used (output):
+ *		#listarray[]: 	skip list. <br>
+ *		#list_count:	 count of skip list.
+ *
+ *	@return	compiled regular expression for skip files.
  */
 static regex_t *
 prepare_skip(void)
@@ -301,17 +306,17 @@ prepare_skip(void)
 
 	return &skip_area;
 }
-/*
+/**
  * issourcefile: check whether or not a source file.
  *
- *	i)	path	path name (must start with ./)
- *	r)		1: source file, 0: other file
+ *	@param[in]	path	path name (@STRONG{must} start with @FILE{./})
+ *	@return		1: source file, 0: other file
  */
 int
 issourcefile(const char *path)
 {
 	if (suff == NULL) {
-		suff = prepare_source();
+		suff = prepare_source();	/* XXX this cannot return NULL */
 		if (suff == NULL)
 			die("prepare_source failed.");
 	}
@@ -319,15 +324,16 @@ issourcefile(const char *path)
 		return 1;
 	return 0;
 }
-/*
+/**
  * skipthisfile: check whether or not we accept this file.
  *
- *	i)	path	path name (must start with ./)
- *	r)		1: skip, 0: don't skip
+ *	@param[in]	path	path name (@STRONG{must} start with @FILE{./})
+ *	@return		1: skip, 0: don't skip
  *
- * Specification of required path name.
- * o Path must start with "./".
- * o Directory path name must end with "/".
+ * @attention
+ * @STRONG{Specification of required path name:}
+ * - Path @STRONG{must} start with @FILE{./}.
+ * - Directory path name @STRONG{must} end with @FILE{/}.
  */
 int
 skipthisfile(const char *path)
@@ -369,19 +375,21 @@ skipthisfile(const char *path)
 	return 0;
 }
 
-/*
- * Directory Stack
+/**
+ * @name Directory Stack
  */
-static char dir[MAXPATHLEN];			/* directory path */
-static VARRAY *stack;				/* dynamic allocated array */
+/** @{ */
+static char dir[MAXPATHLEN];			/**< directory path */
+static VARRAY *stack;				/**< dynamic allocated array */
 struct stack_entry {
 	STRBUF *sb;
 	char *real;
 	char *dirp, *start, *end, *p;
 };
-static int current_entry;			/* current entry of the stack */
+static int current_entry;			/**< current entry of the stack */
+/** @} */
 
-/*
+/**
  * getrealpath: return a real path of dir using allocated area.
  */
 char *
@@ -393,11 +401,11 @@ getrealpath(const char *dir)
 		die("cannot get real path of '%s'.", trimpath(dir));
 	return check_strdup(real);
 }
-/*
- * has_symlinkloop: whether or not dir has a symbolic link loops.
+/**
+ * has_symlinkloop: whether or not @a dir has a symbolic link loops.
  *
- *	i)	dir	directory (should end by '/')
- *	r)		1: has a loop, 0: don't have a loop
+ *	@param[in]	dir	directory (@STRONG{should} end by @FILE{/})
+ *	@return		1: has a loop, 0: don't have a loop
  */
 int
 has_symlinkloop(const char *dir)
@@ -436,16 +444,18 @@ has_symlinkloop(const char *dir)
 	return 0;
 }
 
-/*
+/**
  * getdirs: get directory list
  *
- *	i)	dir	directory (should end by '/')
- *	o)	sb	string buffer
- *	r)		-1: error, 0: normal
+ *	@param[in]	dir	directory (@STRONG{should} end by @FILE{/})
+ *	@param[out]	sb	string buffer
+ *	@return		-1: error, 0: normal
  *
- * format of directory list:
+ * @par format of directory list:
+ * @code
  * |ddir1\0ffile1\0|
- * means directory 'dir1', file 'file1'.
+ * @endcode
+ * means directory @FILE{dir1}, file @FILE{file1}.
  */
 static int
 getdirs(const char *dir, STRBUF *sb)
@@ -483,19 +493,19 @@ getdirs(const char *dir, STRBUF *sb)
 	(void)closedir(dirp);
 	return 0;
 }
-/*
+/**
  * set_accept_dotfiles: make find to accept dot files and dot directries.
  */
 void
-set_accept_dotfiles()
+set_accept_dotfiles(void)
 {
 	accept_dotfiles = 1;
 }
-/*
- * find_open: start iterator without GPATH.
+/**
+ * find_open: start iterator without @VAR{GPATH}.
  *
- *	i)	start	start directory
- *			If NULL, assumed '.' directory.
+ *	@param[in]	start	start directory <br>
+ *			If @VAR{NULL}, assumed @CODE{\".\"} directory.
  */
 void
 find_open(const char *start)
@@ -524,12 +534,12 @@ find_open(const char *start)
 	curp->end   = curp->start + strbuf_getlen(curp->sb);
 	strlimcpy(cwddir, get_root(), sizeof(cwddir));
 }
-/*
- * find_open_filelist: find_open like interface for handling output of find(1).
+/**
+ * find_open_filelist: find_open like interface for handling output of @XREF{find,1}.
  *
- *	i)	filename	file including list of file names.
- *				When "-" is specified, read from standard input.
- *	i)	root		root directory of source tree
+ *	@param[in]	filename	file including list of file names. <br>
+ *				When @FILE{-} is specified, read from standard input.
+ *	@param[in]	root		root directory of source tree
  */
 void
 find_open_filelist(const char *filename, const char *root)
@@ -565,10 +575,10 @@ find_open_filelist(const char *filename, const char *root)
 		snprintf(rootdir, sizeof(rootdir), "%s/", root);
 	strlimcpy(cwddir, root, sizeof(cwddir));
 }
-/*
- * find_read: read path without GPATH.
+/**
+ * find_read: read path without @VAR{GPATH}.
  *
- *	r)		path
+ *	@return		path
  */
 char *
 find_read(void)
@@ -586,10 +596,10 @@ find_read(void)
 		die("find_read: internal error.");
 	return path;
 }
-/*
- * find_read_traverse: read path without GPATH.
+/**
+ * find_read_traverse: read path without @VAR{GPATH}.
  *
- *	r)		path
+ *	@return		path
  */
 char *
 find_read_traverse(void)
@@ -686,10 +696,10 @@ find_read_traverse(void)
 	find_eof = 1;
 	return NULL;
 }
-/*
+/**
  * find_read_filelist: read path from file
  *
- *	r)		path
+ *	@return		path
  */
 static char *
 find_read_filelist(void)
@@ -758,7 +768,7 @@ find_read_filelist(void)
 		return path;
 	}
 }
-/*
+/**
  * find_close: close iterator.
  */
 void

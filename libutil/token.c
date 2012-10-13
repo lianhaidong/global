@@ -39,13 +39,13 @@
  */
 int lineno;
 const char *sp, *cp, *lp;
-int crflag;			/* 1: return '\n', 0: doesn't return */
-int cmode;			/* allow token which start with '#' */
-int cppmode;			/* allow '::' as a token */
-int ymode;			/* allow token which start with '%' */
+int crflag;			/**< 1: return '\\n', 0: doesn't return */
+int cmode;			/**< allow token which start with '\#' */
+int cppmode;			/**< allow '\::' as a token */
+int ymode;			/**< allow token which start with '\%' */
 char token[MAXTOKEN];
 char curfile[MAXPATHLEN];
-int continued_line;		/* previous line ends with '\\' */
+int continued_line;		/**< previous line ends with '\\\\' */
 
 static char ptok[MAXTOKEN];
 static int lasttok;
@@ -55,8 +55,10 @@ static STRBUF *ib;
 #define tlen	(p - &token[0])
 static void pushbackchar(void);
 
-/*
+/**
  * opentoken:
+ *
+ *	@param[in]	file
  */
 int
 opentoken(const char *file)
@@ -73,7 +75,7 @@ opentoken(const char *file)
 	continued_line = 0;
 	return 1;
 }
-/*
+/**
  * closetoken:
  */
 void
@@ -83,25 +85,24 @@ closetoken(void)
 	fclose(ip);
 }
 
-/*
+/**
  * nexttoken: get next token
  *
- *	i)	interested	interested special character
- *				if NULL then all character.
- *	i)	reserved	converter from token to token number
- *				if this is specified, nexttoken() return
+ *	@param[in]	interested	interested special character <br>
+ *				if @VAR{NULL} then all character.
+ *	@param[in]	reserved	converter from token to token number <br>
+ *				if this is specified, nexttoken() return <br>
  *				word number, else return symbol.
- *	r)	EOF(-1)	end of file
- *		c ==0		symbol ('tok' has the value.)
- *		c < 256		interested special character
- *		c > 1000	reserved word
+ *	@return	@VAR{EOF}(-1)	end of file <br>
+ *		c ==0		symbol (#SYMBOL; #token has the value.) <br>
+ *		c \< 256		interested special character <br>
+ *		c \> 1000	reserved word
  *
- * nexttoken() doesn't return followings.
- *
- * o comment
- * o space (' ', '\t', '\f', '\v', '\r')
- * o quoted string ("...", '.')
- * o number
+ * @note nexttoken() doesn't return followings:
+ * - comment
+ * - space (@CODE{' '}, @CODE{'\\t'}, @CODE{'\\f'}, @CODE{'\\v'}, @CODE{'\\r'})
+ * - quoted string (@CODE{\"...\"}, @CODE{'.'})
+ * - number
  */
 
 int
@@ -242,7 +243,7 @@ nexttoken(const char *interested, int (*reserved)(const char *, int))
 	}
 	return lasttok = c;
 }
-/*
+/**
  * pushbacktoken: push back token
  *
  *	following nexttoken() return same token again.
@@ -252,12 +253,12 @@ pushbacktoken(void)
 {
 	strlimcpy(ptok, token, sizeof(ptok));
 }
-/*
+/**
  * peekc: peek next char
  *
- *	i)	immediate	0: ignore blank, 1: include blank
+ *	@param[in]	immediate	0: ignore blank, 1: include blank
  *
- * Peekc() read ahead following blanks but doesn't change line.
+ * peekc() read ahead following blanks but doesn't change line.
  */
 int
 peekc(int immediate)
@@ -345,20 +346,22 @@ peekc(int immediate)
 
 	return c;
 }
-/*
+/**
  * throwaway_nextchar: throw away next character
  */
 void
-throwaway_nextchar()
+throwaway_nextchar(void)
 {
 	nextchar();
 }
-/*
+/**
  * atfirst_exceptspace: return if current position is the first column
  *			except for space.
+ * @code
  *	|      1 0
  *      |      v v
  *	|      # define
+ * @endcode
  */
 int
 atfirst_exceptspace(void)
@@ -370,7 +373,7 @@ atfirst_exceptspace(void)
 		start++;
 	return (start == end) ? 1 : 0;
 }
-/*
+/**
  * pushbackchar: push back character.
  *
  *	following nextchar() return same character again.

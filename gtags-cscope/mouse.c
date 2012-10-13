@@ -30,19 +30,20 @@
  DAMAGE. 
  =========================================================================*/
 
-/*	cscope - interactive C symbol cross-reference
- *
+/** @file
  *	mouse functions
+ *
+ *	cscope - interactive C symbol cross-reference
  */
 
 #include "global-cscope.h"
 
-BOOL	mouse = NO;			/* mouse interface */
+BOOL	mouse = NO;			/**< mouse interface */
 
 #ifdef UNIXPC	/* build command requires #ifdef instead of #if */
 #include <sys/window.h>
-BOOL	unixpcmouse = NO;	/* running with a mouse on the Unix PC? */
-static int uw_hs, uw_vs;	/* character height and width */
+BOOL	unixpcmouse = NO;	/**< running with a mouse on the @NAME{Unix} @NAME{PC}? */
+static int uw_hs, uw_vs;	/**< character height and width */
 #endif
 
 static char const rcsid[] = "$Id$";
@@ -52,7 +53,7 @@ typedef	struct {			/* menu */
 	char	*value;
 } MENU;
 
-static	MENU	mainmenu[] = {		/* main menu */
+static	MENU	mainmenu[] = {		/**< main menu */
 	{"Send",	"##\033s##\r"},
 	{"Repeat",	"\031"},
 	{"Edit All",	"\05"},
@@ -64,7 +65,7 @@ static	MENU	mainmenu[] = {		/* main menu */
 	{NULL,		NULL}
 };
 
-static	MENU	changemenu[] = {	/* change mode menu */
+static	MENU	changemenu[] = {	/**< change mode menu */
 	{"Mark Screen",	"*"},
 	{"Mark All",	"a"},
 	{"Change",	"\04"},
@@ -75,14 +76,14 @@ static	MENU	changemenu[] = {	/* change mode menu */
 	{NULL,		NULL}
 };
 
-static	MENU	*loaded;		/* menu loaded */
-static	BOOL	emacsviterm = NO;	/* terminal type */
+static	MENU	*loaded;		/**< menu loaded */
+static	BOOL	emacsviterm = NO;	/**< terminal type */
 
 static	void	loadmenu(MENU *menu);
 static	int	getcoordinate(void);
 static	int	getpercent(void);
 
-/* see if there is a mouse interface */
+/** see if there is a mouse interface */
 
 void
 mouseinit(void)
@@ -148,7 +149,7 @@ mouseinit(void)
 	}
 }
 
-/* load the correct mouse menu */
+/** load the correct mouse menu */
 
 void
 mousemenu(void)
@@ -163,7 +164,7 @@ mousemenu(void)
 	}
 }
 
-/* download a menu */
+/** download a menu */
 
 static void
 loadmenu(MENU *menu)
@@ -194,7 +195,7 @@ loadmenu(MENU *menu)
 	(void) fflush(stdout);
 }
 
-/* reinitialize the mouse in case curses changed the attributes */
+/** reinitialize the mouse in case @NAME{curses} changed the attributes */
 
 void
 mousereinit(void)
@@ -208,7 +209,7 @@ mousereinit(void)
 	}
 }
 
-/* restore the mouse attributes */
+/** restore the mouse attributes */
 
 void
 mousecleanup(void)
@@ -226,7 +227,7 @@ mousecleanup(void)
 	}
 }
 
-/* draw the scrollbar */
+/** draw the scrollbar */
 
 void
 drawscrollbar(int top, int bot)
@@ -258,7 +259,7 @@ drawscrollbar(int top, int bot)
 	}
 }
 
-/* get the mouse information */
+/** get the mouse information */
 
 MOUSE *
 getmouseaction(char leading_char)
@@ -396,7 +397,7 @@ getmouseaction(char leading_char)
 	return(&m);
 }
 
-/* get a row or column coordinate from a mouse button click or sweep */
+/** get a row or column coordinate from a mouse button click or sweep */
 
 static int
 getcoordinate(void)
@@ -415,7 +416,7 @@ getcoordinate(void)
 	return (next + c - ' ');
 }
 
-/* get a percentage */
+/** get a percentage */
 
 static int
 getpercent(void)

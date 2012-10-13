@@ -37,9 +37,9 @@
 
 #include "build.h"
 
-BOOL	buildonly = NO;		/* only build the database */
+BOOL	buildonly = NO;		/**< only build the database */
 
-/* rebuild the database */
+/** rebuild the database */
 void
 rebuild(void)
 {

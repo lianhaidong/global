@@ -30,7 +30,9 @@
  DAMAGE. 
  =========================================================================*/
 
-/* memory allocation functions */
+/** @file
+ *	memory allocation functions
+ */
 
 #include <stdio.h>
 #include <string.h>
@@ -50,7 +52,7 @@ static	void	*alloctest(void *p);
 char	*calloc(), *malloc(), *realloc(), *strcpy();
 #endif
 
-/* allocate a string */
+/** allocate a string */
 
 char *
 my_strdup(char *s)
@@ -59,7 +61,7 @@ my_strdup(char *s)
 }
 
 
-/* version of malloc that only returns if successful */
+/** version of @NAME{malloc} that only returns if successful */
 void *
 mymalloc(size_t size)
 {
@@ -67,7 +69,7 @@ mymalloc(size_t size)
 }
 
 
-/* version of calloc that only returns if successful */
+/** version of @NAME{calloc} that only returns if successful */
 void *
 mycalloc(size_t nelem, size_t size)
 {
@@ -75,7 +77,7 @@ mycalloc(size_t nelem, size_t size)
 }
 
 
-/* version of realloc that only returns if successful */
+/** version of @NAME{realloc} that only returns if successful */
 void *
 myrealloc(void *p, size_t size)
 {
@@ -83,7 +85,7 @@ myrealloc(void *p, size_t size)
 }
 
 
-/* check for memory allocation failure */
+/** check for memory allocation failure */
 static	void *
 alloctest(void *p)
 {

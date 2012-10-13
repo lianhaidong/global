@@ -26,29 +26,31 @@
 #include "checkalloc.h"
 #include "pool.h"
 
-/*
+/** @file
 
 Pool: usage and memory status
 
+@code
 pool = pool_open();					[head]
 
-memory = pool_alloc(pool, 10);				[head] [..........]
-memory = pool_alloc(pool, 10);				[head] [..........][..........]
+memory = pool_malloc(pool, 10);				[head] [..........]
+memory = pool_malloc(pool, 10);				[head] [..........][..........]
 pool_reset(pool);					[head] [++++++++++][++++++++++]
 string = pool_strdup(pool, "12345", 0);			[head] [12345]++++][++++++++++]
 string = pool_strdup_withterm(pool, "12345:678", ':');	[head] [12345][12345]+++++++++]
 								(...: alloc, +++: free)
 pool_close(pool);					(nothing)
+@endcode
 
 */
 
 #define obstack_chunk_alloc check_malloc
 #define obstack_chunk_free free
 
-/*
+/**
  * pool_open: open memory pool
  *
- *	r)	pool	POOL structure
+ *	@return	pool	#POOL structure
  */
 POOL *
 pool_open(void)
@@ -59,24 +61,25 @@ pool_open(void)
 	pool->first_object = obstack_alloc(&pool->obstack, 1);
 	return pool;
 }
-/*
+/**
  * pool_malloc: allocate memory from pool
  *
- *	i)	pool	POOL structure
- *	i)	size	memory size
- *	r)		allocated memory
+ *	@param[in]	pool	#POOL structure
+ *	@param[in]	size	memory size
+ *	@return		allocated memory
  */
 void *
 pool_malloc(POOL *pool, int size)
 {
 	return obstack_alloc(&pool->obstack, size);
 }
-/*
- * pool_strdup: memory pool version of strdup()
+/**
+ * pool_strdup: memory pool version of @NAME{strdup()}
  *
- *	i)	pool	POOL structure
- *	i)	s	string
- *	r)		allocated memory
+ *	@param[in]	pool	#POOL structure
+ *	@param[in]	string	string
+ *	@param[in]	size
+ *	@return		allocated memory
  */
 char *
 pool_strdup(POOL *pool, const char *string, int size)
@@ -85,13 +88,13 @@ pool_strdup(POOL *pool, const char *string, int size)
 		size = strlen(string);
 	return obstack_copy0(&pool->obstack, string, size);
 }
-/*
- * pool_strdup_withterm: memory pool version of strdup()
+/**
+ * pool_strdup_withterm: memory pool version of @NAME{strdup()}
  *
- *	i)	pool	POOL structure
- *	i)	s	string
- *	i)	term	terminate character
- *	r)		allocated memory
+ *	@param[in]	pool	#POOL structure
+ *	@param[in]	string	string
+ *	@param[in]	term	terminate character
+ *	@return		allocated memory
  */
 char *
 pool_strdup_withterm(POOL *pool, const char *string, int term)
@@ -100,10 +103,10 @@ pool_strdup_withterm(POOL *pool, const char *string, int term)
 	int size = p ? p - string : strlen(string);
 	return obstack_copy0(&pool->obstack, string, size);
 }
-/*
+/**
  * pool_reset: reset memory pool
  *
- *	i)	pool	POOL structure
+ *	@param[in]	pool	#POOL structure
  */
 void
 pool_reset(POOL *pool)
@@ -113,10 +116,10 @@ pool_reset(POOL *pool)
 	 */
 	obstack_free(&pool->obstack, pool->first_object);
 }
-/*
+/**
  * pool_close: close memory pool
  *
- *	i)	sh	POOL structure
+ *	@param[in]	pool	#POOL structure
  */
 void
 pool_close(POOL *pool)

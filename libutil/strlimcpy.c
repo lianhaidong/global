@@ -23,15 +23,15 @@
 #include "die.h"
 #include "strlimcpy.h"
 
-/*
+/**
  * strlimcpy: copy string with limit.
  *
- *	o)	dest	destination string
- *	i)	source	source string
- *	i)	limit	size of dest
+ *	@param[out]	dest	destination string
+ *	@param[in]	source	source string
+ *	@param[in]	limit	size of @a dest
  *
- * NOTE: This function is similar to strlcpy of OpenBSD but is different
- * because strlimcpy abort when it beyond the limit.
+ * @note This function is similar to @NAME{strlcpy()} of @NAME{OpenBSD} but is different
+ * because @NAME{strlimcpy} abort when it beyond the limit.
  */
 void
 strlimcpy(char *dest, const char *const source, const int limit)

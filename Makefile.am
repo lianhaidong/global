@@ -23,9 +23,13 @@ endif
 gtagsdir = ${datadir}/gtags
 gtags_DATA = AUTHORS COPYING ChangeLog FAQ INSTALL LICENSE NEWS README THANKS \
         gtags.conf gtags.el gtags.pl gtags.vim gtags-cscope.vim \
-	BOKIN_MODEL BOKIN_MODEL_FAQ DONORS BUILD_TOOLS elvis.rc elvis-2.2_0.patch
+	BOKIN_MODEL BOKIN_MODEL_FAQ DONORS BUILD_TOOLS elvis.rc elvis-2.2_0.patch \
+	mainpage.dox head.in
 
 EXTRA_DIST = ${gtags_DATA} reconf.sh convert.pl
+
+doxygen:
+	GTAGSCONF=':htags_options=--insert-header=head.in --suggest:' doxygen
 
 # If you would like to install gtags.el to the lisp directory then uncomment
 # the following line.

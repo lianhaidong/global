@@ -28,23 +28,34 @@
 void parser_init(const char *, const char *);
 void parser_exit(void);
 
-/* tag type */
-#define PARSER_DEF		1	/* definition */
-#define PARSER_REF_SYM		2	/* reference or other symbol */
+/** @name tag type */
+/** @{ */
+			/** definition */
+#define PARSER_DEF		1
+			/** reference or other symbol */
+#define PARSER_REF_SYM		2
+/** @} */
 
-/* flags */
-#define PARSER_DEBUG		1	/* debug mode */
-#define PARSER_VERBOSE		2	/* verbose mode */
-#define PARSER_WARNING		4	/* print warning message */
-#define PARSER_END_BLOCK	8	/* force level 1 block end */
-#define PARSER_BEGIN_BLOCK	16	/* force level 1 block start */
+/** @name flags */
+/** @{ */
+			/** debug mode */
+#define PARSER_DEBUG		1
+			/** verbose mode */
+#define PARSER_VERBOSE		2
+			/** print warning message */
+#define PARSER_WARNING		4
+			/** force level 1 block end */
+#define PARSER_END_BLOCK	8
+			/** force level 1 block start */
+#define PARSER_BEGIN_BLOCK	16
+/** @} */
 
 typedef void (*PARSER_CALLBACK)(int, const char *, int, const char *, const char *, void *);
 
 void parse_file(const char *, int, PARSER_CALLBACK, void *);
 
 struct parser_param {
-	int size;		/* size of this structure */
+	int size;		/**< size of this structure */
 	int flags;
 	const char *file;
 	PARSER_CALLBACK put;

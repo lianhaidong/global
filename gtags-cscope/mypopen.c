@@ -63,6 +63,7 @@ static char const rcsid[] = "$Id$";
 static pid_t popen_pid[20];
 static RETSIGTYPE (*tstat)(int);
 
+/** opens a file descriptor and then sets close-on-exec for the file */
 int
 myopen(char *path, int flag, int mode)
 {
@@ -104,6 +105,7 @@ myopen(char *path, int flag, int mode)
 	}
 }
 
+/** opens a file pointer and then sets close-on-exec for the file */
 FILE *
 myfopen(char *path, char *mode)
 {

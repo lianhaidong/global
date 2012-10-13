@@ -30,9 +30,10 @@
  DAMAGE. 
  =========================================================================*/
 
-/*	cscope - interactive C symbol cross-reference
- *
+/** @file
  *	display help
+ *
+ *	cscope - interactive C symbol cross-reference
  *
  */
 
@@ -42,7 +43,7 @@
 #else
 #include <curses.h>
 #endif
-/*
+/**
 	max num of lines of help screen -
 	this number needs to be increased if more than n help items are needed
 */

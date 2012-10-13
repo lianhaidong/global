@@ -31,42 +31,68 @@
 
 #include "queue.h"
 
-/*
+/**
  * The memory pool scheme is a simple one.  Each in-memory page is referenced
  * by a bucket which is threaded in up to two of three ways.  All active pages
  * are threaded on a hash chain (hashed by page number) and an lru chain.
  * Inactive pages are threaded on a free chain.  Each reference to a memory
- * pool is handed an opaque MPOOL cookie which stores all of this information.
+ * pool is handed an opaque #MPOOL cookie which stores all of this information.
  */
 #define	HASHSIZE	128
 #define	HASHKEY(pgno)	((pgno - 1) % HASHSIZE)
 
-/* The BKT structures are the elements of the queues. */
+/** The BKT structures are the elements of the queues. */
 typedef struct _bkt {
-	CIRCLEQ_ENTRY(_bkt) hq;		/* hash queue */
-	CIRCLEQ_ENTRY(_bkt) q;		/* lru queue */
-	void    *page;			/* page */
-	pgno_t   pgno;			/* page number */
 
-#define	MPOOL_DIRTY	0x01		/* page needs to be written */
-#define	MPOOL_PINNED	0x02		/* page is pinned into memory */
-	u_int8_t flags;			/* flags */
+#ifndef IS__DOXYGEN_
+	CIRCLEQ_ENTRY(_bkt) hq;		/**< hash queue */
+	CIRCLEQ_ENTRY(_bkt) q;		/**< lru queue */
+#else
+	struct {
+		struct _bkt *cqe_next;
+		struct _bkt *cqe_prev;
+	} hq;						/**< hash queue */
+	struct {
+		struct _bkt *cqe_next;
+		struct _bkt *cqe_prev;
+	} q;						/**< lru queue */
+#endif
+	void    *page;			/**< page */
+	pgno_t   pgno;			/**< page number */
+
+			/** page needs to be written */
+#define	MPOOL_DIRTY	0x01
+			/** page is pinned into memory */
+#define	MPOOL_PINNED	0x02
+	u_int8_t flags;			/**< flags */
 } BKT;
 
 typedef struct MPOOL {
-	CIRCLEQ_HEAD(_lqh, _bkt) lqh;	/* lru queue head */
-					/* hash queue array */
+
+#ifndef IS__DOXYGEN_
+	CIRCLEQ_HEAD(_lqh, _bkt) lqh;	/**< lru queue head */
+					/** hash queue array */
 	CIRCLEQ_HEAD(_hqh, _bkt) hqh[HASHSIZE];
-	pgno_t	curcache;		/* current number of cached pages */
-	pgno_t	maxcache;		/* max number of cached pages */
-	pgno_t	npages;			/* number of pages in the file */
-	u_long	pagesize;		/* file page size */
-	int	fd;			/* file descriptor */
-					/* page in conversion routine */
+#else
+	struct _lqh {
+		struct _bkt *cqh_first;
+		struct _bkt *cqh_last;
+	} lqh;							/**< lru queue head */
+	struct _hqh {
+		struct _bkt *cqh_first;
+		struct _bkt *cqh_last;
+	} hqh[HASHSIZE];				/**< hash queue array */
+#endif
+	pgno_t	curcache;		/**< current number of cached pages */
+	pgno_t	maxcache;		/**< max number of cached pages */
+	pgno_t	npages;			/**< number of pages in the file */
+	u_long	pagesize;		/**< file page size */
+	int	fd;			/**< file descriptor */
+					/** page in conversion routine */
 	void    (*pgin)(void *, pgno_t, void *);
-					/* page out conversion routine */
+					/** page out conversion routine */
 	void    (*pgout)(void *, pgno_t, void *);
-	void	*pgcookie;		/* cookie for page in/out routines */
+	void	*pgcookie;		/**< cookie for page in/out routines */
 #ifdef STATISTICS
 	u_long	cachehit;
 	u_long	cachemiss;

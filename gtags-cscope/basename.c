@@ -30,7 +30,9 @@
  DAMAGE. 
  =========================================================================*/
 
-/* get a file's base name from its path name */
+/** @file
+ *	get a file's base name from its path name
+ */
 
 static char const rcsid[] = "$Id$";
 

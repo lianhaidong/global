@@ -27,13 +27,13 @@
 #include "die.h"
 #include "assoc.h"
 
-/*
+/**
  * assoc_open: open associate array.
  *
- *	r)		descriptor
+ *	@return		descriptor
  */
 ASSOC *
-assoc_open()
+assoc_open(void)
 {
 	ASSOC *assoc = (ASSOC *)check_malloc(sizeof(ASSOC));
 
@@ -46,10 +46,10 @@ assoc_open()
 	assoc->dbop->put_errmsg = "cannot write to temporary file.\nYou can specify the directory for the temporary file using environment variable 'TMPDIR'.";
 	return assoc;
 }
-/*
+/**
  * assoc_close: close associate array.
  *
- *	i)	assoc	descriptor
+ *	@param[in]	assoc	descriptor
  */
 void
 assoc_close(ASSOC *assoc)
@@ -61,12 +61,12 @@ assoc_close(ASSOC *assoc)
 	dbop_close(assoc->dbop);
 	free(assoc);
 }
-/*
+/**
  * assoc_put: put data into associate array.
  *
- *	i)	assoc	descriptor
- *	i)	name	name
- *	i)	value	value
+ *	@param[in]	assoc	descriptor
+ *	@param[in]	name	name
+ *	@param[in]	value	value
  */
 void
 assoc_put(ASSOC *assoc, const char *name, const char *value)
@@ -75,13 +75,13 @@ assoc_put(ASSOC *assoc, const char *name, const char *value)
 		abort();
 	dbop_put(assoc->dbop, name, value);
 }
-/*
+/**
  * assoc_put_withlen: put data into associate array.
  *
- *	i)	assoc	descriptor
- *	i)	name	name
- *	i)	value	value
- *	i)	len	length
+ *	@param[in]	assoc	descriptor
+ *	@param[in]	name	name
+ *	@param[in]	value	value
+ *	@param[in]	len	length
  */
 void
 assoc_put_withlen(ASSOC *assoc, const char *name, const char *value, int len)
@@ -90,12 +90,12 @@ assoc_put_withlen(ASSOC *assoc, const char *name, const char *value, int len)
 		abort();
 	dbop_put_withlen(assoc->dbop, name, value, len);
 }
-/*
+/**
  * assoc_get: get data from associate array.
  *
- *	i)	assoc	descriptor
- *	i)	name	name
- *	r)		value
+ *	@param[in]	assoc	descriptor
+ *	@param[in]	name	name
+ *	@return		value
  */
 const char *
 assoc_get(ASSOC *assoc, const char *name)

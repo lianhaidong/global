@@ -30,10 +30,17 @@
 #include "die.h"
 #include "strlimcpy.h"
 #include "date.h"
-/*
+/**
  * now: current date and time
  *
- *	r)		date and time
+ *	@return		date and time
+ *
+ * If function @NAME{strftime()} is available on your system, the format of the date
+ * and time returned is @CODE{'\%a \%b \%d \%H:\%M:\%S \%Z \%Y'} using local time, otherwise
+ * the @NAME{date} shell command is used. If there's an error with the date command version
+ * of this function, the string returned will be 'unknown time'.
+ *
+ *	@note The returned string will be overwritten on the next call of this function.
  */
 const char *
 now(void)

@@ -19,7 +19,7 @@
 #ifndef _IDSET_H_
 #define _IDSET_H_
 
-/*
+/**
  * Any id is not equal to END_OF_ID.
  */
 #define END_OF_ID ((unsigned int)(-1))
@@ -28,7 +28,7 @@ typedef struct {
 	unsigned int size;
 	unsigned int min;
 	unsigned int max;
-	unsigned int lastid;		/* used by idset_first() and idset_next() */
+	unsigned int lastid;		/**< used by idset_first() and idset_next() */
 	unsigned long *set;
 } IDSET;
 

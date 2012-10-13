@@ -34,7 +34,7 @@ License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n\
 This is free software; you are free to change and redistribute it.\n\
 There is NO WARRANTY, to the extent permitted by law.\n\
 ";
-/*
+/**
  * get_version: get version string.
  */
 char *
@@ -42,8 +42,11 @@ get_version(void)
 {
 	return VERSION;
 }
-/*
+/**
  * version: print version information.
+ *
+ *	@param[in]	name
+ *	@param[in]	verbose
  */
 void
 version(const char *name, const int verbose)

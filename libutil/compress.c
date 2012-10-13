@@ -32,13 +32,15 @@
 #include "strlimcpy.h"
 #include "varray.h"
 
-/*
+/**
+ * @file
  * Compress module
  *
- * Function compress() reduces the size of GTAGS by about 10-20% average.
+ * Function compress() reduces the size of @NAME{GTAGS} by about 10-20% average.
  *
- * PROTOCOL:
+ * @par PROTOCOL:
  *
+ * @code{.txt}
  *	meta record: " __.COMPRESS ddefine ttypedef"
  *
  *	'ddefine' means	d => define
@@ -51,24 +53,30 @@
  *	"define"	@d
  *	"typedef"	@t
  *	<spaces>	@<digit> or @{<number>}
+ * @endcode
  *
- * EXAMPLE OF COMPRESS:
+ * @par EXAMPLE OF COMPRESS:
  *
+ * @code
  *	100 macro 23 #define macro(c) a;      b;
  *	             ~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *	             | [compress]   ^ [uncompress]
  *	             v              |
  *	100 macro 23 #@d @n(c) a;@6b;
  *	             ~~~~~~~~~~~~~~~~
- * DATA STRUCTURE
+ * @endcode
  *
- *	o Ab2name table is used to convert from abbreviation character
- *	  to the string value.
- *	o Name2ab table is used to convert from string value to the
+ * @par DATA STRUCTURE
+ * <br>
+ *	- #ab2name table is used to convert from abbreviation character
+ *	  to the string value. <br>
+ *	- #name2ab table is used to convert from string value to the
  *	  abbreviation character.
  *	  
+ *	@code
  *	ab2name = ('a' => NULL, ... , 'd' => "define", ... 'z' => NULL)
  *	name2ab = ("define" => 'a', "typdef" => 't')
+ *	@endcode
  */
 struct abbrmap {
 	int c;
@@ -78,10 +86,10 @@ struct abbrmap {
 static struct abbrmap ab2name[26];
 static VARRAY *name2ab;
 static char abbrev_string[1024];
-/*
+/**
  * setup two internal tables for abbreviation.
  *
- *	i)	abbrev	abbreviation string
+ *	@param[in]	abbrev	abbreviation string
  */
 void
 abbrev_open(const char *abbrev)
@@ -121,7 +129,7 @@ abbrev_open(const char *abbrev)
 		ab2name[i].length = ab->length;
 	}
 }
-/*
+/**
  * free allocated memory.
  */
 void
@@ -131,8 +139,8 @@ abbrev_close(void)
 		varray_close(name2ab);
 	name2ab = NULL;
 }
-/*
- * for debugging.
+/**
+ * @remark for debugging.
  */
 void
 abbrev_dump(void)
@@ -161,12 +169,12 @@ abbrev_dump(void)
 		}
 	}
 }
-/*
+/**
  * compress source line.
  *
- *	i)	in	source line
- *	i)	name	replaced string
- *	r)		compressed string
+ *	@param[in]	in	source line
+ *	@param[in]	name	replaced string
+ *	@return		compressed string
  */
 char *
 compress(const char *in, const char *name)
@@ -240,12 +248,12 @@ compress(const char *in, const char *name)
 	return strbuf_value(sb);
 }
 
-/*
+/**
  * uncompress source line.
  *
- *	i)	in	compressed string
- *	i)	name	replaced string
- *	r)		uncompressed string
+ *	@param[in]	in	compressed string
+ *	@param[in]	name	replaced string
+ *	@return		uncompressed string
  */
 char *
 uncompress(const char *in, const char *name)

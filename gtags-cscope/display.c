@@ -30,9 +30,10 @@
  DAMAGE. 
  =========================================================================*/
 
-/*	cscope - interactive C symbol cross-reference
- *
+/** @file
  *	display functions
+ *
+ *	cscope - interactive C symbol cross-reference
  */
 
 #ifdef _WIN32
@@ -78,40 +79,40 @@ typedef jmp_buf sigjmp_buf;
 
 static char const rcsid[] = "$Id$";
 
-int	booklen;		/* OGS book name display field length */
-int	*displine;		/* screen line of displayed reference */
-unsigned int disprefs;		/* displayed references */
-int	field;			/* input field */
-int	filelen;		/* file name display field length */
-int	fcnlen;			/* function name display field length */
-unsigned int mdisprefs;		/* maximum displayed references */
-unsigned int nextline;		/* next line to be shown */
-int	numlen;			/* line number display field length */
-unsigned int topline = 1;		/* top line of page */
-int	bottomline;		/* bottom line of page */
-long	searchcount;		/* count of files searched */
-int	subsystemlen;		/* OGS subsystem name display field length */
-unsigned int totallines;	/* total reference lines */
-unsigned fldcolumn;		/* input field column */
+int	booklen;		/**< OGS book name display field length */
+int	*displine;		/**< screen line of displayed reference */
+unsigned int disprefs;		/**< displayed references */
+int	field;			/**< input field */
+int	filelen;		/**< file name display field length */
+int	fcnlen;			/**< function name display field length */
+unsigned int mdisprefs;		/**< maximum displayed references */
+unsigned int nextline;		/**< next line to be shown */
+int	numlen;			/**< line number display field length */
+unsigned int topline = 1;		/**< top line of page */
+int	bottomline;		/**< bottom line of page */
+long	searchcount;		/**< count of files searched */
+int	subsystemlen;		/**< OGS subsystem name display field length */
+unsigned int totallines;	/**< total reference lines */
+unsigned fldcolumn;		/**< input field column */
 
 const char	dispchars[] = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-static	int	fldline;		/* input field line */
-static	sigjmp_buf	env;		/* setjmp/longjmp buffer */
-static	int	lastdispline;		/* last displayed reference line */
-static	char	lastmsg[MSGLEN + 1];	/* last message displayed */
+static	int	fldline;		/**< input field line */
+static	sigjmp_buf	env;		/**< setjmp/longjmp buffer */
+static	int	lastdispline;		/**< last displayed reference line */
+static	char	lastmsg[MSGLEN + 1];	/**< last message displayed */
 static	char	helpstring[] = "Press the ? key for help";
 static	char	selprompt[] = 
 	"Select lines to change (press the ? key for help): ";
 
-typedef char * (*FP)(char *);	/* pointer to function returning a character pointer */
+typedef char * (*FP)(char *);	/**< pointer to function returning a character pointer */
 
 /* HBB 2000/05/05: I removed the casts to function pointer type. It is
  * fundamentally unsafe to call a function through a pointer of a
  * different type ('undefined behaviour' in the words of the ANSI/ISO
  * C standard).  Instead, I made all the find...() functions adhere to
  * the same function type, by changing argument passing a bit. */
-static	struct	{		/* text of input fields */
+static	struct	{		/**< text of input fields */
 	char	*text1;
 	char	*text2;
 	FP	findfcn;
@@ -130,7 +131,7 @@ static	struct	{		/* text of input fields */
 /* Internal prototypes: */
 static	RETSIGTYPE	jumpback(int sig);
 
-/* initialize display parameters */
+/** initialize display parameters */
 
 void
 dispinit(void)
@@ -152,7 +153,7 @@ dispinit(void)
 	displine = mymalloc(mdisprefs * sizeof(int));
 }
 
-/* display a page of the references */
+/** display a page of the references */
 
 void
 display(void)
@@ -386,7 +387,7 @@ display(void)
     refresh();
 }
 
-/* set the cursor position for the field */
+/** set the cursor position for the field */
 void
 setfield(void)
 {
@@ -394,7 +395,7 @@ setfield(void)
 	fldcolumn = strlen(fields[field].text1) + strlen(fields[field].text2) + 3;
 }
 
-/* move to the current input field */
+/** move to the current input field */
 
 void
 atfield(void)
@@ -402,7 +403,7 @@ atfield(void)
 	move(fldline, fldcolumn);
 }
 
-/* move to the changing lines prompt */
+/** move to the changing lines prompt */
 
 void
 atchange(void)
@@ -410,7 +411,9 @@ atchange(void)
 	move(PRLINE, (int) sizeof(selprompt) - 1);
 }
 
-/* search for the symbol or text pattern */
+/** @fn BOOL search(void)
+ *	search for the symbol or text pattern
+ */
 
 /*ARGSUSED*/
 static RETSIGTYPE
@@ -491,7 +494,7 @@ search(void)
 	return(YES);
 }
 
-/* display search progress with default custom format */
+/** display search progress with default custom format */
 
 void
 progress(char *what, long current, long max)
@@ -544,7 +547,7 @@ progress(char *what, long current, long max)
 	++searchcount;
 }
 
-/* print error message on system call failure */
+/** print error message on system call failure */
 
 void
 myperror(char *text) 
@@ -564,7 +567,7 @@ myperror(char *text)
 	postmsg(msg);
 }
 
-/* postmsg clears the message line and prints the message */
+/** postmsg clears the message line and prints the message */
 
 /* VARARGS */
 void
@@ -582,7 +585,7 @@ postmsg(char *msg)
 	(void) strncpy(lastmsg, msg, sizeof(lastmsg) - 1);
 }
 
-/* clearmsg clears the first message line */
+/** clearmsg clears the first message line */
 
 void
 clearmsg(void)
@@ -593,7 +596,7 @@ clearmsg(void)
 	}
 }
 
-/* clearmsg2 clears the second message line */
+/** clearmsg2 clears the second message line */
 
 void
 clearmsg2(void)
@@ -604,7 +607,7 @@ clearmsg2(void)
 	}
 }
 
-/* postmsg2 clears the second message line and prints the message */
+/** postmsg2 clears the second message line and prints the message */
 
 void
 postmsg2(char *msg) 
@@ -619,7 +622,7 @@ postmsg2(char *msg)
 	}
 }
 
-/* display an error mesg - stdout or on second msg line */
+/** display an error mesg - @NAME{stdout} or on second msg line */
 void
 posterr(char *msg, ...) 
 {
@@ -637,7 +640,7 @@ posterr(char *msg, ...)
     }
 }
 
-/* display a fatal error mesg -- stderr *after* shutting down curses */
+/** display a fatal error mesg -- @NAME{stderr} @STRONG{*after*} shutting down curses */
 void
 postfatal(const char *msg, ...)
 {
@@ -656,7 +659,7 @@ postfatal(const char *msg, ...)
 	myexit(1);
 }
 
-/* position references found file at specified line */
+/** position references found file at specified @a line */
 
 void
 seekline(unsigned int line) 
@@ -679,7 +682,7 @@ seekline(unsigned int line)
 	}
 }
 
-/* get the OGS subsystem and book names */
+/** get the @NAME{OGS} subsystem and book names */
 
 void
 ogsnames(char *file, char **subsystem, char **book)
@@ -708,7 +711,7 @@ ogsnames(char *file, char **subsystem, char **book)
 	}
 }
 
-/* get the requested path components */
+/** get the requested @a path @a components */
 
 char *
 pathcomponents(char *path, int components)
@@ -728,7 +731,7 @@ pathcomponents(char *path, int components)
 	return(s);
 }
 
-/* open the references found file for writing */
+/** open the references found file for writing */
 
 BOOL
 writerefsfound(void)

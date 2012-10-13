@@ -29,6 +29,8 @@
 #endif
 #include <stdarg.h>
 
+/** @file */
+
 #ifndef __attribute__
 /* This feature is available in gcc versions 2.5 and later.  */
 # if __GNUC__ < 2 || (__GNUC__ == 2 && __GNUC_MINOR__ < 5) || __STRICT_ANSI__
@@ -45,10 +47,18 @@
 #define INITIALSIZE 80
 #define EXPANDSIZE 80
 
-/* for strbuf_fgets() */
+/**
+ * @name Defines for strbuf_fgets()
+ * See: strbuf_fgets()
+ */
+/** @{ */
+			/** append next record to existing data. */
 #define STRBUF_APPEND		1
+			/** remove last @CODE{'\\n'} and/or @CODE{'\\r'}, if exists. */
 #define STRBUF_NOCRLF		2
+			/** skip lines which start with @CODE{'\#'} */
 #define STRBUF_SHARPSKIP	4
+/** @} */
 
 typedef struct _strbuf {
 	char *name;
@@ -59,16 +69,19 @@ typedef struct _strbuf {
 	int alloc_failed;
 } STRBUF;
 
-/*
+/**
  * STATIC_STRBUF(sb):
  *
  * This macro is used for static string buffer which is suitable for
  * work area and(or) return value of function. The area allocated once
- * is repeatedly used though the area is never released.
- * You must call strbuf_clear(sb) every time before using.
- * You must not call strbuf_close(sb) for it.
+ * is repeatedly used though the area is never released. <br>
  *
- * Usage:
+ * @attention
+ * You must call strbuf_clear() every time before using. <br>
+ * You must @STRONG{not} call strbuf_close() for it.
+ *
+ * @par Usage:
+ * @code
  *      function(...) {
  *              STATIC_STRBUF(sb);
  *
@@ -78,6 +91,7 @@ typedef struct _strbuf {
  *              ...
  *              return strbuf_value(sb);
  *      }
+ * @endcode
  */
 #define STATIC_STRBUF(sb) static STRBUF sb[1]
 

@@ -36,10 +36,10 @@ const char **argslist;
 FILE *ip;
 GFIND *gp;
 
-/*
+/**
  * args_open:
  *
- *	i)	args	args array
+ *	@param[in]	args	args array
  */
 void
 args_open(const char **args)
@@ -47,11 +47,11 @@ args_open(const char **args)
 	type = ARGS_ARGS;
 	argslist = args;
 }
-/*
- * args_open_filelist: args_open like interface for handling output of find(1).
+/**
+ * args_open_filelist: #args_open like interface for handling output of @XREF{find,1}.
  *
- *	i)	filename	file including list of file names.
- *				When "-" is specified, read from standard input.
+ *	@param[in]	filename	file including list of file names. <br>
+ *				When @FILE{-} is specified, read from standard input.
  */
 void
 args_open_filelist(const char *filename)
@@ -65,12 +65,12 @@ args_open_filelist(const char *filename)
 			die("cannot open '%s'.", filename);
 	}
 }
-/*
- * args_open_both: args_open like interface for argument and file list.
+/**
+ * args_open_both: #args_open like interface for argument and file list.
  *
- *	i)	args		args array
- *	i)	filename	file including list of file names.
- *				When "-" is specified, read from standard input.
+ *	@param[in]	args		args array
+ *	@param[in]	filename	file including list of file names. <br>
+ *				When @FILE{-} is specified, read from standard input.
  */
 void
 args_open_both(const char **args, const char *filename)
@@ -85,10 +85,10 @@ args_open_both(const char **args, const char *filename)
 			die("cannot open '%s'.", filename);
 	}
 }
-/*
- * args_open_gfind: args_open like interface for handling output of gfind.
+/**
+ * args_open_gfind: #args_open like interface for handling output of @NAME{gfind}.
  *
- *	i)	agp	GFIND descriptor
+ *	@param[in]	agp	GFIND descriptor
  */
 void
 args_open_gfind(GFIND *agp)
@@ -97,14 +97,14 @@ args_open_gfind(GFIND *agp)
 	gp = agp;
 }
 void
-args_open_nop()
+args_open_nop(void)
 {
 	type = ARGS_NOP;
 }
-/*
+/**
  * args_read: read path From args.
  *
- *	r)		path (NULL: end of argument)
+ *	@return		path (@VAR{NULL}: end of argument)
  */
 const char *
 args_read(void)
@@ -137,7 +137,7 @@ args_read(void)
 	}
 	return p;
 }
-/*
+/**
  * args_close: close args.
  */
 void

@@ -25,7 +25,7 @@
 static char comline[MAXFILLEN];
 
 static char *
-common()
+common(void)
 {
 	static char com[80];
 	snprintf(com, sizeof(com), "%s --encode-path=\" \t\" --result=cscope%s%s",

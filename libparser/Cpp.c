@@ -40,25 +40,28 @@ static int function_definition(const struct parser_param *);
 static void condition_macro(const struct parser_param *, int);
 static int enumerator_list(const struct parser_param *);
 
-#define MAXCOMPLETENAME 1024            /* max size of complete name of class */
-#define MAXCLASSSTACK   100             /* max size of class stack */
+		/** max size of complete name of class */
+#define MAXCOMPLETENAME 1024
+		/** max size of class stack */
+#define MAXCLASSSTACK   100
 #define IS_CV_QUALIFIER(c)      ((c) == CPP_CONST || (c) == CPP_VOLATILE)
 
-/*
- * #ifdef stack.
- */
 #define MAXPIFSTACK	100
 
-static struct {
-	short start;		/* level when #if block started */
-	short end;		/* level when #if block end */
-	short if0only;		/* #if 0 or notdef only */
-} pifstack[MAXPIFSTACK], *cur;
-static int piflevel;		/* condition macro level */
-static int level;		/* brace level */
-static int namespacelevel;	/* namespace block level */
+/**
+ * @name #ifdef stack.
+ */
 
-/*
+static struct {
+	short start;		/**< level when @CODE{\#if} block started */
+	short end;		/**< level when @CODE{\#if} block end */
+	short if0only;		/**< @CODE{\#if 0} or notdef only */
+} pifstack[MAXPIFSTACK], *cur;
+static int piflevel;		/**< condition macro level */
+static int level;		/**< brace level */
+static int namespacelevel;	/**< namespace block level */
+
+/**
  * Cpp: read C++ file and pickup tag entries.
  */
 void
@@ -520,8 +523,8 @@ Cpp(const struct parser_param *param)
 	}
 	closetoken();
 }
-/*
- * process_attribute: skip attributes in __attribute__((...)).
+/**
+ * process_attribute: skip attributes in @CODE{__attribute__((...))}.
  */
 static void
 process_attribute(const struct parser_param *param)
@@ -544,10 +547,10 @@ process_attribute(const struct parser_param *param)
 			break;
 	}
 }
-/*
+/**
  * function_definition: return if function definition or not.
  *
- *	r)	target type
+ *	@return	target type
  */
 static int
 function_definition(const struct parser_param *param)
@@ -622,10 +625,11 @@ function_definition(const struct parser_param *param)
 	return 0;
 }
 
-/*
+/**
  * condition_macro: 
  *
- *	i)	cc	token
+ *	@param[in]	param
+ *	@param[in]	cc	token
  */
 static void
 condition_macro(const struct parser_param *param, int cc)
@@ -682,8 +686,8 @@ condition_macro(const struct parser_param *param, int cc)
 	}
 }
 
-/*
- * enumerator_list: process "symbol (= expression), ... }"
+/**
+ * enumerator_list: process @CODE{"symbol (= expression), ... \}"}
  */
 static int
 enumerator_list(const struct parser_param *param)

@@ -24,7 +24,7 @@
 void args_open(char *const *);
 void args_open_filelist(const char *);
 void args_open_gfind(GFIND *gp);
-void args_open_nop();
+void args_open_nop(void);
 void args_open_both(char *const *, const char *);
 const char *args_read(void);
 void args_close(void);

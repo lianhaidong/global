@@ -31,12 +31,13 @@
 #include "die.h"
 #include "locatestring.h"
 
-/*
+/** @file
 
 String locator: usage and memory status
 
         'v': result pointer
  
+@code
 string = "ABC XYZ XYZ ABC"
 
 pointer = locatestring(string, "XYZ", MATCH_FIRST);
@@ -66,13 +67,13 @@ pointer = locatestring(string, "ABC XYZ XYZ ABC", MATCH_COMPLETE);
 pointer = locatestring(string, "xyZ", MATCH_FIRST|IGNORE_CASE);
              v
         "ABC XYZ XYZ ABC"
-
+@endcode
  */
 
-/*
+/**
  * strincmp: strncmp with ignoring case.
  *
- *	Interface is same with strncmp.
+ *	Interface is same with @NAME{strncmp}.
  */
 static int
 strincmp(const char *string, const char *pattern, size_t len)

@@ -66,7 +66,7 @@ static int is_defined_in_GTAGS(GTOP *, const char *);
 static void flush_pool(GTOP *, const char *);
 static void segment_read(GTOP *);
 
-/*
+/**
  * compare_path: compare function for sorting path names.
  */
 static int
@@ -74,7 +74,7 @@ compare_path(const void *s1, const void *s2)
 {
 	return strcmp(*(char **)s1, *(char **)s2);
 }
-/*
+/**
  * compare_lineno: compare function for sorting line number.
  */
 static int
@@ -82,7 +82,7 @@ compare_lineno(const void *s1, const void *s2)
 {
 	return *(const int *)s1 - *(const int *)s2;
 }
-/*
+/**
  * compare_tags: compare function for sorting tags.
  */
 static int
@@ -95,16 +95,19 @@ compare_tags(const void *v1, const void *v2)
 		return ret;
 	return e1->lineno - e2->lineno;
 }
-/*
+/**
+ * @fn static const char *seekto(const char *string, int n)
  * seekto: seek to the specified item of tag record.
  *
- * Usage:
+ * @par Usage:
+ * @code
  *           0         1          2
  * tagline = <file id> <tag name> <line number>
  *
  * <file id>     = seekto(tagline, SEEKTO_FILEID);
  * <tag name>    = seekto(tagline, SEEKTO_TAGNAME);
  * <line number> = seekto(tagline, SEEKTO_LINENO);
+ * @endcode
  */
 #define SEEKTO_FILEID	0
 #define SEEKTO_TAGNAME	1
@@ -122,118 +125,141 @@ seekto(const char *string, int n)
 	}
 	return p;
 }
-/*
+/**
  * Tag format
  *
- * [Specification of format version 6]
+ * [@EMPH{Specification of format version 6}]
  * 
- * Standard format:
+ * @par Standard format:
  *
- *	This format is the default format of GTAGS.
+ *	This format is the default format of #GTAGS.
  * 
+ * @par
+ * @code{.txt}
  *         <file id> <tag name> <line number> <line image>
+ * @endcode
  * 
+ * @par
  *                 * Separator is single blank.
  * 
+ * @par
+ * @code{.txt}
  *         [example]
  *         +------------------------------------
  *         |110 func 10 int func(int a)
  *         |110 func 30 func(int a1, int a2)
+ * @endcode
  * 
- *         Line image might be compressed (GTAGS_COMPRESS).
- *         Tag name might be compressed (GTAGS_COMPNAME).
+ * @par
+ *         Line image might be compressed (#GTAGS_COMPRESS). <br>
+ *         Tag name might be compressed (#GTAGS_COMPNAME).
  *
- * Compact format:
+ * @par Compact format:
  * 
- *	This format is the default format of GRTAGS.
- *	It is used for GTAGS with the -c option.
+ * @par
+ *	This format is the default format of #GRTAGS. <br>
+ *	It is used for #GTAGS with the @OPTION{-c} option.
  *
+ * @par
+ * @code{.txt}
  *         <file id> <tag name> <line number>,...
+ * @endcode
  * 
+ * @par
  *                 * Separator is single blank.
  * 
+ * @par
+ * @code{.txt}
  *         [example]
  *         +------------------------------------
  *         |110 func 10,30
+ * @endcode
  * 
- *         Line numbers are sorted in a line.
+ * @par
+ *         Line numbers are sorted in a line. <br>
  *	   Each line number might be expressed as difference from the previous
- *	   line number except for the head (GTAGS_COMPLINE).
- *           ex: 10,3,2 means '10 13 15'.
- *	   In addition,successive line numbers are expressed as a range.
+ *	   line number except for the head (#GTAGS_COMPLINE). <br>
+ *           ex: 10,3,2 means '10 13 15'. <br>
+ *	   In addition,successive line numbers are expressed as a range. <br>
  *           ex: 10-3 means '10 11 12 13'.
  *
- * [Description]
+ * @par [Description]
  * 
- * o Standard format is applied to GTAGS, and compact format is applied
- *   to GRTAGS by default.
- * o GSYMS is not used any longer. It is virtually included by GRTAGS.
- * o Above two formats are same to the first line number. So, we can use
- *   common function to sort them.
- * o Separator is single blank.
- *   This decrease disk space used a little, and make it easy to parse
- *   tag record.
- * o Use file id instead of path name.
- *   This allows blanks in path name at least in tag files.
- * o Put file id at the head of tag record.
- *   We can access file id without string processing.
- *   This is advantageous for deleting tag record when incremental updating.
+ * - Standard format is applied to #GTAGS, and compact format is applied
+ *     to #GRTAGS by default.
+ * - #GSYMS is not used any longer. It is virtually included by GRTAGS.
+ * - Above two formats are same to the first line number. So, we can use
+ *     common function to sort them.
+ * - Separator is single blank.
+ *     This decrease disk space used a little, and make it easy to parse
+ *     tag record.
+ * - Use file id instead of path name.
+ *     This allows blanks in path name at least in tag files.
+ * - Put file id at the head of tag record.
+ *     We can access file id without string processing.
+ *     This is advantageous for deleting tag record when incremental updating.
  * 
- * [Concept of format version]
+ * @par [Concept of format version]
  *
- * Since GLOBAL's tag files are machine independent, they can be distributed
- * apart from GLOBAL itself. For example, if some network file system available,
+ * Since @NAME{GLOBAL}'s tag files are machine independent, they can be distributed
+ * apart from @NAME{GLOBAL} itself. For example, if some network file system available,
  * client may execute global using server's tag files. In this case, both
- * GLOBAL are not necessarily the same version. So, we should assume that
- * older version of GLOBAL might access the tag files which generated
- * by new GLOBAL. To deal in such case, we decided to buried a version number
- * to both global(1) and tag files. The conclete procedure is like follows:
+ * @NAME{GLOBAL} are not necessarily the same version. So, we should assume that
+ * older version of @NAME{GLOBAL} might access the tag files which generated
+ * by new @NAME{GLOBAL}. To deal in such case, we decided to buried a version number
+ * to both @XREF{global,1} and tag files. The conclete procedure is like follows:
  *
- * 1. Gtags(1) bury the version number in tag files.
- * 2. Global(1) pick up the version number from a tag file. If the number
- *    is larger than its acceptable version number then global give up work
- *    any more and display error message.
- * 3. If version number is not found then it assumes version 1.
+ * @par
+ * -# @XREF{gtags,1} bury the version number in tag files. <br>
+ * -# @XREF{global,1} pick up the version number from a tag file. If the number
+ *      is larger than its acceptable version number then global give up work
+ *      any more and display error message. <br>
+ * -# If version number is not found then it assumes version 1.
  *
- * [History of format version]
+ * @par [History of format version]
  *
- * GLOBAL-1.0 - 1.8     no idea about format version.
- * GLOBAL-1.9 - 2.24    understand format version.
- *                      support format version 1 (default).
- *                      if (format > 1) then print error message.
- * GLOBAL-3.0 - 4.5     support format version 1 and 2.
- *                      if (format > 2) then print error message.
- * GLOBAL-4.5.1 - 4.8.7 support format version 1, 2 and 3.
- *                      if (format > 3) then print error message.
- * GLOBAL-5.0 -	5.3	support format version only 4.
- *                      if (format !=  4) then print error message.
- * GLOBAL-5.4 - 5.8.2	support format version 4 and 5
- *                      if (format > 5 || format < 4) then print error message.
- * GLOBAL-5.9 -		support only format version 6
- *                      if (format > 6 || format < 6) then print error message.
+ @verbatim
+  GLOBAL-1.0 - 1.8     no idea about format version.
+  GLOBAL-1.9 - 2.24    understand format version.
+                       support format version 1 (default).
+                       if (format > 1) then print error message.
+  GLOBAL-3.0 - 4.5     support format version 1 and 2.
+                       if (format > 2) then print error message.
+  GLOBAL-4.5.1 - 4.8.7 support format version 1, 2 and 3.
+                       if (format > 3) then print error message.
+  GLOBAL-5.0 -	5.3	support format version only 4.
+                       if (format !=  4) then print error message.
+  GLOBAL-5.4 - 5.8.2	support format version 4 and 5
+                       if (format > 5 || format < 4) then print error message.
+  GLOBAL-5.9 -		support only format version 6
+                       if (format > 6 || format < 6) then print error message.
+ @endverbatim
  *
- * In GLOBAL-5.0, we threw away the compatibility with the past formats.
+ * In @NAME{GLOBAL-5.0}, we threw away the compatibility with the past formats.
  * Though we could continue the support for older formats, it seemed
  * not to be worthy. Because keeping maintaining the all formats hinders
  * new optimization and the function addition in the future.
  * Instead, the following error messages are displayed in a wrong usage.
+ * @code{.sh}
  *       [older global and new tag file]
  *       $ global -x main
  *       GTAGS seems new format. Please install the latest GLOBAL.
  *       [new global and older tag file]
  *       $ global -x main
  *       GTAGS seems older format. Please remake tag files.
+ * @endcode
  */
-static int new_format_version = 6;	/* new format version */
-static int upper_bound_version = 6;	/* acceptable format version (upper bound) */
-static int lower_bound_version = 6;	/* acceptable format version (lower bound) */
+static int new_format_version = 6;	/**< new format version */
+static int upper_bound_version = 6;	/**< acceptable format version (upper bound) */
+static int lower_bound_version = 6;	/**< acceptable format version (lower bound) */
 static const char *const tagslist[] = {"GPATH", "GTAGS", "GRTAGS", "GSYMS"};
-/*
- * Virtual GRTAGS, GSYMS processing:
+/**
+ * Virtual #GRTAGS, #GSYMS processing:
  *
- * We use a real GRTAGS as virtual GRTAGS and GSYMS.
- * In fact, GSYMS tag file doesn't exist.
+ * We use a real @NAME{GRTAGS} as virtual @NAME{GRTAGS} and @NAME{GSYMS}.
+ * In fact, @NAME{GSYMS} tag file doesn't exist.
  *
+ * @code{.txt}
  * Real tag file	virtual tag file
  * --------------------------------------
  * GTAGS =============> GTAGS
@@ -241,6 +267,7 @@ static const char *const tagslist[] = {"GPATH", "GTAGS", "GRTAGS", "GSYMS"};
  * GRTAGS ============> GRTAGS + GSYMS
  *            +=======> GRTAGS	tags which is defined in GTAGS
  *            +=======> GSYMS	tags which is not defined in GTAGS
+ * @endcode
  */
 #define VIRTUAL_GRTAGS_GSYMS_PROCESSING(gtop) 						\
 	if (gtop->db == GRTAGS || gtop->db == GSYMS) {					\
@@ -248,14 +275,14 @@ static const char *const tagslist[] = {"GPATH", "GTAGS", "GRTAGS", "GSYMS"};
 		if ((gtop->db == GRTAGS && !defined) || (gtop->db == GSYMS && defined))	\
 			continue;							\
 	}
-/*
- * is_defined_in_GTAGS: whether or not the name is defined in GTAGS.
+/**
+ * is_defined_in_GTAGS: whether or not the name is defined in #GTAGS.
  *
- *	i)	gtop
- *	i)	name	tag name
- *	r)		0: not defined, 1: defined
+ *	@param[in]	gtop
+ *	@param[in]	name	tag name
+ *	@return		0: not defined, 1: defined
  *
- * It is assumed that the input stream is sorted by the tag name.
+ * @note It is assumed that the input stream is sorted by the tag name.
  */
 static int
 is_defined_in_GTAGS(GTOP *gtop, const char *name)
@@ -268,11 +295,11 @@ is_defined_in_GTAGS(GTOP *gtop, const char *name)
 	strlimcpy(prev_name, name, sizeof(prev_name));
 	return prev_result = dbop_get(gtop->gtags, prev_name) ? 1 : 0;
 }
-/*
+/**
  * dbname: return db name
  *
- *	i)	db	0: GPATH, 1: GTAGS, 2: GRTAGS, 3: GSYMS
- *	r)		dbname
+ *	@param[in]	db	0: #GPATH, 1: #GTAGS, 2: #GRTAGS, 3: #GSYMS
+ *	@return		dbname
  */
 const char *
 dbname(int db)
@@ -282,19 +309,19 @@ dbname(int db)
 	assert(db >= 0 && db < GTAGLIM);
 	return tagslist[db];
 }
-/*
+/**
  * gtags_open: open global tag.
  *
- *	i)	dbpath	dbpath directory
- *	i)	root	root directory (needed when compact format)
- *	i)	db	GTAGS, GRTAGS, GSYMS
- *	i)	mode	GTAGS_READ: read only
- *			GTAGS_CREATE: create tag
- *			GTAGS_MODIFY: modify tag
- *	i)	flags	GTAGS_COMPACT: compact format
- *	r)		GTOP structure
+ *	@param[in]	dbpath	dbpath directory
+ *	@param[in]	root	root directory (needed when compact format)
+ *	@param[in]	db	#GTAGS, #GRTAGS, #GSYMS
+ *	@param[in]	mode	#GTAGS_READ: read only <br>
+ *			#GTAGS_CREATE: create tag <br>
+ *			#GTAGS_MODIFY: modify tag
+ *	@param[in]	flags	#GTAGS_COMPACT: compact format
+ *	@return		#GTOP structure
  *
- * when error occurred, gtagopen doesn't return.
+ * @note when error occurred, @NAME{gtags_open()} doesn't return.
  */
 GTOP *
 gtags_open(const char *dbpath, const char *root, int db, int mode, int flags)
@@ -426,14 +453,14 @@ gtags_open(const char *dbpath, const char *root, int db, int mode, int flags)
 	}
 	return gtop;
 }
-/*
+/**
  * gtags_put_using: put tag record with packing.
  *
- *	i)	gtop	descripter of GTOP
- *	i)	tag	tag name
- *	i)	lno	line number
- *	i)	fid	file id
- *	i)	img	line image
+ *	@param[in]	gtop	descripter of #GTOP
+ *	@param[in]	tag	tag name
+ *	@param[in]	lno	line number
+ *	@param[in]	fid	file id
+ *	@param[in]	img	line image
  */
 void
 gtags_put_using(GTOP *gtop, const char *tag, int lno, const char *fid, const char *img)
@@ -488,11 +515,11 @@ gtags_put_using(GTOP *gtop, const char *tag, int lno, const char *fid, const cha
 	strbuf_puts(gtop->sb, (gtop->format & GTAGS_COMPRESS) ? compress(img, key) : img);
 	dbop_put(gtop->dbop, key, strbuf_value(gtop->sb));
 }
-/*
+/**
  * gtags_flush: Flush the pool for compact format.
  *
- *	i)	gtop	descripter of GTOP
- *	i)	fid	file id
+ *	@param[in]	gtop	descripter of #GTOP
+ *	@param[in]	fid	file id
  */
 void
 gtags_flush(GTOP *gtop, const char *fid)
@@ -502,11 +529,11 @@ gtags_flush(GTOP *gtop, const char *fid)
 		strhash_reset(gtop->path_hash);
 	}
 }
-/*
+/**
  * gtags_delete: delete records belong to set of fid.
  *
- *	i)	gtop	GTOP structure
- *	i)	deleteset bit array of fid
+ *	@param[in]	gtop	#GTOP structure
+ *	@param[in]	deleteset bit array of fid
  */
 void
 gtags_delete(GTOP *gtop, IDSET *deleteset)
@@ -526,21 +553,21 @@ gtags_delete(GTOP *gtop, IDSET *deleteset)
 			dbop_delete(gtop->dbop, NULL);
 	}
 }
-/*
+/**
  * gtags_first: return first record
  *
- *	i)	gtop	GTOP structure
- *	i)	pattern	tag name
- *		o may be regular expression
- *		o may be NULL
- *	i)	flags	GTOP_PREFIX	prefix read
- *			GTOP_KEY	read key only
- *			GTOP_PATH	read path only
- *			GTOP_NOREGEX	don't use regular expression.
- *			GTOP_IGNORECASE	ignore case distinction.
- *			GTOP_BASICREGEX	use basic regular expression.
- *			GTOP_NOSORT	don't sort
- *	r)		record
+ *	@param[in]	gtop	#GTOP structure
+ *	@param[in]	pattern	tag name <br>
+ *		- may be regular expression
+ *		- may be @VAR{NULL}
+ *	@param[in]	flags	#GTOP_PREFIX:	prefix read <br>
+ *			#GTOP_KEY:	read key only <br>
+ *			#GTOP_PATH:	read path only <br>
+ *			#GTOP_NOREGEX:	don't use regular expression. <br>
+ *			#GTOP_IGNORECASE:	ignore case distinction. <br>
+ *			#GTOP_BASICREGEX:	use basic regular expression. <br>
+ *			#GTOP_NOSORT:	don't sort
+ *	@return		record
  */
 GTP *
 gtags_first(GTOP *gtop, const char *pattern, int flags)
@@ -707,12 +734,12 @@ gtags_first(GTOP *gtop, const char *pattern, int flags)
 		return  &gtop->gtp_array[gtop->gtp_index++];
 	}
 }
-/*
+/**
  * gtags_next: return next record.
  *
- *	i)	gtop	GTOP structure
- *	r)		record
- *			NULL end of tag
+ *	@param[in]	gtop	#GTOP structure
+ *	@return		record
+ *			@VAR{NULL} end of tag
  */
 GTP *
 gtags_next(GTOP *gtop)
@@ -747,10 +774,10 @@ gtags_next(GTOP *gtop)
 		return &gtop->gtp_array[gtop->gtp_index++];
 	}
 }
-/*
+/**
  * gtags_close: close tag file
  *
- *	i)	gtop	GTOP structure
+ *	@param[in]	gtop	#GTOP structure
  */
 void
 gtags_close(GTOP *gtop)
@@ -775,10 +802,11 @@ gtags_close(GTOP *gtop)
 		dbop_close(gtop->gtags);
 	free(gtop);
 }
-/*
+/**
  * flush_pool: flush the pool and write is as compact format.
  *
- *	i)	gtop	descripter of GTOP
+ *	@param[in]	gtop	descripter of #GTOP
+ *	@param[in]	s_fid
  */
 static void
 flush_pool(GTOP *gtop, const char *s_fid)
@@ -904,23 +932,24 @@ flush_pool(GTOP *gtop, const char *s_fid)
 		varray_close(vb);
 	}
 }
-/*
+/**
  * Read a tag segment with sorting.
  *
- *	i)	gtop	GTOP structure
- *	o)	gtop->gtp_array		segment table
- *	o)	gtop->gtp_count		segment table size
- *	o)	gtop->gtp_index		segment table index (initial value = 0)
- *	o)	gtop->cur_tagname	current tag name
+ *	@param[in]	gtop	#GTOP structure <br>
+ *		Output:	@CODE{gtop->gtp_array}		segment table <br>
+ *		Output:	@CODE{gtop->gtp_count}		segment table size <br>
+ *		Output:	@CODE{gtop->gtp_index}		segment table index (initial value = 0) <br>
+ *		Output:	@CODE{gtop->cur_tagname}	current tag name
  *
- * A segment is a set of tag records which have same tag name.
- * This function read a segment from tag file, sort it and put it on segment table.
+ * A segment is a set of tag records which have same tag name. <br>
+ * This function read a segment from tag file, sort it and put it on segment table. <br>
  * This function can treat both of standard format and compact format.
  *
  * Sorting is done by three keys.
- *	1st key: tag name
- *	2nd key: file name
- *	3rd key: line number
+ *	- 1st key: tag name
+ *	- 2nd key: file name
+ *	- 3rd key: line number
+ *
  * Since all records in a segment have same tag name, you need not think about 1st key.
  */
 void

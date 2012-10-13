@@ -39,15 +39,17 @@ static int match_suffix_list(const char *, const char *);
 
 static STRBUF *active_map;
 
-/*
+/**
  * construct language map.
  *
- * copy string langmap and convert it to language map like this:
+ * copy string langmap (@a map) and convert it to language map like this:
  *
+ * @code{.txt}
  * langmap (string)	"c:.c.h,java:.java,cpp:.C.H"
  *	|
  *	v
  * language map		c\0.c.h\0java\0.java\0cpp\0.C.H\0
+ * @endcode
  */
 void
 setup_langmap(const char *map)
@@ -73,8 +75,13 @@ setup_langmap(const char *map)
 	/* strbuf_close(active_map); */
 }
 
-/*
- * decide the language of the suffix.
+/**
+ * decide the language of the @a suffix.
+ *
+ * @remark
+ * 		Though @FILE{*.h} files are shared by C and C++, @NAME{GLOBAL} treats them
+ * 		as C source files by default. If you set an environment variable
+ *		@FILE{GTAGSFORCECPP} then C++ parser will be invoked.
  */
 const char *
 decide_lang(const char *suffix)
@@ -102,8 +109,8 @@ decide_lang(const char *suffix)
 	return NULL;
 }
 
-/*
- * return true if the suffix matches with one in the list.
+/**
+ * return true if the @a suffix matches with one in the @a list.
  */
 static int
 match_suffix_list(const char *suffix, const char *list)
@@ -123,8 +130,8 @@ match_suffix_list(const char *suffix, const char *list)
 	return 0;
 }
 
-/*
- * make suffix value from langmap value.
+/**
+ * make suffix value from @a langmap value.
  */
 void
 make_suffixes(const char *langmap, STRBUF *sb)

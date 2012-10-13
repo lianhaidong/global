@@ -56,15 +56,13 @@ static char sccsid[] = "@(#)bt_close.c	8.7 (Berkeley) 8/17/94";
 
 static int bt_meta(BTREE *);
 
-/*
+/**
  * BT_CLOSE -- Close a btree.
  *
- * Parameters:
- *	dbp:	pointer to access method
- *	abandon: 1: don't sync, 0: sync
+ *	@param dbp	pointer to access method
+ *	@param abandon	1: don't sync, 0: sync
  *
- * Returns:
- *	RET_ERROR, RET_SUCCESS
+ * @return #RET_ERROR, #RET_SUCCESS
  */
 int
 __bt_close(dbp, abandon)
@@ -118,14 +116,13 @@ __bt_close(dbp, abandon)
 	return (close(fd) ? RET_ERROR : RET_SUCCESS);
 }
 
-/*
+/**
  * BT_SYNC -- sync the btree to disk.
  *
- * Parameters:
- *	dbp:	pointer to access method
+ *	@param dbp	pointer to access method
+ *	@param flags
  *
- * Returns:
- *	RET_SUCCESS, RET_ERROR.
+ * @return #RET_SUCCESS, #RET_ERROR.
  */
 int
 __bt_sync(dbp, flags)
@@ -161,14 +158,12 @@ __bt_sync(dbp, flags)
 	return (status);
 }
 
-/*
+/**
  * BT_META -- write the tree meta data to disk.
  *
- * Parameters:
- *	t:	tree
+ *	@param t	tree
  *
- * Returns:
- *	RET_ERROR, RET_SUCCESS
+ * @return #RET_ERROR, #RET_SUCCESS
  */
 static int
 bt_meta(t)

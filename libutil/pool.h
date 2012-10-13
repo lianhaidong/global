@@ -22,8 +22,8 @@
 #include "obstack.h"
 
 typedef struct {
-	struct obstack obstack;		/* memory pool */
-	char *first_object;		/* first object	(for reset) */
+	struct obstack obstack;		/**< memory pool */
+	char *first_object;		/**< first object	(for reset) */
 } POOL;
 
 POOL *pool_open(void);

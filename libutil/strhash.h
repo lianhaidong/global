@@ -24,18 +24,18 @@
 
 struct sh_entry {
 	SLIST_ENTRY(sh_entry) ptr;
-	char *name;			/* name:  hash key		*/
-	void *value;			/* value: user structure	*/
+	char *name;			/**< name:  hash key		*/
+	void *value;			/**< value: user structure	*/
 };
 
 SLIST_HEAD(sh_head, sh_entry);
 
 typedef struct {
-	int buckets;			/* number of buckets		*/
-	struct sh_head *htab;		/* hash buckets			*/
-	POOL *pool;			/* memory pool			*/
-	unsigned long entries;		/* number of entries		*/
-	/*
+	int buckets;			/**< number of buckets		*/
+	struct sh_head *htab;		/**< hash buckets			*/
+	POOL *pool;			/**< memory pool			*/
+	unsigned long entries;		/**< number of entries		*/
+	/**
 	 * iterator
 	 */
 	struct sh_entry *cur_entry;

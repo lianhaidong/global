@@ -40,7 +40,7 @@ static const char *dirs[]    = {NULL, DEFS,         REFS,        SYMS};
 static const char *kinds[]   = {NULL, "definition", "reference", "symbol"};
 static const char *options[] = {NULL, "",           "r",         "s"};
 
-/*
+/**
  * Make duplicate object index.
  *
  * If referred tag is only one, direct link which points the tag is generated.

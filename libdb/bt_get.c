@@ -46,17 +46,15 @@ static char sccsid[] = "@(#)bt_get.c	8.6 (Berkeley) 7/20/94";
 #include "db.h"
 #include "btree.h"
 
-/*
+/**
  * __BT_GET -- Get a record from the btree.
  *
- * Parameters:
- *	dbp:	pointer to access method
- *	key:	key to find
- *	data:	data to return
- *	flag:	currently unused
+ *	@param dbp	pointer to access method
+ *	@param key	key to find
+ *	@param data	data to return
+ *	@param flags	currently unused
  *
- * Returns:
- *	RET_ERROR, RET_SUCCESS and RET_SPECIAL if the key not found.
+ * @return #RET_ERROR, #RET_SUCCESS and #RET_SPECIAL if the key not found.
  */
 int
 __bt_get(dbp, key, data, flags)

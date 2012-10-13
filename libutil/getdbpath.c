@@ -44,7 +44,7 @@
 #include "strlimcpy.h"
 #include "test.h"
 
-/*
+/**
  * define the position of the root slash.
  */
 #if defined(_WIN32) || defined(__DJGPP__)
@@ -53,12 +53,12 @@
 #define ROOT 0
 #endif
 
-static const char *makeobjdirprefix;	/* obj partition		*/
-static const char *makeobjdir;		/* obj directory		*/
-char const *gtags_dbpath_error;		/* error message */
+static const char *makeobjdirprefix;	/**< obj partition		*/
+static const char *makeobjdir;		/**< obj directory		*/
+char const *gtags_dbpath_error;		/**< error message */
 
-/*
- * setupvariables: load variables regard to BSD OBJ directory.
+/**
+ * setupvariables: load variables regard to @NAME{BSD} @NAME{OBJ} directory.
  */
 static void
 setupvariables(int verbose)
@@ -80,12 +80,12 @@ setupvariables(int verbose)
 		makeobjdir = "obj";
 	}
 }
-/*
+/**
  * getobjdir: get objdir if it exists.
  *
- *	i)	candidate candidate root directory
- *	i)	verbose	verbose mode 1: on, 0: off
- *	r)		objdir(NULL: not found)
+ *	@param[in]	candidate candidate root directory
+ *	@param[in]	verbose	verbose mode 1: on, 0: off
+ *	@return		objdir(@VAR{NULL}: not found)
  */
 char *
 getobjdir(const char *candidate, int verbose)
@@ -124,18 +124,18 @@ getobjdir(const char *candidate, int verbose)
 #endif
 	return NULL;
 }
-/*
+/**
  * gtagsexist: test whether GTAGS's existence.
  *
- *	i)	candidate candidate root directory
- *	o)	dbpath	directory which GTAGS exist
- *	i)	size	size of dbpath buffer
- *	i)	verbose	verbose mode 1: on, 0: off
- *	r)		0: not found, 1: found
+ *	@param[in]	candidate candidate root directory
+ *	@param[out]	dbpath	directory which @FILE{GTAGS} exist
+ *	@param[in]	size	size of @a dbpath buffer
+ *	@param[in]	verbose	verbose mode 1: on, 0: off
+ *	@return		0: not found, 1: found
  *
- * Gtagsexist locate GTAGS file in "$candidate/", "$candidate/obj/" and
- * "/usr/obj/$candidate/" in this order by default.
- * This behavior is same with BSD make(1)'s one.
+ * Gtagsexist locate @FILE{GTAGS} file in @FILE{\$candidate/}, @FILE{\$candidate/obj/} and
+ * @FILE{/usr/obj/\$candidate/} in this order by default. <br>
+ * This behavior is same with @NAME{BSD} @XREF{make,1}'s one.
  */
 int
 gtagsexist(const char *candidate, char *dbpath, int size, int verbose)
@@ -190,15 +190,18 @@ static char dbpath[MAXPATHLEN];
 static char root[MAXPATHLEN];
 static char root_with_slash[MAXPATHLEN];
 static char cwd[MAXPATHLEN];
-/*
+/**
  * setupdbpath: setup dbpath directory
  *
- *	go)	cwd	current directory
- *	go)	root	root of source tree
- *	go)	dbpath directory which GTAGS exist
- *	i)	verbose	verbose mode 1: on, 0: off
- *	go)	gtags_dbpath_error: set if status < 0
- *	r)	0: normal, 0<: error
+ *	@param[in]	verbose	verbose mode 1: on, 0: off
+ *
+ *	@par Globals used (output):
+ *		#cwd:	current directory <br>
+ *		#root:	root of source tree <br>
+ *		#dbpath: directory which @FILE{GTAGS} exist <br>
+ *		#gtags_dbpath_error: set if status (return value) \< 0
+ *
+ *	@return	0: normal, 0\<: error
  */
 int
 setupdbpath(int verbose)
@@ -208,7 +211,7 @@ setupdbpath(int verbose)
 	static char msg[1024];
 
 	if (!getcwd(cwd, MAXPATHLEN)) {
-		gtags_dbpath_error = "cannot get current directory.";
+		gtags_dbpath_error = "cannot get current directory";
 		return -1;
 	}
 	canonpath(cwd);
@@ -217,16 +220,16 @@ setupdbpath(int verbose)
 		if (verbose)
 			fprintf(stderr, "GTAGSROOT is set to '%s'.\n", p);
 		if (!isabspath(p)) {
-			gtags_dbpath_error = "GTAGSROOT must be an absolute path.";
+			gtags_dbpath_error = "GTAGSROOT must be an absolute path";
 			return -1;
 		}
 		if (stat(p, &sb) || !S_ISDIR(sb.st_mode)) {
-			snprintf(msg, sizeof(msg), "directory '%s' not found.", p);
+			snprintf(msg, sizeof(msg), "directory '%s' not found", p);
 			gtags_dbpath_error = msg;
 			return -1;
 		}
 		if (realpath(p, root) == NULL) {
-			snprintf(msg, sizeof(msg), "cannot get real path of '%s'.", p);
+			snprintf(msg, sizeof(msg), "cannot get real path of '%s'", p);
 			gtags_dbpath_error = msg;
 			return -1;
 		}
@@ -237,18 +240,18 @@ setupdbpath(int verbose)
 			if (verbose)
 				fprintf(stderr, "GTAGSDBPATH is set to '%s'.\n", p);
 			if (!isabspath(p)) {
-				gtags_dbpath_error = "GTAGSDBPATH must be an absolute path.";
+				gtags_dbpath_error = "GTAGSDBPATH must be an absolute path";
 				return -1;
 			}
 			if (stat(p, &sb) || !S_ISDIR(sb.st_mode)) {
-				snprintf(msg, sizeof(msg), "directory '%s' not found.", p);
+				snprintf(msg, sizeof(msg), "directory '%s' not found", p);
 				gtags_dbpath_error = msg;
 				return -1;
 			}
 			strlimcpy(dbpath, getenv("GTAGSDBPATH"), MAXPATHLEN);
 		} else {
 			if (!gtagsexist(root, dbpath, MAXPATHLEN, verbose)) {
-				gtags_dbpath_error = "GTAGS not found.";
+				gtags_dbpath_error = "GTAGS not found";
 				return -3;
 			}
 		}
@@ -272,7 +275,7 @@ setupdbpath(int verbose)
 			*p = 0;
 		}
 		if (*(root+ROOT) == 0) {
-			gtags_dbpath_error = "GTAGS not found.";
+			gtags_dbpath_error = "GTAGS not found";
 			return -3;
 		}
 		/*
@@ -319,26 +322,28 @@ setupdbpath(int verbose)
 		snprintf(root_with_slash, sizeof(root_with_slash), "%s/", root);
 	return 0;
 }
-/*
- * return saved values.
+/**
+ * @name return saved values.
  */
+/** @{ */
 const char *
-get_dbpath()
+get_dbpath(void)
 {
 	return (const char *)dbpath;
 }
 const char *
-get_root()
+get_root(void)
 {
 	return (const char *)root;
 }
 const char *
-get_root_with_slash()
+get_root_with_slash(void)
 {
 	return (const char *)root_with_slash;
 }
 const char *
-get_cwd()
+get_cwd(void)
 {
 	return (const char *)cwd;
 }
+/** @} */

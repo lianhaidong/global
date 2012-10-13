@@ -55,18 +55,17 @@ static char sccsid[] = "@(#)bt_put.c	8.8 (Berkeley) 7/26/94";
 
 static EPG *bt_fast(BTREE *, const DBT *, const DBT *, int *);
 
-/*
+/**
  * __BT_PUT -- Add a btree item to the tree.
  *
- * Parameters:
- *	dbp:	pointer to access method
- *	key:	key
- *	data:	data
- *	flag:	R_NOOVERWRITE
+ *	@param dbp	pointer to access method
+ *	@param key	key
+ *	@param data	data
+ *	@param flags	#R_NOOVERWRITE
  *
- * Returns:
- *	RET_ERROR, RET_SUCCESS and RET_SPECIAL if the key is already in the
- *	tree and R_NOOVERWRITE specified.
+ * @return
+ *	#RET_ERROR, #RET_SUCCESS and #RET_SPECIAL if the key is already in the
+ *	tree and #R_NOOVERWRITE specified.
  */
 int
 __bt_put(dbp, key, data, flags)
@@ -255,15 +254,15 @@ success:
 
 u_long bt_cache_hit, bt_cache_miss;
 
-/*
+/**
  * BT_FAST -- Do a quick check for sorted data.
  *
- * Parameters:
- *	t:	tree
- *	key:	key to insert
+ *	@param t	tree
+ *	@param key	key to insert
+ *	@param data
+ *	@param exactp
  *
- * Returns:
- * 	EPG for new record or NULL if not found.
+ * @return #EPG for new record or @CODE{NULL} if not found.
  */
 static EPG *
 bt_fast(t, key, data, exactp)

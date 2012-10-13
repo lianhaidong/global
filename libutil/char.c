@@ -45,11 +45,11 @@ const unsigned char chartype[256] = {
 #error "Unsupported character encoding."
 #endif
 };
-/*
+/**
  * isregex: test whether or not regular expression
  *
- *	i)	s	string
- *	r)		1: is regex, 0: not regex
+ *	@param[in]	s	string
+ *	@return		1: is regex, 0: not regex
  */
 int
 isregex(const char *s)
@@ -61,10 +61,15 @@ isregex(const char *s)
 			return 1;
 	return 0;
 }
-/*
+/**
  * quote string.
  *
+ *  @remark Non-alphanumeric characters are quoted/escaped.
+ *
+ *	@par Examples:
+ *	@code
  *	'a:a,a' => 'a\:a\,a'
+ *	@endcode
  */
 const char *
 quote_string(const char *s)
@@ -79,10 +84,13 @@ quote_string(const char *s)
 	}
 	return strbuf_value(sb);
 }
-/*
+/**
  * quote characters in the string.
  *
+ *	@par Examples:
+ *	@code
  *	quote_char('a:a,a', :) => 'a\:a,a'
+ *	@endcode
  */
 const char *
 quote_chars(const char *s, unsigned int c)
@@ -102,11 +110,14 @@ quote_chars(const char *s, unsigned int c)
 #else
 #define SHELL_QUOTE '\''
 #endif
-/*
+/**
  * quote for shell.
  *
+ *	@par Examples:
+ *	@code
  *	aaa => 'aaa'
  *	a'a => 'a'\''aa'
+ *	@endcode
  */
 const char *
 quote_shell(const char *s)

@@ -46,23 +46,25 @@ static struct anchor *curp;
 static struct anchor *end;
 static struct anchor *CURRENT;
 
-/* compare routine for qsort(3) */
+/** compare routine for @XREF{qsort,3} */
 static int
 cmp(const void *s1, const void *s2)
 {
 	return ((struct anchor *)s1)->lineno - ((struct anchor *)s2)->lineno;
 }
-/*
- * Pointers (as lineno).
+/**
+ * @name Pointers (as lineno).
  */
+/** @{ */
 static int FIRST;
 static int LAST;
 static struct anchor *CURRENTDEF;
+/** @} */
 
-/*
+/**
  * anchor_prepare: setup input stream.
  *
- *	i)	anchor_stream	file pointer of path list
+ *	@param[in]	anchor_stream	file pointer of path list
  */
 void
 anchor_prepare(FILE *anchor_stream)
@@ -98,10 +100,10 @@ anchor_prepare(FILE *anchor_stream)
 		}
 	}
 }
-/*
+/**
  * anchor_load: load anchor table
  *
- *	i)	path	path name
+ *	@param[in]	path	path name
  */
 void
 anchor_load(const char *path)
@@ -224,7 +226,7 @@ anchor_load(const char *path)
 	end = &table[vb->length];
 	/* anchor_dump(stderr, 0);*/
 }
-/*
+/**
  * anchor_unload: unload anchor table
  */
 void
@@ -243,7 +245,7 @@ anchor_unload(void)
 	FIRST = LAST = 0;
 	start = curp = end = NULL;
 }
-/*
+/**
  * anchor_first: return the first anchor
  */
 struct anchor *
@@ -256,7 +258,7 @@ anchor_first(void)
 		CURRENTDEF = CURRENT;
 	return CURRENT;
 }
-/*
+/**
  * anchor_next: return the next anchor
  */
 struct anchor *
@@ -270,13 +272,14 @@ anchor_next(void)
 		CURRENTDEF = CURRENT;
 	return CURRENT;
 }
-/*
+/**
  * anchor_get: return the specified anchor
  *
- *	i)	name	name of anchor
- *	i)	length	lenght of the name
- *	i)	type	==0: not specified
+ *	@param[in]	name	name of anchor
+ *	@param[in]	length	lenght of the name
+ *	@param[in]	type	==0: not specified <br>
  *			!=0: D, M, T, R, Y
+ *	@param[in]	lineno	line number
  */
 struct anchor *
 anchor_get(const char *name, int length, int type, int lineno)
@@ -301,12 +304,14 @@ anchor_get(const char *name, int length, int type, int lineno)
 				return p;
 	return NULL;
 }
-/*
+/**
  * define_line: check whether or not this is a define line.
  *
- *	i)	lineno	line number
- *	go)	curp	pointer to the current cluster
- *	r)		1: definition, 0: not definition
+ *	@param[in]	lineno	line number
+ *	@par Globals used (output):
+ *		#curp	pointer to the current cluster
+ *
+ *	@return		1: definition, 0: not definition
  */
 int
 define_line(int lineno)
@@ -330,9 +335,11 @@ define_line(int lineno)
 			return 1;
 	return 0;
 }
-/*
+/**
  * anchor_getlinks: return anchor link array
  *		(previous, next, first, last, top, bottom)
+ *
+ *	@param[in]	lineno	line number
  */
 int *
 anchor_getlinks(int lineno)

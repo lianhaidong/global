@@ -51,8 +51,8 @@
 static FILE *fp;
 static STRBUF *ib;
 static char *confline;
-/*
- * 32 level nested tc= or include= is allowed.
+/**
+ * 32 level nested @CODE{tc=} or @CODE{include=} is allowed.
  */
 static int allowed_nest_level = 32;
 static int opened;
@@ -65,13 +65,15 @@ static void includelabel(STRBUF *, const char *, int);
 #define isblank(c)	((c) == ' ' || (c) == '\t')
 #endif
 
-/*
+/**
  * trim: trim string.
  *
+ * @code
  * : var1=a b :
  *	|
  *	v
  * :var1=a b :
+ * @endcode
  */
 static void
 trim(char *l)
@@ -101,16 +103,16 @@ trim(char *l)
 	}
 	*b = 0;
 }
-/*
+/**
  * readrecord: read recoed indexed by label.
  *
- *	i)	label	label in config file
- *	r)		record
+ *	@param[in]	label	label in config file
+ *	@return		record
  *
- * Jobs:
- * o skip comment.
- * o append following line.
- * o format check.
+ * @par Jobs:
+ * - skip comment.
+ * - append following line.
+ * - format check.
  */
 static const char *
 readrecord(const char *label)
@@ -162,12 +164,12 @@ readrecord(const char *label)
 	 */
 	return NULL;
 }
-/*
- * includelabel: procedure for tc= (or include=)
+/**
+ * includelabel: procedure for @CODE{tc=} (or @CODE{include=})
  *
- *	o)	sb	string buffer
- *	i)	label	record label
- *	i)	level	nest level for check
+ *	@param[out]	sb	string buffer
+ *	@param[in]	label	record label
+ *	@param[in]	level	nest level for check
  */
 static void
 includelabel(STRBUF *sb, const char *label, int	level)
@@ -192,7 +194,7 @@ includelabel(STRBUF *sb, const char *label, int	level)
 	strbuf_puts(sb, p);
 	free((void *)savep);
 }
-/*
+/**
  * configpath: get path of configuration file.
  */
 static char *
@@ -230,10 +232,11 @@ configpath(void)
 		return NULL;
 	return strbuf_value(sb);
 }
-/*
+/**
  * openconf: load configuration file.
  *
- *	go)	line	specified entry
+ * @par Globals used (output):
+ *	#confline:	 specified entry
  */
 void
 openconf(void)
@@ -310,12 +313,12 @@ openconf(void)
 	trim(confline);
 	return;
 }
-/*
+/**
  * getconfn: get property number
  *
- *	i)	name	property name
- *	o)	num	value (if not NULL)
- *	r)		1: found, 0: not found
+ *	@param[in]	name	property name
+ *	@param[out]	num	value (if not @VAR{NULL})
+ *	@return		1: found, 0: not found
  */
 int
 getconfn(const char *name, int *num)
@@ -334,12 +337,12 @@ getconfn(const char *name, int *num)
 	}
 	return 0;
 }
-/*
+/**
  * getconfs: get property string
  *
- *	i)	name	property name
- *	o)	sb	string buffer (if not NULL)
- *	r)		1: found, 0: not found
+ *	@param[in]	name	property name
+ *	@param[out]	sb	string buffer (if not @VAR{NULL})
+ *	@return		1: found, 0: not found
  */
 int
 getconfs(const char *name, STRBUF *sb)
@@ -404,11 +407,11 @@ getconfs(const char *name, STRBUF *sb)
 	}
 	return exist;
 }
-/*
+/**
  * getconfb: get property bool value
  *
- *	i)	name	property name
- *	r)		1: TRUE, 0: FALSE
+ *	@param[in]	name	property name
+ *	@return		1: @VAR{TRUE}, 0: @VAR{FALSE}
  */
 int
 getconfb(const char *name)
@@ -422,7 +425,7 @@ getconfb(const char *name)
 		return 1;
 	return 0;
 }
-/*
+/**
  * getconfline: print loaded config entry.
  */
 const char *

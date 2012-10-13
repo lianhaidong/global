@@ -104,14 +104,14 @@ isnotfunction(const char *name)
 /*----------------------------------------------------------------------*/
 /* Parser switch                                                        */
 /*----------------------------------------------------------------------*/
-/*
+/**
  * This is the linkage section of each parsers.
  * If you want to support new language, you must define parser procedure
  * which requires file name as an argument.
  */
 struct lang_entry {
 	const char *lang_name;
-	void (*parser)(const struct parser_param *);	/* parser procedure */
+	void (*parser)(const struct parser_param *);	/**< parser procedure */
 	const char *parser_name;
 	const char *lt_dl_name;
 };
@@ -122,19 +122,29 @@ struct plugin_entry {
 	struct lang_entry entry;
 };
 
+#ifndef IS__DOXYGEN_
 static STAILQ_HEAD(plugin_list, plugin_entry)
 	plugin_list = STAILQ_HEAD_INITIALIZER(plugin_list);
+
+#else
+static struct plugin_list {
+	struct plugin_entry *stqh_first; /**< first element */
+	struct plugin_entry **stqh_last; /**< addr of last next element */
+} plugin_list = { NULL, &(plugin_list).stqh_first };
+#endif
 static char *langmap_saved, *pluginspec_saved;
 
-/*
+/**
  * load_plugin_parser: Load plug-in parsers.
  *
- *	i)	pluginspec	described below
+ *	@param[in]	pluginspec	described below
  *
- * Syntax:
+ * @par Syntax:
+ * @code{.txt}
  *   <pluginspec> ::= <map> | <map>","<pluginspec>
  *   <map>        ::= <language name>":"<shared object path>
  *                  | <language name>":"<shared object path>":"<function name>
+ * @endcode
  */
 static void
 load_plugin_parser(const char *pluginspec)
@@ -183,7 +193,7 @@ load_plugin_parser(const char *pluginspec)
 	}
 }
 
-/*
+/**
  * unload_plugin_parser: Unload plug-in parsers.
  */
 static void
@@ -203,7 +213,7 @@ unload_plugin_parser(void)
 	free(pluginspec_saved);
 }
 
-/*
+/**
  * The first entry is default language.
  */
 static const struct lang_entry lang_switch[] = {
@@ -217,11 +227,11 @@ static const struct lang_entry lang_switch[] = {
 	{"asm",		assembly,	"assembly",	"builtin"}
 };
 #define DEFAULT_ENTRY &lang_switch[0]
-/*
+/**
  * get language entry.
  *
- *      i)      lang    language name (NULL means 'not specified'.)
- *      r)              language entry
+ *      @param[in]      lang    language name (@CODE{NULL} means 'not specified'.)
+ *      @return              language entry
  */
 static const struct lang_entry *
 get_lang_entry(const char *lang)
@@ -250,31 +260,36 @@ get_lang_entry(const char *lang)
 	return DEFAULT_ENTRY;
 }
 
-/*
- * Usage:
+/**
+ * @par Usage:
+ * @code{.txt}
  * [gtags.conf]
  * +----------------------------
  * |...
  * |gtags_parser=<pluginspec>
  * |langmap=<langmap>
+ * @endcode
  *
  * 1. Load langmap and pluginspec, and initialize parsers.
  *
- *	parser_init(langmap, plugin_parser);
+ *	@par
+ *	@CODE{parser_init(langmap, plugin_parser);}
  *
  * 2. Execute parsers
  *
- *	parse_file(...);
+ *	@par
+ *	@CODE{#parse_file(...);}
  *
  * 3. Unload parsers.
  *
- *	parser_exit();
+ *	@par
+ *	@CODE{parser_exit();}
  */
-/*
+/**
  * parser_init: load langmap and shared libraries.
  *
- *	i)	langmap		the value of langmap=<langmap>
- *	i)	pluginspec	the value of gtags_parser=<pluginspec>
+ *	@param[in]	langmap		the value of @CODE{langmap=\<langmap\>}
+ *	@param[in]	pluginspec	the value of @CODE{gtags_parser=\<pluginspec\>}
  */
 void
 parser_init(const char *langmap, const char *pluginspec)
@@ -301,7 +316,7 @@ parser_init(const char *langmap, const char *pluginspec)
 #endif
 }
 
-/*
+/**
  * parser_exit: unload shared libraries.
  */
 void
@@ -311,14 +326,14 @@ parser_exit(void)
 	free(langmap_saved);
 }
 
-/*
+/**
  * parse_file: select and execute a parser.
  *
- *	i)	path	path name
- *	i)	flags	PARSER_WARNING: print warning messages
- *	i)	put	callback routine
+ *	@param[in]	path	path name
+ *	@param[in]	flags	#PARSER_WARNING: print warning messages
+ *	@param[in]	put	callback routine <br>
  *			each parser use this routine for output
- *	i)	arg	argument for callback routine
+ *	@param[in]	arg	argument for callback routine
  */
 void
 parse_file(const char *path, int flags, PARSER_CALLBACK put, void *arg)

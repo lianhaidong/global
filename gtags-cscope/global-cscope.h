@@ -32,9 +32,10 @@
 
 /* $Id$ */
 
-/*	cscope - interactive C symbol cross-reference
- *
+/** @file
  *	global type, data, and function definitions
+ *
+ *	cscope - interactive C symbol cross-reference
  */
 
 #ifndef CSCOPE_GLOBAL_H
@@ -175,18 +176,18 @@ typedef RETSIGTYPE (*sighandler_t)(int);
 # define	lstat(file,buf)	stat(file,buf)
 #endif
 
-typedef	enum	{		/* boolean data type */
+typedef	enum	{		/** boolean data type */
 	NO,
 	YES
 } BOOL;
 
-typedef	enum	{		/* findinit return code */
+typedef	enum	{		/** findinit return code */
 	NOERROR,
 	NOTSYMBOL,
 	REGCMPERROR
 } FINDINIT;
 
-typedef	struct {		/* mouse action */
+typedef	struct {		/** mouse action */
 	int	button;
 	int	percent;
 	int	x1;
@@ -195,69 +196,77 @@ typedef	struct {		/* mouse action */
 	int	y2;
 } MOUSE;
 
-struct cmd {			/* command history struct */
-	struct	cmd *prev, *next;	/* list ptrs */
-	int	field;			/* input field number */
-	char	*text;			/* input field text */
+struct cmd {			/** command history struct */
+	struct	cmd *prev, *next;	/**< list ptrs */
+	int	field;			/**< input field number */
+	char	*text;			/**< input field text */
 };
 
-/* main.c global data */
-extern	char	*editor, *home, *shell, *lineflag;	/* environment variables */
-extern	char	*global_command;			/* "global" by default */
-extern	char	*gtags_command;				/* "gtags" by default */
-extern	char	*home;		/* Home directory */
+/** @name main.c global data */
+/** @{ */
+extern	char	*editor, *home, *shell, *lineflag;	/**< environment variables */
+extern	char	*global_command;			/**< @FILE{global} by default */
+extern	char	*gtags_command;				/**< @FILE{gtags} by default */
+extern	char	*home;		/**< Home directory */
 extern 	BOOL	lineflagafterfile;
-extern	char	*argv0;		/* command name */
-extern	int	dispcomponents;	/* file path components to display */
+extern	char	*argv0;		/**< command name */
+extern	int	dispcomponents;	/**< file path components to display */
 #if CCS
-extern	BOOL	displayversion;	/* display the C Compilation System version */
+extern	BOOL	displayversion;	/**< display the C Compilation System version */
 #endif
-extern	BOOL	editallprompt;	/* prompt between editing files */
-extern	BOOL	incurses;	/* in curses */
-extern	BOOL	isuptodate;	/* consider the crossref up-to-date */
-extern	BOOL	linemode;	/* use line oriented user interface */
-extern	BOOL	absolutepath;	/* print absolute path name */
-extern	BOOL	verbosemode;	/* print extra information on line mode */
-extern	BOOL	ogs;		/* display OGS book and subsystem names */
-extern	char	*prependpath;	/* prepend path to file names */
-extern	FILE	*refsfound;	/* references found file */
-extern	char	temp1[];	/* temporary file name */
-extern	char	temp2[];	/* temporary file name */
-extern	char	tempstring[TEMPSTRING_LEN + 1]; /* global dummy string buffer */
-extern	char	*tmpdir;	/* temporary directory */
+extern	BOOL	editallprompt;	/**< prompt between editing files */
+extern	BOOL	incurses;	/**< in @NAME{curses} */
+extern	BOOL	isuptodate;	/**< consider the crossref up-to-date */
+extern	BOOL	linemode;	/**< use line oriented user interface */
+extern	BOOL	absolutepath;	/**< print absolute path name */
+extern	BOOL	verbosemode;	/**< print extra information on line mode */
+extern	BOOL	ogs;		/**< display OGS book and subsystem names */
+extern	char	*prependpath;	/**< prepend path to file names */
+extern	FILE	*refsfound;	/**< references found file */
+extern	char	temp1[];	/**< temporary file name */
+extern	char	temp2[];	/**< temporary file name */
+extern	char	tempstring[TEMPSTRING_LEN + 1]; /**< global dummy string buffer */
+extern	char	*tmpdir;	/**< temporary directory */
+/** @} */
 
-/* command.c global data */
-extern	BOOL	caseless;	/* ignore letter case when searching */
-extern	BOOL	*change;	/* change this line */
-extern	BOOL	changing;	/* changing text */
+/** @name command.c global data */
+/** @{ */
+extern	BOOL	caseless;	/**< ignore letter case when searching */
+extern	BOOL	*change;	/**< change this line */
+extern	BOOL	changing;	/**< changing text */
 extern	int	selecting;
 extern	unsigned int curdispline;
-extern	char	newpat[];	/* new pattern */
-extern	char	Pattern[];	/* symbol or text pattern */
+extern	char	newpat[];	/**< new pattern */
+extern	char	Pattern[];	/**< symbol or text pattern */
+/** @} */
 
-/* display.c global data */
-extern 	int	booklen;	/* OGS book name display field length */
-extern	int	*displine;	/* screen line of displayed reference */
-extern	unsigned int disprefs;	/* displayed references */
-extern	int	fcnlen;		/* function name display field length */
-extern	int	field;		/* input field */
-extern	int	filelen;	/* file name display field length */
-extern	unsigned fldcolumn;	/* input field column */
-extern	unsigned int mdisprefs;	/* maximum displayed references */
-extern	unsigned int nextline;	/* next line to be shown */
-extern	int	numlen;		/* line number display field length */
-extern	unsigned int topline;	/* top line of page */
-extern	int	bottomline;	/* bottom line of page */
-extern	long	searchcount;	/* count of files searched */
-extern	int	subsystemlen;	/* OGS subsystem name display field length */
-extern	unsigned int totallines; /* total reference lines */
-extern	const char dispchars[];	/* display chars for jumping to lines */
+/** @name display.c global data */
+/** @{ */
+extern 	int	booklen;	/**< OGS book name display field length */
+extern	int	*displine;	/**< screen line of displayed reference */
+extern	unsigned int disprefs;	/**< displayed references */
+extern	int	fcnlen;		/**< function name display field length */
+extern	int	field;		/**< input field */
+extern	int	filelen;	/**< file name display field length */
+extern	unsigned fldcolumn;	/**< input field column */
+extern	unsigned int mdisprefs;	/**< maximum displayed references */
+extern	unsigned int nextline;	/**< next line to be shown */
+extern	int	numlen;		/**< line number display field length */
+extern	unsigned int topline;	/**< top line of page */
+extern	int	bottomline;	/**< bottom line of page */
+extern	long	searchcount;	/**< count of files searched */
+extern	int	subsystemlen;	/**< OGS subsystem name display field length */
+extern	unsigned int totallines; /**< total reference lines */
+extern	const char dispchars[];	/**< display chars for jumping to lines */
+/** @} */
 
-/* mouse.c global data */
-extern	BOOL	mouse;		/* mouse interface */
+/** @name mouse.c global data */
+/** @{ */
+extern	BOOL	mouse;		/**< mouse interface */
+/** @} */
 
 #if UNIXPC
-extern	BOOL	unixpcmouse;		/* UNIX PC mouse interface */
+extern	BOOL	unixpcmouse;		/**< UNIX PC mouse interface */
 #endif
 
 /* cscope functions called from more than one function or between files */ 

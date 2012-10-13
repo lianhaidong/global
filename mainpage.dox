@@ -1,0 +1,45 @@
+/** @file global.c
+@brief @NAME{global} - print locations of the specified object.
+
+@mainpage GNU GLOBAL source code tag system
+@code{.txt}
+___________________________________
+|      |  |  |     |  _  |     |  |
+|  |___|  |  |  |  |    _|  |  |  |    GNU GLOBAL source code tag system
+|  |   |  |  |  |  |     |     |  |
+|  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+@endcode
+
+@NAME{GNU} @NAME{GLOBAL} is a source code tag system that works the same way across diverse
+environments. It supports @NAME{C}, @NAME{C++}, @NAME{Yacc}, @NAME{Java}, @NAME{PHP4} and
+@NAME{assembly} source code.
+
+@section s1 The main() files
+
+	@ref global.c "global.c -- print locations of the specified object."
+
+	@ref gozilla.c "gozilla.c -- force mozilla browser to display specified part of a source file."
+
+	@ref gtags.c "gtags.c -- create tag files for global."
+
+	@ref gtags-cscope.c "gtags-cscope.c -- interactive C symbol cross-reference (cscope)."
+
+	@ref htags.c "htags.c -- generate hypertext (XHTML or HTML) pages from a set of source files."
+
+	Click on the @STRONG{Files} button above, to see all the source files documented by @NAME{Doxygen}.
+
+@section s2 Documentation
+
+	Please see @FILE{doc/global.texi} (texinfo format) to know how to use @NAME{GLOBAL}.
+	You can see it even on @NAME{GLOBAL}'s web site: <br>
+
+	@FILE{http://www.gnu.org/software/global/globaldoc_toc.html} <br>
+	@FILE{http://www.gnu.org/software/global/manual/}
+
+@section s3 Latest information
+
+	You can see the latest information on @NAME{GLOBAL}'s web site.
+
+	@FILE{http://www.gnu.org/software/global/whatsnew.html}
+*/

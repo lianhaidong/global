@@ -50,34 +50,34 @@ static char sccsid[] = "@(#)bt_overflow.c	8.5 (Berkeley) 7/16/94";
 #include "db.h"
 #include "btree.h"
 
-/*
+/**
+ * @file
  * Big key/data code.
  *
  * Big key and data entries are stored on linked lists of pages.  The initial
  * reference is byte string stored with the key or data and is the page number
  * and size.  The actual record is stored in a chain of pages linked by the
- * nextpg field of the PAGE header.
+ * nextpg field of the #PAGE header.
  *
  * The first page of the chain has a special property.  If the record is used
- * by an internal page, it cannot be deleted and the P_PRESERVE bit will be set
+ * by an internal page, it cannot be deleted and the #P_PRESERVE bit will be set
  * in the header.
  *
- * XXX
- * A single DBT is written to each chain, so a lot of space on the last page
+ * @par XXX
+ * A single #DBT is written to each chain, so a lot of space on the last page
  * is wasted.  This is a fairly major bug for some data sets.
  */
 
-/*
+/**
  * __OVFL_GET -- Get an overflow key/data item.
  *
- * Parameters:
- *	t:	tree
- *	p:	pointer to { pgno_t, u_int32_t }
- *	buf:	storage address
- *	bufsz:	storage size
+ *	@param t	tree
+ *	@param p	pointer to {#pgno_t, @CODE{u_int32_t}}
+ *	@param ssz
+ *	@param buf	storage address
+ *	@param bufsz	storage size
  *
- * Returns:
- *	RET_ERROR, RET_SUCCESS
+ * @return #RET_ERROR, #RET_SUCCESS
  */
 int
 __ovfl_get(t, p, ssz, buf, bufsz)
@@ -127,16 +127,14 @@ __ovfl_get(t, p, ssz, buf, bufsz)
 	return (RET_SUCCESS);
 }
 
-/*
+/**
  * __OVFL_PUT -- Store an overflow key/data item.
  *
- * Parameters:
- *	t:	tree
- *	data:	DBT to store
- *	pgno:	storage page number
+ *	@param t	tree
+ *	@param dbt	#DBT to store
+ *	@param pg	storage page number
  *
- * Returns:
- *	RET_ERROR, RET_SUCCESS
+ * @return #RET_ERROR, #RET_SUCCESS
  */
 int
 __ovfl_put(t, dbt, pg)
@@ -182,15 +180,13 @@ __ovfl_put(t, dbt, pg)
 	return (RET_SUCCESS);
 }
 
-/*
+/**
  * __OVFL_DELETE -- Delete an overflow chain.
  *
- * Parameters:
- *	t:	tree
- *	p:	pointer to { pgno_t, u_int32_t }
+ *	@param t	tree
+ *	@param p	pointer to {#pgno_t, @CODE{u_int32_t}}
  *
- * Returns:
- *	RET_ERROR, RET_SUCCESS
+ * @return #RET_ERROR, #RET_SUCCESS
  */
 int
 __ovfl_delete(t, p)

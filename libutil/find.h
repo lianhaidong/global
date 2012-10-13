@@ -21,7 +21,7 @@
 #ifndef _FIND_H_
 #define _FIND_H_
 
-void set_accept_dotfiles();
+void set_accept_dotfiles(void);
 int skipthisfile(const char *);
 int issourcefile(const char *);
 void find_open(const char *);

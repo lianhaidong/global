@@ -55,6 +55,11 @@
 #include "parser.h"
 #include "const.h"
 
+/**
+ @file
+ @NAME{gtags} - create tag files for @NAME{global}.
+*/
+
 static void usage(void);
 static void help(void);
 int main(int, char **);
@@ -63,13 +68,13 @@ void updatetags(const char *, const char *, IDSET *, STRBUF *);
 void createtags(const char *, const char *);
 int printconf(const char *);
 
-int cflag;					/* compact format */
-int iflag;					/* incremental update */
-int Iflag;					/* make  idutils index */
-int Oflag;					/* use objdir */
-int qflag;					/* quiet mode */
-int wflag;					/* warning message */
-int vflag;					/* verbose mode */
+int cflag;					/**< compact format */
+int iflag;					/**< incremental update */
+int Iflag;					/**< make  idutils index */
+int Oflag;					/**< use objdir */
+int qflag;					/**< quiet mode */
+int wflag;					/**< warning message */
+int vflag;					/**< verbose mode */
 int show_version;
 int show_help;
 int show_config;
@@ -84,11 +89,13 @@ int statistics = STATISTICS_STYLE_NONE;
 
 #define GTAGSFILES "gtags.files"
 
-/*
- * Path filter
+/**
+ * @name Path filter
  */
+/** @{ */
 int do_path;
 int convert_type = PATH_RELATIVE;
+/** @} */
 
 int extractmethod;
 int total;
@@ -507,12 +514,12 @@ main(int argc, char **argv)
 
 	return 0;
 }
-/*
+/**
  * incremental: incremental update
  *
- *	i)	dbpath	dbpath directory
- *	i)	root	root directory of source tree
- *	r)		0: not updated, 1: updated
+ *	@param[in]	dbpath	dbpath directory
+ *	@param[in]	root	root directory of source tree
+ *	@return		0: not updated, 1: updated
  */
 int
 incremental(const char *dbpath, const char *root)
@@ -710,7 +717,9 @@ exit:
 
 	return updated;
 }
-/*
+/**
+ * @fn static void put_syms(int type, const char *tag, int lno, const char *path, const char *line_image, void *arg)
+ *
  * callback functions for built-in parser
  */
 struct put_func_data {
@@ -737,13 +746,13 @@ put_syms(int type, const char *tag, int lno, const char *path, const char *line_
 	}
 	gtags_put_using(gtop, tag, lno, data->fid, line_image);
 }
-/*
+/**
  * updatetags: update tag file.
  *
- *	i)	dbpath		directory in which tag file exist
- *	i)	root		root directory of source tree
- *	i)	deleteset	bit array of fid of deleted or modified files 
- *	i)	addlist		\0 separated list of added or modified files
+ *	@param[in]	dbpath		directory in which tag file exist
+ *	@param[in]	root		root directory of source tree
+ *	@param[in]	deleteset	bit array of fid of deleted or modified files 
+ *	@param[in]	addlist		@CODE{\\0} separated list of added or modified files
  */
 void
 updatetags(const char *dbpath, const char *root, IDSET *deleteset, STRBUF *addlist)
@@ -826,11 +835,11 @@ updatetags(const char *dbpath, const char *root, IDSET *deleteset, STRBUF *addli
 	if (data.gtop[GRTAGS] != NULL)
 		gtags_close(data.gtop[GRTAGS]);
 }
-/*
+/**
  * createtags: create tags file
  *
- *	i)	dbpath	dbpath directory
- *	i)	root	root directory of source tree
+ *	@param[in]	dbpath	dbpath directory
+ *	@param[in]	root	root directory of source tree
  */
 void
 createtags(const char *dbpath, const char *root)
@@ -908,11 +917,11 @@ createtags(const char *dbpath, const char *root)
 	}
 	strbuf_close(sb);
 }
-/*
+/**
  * printconf: print configuration data.
  *
- *	i)	name	label of config data
- *	r)		exit code
+ *	@param[in]	name	label of config data
+ *	@return		exit code
  */
 int
 printconf(const char *name)

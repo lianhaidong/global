@@ -30,6 +30,8 @@
 #ifndef	_COMPAT_H_
 #define	_COMPAT_H_
 
+/** @file */
+
 #include <sys/types.h>
 
 #if (defined(_WIN32) && !defined(__CYGWIN__)) || defined(__DJGPP__)
@@ -50,9 +52,11 @@ typedef unsigned short	u_short;
 #define	SIG_UNBLOCK	2
 #define	SIG_SETMASK	3
 
-static int __sigtemp;		/* For the use of sigprocmask */
+static int __sigtemp;		/**< For the use of #sigprocmask */
 
-/* Repeated test of oset != NULL is to avoid "*0". */
+/** @remark
+ *	Repeated test of @CODE{oset != NULL} is to avoid @CODE{"*0"}.
+ */
 #define	sigprocmask(how, set, oset)					\
 	((__sigtemp =							\
 	(((how) == SIG_BLOCK) ?						\
@@ -65,10 +69,13 @@ static int __sigtemp;		/* For the use of sigprocmask */
 		sigsetmask(__sigtemp)), 0)
 #endif
 
-/*
+/**
+ * @name BYTE_ORDER
+ * @details
  * If your system doesn't have an include file with the appropriate
  * byte order set, make sure you specify the correct one.
  */
+/** @{ */
 #ifndef BYTE_ORDER
 #define LITTLE_ENDIAN   1234
 #define BIG_ENDIAN      4321
@@ -78,7 +85,9 @@ static int __sigtemp;		/* For the use of sigprocmask */
 #define BYTE_ORDER LITTLE_ENDIAN
 #endif
 #endif
+/** @} */
 
+/** @name Compatibility macros */
 /*
  * Old definitions were rewritten using 'HAVE_XXX' macros.
  *
@@ -97,6 +106,7 @@ static int __sigtemp;		/* For the use of sigprocmask */
  * #define	memmove(a, b, n)	bcopy(b, a, n)
  * #endif
 */
+/** @{ */
 #if !defined (HAVE_INDEX) && defined (HAVE_STRCHR)
 #define	index(a, b)		strchr(a, b)
 #endif
@@ -125,73 +135,92 @@ static int __sigtemp;		/* For the use of sigprocmask */
 #if !defined (HAVE_MEMMOVE) && defined (HAVE_BCOPY)
 #define	memmove(a, b, n)	bcopy(b, a, n)
 #endif
+/** @} */
 
-/*
- * 32-bit machine.  The db routines are theoretically independent of
- * the size of u_shorts and u_longs, but I don't know that anyone has
- * ever actually tried it.  At a minimum, change the following #define's
+/**
+ * @def O_ACCMODE
+ * @details
+ * 32-bit machine.  The #DB routines are theoretically independent of
+ * the size of @NAME{u_shorts} and @NAME{u_longs}, but I don't know that anyone has
+ * ever actually tried it.  At a minimum, change the following @CODE{\#define}'s
  * if you are trying to compile on a different type of system.
  */
-#ifndef O_ACCMODE			/* POSIX 1003.1 access mode mask. */
+/** @{ */
+#ifndef O_ACCMODE			/** @NAME{POSIX 1003.1} access mode mask. */
 #define	O_ACCMODE	(O_RDONLY|O_WRONLY|O_RDWR)
 #endif
+/** @} */
 
-#ifndef	_POSIX2_RE_DUP_MAX		/* POSIX 1003.2 RE limit. */
+#ifndef	_POSIX2_RE_DUP_MAX		/** @NAME{POSIX 1003.2} RE limit. */
 #define	_POSIX2_RE_DUP_MAX	255
 #endif
 
-/*
- * If you can't provide lock values in the open(2) call.  Note, this
+/**
+ * @details
+ * If you can't provide lock values in the @XREF{open,2} call.  Note, this
  * allows races to happen.
  */
-#ifndef O_EXLOCK			/* 4.4BSD extension. */
+/** @{ */
+#ifndef O_EXLOCK			/** @NAME{4.4BSD} extension. */
 #define	O_EXLOCK	0
 #endif
+/** @} */
 
-#ifndef O_SHLOCK			/* 4.4BSD extension. */
+#ifndef O_SHLOCK			/** @NAME{4.4BSD} extension. */
 #define	O_SHLOCK	0
 #endif
 
-#ifndef O_BINARY	/* UNIX systems don't often have or need this */
+#ifndef O_BINARY	/** @NAME{UNIX} systems don't often have or need this */
 #define O_BINARY 0
 #endif
 
-#ifndef O_NONBLOCK	/* Win32 systems doesn't have or need this */
+#ifndef O_NONBLOCK	/** @NAME{Win32} systems doesn't have or need this */
 #define	O_NONBLOCK	0
 #endif
 
-#ifndef EFTYPE
-#define	EFTYPE		EINVAL		/* POSIX 1003.1 format errno. */
+#ifndef EFTYPE		/** @NAME{POSIX 1003.1} format errno. */
+#define	EFTYPE		EINVAL
 #endif
 
+/** @name POSIX 1003.1 seek values */
+/** @{ */
 #ifndef SEEK_END
-#define	SEEK_SET	0		/* POSIX 1003.1 seek values */
+#define	SEEK_SET	0
 #define	SEEK_CUR	1
 #define	SEEK_END	2
 #endif
+/** @} */
 
-#ifndef _POSIX2_RE_DUP_MAX		/* POSIX 1003.2 values. */
+#ifndef _POSIX2_RE_DUP_MAX	/** @NAME{POSIX 1003.2} values. */
 #define	_POSIX2_RE_DUP_MAX	255
 #endif
 
-#ifndef NULL				/* ANSI C #defines NULL everywhere. */
+#ifndef NULL		/** @NAME{ANSI C} @CODE{\#define}s @VAR{NULL} everywhere. */
 #define	NULL		0
 #endif
 
-#ifndef	MAX				/* Usually found in <sys/param.h>. */
+#ifndef	MAX				/** Usually found in @FILE{\<sys/param.h\>}. */
 #define	MAX(_a,_b)	((_a)<(_b)?(_b):(_a))
 #endif
-#ifndef	MIN				/* Usually found in <sys/param.h>. */
+#ifndef	MIN				/** Usually found in @FILE{\<sys/param.h\>}. */
 #define	MIN(_a,_b)	((_a)<(_b)?(_a):(_b))
 #endif
 
-#ifndef S_ISDIR				/* POSIX 1003.1 file type tests. */
-#define	S_ISDIR(m)	((m & 0170000) == 0040000)	/* directory */
-#define	S_ISCHR(m)	((m & 0170000) == 0020000)	/* char special */
-#define	S_ISBLK(m)	((m & 0170000) == 0060000)	/* block special */
-#define	S_ISREG(m)	((m & 0170000) == 0100000)	/* regular file */
-#define	S_ISFIFO(m)	((m & 0170000) == 0010000)	/* fifo */
+/** @name POSIX 1003.1 file type tests. */
+/** @{ */
+#ifndef S_ISDIR
+		/** directory */
+#define	S_ISDIR(m)	((m & 0170000) == 0040000)
+		/** char special */
+#define	S_ISCHR(m)	((m & 0170000) == 0020000)
+		/** block special */
+#define	S_ISBLK(m)	((m & 0170000) == 0060000)
+		/** regular file */
+#define	S_ISREG(m)	((m & 0170000) == 0100000)
+		/** fifo */
+#define	S_ISFIFO(m)	((m & 0170000) == 0010000)
 #endif
+/** @} */
 
 #ifndef HAVE_LSTAT
 #define lstat	stat

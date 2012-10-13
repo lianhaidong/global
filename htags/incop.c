@@ -55,7 +55,7 @@ strtolower(const char *s)
 /*----------------------------------------------------------------------*/
 static STRHASH *head_inc;
 
-/*
+/**
  * init_inc: initialize include file list.
  */
 void
@@ -63,12 +63,12 @@ init_inc(void)
 {
 	head_inc = strhash_open(1024);
 }
-/*
+/**
  * put_inc: put include file.
  *
- *	i)	file	file name (the last component of the path)
- *	i)	path	path name or command line.
- *	i)	id	path id
+ *	@param[in]	file	file name (the last component of the @a path)
+ *	@param[in]	path	path name or command line.
+ *	@param[in]	id	path id
  */
 void
 put_inc(const char *file, const char *path, int id)
@@ -95,11 +95,11 @@ put_inc(const char *file, const char *path, int id)
 	strbuf_puts0(data->contents, path);
 	data->count++;
 }
-/*
+/**
  * get_inc: get include file.
  *
- *	i)	path	path name or command line.
- *	r)		descriptor
+ *	@param[in]	name	path name or command line.
+ *	@return		descriptor
  */
 struct data *
 get_inc(const char *name)
@@ -108,10 +108,10 @@ get_inc(const char *name)
 
 	return entry ? entry->value : NULL;
 }
-/*
+/**
  * first_inc: get the first include file.
  *
- *	r)		descriptor
+ *	@return		descriptor
  */
 struct data *
 first_inc(void)
@@ -120,10 +120,10 @@ first_inc(void)
 
 	return entry ? entry->value : NULL;
 }
-/*
+/**
  * next_inc: get the next include file.
  *
- *	r)		descriptor
+ *	@return		descriptor
  */
 struct data *
 next_inc(void)
@@ -134,11 +134,11 @@ next_inc(void)
 }
 
 
-/*
+/**
  * put_included: put include file reference.
  *
- *	i)	data	inc structure
- *	i)	path	path name or command line.
+ *	@param[in]	data	inc structure
+ *	@param[in]	path	path name or command line.
  */
 void
 put_included(struct data *data, const char *path)
@@ -148,11 +148,11 @@ put_included(struct data *data, const char *path)
 	strbuf_puts0(data->ref_contents, path);
 	data->ref_count++;
 }
-/*
+/**
  * get_included: get included file.
  *
- *	i)	path	path name or command line.
- *	r)		descriptor
+ *	@param[in]	name	path name or command line.
+ *	@return		descriptor
  */
 struct data *
 get_included(const char *name)

@@ -75,16 +75,15 @@ dbopen(fname, flags, mode, type, openinfo)
 }
 
 static int
-__dberr()
+__dberr(void)
 {
 	return (RET_ERROR);
 }
 
-/*
+/**
  * __DBPANIC -- Stop.
  *
- * Parameters:
- *	dbp:	pointer to the DB structure.
+ *	@param dbp	pointer to the #DB structure.
  */
 void
 __dbpanic(dbp)

@@ -100,15 +100,15 @@ struct statistics_time {
 	STAILQ_ENTRY(statistics_time) next;
 
 	ELAPSED_TIME_TYPE elapsed_start;
-	double elapsed;		/* Elapsed time in seconds. */
+	double elapsed;		/**< Elapsed time in seconds. */
 
 #if CPU_TIME_AVAILABLE
 	CPU_TIME_TYPE user_start;
 	CPU_TIME_TYPE system_start;
-	double user;		/* User time in seconds. */
-	double system;		/* System time in seconds. */
-	double percent;		/* (user + system) * 100 / elapsed */
-				/* percent may be NaN or infinity. */
+	double user;		/**< User time in seconds. */
+	double system;		/**< System time in seconds. */
+	double percent;		/**< (user + system) * 100 / elapsed */
+				/**< percent may be NaN or infinity. */
 #endif
 
 	int name_len;

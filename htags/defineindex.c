@@ -35,13 +35,14 @@
 #include "path2url.h"
 #include "common.h"
 
-/*
+/**
  * makedefineindex: make definition index (including alphabetic index)
  *
- *	i)	file		definition index file
- *	i)	total		definitions total
- *	o)	@defines
- *	gi)	tag cache
+ *	@param[in]	file		definition index file
+ *	@param[in]	total		definitions total
+ *	@param[out]	defines		\@defines
+ *	@par Globals used (input):
+ *		tag cache	  XXX: should this be global output, not input?
  */
 int
 makedefineindex(const char *file, int total, STRBUF *defines)

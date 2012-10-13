@@ -42,11 +42,11 @@
 #include "die.h"
 #include "test.h"
 
-/*
- * Decide whether or not the path is binary file.
+/**
+ * Decide whether or not the @a path is binary file.
  *
- *	i)	path
- *	r)	0: is not binary, 1: is binary
+ *	@param[in]	path
+ *	@return	0: is not binary, 1: is binary
  */
 static int
 is_binary(const char *path)
@@ -72,22 +72,21 @@ is_binary(const char *path)
 	}
 	return 0;
 }
-/*
+/**
  * test: 
  *
- *	i)	flags	file flags
+ *	@param[in]	flags	file flags <br>
+ *			@CODE{"f"}	[ -f path ] is @a path a regular file (not a dir, link or pipe etc.)? <br>
+ *			@CODE{"d"}	[ -d path ] is @a path a dir? <br>
+ *			@CODE{"r"}	[ -r path ] can we read from @a path? <br>
+ *			@CODE{"s"}	[ -s path ] has @a path got a non-zero size? <br>
+ *			@CODE{"w"}	[ -w path ] can we write to @a path? <br>
+ *			@CODE{"x"}	[ -x path ] is @a path an executable file/program? <br>
+ *			@CODE{"b"}	[ -b path ] is @a path a binary file?
  *
- *			"f"	[ -f path ]
- *			"d"	[ -d path ]
- *			"r"	[ -r path ]
- *			"s"	[ -s path ]
- *			"w"	[ -w path ]
- *			"x"	[ -x path ]
- *			"b"	[ -b path ]
- *
- *	i)	path	path
- *			if NULL then previous path.
- *	r)		0: no, 1: ok
+ *	@param[in]	path	path <br>
+ *			if @VAR{NULL} then previous path.
+ *	@return		0: no, 1: ok
  *
  * You can specify more than one character. It assumed 'AND' test.
  */
@@ -148,11 +147,11 @@ test(const char *flags, const char *path)
 	}
 	return 1;
 }
-/*
+/**
  * filesize: get file size in bytes.
  *
- *	i)	path	path of file
- *	r)		!= -1: file size
+ *	@param[in]	path	path of file
+ *	@return		!= -1: file size
  *			== -1: file not found
  */
 int

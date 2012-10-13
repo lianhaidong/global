@@ -22,14 +22,24 @@
 /*
  * Parameter values.
  */
-/* gen_image() */
+/**
+ * @name Defines for gen_image()
+ * See: gen_image()
+ */
+/** @{ */
 #define CURRENT	0
 #define PARENT 1
+/** @} */
 
-/* gen_page_begin() */
+/**
+ * @name Defines for gen_page_begin()
+ * See: gen_page_begin()
+ */
+/** @{ */
 #define TOPDIR 0
 #define SUBDIR 1
 #define CGIDIR 2
+/** @} */
 
 /*
  * tag
@@ -119,8 +129,8 @@ extern const char *guide_path_end;
 int fputs_nl(const char *, FILE *);
 void setup_xhtml(void);
 void save_current_path(const char *);
-char *get_current_dir();
-char *get_current_file();
+char *get_current_dir(void);
+char *get_current_file(void);
 const char *upperdir(const char *);
 const char *gen_insert_header(int);
 const char *gen_insert_footer(int);
@@ -148,5 +158,6 @@ const char *gen_input_with_title_checked(const char *, const char *, const char 
 const char *gen_frameset_begin(const char *);
 const char *gen_frameset_end(void);
 const char *gen_frame(const char *, const char *);
+/* const char *fix_attr_value(const char *); */
 
 #endif /* ! _COMMON_H_ */

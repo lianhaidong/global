@@ -64,20 +64,19 @@ static recno_t	 rec_total(PAGE *);
 
 u_long	bt_rootsplit, bt_split, bt_sortsplit, bt_pfxsaved;
 
-/*
+/**
  * __BT_SPLIT -- Split the tree.
  *
- * Parameters:
- *	t:	tree
- *	sp:	page to split
- *	key:	key to insert
- *	data:	data to insert
- *	flags:	BIGKEY/BIGDATA flags
- *	ilen:	insert length
- *	skip:	index to leave open
+ *	@param t	tree
+ *	@param sp	page to split
+ *	@param key	key to insert
+ *	@param data	data to insert
+ *	@param flags	#P_BIGKEY/#P_BIGDATA flags
+ *	@param ilen	insert length
+ *	@param argskip	index to leave open
  *
- * Returns:
- *	RET_ERROR, RET_SUCCESS
+ * @return
+ *	#RET_ERROR, #RET_SUCCESS
  */
 int
 __bt_split(t, sp, key, data, flags, ilen, argskip)
@@ -327,19 +326,18 @@ err2:	mpool_put(t->bt_mp, l, 0);
 	return (RET_ERROR);
 }
 
-/*
+/**
  * BT_PAGE -- Split a non-root page of a btree.
  *
- * Parameters:
- *	t:	tree
- *	h:	root page
- *	lp:	pointer to left page pointer
- *	rp:	pointer to right page pointer
- *	skip:	pointer to index to leave open
- *	ilen:	insert length
+ *	@param t	tree
+ *	@param h	root page
+ *	@param lp	pointer to left page pointer
+ *	@param rp	pointer to right page pointer
+ *	@param skip	pointer to index to leave open
+ *	@param ilen	insert length
  *
- * Returns:
- *	Pointer to page in which to insert or NULL on error.
+ * @return
+ *	Pointer to page in which to insert or @CODE{NULL} on error.
  */
 static PAGE *
 bt_page(t, h, lp, rp, skip, ilen)
@@ -432,19 +430,18 @@ bt_page(t, h, lp, rp, skip, ilen)
 	return (tp);
 }
 
-/*
+/**
  * BT_ROOT -- Split the root page of a btree.
  *
- * Parameters:
- *	t:	tree
- *	h:	root page
- *	lp:	pointer to left page pointer
- *	rp:	pointer to right page pointer
- *	skip:	pointer to index to leave open
- *	ilen:	insert length
+ *	@param t	tree
+ *	@param h	root page
+ *	@param lp	pointer to left page pointer
+ *	@param rp	pointer to right page pointer
+ *	@param skip	pointer to index to leave open
+ *	@param ilen	insert length
  *
- * Returns:
- *	Pointer to page in which to insert or NULL on error.
+ * @return
+ *	Pointer to page in which to insert or @CODE{NULL} on error.
  */
 static PAGE *
 bt_root(t, h, lp, rp, skip, ilen)
@@ -481,17 +478,16 @@ bt_root(t, h, lp, rp, skip, ilen)
 	return (tp);
 }
 
-/*
+/**
  * BT_RROOT -- Fix up the recno root page after it has been split.
  *
- * Parameters:
- *	t:	tree
- *	h:	root page
- *	l:	left page
- *	r:	right page
+ *	@param t	tree
+ *	@param h	root page
+ *	@param l	left page
+ *	@param r	right page
  *
- * Returns:
- *	RET_ERROR, RET_SUCCESS
+ * @return
+ *	#RET_ERROR, #RET_SUCCESS
  */
 static int
 bt_rroot(t, h, l, r)
@@ -521,17 +517,16 @@ bt_rroot(t, h, l, r)
 	return (RET_SUCCESS);
 }
 
-/*
+/**
  * BT_BROOT -- Fix up the btree root page after it has been split.
  *
- * Parameters:
- *	t:	tree
- *	h:	root page
- *	l:	left page
- *	r:	right page
+ *	@param t	tree
+ *	@param h	root page
+ *	@param l	left page
+ *	@param r	right page
  *
- * Returns:
- *	RET_ERROR, RET_SUCCESS
+ * @return
+ *	#RET_ERROR, #RET_SUCCESS
  */
 static int
 bt_broot(t, h, l, r)
@@ -596,18 +591,17 @@ bt_broot(t, h, l, r)
 	return (RET_SUCCESS);
 }
 
-/*
+/**
  * BT_PSPLIT -- Do the real work of splitting the page.
  *
- * Parameters:
- *	t:	tree
- *	h:	page to be split
- *	l:	page to put lower half of data
- *	r:	page to put upper half of data
- *	pskip:	pointer to index to leave open
- *	ilen:	insert length
+ *	@param t	tree
+ *	@param h	page to be split
+ *	@param l	page to put lower half of data
+ *	@param r	page to put upper half of data
+ *	@param pskip	pointer to index to leave open
+ *	@param ilen	insert length
  *
- * Returns:
+ * @return
  *	Pointer to page in which to insert.
  */
 static PAGE *
@@ -773,7 +767,7 @@ bt_psplit(t, h, l, r, pskip, ilen)
 	return (rval);
 }
 
-/*
+/**
  * BT_PRESERVE -- Mark a chain of pages as used by an internal node.
  *
  * Chains of indirect blocks pointed to by leaf nodes get reclaimed when the
@@ -781,12 +775,11 @@ bt_psplit(t, h, l, r, pskip, ilen)
  * pages never get deleted.  This routine marks a chain as pointed to by an
  * internal page.
  *
- * Parameters:
- *	t:	tree
- *	pg:	page number of first page in the chain.
+ *	@param t	tree
+ *	@param pg	page number of first page in the chain.
  *
- * Returns:
- *	RET_SUCCESS, RET_ERROR.
+ * @return
+ *	#RET_SUCCESS, #RET_ERROR.
  */
 static int
 bt_preserve(t, pg)
@@ -802,19 +795,18 @@ bt_preserve(t, pg)
 	return (RET_SUCCESS);
 }
 
-/*
+/**
  * REC_TOTAL -- Return the number of recno entries below a page.
  *
- * Parameters:
- *	h:	page
+ *	@param h	page
  *
- * Returns:
+ * @return
  *	The number of recno entries below a page.
  *
- * XXX
- * These values could be set by the bt_psplit routine.  The problem is that the
+ * @par XXX
+ * These values could be set by the #bt_psplit routine.  The problem is that the
  * entry has to be popped off of the stack etc. or the values have to be passed
- * all the way back to bt_split/bt_rroot and it's not very clean.
+ * all the way back to #bt_split/#bt_rroot and it's not very clean.
  */
 static recno_t
 rec_total(h)

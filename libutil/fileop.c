@@ -32,11 +32,13 @@
 #include "makepath.h"
 #include "strlimcpy.h"
 
-/*
+/**
+ @file
 
 File operation: usage
 
-	[WRITE]
+ @par [WRITE]
+ @code
 	int compress = cflag ? 1 : 0;
 
 	FILEOP *fileop = open_output_file(path, compress);
@@ -45,20 +47,23 @@ File operation: usage
 	fputs("Hello", op);
 	...
 	close_file(fileop);
+ @endcode
 
-	[READ]
+ @par [READ]
+ @code
 	FILEOP *fileop = open_input_file(path);
 	FILE *ip = get_descripter(fileop);
 
 	fgets(buf, sizeof(buf), ip);
 	...
 	close_file(fileop);
+ @endcode
 */
-/*
+/**
  * open input file.
  *
- *	i)	path	path name
- *	r)		file descripter
+ *	@param[in]	path	path name
+ *	@return		file descripter
  */
 FILEOP *
 open_input_file(const char *path)
@@ -74,12 +79,14 @@ open_input_file(const char *path)
 	fileop->type = FILEOP_INPUT;
 	return fileop;
 }
-/*
+/**
  * open output file
  *
- *	i)	path	path name
- *	i)	compress 0: normal, 1: compress
- *	r)		file descripter
+ *	@param[in]	path	path name
+ *	@param[in]	compress 0: normal, 1: compress
+ *	@return		file descripter
+ *
+ *	@note Uses the @NAME{gzip} program to compress, which should already be on your system.
  */
 FILEOP *
 open_output_file(const char *path, int compress)
@@ -108,18 +115,20 @@ open_output_file(const char *path, int compress)
 	fileop->fp = fp;
 	return fileop;
 }
-/*
+/**
  * get UNIX file descripter
+ *
+ * ( See open_input_file() and open_output_file() ).
  */
 FILE *
 get_descripter(FILEOP *fileop)
 {
 	return fileop->fp;
 }
-/*
+/**
  * close_file: close file
  *
- *	i)	fileop	file descripter
+ *	@param[in]	fileop	file descripter
  */
 void
 close_file(FILEOP *fileop)

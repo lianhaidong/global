@@ -62,7 +62,7 @@ int search(const char *, const char *, const char *, const char *, int);
 void tagsearch(const char *, const char *, const char *, const char *, int);
 void encode(char *, int, const char *);
 
-const char *localprefix;		/* local prefix		*/
+const char *localprefix;		/**< local prefix		*/
 int aflag;				/* [option]		*/
 int cflag;				/* command		*/
 int dflag;				/* command		*/
@@ -90,14 +90,16 @@ int xflag;				/* [option]		*/
 int show_version;
 int show_help;
 int nofilter;
-int nosource;				/* undocumented command */
+int nosource;				/**< undocumented command */
 int debug;
-int literal;				/* 1: literal search	*/
-int print0;				/* -print0 option	*/
+int literal;				/**< 1: literal search	*/
+int print0;				/**< @OPTION{-print0} option	*/
 int format;
-int type;				/* path conversion type */
-int match_part;				/* match part only	*/
-const char *cwd, *root, *dbpath;
+int type;				/**< path conversion type */
+int match_part;				/**< match part only	*/
+const char *cwd;			/**< current directory	*/
+const char *root;			/**< root of source tree	*/
+const char *dbpath;			/**< dbpath directory	*/
 char *context_file;
 char *context_lineno;
 char *file_list;
@@ -187,13 +189,15 @@ setcom(int c)
 	else if (command != c)
 		usage();
 }
-/*
+/**
+ * @fn int decide_tag_by_context(const char *tag, const char *file, int lineno)
+ *
  * decide_tag_by_context: decide tag type by context
  *
- *	i)	tag	tag name
- *	i)	file	context file
- *	i)	lineno	context lineno
- *	r)		GTAGS, GRTAGS, GSYMS
+ *	@param[in]	tag	tag name
+ *	@param[in]	file	context file
+ *	@param[in]	lineno	context lineno
+ *	@return		#GTAGS, #GRTAGS, #GSYMS
  */
 #define NEXT_NUMBER(p) do {                                                         \
 	for (n = 0; isdigit(*p); p++)                                               \
@@ -751,14 +755,14 @@ main(int argc, char **argv)
 	}
 	return 0;
 }
-/*
- * completion_tags: print completion list of specified prefix
+/**
+ * completion_tags: print completion list of specified @a prefix
  *
- *	i)	dbpath	dbpath directory
- *	i)	root	root directory
- *	i)	prefix	prefix of primary key
- *	i)	db	GTAGS,GRTAGS,GSYMS
- *	r)		number of words
+ *	@param[in]	dbpath	dbpath directory
+ *	@param[in]	root	root directory
+ *	@param[in]	prefix	prefix of primary key
+ *	@param[in]	db	#GTAGS,#GRTAGS,#GSYMS
+ *	@return		number of words
  */
 int
 completion_tags(const char *dbpath, const char *root, const char *prefix, int db)
@@ -825,13 +829,13 @@ completion_tags(const char *dbpath, const char *root, const char *prefix, int db
 	gtags_close(gtop);
 	return count;
 }
-/*
- * completion: print completion list of specified prefix
+/**
+ * completion: print completion list of specified @a prefix
  *
- *	i)	dbpath	dbpath directory
- *	i)	root	root directory
- *	i)	prefix	prefix of primary key
- *	i)	db	GTAGS,GRTAGS,GSYMS
+ *	@param[in]	dbpath	dbpath directory
+ *	@param[in]	root	root directory
+ *	@param[in]	prefix	prefix of primary key
+ *	@param[in]	db	#GTAGS,#GRTAGS,#GSYMS
  */
 void
 completion(const char *dbpath, const char *root, const char *prefix, int db)
@@ -874,12 +878,12 @@ completion(const char *dbpath, const char *root, const char *prefix, int db)
 	}
 	/* return total; */
 }
-/*
- * completion_idutils: print completion list of specified prefix
+/**
+ * completion_idutils: print completion list of specified @a prefix
  *
- *	i)	dbpath	dbpath directory
- *	i)	root	root directory
- *	i)	prefix	prefix of primary key
+ *	@param[in]	dbpath	dbpath directory
+ *	@param[in]	root	root directory
+ *	@param[in]	prefix	prefix of primary key
  */
 void
 completion_idutils(const char *dbpath, const char *root, const char *prefix)
@@ -926,11 +930,11 @@ completion_idutils(const char *dbpath, const char *root, const char *prefix)
 	fclose(ip);
 	strbuf_close(sb);
 }
-/*
+/**
  * completion_path: print candidate path list.
  *
- *	i)	dbpath	dbpath directory
- *	i)	prefix	prefix of primary key
+ *	@param[in]	dbpath	dbpath directory
+ *	@param[in]	prefix	prefix of primary key
  */
 void
 completion_path(const char *dbpath, const char *prefix)
@@ -1007,10 +1011,10 @@ completion_path(const char *dbpath, const char *prefix)
  * Sort filter is implemented in gtagsop module (libutil/gtagsop.c).
  * Path filter is implemented in pathconvert module (libutil/pathconvert.c).
  */
-/*
+/**
  * print number of object.
  *
- * This procedure is commonly used except for the -P option.
+ * This procedure is commonly used except for the @OPTION{-P} option.
  */
 void
 print_count(int number)
@@ -1029,11 +1033,11 @@ print_count(int number)
 		break;
 	}
 }
-/*
- * idutils:  lid(idutils) pattern
+/**
+ * idutils:  @NAME{lid}(@NAME{idutils}) pattern
  *
- *	i)	pattern	POSIX regular expression
- *	i)	dbpath	GTAGS directory
+ *	@param[in]	pattern	@NAME{POSIX} regular expression
+ *	@param[in]	dbpath	@FILE{GTAGS} directory
  */
 void
 idutils(const char *pattern, const char *dbpath)
@@ -1125,10 +1129,12 @@ idutils(const char *pattern, const char *dbpath)
 		fprintf(stderr, " (using idutils index in '%s').\n", dbpath);
 	}
 }
-/*
- * grep: grep pattern
+/**
+ * grep: @NAME{grep} pattern
  *
- *	i)	pattern	POSIX regular expression
+ *	@param[in]	pattern	@NAME{POSIX} regular expression
+ *	@param	argv
+ *	@param	dbpath
  */
 void
 grep(const char *pattern, char *const *argv, const char *dbpath)
@@ -1235,10 +1241,11 @@ grep(const char *pattern, char *const *argv, const char *dbpath)
 		fprintf(stderr, " (no index used).\n");
 	}
 }
-/*
+/**
  * pathlist: print candidate path list.
  *
- *	i)	dbpath
+ *	@param	pattern
+ *	@param[in]	dbpath
  */
 void
 pathlist(const char *pattern, const char *dbpath)
@@ -1318,14 +1325,16 @@ pathlist(const char *pattern, const char *dbpath)
 		fprintf(stderr, " (using '%s').\n", makepath(dbpath, dbname(GPATH), NULL));
 	}
 }
-/*
+/**
+ * @fn void parsefile(char *const *argv, const char *cwd, const char *root, const char *dbpath, int db)
+ *
  * parsefile: parse file to pick up tags.
  *
- *	i)	argv
- *	i)	cwd	current directory
- *	i)	root	root directory of source tree
- *	i)	dbpath	dbpath
- *	i)	db	type of parse
+ *	@param[in]	argv
+ *	@param[in]	cwd	current directory
+ *	@param[in]	root	root directory of source tree
+ *	@param[in]	dbpath	dbpath
+ *	@param[in]	db	type of parse
  */
 #define TARGET_DEF	(1 << GTAGS)
 #define TARGET_REF	(1 << GRTAGS)
@@ -1336,7 +1345,7 @@ struct parsefile_data {
 	int target;
 	int extractmethod;
 	int count;
-	const char *fid;			/* fid of the file under processing */
+	const char *fid;			/**< fid of the file under processing */
 };
 static void
 put_syms(int type, const char *tag, int lno, const char *path, const char *line_image, void *arg)
@@ -1500,17 +1509,19 @@ parsefile(char *const *argv, const char *cwd, const char *root, const char *dbpa
 		fprintf(stderr, " (no index used).\n");
 	}
 }
-/*
+/**
+ * @fn int search(const char *pattern, const char *root, const char *cwd, const char *dbpath, int db)
+ *
  * search: search specified function 
  *
- *	i)	pattern		search pattern
- *	i)	root		root of source tree
- *	i)	cwd		current directory
- *	i)	dbpath		database directory
- *	i)	db		GTAGS,GRTAGS,GSYMS
- *	r)			count of output lines
+ *	@param[in]	pattern		search pattern
+ *	@param[in]	root		root of source tree
+ *	@param[in]	cwd		current directory
+ *	@param[in]	dbpath		database directory
+ *	@param[in]	db		#GTAGS,#GRTAGS,#GSYMS
+ *	@return			count of output lines
  */
-/* get next number and seek to the next character */
+/** get next number and seek to the next character */
 #define GET_NEXT_NUMBER(p) do {                                                 \
                 if (!isdigit(*p))                                              \
                         p++;                                                    \
@@ -1733,14 +1744,14 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 	gtags_close(gtop);
 	return count;
 }
-/*
+/**
  * tagsearch: execute tag search
  *
- *	i)	pattern		search pattern
- *	i)	cwd		current directory
- *	i)	root		root of source tree
- *	i)	dbpath		database directory
- *	i)	db		GTAGS,GRTAGS,GSYMS
+ *	@param[in]	pattern		search pattern
+ *	@param[in]	cwd		current directory
+ *	@param[in]	root		root of source tree
+ *	@param[in]	dbpath		database directory
+ *	@param[in]	db		#GTAGS,#GRTAGS,#GSYMS
  */
 void
 tagsearch(const char *pattern, const char *cwd, const char *root, const char *dbpath, int db)
@@ -1793,12 +1804,12 @@ tagsearch(const char *pattern, const char *cwd, const char *root, const char *db
 		fputs(".\n", stderr);
 	}
 }
-/*
- * encode: string copy with converting blank chars into %ff format.
+/**
+ * encode: string copy with converting blank chars into @CODE{\%ff} format.
  *
- *	o)	to	result
- *	i)	size	size of 'to' buffer
- *	i)	from	string
+ *	@param[out]	to	result
+ *	@param[in]	size	size of @a to buffer
+ *	@param[in]	from	string
  */
 void
 encode(char *to, int size, const char *from)

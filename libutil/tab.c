@@ -42,10 +42,10 @@
 
 static int tabs = 8;
 
-/*
+/**
  * settabs: set default tab stop
  *
- *	i)	n	tab stop
+ *	@param[in]	n	tab stop (1...32 only)
  */
 void
 settabs(int n)
@@ -54,18 +54,21 @@ settabs(int n)
 		return;
 	tabs = n;
 }
-/*
+/**
+ * @fn size_t read_file_detabing(char *buf, size_t size, FILE *ip, int *dest_saved, int *spaces_saved)
+ *
  * Read file converting tabs into spaces.
  *
- *	o)	buf	
- *	i)	size	size of 'buf'
- *	i)	ip	input file
- *	o)	dest_saved	current column in 'buf'
- *	o)	spaces_saved	left spaces
- *	r)		size of data
+ *	@param[out]	buf	
+ *	@param[in]	size	size of @a buf
+ *	@param[in]	ip	input file
+ *	@param[out]	dest_saved	current column in @a buf
+ *	@param[out]	spaces_saved	left spaces
+ *	@return		size of data
  *
- * Dest_saved and spaces_saved are control variables.
- * You must initialize them with 0 when the input file is opened.
+ * @attention
+ * @a dest_saved and @a spaces_saved are control variables. <br>
+ * You must initialize them with 0 (zero) when the input file is opened.
  */
 #define PUTSPACES \
 	do {									\
@@ -112,12 +115,12 @@ read_file_detabing(char *buf, size_t size, FILE *ip, int *dest_saved, int *space
 	*spaces_saved = spaces;
 	return p - buf;
 }
-/*
+/**
  * detab_replacing: convert tabs into spaces and print with replacing.
  *
- *	i)	op	FILE *
- *	i)	buf	string including tabs
- *	i)	replace	replacing function
+ *	@param[in]	op	@CODE{FILE *}
+ *	@param[in]	buf	string including tabs
+ *	@param[in]	replace	replacing function
  */
 void
 detab_replacing(FILE *op, const char *buf, const char *(*replace)(int c))

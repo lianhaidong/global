@@ -24,23 +24,36 @@
 #include <sys/param.h>
 #endif
 
-#define MAXFILLEN	1024		/* max length of filter		*/
-#define IDENTLEN	512		/* max length of ident		*/
-#define MAXBUFLEN	1024		/* max length of buffer		*/
-#define MAXPROPLEN	1024		/* max length of property	*/
-#define MAXARGLEN	512		/* max length of argument	*/
-#define MAXTOKEN	512		/* max length of token		*/
-#define MAXFIDLEN	32		/* max length of fid		*/
+		/** max length of filter	*/
+#define MAXFILLEN	1024
+		/** max length of ident		*/
+#define IDENTLEN	512
+		/** max length of buffer	*/
+#define MAXBUFLEN	1024
+		/** max length of property	*/
+#define MAXPROPLEN	1024
+		/** max length of argument	*/
+#define MAXARGLEN	512
+		/** max length of token		*/
+#define MAXTOKEN	512
+		/** max length of fid		*/
+#define MAXFIDLEN	32
+
 #ifndef MAXPATHLEN
-#define MAXPATHLEN	1024		/* max length of path		*/
+		/** max length of path		*/
+#define MAXPATHLEN	1024
 #endif
-#define MAXKEYLEN	MAXPATHLEN	/* max length of record key	*/
-#define MAXURLLEN	1024		/* max length of URL		*/
+		/** max length of record key	*/
+#define MAXKEYLEN	MAXPATHLEN
+		/** max length of URL		*/
+#define MAXURLLEN	1024
 /*
  * The default cache size of db library is 50MB.
  * The minimum size is 500KB.
  */
-#define GTAGSCACHE	50000000	/* default cache size 50MB	*/
-#define GTAGSMINCACHE	500000		/* minimum cache size 500KB	*/
+		/** default cache size 50MB	*/
+#define GTAGSCACHE	50000000
+		/** minimum cache size 500KB	*/
+#define GTAGSMINCACHE	500000
 
 #endif /* ! _GPARAM_H_ */

@@ -30,11 +30,11 @@
 #include "path2url.h"
 #include "common.h"
 
-/*
- * makecflowindex: make call-tree based on cflow's output
+/**
+ * makecflowindex: make call-tree based on @NAME{cflow}'s output
  *
- *	i)	output		output file name
- *	i)	cflow_file	input file which is the output of Cflow with --format=posix
+ *	@param[in]	output		output file name
+ *	@param[in]	cflow_file	input file which is the output of @NAME{Cflow} with @OPTION{--format=posix}
  */
 int
 makecflowindex(const char *output, const char *cflow_file)

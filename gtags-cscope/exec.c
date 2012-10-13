@@ -30,9 +30,10 @@
  DAMAGE. 
  =========================================================================*/
 
-/*	cscope - interactive C symbol cross-reference
- *
+/** @file
  *	process execution functions
+ *
+ *	cscope - interactive C symbol cross-reference
  */
 
 #include <unistd.h>
@@ -57,9 +58,9 @@
 
 static char const rcsid[] = "$Id$";
 
-static	sighandler_t oldsigquit; /* old value of quit signal */
-static	sighandler_t oldsighup; /* old value of hangup signal */
-static	sighandler_t oldsigtstp; /* old value of SIGTSTP */
+static	sighandler_t oldsigquit; /**< old value of quit signal */
+static	sighandler_t oldsighup; /**< old value of hangup signal */
+static	sighandler_t oldsigtstp; /**< old value of @VAR{SIGTSTP} */
 
 #if HAVE_FORK /* none of these is needed, there */
 static	int	join(pid_t p);
@@ -67,7 +68,7 @@ static	int	myexecvp(char *a, char **args);
 static	pid_t	myfork(void);
 #endif
 
-/* execute forks and executes a program or shell script, waits for it to
+/** execute forks and executes a program or shell script, waits for it to
  * finish, and returns its exit code.
  */
 
@@ -116,8 +117,8 @@ execute(char *a, ...)	/* note: "exec" is already defined on u370 */
 
 #if HAVE_FORK /* None of the following functions is used there */
 
-/* myexecvp is an interface to the execvp system call to
- * modify argv[0] to reference the last component of its path-name.
+/** myexecvp is an interface to the @NAME{execvp} system call to
+ * modify @CODE{argv[0]} to reference the last component of its path-name.
  */
 static int
 myexecvp(char *a, char **args)
@@ -136,7 +137,7 @@ myexecvp(char *a, char **args)
     /* NOTREACHED */
 }
 
-/* myfork acts like fork but also handles signals */
+/** myfork acts like fork but also handles signals */
 
 static pid_t
 myfork(void)
@@ -169,7 +170,7 @@ myfork(void)
 	return p;
 }
 
-/* join is the compliment of fork */
+/** join is the compliment of fork */
 
 static int
 join(pid_t p) 

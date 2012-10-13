@@ -46,23 +46,47 @@
 #define GTAGS_CREATE	1
 #define GTAGS_MODIFY	2
 
-/* gtags_open() */
-#define GTAGS_COMPACT		1	/* compact option */
-#define GTAGS_COMPRESS		2	/* compression option */
-#define GTAGS_COMPLINE		4	/* compression option for line number */
-#define GTAGS_COMPNAME		8	/* compression option for line number */
-#define GTAGS_EXTRACTMETHOD	16	/* extract method from class definition */
-#define GTAGS_DEBUG		65536	/* print information for debug */
-/* gtags_first() */
-#define GTOP_KEY		1	/* read key part */
-#define GTOP_PATH		2	/* read path part */
-#define GTOP_PREFIX		4	/* prefixed read */
-#define GTOP_NOREGEX		8	/* don't use regular expression */
-#define GTOP_IGNORECASE		16	/* ignore case distinction */
-#define GTOP_BASICREGEX		32	/* use basic regular expression */
-#define GTOP_NOSORT		64	/* don't sort */
+/**
+ * @name 
+ * Defines for gtags_open()
+*/
+/** @{ */
+			/** compact option */
+#define GTAGS_COMPACT		1
+			/** compression option */
+#define GTAGS_COMPRESS		2
+			/** compression option for line number */
+#define GTAGS_COMPLINE		4
+			/** compression option for line number */
+#define GTAGS_COMPNAME		8
+			/** extract method from class definition */
+#define GTAGS_EXTRACTMETHOD	16
+			/** print information for debug */
+#define GTAGS_DEBUG		65536
+/** @} */
 
-/*
+/**
+ * @name 
+ * Defines for gtags_first()
+*/
+/** @{ */
+			/** read key part */
+#define GTOP_KEY		1
+			/** read path part */
+#define GTOP_PATH		2
+			/** prefixed read */
+#define GTOP_PREFIX		4
+			/** don't use regular expression */
+#define GTOP_NOREGEX		8
+			/** ignore case distinction */
+#define GTOP_IGNORECASE		16
+			/** use basic regular expression */
+#define GTOP_BASICREGEX		32
+			/** don't sort */
+#define GTOP_NOSORT		64
+/** @} */
+
+/**
  * This entry corresponds to one raw record.
  */
 typedef struct {
@@ -73,37 +97,47 @@ typedef struct {
 } GTP;
 
 typedef struct {
-	DBOP *dbop;			/* descripter of DBOP */
-	DBOP *gtags;			/* descripter of GTAGS */
-	int format_version;		/* format version */
-	int format;			/* GTAGS_COMPACT, GTAGS_COMPRESS */
-	int mode;			/* mode */
-	int db;				/* 0:GTAGS, 1:GRTAGS, 2:GSYMS */
-	int openflags;			/* flags value of gtags_open() */
-	int flags;			/* flags */
-	char root[MAXPATHLEN];	/* root directory of source tree */
-	/*
-	 * Stuff for GTOP_PATH.
+	DBOP *dbop;			/**< descripter of #DBOP */
+	DBOP *gtags;			/**< descripter of #GTAGS */
+	int format_version;		/**< format version */
+	int format;			/**< #GTAGS_COMPACT, #GTAGS_COMPRESS */
+	int mode;			/**< mode */
+	int db;				/**< 0:#GTAGS, 1:#GRTAGS, 2:#GSYMS */
+	int openflags;			/**< flags value of gtags_open() */
+	int flags;			/**< flags */
+	char root[MAXPATHLEN];	/**< root directory of source tree */
+
+	/**
+	 * Stuff for #GTOP_PATH.
 	 */
-	int path_count;
-	int path_index;
-	char **path_array;
-	/*
+	/** @{ */
+	int path_count;		/**< */
+	int path_index;		/**< */
+	char **path_array;	/**< */
+	/** @} */
+
+	/**
 	 * Stuff for segment_read().
 	 */
-	int gtp_count;
-	int gtp_index;
-	GTP *gtp_array;
-	GTP gtp;
-	POOL *segment_pool;
-	VARRAY *vb;
-	char cur_tagname[IDENTLEN];	/* current tag name */
-	/*
+	/** @{ */
+	int gtp_count;		/**< */
+	int gtp_index;		/**< */
+	GTP *gtp_array;		/**< */
+	GTP gtp;			/**< */
+	POOL *segment_pool;	/**< */
+	VARRAY *vb;			/**< */
+	char cur_tagname[IDENTLEN];	/**< current tag name */
+	/** @} */
+
+	/**
 	 * Stuff for compact format
 	 */
-	char cur_path[MAXPATHLEN];	/* current path */
-	STRBUF *sb;			/* string buffer */
-	/* used for compact format and path name only read */
+	/** @{ */
+	char cur_path[MAXPATHLEN];	/**< current path */
+	STRBUF *sb;			/**< string buffer */
+	/** @} */
+
+	/** used for compact format and path name only read */
 	STRHASH *path_hash;
 } GTOP;
 

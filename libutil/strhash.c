@@ -30,10 +30,11 @@
 #include "hash-string.h"
 #include "pool.h"
 
-/*
+/** @file
 
 String Hash (associative array): usage and memory status
 
+@code
 hash = strhash_open(10);			// allocate hash buckets.
 
 entry = strhash_assign(hash, "name1", 0);	// get entry for the name.
@@ -68,17 +69,17 @@ char *s = (char *)entry->value;
 
 strhash_close(hash);				// free resources.
 						entry
-
+@endcode
 */
 
 #define obstack_chunk_alloc check_malloc
 #define obstack_chunk_free free
 
-/*
+/**
  * strhash_open: open string hash table.
  *
- *	i)	buckets	 size of bucket table
- *	r)	sh	STRHASH structure
+ *	@param[in]	buckets	 size of bucket table
+ *	@return	sh	#STRHASH structure
  */
 STRHASH *
 strhash_open(int buckets)
@@ -94,17 +95,17 @@ strhash_open(int buckets)
 	sh->entries = 0;
 	return sh;
 }
-/*
+/**
  * strhash_assign: assign hash entry.
  *
- *	i)	sh	STRHASH structure
- *	i)	name	name
- *	i)	force	if entry not found, create it.
- *	r)		pointer of the entry
+ *	@param[in]	sh	#STRHASH structure
+ *	@param[in]	name	name
+ *	@param[in]	force	if entry not found, create it.
+ *	@return		pointer of the entry
  *
- * If specified entry is found then it is returned, else if the force == 1
- * then new allocated entry is returned.
- * This procedure doesn't operate the contents of entry->value.
+ * If specified entry is found then it is returned, else if the @CODE{force == 1}
+ * then new allocated entry is returned. <br>
+ * This procedure doesn't operate the contents of @CODE{entry->value}.
  */
 struct sh_entry *
 strhash_assign(STRHASH *sh, const char *name, int force)
@@ -130,13 +131,13 @@ strhash_assign(STRHASH *sh, const char *name, int force)
 	}
 	return entry;
 }
-/*
+/**
  * strhash_strdup: allocate memory and copy string.
  *
- *	i)	sh	STRHASH structure
- *	i)	string	string
- *	i)	size	size of string
- *	r)		allocated string
+ *	@param[in]	sh	#STRHASH structure
+ *	@param[in]	string	string
+ *	@param[in]	size	size of string
+ *	@return		allocated string
  *
  */
 char *
@@ -144,10 +145,10 @@ strhash_strdup(STRHASH *sh, const char *string, int size)
 {
 	return pool_strdup(sh->pool, string, size);
 }
-/*
+/**
  * strhash_first: get first entry
  *
- *	i)	sh	STRHASH structure
+ *	@param[in]	sh	#STRHASH structure
  */
 struct sh_entry *
 strhash_first(STRHASH *sh)
@@ -156,10 +157,10 @@ strhash_first(STRHASH *sh)
 	sh->cur_entry = NULL;
 	return strhash_next(sh);
 }
-/*
+/**
  * strhash_next: get next entry
  *
- *	i)	sh	STRHASH structure
+ *	@param[in]	sh	#STRHASH structure
  */
 struct sh_entry *
 strhash_next(STRHASH *sh)
@@ -179,10 +180,10 @@ strhash_next(STRHASH *sh)
 	}
 	return entry;
 }
-/*
+/**
  * strhash_reset: reset string hash.
  *
- *	i)	sh	STRHASH structure
+ *	@param[in]	sh	#STRHASH structure
  */
 void
 strhash_reset(STRHASH *sh)
@@ -201,10 +202,10 @@ strhash_reset(STRHASH *sh)
 	pool_reset(sh->pool);
 	sh->entries = 0;
 }
-/*
+/**
  * strhash_close: close hash array.
  *
- *	i)	sh	STRHASH structure
+ *	@param[in]	sh	#STRHASH structure
  */
 void
 strhash_close(STRHASH *sh)

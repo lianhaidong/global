@@ -46,51 +46,60 @@ static int _mode;
 static int opened;
 static int created;
 
-/*
- * GPATH format version
+/**
+ * @file
+ * @NAME{GPATH} format version
  *
- * 1. Gtags(1) bury version number in GPATH.
- * 2. Global(1) pick up the version number from GPATH. If the number
- *    is not acceptable version number then global give up work any more
- *    and display error message.
- * 3. If version number is not found then it assumes version 1.
- * 4. GPATH version is independent with the other tag files.
+ * -# @XREF{gtags,1} bury version number in #GPATH.
+ * -# @XREF{global,1} pick up the version number from #GPATH. If the number
+ *    is not acceptable version number then @NAME{global} give up work any more
+ *    and display error message. <br>
+ * -# If version number is not found then it assumes version 1.
+ * -# @NAME{GPATH} version is independent with the other tag files.
  *
- * [History of format version]
+ * @par [History of format version]
  *
- * GLOBAL-4.8.7		no idea about format version.
- * GLOBAL-5.0		understand format version.
+ * @NAME{GLOBAL-4.8.7}		no idea about format version. <br>
+ * @NAME{GLOBAL-5.0}		understand format version. <br>
  *			support format version 2.
  *
  * - Format version 1
+ * @par
  *
- * GPATH has only source files.
+ * #GPATH has only source files.
  *
+ * @par
+ * @code{.txt}
  *      key             data
  *      --------------------
  *      ./aaa.c\0       11\0
+ * @endcode
  *
  * - Format version 2
+ * @par
  *
- * GPATH has not only source files but also other files like README.
+ * #GPATH has not only source files but also other files like @FILE{README}.
  * You can distinguish them by the flag following data value.
- * At present, the flag value is only 'o'(other files).
+ * At present, the flag value is only @CODE{'o'} (other files).
  *
+ * @par
+ * @code{.txt}
  *      key             data
  *      --------------------
  *      ./aaa.c\0       11\0
  *      ./README\0      12\0o\0         <=== 'o' means other files.
+ * @endcode
  */
-static int support_version = 2;	/* acceptable format version   */
-static int create_version = 2;	/* format version of newly created tag file */
-/*
+static int support_version = 2;	/**< acceptable format version   */
+static int create_version = 2;	/**< format version of newly created tag file */
+/**
  * gpath_open: open gpath tag file
  *
- *	i)	dbpath	GTAGSDBPATH
- *	i)	mode	0: read only
- *			1: create
+ *	@param[in]	dbpath	@VAR{GTAGSDBPATH}
+ *	@param[in]	mode	0: read only <br>
+ *			1: create <br>
  *			2: modify
- *	r)		0: normal
+ *	@return		0: normal <br>
  *			-1: error
  */
 int
@@ -131,13 +140,13 @@ gpath_open(const char *dbpath, int mode)
 	opened++;
 	return 0;
 }
-/*
+/**
  * gpath_put: put path name
  *
- *	i)	path	path name
- *	i)	type	path type
- *			GPATH_SOURCE: source file
- *			GPATH_OTHER: other file
+ *	@param[in]	path	path name
+ *	@param[in]	type	path type <br>
+ *			#GPATH_SOURCE: source file <br>
+ *			#GPATH_OTHER: other file
  */
 void
 gpath_put(const char *path, int type)
@@ -171,14 +180,14 @@ gpath_put(const char *path, int type)
 		strbuf_puts0(sb, "o");
 	dbop_put_withlen(dbop, fid, strbuf_value(sb), strbuf_getlen(sb));
 }
-/*
+/**
  * gpath_path2fid: convert path into id
  *
- *	i)	path	path name
- *	o)	type	path type
- *			GPATH_SOURCE: source file
- *			GPATH_OTHER: other file
- *	r)		file id
+ *	@param[in]	path	path name
+ *	@param[out]	type	path type <br>
+ *			#GPATH_SOURCE: source file <br>
+ *			#GPATH_OTHER: other file
+ *	@return		file id
  */
 const char *
 gpath_path2fid(const char *path, int *type)
@@ -192,14 +201,14 @@ gpath_path2fid(const char *path, int *type)
 	}
 	return fid;
 }
-/*
+/**
  * gpath_fid2path: convert id into path
  *
- *	i)	fid	file id
- *	o)	type	path type
- *			GPATH_SOURCE: source file
- *			GPATH_OTHER: other file
- *	r)		path name
+ *	@param[in]	fid	file id
+ *	@param[out]	type	path type <br>
+ *			#GPATH_SOURCE: source file <br>
+ *			#GPATH_OTHER: other file
+ *	@return		path name
  */
 const char *
 gpath_fid2path(const char *fid, int *type)
@@ -212,10 +221,10 @@ gpath_fid2path(const char *fid, int *type)
 	}
 	return path;
 }
-/*
+/**
  * gpath_delete: delete specified path record
  *
- *	i)	path	path name
+ *	@param[in]	path	path name
  */
 void
 gpath_delete(const char *path)
@@ -231,10 +240,10 @@ gpath_delete(const char *path)
 	dbop_delete(dbop, fid);
 	dbop_delete(dbop, path);
 }
-/*
+/**
  * gpath_nextkey: return next key
  *
- *	r)		next id
+ *	@return		next id
  */
 int
 gpath_nextkey(void)
@@ -242,7 +251,7 @@ gpath_nextkey(void)
 	assert(_mode != 1);
 	return _nextkey;
 }
-/*
+/**
  * gpath_close: close gpath tag file
  */
 void
@@ -266,24 +275,27 @@ gpath_close(void)
 		created = 1;
 }
 
-/*
- * gfind iterator using GPATH.
+/**
+ * @fn GFIND *gfind_open(const char *dbpath, const char *local, int target)
  *
- * gfind_xxx() does almost same with find_xxx() but much faster,
- * because gfind_xxx() use GPATH (file index).
- * If GPATH exist then you should use this.
+ * @remark gfind iterator using #GPATH.
+ *
+ * @par
+ * @NAME{gfind_xxx()} does almost same with @NAME{find_xxx()} but much faster,
+ * because @NAME{gfind_xxx()} use #GPATH (file index). <br>
+ * If #GPATH exist then you should use this.
  */
 
-/*
- * gfind_open: start iterator using GPATH.
+/**
+ * gfind_open: start iterator using #GPATH.
  *
- *	i)	dbpath	dbpath
- *	i)	local	local prefix
- *			if NULL specified, it assumes "./";
- *	i)	target	GPATH_SOURCE: only source file
- *			GPATH_OTHER: only other file
- *			GPATH_BOTH: source file + other file
- *	r)		GFIND structure
+ *	@param[in]	dbpath  dbpath
+ *	@param[in]	local   local prefix <br>
+ *			if @VAR{NULL} specified, it assumes @FILE{./};
+ *	@param[in]      target  #GPATH_SOURCE: only source file <br>
+ *			#GPATH_OTHER: only other file <br>
+ *			#GPATH_BOTH: source file + other file
+ *	@return		#GFIND structure
  */
 GFIND *
 gfind_open(const char *dbpath, const char *local, int target)
@@ -306,11 +318,11 @@ gfind_open(const char *dbpath, const char *local, int target)
 		die("GPATH seems older format. Please remake tag files."); 
 	return gfind;
 }
-/*
- * gfind_read: read path using GPATH.
+/**
+ * gfind_read: read path using #GPATH.
  *
- *	i)	gfind	GFIND structure
- *	r)		path
+ *	@param[in]	gfind	#GFIND structure
+ *	@return		path
  */
 const char *
 gfind_read(GFIND *gfind)
@@ -342,7 +354,7 @@ gfind_read(GFIND *gfind)
 	}
 	return gfind->path;
 }
-/*
+/**
  * gfind_close: close iterator.
  */
 void

@@ -43,6 +43,11 @@
 #include "regex.h"
 #include "const.h"
 
+/**
+ @file
+ @NAME{gozilla} - force @NAME{mozilla} browser to display specified part of a source file.
+*/
+
 static void usage(void);
 static void help(void);
 
@@ -91,14 +96,16 @@ help(void)
 	exit(0);
 }
 
-/*
+/**
  * load_alias: load alias value.
  *
+ * @code{.txt}
  * [$HOME/.gozillarc]
  * +-----------------------
  * |a:http://www.gnu.org
  * |f = file:/usr/share/xxx.html
  * |www	http://www.xxx.yyy/
+ * @endcode
  */
 static void
 load_alias(void)
@@ -150,11 +157,11 @@ load_alias(void)
 end:
 	strbuf_close(sb);
 }
-/*
+/**
  * alias: get alias value.
  *
- *	i)	alias_name	alias name
- *	r)			its value
+ *	@param[in]	alias_name	alias name
+ *	@return			its value
  */
 static const char *
 alias(const char *alias_name)
@@ -163,10 +170,10 @@ alias(const char *alias_name)
 	return ent ? ent->value : NULL;
 }
 
-/*
- * locate_HTMLdir: locate HTML directory made by htags(1).
+/**
+ * locate_HTMLdir: locate HTML directory made by @XREF{htags,1}.
  *
- *	r)		HTML directory
+ *	@return		HTML directory
  */
 static const char *
 locate_HTMLdir(void)
@@ -336,12 +343,12 @@ main(int argc, char **argv)
 	exit(0);
 }
 
-/*
+/**
  * getdefinitionURL: get URL includes specified definition.
  *
- *	i)	arg	definition name
- *	i)	htmldir HTML directory
- *	o)	URL	URL begin with 'file:'
+ *	@param[in]	arg	definition name
+ *	@param[in]	htmldir HTML directory
+ *	@param[out]	URL	URL begin with @CODE{'file:'}
  */
 void
 getdefinitionURL(const char *arg, const char *htmldir, STRBUF *URL)
@@ -377,12 +384,12 @@ getdefinitionURL(const char *arg, const char *htmldir, STRBUF *URL)
 	recover(&ptable);
 	strbuf_close(sb);
 }
-/*
- * getURL: get URL of the specified file.
+/**
+ * getURL: get URL of the specified @a file.
  *
- *	i)	file	file name
- *	i)	htmldir HTML directory
- *	o)	URL	URL begin with 'file:'
+ *	@param[in]	file	file name
+ *	@param[in]	htmldir HTML directory
+ *	@param[out]	URL	URL begin with @CODE{'file:'}
  */
 void
 getURL(const char *file, const char *htmldir, STRBUF *URL)
@@ -400,11 +407,11 @@ getURL(const char *file, const char *htmldir, STRBUF *URL)
 		makefileurl(realpath(file, buf), 0, URL);
 	strbuf_close(sb);
 }
-/*
- * isprotocol: return 1 if url has a procotol.
+/**
+ * isprotocol: return 1 if @a url has a procotol.
  *
- *	i)	url	URL
- *	r)		1: protocol, 0: file
+ *	@param[in]	url	URL
+ *	@return		1: protocol, 0: file
  */
 int
 isprotocol(const char *url)
@@ -425,14 +432,14 @@ isprotocol(const char *url)
 		return 1;
 	return 0;
 }
-/*
+/**
  * convertpath: convert source file into hypertext path.
  *
- *	i)	dbpath	dbpath
- *	i)	htmldir	HTML directory made by htags(1)
- *	i)	path	source file path
- *	o)	sb	string buffer
- *	r)		0: normal, -1: error
+ *	@param[in]	dbpath	dbpath
+ *	@param[in]	htmldir	HTML directory made by @XREF{htags,1}
+ *	@param[in]	path	source file path
+ *	@param[out]	sb	string buffer
+ *	@return		0: normal, -1: error
  */
 int
 convertpath(const char *dbpath, const char *htmldir, const char *path, STRBUF *sb)
@@ -487,17 +494,23 @@ convertpath(const char *dbpath, const char *htmldir, const char *path, STRBUF *s
 	}
 	return -1;
 }
-/*
- * makefileurl: make url which start with 'file:'.
+/**
+ * makefileurl: make url which start with @CODE{'file:'}.
  *
- *	i)	path	path name (absolute)
- *	i)	line	!=0: line number
- *	o)	url	URL
+ *	@param[in]	path	path name (absolute)
+ *	@param[in]	line	!=0: line number
+ *	@param[out]	url	URL
  *
+ * @par Examples:
+ * @code
  * makefileurl('/dir/a.html', 10)   => 'file:///dir/a.html#L10'
+ * @endcode
  *
+ * @par
  * (Windows32 environment)
+ * @code
  * makefileurl('c:/dir/a.html', 10) => 'file://c|/dir/a.html#L10'
+ * @endcode
  */
 void
 makefileurl(const char *path, int line, STRBUF *url)
@@ -519,11 +532,11 @@ makefileurl(const char *path, int line, STRBUF *url)
 		strbuf_putn(url, line);
 	}
 }
-/*
- * show_page_by_url: show page by url
+/**
+ * show_page_by_url: show page by @a url
  *
- *	i)	browser browser name
- *	i)	url	URL
+ *	@param[in]	browser browser name
+ *	@param[in]	url	URL
  */
 #if defined(_WIN32)
 /* Windows32 version */

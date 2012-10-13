@@ -35,25 +35,29 @@
 #include "varray.h"
 #include "strbuf.h"
 
-/* File buffer */
+/** @name File buffer */
+/** @{ */
 #define EXPAND 1024
 static STRBUF *ib;
 static char *filebuf;
 static int filesize;
+/** @} */
 
-/* File pointer */
+/** @name File pointer */
+/** @{ */
 static char *curp;
 static char *endp;
+/** @} */
 
-/* Offset table */
+/** Offset table */
 static VARRAY *vb;
 
 static void linetable_put(int, int);
-/*
+/**
  * linetable_open: load whole of file into memory.
  *
- *	i)	path	path
- *	r)		0: normal
+ *	@param[in]	path	path
+ *	@return		0: normal <br>
  *			-1: cannot open file.
  */
 int
@@ -85,12 +89,12 @@ linetable_open(const char *path)
 
 	return 0;
 }
-/*
- * linetable_read: read(2) compatible routine for linetable.
+/**
+ * linetable_read: @XREF{read,2} compatible routine for linetable.
  *
- *	io)	buf	read buffer
- *	i)	size	buffer size
- *	r)		==-1: end of file
+ *	@param[in,out]	buf	read buffer
+ *	@param[in]	size	buffer size
+ *	@return		==-1: end of file <br>
  *			!=-1: number of bytes actually read
  */
 int
@@ -107,11 +111,11 @@ linetable_read(char *buf, int size)
 
 	return size;
 }
-/*
+/**
  * linetable_put: put a line into table.
  *
- *	i)	offset	offset of the line
- *	i)	lineno	line number of the line (>= 1)
+ *	@param[in]	offset	offset of the line
+ *	@param[in]	lineno	line number of the line (\>= 1)
  */
 void
 linetable_put(int offset, int lineno)
@@ -123,13 +127,13 @@ linetable_put(int offset, int lineno)
 	entry = varray_assign(vb, lineno - 1, 1);
 	*entry = offset;
 }
-/*
+/**
  * linetable_get: get a line from table.
  *
- *	i)	lineno	line number of the line (>= 1)
- *	o)	offset	offset of the line
- *			if offset == NULL, nothing returned.
- *	r)		line pointer
+ *	@param[in]	lineno	line number of the line (\>= 1)
+ *	@param[out]	offset	offset of the line <br>
+ *			if @CODE{offset == NULL}, nothing returned.
+ *	@return		line pointer
  */
 char *
 linetable_get(int lineno, int *offset)
@@ -143,7 +147,7 @@ linetable_get(int lineno, int *offset)
 		*offset = addr;
 	return filebuf + addr;
 }
-/*
+/**
  * linetable_close: close line table.
  */
 void
@@ -152,11 +156,11 @@ linetable_close(void)
 	varray_close(vb);
 	strbuf_close(ib);
 }
-/*
+/**
  * linetable_print: print a line.
  *
- *	i)	op	output file pointer
- *	i)	lineno	line number (>= 1)
+ *	@param[in]	op	output file pointer
+ *	@param[in]	lineno	line number (\>= 1)
  */
 void
 linetable_print(FILE *op, int lineno)

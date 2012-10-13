@@ -30,9 +30,10 @@
  DAMAGE. 
  =========================================================================*/
 
-/*	cscope - interactive C symbol or text cross-reference
- *
+/**	@file
  *	command functions
+ *
+ *	@NAME{gtags-cscope} - interactive C symbol or text cross-reference (@NAME{cscope})
  */
 
 #include "global-cscope.h"
@@ -55,13 +56,13 @@ static char const rcsid[] = "$Id$";
 int	selecting;
 unsigned int   curdispline = 0;
 
-BOOL	caseless;		/* ignore letter case when searching */
-BOOL	*change;		/* change this line */
-BOOL	changing;		/* changing text */
-char	newpat[PATLEN + 1];	/* new pattern */
+BOOL	caseless;		/**< ignore letter case when searching */
+BOOL	*change;		/**< change this line */
+BOOL	changing;		/**< changing text */
+char	newpat[PATLEN + 1];	/**< new pattern */
 /* HBB 20040430: renamed to avoid lots of clashes with function arguments
  * also named 'pattern' */
-char	Pattern[PATLEN + 1];	/* symbol or text pattern */
+char	Pattern[PATLEN + 1];	/**< symbol or text pattern */
 
 /* HBB FIXME 20060419: these should almost certainly be const */
 static	char	appendprompt[] = "Append to file: ";
@@ -80,7 +81,7 @@ static	void	mark(unsigned int i);
 static	void	scrollbar(MOUSE *p);
 
 
-/* execute the command */
+/** execute the command */
 BOOL
 command(int commandc)
 {
@@ -583,7 +584,7 @@ cscope: cannot open pipe to shell command: %s\n", newpat);
     return(YES);
 }
 
-/* clear the prompt line */
+/** clear the prompt line */
 
 static void
 clearprompt(void)
@@ -592,7 +593,7 @@ clearprompt(void)
 	clrtoeol();
 }
 
-/* read references from a file */
+/** read references from a file */
 
 BOOL
 readrefs(char *filename)
@@ -626,7 +627,7 @@ readrefs(char *filename)
 	return(YES);
 }
 
-/* change one text string to another */
+/** change one text string to another */
 
 static BOOL
 changestring(void)
@@ -833,7 +834,7 @@ changestring(void)
 }
 
 
-/* mark/unmark this displayed line to be changed */
+/** mark/unmark this displayed line to be changed */
 static void
 mark(unsigned int i)
 {
@@ -854,7 +855,7 @@ mark(unsigned int i)
 }
 
 
-/* scrollbar actions */
+/** scrollbar actions */
 static void
 scrollbar(MOUSE *p)
 {
@@ -893,7 +894,7 @@ scrollbar(MOUSE *p)
 }
 
 
-/* count the references found */
+/** count the references found */
 void
 countrefs(void)
 {

@@ -27,25 +27,27 @@
 
 #define NEXTKEY		" __.NEXTKEY"
 
-/*
- * File type
+/**
+ * @name File type
  */
+/** @{ */
 #define GPATH_SOURCE	1
 #define GPATH_OTHER	2
 #define GPATH_BOTH	3
+/** @} */
 
 typedef struct {
-	/* set by gfind_open() */
+	/** set by gfind_open() */
 	DBOP *dbop;
 	const char *prefix;
 	int target;
 	int version;
-	/* set by gfind_open() and gfind_read() */
+	/** set by gfind_open() and gfind_read() */
 	int first;
-	int eod;		/* end of data */
+	int eod;		/**< end of data */
 	/* set by gfind_read() */
-	int type;		/* File type */
-	const char *path;	/* return value of gfind_read() */
+	int type;		/**< File type; set by gfind_read() */
+	const char *path;	/**< return value of gfind_read() */
 } GFIND;
 
 int gpath_open(const char *, int);

@@ -36,10 +36,10 @@
 static ASSOC *assoc;
 static int nextkey;
 
-/*
+/**
  * load_gpath: load gpath tag file.
  *
- * load the contents of GPATH file into the memory.
+ * load the contents of @NAME{GPATH} file into the memory.
  */
 void
 load_gpath(const char *dbpath)
@@ -64,21 +64,21 @@ load_gpath(const char *dbpath)
 	}
 	dbop_close(dbop);
 }
-/*
- * unload_gpath: load gpath tag file.
+/**
+ * unload_gpath: unload gpath tag file.
  *
- * load the contents of GPATH file into the memory.
+ * unload the contents of @NAME{GPATH} file from memory.
  */
 void
 unload_gpath(void)
 {
 	assoc_close(assoc);
 }
-/*
+/**
  * path2fid: convert the path name into the file id.
  *
- *	i)	path	path name
- *	r)		id
+ *	@param[in]	path	path name
+ *	@return		id
  */
 const char *
 path2fid(const char *path)
@@ -101,11 +101,11 @@ path2fid(const char *path)
 	}
 	return p;
 }
-/*
+/**
  * path2fid_readonly: convert the path name into the file id.
  *
- *	i)	path	path name
- *	r)		id
+ *	@param[in]	path	path name
+ *	@return		id
  */
 const char *
 path2fid_readonly(const char *path)

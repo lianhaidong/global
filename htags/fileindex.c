@@ -45,10 +45,10 @@ static const char *getpath(void);
 static void ungetpath(void);
 static GFIND *gp;
 static int retry;
-/*
+/**
  * get a path from input stream.
  *
- * Each path name must start with "./".
+ * @note Each path name must start with @CODE{"./"}.
  */
 static const char *
 getpath(void)
@@ -64,7 +64,7 @@ getpath(void)
 	retry = 0;
 	return buff;
 }
-/*
+/**
  * push back a path name.
  */
 static void
@@ -82,12 +82,12 @@ static const char *localpath(const char *, char *);
 static const char *appendslash(const char *);
 static const char *insert_comma(unsigned int);
 
-/*
+/**
  * extract_lastname: extract the last name of include line.
  *
- *	i)	image	source image of include
- *	i)	is_php	1: is PHP source
- *	r)		last name
+ *	@param[in]	image	source image of include
+ *	@param[in]	is_php	1: is @NAME{PHP} source
+ *	@return		last name or @VAR{NULL} on error.
  */
 static const char *
 extract_lastname(const char *image, int is_php)
@@ -169,14 +169,17 @@ extract_lastname(const char *image, int is_php)
 	}
 	return NULL;
 }
-/*
- * get the last part of the path.
+/**
+ * get the last part of the @a path.
  *
- *	i)	path	path name
- *	r)		last part
- * Ex.
+ *	@param[in]	path	path name
+ *	@return		last part
+ *
+ * @par Examples:
+ * @code
  * lastpart("a/b")	=> "b"
  * lastpart("a")	=> "a"
+ * @endcode
  */
 static const char *
 lastpart(const char *path)
@@ -185,14 +188,17 @@ lastpart(const char *path)
 
 	return p ? p + 1 : path;
 }
-/*
- * get the directory part of the path.
+/**
+ * get the directory part of the @a path.
  *
- *	i)	path	path name
- *	o)	result	result buffer
- *	r)		directory part
- * Ex.
+ *	@param[in]	path	path name
+ *	@param[out]	result	result buffer
+ *	@return		directory part
+ *
+ * @par Examples:
+ * @code
  * dirpart("a/b/c")	=> "a/b"
+ * @endcode
  */
 static const char *
 dirpart(const char *path, char *result)
@@ -205,17 +211,19 @@ dirpart(const char *path, char *result)
 	*p = '\0';
 	return result;
 }
-/*
- * get the local path name if the path is under the dir.
+/**
+ * get the local path name if the path is under the @a dir.
  *
- *	i)	path	path name
- *	i)	dir	directory name
- *	r)		local path name
+ *	@param[in]	path	path name
+ *	@param[in]	dir	directory name
+ *	@return		local path name or @VAR{NULL}
  *
- * Ex.
+ * @par Examples:
+ * @code
  * localpath("a/b/c", "a/b")	=> "c"
  * localpath("a/b/c/d", "a/b")	=> "c/d"
  * localpath("a/b/c", "a/d")	=> NULL
+ * @endcode
  */
 static const char *
 localpath(const char *path, char *dir)
@@ -226,14 +234,18 @@ localpath(const char *path, char *dir)
 		return path + length + 1;
 	return NULL;
 }
-/*
- * append '/' after the path name
+/**
+ * append @CODE{'/'} after the path name
  *
- *	i)	path	path name
- *	r)		appended path name
+ *	@param[in]	path	path name
+ *	@return		appended path name
  *
- * Ex.
+ *	@note Doesn't check if ends with a @CODE{'/'} already.
+ *
+ * @par Examples:
+ * @code
  * appendslash("a")	=> "a/"
+ * @endcode
  */
 static const char *
 appendslash(const char *path)
@@ -245,28 +257,32 @@ appendslash(const char *path)
 	strbuf_putc(sb, '/');
 	return strbuf_value(sb);
 }
-/*
- * remove './' at the head of the path name
+/**
+ * remove @CODE{"./"} at the head of the path name
  *
- *	i)	path	path name
- *	r)		removed path name
+ *	@param[in]	path	path name
+ *	@return		removed path name
  *
- * Ex.
+ * @par Examples:
+ * @code
  * removedotslash("./a") => "a"
+ * @endcode
  */
 static const char *
 removedotslash(const char *path)
 {
 	return (*path == '.' && *(path + 1) == '/') ? path + 2 : path;
 }
-/*
+/**
  * insert_comma: insert comma to the number.
  *
- *	i)	n	number
- *	r)		edited string
+ *	@param[in]	n	number
+ *	@return		edited string
  *
- * Ex.
+ * @par Examples:
+ * @code
  * 10000 => 10,000
+ * @endcode
  */
 static const char *
 insert_comma(unsigned int n)
@@ -313,16 +329,18 @@ const char *indexlink;
 regex_t is_include_file;
 int src_count;
 
-/*
- * print contents of one directory and the descendant. (recursively called)
+/**
+ * @fn static int print_directory(int level, char *basedir)
  *
- *	i)	level	directory nest level
- *	io)	basedir	current directory
+ * print contents of one directory and the descendant. (@STRONG{recursively called})
+ *
+ *	@param[in]	level	directory nest level
+ *	@param[in,out]	basedir	current directory
  *
  * This function read find style records, and print directory tree.
  */
-/*
- * File list of the top level directory (when level == 0) is not written
+/**
+ * File list of the top level directory (when @CODE{level == 0}) is not written
  * to a file directly. Instead, it is written to string buffer, because
  * it appears in some places.
  */
@@ -454,12 +472,12 @@ print_directory(int level, char *basedir)
 	html_count++;
 	return count;
 }
-/*
+/**
  * print directory header.
  *
- *	i)	op	file index
- *	i)	level	1,2...
- *	i)	dir	directory name
+ *	@param[in]	op	file index
+ *	@param[in]	level	1,2...
+ *	@param[in]	dir	directory name
  */
 static void
 print_directory_header(FILE *op, int level, const char *dir)
@@ -530,12 +548,12 @@ print_directory_header(FILE *op, int level, const char *dir)
 		fputs_nl(br, op);
 	}
 }
-/*
+/**
  * print directory footer.
  *
- *	i)	op	file index
- *	i)	level	1,2...
- *	i)	dir	directory name
+ *	@param[in]	op	file index
+ *	@param[in]	level	1,2...
+ *	@param[in]	dir	directory name
  */
 static void
 print_directory_footer(FILE *op, int level, const char *dir)
@@ -569,11 +587,11 @@ print_directory_footer(FILE *op, int level, const char *dir)
 	fputs_nl(body_end, op);
 	fputs_nl(gen_page_end(), op);
 }
-/*
+/**
  * print file name.
  *
- *	i)	level	0,1,2...
- *	i)	path	path of the file
+ *	@param[in]	level	0,1,2...
+ *	@param[in]	path	path of the file
  */
 static const char *
 print_file_name(int level, const char *path)
@@ -629,12 +647,12 @@ print_file_name(int level, const char *path)
 	strbuf_putc(sb, '\n');
 	return (const char *)strbuf_value(sb);
 }
-/*
+/**
  * print directory name.
  *
- *	i)	level	0,1,2...
- *	i)	path	path of the directory
- *	i)	count	number of files in this directory
+ *	@param[in]	level	0,1,2...
+ *	@param[in]	path	path of the directory
+ *	@param[in]	count	number of files in this directory
  */
 static const char *
 print_directory_name(int level, const char *path, int count)
@@ -668,11 +686,11 @@ print_directory_name(int level, const char *path, int count)
 	strbuf_putc(sb, '\n');
 	return (const char *)strbuf_value(sb);
 }
-/*
+/**
  * makefileindex: make file index.
  *
- *	i)	file		output file name
- *	o)	files		top level file index
+ *	@param[in]	file		output file name
+ *	@param[out]	a_files		top level file index
  */
 int
 makefileindex(const char *file, STRBUF *a_files)

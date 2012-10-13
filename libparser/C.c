@@ -50,21 +50,22 @@ static int enumerator_list(const struct parser_param *);
 #define TYPE_C		0
 #define TYPE_LEX	1
 #define TYPE_YACC	2
-/*
- * #ifdef stack.
- */
+
 #define MAXPIFSTACK	100
 
+/**
+ * @name #ifdef stack.
+ */
 static struct {
-	short start;		/* level when #if block started */
-	short end;		/* level when #if block end */
-	short if0only;		/* #if 0 or notdef only */
+	short start;		/**< level when @CODE{\#if} block started */
+	short end;		/**< level when @CODE{\#if} block end */
+	short if0only;		/**< @CODE{\#if 0} or notdef only */
 } stack[MAXPIFSTACK], *cur;
-static int piflevel;		/* condition macro level */
-static int level;		/* brace level */
-static int externclevel;	/* extern "C" block level */
+static int piflevel;		/**< condition macro level */
+static int level;		/**< brace level */
+static int externclevel;	/**< @CODE{extern "C"} block level */
 
-/*
+/**
  * yacc: read yacc file and pickup tag entries.
  */
 void
@@ -72,7 +73,7 @@ yacc(const struct parser_param *param)
 {
 	C_family(param, TYPE_YACC);
 }
-/*
+/**
  * C: read C file and pickup tag entries.
  */
 void
@@ -80,9 +81,9 @@ C(const struct parser_param *param)
 {
 	C_family(param, TYPE_C);
 }
-/*
- *	i)	file	source file
- *	i)	type	TYPE_C, TYPE_YACC, TYPE_LEX
+/**
+ *	@param[in]	param	source file
+ *	@param[in]	type	#TYPE_C, #TYPE_YACC, #TYPE_LEX
  */
 static void
 C_family(const struct parser_param *param, int type)
@@ -472,8 +473,8 @@ C_family(const struct parser_param *param, int type)
 	}
 	closetoken();
 }
-/*
- * process_attribute: skip attributes in __attribute__((...)).
+/**
+ * process_attribute: skip attributes in @CODE{__attribute__((...))}.
  */
 static void
 process_attribute(const struct parser_param *param)
@@ -496,11 +497,12 @@ process_attribute(const struct parser_param *param)
 			break;
 	}
 }
-/*
+/**
  * function_definition: return if function definition or not.
  *
- *	o)	arg1	the first argument
- *	r)	target type
+ *	@param	param	
+ *	@param[out]	arg1	the first argument
+ *	@return	target type
  */
 static int
 function_definition(const struct parser_param *param, char arg1[MAXTOKEN])
@@ -582,10 +584,11 @@ function_definition(const struct parser_param *param, char arg1[MAXTOKEN])
 	return 0;
 }
 
-/*
+/**
  * condition_macro: 
  *
- *	i)	cc	token
+ *	@param	param	
+ *	@param[in]	cc	token
  */
 static void
 condition_macro(const struct parser_param *param, int cc)
@@ -641,8 +644,8 @@ condition_macro(const struct parser_param *param, int cc)
 	}
 }
 
-/*
- * enumerator_list: process "symbol (= expression), ... }"
+/**
+ * enumerator_list: process @CODE{"symbol (= expression), ... \}"}
  */
 static int
 enumerator_list(const struct parser_param *param)

@@ -50,27 +50,29 @@
 #include "strlimcpy.h"
 #include "test.h"
 
-/*
- * Though the prefix of the key of meta record is currently only a ' ',
+/**
+ * Though the prefix of the key of meta record is currently only a @CODE{' '} (blank),
  * this will be enhanced in the future.
  */
 #define ismeta(p)	(*((char *)(p)) <= ' ')
 
-/*
- * Stuff for DBOP_SORTED_WRITE
+/**
+ * Stuff for #DBOP_SORTED_WRITE
  */
 #define SORT_SEP '\t'
 
-/*
+/**
  * Two functions required for sorted writing.
  *
+ * @fn static void start_sort_process(DBOP *dbop)
  * (1) start_sort_process: start sort process for sorted writing
  *
- *	i)	dbop	DBOP descriptor
+ *	@param[in]	dbop	DBOP descriptor
  *
+ * @fn static void terminate_sort_process(DBOP *dbop)
  * (2) terminate_sort_process: terminate sort process
  *
- *	i)	dbop	DBOP descriptor
+ *	@param[in]	dbop	DBOP descriptor
  */
 static void start_sort_process(DBOP *);
 static void terminate_sort_process(DBOP *);
@@ -236,16 +238,16 @@ terminate_sort_process(DBOP *dbop) {
 }
 #endif
 
-/*
+/**
  * dbop_open: open db database.
  *
- *	i)	path	database name
- *	i)	mode	0: read only, 1: create, 2: modify
- *	i)	perm	file permission
- *	i)	flags
- *			DBOP_DUP: allow duplicate records.
- *			DBOP_SORTED_WRITE: use sorted writing. This requires POSIX sort.
- *	r)		descripter for dbop_xxx()
+ *	@param[in]	path	database name
+ *	@param[in]	mode	0: read only, 1: create, 2: modify
+ *	@param[in]	perm	file permission
+ *	@param[in]	flags
+ *			#DBOP_DUP: allow duplicate records. <br>
+ *			#DBOP_SORTED_WRITE: use sorted writing. This requires @NAME{POSIX} sort.
+ *	@return		descripter for @NAME{dbop_xxx()}
  *
  * Sorted wirting is fast because all writing is done by not insertion but addition.
  */
@@ -315,12 +317,12 @@ dbop_open(const char *path, int mode, int perm, int flags)
 		start_sort_process(dbop);
 	return dbop;
 }
-/*
+/**
  * dbop_get: get data by a key.
  *
- *	i)	dbop	descripter
- *	i)	name	name
- *	r)		pointer to data
+ *	@param[in]	dbop	descripter
+ *	@param[in]	name	name
+ *	@return		pointer to data
  */
 const char *
 dbop_get(DBOP *dbop, const char *name)
@@ -345,12 +347,12 @@ dbop_get(DBOP *dbop, const char *name)
 	}
 	return (dat.data);
 }
-/*
+/**
  * dbop_put: put data by a key.
  *
- *	i)	dbop	descripter
- *	i)	name	key
- *	i)	data	data
+ *	@param[in]	dbop	descripter
+ *	@param[in]	name	key
+ *	@param[in]	data	data
  */
 void
 dbop_put(DBOP *dbop, const char *name, const char *data)
@@ -386,15 +388,15 @@ dbop_put(DBOP *dbop, const char *name, const char *data)
 		die(dbop->put_errmsg ? dbop->put_errmsg : "dbop_put failed.");
 	}
 }
-/*
+/**
  * dbop_put_withlen: put data by a key.
  *
- *	i)	dbop	descripter
- *	i)	name	key
- *	i)	data	data
- *	i)	length	length of data
+ *	@param[in]	dbop	descripter
+ *	@param[in]	name	key
+ *	@param[in]	data	data
+ *	@param[in]	length	length of @a data
  *
- * Note: This function doesn't support sorted writing.
+ * @note This function doesn't support sorted writing.
  */
 void
 dbop_put_withlen(DBOP *dbop, const char *name, const char *data, int length)
@@ -422,11 +424,11 @@ dbop_put_withlen(DBOP *dbop, const char *name, const char *data, int length)
 		die(dbop->put_errmsg ? dbop->put_errmsg : "dbop_put_withlen failed.");
 	}
 }
-/*
+/**
  * dbop_delete: delete record by path name.
  *
- *	i)	dbop	descripter
- *	i)	path	path name
+ *	@param[in]	dbop	descripter
+ *	@param[in]	path	path name
  */
 void
 dbop_delete(DBOP *dbop, const char *path)
@@ -444,31 +446,30 @@ dbop_delete(DBOP *dbop, const char *path)
 	if (status == RET_ERROR)
 		die("dbop_delete failed.");
 }
-/*
+/**
  * dbop_update: update record.
  *
- *	i)	dbop	descripter
- *	i)	key	key
- *	i)	dat	data
+ *	@param[in]	dbop	descripter
+ *	@param[in]	key	key
+ *	@param[in]	dat	data
  */
 void
 dbop_update(DBOP *dbop, const char *key, const char *dat)
 {
 	dbop_put(dbop, key, dat);
 }
-/*
+/**
  * dbop_first: get first record. 
  * 
- *	i)	dbop	dbop descripter
- *	i)	name	key value or prefix
- *			!=NULL: indexed read by key
+ *	@param[in]	dbop	dbop descripter
+ *	@param[in]	name	key value or prefix <br>
+ *			!=NULL: indexed read by key <br>
  *			==NULL: sequential read
- *	i)	preg	compiled regular expression if any.
- *	i)	flags	following dbop_next call take over this.
- *			DBOP_KEY	read key part
- *			DBOP_PREFIX	prefix read
- *					only valied when sequential read
- *	r)		data
+ *	@param[in]	preg	compiled regular expression if any.
+ *	@param[in]	flags	following dbop_next call take over this. <br>
+ *			#DBOP_KEY:	read key part <br>
+ *			#DBOP_PREFIX:	prefix read; only valied when sequential read
+ *	@return		data
  */
 const char *
 dbop_first(DBOP *dbop, const char *name, regex_t *preg, int flags)
@@ -538,13 +539,13 @@ dbop_first(DBOP *dbop, const char *name, regex_t *preg, int flags)
 	}
 	return ((char *)dat.data);
 }
-/*
+/**
  * dbop_next: get next record. 
  * 
- *	i)	dbop	dbop descripter
- *	r)		data
+ *	@param[in]	dbop	dbop descripter
+ *	@return		data
  *
- * Db_next always skip meta records.
+ * @note dbop_next() always skip meta records.
  */
 const char *
 dbop_next(DBOP *dbop)
@@ -593,23 +594,24 @@ dbop_next(DBOP *dbop)
 		die("dbop_next failed.");
 	return NULL;
 }
-/*
+/**
  * dbop_unread: unread record to read again.
  * 
- *	i)	dbop	dbop descripter
+ *	@param[in]	dbop	dbop descripter
  *
- * Dbop_next will read this record later.
+ * @note dbop_next() will read this record later.
  */
 void
 dbop_unread(DBOP *dbop)
 {
 	dbop->unread = 1;
 }
-/*
+/**
  * dbop_lastdat: get last data
  * 
- *	i)	dbop	dbop descripter
- *	r)		last data
+ *	@param[in]	dbop	dbop descripter
+ *	@param[out]	size
+ *	@return		last data
  */
 const char *
 dbop_lastdat(DBOP *dbop, int *size)
@@ -618,7 +620,7 @@ dbop_lastdat(DBOP *dbop, int *size)
 		*size = dbop->lastsize;
 	return dbop->lastdat;
 }
-/*
+/**
  * get_flag: get flag value
  */
 const char *
@@ -639,7 +641,7 @@ dbop_getflag(DBOP *dbop)
 	}
 	return flag;
 }
-/*
+/**
  * dbop_getoption: get option
  */
 const char *
@@ -657,7 +659,7 @@ dbop_getoption(DBOP *dbop, const char *key)
 	strlimcpy(buf, p, sizeof(buf));
 	return buf;
 }
-/*
+/**
  * dbop_putoption: put option
  */
 void
@@ -671,7 +673,7 @@ dbop_putoption(DBOP *dbop, const char *key, const char *string)
 		snprintf(buf, sizeof(buf), "%s", key);
 	dbop_put(dbop, key, buf);
 }
-/*
+/**
  * dbop_getversion: get format version
  */
 int
@@ -684,7 +686,7 @@ dbop_getversion(DBOP *dbop)
 		format_version = atoi(p);
 	return format_version;
 }
-/*
+/**
  * dbop_putversion: put format version
  */
 void
@@ -695,10 +697,10 @@ dbop_putversion(DBOP *dbop, int version)
 	snprintf(number, sizeof(number), "%d", version);
 	dbop_putoption(dbop, VERSIONKEY, number);
 }
-/*
+/**
  * dbop_close: close db
  * 
- *	i)	dbop	dbop descripter
+ *	@param[in]	dbop	dbop descripter
  */
 void
 dbop_close(DBOP *dbop)

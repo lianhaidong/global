@@ -20,11 +20,13 @@
 #define _ANCHOR_H_
 
 #include "checkalloc.h"
-/*
+/**
+ * @struct anchor
+ *
  * Anchor table.
  *
- * Most names are written to tag[] directly.
- * Long name whose length > ANCHOR_NAMELEN are written to newly allocated
+ * Most names are written to #tag[] directly.
+ * Long name whose length \> #ANCHOR_NAMELEN are written to newly allocated
  * memory and are linked to reserve. It is necessary to clear the variable
  * which is not used.
  */
