@@ -23,7 +23,7 @@ This directory includes built-in parsers.
 To build the parser, you need to have the following package installed:
 
 	- GNU gperf 3.0.3	to look up reserved words.
-	- flex 2.5.4a		to generate php and assembly parser.
+	- flex 2.5.35		to generate php and assembly parser.
 	- GNU bison 1.875	to generate assembly parser.
 
 2. Reserved word processing using GNU gperf.
