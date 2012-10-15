@@ -1244,7 +1244,7 @@ grep(const char *pattern, char *const *argv, const char *dbpath)
 /**
  * pathlist: print candidate path list.
  *
- *	@param	pattern
+ *	@param[in]	pattern
  *	@param[in]	dbpath
  */
 void
