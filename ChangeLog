@@ -20,6 +20,16 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+October 13 2012, Shigio YAMAGUCHI
+
+	Comments were rewritten in the Doxygen style. Submitted by Simon Dommett.
+	To generate a document, please invoke make command in the root directory
+	of the project like follows:
+
+	$ make doxygen
+
+	doxygen 1.8.2 is required.
+
 June 9 2012, Shigio YAMAGUCHI
 
 	Added BUILD_TOOLS file, which includes the list of version numbers
