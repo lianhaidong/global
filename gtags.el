@@ -597,6 +597,8 @@
         (message "Please specify an existing source file.")
        (setq tagname input)
        (gtags-push-context)
+       ; expand the file name (~->$HOME))
+       (setq tagname (expand-file-name tagname))
        (gtags-goto-tag tagname "f"))))
 
 (defun gtags-find-tag-from-here ()
