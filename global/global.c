@@ -45,6 +45,10 @@
 #include "regex.h"
 #include "const.h"
 
+/**
+ * @file global.c
+ * @NAME{global} - print locations of the specified object.
+ */
 static void usage(void);
 static void help(void);
 static void setcom(int);

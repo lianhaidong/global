@@ -1,6 +1,4 @@
-/** @file global.c
-@brief @NAME{global} - print locations of the specified object.
-
+/**
 @mainpage GNU GLOBAL source code tag system
 @code{.txt}
 ___________________________________

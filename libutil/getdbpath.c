@@ -211,7 +211,7 @@ setupdbpath(int verbose)
 	static char msg[1024];
 
 	if (!getcwd(cwd, MAXPATHLEN)) {
-		gtags_dbpath_error = "cannot get current directory";
+		gtags_dbpath_error = "cannot get current directory.";
 		return -1;
 	}
 	canonpath(cwd);
@@ -220,16 +220,16 @@ setupdbpath(int verbose)
 		if (verbose)
 			fprintf(stderr, "GTAGSROOT is set to '%s'.\n", p);
 		if (!isabspath(p)) {
-			gtags_dbpath_error = "GTAGSROOT must be an absolute path";
+			gtags_dbpath_error = "GTAGSROOT must be an absolute path.";
 			return -1;
 		}
 		if (stat(p, &sb) || !S_ISDIR(sb.st_mode)) {
-			snprintf(msg, sizeof(msg), "directory '%s' not found", p);
+			snprintf(msg, sizeof(msg), "directory '%s' not found.", p);
 			gtags_dbpath_error = msg;
 			return -1;
 		}
 		if (realpath(p, root) == NULL) {
-			snprintf(msg, sizeof(msg), "cannot get real path of '%s'", p);
+			snprintf(msg, sizeof(msg), "cannot get real path of '%s'.", p);
 			gtags_dbpath_error = msg;
 			return -1;
 		}
@@ -240,18 +240,18 @@ setupdbpath(int verbose)
 			if (verbose)
 				fprintf(stderr, "GTAGSDBPATH is set to '%s'.\n", p);
 			if (!isabspath(p)) {
-				gtags_dbpath_error = "GTAGSDBPATH must be an absolute path";
+				gtags_dbpath_error = "GTAGSDBPATH must be an absolute path.";
 				return -1;
 			}
 			if (stat(p, &sb) || !S_ISDIR(sb.st_mode)) {
-				snprintf(msg, sizeof(msg), "directory '%s' not found", p);
+				snprintf(msg, sizeof(msg), "directory '%s' not found.", p);
 				gtags_dbpath_error = msg;
 				return -1;
 			}
 			strlimcpy(dbpath, getenv("GTAGSDBPATH"), MAXPATHLEN);
 		} else {
 			if (!gtagsexist(root, dbpath, MAXPATHLEN, verbose)) {
-				gtags_dbpath_error = "GTAGS not found";
+				gtags_dbpath_error = "GTAGS not found.";
 				return -3;
 			}
 		}
@@ -275,7 +275,7 @@ setupdbpath(int verbose)
 			*p = 0;
 		}
 		if (*(root+ROOT) == 0) {
-			gtags_dbpath_error = "GTAGS not found";
+			gtags_dbpath_error = "GTAGS not found.";
 			return -3;
 		}
 		/*
