@@ -21,6 +21,19 @@ ___________________________________
 GNU GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 6.2.5 - November 16 2012
+
+[CHANGES]
+New facilities:
+gtags.el: Now supports XEmacs again.
+gtags.vim: New custom variable Dont_Jump_Automatically.
+
+[BUG FIXED]
+gtags: Now the following error does not occur.
+  'input buffer overflow, can't enlarge buffer because scanner uses REJECT'
+gtags.el: 'gtags-parse-file' didn't expand the file name (tilde character => $HOME).
+  Now it works.
+
 Version 6.2.4 - May 30 2012
 
 [BUG FIXED]
