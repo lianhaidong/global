@@ -97,20 +97,20 @@ strincmp(const char *string, const char *pattern, size_t len)
 	return 0;
 }
 
-/*
+/**
  * locatestring: locate pattern from string
  *
- *	i)	string	string
- *	i)	pattern	pattern
- *	i)	flag	MATCH_FIRST:	match first
- *			MATCH_AT_FIRST: match only at first column
- *			MATCH_LAST:	match last
- *			MATCH_AT_LAST:	match only at last column
- *			MATCH_COMPLETE	match completely
+ *	@param[in]	string	string
+ *	@param[in]	pattern	pattern
+ *	@param[in]	flag	MATCH_FIRST:	match first <br>
+ *			MATCH_AT_FIRST: match only at first column <br>
+ *			MATCH_LAST:	match last <br>
+ *			MATCH_AT_LAST:	match only at last column <br>
+ *			MATCH_COMPLETE	match completely <br>
  *			IGNORE_CASE:	Ignore case
- *	r)		pointer or NULL
- *			If the flag == MATCH_AT_FIRST then the pointer
- *			points the following character of the matched
+ *	@return		pointer or NULL
+ *			If the flag == MATCH_AT_FIRST then the pointer <br>
+ *			points the following character of the matched <br>
  *			string, else points at the head of it.
  *
  * This function is made to avoid compatibility problems.
