@@ -54,6 +54,9 @@
 static char *argv[] = {
 	EXUBERANT_CTAGS,
 	NULL,
+#ifdef USE_TYPE_STRING
+	"--gtags",
+#endif
 	"-xu",
 	"--filter",
 	"--filter-terminator=" TERMINATOR "\n",
@@ -177,8 +180,34 @@ static void
 put_line(char *ctags_x, const struct parser_param *param)
 {
 	int lineno;
+	int type = PARSER_DEF;
 	char *p, *tagname, *filename;
 
+#ifdef USE_TYPE_STRING
+	/*
+	 * Output of ctags:
+	 * ctags -x ...
+	 * main              326 global/global.c  main(int argc, char **argv)
+	 *
+	 * ctags -x --gtags ...
+	 * D main              326 global/global.c  main(int argc, char **argv)
+	 */
+	switch (*ctags_x) {
+	case 'D':
+		type = PARSER_DEF;
+		break;
+	case 'R':
+		type = PARSER_REF_SYM;
+		break;
+	default:
+		param->die("unexpected type string.");
+	}
+	/* skip type string */
+	while (*ctags_x && !isspace((unsigned char)*ctags_x))
+		ctags_x++;
+	while (*ctags_x  && isspace((unsigned char)*ctags_x))
+		ctags_x++;
+#endif
 	filename = strstr(ctags_x, param->file);
 	if (filename == NULL || filename == ctags_x)
 		return;
@@ -213,7 +242,7 @@ put_line(char *ctags_x, const struct parser_param *param)
 		while (isspace((unsigned char)*p))
 			p++;
 	}
-	param->put(PARSER_DEF, tagname, lineno, filename, p, param->arg);
+	param->put(type, tagname, lineno, filename, p, param->arg);
 }
 
 void

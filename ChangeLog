@@ -20,6 +20,19 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+October 20 2012, Shigio YAMAGUCHI
+
+	Added support for type string of ctags.
+	Configure script detects whether ctags has --gtags option or not.
+	However, I don't know whether the ctags which has this option will be released.
+
+	Exuberant Ctags with --gtags option:
+	$ ctags --gtags -x ...
+	D main              320 global/global.c  main(int argc, char **argv)
+	R NULL              325 global/global.c  const char *av = NULL;
+	=
+	^-- Type string (D: definition, R: other than definition)
+
 October 13 2012, Shigio YAMAGUCHI
 
 	Comments were rewritten in the Doxygen style. Submitted by Simon Dommett.

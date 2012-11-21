@@ -267,6 +267,16 @@ AC_ARG_WITH(exuberant-ctags,
 		AC_MSG_RESULT([using $EXUBERANT_CTAGS])
 	fi
 ])
+if test ${EXUBERANT_CTAGS} != no && test -x ${EXUBERANT_CTAGS}; then
+	AC_MSG_CHECKING(whether exuberant ctags --gtags works)
+	if (sh -c "${EXUBERANT_CTAGS} --gtags -x /dev/null") > /dev/null 2>&1; then
+		AC_DEFINE(USE_TYPE_STRING,1,[Define if ctags --gtags option is available.])
+		AC_MSG_RESULT(yes)
+	else
+		AC_MSG_RESULT(no)
+	fi
+fi
+
 AC_DEFINE_UNQUOTED(EXUBERANT_CTAGS, "$EXUBERANT_CTAGS", [Exuberant Ctags program.])
 AC_SUBST(EXUBERANT_CTAGS)
 
