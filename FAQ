@@ -126,7 +126,25 @@ A5. gtags-cscope(1) requires curses library. There are two choices of yours.
 	$ make
 
 ----------------------------------------------------------------------------
-Q6. Deleted.
+Q6. How to use ctags as a parser of GLOBAL?
+A6. If you have already installed Exuberant Ctags in your system,
+    Please do the following:
+
+	(It is assumed that GLOBAL is installed in '/usr/local'.)
+
+	$ export GTAGSCONF=/usr/local/share/gtags/gtags.conf
+	$ export GTAGSLABEL=exuberant-ctags
+	$ gtags				# gtags invokes Exuberant Ctags.
+
+    This means that GLOBAL already supports 41 programming languages
+    supported by Exuberant Ctags.
+
+    If it is failed, please reinstall GLOBAL like follows:
+
+	$  ./configure --with-exuberant-ctags=/usr/local/bin/ctags
+	$ make
+	$ sudo make install
+
 ----------------------------------------------------------------------------
 Q7. Gtags(1) and htags(1) work only for one directory tree. So, we cannot
     refer library functions like strlen() from my project. Any solutions?
