@@ -1,7 +1,7 @@
 " File: gtags.vim
 " Author: Tama Communications Corporation
-" Version: 0.6.3
-" Last Modified: Oct 13, 2012
+" Version: 0.6.4
+" Last Modified: Nov 24, 2012
 "
 " Copyright and licence
 " ---------------------
@@ -206,8 +206,12 @@ if !exists("g:Gtags_Auto_Update")
     let g:Gtags_Auto_Update = 0
 endif
 
-if !exists("g:Dont_Jump_Automatically")
-    let g:Dont_Jump_Automatically = 0
+if !exists("g:Gtags_No_Auto_Jump")
+    if !exists("g:Dont_Jump_Automatically")
+	let g:Gtags_No_Auto_Jump = 0
+    else
+	let g:Gtags_No_Auto_Jump = g:Dont_Jump_Automatically
+    endif
 endif
 
 " -- ctags-x format 
@@ -403,7 +407,7 @@ function! s:ExecLoad(option, long_option, pattern)
     " Parse the output of 'global -x or -t' and show in the quickfix window.
     let l:efm_org = &efm
     let &efm = g:Gtags_Efm
-    if g:Dont_Jump_Automatically == 1
+    if g:Gtags_No_Auto_Jump == 1
         cgete l:result
     else
         cexpr! l:result
