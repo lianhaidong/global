@@ -121,11 +121,11 @@ GNU GLOBAL has following features:
 	@item Web browser
 	@item Doxygen documentation system
 	@end itemize
-@item find the locations of specified object quickly.
-@item locate not only object definitions but also object references.
+@item find locations of specified symbol quickly.
+@item locate not only definitions but also references.
 @item allows duplicate objects.
-@item locate path names which include specified pattern.
-@item hierarchical search is available.
+@item locate paths which matches to the specified pattern.
+@item hierarchical search by default.
 @item search not only in a source project but also in library projects.
 @item generate completion list for completing input method.
 @item support various output format.
@@ -137,6 +137,12 @@ GNU GLOBAL has following features:
 @item plug-in parser is available to treat new language.
 @item support customizing with @file{gtags.conf}.
 @item generate a hypertext of source code.
+@item compact format to save disk space.
+@item customizing using a configuration file (gtags.conf).
+@item support client/server environment (TRAMP ready).
+@item ignore binary files, dot files and specified files.
+@item include cscope compatible program (gtags-cscope).
+@item include grep like command (-g command).
 @end itemize
 
 @c ***************************************************************************

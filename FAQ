@@ -130,20 +130,24 @@ Q6. How to use ctags as a parser of GLOBAL?
 A6. If you have already installed Exuberant Ctags in your system,
     Please do the following:
 
-	(It is assumed that GLOBAL is installed in '/usr/local'.)
+        [Installation of GLOBAL]
 
-	$ export GTAGSCONF=/usr/local/share/gtags/gtags.conf
-	$ export GTAGSLABEL=exuberant-ctags
-	$ gtags				# gtags invokes Exuberant Ctags.
+        It assumed that ctags command is installed in '/usr/local/bin'.
+
+        $ ./configure --with-exuberant-ctags=/usr/local/bin/ctags
+        $ make
+        $ sudo make install
+
+        [Executing of gtags]
+
+        It assumed that GLOBAL is installed in '/usr/local' which is the default.
+
+        $ export GTAGSCONF=/usr/local/share/gtags/gtags.conf
+        $ export GTAGSLABEL=ctags
+        $ gtags                         # invokes Exuberant Ctags internally
 
     This means that GLOBAL already supports 41 programming languages
     supported by Exuberant Ctags.
-
-    If it is failed, please reinstall GLOBAL like follows:
-
-	$  ./configure --with-exuberant-ctags=/usr/local/bin/ctags
-	$ make
-	$ sudo make install
 
 ----------------------------------------------------------------------------
 Q7. Gtags(1) and htags(1) work only for one directory tree. So, we cannot

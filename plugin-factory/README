@@ -45,15 +45,26 @@ Note:
 Gtags always makes GRTAGS even if you don't use PARSER_REF_SYM.
 This is an example of plug-in parser for gtags(1).
 
-How to use Exuberant Ctags parser?
-==================================
+How to use Exuberant Ctags as a parser?
+=======================================
 
 The parser 'exuberant-ctags.la' is built as a shared library, and is installed to
 /usr/local/lib/gtags by default.
 
 To use this parser, please do like follows:
-(It assumed that Exuberant ctags exists in "/usr/local/bin".)
 
-	$ ./configure --with-exuberant-ctags=/usr/local/bin/ctags
-	$ make install
-	$ gtags --gtagsconf=/usr/local/share/gtags/gtags.conf --gtagslabel=ctags
+        [Installation of GLOBAL]
+
+        It assumed that ctags command is installed in '/usr/local/bin'.
+
+        $ ./configure --with-exuberant-ctags=/usr/local/bin/ctags
+        $ make
+        $ sudo make install
+
+        [Executing of gtags]
+
+        It assumed that GLOBAL is installed in '/usr/local' which is the default.
+
+        $ export GTAGSCONF=/usr/local/share/gtags/gtags.conf
+        $ export GTAGSLABEL=ctags
+        $ gtags                         # invokes Exuberant Ctags internally
