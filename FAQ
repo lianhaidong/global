@@ -173,7 +173,9 @@ A7. For global(1), you can use GTAGSLIBPATH environment variable.
 	$ htags
 
 ----------------------------------------------------------------------------
-Q8. Deleted.
+Q8. I can't make GSYMS file.
+
+A8. No problem. GSYMS was merged into GRTAGS in GLOBAL-5.9 or later.
 ----------------------------------------------------------------------------
 Q9. Deleted.
 ----------------------------------------------------------------------------
