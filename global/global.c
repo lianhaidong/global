@@ -44,6 +44,7 @@
 #include "parser.h"
 #include "regex.h"
 #include "const.h"
+#include "literal.h"
 
 /**
  * @file global.c
@@ -1160,15 +1161,28 @@ grep(const char *pattern, char *const *argv, const char *dbpath)
 	 * convert spaces into %FF format.
 	 */
 	encode(encoded_pattern, sizeof(encoded_pattern), pattern);
+	/*
+	 * literal search available?
+	 */
+	if (!literal) {
+		const char *p = pattern;
+		int normal = 1;
 
+		for (; *p; p++) {
+			if (!(isalpha(*p) || isdigit(*p) || isblank(*p) || *p == '_')) {
+				normal = 0;
+				break;
+			}
+		}
+		if (normal)
+			literal = 1;
+	}
 	if (oflag)
 		target = GPATH_BOTH;
 	if (Oflag)
 		target = GPATH_OTHER;
 	if (literal) {
-		flags = MATCH_FIRST;
-		if (iflag)
-			flags |= IGNORE_CASE;
+		literal_comple(pattern);
 	} else {
 		if (!Gflag)
 			flags |= REG_EXTENDED;
@@ -1210,30 +1224,28 @@ grep(const char *pattern, char *const *argv, const char *dbpath)
 		}
 		if (lflag && !locatestring(path, localprefix, MATCH_AT_FIRST))
 			continue;
-		if (!(fp = fopen(path, "r")))
-			die("cannot open file '%s'.", path);
-		linenum = 0;
-		while ((buffer = strbuf_fgets(ib, fp, STRBUF_NOCRLF)) != NULL) {
-			int result;
-
-			if (literal) {
-				result = locatestring(buffer, pattern, flags) ? 0 : -1;
-			} else {
-				result = regexec(&preg, buffer, 0, 0, 0);
-			}
-			linenum++;
-			if ((!Vflag && result == 0) || (Vflag && result != 0)) {
-				count++;
-				if (format == FORMAT_PATH) {
-					convert_put_path(cv, path);
-					break;
-				} else {
-					convert_put_using(cv, encoded_pattern, path, linenum, buffer,
-						(user_specified) ? NULL : gp->dbop->lastdat);
+		if (literal) {
+			literal_search(cv, path, format);
+		} else {
+			if (!(fp = fopen(path, "r")))
+				die("cannot open file '%s'.", path);
+			linenum = 0;
+			while ((buffer = strbuf_fgets(ib, fp, STRBUF_NOCRLF)) != NULL) {
+				int result = regexec(&preg, buffer, 0, 0, 0);
+				linenum++;
+				if ((!Vflag && result == 0) || (Vflag && result != 0)) {
+					count++;
+					if (format == FORMAT_PATH) {
+						convert_put_path(cv, path);
+						break;
+					} else {
+						convert_put_using(cv, encoded_pattern, path, linenum, buffer,
+							(user_specified) ? NULL : gp->dbop->lastdat);
+					}
 				}
 			}
+			fclose(fp);
 		}
-		fclose(fp);
 	}
 	args_close();
 	convert_close(cv);

@@ -20,6 +20,11 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+December 3 2012, Shigio YAMAGUCHI
+
+	[global/literal.c]
+	Included fgrep's code of 4.3BSD.
+
 October 20 2012, Shigio YAMAGUCHI
 
 	Added support for type string of ctags.

@@ -12,7 +12,7 @@
 #
 bin_PROGRAMS= global
 
-global_SOURCES = global.c
+global_SOURCES = global.c literal.c
 
 INCLUDES = @INCLUDES@
 

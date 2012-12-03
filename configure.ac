@@ -105,6 +105,7 @@ fi
 
 dnl Checks for library functions.
 AC_FUNC_ALLOCA
+AC_FUNC_MMAP
 AC_FUNC_MEMCMP
 AC_TYPE_SIGNAL
 AC_FUNC_STRFTIME

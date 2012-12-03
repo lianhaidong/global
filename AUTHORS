@@ -174,4 +174,9 @@ o cscope-15.7a by Joe Steffen and others:
 	gtags-cscope/mypopen.c		src/mypopen.c
 	gtags-cscope/version-cscope.h	src/version.h
 
+o fgrep.c by University of California, Berkeley.
+
+					[fgrep in 4.3BSD]
+	global/literal.c		/usr/src/usr.bin/fgrep.c
+
 they are considered a separate package, not part of GLOBAL proper.
