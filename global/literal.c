@@ -40,6 +40,12 @@
 #ifdef HAVE_MMAP
 #include <sys/mman.h>
 #endif
+#ifdef HAVE_FCNTL_H
+#include <fcntl.h>
+#endif
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
 #include "format.h"
 #include "pathconvert.h"
 #include "die.h"
@@ -188,7 +194,7 @@ literal_search(CONVERT *cv, const char *file, int format)
 			failed = 0;
 			continue;
 		}
-		if (*p++ == '\n')
+		if (*p++ == '\n') {
 			if (Vflag)
 				goto succeed;
 			else {
@@ -197,6 +203,7 @@ literal_search(CONVERT *cv, const char *file, int format)
 				c = w;
 				failed = 0;
 			}
+		}
 	}
 finish:
 #ifdef HAVE_MMAP
@@ -206,7 +213,6 @@ finish:
 	free(buf);
 #endif
 	close(f);
-	return 0;
 }
 /**
  * make automaton.
