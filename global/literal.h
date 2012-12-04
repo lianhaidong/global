@@ -20,7 +20,7 @@
 #define _LITERAL_H_
 
 void literal_comple(const char *);
-void literal_search(CONVERT *, const char *, int);
+void literal_search(CONVERT *, const char *);
 
 #endif /* ! _LITERAL_H_ */
 

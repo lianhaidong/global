@@ -56,12 +56,11 @@ void cfail(void);
 
 extern int iflag;
 extern int Vflag;
-extern int format;
 extern void encode(char *, int, const char *);
 
 #define	MAXSIZ 6000
 #define QSIZE 400
-struct words {
+static struct words {
 	char 	inp;
 	char	out;
 	struct	words *nst;
@@ -98,22 +97,19 @@ literal_comple(const char *pattern)
  * literal_search: execute literal search
  *
  *	@param[in]	file	file to search
- *	@param[in]	format	output format
  *	@return		0: normal, -1: error
  */
 # define ccomp(a,b) (iflag ? lca(a)==lca(b) : a==b)
 # define lca(x) (isupper(x) ? tolower(x) : x)
 void
-literal_search(CONVERT *cv, const char *file, int format)
+literal_search(CONVERT *cv, const char *file)
 {
 	struct words *c;
 	int ccount;
 	char *p;
 	char *buf;
 	struct stat stb;
-	int failed;
 	char *linep;
-	int nsucc = 0;
 	long lineno;
 	int f;
 
@@ -138,7 +134,6 @@ literal_search(CONVERT *cv, const char *file, int format)
 #endif
 	linep = p = buf;
 	ccount = stb.st_size;
-	failed = 0;
 	lineno = 1;
 	c = w;
 	for (;;) {
@@ -154,7 +149,6 @@ literal_search(CONVERT *cv, const char *file, int format)
 			}
 			else {
 				c = c->fail;
-				failed = 1;
 				if (c==0) {
 					c = w;
 					istate:
@@ -175,8 +169,7 @@ literal_search(CONVERT *cv, const char *file, int format)
 			}
 			if (Vflag)
 				goto nomatch;
-	succeed:	nsucc = 1;
-			if (format == FORMAT_PATH) {
+	succeed:	if (cv->format == FORMAT_PATH) {
 				convert_put_path(cv, file);
 				goto finish;
 			} else {
@@ -191,7 +184,6 @@ literal_search(CONVERT *cv, const char *file, int format)
 	nomatch:	lineno++;
 			linep = p;
 			c = w;
-			failed = 0;
 			continue;
 		}
 		if (*p++ == '\n') {
@@ -201,7 +193,6 @@ literal_search(CONVERT *cv, const char *file, int format)
 				lineno++;
 				linep = p;
 				c = w;
-				failed = 0;
 			}
 		}
 	}

@@ -14,6 +14,8 @@ bin_PROGRAMS= global
 
 global_SOURCES = global.c literal.c
 
+noinst_HEADERS = literal.h
+
 INCLUDES = @INCLUDES@
 
 LDADD = @LDADD@
