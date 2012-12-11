@@ -21,6 +21,23 @@ ___________________________________
 GNU GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 6.2.6 - December 11 2012
+
+[CHANGES]
+New facilities:
+ctags-5.8.patch: Patch against ctags-5.8. This adds new option --gtags and new
+  function makeSimpleReferenceTag() to ctags. These are for making reference tags
+  for GLOBAL, and enable you to write a single parser for both GLOBAL and ctags
+  at once.
+exuberant-ctags.so: Added support for ctags --gtags option.
+
+Changed:
+gtags.vim: Renamed custom variable 'Dont_Jump_Automatically' to 'Gtags_No_Auto_Jump'.
+  Now 'Dont_Jump_Automatically' is deprecated.
+global: The performance of literal search (-g --literal) has been improved.
+  A pattern string which consists of alphanumeric characters and/or blank characters
+  is treated as a literal string automatically. Try 'global -gx --literal string'.
+
 Version 6.2.5 - November 16 2012
 
 [CHANGES]
