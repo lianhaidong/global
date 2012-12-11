@@ -18,7 +18,7 @@ htags_SOURCES = htags.c defineindex.c dupindex.c fileindex.c cflowindex.c src2ht
 
 noinst_HEADERS = htags.h anchor.h cache.h common.h incop.h path2url.h lexcommon.h
 
-INCLUDES = @INCLUDES@ -I$(srcdir)
+AM_CPPFLAGS = @AM_CPPFLAGS@ -I$(srcdir)
 
 LDADD = @LDADD@
 

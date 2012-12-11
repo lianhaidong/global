@@ -20,6 +20,12 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+December 11 2012, Shigio YAMAGUCHI
+
+	Some automake macros were changed as follows to avoid warning messages.
+	o INCLUDES was changed to AM_CPPFLAGS
+	o AC_PROG_RANLIB was removed.
+
 December 3 2012, Shigio YAMAGUCHI
 
 	[global/literal.c]

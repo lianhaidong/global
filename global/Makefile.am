@@ -16,7 +16,7 @@ global_SOURCES = global.c literal.c
 
 noinst_HEADERS = literal.h
 
-INCLUDES = @INCLUDES@
+AM_CPPFLAGS = @AM_CPPFLAGS@
 
 LDADD = @LDADD@
 

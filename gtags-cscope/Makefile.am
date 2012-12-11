@@ -17,7 +17,7 @@ gtags_cscope_SOURCES = gtags-cscope.c alloc.c alloc.h basename.c build.c \
 	exec.c find.c global-cscope.h help.c history.c input.c library.h \
 	logdir.c mouse.c mygetenv.c mypopen.c  version-cscope.h
 
-INCLUDES = @INCLUDES@
+AM_CPPFLAGS = $(CURSES_INCLUDEDIR) @AM_CPPFLAGS@
 
 LDADD = @LDADD@
 
@@ -26,7 +26,5 @@ gtags_cscope_LDADD = $(LDADD) $(LIBLTDL) $(CURSES_LIBS)
 gtags_cscope_DEPENDENCIES = $(LDADD) $(LTDLDEPS)
 
 man_MANS = gtags-cscope.1
-
-AM_CPPFLAGS = $(CURSES_INCLUDEDIR)
 
 EXTRA_DIST = $(man_MANS) const.h manual.in

@@ -29,6 +29,6 @@ pathconvert.c compress.c checkalloc.c pool.c fileop.c statistics.c args.c loggin
 
 AM_CFLAGS = -DBINDIR='"$(bindir)"' -DDATADIR='"$(datadir)"' -DLOCALSTATEDIR='"$(localstatedir)"' -DSYSCONFDIR='"$(sysconfdir)"'
 
-INCLUDES = @INCLUDES@
+AM_CPPFLAGS = @AM_CPPFLAGS@
 
 libgloutil_a_DEPENDENCIES = $(libgloutil_a_LIBADD)

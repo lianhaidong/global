@@ -17,7 +17,7 @@ noinst_HEADERS = parser.h internal.h asm_parse.h \
 
 libgloparser_a_SOURCES = parser.c C.c Cpp.c asm_parse.c asm_scan.c java.c php.c
 
-INCLUDES = @INCLUDES@
+AM_CPPFLAGS = @AM_CPPFLAGS@
 
 libgloparser_a_DEPENDENCIES = $(libgloparser_a_LIBADD)
 
