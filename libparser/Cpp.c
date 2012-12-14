@@ -72,6 +72,7 @@ Cpp(const struct parser_param *param)
 	int startclass, startthrow, startmacro, startsharp, startequal;
 	char classname[MAXTOKEN];
 	char completename[MAXCOMPLETENAME];
+	char *completename_limit = &completename[sizeof(completename)];
 	int classlevel;
 	struct {
 		char *classname;
@@ -209,10 +210,10 @@ Cpp(const struct parser_param *param)
 
 				if (++classlevel >= MAXCLASSSTACK)
 					die("class stack over flow.[%s]", curfile);
-				if (classlevel > 1)
+				if (classlevel > 1 && p < completename_limit)
 					*p++ = '.';
 				stack[classlevel].classname = p;
-				while (*q)
+				while (*q && p < completename_limit)
 					*p++ = *q++;
 				stack[classlevel].terminate = p;
 				stack[classlevel].level = level;
@@ -614,9 +615,10 @@ function_definition(const struct parser_param *param)
 		else if (c == '{' /* } */) {
 			pushbacktoken();
 			return 1;
-		} else if (c == /* { */'}')
+		} else if (c == /* { */'}') {
+			pushbacktoken();
 			break;
-		else if (c == '=')
+		} else if (c == '=')
 			break;
 		/* pick up symbol */
 		if (c == SYMBOL)
