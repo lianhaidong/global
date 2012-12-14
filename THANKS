@@ -146,7 +146,7 @@ Wes Wojtas		bug report about htags's segmentation fault.
 Whity Pig		bug fix patch for global(1) on Cygwin environment.
 Wolfgang Helbig		bug report about generating wrong path name.
 Yann Dirson		many bug reports and many valuable suggestions.
-Yoshiharu Ito		advice about SunOS 4.1.3.
+Yoshiharu Ito		advice about SunOS 4.1.3, and a bug report about configure.ac.
 Yoshinori Tomita	advice about compat.h for Solaris.
 Y. Yoshinaga		advice about makefile for Debian GNU/Linux.
 Yushi Oka		bug report about config path and improvements of gtags-mode

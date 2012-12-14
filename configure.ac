@@ -167,15 +167,15 @@ dnl
 AC_ARG_WITH(db185-compat,
 [  --with-db185-compat[[=DIR]] use DB1.85 compatible API included in DB2 or later ],
 [
-	if test "$withval" != 'no'; then
+	if test "$withval" != no; then
 		case "$withval" in
 		''|yes)
 			;;
 		*)
-			if ! test -d $withval; then
+			if ! test -d "$withval"; then
 				AC_MSG_ERROR([directory $withval not found.])
 			fi
-			if ! test -r $withval/include/db_185.h; then
+			if ! test -r "$withval/include/db_185.h"; then
 				AC_MSG_ERROR([header $withval/include/db_185.h not found.])
 			fi
 			AM_CPPFLAGS="$AM_CPPFLAGS -I$withval/include"
@@ -186,7 +186,7 @@ AC_ARG_WITH(db185-compat,
 		#DBLIBRARY='-ldb'
 		AC_DEFINE(USE_DB185_COMPAT,1,[Define if you use DB1.85 compatible API.])
 	fi
-],[ with_db185_compat='no' ])
+],[ with_db185_compat=no ])
 AM_CONDITIONAL([USE_DB185_COMPAT], [test "$with_db185_compat" != no])
 
 LDADD='../libparser/libgloparser.a ../libutil/libgloutil.a '$DBLIBRARY' ../libglibc/libgloglibc.a'
@@ -198,17 +198,17 @@ AC_MSG_CHECKING(for home-etc support)
 AC_ARG_WITH(home-etc,
 [  --with-home-etc[[=DIR]]   include home-etc support [[DIR=/usr/local]] ],
 [
-        if test "$withval" = 'no'; then
+        if test "$withval" = no; then
                 AC_MSG_RESULT(no)
         else
-                case $withval in
+                case "$withval" in
                 ''|yes) HOMEETC=/usr/local;;
-                *)      HOMEETC=$withval;;
+                *)      HOMEETC="$withval";;
                 esac
-                if ! test -d $HOMEETC; then
+                if ! test -d "$HOMEETC"; then
                         AC_MSG_ERROR([directory '$HOMEETC' not found.])
                 fi
-		if ! test -f $HOMEETC/include/home_etc.h; then
+		if ! test -f "$HOMEETC/include/home_etc.h"; then
                         AC_MSG_ERROR([header '$HOMEETC/include/home_etc.h' not found.])
                 fi
                 AM_CPPFLAGS="$AM_CPPFLAGS -I$HOMEETC/include"
@@ -227,7 +227,7 @@ AC_MSG_CHECKING(for pread/pwrite support)
 AC_ARG_WITH(pread-pwrite,
 [  --with-pread-pwrite     include pread/pwrite support for BSD db library ],
 [
-        if test "$withval" = 'no'; then
+        if test "$withval" = no; then
                 AC_MSG_RESULT(no)
         else
 		AC_DEFINE(HAVE_PREAD, 1, [Define to 1 if you have and use pread.])
@@ -246,7 +246,7 @@ AC_ARG_WITH(exuberant-ctags,
 [  --with-exuberant-ctags=PROGRAM  specify Exuberant Ctags program ],
 [
 	EXUBERANT_CTAGS="$withval"
-        if test "$withval" = 'no'; then
+        if test "$withval" = no; then
                 AC_MSG_RESULT(no)
 	else
                 AC_MSG_RESULT([using $EXUBERANT_CTAGS])
@@ -255,7 +255,7 @@ AC_ARG_WITH(exuberant-ctags,
 [
 	for d in `echo $PATH | sed -e 's/^:/.:/' -e 's/::/:.:/g' -e 's/:$/:./' -e 's/:/ /g'`
 	do
-		if test -x $d/ctags && (sh -c "$d/ctags --version" | grep "Exuberant Ctags") > /dev/null 2>&1; then
+		if test -x "$d/ctags" && (sh -c "'$d/ctags' --version" | grep "Exuberant Ctags") > /dev/null 2>&1; then
 			withval="$d/ctags"
 			break
 		fi
@@ -267,9 +267,9 @@ AC_ARG_WITH(exuberant-ctags,
 		AC_MSG_RESULT([using $EXUBERANT_CTAGS])
 	fi
 ])
-if test ${EXUBERANT_CTAGS} != no && test -x ${EXUBERANT_CTAGS}; then
+if test "$EXUBERANT_CTAGS" != '' && test "$EXUBERANT_CTAGS" != no && test -x "$EXUBERANT_CTAGS"; then
 	AC_MSG_CHECKING(whether exuberant ctags --gtags works)
-	if (sh -c "${EXUBERANT_CTAGS} --gtags -x /dev/null") > /dev/null 2>&1; then
+	if (sh -c "'$EXUBERANT_CTAGS' --gtags -x /dev/null") > /dev/null 2>&1; then
 		AC_DEFINE(USE_TYPE_STRING,1,[Define if ctags --gtags option is available.])
 		AC_MSG_RESULT(yes)
 	else
@@ -288,7 +288,7 @@ AC_ARG_WITH(posix-sort,
 [  --with-posix-sort=PROGRAM  specify POSIX sort program ],
 [
 	POSIX_SORT="$withval"
-        if test "$withval" = 'no'; then
+        if test "$withval" = no; then
                 AC_MSG_RESULT(no)
 	else
                 AC_MSG_RESULT([using $POSIX_SORT])
@@ -297,7 +297,7 @@ AC_ARG_WITH(posix-sort,
 [
 	for d in `echo $PATH | sed -e 's/^:/.:/' -e 's/::/:.:/g' -e 's/:$/:./' -e 's/:/ /g'`
 	do
-		if test -x $d/sort && (sh -c "$d/sort -t ':' -k 1,1" < /dev/null) > /dev/null 2>&1; then
+		if test -x "$d/sort" && (sh -c "'$d/sort' -t ':' -k 1,1" < /dev/null) > /dev/null 2>&1; then
 			withval="$d/sort"
 			break
 		fi
