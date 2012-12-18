@@ -376,8 +376,17 @@ main(int argc, char **argv)
 		
 		if (!test("f", p))
 			die("'%s' not found.", p);
+#if _WIN32 || __DJGPP__
+		for (; *p; p++)
+			if (*p == '\\')
+				*p = '/';
+		p = single_update;
+#define LOCATEFLAG MATCH_AT_FIRST|IGNORE_CASE
+#else
+#define LOCATEFLAG MATCH_AT_FIRST
+#endif
 		if (isabspath(p)) {
-			char *q = locatestring(p, cwd, MATCH_AT_FIRST);
+			char *q = locatestring(p, cwd, LOCATEFLAG);
 
 			if (q && *q == '/')
 				snprintf(regular_path_name, MAXPATHLEN, "./%s", q + 1);
