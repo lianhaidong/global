@@ -117,6 +117,8 @@ literal_search(CONVERT *cv, const char *file)
 		die("cannot open '%s'.", file);
 	if (fstat(f, &stb) < 0)
 		die("cannot fstat '%s'.", file);
+	if (stb.st_size == 0)
+		goto skip_empty_file;
 #ifdef HAVE_MMAP
 	buf = mmap(0, stb.st_size, PROT_READ, MAP_SHARED, f, 0);
 	if (buf == MAP_FAILED)
@@ -203,6 +205,7 @@ finish:
 #else
 	free(buf);
 #endif
+skip_empty_file:
 	close(f);
 }
 /**
