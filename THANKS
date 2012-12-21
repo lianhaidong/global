@@ -29,6 +29,7 @@ Andy Newman		bug report about treating tab character.
 Andy Zhou		bug report about gtags-parser overlook 'extern' prefixed function.
 Arne Schmitz		bug report about gtags-parser.
 Alex Ott		profitable information about LFS(Large file support).
+Alexander Gusak		bug report about c++ parser's segmentation violation.
 Bakken, Luke		bug fix method about stat() in htags(1).
 Bert Gijsbers		investigation about mandoc macro and a bug report.
 Bob Bentley		bug report about bless.sh and gtags.
