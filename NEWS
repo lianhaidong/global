@@ -21,6 +21,12 @@ ___________________________________
 GNU GLOBAL NEWS - User visible changes.
 At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 6.2.7 - December 22 2012
+
+[BUG FIXED]
+global: The -g command failed in handling of files whose size is 0 in some systems.
+Now it works.
+
 Version 6.2.6 - December 11 2012
 
 [CHANGES]
