@@ -39,6 +39,9 @@
 #endif
 #ifdef HAVE_MMAP
 #include <sys/mman.h>
+#elif _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 #endif
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>
@@ -49,6 +52,10 @@
 #include "format.h"
 #include "pathconvert.h"
 #include "die.h"
+
+#ifndef O_BINARY
+#define O_BINARY 0
+#endif
 
 void overflo(void);
 void cgotofn(const char *);
@@ -113,16 +120,28 @@ literal_search(CONVERT *cv, const char *file)
 	long lineno;
 	int f;
 
-	if ((f = open(file, 0)) < 0)
-		die("cannot open '%s'.", file);
-	if (fstat(f, &stb) < 0)
-		die("cannot fstat '%s'.", file);
+	if ((f = open(file, O_BINARY)) < 0) {
+		warning("cannot open '%s'.", file);
+		return;
+	}
+	if (fstat(f, &stb) < 0) {
+		warning("cannot fstat '%s'.", file);
+		goto skip_empty_file;
+	}
 	if (stb.st_size == 0)
 		goto skip_empty_file;
 #ifdef HAVE_MMAP
 	buf = mmap(0, stb.st_size, PROT_READ, MAP_SHARED, f, 0);
 	if (buf == MAP_FAILED)
 		die("mmap failed (%s).", file);
+#elif _WIN32
+	{
+	HANDLE hMap = CreateFileMapping((HANDLE)_get_osfhandle(f), NULL, PAGE_READONLY, 0, stb.st_size, NULL);
+	if (hMap == NULL)
+		die("CreateFileMapping failed (%s).", file);
+	buf = MapViewOfFile(hMap, FILE_MAP_READ, 0, 0, 0);
+	if (buf == NULL)
+		die("MapViewOfFile failed (%s).", file);
 #else
 #ifdef HAVE_ALLOCA
 	buf = (char *)alloca(stb.st_size);
@@ -201,6 +220,10 @@ literal_search(CONVERT *cv, const char *file)
 finish:
 #ifdef HAVE_MMAP
 	munmap(buf, stb.st_size);
+#elif _WIN32
+	UnmapViewOfFile(buf);
+	CloseHandle(hMap);
+	}
 #elif HAVE_ALLOCA
 #else
 	free(buf);
