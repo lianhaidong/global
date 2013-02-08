@@ -28,6 +28,7 @@ Andrs Azar		Cygwin trouble report.
 Andy Newman		bug report about treating tab character.
 Andy Zhou		bug report about gtags-parser overlook 'extern' prefixed function.
 Arne Schmitz		bug report about gtags-parser.
+Alain Kalker		patch for global.cgi.tmpl.in to support python's built-in web server.
 Alex Ott		profitable information about LFS(Large file support).
 Alexander Gusak		bug report about c++ parser's segmentation violation.
 Bakken, Luke		bug fix method about stat() in htags(1).

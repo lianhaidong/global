@@ -181,6 +181,12 @@ if (@line == 0) {
 	# direct jump
 	($fid, $tag, $lno, $filename) = split(/[ \t]+/, shift @line);
 	print "Location: $basedir/S/$fid.$html#L$lno\n\n";
+	# Python's built-in webserver doesn't support redirects issued from CGI scripts.
+	print "<html>\n";
+	print qq(<head><meta http-equiv="Refresh" content="0; url=$basedir/S/$fid.$html#L$lno" /></head>\n);
+	print "<body></body>\n";
+	print "</html>\n";
+	#
 	exit 0;
 }
 print header();
