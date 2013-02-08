@@ -133,6 +133,10 @@
 		Treat not only source files but also text files other than source code
 		like @file{README}.
 		This option is valid only with the @option{-g} or @option{-P} command.
+	@item{@option{--path-style} @arg{format}}
+		Print path names using the specified @arg{format}.
+		@arg{format} may be @arg{relative}, @arg{absolute}, @arg{shorter}, @arg{abslib} or @arg{through}.
+		The @option{--path-style} option is given more priority than the -a options.
 	@item{@option{--print0}}
 		Print each record followed by a null character instead of a newline.
 	@item{@option{-q}, @option{--quiet}}

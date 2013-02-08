@@ -119,6 +119,8 @@
 #define PATH_RELATIVE	1
 #define PATH_ABSOLUTE	2
 #define PATH_THROUGH	3
+#define PATH_SHORTER	4
+#define PATH_ABSLIB	5
 /** @} */
 
 #endif /* ! _FORMAT_H_ */

@@ -84,6 +84,7 @@ Katsuyuki Okabe		advice about deciding emacs version.
 Klaus Borchers		advice about deciding emacs version.
 Koen Hufkens		advice about HP-UX 10.x.
 Koie Hidetaka		bug report about global.conf.
+Leo Liu			idea about the --path-style=shorter option.
 Marc Herbert		bug fix of libutil/xargs.c.
 Marcello Nuccio		bug report about globash.rc.
 Marco Corvi		advice about Digital Unix 4.0C.

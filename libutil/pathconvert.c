@@ -129,6 +129,7 @@ convert_pathname(CONVERT *cv, const char *path)
 			path = strbuf_value(cv->abspath);
 			break;
 		case PATH_RELATIVE:
+		case PATH_SHORTER:
 			a = strbuf_value(cv->abspath);
 			b = cv->basedir;
 #if defined(_WIN32) || defined(__DJGPP__)
@@ -140,6 +141,8 @@ convert_pathname(CONVERT *cv, const char *path)
 			if (!abs2rel(a, b, buf, sizeof(buf)))
 				die("abs2rel failed. (path=%s, base=%s).", a, b);
 			path = buf;
+			if (cv->type == PATH_SHORTER && strlen(path) > strbuf_getlen(cv->abspath))
+				path = strbuf_value(cv->abspath);
 			break;
 		default:
 			die("unknown path type.");

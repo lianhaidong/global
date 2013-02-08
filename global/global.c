@@ -102,6 +102,7 @@ int print0;				/**< @OPTION{-print0} option	*/
 int format;
 int type;				/**< path conversion type */
 int match_part;				/**< match part only	*/
+int abslib;				/**< absolute path only in library project */
 const char *cwd;			/**< current directory	*/
 const char *root;			/**< root of source tree	*/
 const char *dbpath;			/**< dbpath directory	*/
@@ -110,6 +111,7 @@ char *context_lineno;
 char *file_list;
 char *encode_chars;
 char *single_update;
+char *path_style;
 
 static void
 usage(void)
@@ -131,6 +133,7 @@ help(void)
 #define ENCODE_PATH	130
 #define MATCH_PART	131
 #define SINGLE_UPDATE	132
+#define PATH_STYLE	133
 #define SORT_FILTER     1
 #define PATH_FILTER     2
 #define BOTH_FILTER     (SORT_FILTER|PATH_FILTER)
@@ -172,6 +175,7 @@ static struct option const long_options[] = {
 	{"debug", no_argument, &debug, 1},
 	{"literal", no_argument, &literal, 1},
 	{"match-part", required_argument, NULL, MATCH_PART},
+	{"path-style", required_argument, NULL, PATH_STYLE},
 	{"print0", no_argument, &print0, 1},
 	{"version", no_argument, &show_version, 1},
 	{"help", no_argument, &show_help, 1},
@@ -458,6 +462,9 @@ main(int argc, char **argv)
 			else
 				die_with_code(2, "unknown part type for the --match-part option.");
 			break;
+		case PATH_STYLE:
+			path_style = optarg;
+			break;
 		case RESULT:
 			if (!strcmp(optarg, "ctags-x"))
 				format = FORMAT_CTAGS_X;
@@ -724,6 +731,21 @@ main(int argc, char **argv)
 		type = PATH_ABSOLUTE;
 	else
 		type = PATH_RELATIVE;
+	if (path_style) {
+		if (!strcmp(path_style, "relative"))
+			type = PATH_RELATIVE;
+		else if (!strcmp(path_style, "absolute"))
+			type = PATH_ABSOLUTE;
+		else if (!strcmp(path_style, "through"))
+			type = PATH_THROUGH;
+		else if (!strcmp(path_style, "shorter"))
+			type = PATH_SHORTER;
+		else if (!strcmp(path_style, "abslib")) {
+			type = PATH_RELATIVE;
+			abslib++;
+		} else
+			die("illegal path style.");
+	}
 	/*
 	 * exec lid(idutils).
 	 */
@@ -1783,6 +1805,8 @@ tagsearch(const char *pattern, const char *cwd, const char *root, const char *db
 	/*
 	 * search in library path.
 	 */
+	if (abslib)
+		type = PATH_ABSOLUTE;
 	if (db == GTAGS && getenv("GTAGSLIBPATH") && (count == 0 || Tflag) && !lflag) {
 		STRBUF *sb = strbuf_open(0);
 		char *libdir, *nextp = NULL;
