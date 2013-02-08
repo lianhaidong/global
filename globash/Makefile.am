@@ -15,7 +15,7 @@ bin_SCRIPTS = globash
 body = $(srcdir)/$(bin_SCRIPTS).in
 
 $(bin_SCRIPTS): $(body)
-	sed -e 's!@DATADIR@!'$(datadir)/gtags'!g' $(body) >$(bin_SCRIPTS).tmp && \
+	sed -e 's!@DATADIR@!'"$(datadir)/gtags"'!g' $(body) >$(bin_SCRIPTS).tmp && \
 	chmod +x $(bin_SCRIPTS).tmp && mv $(bin_SCRIPTS).tmp $(bin_SCRIPTS)
 
 man_MANS = $(bin_SCRIPTS).1
