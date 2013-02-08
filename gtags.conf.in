@@ -1,5 +1,5 @@
 #
-# Copyright (c) 1998, 1999, 2000, 2001, 2002, 2003, 2010, 2011
+# Copyright (c) 1998, 1999, 2000, 2001, 2002, 2003, 2010, 2011, 2013
 #	Tama Communications Corporation
 #
 # This file is part of GNU GLOBAL.
@@ -135,6 +135,12 @@ exuberant-ctags|plugin-example|setting to use Exuberant Ctags plug-in parser:\
 	:gtags_parser=VHDL\:@prefix@/lib/gtags/exuberant-ctags.la:\
 	:gtags_parser=Vim\:@prefix@/lib/gtags/exuberant-ctags.la:\
 	:gtags_parser=YACC\:@prefix@/lib/gtags/exuberant-ctags.la:
+#
+# Drupal configuration.
+#
+drupal|Drupal content management platform:\
+	:tc=common:\
+	:langmap=php\:.php.module.inc.profile.install.test:
 #---------------------------------------------------------------------
 # Configuration for htags(1)
 # Let's paint hypertext with your favorite colors!
