@@ -23,7 +23,11 @@
 #ifdef STDC_HEADERS
 #include <stdlib.h>
 #endif
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
 
+#include "gparam.h"
 #include "logging.h"
 
 /** @file
@@ -110,7 +114,10 @@ void
 logging_arguments(int argc, char **argv)
 {
 	int i;
+	char buf[MAXPATHLEN];
 
+	if (getcwd(buf, sizeof(buf)))
+		logging_printf("In |%s|\n", buf);
 	for (i = 0; i < argc; i++) {
 		if (ignore)
 			break;
