@@ -1924,7 +1924,7 @@ You can write new parser for gtags(1).
 
 Command layer plug-in parser was abolished.
 Please write function layer plug-in parser instead.
-See @file{plugin-example/} to know function layer plug-in parser.
+See @file{plugin-factory/} to know function layer plug-in parser.
 
 @c ***************************************************************************
 @node   Incremental updating
