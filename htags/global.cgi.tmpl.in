@@ -113,6 +113,12 @@ if ($form{'id'}) {
 	if ($?) {
 		error_and_exit("Couldn't find tag directory in secure mode.");
 	}
+} elsif (-d "cgi-bin") {
+	# This code avoids the bug of the python built-in web server.
+	chdir("cgi-bin");
+	if ($?) {
+		error_and_exit("Couldn't change 'cgi-bin' directory.");
+	}
 }
 $html = (-s "../compress") ? 'ghtml' : 'html';
 if (-f "../GTAGSROOT" && open(GTAGSROOT, "../GTAGSROOT")) {
