@@ -3,7 +3,7 @@ dnl Configuration script for GLOBAL.
 dnl Process this file with autoconf to produce a configure script.
 dnl
 dnl Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2008, 2010,
-dnl	2011, 2012
+dnl	2011, 2012, 2013
 dnl	Tama Communications Corporation
 dnl
 dnl This file is part of GNU GLOBAL.
@@ -123,7 +123,8 @@ dnl #### begin of gtags-cscope ###
 AC_CHECK_CURSES
 AM_CONDITIONAL(HAS_CURSES, test "$has_curses" = true)
 if test "$has_curses" = false && test "$enable_gtagscscope" = yes; then
-	AC_MSG_ERROR([curses library is required but not found.])
+	AC_MSG_ERROR([curses library is required but not found.
+If you are not going to use gtags-cscope, please try ./configure --disable-gtagscscope])
 fi
 
 dnl Checks for libraries.
