@@ -113,8 +113,6 @@
 		You can specify the position using @arg{position} argument,
 		which allows one of @arg{before}, @arg{right} and @arg{after}.
 		The default position is @arg{after}.
-	@item{@option{--html}}
-		Generate HTML hypertext instead of XHTML.
 	@item{@option{--html-header} @arg{file}}
 		Insert header records derived from @arg{file} into the HTML header.
 	@item{@option{-I}, @option{--icon}}
