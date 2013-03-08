@@ -424,8 +424,6 @@ cscope: Could not create private temp dir %s\n",
 	if (buildonly == YES) {
 	    myexit(0);
 	}
-	set_env("GTAGSROOT", getcwd(buf, sizeof(buf)));
-	set_env("GTAGSDBPATH", getcwd(buf, sizeof(buf)));
     }
 
     /* opendatabase(); */
