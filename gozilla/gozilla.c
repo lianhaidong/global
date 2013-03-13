@@ -358,8 +358,11 @@ getdefinitionURL(const char *arg, const char *htmldir, STRBUF *URL)
 	SPLIT ptable;
 	int status = -1;
 	STRBUF *sb = strbuf_open(0);
-	const char *path = makepath(htmldir, "MAP", NULL);
+	const char *path = makepath(htmldir, "D", NULL);
 
+	if (!test("d", path))
+		die("'%s' not found. Please invoke htags(1) without the -D option.", path);
+	path = makepath(htmldir, "MAP", NULL);
 	if (!test("f", path))
 		die("'%s' not found. Please invoke htags(1) with the --map-file option.", path);
 	fp = fopen(path, "r");
