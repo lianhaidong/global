@@ -414,8 +414,6 @@ cscope: Could not create private temp dir %s\n",
             /* NOTREACHED */
 	}
     } else {
-	char buf[MAXPATHLEN];
-
 	if (linemode == NO || verbosemode == YES)    /* display if verbose as well */
 	    postmsg("Building cross-reference...");                 
 	rebuild();
