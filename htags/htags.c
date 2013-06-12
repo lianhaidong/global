@@ -2139,15 +2139,15 @@ main(int argc, char **argv)
 		snprintf(com, sizeof(com), "%s/gtags/style.css.tmpl", datadir, distpath);
 		if (test("f", com))
 		       template = ".tmpl";
-		snprintf(com, sizeof(com), "cp %s/gtags/style.css%s %s/style.css", datadir, template, distpath);
+		snprintf(com, sizeof(com), "cp \"%s\"/gtags/style.css%s \"%s\"/style.css", datadir, template, distpath);
 #else
-		snprintf(com, sizeof(com), "cp %s/gtags/style.css.tmpl %s/style.css", datadir, distpath);
+		snprintf(com, sizeof(com), "cp \"%s\"/gtags/style.css.tmpl \"%s\"/style.css", datadir, distpath);
 #endif
 		system(com);
 	}
 	if (auto_completion || tree_view) {
 		char com[MAXPATHLEN*2+32];
-		snprintf(com, sizeof(com), "cp -r %s/gtags/jquery/* %s/js", datadir, distpath);
+		snprintf(com, sizeof(com), "cp -r \"%s\"/gtags/jquery/* \"%s\"/js", datadir, distpath);
 		system(com);
 	}
 	message("[%s] Done.", now());
@@ -2176,7 +2176,7 @@ main(int argc, char **argv)
 	if (Iflag) {
 		char com[MAXPATHLEN*2+32];
 
-		snprintf(com, sizeof(com), "cp -r %s/gtags/icons %s", datadir, distpath);
+		snprintf(com, sizeof(com), "cp -r \"%s\"/gtags/icons \"%s\"", datadir, distpath);
 		system(com);
 	}
 	gpath_close();
