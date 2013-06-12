@@ -120,12 +120,10 @@ edit(char *file, char *linenum)
 		(void) execute(editor, editor, plusnum, file, NULL_DEVICE, NULL);
 	}
 	else if (lineflagafterfile) {
-		(void) snprintf(com, sizeof(com), "%s %s \"%s\"", editor, file, plusnum);
-		system(com);
+		(void) execute(editor, editor, file, plusnum, NULL);
 	}
 	else {
-		(void) snprintf(com, sizeof(com), "%s %s \"%s\"", editor, plusnum, file);
-		system(com);
+		(void) execute(editor, editor, plusnum, file, NULL);
 	}
 	clear();	/* redisplay screen */
 }
