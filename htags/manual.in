@@ -144,6 +144,11 @@
 		At the first time, you should (1) copy the CGI script written by this command
 		into the system CGI directory, and (2) execute bless.sh script at the HTML directory
 		as a root user.
+		If you don't want to become a root user, please change the directory permission
+		according to your demand like this:
+		@begin_verbatim
+		# chmod 777 /usr/local/var/gtags/sitekeys
+		@end_verbatim
 	@item{@option{-s}, @option{--symbol}}
 		Make anchors not only for object definitions and references but also other symbols.
 	@item{@option{--show-position}}
