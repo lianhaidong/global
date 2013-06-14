@@ -103,7 +103,6 @@ editall(void)
 void
 edit(char *file, char *linenum)
 {
-	char	com[PATHLEN + 81];
 	char	msg[MSGLEN + 1];	/* message */
 	char	plusnum[NUMLEN + 20];	/* line number option: allow space for wordy line# flag */
 	char	*s;
