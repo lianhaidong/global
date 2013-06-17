@@ -19,10 +19,10 @@
 #ifndef _ASSOC_H_
 #define _ASSOC_H_
 
-#include "dbop.h"
+#include "db.h"
 
 typedef struct {
-	DBOP *dbop;
+	DB *db;
 } ASSOC;
 
 ASSOC *assoc_open(void);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2010 Tama Communications Corporation
+ * Copyright (c) 2004, 2010, 2013 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -22,6 +22,7 @@
 #ifdef STDC_HEADERS
 #include <stdlib.h>
 #endif
+#include <fcntl.h>
 
 #include "checkalloc.h"
 #include "die.h"
@@ -40,10 +41,9 @@ assoc_open(void)
 	/*
 	 * Use invisible temporary file.
 	 */
-	assoc->dbop = dbop_open(NULL, 1, 0600, 0);
-	if (assoc->dbop == NULL)
-		abort();
-	assoc->dbop->put_errmsg = "cannot write to temporary file.\nYou can specify the directory for the temporary file using environment variable 'TMPDIR'.";
+	assoc->db = dbopen(NULL, O_RDWR|O_CREAT|O_TRUNC, 0600, DB_BTREE, NULL);
+	if (assoc->db == NULL)
+		die("cannot make associate array.");
 	return assoc;
 }
 /**
@@ -56,9 +56,16 @@ assoc_close(ASSOC *assoc)
 {
 	if (assoc == NULL)
 		return;
-	if (assoc->dbop == NULL)
-		abort();
-	dbop_close(assoc->dbop);
+	if (assoc->db == NULL)
+		return;
+#ifdef USE_DB185_COMPAT
+	(void)assoc->db->close(assoc->db);
+#else
+	/*
+	 * If dbname = NULL, omit writing to the disk in __bt_close().
+	 */
+	(void)assoc->db->close(assoc->db, 1);
+#endif
 	free(assoc);
 }
 /**
@@ -71,24 +78,60 @@ assoc_close(ASSOC *assoc)
 void
 assoc_put(ASSOC *assoc, const char *name, const char *value)
 {
-	if (assoc->dbop == NULL)
-		abort();
-	dbop_put(assoc->dbop, name, value);
+	DB *db = assoc->db;
+	DBT key, dat;
+	int status;
+
+	if (db == NULL)
+		die("associate array is not prepared.");
+	if (strlen(name) == 0)
+		die("primary key size == 0.");
+	key.data = (char *)name;
+	key.size = strlen(name)+1;
+	dat.data = (char *)value;
+	dat.size = strlen(value)+1;
+
+	status = (*db->put)(db, &key, &dat, 0);
+	switch (status) {
+	case RET_SUCCESS:
+		break;
+	case RET_ERROR:
+	case RET_SPECIAL:
+		die("cannot write to the associate array. (assoc_put)");
+	}
 }
 /**
  * assoc_put_withlen: put data into associate array.
  *
- *	@param[in]	assoc	descriptor
- *	@param[in]	name	name
- *	@param[in]	value	value
- *	@param[in]	len	length
+ *      @param[in]      assoc   descriptor
+ *      @param[in]      name    name
+ *      @param[in]      value   value
+ *      @param[in]      length  length of value
  */
 void
-assoc_put_withlen(ASSOC *assoc, const char *name, const char *value, int len)
+assoc_put_withlen(ASSOC *assoc, const char *name, const char *value, int length)
 {
-	if (assoc->dbop == NULL)
-		abort();
-	dbop_put_withlen(assoc->dbop, name, value, len);
+	DB *db = assoc->db;
+	DBT key, dat;
+	int status;
+
+	if (db == NULL)
+		die("associate array is not prepared.");
+	if (strlen(name) == 0)
+		die("primary key size == 0.");
+	key.data = (char *)name;
+	key.size = strlen(name)+1;
+	dat.data = (char *)value;
+	dat.size = length;
+
+	status = (*db->put)(db, &key, &dat, 0);
+	switch (status) {
+	case RET_SUCCESS:
+		break;
+	case RET_ERROR:
+	case RET_SPECIAL:
+		die("cannot write to the associate array. (assoc_put)");
+	}
 }
 /**
  * assoc_get: get data from associate array.
@@ -100,7 +143,23 @@ assoc_put_withlen(ASSOC *assoc, const char *name, const char *value, int len)
 const char *
 assoc_get(ASSOC *assoc, const char *name)
 {
-	if (assoc->dbop == NULL)
-		abort();
-	return dbop_get(assoc->dbop, name);
+	DB *db = assoc->db;
+	DBT key, dat;
+	int status;
+
+	if (db == NULL)
+		die("associate array is not prepared.");
+	key.data = (char *)name;
+	key.size = strlen(name)+1;
+
+	status = (*db->get)(db, &key, &dat, 0);
+	switch (status) {
+	case RET_SUCCESS:
+		break;
+	case RET_ERROR:
+		die("cannot read from the associate array. (assoc_get)");
+	case RET_SPECIAL:
+		return (NULL);
+	}
+	return (dat.data);
 }
