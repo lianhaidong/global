@@ -20,6 +20,10 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+June 17 2013, Shigio YAMAGUCHI
+
+	Dependence to dbop.c module was eliminated from assoc.c module.
+
 June 12 2013, Shigio YAMAGUCHI
 
 	File 'HTML/sitekey' (--system-cgi option) was removed since it is unnecessary.
