@@ -22,7 +22,12 @@
 #ifdef STDC_HEADERS
 #include <stdlib.h>
 #endif
+#ifdef HAVE_FCNTL_H
 #include <fcntl.h>
+#endif
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
 
 #include "checkalloc.h"
 #include "die.h"
