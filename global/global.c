@@ -645,13 +645,12 @@ main(int argc, char **argv)
 					die("rel2abs failed.");
 				single_update = regular_path_name;
 			}
-			strbuf_puts(sb, " --single-update=");
-			strbuf_putc(sb, '"');
-			strbuf_puts(sb, single_update);
-			strbuf_putc(sb, '"');
+			strbuf_puts(sb, " --single-update");
+			strbuf_putc(sb, ' ');
+			strbuf_puts(sb, quote_shell(single_update));
 		}
 		strbuf_putc(sb, ' ');
-		strbuf_puts(sb, dbpath);
+		strbuf_puts(sb, quote_shell(dbpath));
 		if (system(strbuf_value(sb)))
 			exit(1);
 		strbuf_close(sb);

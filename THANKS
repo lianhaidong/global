@@ -152,6 +152,7 @@ Yann Dirson		many bug reports and many valuable suggestions.
 Yoshiharu Ito		advice about SunOS 4.1.3, and a bug report about configure.ac.
 Yoshinori Tomita	advice about compat.h for Solaris.
 Y. Yoshinaga		advice about makefile for Debian GNU/Linux.
+Yun sheng		bug report about global -u, gtags.vim and gtags-cscope.vim.
 Yushi Oka		bug report about config path and improvements of gtags-mode
 			(gtags-select-buffer-single, gtags-ignore-case).
 ---------------------------------------------------------------------------
