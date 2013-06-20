@@ -20,24 +20,6 @@ ___________________________________
 Frequently Asked Questions about GLOBAL.
 
 ----------------------------------------------------------------------------
-Q0. Please explain about BOKINware.
-
-A0. GNU GLOBAL is BOKINware. It means that it is free software
-    based on GNU GPL, and is commercial (for-profit) software
-    based on BOKIN model.
-
-    BOKIN Model is a business model to obtain proceeds by widely
-    collecting donations while developing and distributing
-    free software. This model is constructed not to take away
-    consumer's freedom of software, and is similar to the model
-    of FSF except that FSF is not commercial organization.
-    Your contribution is put on donors list in DONORS file, and
-    distributed all over the world with GNU GLOBAL itself.
-
-    Please see the files: DONORS, BOKIN_MODEL and BOKIN_MODEL_FAQ
-    for more details.
-
-----------------------------------------------------------------------------
 Q1. Does GLOBAL support DOS and Windows 32 environment?
 
 A1. No, it doesn't. GNU GLOBAL supports only UNIX(POSIX) environment.
@@ -46,13 +28,13 @@ A1. No, it doesn't. GNU GLOBAL supports only UNIX(POSIX) environment.
            http://www.gnu.org/software/global/download.html
 
     Though GLOBAL doesn't supports DOS and Windows 32 environment,
-    we accept the code for them if the following requirements are met:
-    o It works in DOS and(or) Windows 32 environment.
-    o It doesn't influence UNIX environment.
+    we accept code for them if the following requirements are met:
+    (1) It works in DOS and(or) Windows 32 environment.
+    (2) It doesn't influence UNIX environment.
 
 ----------------------------------------------------------------------------
 Q2. GLOBAL skips some functions.
-    For example, GLOBAL skips the function 'func()' in this example.
+    For example, GLOBAL skips 'func()' in this example.
 
 	#define M(a)	static char *string = a;
 
@@ -76,7 +58,7 @@ A2. GLOBAL cannot recognize 'func()', because M(a) seems to be a function
 	}
 
     Otherwise, you can tell gtags(1) that 'M' is not a function by listing
-    the macros in '.notfunction' file in the current directory.
+    the macros in '.notfunction' file in the root directory of the project.
 
 	[.notfunction]
 	+---------------
@@ -84,7 +66,7 @@ A2. GLOBAL cannot recognize 'func()', because M(a) seems to be a function
 	|...
 
 ----------------------------------------------------------------------------
-Q3. I'm a C++ programmer. Why does not gtags pick up the class names in *.h?
+Q3. I'm a C++ programmer. Why does not gtags pick up class names in *.h?
 
 A3. GLOBAL treats *.h files as a C source file. If you want to treat them
     as a C++ source file, please set environment variable GTAGSFORCECPP.
@@ -112,13 +94,13 @@ A4. If your GNU system supports 64-bit file offset then please try the
 	$ ./configure CFLAGS='-D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64'
 
 ----------------------------------------------------------------------------
-Q5. What is the message? What should I do?
+Q5. What is this message? What should I do?
     'configure: error: curses library is required but not found."
 
 A5. gtags-cscope(1) requires curses library. There are two choices of yours.
 
     If you use gtags-cscope(1)
-	Please install curses library. You can get it here:
+	Please install curses library. You can get it from:
 	http://www.gnu.org/software/ncurses/
     else 
 	You can install GLOBAL without gtags-cscope(1) like follows:
