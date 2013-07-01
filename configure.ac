@@ -318,7 +318,7 @@ dnl default mode of sitekeys directory.
 dnl
 AC_MSG_CHECKING(default mode of sitekeys directory)
 AC_ARG_WITH(sitekeys-mode,
-[  --with-sitekeys-mode     default mode of sitekeys directory ],
+[  --with-sitekeys-mode    default mode of the sitekeys directory ],
 [ SITEKEYS_MODE="$withval" ],
 [ SITEKEYS_MODE="755" ])
 AC_MSG_RESULT($SITEKEYS_MODE)
