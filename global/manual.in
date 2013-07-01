@@ -1,6 +1,6 @@
 #
 # Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2006
-#	2008, 2009, 2011, 2012 Tama Communications Corporation
+#	2008, 2009, 2011, 2012, 2013 Tama Communications Corporation
 #
 # This file is part of GNU GLOBAL.
 #
@@ -22,8 +22,8 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	GLOBAL,1,May 2012,GNU Project
-@NAME	global - print locations of the specified object.
+@HEADER	GLOBAL,1,Jun 2013,GNU Project
+@NAME	global - print locations of given symbols
 @SYNOPSIS
 	@name{global} [-adGilnqrstTvx][-e] @arg{pattern}
 	@name{global} -c[diIoOPrsT] @arg{prefix}
@@ -34,40 +34,41 @@
 	@name{global} -p[qrv]
 	@name{global} -u[qv]
 @DESCRIPTION
-	@name{Global} finds locations of the specified object
+	@name{Global} finds locations of given symbols
 	in C, C++, Yacc, Java, PHP and Assembly source files,
-	and print the path name, line number and line image of the locations.
-	@name{Global} can locate not only object definitions but also object
-	references and other symbols.
+	and print path name, line number and line image for each of them.
+	@name{Global} can locate not only definitions but also references
+	and other symbols.
 
-	@name{Global} can treat a source tree, that is, a directory that
-	has sub-directories and source files, as a project.
+	@name{Global} can treat a source tree, that is, a directory that has
+	sub-directories and source files, as a project.
 	In advance of using this command, you must execute @xref{gtags,1}
-	at the root directory of a project to make tag files.
-	Then you can execute this command anywhere in the project.
+	at the root directory of the project which you want to investigate
+	to make tag files.
+	Then you can use @name{global} command anywhere in the project.
 	You need not specify where the tag file is.
 	Instead, @name{global} locates it by itself.
 
-	You can specify a regular expression for the @arg{pattern}.
+	You can use regular expression for @arg{pattern}.
 	@name{Global} understands two different versions of regular expression
 	syntax: @arg{basic} and @arg{extended}. The default is @arg{extended}.
 @COMMANDS
 	The following commands are available:
 	@begin_itemize
 	@item{<no command> @arg{pattern}}
-		Print objects which match to the @arg{pattern}.
-		By default, print object definitions.
+		Print tags of symbols which match to the @arg{pattern}.
+		By default, print definition tags.
 	@item{@option{-c}, @option{--completion} [@arg{prefix}]}
-		Print object names which start with the specified @arg{prefix}.
-		If @arg{prefix} is not specified, print all object names.
+		Print symbols which start with the @arg{prefix}.
+		If @arg{prefix} is not given, print all symbols.
 	@item{@option{-f}, @option{--file} @arg{files}}
-		Print all objects in the @arg{files}.
+		Print all tags in the @arg{files}.
 		This option implies the @option{-x} option.
 	@item{@option{-g}, @option{--grep} @arg{pattern} [@arg{files}]}
 		Print all lines which match to the @arg{pattern}.
-		If @arg{files} is specified, this command searches in the files.
+		If @arg{files} are given, this command searches in the files.
 	@item{@option{--help}}
-		Show help.
+		Print a usage message.
 	@item{@option{-I}, @option{--idutils} @arg{pattern}}
 		Print all lines which match to the @arg{pattern}.
 		This function use @xref{idutils,1} as a search engine.
@@ -75,9 +76,9 @@
 		in your system and execute @xref{gtags,1} with the @option{-I} option.
 	@item{@option{-P}, @option{--path} [@arg{pattern}]}
 		Print path names which match to the @arg{pattern}.
-		If no pattern specified, print all path names in the project.
+		If no pattern is given, print all paths in the project.
 	@item{@option{-p}, @option{--print-dbpath}}
-		Print the location of @file{GTAGS}.
+		Print location of @file{GTAGS}.
 	@item{@option{-u}, @option{--update}}
 		Update tag files incrementally.
 		This command internally invokes @xref{gtags,1}.
@@ -92,7 +93,7 @@
 	@item{@option{-a}, @option{--absolute}}
 		Print absolute path name. By default, print relative path name.
 	@item{@option{-d}, @option{--definition}}
-		Print locations of object definitions.
+		Print locations of definitions.
 	@item{@option{--from-here} @arg{context}}
 		Decide tag type by the @arg{context}. The @arg{context} must be 'lineno:path'.
 		If this option is specified then the @option{-s} and @option{-r}
@@ -113,7 +114,7 @@
 	@item{@option{-i}, @option{--ignore-case}}
 		Ignore case distinctions in the pattern.
 	@item{@option{-l}, @option{--local}}
-		Print only objects which exist under the current directory.
+		Print only tags which exist under the current directory.
 	@item{@option{-L}, @option{--file-list} @arg{file-list}}
 		Obtain files from @arg{file-list} in addition to the arguments.
 	@item{@option{--literal}}
@@ -121,17 +122,16 @@
 		This option is only valid when the @option{-g} command is specified.
 	@item{@option{--match-part @arg{part}}}
 		Specify the matched part of path name.
+		Possible values are as follows: @arg{first}, @arg{last}, @arg{all}. The default is @arg{all}.
 		This option is valid only with the @option{-c} command with the @option{-P} option.
-		The default is @arg{all}.
 	@item{@option{-n}, @option{--nofilter}}
 		Suppress sort filter and path conversion filter.
 	@item{@option{-O}, @option{--only-other}}
-		Treat only text files other than source code like @file{README}.
+		Treat only text files: @file{README}, @file{ChangeLog}, or etc.
 		This option is valid only with the @option{-g} or @option{-P} command.
 		This option overrides the @option{-o} option.
 	@item{@option{-o}, @option{--other}}
-		Treat not only source files but also text files other than source code
-		like @file{README}.
+		Treat not only source files but also text files: @file{README}, @file{ChangeLog}, or etc.
 		This option is valid only with the @option{-g} or @option{-P} command.
 	@item{@option{--path-style} @arg{format}}
 		Print path names using the specified @arg{format}.
@@ -142,7 +142,8 @@
 	@item{@option{-q}, @option{--quiet}}
 		Quiet mode.
 	@item{@option{-r}, @option{--reference}, @option{--rootdir}}
-		Print locations of object references.
+		Print reference tags.
+		Reference means the reference to a symbol which has definitions.
 		With the @option{-p} option, print the root directory of the project.
 	@item{@option{--result} @arg{format}}
 		Print out using the specified @arg{format}.
@@ -157,7 +158,8 @@
 		and there is no change in other files.
                 This option implies the @option{-u} option.
 	@item{@option{-s}, @option{--symbol}}
-		Print locations of the specified symbol other than definitions.
+		Print other symbol tags.
+		Other symbol means the reference to a symbol which has no definition.
 	@item{@option{-T}, @option{--through}}
 		Go through all the tag files listed in @var{GTAGSLIBPATH}.
 		By default, stop searching when tag is found.
@@ -178,8 +180,12 @@
 	$ ls -F
 	Makefile      src/    lib/
 	$ gtags
+	$ ls G*
+	GPATH   GRTAGS  GTAGS
 	$ global main
 	src/main.c
+	$ (cd src; global main)
+	main.c
 	$ global -x main
 	main              10 src/main.c  main (argc, argv) {
 	$ global -f src/main.c
@@ -190,8 +196,7 @@
 	$ global -x '^[sg]et'
 	set_num           20 lib/util.c  set_num(values) {
 	get_num           30 lib/util.c  get_num() {
-	$ global -rx '^[sg]et'
-	get_num          205 src/op.c            while (get_num() > 0) {
+	$ global -rx set_num
 	set_num          113 src/op.c            set_num(32);
 	set_num          225 src/opop.c               if (set_num(0) > 0) {
 	$ global strlen
@@ -207,11 +212,11 @@
 @FILES
 	@begin_itemize
 	@item{@file{GTAGS}}
-		Tag file for object definitions.
+		Tag file for definitions.
 	@item{@file{GRTAGS}}
-		Tag file for object references.
+		Tag file for references.
 	@item{@file{GPATH}}
-		Tag file for path of source files.
+		Tag file for source files.
 	@item{@file{GTAGSROOT}}
 		If environment variable @var{GTAGSROOT} is not set
 		and file @file{GTAGSROOT} exists in the same directory with @file{GTAGS}
@@ -229,7 +234,7 @@
 		This value is ignored when @var{GTAGSROOT} is not defined.
 	@item{@var{GTAGSLIBPATH}}
 		If this variable is set, it is used as the path to search
-		for library functions. If the specified object is not
+		for library functions. If the given symbol is not
 		found in the project, @name{global} also search in these paths.
 		Since only @file{GTAGS} is targeted in the retrieval, this variable is
 		ignored when the @option{-r} or @option{-s} is specified.

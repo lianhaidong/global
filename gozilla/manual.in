@@ -56,7 +56,7 @@
 	@item{@option{--help}}
 		Show help.
 	@item{@option{-p}}
-		Print just a generated URL instead of displaying it.
+		Print just a generated URL instead of the contents.
 	@item{@arg{file}}
 		File name or alias name.
 	@item{@option{-q}, @option{--quiet}}
@@ -71,9 +71,9 @@
 	@item{@file{HTML/}}
 		Hypertext of source code.
 	@item{@file{GTAGS/}}
-		Tag file for object definitions.
+		Tag file for definitions.
 	@item{@file{$HOME/.gozillarc}}
-		Alias file. Please read source code for the detail.
+		Alias file. Not yet documented.
 	@end_itemize
 @ENVIRONMENT
 	@begin_itemize
