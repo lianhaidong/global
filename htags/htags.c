@@ -1151,7 +1151,12 @@ makecommonpart(const char *title, const char *defines, const char *files)
 				strbuf_puts_nl(sb, header_end);
 				if (tree_view) {
 					strbuf_puts_nl(sb, tree_control);
-					strbuf_puts_nl(sb, tree_begin);
+					if (tree_view_type) {
+						strbuf_sprintf(sb, tree_begin_using, tree_view_type);
+						strbuf_putc(sb, '\n');
+					} else {
+						strbuf_puts_nl(sb, tree_begin);
+					}
 				} else if (table_flist)
 					strbuf_puts_nl(sb, flist_begin);
 				else if (!no_order_list)

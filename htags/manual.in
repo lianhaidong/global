@@ -169,6 +169,9 @@
 	@item{@option{--tree-view}[=@arg{type}]}
 		Use treeview for the file index.
 		Please note that this function requires javascript language in your browser.
+		Possible values of @arg{type} are as follows: @arg{treeview}, @arg{treeview-red},
+		@arg{treeview-black}, @arg{treeview-gray}, @arg{treeview-famfamfam}.
+		The default is @arg{treeview}.
 	@item{@option{-v}, @option{--verbose}}
 		Verbose mode.
 	@item{@option{-w}, @option{--warning}}

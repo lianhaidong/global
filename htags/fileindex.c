@@ -375,8 +375,8 @@ print_directory(int level, char *basedir)
 			strbuf_puts(files, gen_href_begin_with_title_target("files", path2fid(basedir), HTML, NULL, NULL, target));
 			strbuf_puts(files, full_path ? removedotslash(basedir) : lastpart(basedir));
 			strbuf_puts(files, gen_href_end());
-			strbuf_puts(files, dir_end);
-			strbuf_puts(files, "\n<ul>\n");
+			strbuf_puts_nl(files, dir_title_end);
+			strbuf_puts_nl(files, "<ul>");
 		}
 	}
 	while ((path = getpath()) != NULL) {
@@ -466,8 +466,10 @@ print_directory(int level, char *basedir)
 	if (level > 0) {
 		print_directory_footer(op, level, basedir);
 		close_file(fileop);
-		if (tree_view)
-			strbuf_puts(files, "</ul>\n");
+		if (tree_view) {
+			strbuf_puts_nl(files, "</ul>");
+			strbuf_puts_nl(files, dir_end);
+		}
 	}
 	html_count++;
 	return count;
