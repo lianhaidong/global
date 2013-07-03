@@ -123,6 +123,7 @@ const char *noframes_end	= "</noframes>";
 /** @name tree view tag (--tree-view) */
 /** @{ */
 const char *tree_control	= "<div id='control'>All <a href='#'>close</a> | <a href='#'>open</a></div>";
+const char *tree_loading	= "<span id='init' class='loading'>Under construction...</span>";
 const char *tree_begin		= "<ul id='tree'>";
 const char *tree_begin_using	= "<ul id='tree' class='%s'>";
 const char *tree_end		= "</ul>";

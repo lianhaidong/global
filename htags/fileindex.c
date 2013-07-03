@@ -752,6 +752,7 @@ makefileindex(const char *file, STRBUF *a_files)
 	fputs_nl(header_end, filesop);
 	if (tree_view) {
 		fputs_nl(tree_control, filesop);
+		fputs_nl(tree_loading, filesop);
 		if (tree_view_type) {
 			fprintf(filesop, tree_begin_using, tree_view_type);
 			fputc('\n', filesop);

@@ -111,6 +111,7 @@ extern const char *noframes_begin;
 extern const char *noframes_end;
 
 extern const char *tree_control;
+extern const char *tree_loading;
 extern const char *tree_begin;
 extern const char *tree_begin_using;
 extern const char *tree_end;

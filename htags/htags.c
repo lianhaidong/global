@@ -1151,6 +1151,7 @@ makecommonpart(const char *title, const char *defines, const char *files)
 				strbuf_puts_nl(sb, header_end);
 				if (tree_view) {
 					strbuf_puts_nl(sb, tree_control);
+					strbuf_puts_nl(sb, tree_loading);
 					if (tree_view_type) {
 						strbuf_sprintf(sb, tree_begin_using, tree_view_type);
 						strbuf_putc(sb, '\n');
@@ -1664,6 +1665,7 @@ main(int argc, char **argv)
 		Fflag = 1;				/* uses frame */
 		fflag = dynamic = 1;			/* needs a HTTP server */
 		auto_completion = tree_view = 1;	/* needs javascript */
+		tree_view_type = "filetree";		/* --tree-view=filetree */
 	}
 	if (strchr(sitekey, '.') || strchr(sitekey, '/'))
 		die("site key must not include '.' and '/'.");
