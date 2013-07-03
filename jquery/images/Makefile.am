@@ -10,11 +10,11 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
-images_DATA = file.gif folder-closed.gif folder.gif minus.gif plus.gif \
-	treeview-black-line.gif treeview-black.gif treeview-default-line.gif \
-	treeview-default.gif treeview-famfamfam-line.gif treeview-famfamfam.gif \
-	treeview-gray-line.gif treeview-gray.gif treeview-red-line.gif \
-	treeview-red.gif
+images_DATA = file.png folder-closed.png folder.png minus.png plus.png \
+	treeview-black-line.png treeview-black.png treeview-default-line.png \
+	treeview-default.png treeview-famfamfam-line.png treeview-famfamfam.png \
+	treeview-gray-line.png treeview-gray.png treeview-red-line.png \
+	treeview-red.png
 
 imagesdir = ${datadir}/gtags/jquery/images
 
