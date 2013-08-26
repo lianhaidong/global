@@ -1665,7 +1665,6 @@ main(int argc, char **argv)
 		Fflag = 1;				/* uses frame */
 		fflag = dynamic = 1;			/* needs a HTTP server */
 		auto_completion = tree_view = 1;	/* needs javascript */
-		tree_view_type = "filetree";		/* --tree-view=filetree */
 	}
 	if (strchr(sitekey, '.') || strchr(sitekey, '/'))
 		die("site key must not include '.' and '/'.");
