@@ -35,5 +35,5 @@ install-data-hook:
 	dir="$(DESTDIR)$(localstatedir)/gtags/sitekeys"; \
 	if [ ! -d $$dir ]; then \
 		$(MKDIR_P) $$dir; \
-		chmod 755 $$dir; \
+		chmod @SITEKEYS_MODE@ $$dir; \
 	fi
