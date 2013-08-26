@@ -19,7 +19,31 @@ ___________________________________
 		----------------------------------
 
 GNU GLOBAL NEWS - User visible changes.
-At least, you had better search '[INCOMPATIBLE CHANGES]' for each version.
+At least, you should search '[INCOMPATIBLE CHANGES]' for each version.
+
+Version 6.2.9 - August 26 2013
+
+[CHANGES]
+New facilities:
+o configure: New option --with-sitekeys-mode=MODE.
+
+Changed:
+o jquery.treeview.js: Removed effects on mouse over because they use time too much
+  to build a tree. Now it works faster than previous versions.
+o htags: Added a loading message when the --tree-view option is specified.
+
+[INCOMPATIBLE CHANGES]
+o gtags-cscope: Though previous gtags-cscope ignored GTAGSROOT, GTAGSDBPATH when
+  the -d option was not specified, it was meaningless. Now it accepts both of them
+  always.
+
+[BUG FIXED]
+o gtags-cscope: Arrow keys didn't work after execution of external programs. Now it works.
+o global: The -u option didn't work in a project whose path includes blanks. Now it works.
+o htags: Fixed some bugs about --tree-view option.
+- The type argument of --tree-view option didn't work in the top page. Now it works.
+- Directory icons by --tree-view=filetree were not displayed. Now it works.
+- On-line manual didn't say about the type argument. Now it is written.
 
 Version 6.2.8 - February 28 2013
 
