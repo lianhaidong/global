@@ -40,7 +40,7 @@ const unsigned char chartype[256] = {
 	0, U, U, U, U, U, U, U, U, U, U, U, U, U, U, U,	/* @ABCDEFGHIJKLMNO */
 	U, U, U, U, U, U, U, U, U, U, U, R, R, R, R, U,	/* PQRSTUVWXYZ[\]^_ */
 	0, U, U, U, U, U, U, U, U, U, U, U, U, U, U, U,	/* `abcdefghijklmno */
-	U, U, U, U, U, U, U, U, U, U, U, R, 0, R, U,	/* pqrstuvwxyz{|}~ */
+	U, U, U, U, U, U, U, U, U, U, U, R, R, R, U,	/* pqrstuvwxyz{|}~ */
 #else
 #error "Unsupported character encoding."
 #endif
