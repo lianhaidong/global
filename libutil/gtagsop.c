@@ -614,19 +614,13 @@ gtags_first(GTOP *gtop, const char *pattern, int flags)
 		key = NULL;
 		preg = NULL;
 	} else if (isregex(pattern) && regcomp(preg, pattern, regflags) == 0) {
-		const char *p;
 		/*
-		 * If the pattern include '^' + some non regular expression
-		 * characters like '^aaa[0-9]', we take prefix read method
-		 * with the non regular expression part as the prefix.
+		 * If the pattern is '^' + <non regular expression> like '^aaa',
+		 * we take prefix read method with the non regular expression part
+		 * as a prefix.
 		 */
-		if (!(flags & GTOP_IGNORECASE) && *pattern == '^' && *(p = pattern + 1) && !isregexchar(*p)) {
-			int i = 0;
-
-			while (*p && !isregexchar(*p) && i < IDENTLEN)
-				prefix[i++] = *p++;
-			prefix[i] = '\0';
-			key = prefix;
+		if (!(flags & GTOP_IGNORECASE) && *pattern == '^' && !isregex(pattern + 1)) {
+			key = pattern + 1;
 			dbflags |= DBOP_PREFIX;
 		} else {
 			key = NULL;
