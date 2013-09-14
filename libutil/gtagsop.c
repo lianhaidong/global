@@ -574,7 +574,6 @@ gtags_first(GTOP *gtop, const char *pattern, int flags)
 {
 	int dbflags = 0;
 	int regflags = 0;
-	char prefix[IDENTLEN];
 	static regex_t reg;
 	regex_t *preg = &reg;
 	const char *key = NULL;
