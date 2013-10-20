@@ -1,7 +1,7 @@
 " File: gtags.vim
 " Author: Tama Communications Corporation
-" Version: 0.6.4
-" Last Modified: Nov 24, 2012
+" Version: 0.6.5
+" Last Modified: Oct 21, 2013
 "
 " Copyright and licence
 " ---------------------
@@ -273,7 +273,7 @@ function! s:Extract(line, target)
     let l:i = 0
 
     " skip command name.
-    if a:line =~ '^Gtags'
+    if a:line =~# '^Gtags'
         let l:i = 5
     endif
     while l:i < l:length && a:line[l:i] == ' '
@@ -293,7 +293,7 @@ function! s:Extract(line, target)
                     let l:option = l:option . l:c
                     let l:i = l:i + 1
                 endwhile 
-                if l:c == 'e'
+                if l:c ==# 'e'
                     let l:force_pattern = 1
                 endif
             endif
@@ -335,7 +335,7 @@ function! s:TrimOption(option)
 
     while l:i < l:length
         let l:c = a:option[l:i]
-        if l:c !~ '[cenpquv]'
+        if l:c !~# '[cenpquv]'
             let l:option = l:option . l:c
         endif
         let l:i = l:i + 1
@@ -352,7 +352,7 @@ function! s:ExecLoad(option, long_option, pattern)
     let l:option = ''
     let l:result = ''
 
-    if a:option =~ 'f'
+    if a:option =~# 'f'
         let l:isfile = 1
         if filereadable(a:pattern) == 0
             call s:Error('File ' . a:pattern . ' not found.')
@@ -384,11 +384,11 @@ function! s:ExecLoad(option, long_option, pattern)
         return
     endif
     if l:result == '' 
-        if l:option =~ 'f'
+        if l:option =~# 'f'
             call s:Error('Tag not found in ' . a:pattern . '.')
-        elseif l:option =~ 'P'
+        elseif l:option =~# 'P'
             call s:Error('Path which matches to ' . a:pattern . ' not found.')
-        elseif l:option =~ 'g'
+        elseif l:option =~# 'g'
             call s:Error('Line which matches to ' . a:pattern . ' not found.')
         else
             call s:Error('Tag which matches to ' . g:Gtags_Shell_Quote_Char . a:pattern . g:Gtags_Shell_Quote_Char . ' not found.')
@@ -430,7 +430,7 @@ function! s:RunGlobal(line)
     " If no pattern supplied then get it from user.
     if l:pattern == ''
         let s:option = l:option
-        if l:option =~ 'f'
+        if l:option =~# 'f'
             let l:line = input("Gtags for file: ", expand('%'), 'file')
         else
             let l:line = input("Gtags for pattern: ", expand('<cword>'), 'custom,GtagsCandidateCore')
@@ -478,9 +478,9 @@ function! GtagsCandidate(lead, line, pos)
 endfunction
 
 function! GtagsCandidateCore(lead, line, pos)
-    if s:option == 'g'
+    if s:option ==# 'g'
         return ''
-    elseif s:option == 'f'
+    elseif s:option ==# 'f'
         if isdirectory(a:lead)
             if a:lead =~ '/$'
                 let l:pattern = a:lead . '*'
