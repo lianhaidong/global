@@ -159,6 +159,11 @@
   :group 'gtags
   :type 'boolean)
 
+(defcustom gtags-find-all-text-files t
+  "*If non-nil, gtags-find-file command finds all text files."
+  :group 'gtags
+  :type 'boolean)
+
 (defcustom gtags-prefix-key "\C-c"
   "*If non-nil, it is used for the prefix key of gtags-xxx command."
   :group 'gtags
@@ -447,7 +452,7 @@
 (defun gtags-completing (flag string predicate code)
   ; The purpose of using the -n option for the -P command is to exclude
   ; dependence on the execution directory.
-  (let ((option (cond ((eq flag 'files)   "-cPo")
+  (let ((option (cond ((eq flag 'files)   (if gtags-find-all-text-files "-cPo" "-cP"))
                       ((eq flag 'grtags)  "-cr")
                       ((eq flag 'gsyms)   "-cs")
                       ((eq flag 'idutils) "-cI")
@@ -613,7 +618,7 @@
                   nil nil nil gtags-history-list))
     (if (not (equal "" input)) (setq tagname input))
     (gtags-push-context)
-    (gtags-goto-tag tagname "Po")))
+    (gtags-goto-tag tagname (if gtags-find-all-text-files "Po" "P"))))
 
 (defun gtags-parse-file ()
   "Input file name and show the list of tags in it."
