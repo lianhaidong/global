@@ -3,7 +3,7 @@
 ;(setq debug-on-error t)
 ;;
 ;; Copyright (c) 1997, 1998, 1999, 2000, 2006, 2007, 2008, 2009, 2010
-;;		2011, 2012
+;;		2011, 2012, 2013
 ;;	Tama Communications Corporation
 ;;
 ;; This file is part of GNU GLOBAL.
@@ -24,7 +24,7 @@
 
 ;; GLOBAL home page is at: http://www.gnu.org/software/global/
 ;; Author: Tama Communications Corporation
-;; Version: 3.7
+;; Version: 3.8
 ;; Keywords: tools
 
 ;; Gtags-mode is implemented as a minor mode so that it can work with any
@@ -67,6 +67,34 @@
 ;; If 'gtags-suggested-key-mapping' is not set, any key mapping is not done.
 ;; If 'gtags-disable-pushy-mouse-mapping' is set, any mouse mapping is not done.
 ;;
+;; Here is an example of initial file.
+;; It assumed that gtags.el is installed into '$HOME/.emacs.d/lisp'.
+;;
+;; $ cp /usr/local/share/gtags/gtags.el $HOME/.emacs.d/lisp
+;; $ vi $HOME/.emacs.d/init.el
+;;
+;; [$HOME/.emacs.d/init.el]
+;; +----------------------------------------------------------------
+;; |(add-to-list 'load-path "~/.emacs.d/lisp")
+;; |(autoload 'gtags-mode "gtags" "" t)
+;; |(add-hook 'gtags-mode-hook
+;; |  '(lambda ()
+;; |        ; Local customization (overwrite key mapping)
+;; |        (define-key gtags-mode-map "\C-f" 'scroll-up)
+;; |        (define-key gtags-mode-map "\C-b" 'scroll-down)
+;; |))
+;; |(add-hook 'gtags-select-mode-hook
+;; |  '(lambda ()
+;; |        (setq hl-line-face 'underline)
+;; |        (hl-line-mode 1)
+;; |))
+;; |(add-hook 'c-mode-hook
+;; |  '(lambda ()
+;; |        (gtags-mode 1)))
+;; |; Customization
+;; |(setq gtags-suggested-key-mapping t)
+;; |(setq gtags-auto-update t)
+;; +----------------------------------------------------------------
 
 ;;; Code
 
