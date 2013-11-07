@@ -1246,7 +1246,9 @@ grep(const char *pattern, char *const *argv, const char *dbpath)
 		if (lflag && !locatestring(path, localprefix, MATCH_AT_FIRST))
 			continue;
 		if (literal) {
-			literal_search(cv, path);
+			int n = literal_search(cv, path);
+			if (n > 0)
+				count += n;
 		} else {
 			if (!(fp = fopen(path, "r")))
 				die("cannot open file '%s'.", path);

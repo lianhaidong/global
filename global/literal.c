@@ -108,7 +108,7 @@ literal_comple(const char *pattern)
  */
 # define ccomp(a,b) (iflag ? lca(a)==lca(b) : a==b)
 # define lca(x) (isupper(x) ? tolower(x) : x)
-void
+int
 literal_search(CONVERT *cv, const char *file)
 {
 	struct words *c;
@@ -119,10 +119,11 @@ literal_search(CONVERT *cv, const char *file)
 	char *linep;
 	long lineno;
 	int f;
+	int count = 0;
 
 	if ((f = open(file, O_BINARY)) < 0) {
 		warning("cannot open '%s'.", file);
-		return;
+		return -1;
 	}
 	if (fstat(f, &stb) < 0) {
 		warning("cannot fstat '%s'.", file);
@@ -192,6 +193,7 @@ literal_search(CONVERT *cv, const char *file)
 				goto nomatch;
 	succeed:	if (cv->format == FORMAT_PATH) {
 				convert_put_path(cv, file);
+				count++;
 				goto finish;
 			} else {
 				STATIC_STRBUF(sb);
@@ -201,6 +203,7 @@ literal_search(CONVERT *cv, const char *file)
 				strbuf_unputc(sb, '\n');
 				strbuf_unputc(sb, '\r');
 				convert_put_using(cv, encoded_pattern, file, lineno, strbuf_value(sb), NULL);
+				count++;
 			}
 	nomatch:	lineno++;
 			linep = p;
@@ -230,6 +233,7 @@ finish:
 #endif
 skip_empty_file:
 	close(f);
+	return count;
 }
 /**
  * make automaton.
