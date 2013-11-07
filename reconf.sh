@@ -21,6 +21,7 @@
 #
 #	% sh reconf.sh [--configure|--make|--install]
 #
+CDPATH=
 case $1 in
 --help)	echo "Usage: sh reconf.sh [--configure|--make|--install]"
 	exit 0;;
