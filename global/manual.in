@@ -242,6 +242,9 @@
 		Configuration file. The default is @file{$HOME/.globalrc}.
 	@item{@var{GTAGSLABEL}}
 		Configuration label. The default is @arg{default}.
+	@item{@var{MAKEOBJDIR}}
+		If this variable is set, @file{$MAKEOBJDIR} is used as the name
+		of BSD-style objdir. The default is @file{obj}.
 	@item{@var{MAKEOBJDIRPREFIX}}
 		If this variable is set, @file{$MAKEOBJDIRPREFIX} is used as the prefix
 		of BSD-style objdir. The default is @file{/usr/obj}.

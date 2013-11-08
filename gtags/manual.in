@@ -125,6 +125,9 @@
 	@item{@var{GTAGSFORCECPP}}
 		If this variable is set, each file whose suffix is 'h' is treated
 		as a C++ source file.
+	@item{@var{MAKEOBJDIR}}
+		If this variable is set, @file{$MAKEOBJDIR} is used as the name
+		of BSD-style objdir. The default is @file{obj}.
 	@item{@var{MAKEOBJDIRPREFIX}}
 		If this variable is set, @file{$MAKEOBJDIRPREFIX} is used as the prefix
 		of BSD-style objdir. The default is @file{/usr/obj}.
