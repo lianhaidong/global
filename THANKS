@@ -5,6 +5,7 @@ ___________________________________
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  Copyright (c) 2000, 2001, 2002, 2003, 2004, 2006, 2007, 2008, 2009, 2010, 2012
+	2013
 	Tama Communications Corporation
 
  This file is free software; as a special exception the author gives
@@ -24,7 +25,7 @@ Thanks to:		for his(her):
 A.E. Brouwer		advice about writing code for generic UNIX.
 Andrew Gallatin		bug report about generating wrong path.
 Aneesh Kumar		bug report about beta facility of gtags(1).
-Andrs Azar		Cygwin trouble report.
+Andrés Azar		Cygwin trouble report.
 Andy Newman		bug report about treating tab character.
 Andy Zhou		bug report about gtags-parser overlook 'extern' prefixed function.
 Arne Schmitz		bug report about gtags-parser.
@@ -50,7 +51,7 @@ Dirk Schultheis		advice about compat.h for Solaris.
 Emile Heyns		advice about writing code for generic UNIX.
 Erik Jonsson		algorithm for detecting binary file.
 Eric Paire		bug report about gtags-parser's memory violation.
-Frederic Maitre		bug report about global(1) and gtags(1) at the system root directory.
+Frédéric Maitre		bug report about global(1) and gtags(1) at the system root directory.
 Gary Kline		advice about the name of parser.
 Geoffrey Robson		bug report about global (-t option didn't work correctly).
 George Neville-Neil	report about the useless inspection of gtags(1).
@@ -68,6 +69,7 @@ Jason Hood		port to DJGPP and Mingw32, and bug report about globash.rc.
 			He also corrected a lot of grammatical mistakes of the online manuals.
 Jean-Marc Saffroy	idea to skip all files whoes first character of name is '.'.
 			profitable information about LFS(Large file support).
+			idea and code about gtags-find-all-text-files of gtags.el.
 Jeff Trawick		idea about -l option of htags(1).
 Jeroen Roovers		bug report about htags/Makefile.am.
 Jianbin Kang		bug report about segmentation fault of gtags(1).
@@ -85,6 +87,7 @@ Klaus Borchers		advice about deciding emacs version.
 Koen Hufkens		advice about HP-UX 10.x.
 Koie Hidetaka		bug report about global.conf.
 Leo Liu			idea about the --path-style=shorter option.
+			bug report about the combination of -v and -g option.
 Marc Herbert		bug fix of libutil/xargs.c.
 Marcello Nuccio		bug report about globash.rc.
 Marco Corvi		advice about Digital Unix 4.0C.
@@ -104,7 +107,7 @@ Patrick Strasser	many bug reports about htags(1).
 Paul Lew		advice about the build in Solaris environment.
 Paulius Bulotas		bug report and fix patch for gozilla(1).
 Pawel Wilk		idea about home_etc facility on PLD Linux/GNU.
-Per Nordlxw		bug report that gtags-parser(1) cannot treat 'extern "C" { ... }'.
+Per Nordlöw		bug report that gtags-parser(1) cannot treat 'extern "C" { ... }'.
 Philippe Defert		building on many plat-homes and the problem report.
 Ray Simard		detailed investigation about POSIX dirent(3).
 Richard Stallman	advice about gtags.el and GNU style packaging.
@@ -148,6 +151,7 @@ Van Trinh		bug report about db(3) and patch information.
 Wes Wojtas		bug report about htags's segmentation fault.
 Whity Pig		bug fix patch for global(1) on Cygwin environment.
 Wolfgang Helbig		bug report about generating wrong path name.
+xing du			bug report about gtags.vim. (The -P option didn't work)
 Yann Dirson		many bug reports and many valuable suggestions.
 Yoshiharu Ito		advice about SunOS 4.1.3, and a bug report about configure.ac.
 Yoshinori Tomita	advice about compat.h for Solaris.
