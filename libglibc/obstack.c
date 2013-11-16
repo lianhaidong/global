@@ -28,6 +28,7 @@
 # include <shlib-compat.h>
 #else
 # include "obstack.h"
+# include <stdlib.h>
 #endif
 
 /* NOTE BEFORE MODIFYING THIS FILE: This version number must be
