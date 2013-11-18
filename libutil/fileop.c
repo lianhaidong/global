@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006
+ * Copyright (c) 2006, 2013
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -22,8 +22,20 @@
 #include <config.h>
 #endif
 #include <stdio.h>
+#include <sys/stat.h>
+#include <dirent.h>
 #ifdef STDC_HEADERS
 #include <stdlib.h>
+#endif
+#ifdef HAVE_STRING_H
+#include <string.h>
+#else
+#include <strings.h>
+#endif
+#ifdef HAVE_FCNTL_H
+#include <fcntl.h>
+#else
+#include <sys/file.h>
 #endif
 
 #include "checkalloc.h"
@@ -31,6 +43,7 @@
 #include "fileop.h"
 #include "makepath.h"
 #include "strlimcpy.h"
+#include "test.h"
 
 /**
  @file
@@ -139,4 +152,94 @@ close_file(FILEOP *fileop)
 	} else
 		fclose(fileop->fp);
 	free(fileop);
+}
+/**
+ * copy file
+ *
+ *	@param[in]	src	source file
+ *	@param[in]	dist	distination file
+ */
+/*
+void
+copyfile(const char *src, const char *dist)
+{
+	char buf[MAXBUFLEN];
+
+	FILEOP *input_file = open_input_file(src);
+	FILEOP *output_file = open_output_file(dist, 0);
+	while (fgets(buf, sizeof(buf), get_descripter(input_file)) != NULL)
+		fputs(buf, get_descripter(output_file));
+	close_file(input_file);
+	close_file(output_file);
+}
+*/
+/**
+ * copy file.
+ *
+ *	@param[in]	src	source file
+ *	@param[in]	dist	distination file
+ */
+void
+copyfile(const char *src, const char *dist)
+{
+	int ip, op, size;
+	char buf[8192];
+
+#ifndef O_BINARY
+#define O_BINARY 0
+#endif
+	ip = open(src, O_RDONLY|O_BINARY);
+	if (ip < 0)
+		die("cannot open input file '%s'.", src);
+	op = open(dist, O_WRONLY|O_CREAT|O_TRUNC|O_BINARY, 0775);
+	if (op < 0)
+		die("cannot create output file '%s'.", dist);
+	while ((size = read(ip, buf, sizeof(buf))) != 0) {
+		if (size < 0)
+			die("file read error.");
+		if (write(op, buf, size) != size)
+			die("file write error.");
+	}
+	close(op);
+	close(ip);
+}
+/**
+ * copy directory
+ *
+ *	@param[in]	srcdir	source directory
+ *	@param[in]	distdir	distination directory
+ *
+ * This function cannot treat nested directory.
+ */
+void
+copydirectory(const char *srcdir, const char *distdir)
+{
+	DIR *dirp;
+	struct dirent *dp;
+	struct stat st;
+
+	if (!test("d", srcdir))
+		die("directory '%s' not found.", srcdir);
+	if (!test("d", distdir))
+		if (mkdir(distdir, 0775) < 0)
+			die("cannot make directory '%s'.", distdir);
+	if ((dirp = opendir(srcdir)) == NULL)
+		die("cannot read directory '%s'.", srcdir);
+	while ((dp = readdir(dirp)) != NULL) {
+		const char *path = makepath(srcdir, dp->d_name, NULL);
+
+		if (!strcmp(dp->d_name, ".") || !strcmp(dp->d_name, ".."))
+			continue;
+		if (stat(path, &st) < 0)
+			die("cannot stat file '%s'.", path);
+		if (S_ISREG(st.st_mode)) {
+			char src[MAXPATHLEN];
+			char dist[MAXPATHLEN];
+
+			strlimcpy(src, path, sizeof(src));
+			strlimcpy(dist, makepath(distdir, dp->d_name, NULL), sizeof(dist));
+			copyfile(src, dist);
+		}
+	}
+	(void)closedir(dirp);
 }

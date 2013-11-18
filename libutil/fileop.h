@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006
+ * Copyright (c) 2006, 2013
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -42,5 +42,7 @@ FILEOP *open_input_file(const char *);
 FILEOP *open_output_file(const char *, int);
 FILE *get_descripter(FILEOP *);
 void close_file(FILEOP *);
+void copyfile(const char *, const char *);
+void copydirectory(const char *, const char *);
 
 #endif /* ! _FILEOP_H */

@@ -20,6 +20,11 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+November 17 2013, Shigio YAMAGUCHI
+
+	Added two functions: copyfile(), copydirectory(). They removes the necessity
+	of external command 'cp'.
+
 June 17 2013, Shigio YAMAGUCHI
 
 	Dependence to dbop.c module was eliminated from assoc.c module.
