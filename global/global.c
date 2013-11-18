@@ -1110,7 +1110,7 @@ idutils(const char *pattern, const char *dbpath)
 		q = path + 2;
 		/* extract path name */
 		if (*grep == '/')
-			die("The path in the output of lid is assumed absolute. '%s'", grep);
+			die("The path in the output of lid is assumed relative.\n'%s'", grep);
 		p = grep;
 		while (*p && *p != ':')
 			*q++ = *p++;
