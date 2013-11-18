@@ -88,6 +88,7 @@ Koen Hufkens		advice about HP-UX 10.x.
 Koie Hidetaka		bug report about global.conf.
 Leo Liu			idea about the --path-style=shorter option.
 			bug report about the combination of -v and -g option.
+			bug report about the --from-here with a path includes symbolic links.
 Marc Herbert		bug fix of libutil/xargs.c.
 Marcello Nuccio		bug report about globash.rc.
 Marco Corvi		advice about Digital Unix 4.0C.
