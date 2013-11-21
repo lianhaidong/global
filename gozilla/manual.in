@@ -32,7 +32,7 @@
 	@name{Gozilla} can be used with other browsers like firefox and epiphany.
 
 	In advance of using this command, you must execute @xref{gtags,1}
-	and @xref{htags,1} at the root directory of a project to make tag files.
+	and @xref{htags,1} at the root directory of the project to make tag files.
 	Then you can execute this command anywhere in the project.
 
 	First form:@br
@@ -41,7 +41,8 @@
 
 	Second form:@br
 	You can specify a definition name directly. The definition name should
-	exist in @file{GTAGS}.
+	exist in @file{GTAGS}. This option requires @file{HTML/MAP} generated
+	by @xref{htags,1}.
 
 	Some browsers require you to load it before executing @name{gozilla}.
 @OPTIONS
@@ -68,10 +69,12 @@
 	@end_itemize
 @FILES
 	@begin_itemize
-	@item{@file{HTML/}}
-		Hypertext of source code.
 	@item{@file{GTAGS}}
 		Tag file for definitions.
+	@item{@file{HTML/}}
+		Hypertext of source code.
+	@item{@file{HTML/MAP}}
+		Mapping file for converting tag name into the path of tag list.
 	@item{@file{$HOME/.gozillarc}}
 		Alias file. Please read the source code for details.
 	@end_itemize
