@@ -257,10 +257,6 @@
 	@end_itemize
 @CONFIGURATION
 	The following configuration variables affect the execution of @name{htags}:
-	If the @option{--xhtml} option is specified then all definitions of
-	HTML tag are ignored.
-	Instead, you can customize the appearance using style sheet file
-	(@file{style.css}).
 
 	@begin_itemize
 	@item{@code{datadir}(string)}
@@ -308,7 +304,7 @@
 	PHP support is far from complete.
 
 	The @option{-f}, @option{-D} and @option{-c} options generate CGI programs.
-	If you open the result to the public, please recognize the security dangers.
+	If you open the hypertext to the public, please recognize security dangers.
 @AUTHOR
 	Shigio YAMAGUCHI, Hideki IWAMOTO and others.
 @HISTORY

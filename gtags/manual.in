@@ -43,7 +43,8 @@
 
 	@begin_itemize
 	@item{@option{--accept-dotfiles}}
-		Accept dot files and dot directories. By default, @name{gtags} ignores them.
+		Accept files and directories whose names begin with a dot.
+		By default, @name{gtags} ignores them.
 	@item{@option{-c}, @option{--compact}}
 		Make @file{GTAGS} in compact format.
 		This option does not influence @file{GRTAGS},
