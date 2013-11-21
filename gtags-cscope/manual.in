@@ -1,5 +1,5 @@
 @HEADER GTAGS-CSCOPE,1,March 2011,GNU Project
-@NAME   gtags-cscope - interactively examine a C program
+@NAME   gtags-cscope - interactively examine a C program.
 @SYNOPSIS
 	@name{gtags-cscope} [-bCdehLlVv][-F file ][-012345678 @arg{pattern}][-p n]
 @DESCRIPTION
@@ -16,11 +16,12 @@
 	Some command line arguments can only occur as the only argument in
 	the execution of @name{gtags-cscope}.  They cause the program to just print out
 	some output and exit immediately:
+
 	@begin_itemize
 	@item{@option{-h}}
 		View the long usage help display.
 	@item{@option{-V}}
-		Print on the first line of screen the version number of gtags-cscope.
+		Print the version number of @name{gtags-cscope}.
 	@item{@option{--help}}
 		Same as @option{-h}
 	@item{@option{--version}}
@@ -28,9 +29,10 @@
 	@end_itemize
 
 	The following options can appear in any combination:
+
 	@begin_itemize
 	@item{@option{-a}}
-		Print absolute path name.
+		Print absolute path names.
 	@item{@option{-b}}
 		Build the cross-reference only.
 	@item{@option{-C}}
@@ -38,7 +40,7 @@
 	@item{@option{-d}}
 		Do not update the cross-reference.
 	@item{@option{-e}}
-		Suppress the <Ctrl>-e command prompt between files.
+		Suppress the @kbd{^e} command prompt between files.
 	@item{@option{-F} @arg{file}}
 		Read symbol reference lines from @arg{file}. 
 		(A symbol reference file is created by > and >>,
@@ -50,14 +52,13 @@
 		Do a single search with line-oriented output when used with the
 		-num pattern option.
 	@item{@option{-l}}
-		Line-oriented interface (see ``Line-Oriented Interface'' below).
-		This option implies the -d option.
+		Line-oriented interface.
+		This option implies the @option{-d} option.
 	@item{@option{-[0-9]} @arg{pattern}}
-		Go to input field @arg{num} (counting from 0) and find 
-		@arg{pattern}.
+		Go to input field @arg{num} (counting from 0) and find @arg{pattern}.
 	@item{@option{-p} @arg{n}}
 		Display the last @arg{n} file path components instead of
-		the default (1). Use @arg{0} not to display the file name at all.
+		the default (1). Use @val{0} to not display the file name at all.
 	@item{@option{-v}}
 		Be more verbose in line-oriented mode.
 	@end_itemize
@@ -81,6 +82,7 @@
 @Issuing subsequent requests
 	If the search is successful, any of these single-character commands
 	can be used:
+
 	@begin_itemize
 	@item{0-9a-zA-Z}
 		Edit the file referenced by the given line number.
@@ -91,11 +93,11 @@
 	@item{<Up>}
 		Move to the previous menu item (if the cursor is in the menu)
 		or move to the previous matching line (if the cursor is in the
-		matching line list.)
+		matching line list).
 	@item{<Down>}
 		Move to the next menu item (if the cursor is in the menu)
 		or move to the next matching line (if the cursor is in the
-		matching line list.)
+		matching line list).
 	@item{+}
 		Display next set of matching lines.
 	@item{-}
@@ -108,7 +110,7 @@
 		Append the displayed list of lines to a file.
 	@item{<}
 		Read lines from a file that is in symbol reference format
-		(created by > or >>), just like the -F option.
+		(created by @kbd{>} or @kbd{>>}), just like the @option{-F} option.
 	@item{^}
 		Filter all lines through a shell command and display the
 		resulting lines, replacing the lines that were already there.
@@ -116,7 +118,7 @@
 		Pipe all lines to a shell command and display them without
 		changing them.
 	@item{^g}
-		Read lines from the result of the execution of global(1).
+		Read lines from the result of the execution of @xref{global,1}.
 	@end_itemize
 
 	At any time these single-character commands can also be used:
@@ -135,25 +137,26 @@
 		Move to next input field and search pattern.
 	@item{^c}
 		Toggle ignore/use letter case when searching. (When ignoring
-		letter case, search for ``FILE'' will match ``File'' and ``file''.)
+		letter case, a search for @samp{FILE} will match @samp{File}
+		and @samp{file}.)
 	@item{^r}
 		Rebuild the cross-reference.
 	@item{!}
-		Start an interactive shell (type ^d to return to gtags-cscope).
+		Start an interactive shell (type @kbd{^d} to return to @name{gtags-cscope}).
 	@item{^l}
 		Redraw the screen.
 	@item{?}
-		Give help information about gtags-cscope commands.
+		Give help information about @name{gtags-cscope} commands.
 	@item{^d}
-		Exit gtags-cscope.
+		Exit @name{gtags-cscope}.
 	@end_itemize
 
 	NOTE: If the first character of the text to be searched for matches
-	one of the above commands, escape it by typing a  (backslash) first.
+	one of the above commands, escape it by typing a @kbd{\} (backslash) first.
 
 	Substituting new text for old text
 
-	After the text to be changed has been typed, gtags-cscope will prompt for
+	After the text to be changed has been typed, @name{gtags-cscope} will prompt for
 	the new text, and then it will display the lines containing the old
 	text. Select the lines to be changed with these single-character
 	commands:
@@ -175,111 +178,124 @@
 	@item{<Esc>}
 		Exit without changing the marked lines.
 	@item{!}
-		Start an interactive shell (type ^d to return to gtags-cscope).
+		Start an interactive shell (type @kbd{^d} to return to @name{gtags-cscope}).
 	@item{^l}
 		Redraw the screen.
 	@item{?}
-		Give help information about gtags-cscope commands.
-	@item{ Special keys}
-		If your terminal has arrow keys that work in vi, you can use them
+		Give help information about @name{gtags-cscope} commands.
+	@item{Special keys}
+		If your terminal has arrow keys that work in @name{vi}, you can use them
 		to move around the input fields. The up-arrow key is useful to move to
 		the previous
 		input field instead of using the <Tab> key repeatedly. If you have
-		<CLEAR>, <NEXT>, or <PREV> keys they will act as the ^l, +, and -
-		commands, respectively.
+		<CLEAR>, <NEXT>, or <PREV> keys they will act as the @kbd{^l}, @kbd{+},
+		and @kbd{-} commands, respectively.
 	@end_itemize
 @Line-Oriented interface
-	The -l option lets you use gtags-cscope where a screen-oriented interface
-	would not be useful, for example, from another screen-oriented
-	program.
+	The @option{-l} option lets you use @name{gtags-cscope}
+	where a screen-oriented interface
+	would not be useful, for example, from another screen-oriented program.
 
-	gtags-cscope will prompt with >> when it is ready for an input line starting
-	with the field number (counting from 0) immediately followed by the
-	search pattern, for example, ``lmain'' finds the definition of the
-	main function.
+	@name{gtags-cscope} will prompt with @samp{>>} when it is ready
+	for an input line, which starts
+	with the field number (counting from 0), immediately followed by the
+	search pattern. For example, @samp{1main} finds the definition of the
+	@samp{main} function.
 
-	If you just want a single search, instead of the -l option use the -L
-	and -num pattern options, and you won't get the >> prompt.
+	If you just want a single search, instead of the @option{-l} option use
+	the @option{-L} and @option{-num @arg{pattern}} options,
+	and you won't get the @samp{>>} prompt.
 
-	For -l, gtags-cscope outputs the number of reference lines
-	cscope: 2 lines
+	For @option{-l}, @name{gtags-cscope} outputs the number of reference lines:@br
+        cscope: 2 lines
 
-	For each reference found, gtags-cscope outputs a line consisting of the file
-	name, function name, line number, and line text, separated by spaces,
-	for example,
+	For each reference found, @name{gtags-cscope} outputs a line consisting of the file
+	name, function name, line number, and line text, separated by spaces.
+	For example:@br
 	main.c main 161 main(argc, argv)
 
-	Note that the editor is not called to display a single reference,
-	unlike the screen-oriented interface.
+        Note that the editor is not called to display a single reference,
+        unlike the screen-oriented interface.
 
-	You can use the c command to toggle ignore/use letter case when
-	searching. (When ignoring letter case, search for ``FILE'' will match
-	``File'' and ``file''.)
+	You can use the @kbd{c} command to toggle ignore/use letter case when
+	searching. (When ignoring letter case, a search for @samp{FILE} will
+	match @samp{File} and @samp{file}.)
 
-	You can use the r command to rebuild the database.
+	You can use the @kbd{r} command to rebuild the database.
 
-	gtags-cscope will quit when it detects end-of-file, or when the first
-	character of an input line is ``^d'' or ``q''.
+	@name{gtags-cscope} will quit when it detects end-of-file, or when the first
+	character of an input line is @kbd{^d} or @kbd{q}.
 @ENVIRONMENT VARIABLES
-	The following environment variables are the cscope origin.
+	The following environment variables are of @name{cscope} origin.
 
 	@begin_itemize
 	@item{@var{CSCOPE_EDITOR}}
-		Overrides the EDITOR and VIEWER variables. Use this if you wish to use
-		a different editor with cscope than that specified by your
-		EDITOR/VIEWER variables.
+		Overrides the @var{EDITOR} and @var{VIEWER} variables.
+		Use this if you wish to use a different editor with @name{cscope}
+		than that specified by your @var{EDITOR}/@var{VIEWER} variables.
 	@item{@var{CSCOPE_LINEFLAG}}
-		Format of the line number flag for your editor. By default, cscope
-		invokes your editor via the equivalent of ``editor +N file'', where
-		``N'' is the line number that the editor should jump to. This format
-		is used by both emacs and vi. If your editor needs something
-		different, specify it in this variable, with ``%s'' as a placeholder
-		for the line number.  Ex: if your editor needs to be invoked as
-		``editor -#103 file'' to go to line 103, set this variable to
-		``-#%s''.
+		Format of the line number flag for your editor.
+		By default, @name{cscope} invokes your editor via the equivalent of
+		@samp{editor +@arg{N} @arg{file}}, where @arg{N} is the line number
+		that the editor should jump to.
+		This format is used by both @name{emacs} and @name{vi}.
+		If your editor needs something different, specify it in this variable,
+		with @samp{%s} as a placeholder for the line number.
+		Eg: if your editor needs to be invoked as @samp{editor -#103 @arg{file}}
+		to go to line 103, set this variable to @samp{-#%s}.
 	@item{@var{CSCOPE_LINEFLAG_AFTER_FILE}}
-		Set this variable to ``yes'' if your editor needs to be invoked with
+		Set this variable to @val{yes} if your editor needs to be invoked with
 		the line number option after the filename to be edited. To continue
-		the example from CSCOPE_LINEFLAG, above: if your editor needs to see
-		``editor file -#number'', set this environment variable. Users of most
-		standard editors (vi, emacs) do not need to set this variable.
+		the example from @var{CSCOPE_LINEFLAG}, above: if your editor needs to see
+		@samp{editor @arg{file} -#@arg{number}}, set this environment variable.
+		Users of most standard editors (@name{vi}, @name{emacs}) do not need
+		to set this variable.
 	@item{@var{EDITOR}}
-		Preferred editor, which defaults to vi.
+		Preferred editor, which defaults to @name{vi}.
 	@item{@var{HOME}}
 		Home directory, which is automatically set at login.
 	@item{@var{SHELL}}
-		Preferred shell, which defaults to sh.
+		Preferred shell, which defaults to @name{sh}.
 	@item{@var{TERM}}
 		Terminal type, which must be a screen terminal.
 	@item{@var{TERMINFO}}
 		Terminal information directory full path name. If your terminal
-		is not in the standard terminfo directory, see curses
-		and terminfo for how to make your own terminal description.
+		is not in the standard terminfo directory, see @name{curses}
+		and @name{terminfo} for how to make your own terminal description.
 	@item{@var{TMPDIR}}
-		Temporary file directory, which defaults to /tmp.
+		Temporary file directory, which defaults to @file{/tmp}.
 	@item{@var{VIEWER}}
-		Preferred file display program (such as less), which overrides
-		EDITOR (see above).
+		Preferred file display program (such as @name{less}), which overrides
+		@var{EDITOR} (see above).
 	@end_itemize
 
-	The following environment variables are the GLOBAL origin.
+	The following environment variables are of @name{GLOBAL} origin.
 
 	@begin_itemize
-	@item{@var{GTAGSROOT}}
-		The root directory of the project.
-	@item{@var{GTAGSDBPATH}}
-		The directory on which tag files exist.
-		This value is ignored when @var{GTAGSROOT} is not defined.
-	@item{@var{GTAGSLIBPATH}}
-		If this variable is set, it is used as the path to search
-		for library functions. If the specified object is not
-		found in the project, @name{global} also search in these paths.
-		Since only @file{GTAGS} is targeted in the retrieval, this variable is
-		ignored when the @option{-r} or @option{-s} is specified.
 	@item{@var{GTAGSCONF}}
 		Configuration file. The default is @file{$HOME/.globalrc}.
+	@item{@var{GTAGSGLOBAL}}
+		If this variable is set, @file{$GTAGSGLOBAL} is used as the name
+                of @xref{global,1}. The default is @name{global}.
+	@item{@var{GTAGSGTAGS}}
+		If this variable is set, @file{$GTAGSGTAGS} is used as the name
+                of @xref{gtags,1}. The default is @name{gtags}.
+	@item{@var{GTAGSDBPATH}}
+		The directory in which the tag files exist.
+		This value is ignored when @var{GTAGSROOT} is not defined.
 	@item{@var{GTAGSLABEL}}
-		Configuration label. The default is @arg{default}.
+		Configuration label. The default is @val{default}.
+	@item{@var{GTAGSLIBPATH}}
+		If this variable is set, it is used as the path to search
+		for library functions. If the specified tags is not
+		found in the project, @name{global} also searches in these paths.
+		Since only @file{GTAGS} is targeted in the retrieval, this variable is
+		ignored when @option{-r} or @option{-s} is specified.
+	@item{@var{GTAGSROOT}}
+		The root directory of the project.
+	@item{@var{MAKEOBJDIR}}
+		If this variable is set, @file{$MAKEOBJDIR} is used as the name
+		of BSD-style objdir. The default is @file{obj}.
 	@item{@var{MAKEOBJDIRPREFIX}}
 		If this variable is set, @file{$MAKEOBJDIRPREFIX} is used as the prefix
 		of BSD-style objdir. The default is @file{/usr/obj}.
@@ -294,7 +310,7 @@
 		Tag file for source files.
 	@item{@file{GTAGSROOT}}
 		If environment variable @var{GTAGSROOT} is not set
-		and file @file{GTAGSROOT} exists in the same directory with @file{GTAGS}
+		and file @file{GTAGSROOT} exists in the same directory as @file{GTAGS}
 		then @name{global} sets @var{GTAGSROOT} to the contents of the file.
 	@item{@file{$HOME/.globalrc}, @file{/etc/gtags.conf}, @file{[sysconfdir]/gtags.conf}}
 		Configuration files.
@@ -308,14 +324,15 @@
 	(http://www.gnu.org/software/global/).
 @BUG
 	The function field of the display is almost <unknown> since
-	GLOBAL doesn't recognize it.
+	@name{GLOBAL} doesn't recognize it.
 
-	``Find functions called by this function'' is not implemented.
+	'Find functions called by this function' is not implemented.
 @AUTHOR
-	Joe Steffen (original author) and others
+	Joe Steffen (original author) and others.
 @HISTORY
-	@name{Cscope} was originally developed at Bell Labs in the early 1980's,
+	@name{Cscope} was originally developed at Bell Labs in the early 1980s,
 	and was released as free software under the BSD license in April 2000.
-	@name{Gtags-cscope} is a derivative of cscope to use GLOBAL as the back-end.
+	@name{Gtags-cscope} is a derivative of @name{cscope} to use @name{GLOBAL}
+	as the back-end.
 	Its line-oriented interface was originally written in 2006, and was
-	re-implemented in 2011 using cscope itself.
+	re-implemented in 2011 using @name{cscope} itself.
