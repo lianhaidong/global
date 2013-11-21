@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 # This file is converted to the following files:
-#       o command source file(for usage and help).
+#       o command source file (for usage and help).
 #       o man format reference manual.
 #       o texinfo format reference manual.
 #
@@ -52,11 +52,11 @@
 	@item{@option{-b} @arg{browser}}
 		Browser to use. By default, it is assumed @name{mozilla}.
 	@item{@option{-d} @arg{name}}
-		Print object definitions.
+		Print definitions.
 	@item{@option{--help}}
 		Show help.
 	@item{@option{-p}}
-		Print just a generated URL instead of the contents.
+		Just print a generated URL instead of displaying it.
 	@item{@arg{file}}
 		File name or alias name.
 	@item{@option{-q}, @option{--quiet}}
@@ -70,20 +70,20 @@
 	@begin_itemize
 	@item{@file{HTML/}}
 		Hypertext of source code.
-	@item{@file{GTAGS/}}
+	@item{@file{GTAGS}}
 		Tag file for definitions.
 	@item{@file{$HOME/.gozillarc}}
-		Alias file. Not yet documented.
+		Alias file. Please read the source code for details.
 	@end_itemize
 @ENVIRONMENT
 	@begin_itemize
-	@item{@var{GTAGSROOT}}
-		The root directory of the project.
-	@item{@var{GTAGSDBPATH}}
-		The directory on which tag files exist.
-		This value is ignored when GTAGSROOT is not defined.
 	@item{@var{BROWSER}}
 		Browser to use. By default, it is assumed @name{mozilla}.
+	@item{@var{GTAGSDBPATH}}
+		The directory in which the tag files exist.
+		This value is ignored when @var{GTAGSROOT} is not defined.
+	@item{@var{GTAGSROOT}}
+		The root directory of the project.
 	@end_itemize
 @EXAMPLES
 	@begin_verbatim
@@ -99,7 +99,7 @@
 	$ gozilla -b firefox +82 ctags.c
 	@end_verbatim
 @DIAGNOSTICS
-	@name{Gozilla} exits with a non 0 value if an error occurred, 0 otherwise.
+	@name{Gozilla} exits with a non-0 value if an error occurred, 0 otherwise.
 @SEE ALSO
 	@xref{global,1},
 	@xref{gtags,1},

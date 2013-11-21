@@ -251,6 +251,9 @@ sub convert {
 		$val =~ s/\./\\./g;
 		s/\@code\{$arg\}/$val/;
 	}
+	while (s/\@(val|samp|kbd)\{([^}]+)\}/\\'$2\\'/) {
+		;
+	}
 	while (s/\@file\{($arg)\}/\\'$1\\'/) {
 		;
 	}
@@ -340,6 +343,7 @@ sub convert {
 		;
 	}
 	s/\@option\{/\@samp\{/g;
+	s/\@val\{/\@samp\{/g;
 	while (s/\@(arg|name)\{($arg)\}/$2/) {
 		;
 	}

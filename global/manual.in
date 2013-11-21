@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 # This file is converted to the following files:
-#	o command source file(for usage and help).
+#	o command source file (for usage and help).
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
@@ -36,7 +36,7 @@
 @DESCRIPTION
 	@name{Global} finds locations of given symbols
 	in C, C++, Yacc, Java, PHP and Assembly source files,
-	and print path name, line number and line image for each of them.
+	and prints the path name, line number and line image of the locations.
 	@name{Global} can locate not only definitions but also references
 	and other symbols.
 
@@ -49,94 +49,96 @@
 	You need not specify where the tag file is.
 	Instead, @name{global} locates it by itself.
 
-	You can use regular expression for @arg{pattern}.
+	You can specify a regular expression for @arg{pattern}.
 	@name{Global} understands two different versions of regular expression
-	syntax: @arg{basic} and @arg{extended}. The default is @arg{extended}.
+	syntax: basic and extended (default).
 @COMMANDS
 	The following commands are available:
+
 	@begin_itemize
 	@item{<no command> @arg{pattern}}
-		Print tags of symbols which match to the @arg{pattern}.
+		Print tags which match to @arg{pattern}.
 		By default, print definition tags.
 	@item{@option{-c}, @option{--completion} [@arg{prefix}]}
-		Print symbols which start with the @arg{prefix}.
+		Print symbols which start with @arg{prefix}.
 		If @arg{prefix} is not given, print all symbols.
 	@item{@option{-f}, @option{--file} @arg{files}}
 		Print all tags in the @arg{files}.
-		This option implies the @option{-x} option.
+		This command implies the @option{-x} option.
 	@item{@option{-g}, @option{--grep} @arg{pattern} [@arg{files}]}
 		Print all lines which match to the @arg{pattern}.
-		If @arg{files} are given, this command searches in the files.
+		If @arg{files} are given, this command searches in those files.
 	@item{@option{--help}}
 		Print a usage message.
 	@item{@option{-I}, @option{--idutils} @arg{pattern}}
-		Print all lines which match to the @arg{pattern}.
-		This function use @xref{idutils,1} as a search engine.
+		Print all lines which match to @arg{pattern}.
+		This function uses @xref{idutils,1} as a search engine.
 		To use this command, you need to install @xref{idutils,1}
 		in your system and execute @xref{gtags,1} with the @option{-I} option.
 	@item{@option{-P}, @option{--path} [@arg{pattern}]}
-		Print path names which match to the @arg{pattern}.
+		Print path names which match to @arg{pattern}.
 		If no pattern is given, print all paths in the project.
 	@item{@option{-p}, @option{--print-dbpath}}
 		Print location of @file{GTAGS}.
 	@item{@option{-u}, @option{--update}}
 		Update tag files incrementally.
 		This command internally invokes @xref{gtags,1}.
-		You can execute this command anywhere in the project
+		You can execute this command anywhere in the project,
 		differing from @xref{gtags,1}.
 	@item{@option{--version}}
 		Show version number.
 	@end_itemize
 @OPTIONS
 	The following options are available:
+
 	@begin_itemize
 	@item{@option{-a}, @option{--absolute}}
-		Print absolute path name. By default, print relative path name.
+		Print absolute path names. By default, print relative path names.
 	@item{@option{-d}, @option{--definition}}
 		Print locations of definitions.
+	@item{@option{-e}, @option{--regexp} @arg{pattern}}
+		Use @arg{pattern} as the pattern; useful to protect patterns starting with @samp{-}.
+	@item{@option{--encode-path} @arg{chars}}
+		Convert path characters in @arg{chars} into a @samp{%} symbol, followed by the
+		two-digit hexadecimal representation of the character.
+		A blank will be converted to @samp{%20}.
 	@item{@option{--from-here} @arg{context}}
-		Decide tag type by the @arg{context}. The @arg{context} must be 'lineno:path'.
-		If this option is specified then the @option{-s} and @option{-r}
-		are ignored.
-		Regular expression is not allowed for the @arg{pattern}.
+		Decide tag type by @arg{context}, which must be @samp{lineno:path}.
+		If this option is specified then @option{-s} and @option{-r} are ignored.
+		Regular expression is not allowed for @arg{pattern}.
 		This option assumes use in conversational environments such as
 		editors and IDEs.
-	@item{@option{-e}, @option{--regexp} @arg{pattern}}
-		Use @arg{pattern} as the pattern; useful to protect patterns
-		beginning with @file{-}.
-	@item{@option{--encode-path} @arg{chars}}
-		Convert path characters in @arg{chars} into a '%' symbol, followed by the
-		two-digit hexadecimal representation of the character.
-		A blank will be converted to '%20'.
 	@item{@option{-G}, @option{--basic-regexp}}
 		Interpret @arg{pattern} as a basic regular expression.
-		The default is extended regular expression.
+		The default is an extended regular expression.
 	@item{@option{-i}, @option{--ignore-case}}
 		Ignore case distinctions in the pattern.
-	@item{@option{-l}, @option{--local}}
-		Print only tags which exist under the current directory.
 	@item{@option{-L}, @option{--file-list} @arg{file-list}}
 		Obtain files from @arg{file-list} in addition to the arguments.
+	@item{@option{-l}, @option{--local}}
+		Print only tags which exist under the current directory.
 	@item{@option{--literal}}
 		Execute literal search instead of regular expression search.
 		This option is only valid when the @option{-g} command is specified.
 	@item{@option{--match-part @arg{part}}}
-		Specify the matched part of path name.
-		Possible values are as follows: @arg{first}, @arg{last}, @arg{all}. The default is @arg{all}.
-		This option is valid only with the @option{-c} command with the @option{-P} option.
+		Specify how path name completion should match, where @arg{part} is one of:
+		@val{first}, @val{last} or @val{all} (default).
+		This option is valid only with the @option{-c} command in conjunction with @option{-P}.
+
 	@item{@option{-n}, @option{--nofilter}}
 		Suppress sort filter and path conversion filter.
 	@item{@option{-O}, @option{--only-other}}
-		Treat only text files: @file{README}, @file{ChangeLog}, or etc.
+		Treat only text files other than source code, like @file{README}.
 		This option is valid only with the @option{-g} or @option{-P} command.
 		This option overrides the @option{-o} option.
 	@item{@option{-o}, @option{--other}}
-		Treat not only source files but also text files: @file{README}, @file{ChangeLog}, or etc.
+		Treat not only source files but also text files other than source code,
+		like @file{README}.
 		This option is valid only with the @option{-g} or @option{-P} command.
 	@item{@option{--path-style} @arg{format}}
-		Print path names using the specified @arg{format}.
-		@arg{format} may be @arg{relative}, @arg{absolute}, @arg{shorter}, @arg{abslib} or @arg{through}.
-		The @option{--path-style} option is given more priority than the -a options.
+		Print path names using @arg{format}, which may be one of:
+		@val{relative}, @val{absolute}, @val{shorter}, @val{abslib} or @val{through}.
+		The @option{--path-style} option is given more priority than the @option{-a} option.
 	@item{@option{--print0}}
 		Print each record followed by a null character instead of a newline.
 	@item{@option{-q}, @option{--quiet}}
@@ -146,14 +148,13 @@
 		Reference means the reference to a symbol which has definitions.
 		With the @option{-p} option, print the root directory of the project.
 	@item{@option{--result} @arg{format}}
-		Print out using the specified @arg{format}.
-		@arg{format} may be @arg{path}, @arg{ctags}, @arg{ctags-x}, @arg{grep} or @arg{cscope}.
-		The default is @arg{path}.
-		The @option{--result=ctags} and @option{--result=ctags-x} are
-		equivalent to the @option{-t} and @option{-x} respectively.
-		The @option{--result} option is given more priority than the -t and -x options.
+		Print out using @arg{format}, which may be one of:
+		@val{path} (deault), @val{ctags}, @val{ctags-x}, @val{grep} or @val{cscope}.
+		The @option{--result=ctags} and @option{--result=ctags-x} options are
+		equivalent to the @option{-t} and @option{-x} options respectively.
+		The @option{--result} option is given more priority than the @option{-t} and @option{-x} options.
 	@item{@option{--single-update} @arg{file}}
-		Update tag files incrementally using @xref{gtags,1} with @option{--single-update} option.
+		Update tag files using @xref{gtags,1} with the @option{--single-update} option.
 		It is considered that @arg{file} was added or updated,
 		and there is no change in other files.
                 This option implies the @option{-u} option.
@@ -167,13 +168,13 @@
 		or @option{-l} option is specified.
 	@item{@option{-t}, @option{--tags}}
 		Use standard ctags format.
-	@item{@option{-v}, @option{--verbose}}
-		Verbose mode.
 	@item{@option{-V}, @option{--invert-match}}
 		Invert the sense of matching, to select non-matching lines.
-		This option is valid only with the @option{-g} or @option{-P} command.
+		This option is valid only with the @option{-g} or @option{-P} commands.
+	@item{@option{-v}, @option{--verbose}}
+		Verbose mode.
 	@item{@option{-x}, @option{--cxref}}
-		Use standard ctags cxref (with the @arg{-x}) format.
+		Use standard ctags cxref (with @option{-x}) format.
 	@end_itemize
 @EXAMPLES
 	@begin_verbatim
@@ -219,48 +220,59 @@
 		Tag file for source files.
 	@item{@file{GTAGSROOT}}
 		If environment variable @var{GTAGSROOT} is not set
-		and file @file{GTAGSROOT} exists in the same directory with @file{GTAGS}
+		and file @file{GTAGSROOT} exists in the same directory as @file{GTAGS}
 		then @name{global} sets @var{GTAGSROOT} to the contents of the file.
 	@item{@file{$HOME/.globalrc}, @file{/etc/gtags.conf}, @file{[sysconfdir]/gtags.conf}}
 		Configuration files.
 	@end_itemize
 @ENVIRONMENT
 	The following environment variables affect the execution of @name{global}:
+
 	@begin_itemize
-	@item{@var{GTAGSROOT}}
-		The root directory of the project.
+	@item{@var{GTAGSBLANKENCODE}}
+		If this variable is set, the @option{--encode-path=" <TAB>"}
+		option is specified.
+	@item{@var{GTAGSCACHE}}
+		The size of the B-tree cache. The default is 50000000 (bytes).
+	@item{@var{GTAGSCONF}}
+		Configuration file. The default is @file{$HOME/.globalrc}.
 	@item{@var{GTAGSDBPATH}}
-		The directory on which tag files exist.
+		The directory in which the tag files exist.
 		This value is ignored when @var{GTAGSROOT} is not defined.
+	@item{@var{GTAGSFORCECPP}}
+		If this variable is set, each file whose suffix is @file{.h} is treated
+		as a C++ source file.
+	@item{@var{GTAGSLABEL}}
+		Configuration label. The default is @arg{default}.
 	@item{@var{GTAGSLIBPATH}}
 		If this variable is set, it is used as the path to search
 		for library functions. If the given symbol is not
-		found in the project, @name{global} also search in these paths.
+		found in the project, @name{global} also searches in these paths.
 		Since only @file{GTAGS} is targeted in the retrieval, this variable is
-		ignored when the @option{-r} or @option{-s} is specified.
-	@item{@var{GTAGSCONF}}
-		Configuration file. The default is @file{$HOME/.globalrc}.
-	@item{@var{GTAGSLABEL}}
-		Configuration label. The default is @arg{default}.
+		ignored when @option{-r} or @option{-s} is specified.
+	@item{@var{GTAGSLOGGING}}
+		If this variable is set, @file{$GTAGSLOGGING} is used as the path name
+		of a log file. There is no default value.
+	@item{@var{GTAGSROOT}}
+		The root directory of the project.
+	@item{@var{GTAGSTHROUGH}}
+		If this variable is set, the @option{-T} option is specified.
 	@item{@var{MAKEOBJDIR}}
 		If this variable is set, @file{$MAKEOBJDIR} is used as the name
 		of BSD-style objdir. The default is @file{obj}.
 	@item{@var{MAKEOBJDIRPREFIX}}
 		If this variable is set, @file{$MAKEOBJDIRPREFIX} is used as the prefix
 		of BSD-style objdir. The default is @file{/usr/obj}.
-	@item{@var{GTAGSTHROUGH}}
-		If this variable is set, the @option{-T} option is specified.
-	@item{@var{GTAGSBLANKENCODE}}
-		If this variable is set, the --encode=" <TAB>" option is specified.
 	@end_itemize
 @CONFIGURATION
 	The following configuration variables affect the execution of @name{global}:
+
 	@begin_itemize
-	@item{@code{icase_path}(boolean)}
-		Ignore case distinctions in the @arg{pattern}.
+	@item{@code{icase_path} (boolean)}
+		Ignore case distinctions in @arg{pattern}.
 	@end_itemize
 @DIAGNOSTICS
-	@name{Global} exits with a non 0 value if an error occurred, 0 otherwise.
+	@name{Global} exits with a non-0 value if an error occurred, 0 otherwise.
 @SEE ALSO
 	@xref{gtags,1},
 	@xref{htags,1},

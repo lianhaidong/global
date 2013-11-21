@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 # This file is converted to the following files:
-#	o command source file(for usage and help).
+#	o command source file (for usage and help).
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
@@ -28,11 +28,11 @@
 	@name{globash}
 @DESCRIPTION
 	@name{Globash} is a special shell for GLOBAL using GNU bash.
-	You can use a lot of functions to ease reading source code
+	You can use a lot of functions to ease reading source code,
 	like tag stack, tag mark and cookie.
 	At first, you should make tag files using @name{gtags} and
 	invoke this command in the project.
-	Please refer to the help (type 'ghelp'<ENTER>) for details.
+	Please refer to the help (type @kbd{ghelp<RET>}) for detailed usage.
 @FILES
 	@begin_itemize
 	@item{@file{GTAGS}}
@@ -46,6 +46,7 @@
 	@end_itemize
 @ENVIRONMENT
 	The following environment variables affect the execution of @name{globash}:
+
 	@begin_itemize
 	@item{@var{EDITOR}}
 		The editor used by the show command.
@@ -60,4 +61,4 @@
 @AUTHOR
 	Shigio YAMAGUCHI.
 @HISTORY
-	The @name{globash} command appeared in GLOBAL-4.1(2001).
+	The @name{globash} command appeared in GLOBAL-4.1 (2001).
