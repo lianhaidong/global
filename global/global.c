@@ -1075,6 +1075,8 @@ idutils(const char *pattern, const char *dbpath)
 	lid = usable("lid");
 	if (!lid)
 		die("lid(idutils) not found.");
+	if (!test("f", makepath(dbpath, "ID", NULL)))
+		die("ID file not found.");
 	/*
 	 * convert spaces into %FF format.
 	 */
@@ -1141,7 +1143,7 @@ idutils(const char *pattern, const char *dbpath)
 			break;
 		}
 	}
-	if (pclose(ip) < 0)
+	if (pclose(ip) != 0)
 		die("terminated abnormally.");
 	convert_close(cv);
 	strbuf_close(ib);
