@@ -21,16 +21,27 @@ This directory is a factory of plug-in parsers.
 How to write a plug-in parser?
 ==============================
 
-You should write a parser function like follows:
+You should write a parser function like follows (pseudo code):
 
 #include "parser.h"
 void
 parser(const struct parser_param *param)
 {
-        ...
+	open param->file
+	while (read from file) {
+		if (definition)
+			param->put(PARSER_DEF, ...);
+		else if (reference)
+			param->put(PARSER_REF_SYM, ...);
+		else
+			...
+	}
+	close file
 }
 
 A param argument is given to each parser function.
+param->file is the path name of a source file which should be parsed.
+
 You can write a tag using the param argument like follows:
 
 o write a tag to GTAGS
@@ -43,13 +54,12 @@ o write a tag to GRTAGS
 
 Note: 
 Gtags always makes GRTAGS even if you don't use PARSER_REF_SYM.
-This is an example of plug-in parser for gtags(1).
 
 How to use Exuberant Ctags as a parser?
 =======================================
 
-The parser 'exuberant-ctags.la' is built as a shared library, and is installed to
-/usr/local/lib/gtags by default.
+'exuberant-ctags.la' is a shared library to use Exuberant Ctags,
+and is installed to /usr/local/lib/gtags by default.
 
 To use this parser, please do like follows:
 
