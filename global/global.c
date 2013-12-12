@@ -616,6 +616,11 @@ main(int argc, char **argv)
 		dbpath = get_dbpath();
 	}
 	/*
+	 * Logical current directory.
+	 * We force idutils to follow the same rule as GLOBAL.
+	 */
+	set_env("PWD", cwd);
+	/*
 	 * print dbpath or rootdir.
 	 */
 	if (pflag) {

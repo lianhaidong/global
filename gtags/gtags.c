@@ -368,6 +368,11 @@ main(int argc, char **argv)
 		die("cannot get current directory.");
 	canonpath(cwd);
 	/*
+	 * Logical current directory.
+	 * We force idutils to follow the same rule as GLOBAL.
+	 */
+	set_env("PWD", cwd);
+	/*
 	 * Regularize the path name for single updating (--single-update).
 	 */
 	if (single_update) {
