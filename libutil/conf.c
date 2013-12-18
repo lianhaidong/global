@@ -220,12 +220,8 @@ configpath(void)
 #endif
 	else if (test("r", GTAGSCONF))
 		strbuf_puts(sb, GTAGSCONF);
-	else if (test("r", OLD_GTAGSCONF))
-		strbuf_puts(sb, OLD_GTAGSCONF);
 	else if (test("r", DEBIANCONF))
 		strbuf_puts(sb, DEBIANCONF);
-	else if (test("r", OLD_DEBIANCONF))
-		strbuf_puts(sb, OLD_DEBIANCONF);
 	else if (test("r", makepath(SYSCONFDIR, "gtags.conf", NULL)))
 		strbuf_puts(sb, makepath(SYSCONFDIR, "gtags.conf", NULL));
 	else

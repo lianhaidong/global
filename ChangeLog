@@ -20,6 +20,15 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+December 18 2013, Shigio YAMAGUCHI
+
+	The following paths were removed from the candidate list of configuration file.
+
+	/etc/global.conf (OLD_GTAGSCONF)
+	/etc/gtags/global.conf (OLD_DEBIANCONF)
+
+	These paths were not documented once.
+
 November 17 2013, Shigio YAMAGUCHI
 
 	Added two functions: copyfile(), copydirectory(). They removes the necessity

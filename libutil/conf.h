@@ -28,13 +28,7 @@
  * File format is a subset of @NAME{XXXcap} (@NAME{termcap}, @NAME{printcap}) file.
  */
 #define GTAGSCONF       "/etc/gtags.conf"
-
-				/** for compatibility */
-#define OLD_GTAGSCONF   "/etc/global.conf"
 #define DEBIANCONF      "/etc/gtags/gtags.conf"
-
-				/** for compatibility */
-#define OLD_DEBIANCONF  "/etc/gtags/global.conf"
 #define GTAGSRC 	".globalrc"
 #ifdef __DJGPP__
 #define DOS_GTAGSRC	"_globalrc"
