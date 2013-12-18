@@ -10,9 +10,11 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
-script_DATA = less-global elvis-global global-client gtags-client htags-client README
-
+script_DATA = less-global elvis-global global-client gtags-client htags-client
 scriptdir = ${datadir}/gtags/script
+
+gtags_DATA = SERVERSIDE_HOWTO
+gtagsdir = ${datadir}/gtags
 
 EXTRA_DIST = ${script_DATA}
 

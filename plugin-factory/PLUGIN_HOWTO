@@ -4,7 +4,7 @@ ___________________________________
 |  |   |  |  |  |  |     |     |  |
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Copyright (c) 2011 Tama Communications Corporation
+ Copyright (c) 2011, 2013 Tama Communications Corporation
 
  This file is free software; as a special exception the author gives
  unlimited permission to copy and/or distribute it, with or without
@@ -16,12 +16,19 @@ ___________________________________
 
                 ----------------------------------
 
-This directory is a factory of plug-in parsers.
+Plugin-factory directory ('plugin-factory/' in the GLOBAL package) is a factory
+of plug-in parsers. It has two plug-in parsers which are installed into the
+system by default.
+
+Nop parser('user-custom.c')
+	A skeleton parser. Nothing has been implemented yet.
+Exuberant Ctags('exuberant-ctags.c')
+	A parser to use Exuberant Ctags.
 
 How to write a plug-in parser?
 ==============================
 
-You should write a parser function like follows (pseudo code):
+You should write a parser function in the nop parser like follows (pseudo code):
 
 #include "parser.h"
 void
