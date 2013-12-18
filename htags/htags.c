@@ -1701,14 +1701,11 @@ main(int argc, char **argv)
 		die("cannot get current directory.");
 	if (arg_dbpath[0]) {
 		strlimcpy(dbpath, arg_dbpath, sizeof(dbpath));
-		set_env("GTAGSROOT", cwdpath);
-		set_env("GTAGSDBPATH", dbpath);
-	} else
-		strlimcpy(dbpath, cwdpath, sizeof(dbpath));
-	{
-		int status = setupdbpath(0);			/* for parsers */
+	} else {
+		int status = setupdbpath(0);
 		if (status < 0)
 			die_with_code(-status, gtags_dbpath_error);
+		strlimcpy(dbpath, get_dbpath(), sizeof(dbpath));
 	}
 	if (cflag && !usable("gzip")) {
 		warning("'gzip' command not found. -c option ignored.");
@@ -1892,7 +1889,7 @@ main(int argc, char **argv)
 		message(" Using %s/GTAGS.", get_dbpath());
 	if (grtags_is_empty)
 		message(" GRTAGS is empty.");
-	if (gpath_open(get_dbpath(), 0) < 0)
+	if (gpath_open(dbpath, 0) < 0)
 		die("GPATH not found.");
 	if (!w32) {
 		/* UNDER CONSTRUCTION */
