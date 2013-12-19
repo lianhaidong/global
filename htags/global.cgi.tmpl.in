@@ -133,23 +133,6 @@ if ($?) {
 	error_and_exit("GTAGSROOT directory not found.");
 }
 #
-# Sanity check
-# GTAGS and GPATH is indispensable file.
-#
-$missed = '';
-if (! -f 'GTAGS') {
-	$missed = 'GTAGS';
-} elsif (! -f 'GPATH') {
-	$missed = 'GPATH';
-} elsif ($flag eq 'r' && ! -f 'GRTAGS') {
-	$missed = 'GRTAGS';
-} elsif ($flag eq 'I' && ! -f 'ID') {
-	$missed = 'ID';
-}
-if ($missed) {
-	error_and_exit("Tag file ($missed) not found.");
-}
-#
 # fork and exec global(1) to avoid command substitutions in $pattern.
 # The --result=ctags-xid print the file id of the path at the head
 # of each line.
