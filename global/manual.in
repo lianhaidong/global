@@ -203,12 +203,12 @@
 	$ global strlen
 	$ (cd /usr/src/sys; gtags)
 	$ export GTAGSLIBPATH=/usr/src/sys
-	$ global strlen
-	../../../usr/src/sys/libkern/strlen.c
+	$ global -a strlen
+	/usr/src/sys/libkern/strlen.c
 	$ (cd /usr/src/lib; gtags)
 	$ GTAGSLIBPATH=/usr/src/lib:/usr/src/sys
-	$ global strlen
-	../../../usr/src/lib/libc/string/strlen.c
+	$ global -a strlen
+	/usr/src/lib/libc/string/strlen.c
 	@end_verbatim
 @FILES
 	@begin_itemize
