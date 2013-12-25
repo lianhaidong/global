@@ -12,7 +12,7 @@
 #
 bin_PROGRAMS= global
 
-global_SOURCES = global.c literal.c
+global_SOURCES = global.c literal.c output.c
 
 noinst_HEADERS = literal.h
 

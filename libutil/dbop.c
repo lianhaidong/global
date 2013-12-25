@@ -496,6 +496,7 @@ dbop_first(DBOP *dbop, const char *name, regex_t *preg, int flags)
 		for (status = (*db->seq)(db, &key, &dat, R_CURSOR);
 			status == RET_SUCCESS;
 			status = (*db->seq)(db, &key, &dat, R_NEXT)) {
+			dbop->readcount++;
 			if (flags & DBOP_PREFIX) {
 				if (strncmp((char *)key.data, dbop->key, dbop->keylen))
 					return NULL;
@@ -512,6 +513,7 @@ dbop_first(DBOP *dbop, const char *name, regex_t *preg, int flags)
 		for (status = (*db->seq)(db, &key, &dat, R_FIRST);
 			status == RET_SUCCESS;
 			status = (*db->seq)(db, &key, &dat, R_NEXT)) {
+			dbop->readcount++;
 			/* skip meta records */
 			if (ismeta(key.data) && !(dbop->openflags & DBOP_RAW))
 				continue;
@@ -560,6 +562,7 @@ dbop_next(DBOP *dbop)
 		return dbop->lastdat;
 	}
 	while ((status = (*db->seq)(db, &key, &dat, R_NEXT)) == RET_SUCCESS) {
+		dbop->readcount++;
 		assert(dat.data != NULL);
 		/* skip meta records */
 		if (!(dbop->openflags & DBOP_RAW)) {

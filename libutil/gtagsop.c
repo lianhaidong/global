@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2005, 2006,
- *	2007, 2009, 2010 Tama Communications Corporation
+ *	2007, 2009, 2010, 2013 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -767,6 +767,11 @@ gtags_next(GTOP *gtop)
 		return &gtop->gtp_array[gtop->gtp_index++];
 	}
 }
+void
+gtags_show_statistics(GTOP *gtop)
+{
+	fprintf(stderr, "Numbers of db->seq: %d (%s)\n", gtop->dbop->readcount, dbname(gtop->db));
+}
 /**
  * gtags_close: close tag file
  *
@@ -777,8 +782,6 @@ gtags_close(GTOP *gtop)
 {
 	if (gtop->format & GTAGS_COMPRESS)
 		abbrev_close();
-	if (gtop->format & GTAGS_COMPACT && gtop->cur_path[0])
-		flush_pool(gtop, NULL);
 	if (gtop->segment_pool)
 		pool_close(gtop->segment_pool);
 	if (gtop->path_array)
@@ -796,7 +799,7 @@ gtags_close(GTOP *gtop)
 	free(gtop);
 }
 /**
- * flush_pool: flush the pool and write is as compact format.
+ * flush_pool: flush and write the pool as compact format.
  *
  *	@param[in]	gtop	descripter of #GTOP
  *	@param[in]	s_fid
@@ -808,8 +811,8 @@ flush_pool(GTOP *gtop, const char *s_fid)
 	int header_offset;
 	int i, last;
 
-	if (s_fid == NULL && (s_fid = gpath_path2fid(gtop->cur_path, NULL)) == NULL)
-		die("GPATH is corrupted.('%s' not found)", gtop->cur_path);
+	if (s_fid == NULL)
+		die("flush_pool: impossible");
 	/*
 	 * Write records as compact format and free line number table
 	 * for each entry in the pool.

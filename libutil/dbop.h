@@ -78,6 +78,9 @@ typedef	struct {
 	int pid;			/**< sort process id */
 #endif
 	/** @} */
+
+	/** statistics */
+	int readcount;
 } DBOP;
 
 /**
