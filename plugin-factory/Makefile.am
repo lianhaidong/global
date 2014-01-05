@@ -23,4 +23,6 @@ user_custom_la_LDFLAGS = -module -avoid-version
 gtagsdir = ${datadir}/gtags
 gtags_DATA = PLUGIN_HOWTO
 
+EXTRA_DIST = $(gtags_DATA)
+
 AM_CPPFLAGS = @AM_CPPFLAGS@

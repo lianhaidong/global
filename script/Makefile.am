@@ -16,7 +16,7 @@ scriptdir = ${datadir}/gtags/script
 gtags_DATA = SERVERSIDE_HOWTO
 gtagsdir = ${datadir}/gtags
 
-EXTRA_DIST = ${script_DATA}
+EXTRA_DIST = ${script_DATA} ${gtags_DATA}
 
 gtags-client:
 	cp global-client gtags-client
