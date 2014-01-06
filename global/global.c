@@ -1529,7 +1529,6 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 	GTOP *gtop;
 	GTP *gtp;
 	int flags = 0;
-	int case_prefix = 0;
 
 	/*
 	 * open tag file.
