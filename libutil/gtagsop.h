@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2005, 2006, 2007, 2010
- * 2013
+ * 2013, 2014
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -139,6 +139,15 @@ typedef struct {
 
 	/** used for compact format and path name only read */
 	STRHASH *path_hash;
+
+	/**
+	 * Stuff for calling dbop
+	 */
+	const char *key;
+	char *prefix;
+	regex_t *preg;
+	int dbflags;
+	int readcount;
 } GTOP;
 
 const char *dbname(int);

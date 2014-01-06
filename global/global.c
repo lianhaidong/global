@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005, 2006,
- *	2007, 2008, 2010, 2011, 2012, 2013 Tama Communications Corporation
+ *	2007, 2008, 2010, 2011, 2012, 2013, 2014
+ *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -796,65 +797,20 @@ main(int argc, char **argv)
 int
 completion_tags(const char *dbpath, const char *root, const char *prefix, int db)
 {
-	int flags = GTOP_KEY;
+	int flags = GTOP_KEY | GTOP_NOREGEX | GTOP_PREFIX;
 	GTOP *gtop = gtags_open(dbpath, root, db, GTAGS_READ, 0);
 	GTP *gtp;
 	int count = 0;
 
-	if (prefix && isalpha(*prefix) && iflag) {
-		/*
-		 * If the -i option is specified, we use both of regular
-		 * expression and prefix read for performance. It is done
-		 * by connecting two prefix reading.
-		 */
-		STRBUF *sb = strbuf_open(0);
-		regex_t	preg;
-		int i, firstchar[2];
-
-		flags |= GTOP_NOREGEX;
-		flags |= GTOP_PREFIX;
-		/*
-		 * make regular expression.
-		 */
-		strbuf_putc(sb, '^');
-		strbuf_puts(sb, prefix);
-		if (regcomp(&preg, strbuf_value(sb), REG_ICASE) != 0)
-			die("invalid regular expression.");
-		/*
-		 * Two prefix reading:
-		 *
-		 * prefix = 'main'
-		 * v
-		 * firstchar[0] = 'M';		/^M/	the first time
-		 * firstchar[1] = 'm';		/^m/	the second time
-		 */
-		firstchar[0] = firstchar[1] = *prefix;
-		if (isupper(firstchar[0]))
-			firstchar[1] = tolower(firstchar[0]);
-		else
-			firstchar[0] = toupper(firstchar[0]);
-		for (i = 0; i < 2; i++) {
-			strbuf_reset(sb);
-			strbuf_putc(sb, firstchar[i]);
-			for (gtp = gtags_first(gtop, strbuf_value(sb), flags); gtp; gtp = gtags_next(gtop)) {
-				if (regexec(&preg, gtp->tag, 0, 0, 0) == 0) {
-					fputs(gtp->tag, stdout);
-					fputc('\n', stdout);
-					count++;
-				}
-			}
-		}
-		strbuf_close(sb);
-	} else {
-		flags |= GTOP_NOREGEX;
-		if (prefix)
-			flags |= GTOP_PREFIX;
-		for (gtp = gtags_first(gtop, prefix, flags); gtp; gtp = gtags_next(gtop)) {
-			fputs(gtp->tag, stdout);
-			fputc('\n', stdout);
-			count++;
-		}
+	if (iflag)
+		flags |= GTOP_IGNORECASE;
+	for (gtp = gtags_first(gtop, prefix, flags); gtp; gtp = gtags_next(gtop)) {
+		fputs(gtp->tag, stdout);
+		fputc('\n', stdout);
+		count++;
 	}
+	if (debug)
+		gtags_show_statistics(gtop);
 	gtags_close(gtop);
 	return count;
 }
@@ -1578,26 +1534,8 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 	/*
 	 * open tag file.
 	 */
-	gtop = gtags_open(dbpath, root, db, GTAGS_READ, 0);
+	gtop = gtags_open(dbpath, root, db, GTAGS_READ, debug ? GTAGS_DEBUG : 0);
 	cv = convert_open(type, format, root, cwd, dbpath, stdout, db);
-	/*
-	 * simplification for optimization
-	 */
-	if (*pattern == '^') {
-		if (!strcmp(pattern, "^.*") || !strcmp(pattern, "^.*$"))
-			pattern = ".*";
-		else {
-			char *p = (char *)(pattern + 1);
-			char *q = locatestring(pattern, ".*", MATCH_AT_LAST);
-			if (!q)
-				q = locatestring(pattern, ".*$", MATCH_AT_LAST);
-		 	if (q) {
-				*q = 0;
-				if (isregex(p))
-					*q = '.';
-			}
-		}
-	}
 	/*
 	 * search through tag file.
 	 */
@@ -1607,65 +1545,12 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 		flags |= GTOP_BASICREGEX;
 	if (format == FORMAT_PATH)
 		flags |= GTOP_PATH;
-	if (iflag) {
-		if (!isregex(pattern))
-			case_prefix = *pattern;
-		else if (*pattern == '^' && !isregex(pattern + 1))
-			case_prefix = *(pattern + 1);
-		if (case_prefix)
-			flags |= GTOP_PREFIX;
-		else
-			flags |= GTOP_IGNORECASE;
-	}
-	if (case_prefix) {
-		/*
-		 * optimazation for 'global -i <literal>' or 'global -i '^<literal>'
-		 */
-		char prefix_char[2];
-		int i, prefix_count = 0;
-		regex_t preg;
-		STATIC_STRBUF(sb);
-		int regflags = REG_ICASE;
-
-		if (isalpha(case_prefix)) {
-			prefix_char[0] = toupper(case_prefix);
-			prefix_char[1] = tolower(case_prefix);
-			prefix_count = 2;
-		} else {
-			prefix_char[0] = case_prefix;
-			prefix_count = 1;
-		}
-		strbuf_clear(sb);
-		if (!isregex(pattern)) {
-			strbuf_putc(sb, '^');
-			strbuf_puts(sb, pattern);
-			strbuf_putc(sb, '$');
-		} else {
-			strbuf_puts(sb, pattern);
-		}
-		if (!Gflag)
-			regflags |= REG_EXTENDED;
-		if (regcomp(&preg, strbuf_value(sb), regflags) != 0)
-			die("illegal regular expression.");
-		for (i = 0; i < prefix_count; i++) {
-			strbuf_reset(sb);
-			strbuf_putc(sb, prefix_char[i]);
-			start_output();
-			for (gtp = gtags_first(gtop, strbuf_value(sb), flags); gtp; gtp = gtags_next(gtop)) {
-				if (lflag && !locatestring(gtp->path, localprefix, MATCH_AT_FIRST))
-					continue;
-				if (regexec(&preg, gtp->tag, 0, 0, 0) != 0)
-					continue;
-				count += output_with_formatting(cv, gtp, gtop->format);
-			}
-			end_output();
-		}
-	} else {
-		for (gtp = gtags_first(gtop, pattern, flags); gtp; gtp = gtags_next(gtop)) {
-			if (lflag && !locatestring(gtp->path, localprefix, MATCH_AT_FIRST))
-				continue;
-			count += output_with_formatting(cv, gtp, gtop->format);
-		}
+	if (iflag)
+		flags |= GTOP_IGNORECASE;
+	for (gtp = gtags_first(gtop, pattern, flags); gtp; gtp = gtags_next(gtop)) {
+		if (lflag && !locatestring(gtp->path, localprefix, MATCH_AT_FIRST))
+			continue;
+		count += output_with_formatting(cv, gtp, gtop->format);
 	}
 	convert_close(cv);
 	if (debug)
@@ -1686,8 +1571,23 @@ void
 tagsearch(const char *pattern, const char *cwd, const char *root, const char *dbpath, int db)
 {
 	int count, total = 0;
+	char buffer[IDENTLEN], *p = buffer;
 	char libdbpath[MAXPATHLEN];
 
+	/*
+	 * trim pattern (^<no regex>$ => <no regex>)
+	 */
+	if (pattern) {
+		strlimcpy(p, pattern, sizeof(buffer));
+		if (*p++ == '^') {
+			char *q = p + strlen(p);
+			if (*--q == '$') {
+				*q = 0;
+				if (*p == 0 || !isregex(p))
+					pattern = p;
+			}
+		}
+	}
 	/*
 	 * search in current source tree.
 	 */

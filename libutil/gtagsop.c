@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2005, 2006,
- *	2007, 2009, 2010, 2013 Tama Communications Corporation
+ *	2007, 2009, 2010, 2013, 2014
+ *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -63,6 +64,8 @@ static int compare_lineno(const void *, const void *);
 static int compare_tags(const void *, const void *);
 static const char *seekto(const char *, int);
 static int is_defined_in_GTAGS(GTOP *, const char *);
+static char *get_prefix(const char *, int);
+static int gtags_restart(GTOP *);
 static void flush_pool(GTOP *, const char *);
 static void segment_read(GTOP *);
 
@@ -554,6 +557,84 @@ gtags_delete(GTOP *gtop, IDSET *deleteset)
 	}
 }
 /**
+ * get_prefix: get as long prefix of the pattern as possible.
+ *
+ *	@param[in]	pattern
+ *	@param[in]	flags for gtags_first()
+ *	@return		prefix for search
+ */
+static char *
+get_prefix(const char *pattern, int flags)
+{
+	static char buffer[IDENTLEN];
+	char *prefix = buffer;
+
+	if (pattern == NULL || pattern[0] == 0) {
+		prefix = NULL;
+	} else if (!isregex(pattern)) {
+		if (flags & GTOP_IGNORECASE) {
+			buffer[0] = toupper(*pattern);
+			buffer[1] = 0;
+		} else {
+			prefix = NULL;
+		}
+	} else if (*pattern == '^') {
+		int save = 0;
+		char *p = (char *)(pattern + 1);
+		char *q = locatestring(p, ".*$", MATCH_AT_LAST);
+
+		if (!q)
+			q = locatestring(pattern, "$", MATCH_AT_LAST);
+		if (!q)
+			q = locatestring(pattern, ".*", MATCH_AT_LAST);
+		if (q) {
+			save = *q;
+			*q = 0;
+		}
+		if (*p == 0 || isregex(p)) {
+			prefix = NULL;
+		} else {
+			if (flags & GTOP_IGNORECASE) {
+				prefix[0] = toupper(*p);
+				prefix[1] = 0;
+			} else
+				strlimcpy(buffer, p, sizeof(buffer));
+		}
+		if (save)
+			*q = save;
+	}
+	return prefix;;
+}
+/**
+ * gtags_restart: restart dbop iterator using lower case prefix.
+ *
+ *	@param[in]	gtop	#GTOP structure
+ *	@return		prepared or not
+ *			#0:	cannot continue
+ *			#1:	can continue
+ */
+static int
+gtags_restart(GTOP *gtop)
+{
+	int upper, lower;
+
+	if (gtop->prefix == NULL)
+		die("gtags_restart: impossible.");
+	upper = gtop->prefix[0];
+	lower = tolower(upper);
+	if (upper < lower) {
+		gtop->prefix[0] = lower;
+		gtop->key = gtop->prefix;
+		gtop->prefix = NULL;
+		if (gtop->openflags & GTAGS_DEBUG)
+			fprintf(stderr, "Using prefix: %s\n", gtop->key);
+		return 1;
+	}
+	if (gtop->openflags & GTAGS_DEBUG)
+		fprintf(stderr, "gtags_restart: not prepared.\n");
+	return 0;
+}
+/**
  * gtags_first: return first record
  *
  *	@param[in]	gtop	#GTOP structure
@@ -572,12 +653,18 @@ gtags_delete(GTOP *gtop, IDSET *deleteset)
 GTP *
 gtags_first(GTOP *gtop, const char *pattern, int flags)
 {
-	int dbflags = 0;
 	int regflags = 0;
 	static regex_t reg;
-	regex_t *preg = &reg;
-	const char *key = NULL;
 	const char *tagline;
+	STATIC_STRBUF(regex);
+
+	strbuf_clear(regex);
+	gtop->preg = &reg;
+	gtop->key = NULL;
+	gtop->prefix = NULL;
+	gtop->flags = flags;
+	gtop->dbflags = 0;
+	gtop->readcount = 1;
 
 	/* Settlement for last time if any */
 	if (gtop->path_hash) {
@@ -589,44 +676,72 @@ gtags_first(GTOP *gtop, const char *pattern, int flags)
 		gtop->path_array = NULL;
 	}
 
-	gtop->flags = flags;
-	if (flags & GTOP_PREFIX && pattern != NULL)
-		dbflags |= DBOP_PREFIX;
 	if (flags & GTOP_KEY)
-		dbflags |= DBOP_KEY;
-
+		gtop->dbflags |= DBOP_KEY;
 	if (!(flags & GTOP_BASICREGEX))
 		regflags |= REG_EXTENDED;
-	if (flags & GTOP_IGNORECASE)
-		regflags |= REG_ICASE;
+
 	/*
-	 * Get key and compiled regular expression for dbop_xxxx().
+	 * decide a read method
 	 */
-	if (flags & GTOP_NOREGEX) {
-		key = pattern;
-		preg = NULL;
-	} else if (pattern == NULL || !strcmp(pattern, ".*")) {
+	if (pattern == NULL)
+		gtop->preg = NULL;
+	else if (pattern[0] == 0)
+		return NULL;
+	else if (!strcmp(pattern, ".*") || !strcmp(pattern, "^.*$") ||
+		!strcmp(pattern, "^") || !strcmp(pattern, "$") ||
+		!strcmp(pattern, "^.*") || !strcmp(pattern, ".*$")) {
 		/*
-		 * Since the regular expression '.*' matches to any record,
+		 * Since these regular expressions match to any record,
 		 * we take sequential read method.
 		 */
-		key = NULL;
-		preg = NULL;
-	} else if (isregex(pattern) && regcomp(preg, pattern, regflags) == 0) {
-		/*
-		 * If the pattern is '^' + <non regular expression> like '^aaa',
-		 * we take prefix read method with the non regular expression part
-		 * as a prefix.
-		 */
-		if (!(flags & GTOP_IGNORECASE) && *pattern == '^' && !isregex(pattern + 1)) {
-			key = pattern + 1;
-			dbflags |= DBOP_PREFIX;
+		gtop->preg = NULL;
+	} else if (flags & GTOP_IGNORECASE) {
+		regflags |= REG_ICASE;
+		if (!isregex(pattern) || flags & GTOP_NOREGEX) {
+			gtop->prefix = get_prefix(pattern, flags);
+			if (gtop->openflags & GTAGS_DEBUG)
+				if (gtop->prefix != NULL)
+					fprintf(stderr, "Using prefix: %s\n", gtop->prefix);
+			if (gtop->prefix == NULL)
+				die("gtags_first: impossible (1).");
+			strbuf_putc(regex, '^');
+			strbuf_puts(regex, pattern);
+			if (!(flags & GTOP_PREFIX))
+				strbuf_putc(regex, '$');
+		} else if (*pattern == '^' && (gtop->prefix = get_prefix(pattern, flags)) != NULL) {
+			if (gtop->openflags & GTAGS_DEBUG)
+				fprintf(stderr, "Using prefix: %s\n", gtop->prefix);
+			strbuf_puts(regex, pattern);
 		} else {
-			key = NULL;
+			strbuf_puts(regex, pattern);
 		}
 	} else {
-		key = pattern;
-		preg = NULL;
+		if (!isregex(pattern) || flags & GTOP_NOREGEX) {
+			if (flags & GTOP_PREFIX)
+				gtop->dbflags |= DBOP_PREFIX;
+			gtop->key = pattern;
+			gtop->preg = NULL;
+		} else if (*pattern == '^' && (gtop->key = get_prefix(pattern, flags)) != NULL) {
+			if (gtop->openflags & GTAGS_DEBUG)
+				fprintf(stderr, "Using prefix: %s\n", gtop->key);
+			gtop->dbflags |= DBOP_PREFIX;
+			gtop->preg = NULL;
+		} else {
+			strbuf_puts(regex, pattern);
+		}
+	}
+	if (gtop->prefix) {
+		if (gtop->key)
+			die("gtags_first: impossible (2).");
+		gtop->key = gtop->prefix;
+		gtop->dbflags |= DBOP_PREFIX;
+	}
+	if (strbuf_getlen(regex) > 0) {
+		if (gtop->preg == NULL)
+			die("gtags_first: impossible (3).");
+		if (regcomp(gtop->preg, strbuf_value(regex), regflags) != 0)
+			die("illegal regular expression.");
 	}
 	/*
 	 * If GTOP_PATH is set, at first, we collect all path names in a pool and
@@ -648,7 +763,8 @@ gtags_first(GTOP *gtop, const char *pattern, int flags)
 		 * |105		./aaa/b.c
 		 *  ...
 		 */
-		for (tagline = dbop_first(gtop->dbop, key, preg, dbflags);
+again0:
+		for (tagline = dbop_first(gtop->dbop, gtop->key, gtop->preg, gtop->dbflags);
 		     tagline != NULL;
 		     tagline = dbop_next(gtop->dbop))
 		{
@@ -667,6 +783,8 @@ gtags_first(GTOP *gtop, const char *pattern, int flags)
 				entry->value = strhash_strdup(gtop->path_hash, cp, 0);
 			}
 		}
+		if (gtop->prefix && gtags_restart(gtop))
+			goto again0;
 		/*
 		 * Sort path names.
 		 *
@@ -692,12 +810,17 @@ gtags_first(GTOP *gtop, const char *pattern, int flags)
 		gtop->gtp.path = gtop->path_array[gtop->path_index++];
 		return &gtop->gtp;
 	} else if (gtop->flags & GTOP_KEY) {
-		for (gtop->gtp.tag = dbop_first(gtop->dbop, key, preg, dbflags);
+again1:
+		for (gtop->gtp.tag = dbop_first(gtop->dbop, gtop->key, gtop->preg, gtop->dbflags);
 		     gtop->gtp.tag != NULL;
 		     gtop->gtp.tag = dbop_next(gtop->dbop))
 		{
 			VIRTUAL_GRTAGS_GSYMS_PROCESSING(gtop);
 			break;
+		}
+		if (gtop->gtp.tag == NULL) {
+			if (gtop->prefix && gtags_restart(gtop))
+				goto again1;
 		}
 		return gtop->gtp.tag ? &gtop->gtp : NULL;
 	} else {
@@ -713,9 +836,13 @@ gtags_first(GTOP *gtop, const char *pattern, int flags)
 			gtop->path_hash = strhash_open(HASHBUCKETS);
 		else
 			strhash_reset(gtop->path_hash);
-		tagline = dbop_first(gtop->dbop, key, preg, dbflags);
-		if (tagline == NULL)
+again2:
+		tagline = dbop_first(gtop->dbop, gtop->key, gtop->preg, gtop->dbflags);
+		if (tagline == NULL) {
+			if (gtop->prefix && gtags_restart(gtop))
+				goto again2;
 			return NULL;
+		}
 		/*
 		 * Dbop_next() wil read the same record again.
 		 */
@@ -737,18 +864,25 @@ gtags_first(GTOP *gtop, const char *pattern, int flags)
 GTP *
 gtags_next(GTOP *gtop)
 {
+	gtop->readcount++;
 	if (gtop->flags & GTOP_PATH) {
 		if (gtop->path_index >= gtop->path_count)
 			return NULL;
 		gtop->gtp.path = gtop->path_array[gtop->path_index++];
 		return &gtop->gtp;
 	} else if (gtop->flags & GTOP_KEY) {
-		for (gtop->gtp.tag = dbop_next(gtop->dbop);
-		     gtop->gtp.tag != NULL;
-		     gtop->gtp.tag = dbop_next(gtop->dbop))
+		gtop->gtp.tag = dbop_next(gtop->dbop);
+again3:
+		for (; gtop->gtp.tag != NULL; gtop->gtp.tag = dbop_next(gtop->dbop))
 		{
 			VIRTUAL_GRTAGS_GSYMS_PROCESSING(gtop);
 			break;
+		}
+		if (gtop->gtp.tag == NULL) {
+			if (gtop->prefix && gtags_restart(gtop)) {
+				gtop->gtp.tag = dbop_first(gtop->dbop, gtop->key, gtop->preg, gtop->dbflags);
+				goto again3;
+			}
 		}
 		return gtop->gtp.tag ? &gtop->gtp : NULL;
 	} else {
@@ -762,15 +896,22 @@ gtags_next(GTOP *gtop)
 			/* strhash_reset(gtop->path_hash); */
 			segment_read(gtop);
 		}
-		if (gtop->gtp_index >= gtop->gtp_count)
-			return NULL;
+		if (gtop->gtp_index >= gtop->gtp_count) {
+			if (gtop->prefix && gtags_restart(gtop)) {
+				gtop->gtp.tag = dbop_first(gtop->dbop, gtop->key, gtop->preg, gtop->dbflags);
+				dbop_unread(gtop->dbop);
+				segment_read(gtop);
+			} else
+				return NULL;
+		}
 		return &gtop->gtp_array[gtop->gtp_index++];
 	}
 }
 void
 gtags_show_statistics(GTOP *gtop)
 {
-	fprintf(stderr, "Numbers of db->seq: %d (%s)\n", gtop->dbop->readcount, dbname(gtop->db));
+	fprintf(stderr, "Numbers of gtags (%s): %d\n", dbname(gtop->db), gtop->readcount);
+	fprintf(stderr, "Numbers of dbop  (%s): %d\n", dbname(gtop->db), gtop->dbop->readcount);
 }
 /**
  * gtags_close: close tag file
