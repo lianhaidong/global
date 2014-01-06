@@ -32,7 +32,7 @@ o If you want to use the -I option of global(1) then idutils(1) is needed.
 	ftp://ftp.gnu.org/pub/gnu/idutils/
   
 o If you want to use the --form(-f) or --dynamic(-D) option of htags(1) then
-  Perl version 4 or later is needed.
+  Perl version 5 or later is needed.
 
    If you don't have it, you can fetch it from this site.
 
@@ -47,31 +47,6 @@ o If you want to use the --form(-f) or --dynamic(-D) option of htags(1) then
 	(You can see the options of configure by invoking './configure --help')
 
 3. Using GLOBAL with editors.
-
-o Nvi-1.81.5
-
-   Please get nvi-1.81.5 at:
-
-
-	   http://www.kotnet.org/~skimo/nvi/
-
-   build it with '--enable-perlinterp' option and do the followings.
-   ($HOME/perl is an example. Please replace it with any directory you like.)
-
-	$ mkdir $HOME/perl
-	$ cp gtags.pl $HOME/perl
-	$ vi $HOME/.nexrc
-	+-----------------------------------------
-	|perl use lib qw($ENV{HOME}/perl)
-	|perl require 'gtags.pl'
-	|map ^P :tagprev^M
-	|map ^N :tagnext^M
-	|map ^] :perl tag^M
-	|ab gtag perl tag qw(
-	|ab gta perl tag qw(
-	|ab gt perl tag qw(
-
-   ('gtags.pl' is included in GLOBAL package.)
 
 o Emacs
 
@@ -93,7 +68,10 @@ o Elvis
 
 	http://elvis.vi-editor.org/
 
-   You need not any patch for it.
+   Please copy an elvis script to your home directory.
+
+	$ cp /usr/local/share/gtags/elvis.rc $HOME/.elvisrc
+	$ PATH=/usr/local/share/gtags/script:$PATH
 
 o Vim
 
