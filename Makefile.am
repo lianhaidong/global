@@ -21,12 +21,12 @@ if USE_GTAGSCSCOPE
 endif
 
 gtagsdir = ${datadir}/gtags
-gtags_DATA = AUTHORS COPYING ChangeLog FAQ INSTALL LICENSE NEWS README THANKS \
+gtags_DATA = AUTHORS COPYING COPYING.LIB ChangeLog FAQ INSTALL LICENSE NEWS README THANKS \
+	BOKIN_MODEL BOKIN_MODEL_FAQ DONORS BUILD_TOOLS \
         gtags.conf gtags.el gtags.pl gtags.vim gtags-cscope.vim \
-	BOKIN_MODEL BOKIN_MODEL_FAQ DONORS BUILD_TOOLS elvis.rc elvis-2.2_0.patch \
-	mainpage.dox head.in
+	elvis.rc elvis-2.2_0.patch ctags-5.8.patch
 
-EXTRA_DIST = ${gtags_DATA} reconf.sh convert.pl
+EXTRA_DIST = ${gtags_DATA} reconf.sh convert.pl mainpage.dox head.in
 
 doxygen:
 	GTAGSCONF=':htags_options=--insert-header=head.in --suggest:' doxygen
