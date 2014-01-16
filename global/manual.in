@@ -113,8 +113,10 @@
 		The default is an extended regular expression.
 	@item{@option{-i}, @option{--ignore-case}}
 		Ignore case distinctions in the pattern.
-	@item{@option{-L}, @option{--file-list} @arg{file-list}}
-		Obtain files from @arg{file-list} in addition to the arguments.
+	@item{@option{-L}, @option{--file-list} @arg{file}}
+		Obtain files from @arg{file} in addition to the arguments.
+		The argument @arg{file} can be set to '-' to accept a list of files
+		from the standard input. File names must be separated by newline.
 	@item{@option{-l}, @option{--local}}
 		Print only tags which exist under the current directory.
 	@item{@option{--literal}}
