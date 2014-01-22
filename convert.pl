@@ -67,7 +67,7 @@ sub getvalue {
 	# A value should be defined as:
 	# NAME='VALUE'
 	#
-	my $line=`grep '$name=' configure.ac`;
+	my $line=`grep "$name=" configure.ac`;
 	($value) = $line =~ /^$name='(.*)'$/;
 	unless ($value) {
 		print STDERR "$name not found.\n";
@@ -161,7 +161,7 @@ sub ungetline {
 package c;
 sub convert {
 	local($arg) = '[^},]+';
-	local($macros) = 'arg|code|var|file|name|option';
+	local($macros) = 'arg|code|var|file|name|option|val|samp|kbd';
 	chop;
 	s/^\s+//;
 	while (s/\@($macros)\{($arg)\}/$2/) {
