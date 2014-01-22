@@ -151,7 +151,7 @@
 		With the @option{-p} option, print the root directory of the project.
 	@item{@option{--result} @arg{format}}
 		Print out using @arg{format}, which may be one of:
-		@val{path} (deault), @val{ctags}, @val{ctags-x}, @val{grep} or @val{cscope}.
+		@val{path} (default), @val{ctags}, @val{ctags-x}, @val{grep} or @val{cscope}.
 		The @option{--result=ctags} and @option{--result=ctags-x} options are
 		equivalent to the @option{-t} and @option{-x} options respectively.
 		The @option{--result} option is given more priority than the @option{-t} and @option{-x} options.
