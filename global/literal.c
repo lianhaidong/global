@@ -159,7 +159,7 @@ literal_search(CONVERT *cv, const char *file)
 	lineno = 1;
 	c = w;
 	for (;;) {
-		if (--ccount <= 0)
+		if (--ccount < 0)
 			break;
 		nstate:
 			if (ccomp(c->inp, *p)) {
@@ -186,7 +186,7 @@ literal_search(CONVERT *cv, const char *file)
 			}
 		if (c->out) {
 			while (*p++ != '\n') {
-				if (--ccount <= 0)
+				if (--ccount < 0)
 					break;
 			}
 			if (Vflag)
@@ -210,7 +210,7 @@ literal_search(CONVERT *cv, const char *file)
 			c = w;
 			continue;
 		}
-		if (*p++ == '\n') {
+		if (*p++ == '\n' || ccount == 0) {
 			if (Vflag)
 				goto succeed;
 			else {
