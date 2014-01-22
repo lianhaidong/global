@@ -899,6 +899,8 @@ again3:
 		if (gtop->gtp_index >= gtop->gtp_count) {
 			if (gtop->prefix && gtags_restart(gtop)) {
 				gtop->gtp.tag = dbop_first(gtop->dbop, gtop->key, gtop->preg, gtop->dbflags);
+				if (gtop->gtp.tag == NULL)
+					return NULL;
 				dbop_unread(gtop->dbop);
 				segment_read(gtop);
 			} else
