@@ -44,7 +44,11 @@
 #define MAXPATHLEN	1024
 #endif
 		/** max length of record key	*/
+#if MAXPATHLEN < 1024
+#define MAXKEYLEN	1024
+#else
 #define MAXKEYLEN	MAXPATHLEN
+#endif
 		/** max length of URL		*/
 #define MAXURLLEN	1024
 /*
