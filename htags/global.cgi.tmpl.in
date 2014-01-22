@@ -137,14 +137,14 @@ if ($?) {
 # The --result=ctags-xid print the file id of the path at the head
 # of each line.
 #
-$flags = $flag . $iflag . $oflag;
-if ($flags eq '') {
-	open(PIPE, "-|") || exec '@globalpath@', '--result=ctags-xid', '-e', $pattern;
+$flags = '-' . $flag . $iflag . $oflag . 'e';
+if ($^O eq 'MSWin32') {
+	open(PIPE, '@globalpath@' . " --result=ctags-xid $flags $pattern |");
 } else {
-	open(PIPE, "-|") || exec '@globalpath@', '--result=ctags-xid', '-'.$flags, '-e', $pattern;
-}
-if ($?) {	
-	error_and_exit("Cannot execute global.");
+	open(PIPE, "-|") || exec '@globalpath@', '--result=ctags-xid', $flags, $pattern;
+	if ($?) {
+		error_and_exit("Cannot execute global.");
+	}
 }
 local(%ctab) = ('&', '&amp;', '<', '&lt;', '>', '&gt;');
 $pattern =~ s/([&<>])/$ctab{$1}/ge;

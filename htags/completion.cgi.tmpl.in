@@ -81,7 +81,11 @@ if (-f "../GTAGSROOT" && open(GTAGSROOT, "../GTAGSROOT")) {
 }
 chdir($gtagsroot);
 print "Content-Type: text/html\n\n";
-open(PIPE, "-|") || exec '@globalpath@', '-'.$flags, '-e', $q;
+if ($^O eq 'MSWin32') {
+	open(PIPE, '@globalpath@' . " -${flags}e $q |");
+} else {
+	open(PIPE, "-|") || exec '@globalpath@', '-'.$flags.'e', $q;
+}
 if ($limit > 0) {
 	while (<PIPE>) {
 		print if ($limit-- > 0);
