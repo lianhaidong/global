@@ -2109,7 +2109,7 @@ main(int argc, char **argv)
 		char dist[MAXPATHLEN];
 #ifdef __DJGPP__
 		const char *template = "";
-		snprintf(src, sizeof(com), "%s/gtags/style.css.tmpl", datadir);
+		snprintf(src, sizeof(src), "%s/gtags/style.css.tmpl", datadir);
 		if (test("f", src))
 		       template = ".tmpl";
 		snprintf(src, sizeof(src), "%s/gtags/style.css%s", datadir, template);
