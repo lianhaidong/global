@@ -642,6 +642,13 @@ main(int argc, char **argv)
 			die("gtags command not found.");
 		if (chdir(root) < 0)
 			die("cannot change directory to '%s'.", root);
+#if defined(_WIN32) && !defined(__CYGWIN__)
+		/*
+		 * Get around CMD.EXE's weird quoting rules by sticking another
+		 * perceived whitespace in front (also works with Take Command).
+		 */
+		strbuf_putc(sb, ';');
+#endif
 		strbuf_puts(sb, quote_shell(gtags_path));
 		strbuf_puts(sb, " -i");
 		if (vflag)
@@ -654,8 +661,7 @@ main(int argc, char **argv)
 					die("rel2abs failed.");
 				single_update = regular_path_name;
 			}
-			strbuf_puts(sb, " --single-update");
-			strbuf_putc(sb, ' ');
+			strbuf_puts(sb, " --single-update ");
 			strbuf_puts(sb, quote_shell(single_update));
 		}
 		strbuf_putc(sb, ' ');
@@ -1058,8 +1064,10 @@ idutils(const char *pattern, const char *dbpath)
 		strbuf_puts(ib, " --result=grep");
 	if (iflag)
 		strbuf_puts(ib, " --ignore-case");
+	if (isregex(pattern))
+		strbuf_puts(ib, " --regexp");
 	strbuf_putc(ib, ' ');
-	strbuf_puts(ib, quote_string(pattern));
+	strbuf_puts(ib, quote_shell(pattern));
 	if (debug)
 		fprintf(stderr, "idutils: %s\n", strbuf_value(ib));
 	if (!(ip = popen(strbuf_value(ib), "r")))
