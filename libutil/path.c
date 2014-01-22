@@ -42,6 +42,10 @@
 #include "strlimcpy.h"
 #include "test.h"
 
+#if defined(_WIN32) && !defined(__CYGWIN__)
+#define mkdir(path,mode) mkdir(path)
+#endif
+
 
 /**
  * isabspath: whether absolute path or not
@@ -214,11 +218,7 @@ makedirectories(const char *base, const char *rest, int verbose)
 		if (!test("d", p)) {
 			if (verbose)
 				fprintf(stderr, " Making directory '%s'.\n", p);
-#if defined(_WIN32) && !defined(__CYGWIN__)
-			if (mkdir(p) < 0) {
-#else
 			if (mkdir(p, 0775) < 0) {
-#endif /* WIN32 */
 				strbuf_close(sb);
 				return -3;
 			}

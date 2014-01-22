@@ -48,6 +48,10 @@
 #include "strlimcpy.h"
 #include "test.h"
 
+#if defined(_WIN32) && !defined(__CYGWIN__)
+#define mkdir(path,mode) mkdir(path)
+#endif
+
 /**
  @file
 
