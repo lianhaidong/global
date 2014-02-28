@@ -266,9 +266,9 @@ prepare_skip(void)
 	strbuf_puts(reg, "/GSYMS$|");
 	strbuf_puts(reg, "/GPATH$|");
 	for (p = skiplist; *p; ) {
+		char *skipf;
 		STATIC_STRBUF(sb);
 		strbuf_clear(sb);
-		char *skipf;
 
 		while (*p && *p == ',')
 			p++;
