@@ -1,6 +1,7 @@
 #
 # Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005
-#	2007, 2008, 2009, 2010, 2012 Tama Communications Corporation
+#	2007, 2008, 2009, 2010, 2012, 2014
+#	Tama Communications Corporation
 #
 # This file is part of GNU GLOBAL.
 #
@@ -56,7 +57,7 @@
 		Dump a tag file as text to the standard output. Output format is 'key<tab>data'.
 		This is for debugging.
 	@item{@option{-f}, @option{--file} @arg{file}}
-		Browse through all source files whose names are listed in @arg{file}.
+		Browse through all files whose names are listed in @arg{file}.
 		The argument @arg{file} can be set to @val{-} to accept a list of
 		files from the standard input.
 		File names must be separated by newline.
@@ -168,6 +169,7 @@
 		@name{gtags} skips all files under it.
 		If the value starts with @samp{/}, it is assumed a relative path
 		from the root of source directory.
+		The value may include glob patterns (*, ?, [...], [!...], [^...]).
 	@end_itemize
 @DIAGNOSTICS
 	@name{Gtags} exits with a non-0 value if an error occurred, 0 otherwise.

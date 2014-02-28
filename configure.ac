@@ -3,7 +3,7 @@ dnl Configuration script for GLOBAL.
 dnl Process this file with autoconf to produce a configure script.
 dnl
 dnl Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2008, 2010,
-dnl	2011, 2012, 2013
+dnl	2011, 2012, 2013, 2014
 dnl	Tama Communications Corporation
 dnl
 dnl This file is part of GNU GLOBAL.
@@ -334,7 +334,7 @@ dnl
 dnl DEFAULTSKIP: You need not list files whoes first character of name is '.'.
 dnl		Such files are skipped even in case of not being in the list.
 dnl
-DEFAULTSKIP='HTML/,HTML.pub/,tags,TAGS,ID,y.tab.c,y.tab.h,cscope.out,cscope.po.out,cscope.in.out,SCCS/,RCS/,CVS/,CVSROOT/,{arch}/,autom4te.cache/'
+DEFAULTSKIP='HTML/,HTML.pub/,tags,TAGS,ID,y.tab.c,y.tab.h,gtags.files,cscope.files,cscope.out,cscope.po.out,cscope.in.out,SCCS/,RCS/,CVS/,CVSROOT/,{arch}/,autom4te.cache/,*.orig,*.rej,*.bak,*~,#*#,*.swp,*.tmp,*_flymake.*,*_flymake'
 DEFAULTLANGMAP='c:.c.h,yacc:.y,asm:.s.S,java:.java,cpp:.c++.cc.hh.cpp.cxx.hxx.hpp.C.H,php:.php.php3.phtml'
 DEFAULTINCLUDEFILESUFFIXES='h,hh,hxx,hpp,H,inc.php'
 AC_SUBST(DEFAULTSKIP)

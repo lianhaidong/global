@@ -358,8 +358,10 @@ getconfs(const char *name, STRBUF *sb)
 		if (exist && sb)
 			strbuf_putc(sb, ',');		
 		exist = 1;
-		for (p += strlen(buf); *p && *p != ':'; p++) {
-			if (*p == '\\')	/* quoted character */
+		for (p += strlen(buf); *p; p++) {
+			if (*p == ':')
+				break;
+			if (*p == '\\' && *(p + 1) == ':')	/* quoted character */
 				p++;
 			if (sb)
 				strbuf_putc(sb, *p);

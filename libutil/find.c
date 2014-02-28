@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2005, 2006, 2008,
- *	2009, 2011, 2012 Tama Communications Corporation
+ *	2009, 2011, 2012, 2014 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -109,9 +109,7 @@ static char *find_read_traverse(void);
 static char *find_read_filelist(void);
 
 extern int qflag;
-#ifdef DEBUG
 extern int debug;
-#endif
 static const int allow_blank = 1;
 static const int check_looplink = 1;
 static int accept_dotfiles = 0;
@@ -244,7 +242,9 @@ prepare_skip(void)
 		return NULL;
 	}
 	skiplist = check_strdup(strbuf_value(reg));
-	trim(skiplist);
+	if (debug)
+		fprintf(stderr, "original skip list: %s\n", skiplist);
+	/* trim(skiplist);*/
 	strbuf_reset(reg);
 	/*
 	 * construct regular expression.
@@ -265,23 +265,89 @@ prepare_skip(void)
 	strbuf_puts(reg, "/GRTAGS$|");
 	strbuf_puts(reg, "/GSYMS$|");
 	strbuf_puts(reg, "/GPATH$|");
-	for (p = skiplist; p; ) {
-		char *skipf = p;
-		if ((p = locatestring(p, ",", MATCH_FIRST)) != NULL)
-			*p++ = 0;
+	for (p = skiplist; *p; ) {
+		STATIC_STRBUF(sb);
+		strbuf_clear(sb);
+		char *skipf;
+
+		while (*p && *p == ',')
+			p++;
+		if (*p == '\0')
+			break;
+		for (; *p; p++) {
+			if (*p == ',')
+				break;
+			if (*p == '\\' && *(p + 1) == ',') 
+				p++;
+			strbuf_putc(sb, *p);
+		}
+		skipf = strbuf_value(sb);
 		if (*skipf == '/') {
 			list_count++;
 			strbuf_puts0(list, skipf);
 		} else {
 			strbuf_putc(reg, '/');
 			for (q = skipf; *q; q++) {
-				if (isregexchar(*q))
+				/*
+				 * replaces wild cards into regular expressions.
+				 *
+				 * '*' -> '.*'
+				 * '?' -> '.'
+				 * '[...]' -> '[...]'
+				 * '[!...]' -> '[^...]'
+				 */
+				if (*q == '[') {
+					char *c = q;
+					STATIC_STRBUF(class);
+					int isclass = 1;
+
+					strbuf_clear(class);
+					strbuf_putc(class, *c++);		/* '[' */
+					if (*c == '\0')
+						isclass = 0;
+					else if (*c == ']')
+						strbuf_putc(class, *c++);
+					else if (*c == '!') {
+						strbuf_putc(class, '^');
+						c++;
+					} else
+						strbuf_putc(class, *c++);
+					if (isclass) {
+						while (*c && *c != ']')
+							strbuf_putc(class, *c++);
+						if (*c == ']')
+							strbuf_putc(class, *c);	/* ']' */
+						else
+							isclass = 0;
+					}
+					if (isclass) {
+						strbuf_puts(reg, strbuf_value(class));
+						q = c;
+					} else {
+						/* 'class' is thrown away */
+						strbuf_putc(reg, '\\');
+						strbuf_putc(reg, *q);
+					}
+				} else if (*q == '*')
+					strbuf_puts(reg, ".*");
+				else if (*q == '?')
+					strbuf_putc(reg, '.');
+				else if (*q == '\\' && *(q + 1) == ',')
+					strbuf_putc(reg, *++q);
+				else if (isregexchar(*q)) {
 					strbuf_putc(reg, '\\');
-				strbuf_putc(reg, *q);
+					strbuf_putc(reg, *q);
+				} else {
+					if (*q == '\\' && *(q + 1) != '\0') {
+						strbuf_putc(reg, *q++);
+						strbuf_putc(reg, *q);
+					} else
+						strbuf_putc(reg, *q);
+				}
 			}
 			if (*(q - 1) != '/')
 				strbuf_putc(reg, '$');
-			if (p)
+			if (*p == ',')
 				strbuf_putc(reg, '|');
 		}
 	}
@@ -290,6 +356,8 @@ prepare_skip(void)
 	/*
 	 * compile regular expression.
 	 */
+	if (debug)
+		fprintf(stderr, "converted skip list:\n%s\n", strbuf_value(reg));
 	if (regcomp(&skip_area, strbuf_value(reg), flags) != 0)
 		die("cannot compile regular expression.");
 	if (list_count > 0) {
@@ -349,8 +417,11 @@ skipthisfile(const char *path)
 		if (skip == NULL)
 			die("prepare_skip failed.");
 	}
-	if (regexec(skip, path, 0, 0, 0) == 0)
+	if (regexec(skip, path, 0, 0, 0) == 0) {
+		if (debug)
+			fprintf(stderr, "File '%s' is skipped by skip variable (type 1).\n", path);
 		return 1;
+	}
 	/*
 	 * list check.
 	 */
@@ -364,10 +435,14 @@ skipthisfile(const char *path)
 		 */
 		if (*(last - 1) == '/') {	/* it's a directory */
 			if (!STRNCMP(path + 1, first, last - first)) {
+				if (debug)
+					fprintf(stderr, "File '%s' is skipped by skip variable (type 2).\n", path);
 				return 1;
 			}
 		} else {
 			if (!STRCMP(path + 1, first)) {
+				if (debug)
+					fprintf(stderr, "File '%s' is skipped by skip variable (type 3).\n", path);
 				return 1;
 			}
 		}
