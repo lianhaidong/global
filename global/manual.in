@@ -1,6 +1,6 @@
 #
 # Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2006
-#	2008, 2009, 2011, 2012, 2013 Tama Communications Corporation
+#     2008, 2009, 2011, 2012, 2013, 2014 Tama Communications Corporation
 #
 # This file is part of GNU GLOBAL.
 #
@@ -25,12 +25,12 @@
 @HEADER	GLOBAL,1,Jun 2013,GNU Project
 @NAME	global - print locations of given symbols
 @SYNOPSIS
-	@name{global} [-adGilnqrstTvx][-e] @arg{pattern}
+	@name{global} [-adGilnqrsStTvx][-e] @arg{pattern}
 	@name{global} -c[diIoOPrsT] @arg{prefix}
-	@name{global} -f[adlnqrstvx][-L file-list] @arg{files}
-	@name{global} -g[aGilnoOqtvVx][-L file-list][-e] @arg{pattern} [@arg{files}]
-	@name{global} -I[ailnqtvx][-e] @arg{pattern}
-	@name{global} -P[aGilnoOqtvVx][-e] @arg{pattern}
+	@name{global} -f[adlnqrsStvx][-L file-list] @arg{files}
+	@name{global} -g[aGilnoOqStvVx][-L file-list][-e] @arg{pattern} [@arg{files}]
+	@name{global} -I[ailnqStvx][-e] @arg{pattern}
+	@name{global} -P[aGilnoOqStvVx][-e] @arg{pattern}
 	@name{global} -p[qrv]
 	@name{global} -u[qv]
 @DESCRIPTION
@@ -163,6 +163,9 @@
 	@item{@option{-s}, @option{--symbol}}
 		Print other symbol tags.
 		Other symbol means the reference to a symbol which has no definition.
+	@item{@option{-S}, @option{--scope} @arg{dir}}
+		Print only tags which exist under @arg{dir} directory.
+		It is similar to the @option{-l} option, but you need not change directory.
 	@item{@option{-T}, @option{--through}}
 		Go through all the tag files listed in @var{GTAGSLIBPATH}.
 		By default, stop searching when tag is found.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2002, 2008, 2011
+ * Copyright (c) 1997, 1998, 1999, 2000, 2002, 2008, 2011, 2014
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -39,6 +39,7 @@
 #include "die.h"
 #include "getdbpath.h"
 #include "gtagsop.h"
+#include "locatestring.h"
 #include "makepath.h"
 #include "path.h"
 #include "strlimcpy.h"
@@ -320,6 +321,21 @@ setupdbpath(int verbose)
 		strlimcpy(root_with_slash, root, sizeof(root_with_slash));
 	else
 		snprintf(root_with_slash, sizeof(root_with_slash), "%s/", root);
+	return 0;
+}
+/**
+ * in_the_project: test whether path is in the project.
+ *
+ *	@param[in]	target file or directory
+ *	@return		0: out of the project, 1: in the project
+ *
+ * Please pass an absolute path name which does not include '.' or '..'.
+ */
+int
+in_the_project(const char *path)
+{
+	if (!strcmp(path, root) || locatestring(path, root_with_slash, MATCH_AT_FIRST))
+		return 1;
 	return 0;
 }
 /**
