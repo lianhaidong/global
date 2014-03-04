@@ -22,6 +22,7 @@
 #include <config.h>
 #endif
 #include <assert.h>
+#include <ctype.h>
 #ifdef STDC_HEADERS
 #include <stdlib.h>
 #endif

@@ -512,7 +512,7 @@ main(int argc, char **argv)
 	if (Iflag) {
 		FILE *op;
 		GFIND *gp;
-		char *path;
+		const char *path;
 
 		tim = statistics_time_start("Time of creating ID");
 		if (vflag)
