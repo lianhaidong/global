@@ -921,11 +921,13 @@ completion_idutils(const char *dbpath, const char *root, const char *prefix)
 	strbuf_puts(sb, " --key=token");
 	if (iflag)
 		strbuf_puts(sb, " --ignore-case");
-	strbuf_putc(sb, ' ');
-	strbuf_putc(sb, '"');
-	strbuf_putc(sb, '^');
-	strbuf_puts(sb, prefix);
-	strbuf_putc(sb, '"');
+	if (prefix) {
+		strbuf_putc(sb, ' ');
+		strbuf_putc(sb, '"');
+		strbuf_putc(sb, '^');
+		strbuf_puts(sb, prefix);
+		strbuf_putc(sb, '"');
+	}
 	if (debug)
 		fprintf(stderr, "completion_idutils: %s\n", strbuf_value(sb));
 	if (chdir(root) < 0)
