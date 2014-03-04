@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005, 2006, 2008,
- *	2009, 2010, 2012 Tama Communications Corporation
+ *	2009, 2010, 2012, 2014
+ *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -346,8 +347,21 @@ main(int argc, char **argv)
 		dbop_close(dbop);
 		exit(0);
 	} else if (Iflag) {
+#define REQUIRED_MKID_VERSION "4.5"
+		char *p;
+
 		if (!usable("mkid"))
 			die("mkid not found.");
+		if (read_first_line("mkid --version", sb))
+			die("mkid cannot executed.");
+		p = strrchr(strbuf_value(sb), ' ');
+		if (p == NULL)
+			die("illegal version string of mkid: %s", strbuf_value(sb));
+		switch (check_version(p + 1, REQUIRED_MKID_VERSION))  {
+		case 1:		break;	/* OK */
+		case 0:		die("mkid version %s or later is required.", REQUIRED_MKID_VERSION);
+		default:	die("illegal version string of mkid: %s", strbuf_value(sb));
+		}
 	}
 
 	/*
@@ -496,11 +510,15 @@ main(int argc, char **argv)
 	 * create idutils index.
 	 */
 	if (Iflag) {
+		FILE *op;
+		GFIND *gp;
+		char *path;
+
 		tim = statistics_time_start("Time of creating ID");
 		if (vflag)
 			fprintf(stderr, "[%s] Creating indexes for idutils.\n", now());
 		strbuf_reset(sb);
-		strbuf_puts(sb, "mkid");
+		strbuf_puts(sb, "mkid --files0-from=-");
 		if (vflag)
 			strbuf_puts(sb, " -v");
 		strbuf_sprintf(sb, " --file=%s/ID", quote_shell(dbpath));
@@ -511,13 +529,27 @@ main(int argc, char **argv)
 			strbuf_puts(sb, " 1>&2");
 		} else {
 			strbuf_puts(sb, " >" NULL_DEVICE);
+#ifdef __DJGPP__
+			if (is_unixy())	/* test for 4DOS as well? */
+#endif
+			strbuf_puts(sb, " 2>&1");
 		}
 		if (debug)
 			fprintf(stderr, "executing mkid like: %s\n", strbuf_value(sb));
-		if (system(strbuf_value(sb)))
-			die("mkid failed: %s", strbuf_value(sb));
-		if (chmod(makepath(dbpath, "ID", NULL), 0644) < 0)
-			die("cannot chmod ID file.");
+		op = popen(strbuf_value(sb), "w");
+		if (op == NULL)
+			die("popen failed.");
+		gp = gfind_open(dbpath, NULL, GPATH_BOTH);
+		while ((path = gfind_read(gp)) != NULL) {
+			fputs(path, op);
+			fputc('\0', op);
+		}
+		gfind_close(gp);
+		if (pclose(op) != 0)
+			die("terminated abnormally. '%s'", strbuf_value(sb));
+		if (test("f", makepath(dbpath, "ID", NULL)))
+			if (chmod(makepath(dbpath, "ID", NULL), 0644) < 0)
+				die("cannot chmod ID file.");
 		statistics_time_end(tim);
 	}
 	if (vflag)

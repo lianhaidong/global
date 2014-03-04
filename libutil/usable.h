@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 1999, 2000
+ * Copyright (c) 1998, 1999, 2000, 2014
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -22,5 +22,6 @@
 #define _USABLE_H_
 
 char *usable(const char *);
+int check_version(const char *, const char *);
 
 #endif /* ! _USABLE_H_ */
