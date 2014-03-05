@@ -23,6 +23,7 @@
 #endif
 #include <ctype.h>
 #include <stdio.h>
+#include <errno.h>
 #ifdef HAVE_STRING_H
 #include <string.h>
 #else
@@ -100,7 +101,7 @@ makedefineindex(const char *file, int total, STRBUF *defines)
 	STDOUT = DEFINES;
 	snprintf(command, sizeof(command), PQUOTE "%s -c" PQUOTE, quote_shell(global_path));
 	if ((TAGS = popen(command, "r")) == NULL)
-		die("cannot fork.");
+		die("cannot execute '%s'.", command);
 	alpha[0] = '\0';
 	while ((_ = strbuf_fgets(sb, TAGS, STRBUF_NOCRLF)) != NULL) {
 		const char *tag, *line;
@@ -244,7 +245,7 @@ makedefineindex(const char *file, int total, STRBUF *defines)
 			fprintf(MAP, "%s\t%s\n", tag, url_for_map);
 	}
 	if (pclose(TAGS) != 0)
-		die("'%s' failed.", command);
+		die("terminated abnormally '%s' (errno = %d).", command, errno);
 	if (aflag && alpha[0]) {
 		char tmp[128];
 		const char *msg = (alpha_count == 1) ? "definition" : "definitions";

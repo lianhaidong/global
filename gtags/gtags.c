@@ -24,11 +24,11 @@
 #endif
 #include <sys/types.h>
 #include <sys/stat.h>
-
 #include <ctype.h>
 #include <utime.h>
 #include <signal.h>
 #include <stdio.h>
+#include <errno.h>
 #if TIME_WITH_SYS_TIME
 #include <sys/time.h>
 #include <time.h>
@@ -538,7 +538,7 @@ main(int argc, char **argv)
 			fprintf(stderr, "executing mkid like: %s\n", strbuf_value(sb));
 		op = popen(strbuf_value(sb), "w");
 		if (op == NULL)
-			die("popen failed.");
+			die("cannot execute '%s'.", strbuf_value(sb));
 		gp = gfind_open(dbpath, NULL, GPATH_BOTH);
 		while ((path = gfind_read(gp)) != NULL) {
 			fputs(path, op);
@@ -546,7 +546,7 @@ main(int argc, char **argv)
 		}
 		gfind_close(gp);
 		if (pclose(op) != 0)
-			die("terminated abnormally. '%s'", strbuf_value(sb));
+			die("terminated abnormally '%s' (errno = %d).", strbuf_value(sb), errno);
 		if (test("f", makepath(dbpath, "ID", NULL)))
 			if (chmod(makepath(dbpath, "ID", NULL), 0644) < 0)
 				die("cannot chmod ID file.");

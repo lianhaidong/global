@@ -22,6 +22,7 @@
 #include <config.h>
 #endif
 #include <stdio.h>
+#include <errno.h>
 #ifdef STDC_HEADERS
 #include <stdlib.h>
 #endif
@@ -1083,7 +1084,7 @@ makecommonpart(const char *title, const char *defines, const char *files)
 			snprintf(buf, sizeof(buf), PQUOTE "%s --result=ctags-xid --encode-path=\" \t\" --nofilter=path %s" PQUOTE, quote_shell(global_path), main_func);
 			ip = popen(buf, "r");
 			if (!ip)
-				die("cannot execute command '%s'.", buf);
+				die("cannot execute '%s'.", buf);
 			strbuf_puts_nl(sb, gen_list_begin());
 			while ((_ = strbuf_fgets(ib, ip, STRBUF_NOCRLF)) != NULL) {
 				char fid[MAXFIDLEN];
@@ -1093,7 +1094,7 @@ makecommonpart(const char *title, const char *defines, const char *files)
 			}
 			strbuf_puts_nl(sb, gen_list_end());
 			if (pclose(ip) != 0)
-			die("cannot execute command '%s'.", buf);
+				die("terminated abnormally '%s' (errno = %d).", buf, errno);
 			strbuf_puts_nl(sb, hr);
 			break;
 		case 'd':
@@ -1331,7 +1332,7 @@ save_environment(int argc, char *const *argv)
 		}
 	}
 	if (pclose(ip) != 0)
-		die("cannot execute '%s'.", command);
+		die("terminated abnormally '%s' (errno = %d).", command, errno);
 	strbuf_close(sb);
 	save_config = strbuf_value(save_c);
 	/* doesn't close string buffer for save config. */

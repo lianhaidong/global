@@ -120,7 +120,7 @@ open_output_file(const char *path, int compress)
 		snprintf(command, sizeof(command), "gzip -c >\"%s\"", path);
 		fp = popen(command, "w");
 		if (fp == NULL)
-			die("cannot create pipe.");
+			die("cannot execute '%s'.", command);
 	} else {
 		fp = fopen(path, "w");
 		if (fp == NULL)

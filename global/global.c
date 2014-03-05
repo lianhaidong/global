@@ -24,10 +24,9 @@
 #endif
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <errno.h>
-
 #include <ctype.h>
 #include <stdio.h>
+#include <errno.h>
 #ifdef STDC_HEADERS
 #include <stdlib.h>
 #endif
@@ -944,7 +943,8 @@ completion_idutils(const char *dbpath, const char *root, const char *prefix)
 		*p = '\0';
 		puts(line);
 	}
-	fclose(ip);
+	if (pclose(ip) != 0)
+		die("terminated abnormally (errno = %d).", errno);
 	strbuf_close(sb);
 }
 /**
@@ -1142,7 +1142,7 @@ idutils(const char *pattern, const char *dbpath)
 		}
 	}
 	if (pclose(ip) != 0)
-		die("terminated abnormally.");
+		die("terminated abnormally (errno = %d).", errno);
 	convert_close(cv);
 	strbuf_close(ib);
 	if (vflag) {

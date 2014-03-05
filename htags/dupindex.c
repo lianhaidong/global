@@ -21,6 +21,7 @@
 #include <config.h>
 #endif
 #include <stdio.h>
+#include <errno.h>
 #ifdef HAVE_STRING_H
 #include <string.h>
 #else
@@ -95,7 +96,7 @@ makedupindex(void)
 		strbuf_putc(command, '"');
 #endif
 		if ((ip = popen(strbuf_value(command), "r")) == NULL)
-			die("cannot execute command '%s'.", strbuf_value(command));
+			die("cannot execute '%s'.", strbuf_value(command));
 		while ((ctags_xid = strbuf_fgets(sb, ip, STRBUF_NOCRLF)) != NULL) {
 			char fid[MAXFIDLEN];
 
@@ -175,7 +176,7 @@ makedupindex(void)
 		if (db == GTAGS)
 			definition_count = count;
 		if (pclose(ip) != 0)
-			die("'%s' failed.", strbuf_value(command));
+			die("terminated abnormally '%s' (errno = %d).", strbuf_value(command), errno);
 		if (writing) {
 			if (!dynamic) {
 				fputs_nl(gen_list_end(), op);

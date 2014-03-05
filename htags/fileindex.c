@@ -23,6 +23,7 @@
 #endif
 #include <ctype.h>
 #include <stdio.h>
+#include <errno.h>
 #ifdef STDC_HEADERS
 #include <stdlib.h>
 #endif
@@ -821,7 +822,7 @@ makeincludeindex(void)
 	 */
 	snprintf(command, sizeof(command), PQUOTE "%s -gnx --encode-path=\" \t\" \"^[ \t]*(#[ \t]*(import|include)|include[ \t]*\\()\"" PQUOTE, quote_shell(global_path));
 	if ((PIPE = popen(command, "r")) == NULL)
-		die("cannot fork.");
+		die("cannot execute '%s'.", command);
 	strbuf_reset(input);
 	while ((ctags_x = strbuf_fgets(input, PIPE, STRBUF_NOCRLF)) != NULL) {
 		SPLIT ptable;
@@ -859,7 +860,7 @@ makeincludeindex(void)
 		put_included(inc, buf);
 	}
 	if (pclose(PIPE) != 0)
-		die("terminated abnormally.");
+		die("terminated abnormally '%s' (errno = %d).", command, errno);
 
 	for (inc = first_inc(); inc; inc = next_inc()) {
 		const char *last = inc->name;
