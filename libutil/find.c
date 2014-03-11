@@ -242,8 +242,10 @@ prepare_skip(void)
 		return NULL;
 	}
 	skiplist = check_strdup(strbuf_value(reg));
+#ifdef DEGUB
 	if (debug)
 		fprintf(stderr, "original skip list: %s\n", skiplist);
+#endif
 	/* trim(skiplist);*/
 	strbuf_reset(reg);
 	/*
@@ -356,8 +358,10 @@ prepare_skip(void)
 	/*
 	 * compile regular expression.
 	 */
+#ifdef DEGUB
 	if (debug)
 		fprintf(stderr, "converted skip list:\n%s\n", strbuf_value(reg));
+#endif
 	if (regcomp(&skip_area, strbuf_value(reg), flags) != 0)
 		die("cannot compile regular expression.");
 	if (list_count > 0) {
