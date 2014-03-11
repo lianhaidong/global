@@ -777,7 +777,25 @@ put_syms(int type, const char *tag, int lno, const char *path, const char *line_
 {
 	const struct put_func_data *data = arg;
 	GTOP *gtop;
+	const char *p;
 
+	/*
+	 * sanity checks
+	 * These checks are required, because there is no telling what kind of string
+	 * comes as 'a symbol' from external plug-in parsers.
+	 */
+	for (p = tag; *p; p++) {
+		if (isspace(*p)) {
+			if (wflag)
+				warning("symbol name includs a space character. (Ignored) [+%d %s]", lno, path);
+			return;
+		}
+	}
+	if (p - tag >= IDENTLEN) {
+		if (wflag)
+			warning("symbol name is too long. (Ignored) [+%d %s]", lno, path);
+		return;
+	}
 	switch (type) {
 	case PARSER_DEF:
 		gtop = data->gtop[GTAGS];
