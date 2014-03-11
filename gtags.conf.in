@@ -143,7 +143,6 @@ drupal|Drupal content management platform:\
 	:langmap=php\:.php.module.inc.profile.install.test:
 #---------------------------------------------------------------------
 # Configuration for htags(1)
-# Let's paint hypertext with your favorite colors!
 # See htags(1).
 #---------------------------------------------------------------------
 htags:\
