@@ -216,8 +216,8 @@ dump()
 ###########################################################################
 ### Customized cd
 __gtags_get_cwd() {
-	# always use /bin/pwd to ignore symbolic links.
-	/bin/pwd
+	# always use -P option to ignore symbolic links.
+	builtin pwd -P
 }
 __gtags_get_rootdir() {
 	$__gtags_global_command -pr 2>/dev/null
@@ -296,7 +296,7 @@ cd() {
 	esac
 	__gtags_parse $*
 	if [ "$__gtags_args" = '' ] && [ "$prjroot" != '' ]; then
-		builtin cd $__gtags_options $prjroot
+		builtin cd $__gtags_options "$prjroot"
 	else
 		builtin cd "$@"
 	fi
