@@ -19,6 +19,27 @@ ___________________________________
 GNU GLOBAL NEWS - User visible changes.
 At least, you should search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 6.2.11 - March 12 2014
+
+[CHANGES]
+New facilities:
+o global: New -S (--scope) <directory> option. This option prints only tags
+  which exist under <directory>. It is similar to the -l option, but different
+  from it in that you need not change directory.
+o gtags: Now, the skip list allows glob file patterns (*, ?, [...], [!...], [^...]).
+o gtags.conf: Added the following glob patterns to the skip list:
+  *.orig,*.rej,*.bak,*~,#*#,*.swp,*.tmp,*_flymake.*,*_flymake
+o gtags: Now, the -I option supports file list (-f option or gtags.files).
+  Instead, idutils 4.5 or later is required.
+
+[FIXED BUGS]
+o global: With combination of the --invert-match and --literal, it does not match
+  the last line of files. Now it works.
+o global: Literal search with the -i option prints an unmatched tag in a certain
+  kind of case. Now it works.
+o global: 'global -cI' without argument causes segmentation fault.
+  Now it works.
+
 Version 6.2.10 - January 16 2014
 
 [CHANGES]
@@ -59,7 +80,7 @@ o gtags-cscope: Though previous gtags-cscope ignored GTAGSROOT, GTAGSDBPATH when
   the -d option was not specified, it was meaningless. Now it accepts both of them
   always.
 
-[BUG FIXED]
+[FIXED BUGS]
 o gtags-cscope: Arrow keys didn't work after execution of external programs. Now it works.
 o global: The -u option didn't work in a project whose path includes blanks. Now it works.
 o htags: Fixed some bugs about --tree-view option.
@@ -102,7 +123,7 @@ o htags: End of support of customization of HTML tag using gtags.conf.
 
 Version 6.2.7 - December 22 2012
 
-[BUG FIXED]
+[FIXED BUGS]
 global: The -g command failed in handling of files whose size is 0 in some systems.
 Now it works.
 
@@ -130,7 +151,7 @@ New facilities:
 gtags.el: Now supports XEmacs again.
 gtags.vim: New custom variable Dont_Jump_Automatically.
 
-[BUG FIXED]
+[FIXED BUGS]
 gtags: Now the following error does not occur.
   'input buffer overflow, can't enlarge buffer because scanner uses REJECT'
 gtags.el: 'gtags-parse-file' didn't expand the file name (tilde character => $HOME).
@@ -138,13 +159,13 @@ gtags.el: 'gtags-parse-file' didn't expand the file name (tilde character => $HO
 
 Version 6.2.4 - May 30 2012
 
-[BUG FIXED]
+[FIXED BUGS]
 Gtags with the -f option brings segmentation fault. Now it works.
 This bug exists only in GLOBAL-6.2.3.
 
 Version 6.2.3 - May 26 2012
 
-[BUG FIXED]
+[FIXED BUGS]
 o Built-in parser: When attribute specifier appeared immediately after the
   `struct', `union' or `enum' keyword, GLOBAL could not pick up tag name.
   Now it works correctly.
@@ -160,7 +181,7 @@ o gtags.vim: New custom variables 'Gtags_Auto_Update' (default 0).
 
 Version 6.2.2 - March 15 2012
 
-[BUG FIXED]
+[FIXED BUGS]
 o configure: The --disable-gtagscscope option didn't avoid building gtags-cscope
   completely. So, ./configure failed when there is no curses library.
   Now it avoids building gtags-cscope completely.
@@ -189,7 +210,7 @@ o gtags.el: Key mapping was changed to follow "Key binding conventions" of Emacs
   [New] If 'gtags-suggested-key-mapping' is false, almost key mapping is not done.
         But "\C-m" and "\C-t" in 'Gtags select mode' are always enabled.
 
-[BUG FIXED]
+[FIXED BUGS]
 global: The -L option with '-' didn't work. Now it works.
 Built-in parser:
 - Pick up symbols in expression in enumerator-list as "reference or other symbol".
@@ -215,7 +236,7 @@ o gtags: Add keywords introduced in ISO/IEC 9899:2011.
 [INCOMPATIBLE CHANGES]
 o less-global: Quoting is required for the pattern which should be interpreted by the shell.
 
-[BUG FIXED]
+[FIXED BUGS]
 The icase_path config variable didn't affect the -c command with the -P option of global.
 Now it works.
 
@@ -300,7 +321,7 @@ o gtags.conf: The lines which start with a '#' on the continuation lines is cons
   [new]
   considered as:|      :langmap=C\:.c:        :langmap=Java\:.java:|
 
-[BUG FIXED]
+[FIXED BUGS]
 o gtags.el: gtags-mode-hook and gtags-select-mode-hook were not the last thing run
   when entering the mode. It has been fixed.
 
