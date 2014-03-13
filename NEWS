@@ -33,11 +33,11 @@ o gtags: Now, the -I option supports file list (-f option or gtags.files).
   Instead, idutils 4.5 or later is required.
 
 [FIXED BUGS]
-o global: With combination of the --invert-match and --literal, it does not match
+o global: With combination of the --invert-match and --literal, it did not match
   the last line of files. Now it works.
-o global: Literal search with the -i option prints an unmatched tag in a certain
+o global: Literal search with the -i option printed an unmatched tag in a certain
   kind of case. Now it works.
-o global: 'global -cI' without argument causes segmentation fault.
+o global: 'global -cI' without argument caused segmentation fault.
   Now it works.
 
 Version 6.2.10 - January 16 2014
@@ -52,12 +52,12 @@ o global: Optimization of case-insensitive search like:
   $ global -xi '^str'
 
 [FIXED BUGS]
-o global: Combination of the -v and -g option shows wrong matched
+o global: Combination of the -v and -g option showed wrong matched
   number (always 0). Now it works.
 o global: The --from-here option did not work with a path name
   which includes symbolic links. Now it works.
-o global: The -I command fails when the logical and physical
-  path name of the current working directory are not identical.
+o global: The -I command failed when the logical and physical
+  path name of the current working directory were not identical.
   Now it works.
 o htags: Htags couldn't find tag files in obj directories.
   Now it works.
