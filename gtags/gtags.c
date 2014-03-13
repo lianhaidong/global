@@ -356,11 +356,15 @@ main(int argc, char **argv)
 			die("mkid cannot executed.");
 		p = strrchr(strbuf_value(sb), ' ');
 		if (p == NULL)
-			die("illegal version string of mkid: %s", strbuf_value(sb));
-		switch (check_version(p + 1, REQUIRED_MKID_VERSION))  {
+			die("invalid version string of mkid: %s", strbuf_value(sb));
+		switch (check_version(p + 1, REQUIRED_MKID_VERSION)
+#ifdef _WIN32
+			|| strcmp(p + 1, "3.2.99") == 0
+#endif
+			)  {
 		case 1:		break;	/* OK */
 		case 0:		die("mkid version %s or later is required.", REQUIRED_MKID_VERSION);
-		default:	die("illegal version string of mkid: %s", strbuf_value(sb));
+		default:	die("invalid version string of mkid: %s", strbuf_value(sb));
 		}
 	}
 
