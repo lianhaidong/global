@@ -22,15 +22,15 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	GLOBAL,1,Jun 2013,GNU Project
+@HEADER	GLOBAL,1,March 2014,GNU Project
 @NAME	global - print locations of given symbols
 @SYNOPSIS
-	@name{global} [-adGilnqrsStTvx][-e] @arg{pattern}
+	@name{global} [-adGilnqrstTvx][-S dir][-e] @arg{pattern}
 	@name{global} -c[diIoOPrsT] @arg{prefix}
-	@name{global} -f[adlnqrsStvx][-L file-list] @arg{files}
-	@name{global} -g[aGilnoOqStvVx][-L file-list][-e] @arg{pattern} [@arg{files}]
-	@name{global} -I[ailnqStvx][-e] @arg{pattern}
-	@name{global} -P[aGilnoOqStvVx][-e] @arg{pattern}
+	@name{global} -f[adlnqrstvx][-L file-list][-S dir] @arg{files}
+	@name{global} -g[aGilnoOqtvVx][-L file-list][-S dir][-e] @arg{pattern} [@arg{files}]
+	@name{global} -I[ailnqtvx][-S dir][-e] @arg{pattern}
+	@name{global} -P[aGilnoOqtvVx][-S dir][-e] @arg{pattern}
 	@name{global} -p[qrv]
 	@name{global} -u[qv]
 @DESCRIPTION
