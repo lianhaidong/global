@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _PATHCONVERT_H_
-#define _PATHCONVERT_H_
+#ifndef _CONVERT_H_
+#define _CONVERT_H_
 
 #include <stdio.h>
 #include "gparam.h"
@@ -34,13 +34,11 @@ typedef struct {
 
 } CONVERT;
 
-void set_encode_chars(const unsigned char *);
 void set_print0(void);
-char *decode_path(const char *);
 CONVERT *convert_open(int, int, const char *, const char *, const char *, FILE *, int);
 void convert_put(CONVERT *, const char *);
 void convert_put_path(CONVERT *, const char *);
 void convert_put_using(CONVERT *, const char *, const char *, int, const char *, const char *);
 void convert_close(CONVERT *cv);
 
-#endif /* ! _PATHCONVERT_H_ */
+#endif /* ! _CONVERT_H_ */

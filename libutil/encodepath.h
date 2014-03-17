@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012 Tama Communications Corporation
+ * Copyright (c) 2005, 2006, 2010 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -16,13 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _LITERAL_H_
-#define _LITERAL_H_
+#ifndef _ENCODEPATH_H_
+#define _ENCODEPATH_H_
 
-#include "convert.h"
+int required_encode(int);
+int use_encoding(void);
+void set_encode_chars(const unsigned char *);
+char *decode_path(const char *);
 
-void literal_comple(const char *);
-int literal_search(CONVERT *, const char *);
-
-#endif /* ! _LITERAL_H_ */
-
+#endif /* _ENCODEPATH_H_ */

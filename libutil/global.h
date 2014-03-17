@@ -47,7 +47,6 @@
 #include "logging.h"
 #include "makepath.h"
 #include "path.h"
-#include "pathconvert.h"
 #include "pool.h"
 #include "split.h"
 #include "statistics.h"

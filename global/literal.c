@@ -50,7 +50,7 @@
 #include <unistd.h>
 #endif
 #include "format.h"
-#include "pathconvert.h"
+#include "convert.h"
 #include "die.h"
 
 #ifndef O_BINARY

@@ -43,7 +43,7 @@
 #include <curses.h>
 #endif
 #include "path.h"
-#include "pathconvert.h"
+#include "encodepath.h"
 
 static char const rcsid[] = "$Id$";
 

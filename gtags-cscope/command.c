@@ -38,9 +38,9 @@
 
 #include "global-cscope.h"
 #include "gparam.h"
-#include "pathconvert.h"
 #include "build.h"		/* for rebuild() */
 #include "alloc.h"
+#include "encodepath.h"
 
 #include <stdlib.h>
 #if defined(USE_NCURSES) && !defined(RENAMED_NCURSES)

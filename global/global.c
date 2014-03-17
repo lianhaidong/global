@@ -45,6 +45,7 @@
 #include "regex.h"
 #include "const.h"
 #include "literal.h"
+#include "convert.h"
 
 /**
  * @file global.c
@@ -117,6 +118,14 @@ char *encode_chars;
 char *single_update;
 char *path_style;
 
+/**
+ * @name Path filter
+ */
+/** @{ */
+int do_path;
+int convert_type = PATH_RELATIVE;
+/** @} */
+
 static void
 usage(void)
 {
@@ -138,6 +147,7 @@ help(void)
 #define MATCH_PART	131
 #define SINGLE_UPDATE	132
 #define PATH_STYLE	133
+#define PATH_CONVERT	134
 #define SORT_FILTER     1
 #define PATH_FILTER     2
 #define BOTH_FILTER     (SORT_FILTER|PATH_FILTER)
@@ -181,6 +191,7 @@ static struct option const long_options[] = {
 	{"literal", no_argument, &literal, 1},
 	{"match-part", required_argument, NULL, MATCH_PART},
 	{"path-style", required_argument, NULL, PATH_STYLE},
+	{"path-convert", required_argument, NULL, PATH_CONVERT},
 	{"print0", no_argument, &print0, 1},
 	{"version", no_argument, &show_version, 1},
 	{"help", no_argument, &show_help, 1},
@@ -472,6 +483,17 @@ main(int argc, char **argv)
 			else
 				die_with_code(2, "unknown part type for the --match-part option.");
 			break;
+		case PATH_CONVERT:
+			do_path = 1;
+			if (!strcmp("absolute", optarg))
+				convert_type = PATH_ABSOLUTE;
+			else if (!strcmp("relative", optarg))
+				convert_type = PATH_RELATIVE;
+			else if (!strcmp("through", optarg))
+				convert_type = PATH_THROUGH;
+			else
+				die("Unknown path type.");
+			break;
 		case PATH_STYLE:
 			path_style = optarg;
 			break;
@@ -540,6 +562,42 @@ main(int argc, char **argv)
 
 	argc -= optind;
 	argv += optind;
+	/*
+	 * Path filter
+	 */
+	if (do_path) {
+		/*
+		 * This code is needed for globash.rc.
+		 * This code extract path name from tag line and
+		 * replace it with the relative or the absolute path name.
+		 *
+		 * By default, if we are in src/ directory, the output
+		 * should be converted like follws:
+		 *
+		 * main      10 ./src/main.c  main(argc, argv)\n
+		 * main      22 ./libc/func.c   main(argc, argv)\n
+		 *		v
+		 * main      10 main.c  main(argc, argv)\n
+		 * main      22 ../libc/func.c   main(argc, argv)\n
+		 *
+		 * Similarly, the --path-covert=absolute option specified, then
+		 *		v
+		 * main      10 /prj/xxx/src/main.c  main(argc, argv)\n
+		 * main      22 /prj/xxx/libc/func.c   main(argc, argv)\n
+		 */
+		STRBUF *ib = strbuf_open(MAXBUFLEN);
+		CONVERT *cv;
+		char *ctags_x;
+
+		if (argc < 3)
+			die("global --path-covert: 3 arguments needed.");
+		cv = convert_open(convert_type, FORMAT_CTAGS_X, argv[0], argv[1], argv[2], stdout, NOTAGS);
+		while ((ctags_x = strbuf_fgets(ib, stdin, STRBUF_NOCRLF)) != NULL)
+			convert_put(cv, ctags_x);
+		convert_close(cv);
+		strbuf_close(ib);
+		exit(0);
+	}
 	/*
 	 * At first, we pickup pattern from -e option. If it is not found
 	 * then use argument which is not option.
@@ -1026,7 +1084,7 @@ completion_path(const char *dbpath, const char *prefix)
  * +===========================================+
  *
  * Sort filter is implemented in gtagsop module (libutil/gtagsop.c).
- * Path filter is implemented in pathconvert module (libutil/pathconvert.c).
+ * Path filter is implemented in convert module (global/convert.c).
  */
 /**
  * print number of object.

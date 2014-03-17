@@ -24,6 +24,7 @@
 #include <ctype.h>
 #include <stdio.h>
 #include "global.h"
+#include "convert.h"
 
 /**
  * Stuff for the compact format

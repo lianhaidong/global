@@ -33,40 +33,16 @@
 #include "abs2rel.h"
 #include "checkalloc.h"
 #include "die.h"
+#include "encodepath.h"
 #include "format.h"
 #include "gparam.h"
 #include "gpathop.h"
 #include "gtagsop.h"
-#include "pathconvert.h"
+#include "convert.h"
 #include "strbuf.h"
 #include "strlimcpy.h"
 
-static unsigned char encode[256];
-static int encoding;
 static int newline = '\n';
-
-#define required_encode(c) encode[(unsigned char)c]
-/**
- * set_encode_chars: stores chars to be encoded.
- */
-void
-set_encode_chars(const unsigned char *chars)
-{
-	unsigned int i;
-
-	/* clean the table */
-	memset(encode, 0, sizeof(encode));
-	/* set bits */
-	for (i = 0; chars[i]; i++) {
-		encode[(unsigned char)chars[i]] = 1;
-	}
-	/* You cannot encode '.' and '/'. */
-	encode['.'] = 0;
-	encode['/'] = 0;
-	/* '%' is always encoded when encode is enable. */
-	encode['%'] = 1;
-	encoding = 1;
-}
 /**
  * set_print0: change newline to @CODE{'\0'}.
  */
@@ -74,36 +50,6 @@ void
 set_print0(void)
 {
 	newline = '\0';
-}
-#define outofrange(c)	(c < '0' || c > 'f')
-#define h2int(c) (c >= 'a' ? c - 'a' + 10 : c - '0')
-/**
- * decode_path: decode encoded path name.
- *
- *	@param[in]	path	encoded path name
- *	@return		decoded path name
- */
-char *
-decode_path(const char *path)
-{
-	STATIC_STRBUF(sb);
-	const char *p;
-
-	if (strchr(path, '%') == NULL)
-		return (char *)path;
-	strbuf_clear(sb);
-	for (p = path; *p; p++) {
-		if (*p == '%') {
-			unsigned char c1, c2;
-			c1 = *++p;
-			c2 = *++p;
-			if (outofrange(c1) || outofrange(c2))
-				die("decode_path: unexpected character. (%%%c%c)", c1, c2);
-			strbuf_putc(sb, h2int(c1) * 16 + h2int(c2));
-		} else
-			strbuf_putc(sb, *p);
-	}
-	return strbuf_value(sb);
 }
 /**
  * Path filter for the output of @XREF{global,1}.
@@ -152,7 +98,7 @@ convert_pathname(CONVERT *cv, const char *path)
 	/*
 	 * encoding of the path name.
 	 */
-	if (encoding) {
+	if (use_encoding()) {
 		const char *p;
 		int required = 0;
 

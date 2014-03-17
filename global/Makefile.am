@@ -12,9 +12,9 @@
 #
 bin_PROGRAMS= global
 
-global_SOURCES = global.c literal.c output.c
+global_SOURCES = global.c literal.c output.c convert.c
 
-noinst_HEADERS = literal.h
+noinst_HEADERS = literal.h convert.h
 
 AM_CPPFLAGS = @AM_CPPFLAGS@
 

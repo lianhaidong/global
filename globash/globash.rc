@@ -266,7 +266,7 @@ __gtags_prompt() {
 	fi
 	PS1="$ps "
 	if [ "$root" != "" ] && [ "$cwd" != "" ] && [ "$dbpath" != "" ]; then
-		__gtags_filter="$__gtags_gtags_command --encode-path=' ' --path=relative '$root' '$cwd' '$dbpath'"
+		__gtags_filter="$__gtags_global_command --encode-path=' ' --path-convert=relative '$root' '$cwd' '$dbpath'"
 		__gtags_prev_root=$root
 	fi
 	trap 2

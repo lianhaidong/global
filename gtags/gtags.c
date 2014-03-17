@@ -90,14 +90,6 @@ int statistics = STATISTICS_STYLE_NONE;
 
 #define GTAGSFILES "gtags.files"
 
-/**
- * @name Path filter
- */
-/** @{ */
-int do_path;
-int convert_type = PATH_RELATIVE;
-/** @} */
-
 int extractmethod;
 int total;
 
@@ -144,8 +136,7 @@ static struct option const long_options[] = {
 #define OPT_GTAGSLABEL		130
 #define OPT_PATH		131
 #define OPT_SINGLE_UPDATE	132
-#define OPT_ENCODE_PATH		133
-#define OPT_ACCEPT_DOTFILES	134
+#define OPT_ACCEPT_DOTFILES	133
 	/* flag value */
 	{"accept-dotfiles", no_argument, NULL, OPT_ACCEPT_DOTFILES},
 	{"debug", no_argument, &debug, 1},
@@ -155,7 +146,6 @@ static struct option const long_options[] = {
 
 	/* accept value */
 	{"config", optional_argument, NULL, OPT_CONFIG},
-	{"encode-path", required_argument, NULL, OPT_ENCODE_PATH},
 	{"gtagsconf", required_argument, NULL, OPT_GTAGSCONF},
 	{"gtagslabel", required_argument, NULL, OPT_GTAGSLABEL},
 	{"path", required_argument, NULL, OPT_PATH},
@@ -193,27 +183,9 @@ main(int argc, char **argv)
 		case OPT_GTAGSLABEL:
 			gtagslabel = optarg;
 			break;
-		case OPT_PATH:
-			do_path = 1;
-			if (!strcmp("absolute", optarg))
-				convert_type = PATH_ABSOLUTE;
-			else if (!strcmp("relative", optarg))
-				convert_type = PATH_RELATIVE;
-			else if (!strcmp("through", optarg))
-				convert_type = PATH_THROUGH;
-			else
-				die("Unknown path type.");
-			break;
 		case OPT_SINGLE_UPDATE:
 			iflag++;
 			single_update = optarg;
-			break;
-		case OPT_ENCODE_PATH:
-			if (strlen(optarg) > 255)
-				die("too many encode chars.");
-			if (strchr(optarg, '/') || strchr(optarg, '.'))
-				die("cannot encode '/' and '.' in the path.");
-			set_encode_chars((unsigned char *)optarg);
 			break;
 		case OPT_ACCEPT_DOTFILES:
 			set_accept_dotfiles();
@@ -286,38 +258,6 @@ main(int argc, char **argv)
 			printconf(config_name);
 		else
 			fprintf(stdout, "%s\n", getconfline());
-		exit(0);
-	} else if (do_path) {
-		/*
-		 * This is the main body of path filter.
-		 * This code extract path name from tag line and
-		 * replace it with the relative or the absolute path name.
-		 *
-		 * By default, if we are in src/ directory, the output
-		 * should be converted like follws:
-		 *
-		 * main      10 ./src/main.c  main(argc, argv)\n
-		 * main      22 ./libc/func.c   main(argc, argv)\n
-		 *		v
-		 * main      10 main.c  main(argc, argv)\n
-		 * main      22 ../libc/func.c   main(argc, argv)\n
-		 *
-		 * Similarly, the --path=absolute option specified, then
-		 *		v
-		 * main      10 /prj/xxx/src/main.c  main(argc, argv)\n
-		 * main      22 /prj/xxx/libc/func.c   main(argc, argv)\n
-		 */
-		STRBUF *ib = strbuf_open(MAXBUFLEN);
-		CONVERT *cv;
-		char *ctags_x;
-
-		if (argc < 3)
-			die("gtags --path: 3 arguments needed.");
-		cv = convert_open(convert_type, FORMAT_CTAGS_X, argv[0], argv[1], argv[2], stdout, NOTAGS);
-		while ((ctags_x = strbuf_fgets(ib, stdin, STRBUF_NOCRLF)) != NULL)
-			convert_put(cv, ctags_x);
-		convert_close(cv);
-		strbuf_close(ib);
 		exit(0);
 	} else if (dump_target) {
 		/*
