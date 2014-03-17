@@ -79,15 +79,6 @@ strbuf_close(sb);                       (not exist)
 @endcode
 */
 
-static void print_and_abort (void);
-void (*strbuf_alloc_failed_handler) (void) = print_and_abort;
-
-static void
-print_and_abort(void)
-{
-	die("short of memory.");
-}
-
 /**
  * __strbuf_expandbuf: expand buffer so that afford to the length data at least.
  *
@@ -101,8 +92,6 @@ __strbuf_expandbuf(STRBUF *sb, int length)
 	int newsize = sb->sbufsize + (length > EXPANDSIZE ? length : EXPANDSIZE);
 	char *newbuf;
 
-	if (sb->alloc_failed)
-		return;
 	newbuf = (char *)check_realloc(sb->sbuf, newsize + 1);
 	sb->sbufsize = newsize;
 	sb->sbuf = newbuf;
@@ -138,7 +127,6 @@ void
 strbuf_reset(STRBUF *sb)
 {
 	sb->curp = sb->sbuf;
-	sb->alloc_failed = 0;
 }
 /**
  * strbuf_clear: clear static string buffer.
@@ -172,7 +160,7 @@ strbuf_clear(STRBUF *sb)
 void
 strbuf_nputs(STRBUF *sb, const char *s, int len)
 {
-	if (!sb->alloc_failed && len > 0) {
+	if (len > 0) {
 		if (sb->curp + len > sb->endp)
 			__strbuf_expandbuf(sb, len);
 		while (len-- > 0)
@@ -191,7 +179,7 @@ strbuf_nputs(STRBUF *sb, const char *s, int len)
 void
 strbuf_nputc(STRBUF *sb, int c, int len)
 {
-	if (!sb->alloc_failed && len > 0) {
+	if (len > 0) {
 		if (sb->curp + len > sb->endp)
 			__strbuf_expandbuf(sb, len);
 		while (len-- > 0)
@@ -207,12 +195,10 @@ strbuf_nputc(STRBUF *sb, int c, int len)
 void
 strbuf_puts(STRBUF *sb, const char *s)
 {
-	if (!sb->alloc_failed) {
-		while (*s) {
-			if (sb->curp >= sb->endp)
-				__strbuf_expandbuf(sb, 0);
-			*sb->curp++ = *s++;
-		}
+	while (*s) {
+		if (sb->curp >= sb->endp)
+			__strbuf_expandbuf(sb, 0);
+		*sb->curp++ = *s++;
 	}
 }
 /**
@@ -226,12 +212,10 @@ strbuf_puts(STRBUF *sb, const char *s)
 void
 strbuf_puts_withterm(STRBUF *sb, const char *s, int c)
 {
-	if (!sb->alloc_failed) {
-		while (*s && *s != c) {
-			if (sb->curp >= sb->endp)
-				__strbuf_expandbuf(sb, 0);
-			*sb->curp++ = *s++;
-		}
+	while (*s && *s != c) {
+		if (sb->curp >= sb->endp)
+			__strbuf_expandbuf(sb, 0);
+		*sb->curp++ = *s++;
 	}
 }
 /**
@@ -243,16 +227,14 @@ strbuf_puts_withterm(STRBUF *sb, const char *s, int c)
 void
 strbuf_puts_nl(STRBUF *sb, const char *s)
 {
-	if (!sb->alloc_failed) {
-		while (*s) {
-			if (sb->curp >= sb->endp)
-				__strbuf_expandbuf(sb, 0);
-			*sb->curp++ = *s++;
-		}
+	while (*s) {
 		if (sb->curp >= sb->endp)
 			__strbuf_expandbuf(sb, 0);
-		*sb->curp++ = '\n';
+		*sb->curp++ = *s++;
 	}
+	if (sb->curp >= sb->endp)
+		__strbuf_expandbuf(sb, 0);
+	*sb->curp++ = '\n';
 }
 /**
  * strbuf_putn: put digit string at the last of buffer.
@@ -344,8 +326,6 @@ strbuf_fgets(STRBUF *sb, FILE *ip, int flags)
 
 	if (sb->curp >= sb->endp)
 		__strbuf_expandbuf(sb, EXPANDSIZE);	/* expand buffer */
-	if (sb->alloc_failed)
-		return sb->sbuf;
 
 	for (;;) {
 		if (!fgets(sb->curp, sb->endp - sb->curp, ip)) {
@@ -362,8 +342,6 @@ strbuf_fgets(STRBUF *sb, FILE *ip, int flags)
 			return sb->sbuf;
 		}
 		__strbuf_expandbuf(sb, EXPANDSIZE);	/* expand buffer */
-		if (sb->alloc_failed)
-			return sb->sbuf;
 	}
 	if (flags & STRBUF_NOCRLF) {
 		if (*(sb->curp - 1) == '\n')
@@ -402,8 +380,6 @@ strbuf_sprintf(STRBUF *sb, const char *s, ...)
 void
 strbuf_vsprintf(STRBUF *sb, const char *s, va_list ap)
 {
-	if (sb->alloc_failed)
-		return;
 	for (; *s; s++) {
 		/*
 		 * Put the before part of '%'.

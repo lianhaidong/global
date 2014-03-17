@@ -66,7 +66,6 @@ typedef struct _strbuf {
 	char *endp;
 	char *curp;
 	int sbufsize;
-	int alloc_failed;
 } STRBUF;
 
 /**
@@ -98,11 +97,9 @@ typedef struct _strbuf {
 #define strbuf_empty(sb) (sb->sbufsize == 0)
 
 #define strbuf_putc(sb, c)	do {\
-	if (!sb->alloc_failed) {\
-		if (sb->curp >= sb->endp)\
-			__strbuf_expandbuf(sb, 0);\
-		*sb->curp++ = c;\
-	}\
+	if (sb->curp >= sb->endp)\
+		__strbuf_expandbuf(sb, 0);\
+	*sb->curp++ = c;\
 } while (0)
 
 #define strbuf_puts0(sb, s) do {\
@@ -113,12 +110,10 @@ typedef struct _strbuf {
 #define strbuf_getlen(sb) (sb->curp - sb->sbuf)
 #define strbuf_setlen(sb, len) do {\
 	unsigned int _length = len;\
-	if (!sb->alloc_failed) {\
-		if (_length < strbuf_getlen(sb))\
-			sb->curp = sb->sbuf + _length;\
-		else if (_length > strbuf_getlen(sb))\
-			__strbuf_expandbuf(sb, _length - strbuf_getlen(sb));\
-	}\
+	if (_length < strbuf_getlen(sb))\
+		sb->curp = sb->sbuf + _length;\
+	else if (_length > strbuf_getlen(sb))\
+		__strbuf_expandbuf(sb, _length - strbuf_getlen(sb));\
 } while (0)
 #define strbuf_lastchar(sb) (*(sb->curp - 1))
 
