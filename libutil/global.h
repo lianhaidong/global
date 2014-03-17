@@ -21,9 +21,9 @@
 #ifndef _GLOBAL_H_
 #define _GLOBAL_H_
 
-#include "gparam.h"
 #include "abs2rel.h"
 #include "args.h"
+#include "assoc.h"
 #include "char.h"
 #include "checkalloc.h"
 #include "compress.h"
@@ -32,11 +32,13 @@
 #include "dbop.h"
 #include "defined.h"
 #include "die.h"
+#include "encodepath.h"
 #include "env.h"
 #include "fileop.h"
 #include "find.h"
 #include "format.h"
 #include "getdbpath.h"
+#include "gparam.h"
 #include "gpathop.h"
 #include "gtagsop.h"
 #include "idset.h"
