@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1997, 1999, 2008 Tama Communications Corporation
+ * Copyright (c) 1997, 1999, 2008, 2014
+ *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -35,6 +36,15 @@
 #include "locatestring.h"
 #include "strlimcpy.h"
 #include "path.h"
+
+#define COLOR_PATH
+#ifdef COLOR_PATH
+/*
+ * coloring support using ANSI escape sequence (SGR)
+ */
+#define ESC '\033'
+#define EOE 'm'
+#endif
 
 /** @file
 @verbatim
@@ -340,6 +350,10 @@ abs2rel(const char *path, const char *base, char *result, const int size)
 	 */
 	const char *endp = result + size - 1;
 	char *rp;
+#ifdef COLOR_PATH
+	int escape_count = 0;
+	const char *first_escape = NULL;
+#endif
 
 	if (!isabspath(path)) {
 		if (strlen(path) >= size)
@@ -355,9 +369,26 @@ abs2rel(const char *path, const char *base, char *result, const int size)
 	 * seek to branched point.
 	 */
 	branch = path;
-	for (pp = path, bp = base; *pp && *bp && *pp == *bp; pp++, bp++)
+	for (pp = path, bp = base; *pp && *bp; pp++, bp++) {
+#ifdef COLOR_PATH
+		/* skip escape sequence */
+		if (*pp == ESC) {
+			escape_count++;
+			if (first_escape == NULL)
+				first_escape = pp;
+			while (*pp && *pp != EOE)
+				pp++;
+			if (*pp == EOE)
+				pp++;
+			else
+				die("illegal escape sequence in the path. '%s'", path);
+		}
+#endif
+		if (*pp != *bp)
+			break;
 		if (*pp == '/')
 			branch = pp;
+	}
 	if ((*pp == 0 || (*pp == '/' && *(pp + 1) == 0)) &&
 	    (*bp == 0 || (*bp == '/' && *(bp + 1) == 0))) {
 		rp = result;
@@ -369,6 +400,20 @@ abs2rel(const char *path, const char *base, char *result, const int size)
 		*rp = 0;
 		goto finish;
 	}
+#ifdef COLOR_PATH
+	/* skip escape sequence */
+	if (*pp == ESC) {
+		escape_count++;
+		if (first_escape == NULL)
+			first_escape = pp;
+		while (*pp && *pp != EOE)
+			pp++;
+		if (*pp == EOE)
+			pp++;
+		else
+			die("illegal escape sequence in the path. '%s'", path);
+	}
+#endif
 	if ((*pp == 0 && *bp == '/') || (*pp == '/' && *bp == 0))
 		branch = pp;
 	/*
@@ -390,6 +435,21 @@ abs2rel(const char *path, const char *base, char *result, const int size)
 	 * down to leaf.
 	 */
 	if (*branch) {
+#ifdef COLOR_PATH
+		/*
+		 * Insert the first escape sequence here.
+		 * It is a case where a colored part is divided.
+		 */
+		if (escape_count == 1) {
+			const char *p = first_escape;
+			while (*p && *p != EOE) {
+				if (rp > endp)
+					goto erange;
+				*rp++ = *p++;
+			}
+			*rp++ = *p;
+		}
+#endif
 		if (rp + strlen(branch + 1) > endp)
 			goto erange;
 		strcpy(rp, branch + 1);

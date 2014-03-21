@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2005, 2006, 2010 Tama Communications Corporation
+ * Copyright (c) 2005, 2006, 2010, 2014
+ *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -31,6 +32,7 @@
 #endif
 
 #include "abs2rel.h"
+#include "char.h"
 #include "checkalloc.h"
 #include "die.h"
 #include "encodepath.h"
@@ -38,14 +40,171 @@
 #include "gparam.h"
 #include "gpathop.h"
 #include "gtagsop.h"
-#include "convert.h"
+#include "rewrite.h"
 #include "strbuf.h"
 #include "strlimcpy.h"
 
-static int newline = '\n';
+#include "convert.h"
+static int debug = 0;
+extern int use_color, fflag, gflag, Gflag, iflag, Iflag, Pflag;
+
+/**
+ * coloring support using ANSI escape sequence (SGR)
+ */
+#define ESC '\033'
+#define EOE 'm'
+#define DEFAULT_COLOR "01;31"
+static REWRITE *rewrite;
+static char last_pattern[IDENTLEN];
+static int locked;;
+static int (*code_fputs)(const char *s, FILE *op) = fputs;
+
+/**
+ * fputs with coloring.
+ */
+static int
+color_code_fputs(const char *string, FILE *op)
+{
+	return fputs(rewrite_string(rewrite, string, 0), op);
+}
+/**
+ * set_color_method: setup ANSI escape sequence (SGR).
+ */
+static void
+set_color_method()
+{
+	STATIC_STRBUF(sb);
+	const char *sgr = getenv("GREP_COLOR");
+
+	if (sgr == NULL)
+		sgr = DEFAULT_COLOR;
+	strbuf_clear(sb);
+	/* begin coloring */
+	strbuf_putc(sb, ESC); 
+	strbuf_putc(sb, '[');
+	strbuf_puts(sb, sgr);
+	strbuf_putc(sb, EOE);
+	/* tag name */
+	strbuf_putc(sb, '&');
+	/* end coloring */
+	strbuf_putc(sb, ESC); 
+	strbuf_putc(sb, '[');
+	strbuf_putc(sb, EOE);
+	if (rewrite)
+		rewrite_close(rewrite);
+	rewrite = rewrite_open(NULL, strbuf_value(sb), 0);
+}
+/**
+ * set_color_tag: construct regular expression for coloring tag.
+ *
+ * You should not call this function when locked == true.
+ */
+static void
+set_color_tag(const char *pattern)
+{
+	STATIC_STRBUF(sb);
+	int flags = 0;
+
+	if (rewrite == NULL)
+		die("set_color_tag: impossible.");
+	if (pattern == NULL || !strcmp(pattern, last_pattern))
+		return;		/* nothing to do */
+	strlimcpy(last_pattern, pattern, sizeof(last_pattern));
+	strbuf_clear(sb);
+	if (Iflag) {
+		/*
+		 * refuse '.*' because it brings confused output.
+		 */
+		if (!strcmp(pattern, ".*") ||
+		    !strcmp(pattern, "^.*") ||
+		    !strcmp(pattern, ".*$") ||
+		    !strcmp(pattern, "^.*$"))
+		{
+			rewrite_cancel(rewrite);
+			locked = 1;
+			return;
+		}
+		/*
+		 * Though color support for the -I command is far
+		 * from perfection, it works in almost case.
+		 */
+		strbuf_puts(sb, "\\b");
+		if (isregex(pattern)) {
+			int len = strlen(pattern);
+			int inclass, quote, dollar, i;
+#define TOKEN_CHARS  "[A-Za-z_0-9]"
+			inclass = quote = dollar = i = 0;
+			if (*pattern == '^') {
+				i = 1;
+			} else {
+				strbuf_puts(sb, TOKEN_CHARS);
+				strbuf_putc(sb, '*');
+			}
+			for (; i < len; i++) {
+				int c = pattern[i];
+
+				if (quote) {
+					quote = 0;
+					strbuf_putc(sb, c);
+				} else if (inclass) {
+					if (c == ']')
+						inclass = 0;
+					strbuf_putc(sb, c);
+				} else if (c == '\\') {
+					quote = 1;
+					strbuf_putc(sb, c);
+				} else if (c == '[') {
+					inclass = 1;
+					strbuf_putc(sb, c);
+					if (pattern[i + 1] == ']')
+						strbuf_putc(sb, pattern[++i]);
+				} else if (c == '.') {
+					strbuf_puts(sb, TOKEN_CHARS);
+				} else if (c == '$' && i == len - 1) {
+					dollar = 1;
+				} else {
+					strbuf_putc(sb, c);
+				}
+			}
+			if (!dollar) {
+				strbuf_puts(sb, TOKEN_CHARS);
+				strbuf_putc(sb, '*');
+			}
+		} else {
+			strbuf_puts(sb, pattern);
+		}
+		strbuf_puts(sb, "\\b");
+		locked = 1;
+	} else if (Pflag) {
+		if (*pattern == '^') {
+			strbuf_putc(sb, *pattern++);
+			if (*pattern != '/')
+				strbuf_putc(sb, '/');
+		}
+		strbuf_puts(sb, pattern);
+		locked = 1;
+	} else if (gflag || isregex(pattern)) {
+		strbuf_puts(sb, pattern);
+		locked = 1;
+	} else {
+		strbuf_puts(sb, "\\b");
+		strbuf_puts(sb, pattern);
+		strbuf_puts(sb, "\\b");
+	}
+	if (debug)
+		fprintf(stdout, "regex: |%s|\n", strbuf_value(sb));
+	if (!Gflag)
+		flags |= REG_EXTENDED;
+	if (iflag)
+		flags |= REG_ICASE;
+	/* compile the regular expression */
+	if (rewrite_pattern(rewrite, strbuf_value(sb), flags) < 0)
+		die("illegal regular expression. '%s'", strbuf_value(sb));
+}
 /**
  * set_print0: change newline to @CODE{'\0'}.
  */
+static int newline = '\n';
 void
 set_print0(void)
 {
@@ -53,6 +212,7 @@ set_print0(void)
 }
 /**
  * Path filter for the output of @XREF{global,1}.
+ * The path name starts with "./" which is the project root directory.
  */
 static const char *
 convert_pathname(CONVERT *cv, const char *path)
@@ -60,6 +220,25 @@ convert_pathname(CONVERT *cv, const char *path)
 	static char buf[MAXPATHLEN];
 	const char *a, *b;
 
+	if (use_color && Pflag) {
+		STATIC_STRBUF(sb);
+		const char *p;
+
+		/* color the path */
+		path = rewrite_string(rewrite, path + 1, 0);
+		/* normalize the path */
+		strbuf_clear(sb);
+		strbuf_puts(sb, "./");
+		for (p = path; *p && (*p == '/' || *p == ESC); p++) {
+			if (*p == ESC) {
+				for (; *p && *p != EOE; p++)
+					strbuf_putc(sb, *p);
+				strbuf_putc(sb, *p);
+			}
+		}
+		strbuf_puts(sb, p);
+		path = strbuf_value(sb);
+	}
 	if (cv->type != PATH_THROUGH) {
 		/*
 		 * make absolute path name.
@@ -137,7 +316,6 @@ convert_pathname(CONVERT *cv, const char *path)
  *	@param[in]	dbpath	dbpath directory
  *	@param[in]	op	output file
  *	@param[in]	db	tag type (#GTAGS, #GRTAGS, #GSYMS, #GPATH, #NOTAGS) <br>
- *			only for @NAME{cscope} format
  */
 CONVERT *
 convert_open(int type, int format, const char *root, const char *cwd, const char *dbpath, FILE *op, int db)
@@ -165,6 +343,15 @@ convert_open(int type, int format, const char *root, const char *cwd, const char
 	 */
 	if (gpath_open(dbpath, 0) < 0)
 		die("GPATH not found.");
+	/*
+	 * setup coloring.
+	 */
+	code_fputs = fputs;
+	if (use_color) {
+		set_color_method();
+		if (!Pflag)
+			code_fputs = color_code_fputs;
+	}
 	return cv;
 }
 /**
@@ -173,7 +360,7 @@ convert_open(int type, int format, const char *root, const char *cwd, const char
  *	@param[in]	cv	#CONVERT structure
  *	@param[in]	ctags_x	tag record (@NAME{ctags-x} format)
  *
- * @note This function is only called by @NAME{gtags} with the @OPTION{--path} option.
+ * @note This function is only called by @NAME{global} with the @OPTION{--path} option.
  */
 void
 convert_put(CONVERT *cv, const char *ctags_x)
@@ -302,11 +489,14 @@ convert_put(CONVERT *cv, const char *ctags_x)
  * convert_put_path: convert @a path into relative or absolute and print.
  *
  *	@param[in]	cv	#CONVERT structure
+ *      @param[in]      pattern pattern
  *	@param[in]	path	path name
  */
 void
-convert_put_path(CONVERT *cv, const char *path)
+convert_put_path(CONVERT *cv, const char *pattern, const char *path)
 {
+	if (use_color && !locked && pattern)
+		set_color_tag(pattern);
 	if (cv->format != FORMAT_PATH)
 		die("convert_put_path: internal error.");
 	fputs(convert_pathname(cv, path), cv->op);
@@ -325,6 +515,10 @@ convert_put_path(CONVERT *cv, const char *path)
 void
 convert_put_using(CONVERT *cv, const char *tag, const char *path, int lineno, const char *rest, const char *fid)
 {
+	if (use_color && !locked)
+		set_color_tag(tag);
+	if (cv->tag_for_display)
+		tag = cv->tag_for_display;
 	switch (cv->format) {
 	case FORMAT_PATH:
 		fputs(convert_pathname(cv, path), cv->op);
@@ -346,22 +540,23 @@ convert_put_using(CONVERT *cv, const char *tag, const char *path, int lineno, co
 		fputc(' ', cv->op);
 		/* PASS THROUGH */
 	case FORMAT_CTAGS_X:
-		fprintf(cv->op, "%-16s %4d %-16s %s",
-			tag, lineno, convert_pathname(cv, path), rest);
+		fprintf(cv->op, "%-16s %4d %-16s ",
+			tag, lineno, convert_pathname(cv, path));
+		code_fputs(rest, cv->op);
 		break;
 	case FORMAT_CTAGS_MOD:
 		fputs(convert_pathname(cv, path), cv->op);
 		fputc('\t', cv->op);
 		fprintf(cv->op, "%d", lineno);
 		fputc('\t', cv->op);
-		fputs(rest, cv->op);
+		code_fputs(rest, cv->op);
 		break;
 	case FORMAT_GREP:
 		fputs(convert_pathname(cv, path), cv->op);
 		fputc(':', cv->op);
 		fprintf(cv->op, "%d", lineno);
 		fputc(':', cv->op);
-		fputs(rest, cv->op);
+		code_fputs(rest, cv->op);
 		break;
 	case FORMAT_CSCOPE:
 		fputs(convert_pathname(cv, path), cv->op);
@@ -373,7 +568,7 @@ convert_put_using(CONVERT *cv, const char *tag, const char *path, int lineno, co
 		for (; *rest && isspace(*rest); rest++)
 			;
 		if (*rest)
-			fputs(rest, cv->op);
+			code_fputs(rest, cv->op);
 		else
 			fputs("<unknown>", cv->op);
 		break;

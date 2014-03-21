@@ -78,7 +78,7 @@ output_with_formatting(CONVERT *cv, GTP *gtp, int flags)
 	int count = 0;
 
 	if (format == FORMAT_PATH) {
-		convert_put_path(cv, gtp->path);
+		convert_put_path(cv, NULL, gtp->path);
 		count++;
 	} else if (flags & GTAGS_COMPACT) {
 		count += put_compact_format(cv, gtp, flags);

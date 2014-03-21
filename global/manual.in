@@ -1,6 +1,7 @@
 #
-# Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2006
-#     2008, 2009, 2011, 2012, 2013, 2014 Tama Communications Corporation
+# Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2006,
+#	2008, 2009, 2011, 2012, 2013, 2014
+#	Tama Communications Corporation
 #
 # This file is part of GNU GLOBAL.
 #
@@ -59,6 +60,12 @@
 	@item{<no command> @arg{pattern}}
 		Print tags which match to @arg{pattern}.
 		By default, print definition tags.
+	@item{@option{--color} @arg{when}}
+		Use color to highlight the pattern within the line; @arg{when} may be one of:
+		@arg{never}, @arg{always} or @arg{auto} (default).
+		The default color is bold red text on current background; the environment
+		variable @var{GREP_COLOR} defines it.
+		This option is effective to the following commands: <no command>, -f, -g, -I, -P.
 	@item{@option{-c}, @option{--completion} [@arg{prefix}]}
 		Print symbols which start with @arg{prefix}.
 		If @arg{prefix} is not given, print all symbols.
@@ -234,6 +241,8 @@
 	The following environment variables affect the execution of @name{global}:
 
 	@begin_itemize
+	@item{@var{GREP_COLOR}}
+		The color to use for @option{--color}.
 	@item{@var{GTAGSBLANKENCODE}}
 		If this variable is set, the @option{--encode-path=" <TAB>"}
 		option is specified.

@@ -52,6 +52,7 @@
 #include "format.h"
 #include "convert.h"
 #include "die.h"
+#include "strlimcpy.h"
 
 #ifndef O_BINARY
 #define O_BINARY 0
@@ -75,6 +76,7 @@ static struct words {
 	struct	words *fail;
 } w[MAXSIZ], *smax, *q;
 
+static char pattern[IDENTLEN];
 static char encoded_pattern[IDENTLEN];
 
 /**
@@ -85,12 +87,13 @@ static char encoded_pattern[IDENTLEN];
  * Literal string is treated as is.
  */
 void
-literal_comple(const char *pattern)
+literal_comple(const char *pat)
 {
 	/*
 	 * convert spaces into %FF format.
 	 */
-	encode(encoded_pattern, sizeof(encoded_pattern), pattern);
+	encode(encoded_pattern, sizeof(encoded_pattern), pat);
+	strlimcpy(pattern, pat, sizeof(pattern));
 	/*
 	 * construct a goto table.
 	 */
@@ -192,7 +195,7 @@ literal_search(CONVERT *cv, const char *file)
 			if (Vflag)
 				goto nomatch;
 	succeed:	if (cv->format == FORMAT_PATH) {
-				convert_put_path(cv, file);
+				convert_put_path(cv, NULL, file);
 				count++;
 				goto finish;
 			} else {
@@ -202,7 +205,7 @@ literal_search(CONVERT *cv, const char *file)
 				strbuf_nputs(sb, linep, p - linep);
 				strbuf_unputc(sb, '\n');
 				strbuf_unputc(sb, '\r');
-				convert_put_using(cv, encoded_pattern, file, lineno, strbuf_value(sb), NULL);
+				convert_put_using(cv, pattern, file, lineno, strbuf_value(sb), NULL);
 				count++;
 			}
 	nomatch:	lineno++;

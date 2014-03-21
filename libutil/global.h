@@ -50,6 +50,7 @@
 #include "makepath.h"
 #include "path.h"
 #include "pool.h"
+#include "rewrite.h"
 #include "split.h"
 #include "statistics.h"
 #include "strbuf.h"

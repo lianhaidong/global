@@ -38,6 +38,11 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
+#if defined(_WIN32) && !defined(__CYGWIN__)
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#undef SLIST_ENTRY
+#endif
 #include "getopt.h"
 
 #include "global.h"
@@ -107,6 +112,7 @@ int format;
 int type;				/**< path conversion type */
 int match_part;				/**< match part only	*/
 int abslib;				/**< absolute path only in library project */
+char use_color;				/**< coloring */
 const char *cwd;			/**< current directory	*/
 const char *root;			/**< root of source tree	*/
 const char *dbpath;			/**< dbpath directory	*/
@@ -148,6 +154,7 @@ help(void)
 #define SINGLE_UPDATE	132
 #define PATH_STYLE	133
 #define PATH_CONVERT	134
+#define USE_COLOR	135
 #define SORT_FILTER     1
 #define PATH_FILTER     2
 #define BOTH_FILTER     (SORT_FILTER|PATH_FILTER)
@@ -185,6 +192,7 @@ static struct option const long_options[] = {
 	{"cxref", no_argument, NULL, 'x'},
 
 	/* long name only */
+	{"color", optional_argument, NULL, USE_COLOR},
 	{"encode-path", required_argument, NULL, ENCODE_PATH},
 	{"from-here", required_argument, NULL, FROM_HERE},
 	{"debug", no_argument, &debug, 1},
@@ -352,7 +360,7 @@ main(int argc, char **argv)
 	int option_index = 0;
 
 	logging_arguments(argc, argv);
-	while ((optchar = getopt_long(argc, argv, "acde:ifgGIlL:noOpPqrsS:tTuvVx", long_options, &option_index)) != EOF) {
+	while ((optchar = getopt_long(argc, argv, "acCde:ifgGIlL:noOpPqrsS:tTuvVx", long_options, &option_index)) != EOF) {
 		switch (optchar) {
 		case 0:
 			break;
@@ -453,6 +461,20 @@ main(int argc, char **argv)
 			break;
 		case 'x':
 			xflag++;
+			break;
+		case USE_COLOR:
+			if (optarg) {
+				if (!strcmp(optarg, "never"))
+					use_color = 0;
+				else if (!strcmp(optarg, "always"))
+					use_color = 1;
+				else if (!strcmp(optarg, "auto"))
+					use_color = 2;
+				else
+					die_with_code(2, "unknown color type.");
+			} else {
+				use_color = 2;
+			}
 			break;
 		case ENCODE_PATH:
 			encode_chars = optarg;
@@ -557,6 +579,16 @@ main(int argc, char **argv)
 		Tflag++;
 	if (qflag)
 		vflag = 0;
+	if (use_color) {
+#if defined(_WIN32) && !defined(__CYGWIN__)
+		if (!(getenv("ANSICON") || LoadLibrary("ANSI32.dll")) && use_color == 2)
+			use_color = 0;
+#endif
+		if (use_color == 2 && !isatty(1))
+			use_color = 0;
+		if (Vflag)
+			use_color = 0;
+	}
 	if (show_help)
 		help();
 
@@ -1157,6 +1189,7 @@ idutils(const char *pattern, const char *dbpath)
 	if (!(ip = popen(strbuf_value(ib), "r")))
 		die("cannot execute '%s'.", strbuf_value(ib));
 	cv = convert_open(type, format, root, cwd, dbpath, stdout, NOTAGS);
+	cv->tag_for_display = encoded_pattern;
 	count = 0;
 	strcpy(path, "./");
 	while ((grep = strbuf_fgets(ib, ip, STRBUF_NOCRLF)) != NULL) {
@@ -1178,7 +1211,7 @@ idutils(const char *pattern, const char *dbpath)
 		count++;
 		switch (format) {
 		case FORMAT_PATH:
-			convert_put_path(cv, path);
+			convert_put_path(cv, NULL, path);
 			break;
 		default:
 			/* extract line number */
@@ -1195,7 +1228,7 @@ idutils(const char *pattern, const char *dbpath)
 			/*
 			 * print out.
 			 */
-			convert_put_using(cv, encoded_pattern, path, linenum, p, NULL);
+			convert_put_using(cv, pattern, path, linenum, p, NULL);
 			break;
 		}
 	}
@@ -1266,6 +1299,7 @@ grep(const char *pattern, char *const *argv, const char *dbpath)
 			die("invalid regular expression.");
 	}
 	cv = convert_open(type, format, root, cwd, dbpath, stdout, NOTAGS);
+	cv->tag_for_display = encoded_pattern;
 	count = 0;
 
 	if (*argv && file_list)
@@ -1312,10 +1346,10 @@ grep(const char *pattern, char *const *argv, const char *dbpath)
 				if ((!Vflag && result == 0) || (Vflag && result != 0)) {
 					count++;
 					if (format == FORMAT_PATH) {
-						convert_put_path(cv, path);
+						convert_put_path(cv, NULL, path);
 						break;
 					} else {
-						convert_put_using(cv, encoded_pattern, path, linenum, buffer,
+						convert_put_using(cv, pattern, path, linenum, buffer,
 							(user_specified) ? NULL : gp->dbop->lastdat);
 					}
 				}
@@ -1377,6 +1411,7 @@ pathlist(const char *pattern, const char *dbpath)
 	if (!localprefix)
 		localprefix = "./";
 	cv = convert_open(type, format, root, cwd, dbpath, stdout, GPATH);
+	cv->tag_for_display = "path";
 	count = 0;
 
 	gp = gfind_open(dbpath, localprefix, target);
@@ -1393,9 +1428,9 @@ pathlist(const char *pattern, const char *dbpath)
 		} else if (Vflag)
 			continue;
 		if (format == FORMAT_PATH)
-			convert_put_path(cv, path);
+			convert_put_path(cv, pattern, path);
 		else
-			convert_put_using(cv, "path", path, 1, " ", gp->dbop->lastdat);
+			convert_put_using(cv, pattern, path, 1, " ", gp->dbop->lastdat);
 		count++;
 	}
 	gfind_close(gp);
