@@ -185,6 +185,9 @@ rewrite_dump(REWRITE *rewrite)
 void
 rewrite_close(REWRITE *rewrite)
 {
-	free(rewrite->replace);
+	if (rewrite->pattern)
+		free(rewrite->pattern);
+	if (rewrite->replace)
+		free(rewrite->replace);
 	free(rewrite);	
 }
