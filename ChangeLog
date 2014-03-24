@@ -25,7 +25,7 @@ March 17 2014, Shigio YAMAGUCHI
 	o libutil/encodepath.c
 	o global/convert.c
 	According to the change, the function of the --path command of gtags(1)
-	(undocumented) was moved to global(1)'s --pathconvert command.
+	(undocumented) was moved to global(1)'s --path-convert command.
 
 December 18 2013, Shigio YAMAGUCHI
 
