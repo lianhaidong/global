@@ -515,6 +515,8 @@ convert_put_path(CONVERT *cv, const char *pattern, const char *path)
 void
 convert_put_using(CONVERT *cv, const char *tag, const char *path, int lineno, const char *rest, const char *fid)
 {
+	if (rest == NULL)
+		rest = "";	/* for safety */
 	if (use_color && !locked)
 		set_color_tag(tag);
 	if (cv->tag_for_display)

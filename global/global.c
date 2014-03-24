@@ -49,6 +49,7 @@
 #include "parser.h"
 #include "regex.h"
 #include "const.h"
+#include "output.h"
 #include "literal.h"
 #include "convert.h"
 
@@ -70,9 +71,6 @@ void grep(const char *, char *const *, const char *);
 void pathlist(const char *, const char *);
 void parsefile(char *const *, const char *, const char *, const char *, int);
 int search(const char *, const char *, const char *, const char *, int);
-void start_output();
-void end_output();
-int output_with_formatting(CONVERT *, GTP *, int);
 void tagsearch(const char *, const char *, const char *, const char *, int);
 void encode(char *, int, const char *);
 
@@ -1657,6 +1655,7 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 	GTP *gtp;
 	int flags = 0;
 
+	start_output();
 	/*
 	 * open tag file.
 	 */
@@ -1682,6 +1681,7 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 	if (debug)
 		gtags_show_statistics(gtop);
 	gtags_close(gtop);
+	end_output();
 	return count;
 }
 /**
