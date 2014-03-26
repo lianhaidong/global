@@ -49,6 +49,14 @@ static int debug = 0;
 extern int use_color, fflag, gflag, Gflag, iflag, Iflag, Pflag;
 
 /**
+ * This module converts records before output.
+ * The converting includes the followings:
+ *
+ * 1. constructing format (-x, -t, --result)
+ * 2. converting path style (-a, --path-style)
+ * 3. inserting escape sequences for coloring (--color)
+ */
+/**
  * coloring support using ANSI escape sequence (SGR)
  */
 #define ESC '\033'
