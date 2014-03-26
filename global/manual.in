@@ -60,12 +60,6 @@
 	@item{<no command> @arg{pattern}}
 		Print tags which match to @arg{pattern}.
 		By default, print definition tags.
-	@item{@option{--color} @arg{when}}
-		Use color to highlight the pattern within the line; @arg{when} may be one of:
-		@arg{never}, @arg{always} or @arg{auto} (default).
-		The default color is bold red text on current background; the environment
-		variable @var{GREP_COLOR} defines it.
-		This option is effective to the following commands: <no command>, -f, -g, -I, -P.
 	@item{@option{-c}, @option{--completion} [@arg{prefix}]}
 		Print symbols which start with @arg{prefix}.
 		If @arg{prefix} is not given, print all symbols.
@@ -101,6 +95,12 @@
 	@begin_itemize
 	@item{@option{-a}, @option{--absolute}}
 		Print absolute path names. By default, print relative path names.
+	@item{@option{--color} @arg{when}}
+		Use color to highlight the pattern within the line; @arg{when} may be one of:
+		@arg{never}, @arg{always} or @arg{auto} (default).
+		The default color is bold red text on current background; the environment
+		variable @var{GREP_COLOR} defines it.
+		This option is effective to the following commands: <no command>, -f, -g, -I, -P.
 	@item{@option{-d}, @option{--definition}}
 		Print locations of definitions.
 	@item{@option{-e}, @option{--regexp} @arg{pattern}}
