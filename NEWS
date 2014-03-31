@@ -19,6 +19,23 @@ ___________________________________
 GNU GLOBAL NEWS - User visible changes.
 At least, you should search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 6.2.12 - March 31 2014
+
+[CHANGES]
+New facilities:
+o global: New --color option. It use the environment variable GREP_COLOR
+  (default is red) to highlight the matching string like grep (1).
+  (--colour and GREP_COLORS are not supported this time)
+  Please try the following command line:
+
+  $ global --color=always -x main
+
+[FIXED BUGS]
+o global: There was a lack of initialization of data. It could bring
+  unexpected segmentation violation; it often occurred during execution
+  of htags(1). Now it is fixed.
+  This bug exists in the following version: 6.2.10, 6.2.11.
+
 Version 6.2.11 - March 12 2014
 
 [CHANGES]
