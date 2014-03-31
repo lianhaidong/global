@@ -79,7 +79,7 @@ color_code_fputs(const char *string, FILE *op)
  * set_color_method: setup ANSI escape sequence (SGR).
  */
 static void
-set_color_method()
+set_color_method(void)
 {
 	STATIC_STRBUF(sb);
 	const char *sgr = getenv("GREP_COLOR");

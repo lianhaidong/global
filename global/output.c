@@ -51,7 +51,7 @@ extern int format;
         } while (0)
 
 void
-start_output()
+start_output(void)
 {
 	curpath[0] = curtag[0] = '\0';
 	cur_lineno = last_lineno = 0;
@@ -59,7 +59,7 @@ start_output()
 	src = "";
 }
 void
-end_output()
+end_output(void)
 {
 	if (fp)
 		fclose(fp);
