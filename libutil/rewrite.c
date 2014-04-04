@@ -58,7 +58,7 @@ rewrite_close(rewrite);
  *	@param[in]	replace (allows '&')
  *	@param[in]	flags for regcomp(3)
  *	@return	rewrite	#REWRITE structure
- *			NULL: illegal regular expression
+ *			NULL: invalid regular expression
  */
 REWRITE *
 rewrite_open(const char *pattern, const char *replace, int flags)
@@ -97,7 +97,7 @@ rewrite_open(const char *pattern, const char *replace, int flags)
  *	@param[in]	pattern
  *	@param[in]	flags for regcomp(3)
  *	@return		0: normal
- *			-1: illegal regular expression
+ *			-1: invalid regular expression
  */
 int
 rewrite_pattern(REWRITE *rewrite, const char *pattern, int flags)

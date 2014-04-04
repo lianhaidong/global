@@ -118,7 +118,7 @@ void *
 varray_assign(VARRAY *vb, int index, int force)
 {
 	if (index < 0)
-		die("varray_assign: illegal index value.");
+		die("varray_assign: invalid index value.");
 	if (index >= vb->length) {
 		if (force)
 			vb->length = index + 1;

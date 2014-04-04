@@ -135,7 +135,7 @@ cmp(const void *s1, const void *s2)
  *	@param[out]	lines	@a map lines
  *	@return	 0: succesful <br>
  *		-1: out of memory. <br>
- *		-5: illegal format.
+ *		-5: invalid format.
  */
 static int
 create_filemap_index(char *area, int size, struct map **map, int *lines)

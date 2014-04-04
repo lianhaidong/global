@@ -656,7 +656,7 @@ dbop_getoption(DBOP *dbop, const char *key)
 	if ((p = dbop_get(dbop, key)) == NULL)
 		return NULL;
 	if (dbop->lastsize <= strlen(key))
-		die("illegal format (dbop_getoption).");
+		die("invalid format (dbop_getoption).");
 	for (p += strlen(key); *p && isspace((unsigned char)*p); p++)
 		;
 	strlimcpy(buf, p, sizeof(buf));

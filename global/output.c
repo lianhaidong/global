@@ -142,7 +142,7 @@ put_compact_format(CONVERT *cv, GTP *gtp, int flags)
 	 * Unfold compact format.
 	 */
 	if (!isdigit(*p))
-		die("illegal compact format.");
+		die("invalid compact format.");
 	if (flags & GTAGS_COMPLINE) {
 		/*
 		 * If GTAGS_COMPLINE flag is set, each line number is expressed as

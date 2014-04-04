@@ -133,7 +133,7 @@ args_read(void)
 			p = strbuf_fgets(sb, ip, STRBUF_NOCRLF);
 		break;
 	default:
-		die("args_read: illegal type.");
+		die("args_read: invalid type.");
 	}
 	return p;
 }

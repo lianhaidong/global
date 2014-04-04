@@ -99,8 +99,9 @@
 		Use color to highlight the pattern within the line; @arg{when} may be one of:
 		@arg{never}, @arg{always} or @arg{auto} (default).
 		The default color is bold red text on current background; the environment
-		variable @var{GREP_COLOR} defines it.
-		This option is effective to the following commands: <no command>, -f, -g, -I, -P.
+		variable @var{GREP_COLORS} or @var{GREP_COLOR} defines it.
+		This option is effective to the following commands:
+		<no command>, -f, -g, -I, -P.
 	@item{@option{-d}, @option{--definition}}
 		Print locations of definitions.
 	@item{@option{-e}, @option{--regexp} @arg{pattern}}
@@ -133,7 +134,6 @@
 		Specify how path name completion should match, where @arg{part} is one of:
 		@val{first}, @val{last} or @val{all} (default).
 		This option is valid only with the @option{-c} command in conjunction with @option{-P}.
-
 	@item{@option{-n}, @option{--nofilter}}
 		Suppress sort filter and path conversion filter.
 	@item{@option{-O}, @option{--only-other}}
@@ -242,7 +242,9 @@
 
 	@begin_itemize
 	@item{@var{GREP_COLOR}}
-		The color to use for @option{--color}.
+		The color to use for @option{--color}; @var{GREP_COLORS} has precedence.
+	@item{@var{GREP_COLORS}}
+		The color (@arg{mt} or @arg{ms}) to use for @option{--color}; see @xref{grep,1}.
 	@item{@var{GTAGSBLANKENCODE}}
 		If this variable is set, the @option{--encode-path=" <TAB>"}
 		option is specified.

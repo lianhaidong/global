@@ -159,7 +159,7 @@ anchor_load(const char *path)
 					;
 				if (!*p) {
 					recover(&ptable);
-					die("The output of parser is illegal.\n%s", ctags_x);
+					die("The output of parser is invalid.\n%s", ctags_x);
 				}
 				/*
 				 * Function header is applied only to the anchor whoes type is 'D'.

@@ -741,7 +741,7 @@ gtags_first(GTOP *gtop, const char *pattern, int flags)
 		if (gtop->preg == NULL)
 			die("gtags_first: impossible (3).");
 		if (regcomp(gtop->preg, strbuf_value(regex), regflags) != 0)
-			die("illegal regular expression.");
+			die("invalid regular expression.");
 	}
 	/*
 	 * If GTOP_PATH is set, at first, we collect all path names in a pool and
@@ -772,7 +772,7 @@ again0:
 			/* extract file id */
 			p = locatestring(tagline, " ", MATCH_FIRST);
 			if (p == NULL)
-				die("Illegal tag record. '%s'\n", tagline);
+				die("Invalid tag record. '%s'\n", tagline);
 			*p = '\0';
 			entry = strhash_assign(gtop->path_hash, tagline, 1);
 			/* new entry: get path name and set. */
@@ -1132,7 +1132,7 @@ segment_read(GTOP *gtop)
 		gtp->path = sh->name;
 		lineno = seekto(gtp->tagline, SEEKTO_LINENO);
 		if (lineno == NULL)
-			die("illegal tag record.\n%s", tagline);
+			die("invalid tag record.\n%s", tagline);
 		gtp->lineno = atoi(lineno);
 	}
 	/*

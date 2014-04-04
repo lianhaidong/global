@@ -252,7 +252,7 @@ sub parse_version {
 #
 #	i)	$v	version
 #	i)	$sv	supported version
-#	r)		-1: illegal
+#	r)		-1: invalid
 #			1: supported
 #			0: not supported
 #

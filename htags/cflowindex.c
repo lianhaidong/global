@@ -42,7 +42,7 @@ makecflowindex(const char *output, const char *cflow_file)
 	STRBUF *input = strbuf_open(0);
 	FILE *ip, *op;
 	char *cflow_posix, *p;
-	const char *m0 = "Gave up making call-tree because of illegal POSIX cflow format.";
+	const char *m0 = "Gave up making call-tree because of invalid POSIX cflow format.";
 	const char *m1 = "";
 	const char *title = locatestring(output, "callee", MATCH_AT_FIRST) ? title_callee_tree : title_call_tree;
 	int line = 0;

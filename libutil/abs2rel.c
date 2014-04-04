@@ -381,7 +381,7 @@ abs2rel(const char *path, const char *base, char *result, const int size)
 			if (*pp == EOE)
 				pp++;
 			else
-				die("illegal escape sequence in the path. '%s'", path);
+				die("invalid escape sequence in the path. '%s'", path);
 		}
 #endif
 		if (*pp != *bp)
@@ -411,7 +411,7 @@ abs2rel(const char *path, const char *base, char *result, const int size)
 		if (*pp == EOE)
 			pp++;
 		else
-			die("illegal escape sequence in the path. '%s'", path);
+			die("invalid escape sequence in the path. '%s'", path);
 	}
 #endif
 	if ((*pp == 0 && *bp == '/') || (*pp == '/' && *bp == 0))

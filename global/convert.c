@@ -82,15 +82,33 @@ static void
 set_color_method(void)
 {
 	STATIC_STRBUF(sb);
-	const char *sgr = getenv("GREP_COLOR");
+	const char *sgr = DEFAULT_COLOR;
+	const char *col = getenv("GREP_COLOR");
+	int len;
 
-	if (sgr == NULL)
-		sgr = DEFAULT_COLOR;
+	if (col != NULL)
+		sgr = col;
+	len = strlen(sgr);
+	col = getenv("GREP_COLORS");
+	if (col != NULL) {
+		const char *part = strstr(col, "mt=");
+		if (part == NULL)
+			part = strstr(col, "ms=");
+		if (part != NULL) {
+			const char *sep = strchr(part, ':');
+			if (sep == NULL)
+				sep = strchr(part, '\0');
+			if (sep[-1] != '=') {
+				sgr = part + 3;
+				len = sep - sgr;
+			}
+		}
+	}
 	strbuf_clear(sb);
 	/* begin coloring */
 	strbuf_putc(sb, ESC); 
 	strbuf_putc(sb, '[');
-	strbuf_puts(sb, sgr);
+	strbuf_nputs(sb, sgr, len);
 	strbuf_putc(sb, EOE);
 	/* tag name */
 	strbuf_putc(sb, '&');
@@ -207,7 +225,7 @@ set_color_tag(const char *pattern)
 		flags |= REG_ICASE;
 	/* compile the regular expression */
 	if (rewrite_pattern(rewrite, strbuf_value(sb), flags) < 0)
-		die("illegal regular expression. '%s'", strbuf_value(sb));
+		die("invalid regular expression. '%s'", strbuf_value(sb));
 }
 /**
  * set_print0: change newline to @CODE{'\0'}.
@@ -393,7 +411,7 @@ convert_put(CONVERT *cv, const char *ctags_x)
 		for (; *p && !isspace(*p); p++)
 			;
 		if (*p == '\0')
-			die("illegal ctags-x format (line number not found).");
+			die("invalid ctags-x format (line number not found).");
 		tagnextp = p;
 		tagnextc = *p;
 		*p++ = '\0';
@@ -401,7 +419,7 @@ convert_put(CONVERT *cv, const char *ctags_x)
 		for (; *p && isspace(*p); p++)
 			;
 		if (*p == '\0')
-			die("illegal ctags-x format (line number not found).");
+			die("invalid ctags-x format (line number not found).");
 		/*
 		 * line number
 		 */
@@ -409,13 +427,13 @@ convert_put(CONVERT *cv, const char *ctags_x)
 		for (; *p && !isspace(*p); p++)
 			;
 		if (*p == '\0')
-			die("illegal ctags-x format (path name not found).");
+			die("invalid ctags-x format (path name not found).");
 		*p++ = '\0';
 		/* skip blanks */
 		for (; *p && isspace(*p); p++)
 			;
 		if (*p == '\0')
-			die("illegal ctags-x format (path name not found).");
+			die("invalid ctags-x format (path name not found).");
 		/*
 		 * path name
 		 */
@@ -423,7 +441,7 @@ convert_put(CONVERT *cv, const char *ctags_x)
 		for (; *p && !isspace(*p); p++)
 			;
 		if (*p == '\0')
-			die("illegal ctags-x format (line image not found).");
+			die("invalid ctags-x format (line image not found).");
 		*p++ = '\0';
 		rest = p;
 	}

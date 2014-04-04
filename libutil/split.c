@@ -185,7 +185,7 @@ parse_xid(const char *ctags_xid, char *s_fid, int *n_fid)
 			s_fid[i++] = *p;
 	}
 	if (*p++ != ' ')
-		die("illegal ctags-xid format record. '%s'", ctags_xid);
+		die("invalid ctags-xid format record. '%s'", ctags_xid);
 	if (s_fid)
 		s_fid[i] = '\0';
 	if (n_fid != NULL)

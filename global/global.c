@@ -358,7 +358,7 @@ main(int argc, char **argv)
 	int option_index = 0;
 
 	logging_arguments(argc, argv);
-	while ((optchar = getopt_long(argc, argv, "acCde:ifgGIlL:noOpPqrsS:tTuvVx", long_options, &option_index)) != EOF) {
+	while ((optchar = getopt_long(argc, argv, "acde:ifgGIlL:noOpPqrsS:tTuvVx", long_options, &option_index)) != EOF) {
 		switch (optchar) {
 		case 0:
 			break;
@@ -602,7 +602,7 @@ main(int argc, char **argv)
 		 * replace it with the relative or the absolute path name.
 		 *
 		 * By default, if we are in src/ directory, the output
-		 * should be converted like follws:
+		 * should be converted like follows:
 		 *
 		 * main      10 ./src/main.c  main(argc, argv)\n
 		 * main      22 ./libc/func.c   main(argc, argv)\n
@@ -610,7 +610,7 @@ main(int argc, char **argv)
 		 * main      10 main.c  main(argc, argv)\n
 		 * main      22 ../libc/func.c   main(argc, argv)\n
 		 *
-		 * Similarly, the --path-covert=absolute option specified, then
+		 * Similarly, the --path-convert=absolute option specified, then
 		 *		v
 		 * main      10 /prj/xxx/src/main.c  main(argc, argv)\n
 		 * main      22 /prj/xxx/libc/func.c   main(argc, argv)\n
@@ -620,7 +620,7 @@ main(int argc, char **argv)
 		char *ctags_x;
 
 		if (argc < 3)
-			die("global --path-covert: 3 arguments needed.");
+			die("global --path-convert: 3 arguments needed.");
 		cv = convert_open(convert_type, FORMAT_CTAGS_X, argv[0], argv[1], argv[2], stdout, NOTAGS);
 		while ((ctags_x = strbuf_fgets(ib, stdin, STRBUF_NOCRLF)) != NULL)
 			convert_put(cv, ctags_x);
@@ -864,7 +864,7 @@ main(int argc, char **argv)
 			type = PATH_RELATIVE;
 			abslib++;
 		} else
-			die("illegal path style.");
+			die("invalid path style.");
 	}
 	/*
 	 * exec lid(idutils).
@@ -1025,7 +1025,7 @@ completion_idutils(const char *dbpath, const char *root, const char *prefix)
 		for (p = line; *p && *p != ' '; p++)
 			;
 		if (*p == '\0') {
-			warning("Illegal line: %s", line);
+			warning("Invalid line: %s", line);
 			continue;
 		}
 		*p = '\0';
