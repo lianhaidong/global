@@ -119,6 +119,8 @@ set_color_method(void)
 	if (rewrite)
 		rewrite_close(rewrite);
 	rewrite = rewrite_open(NULL, strbuf_value(sb), 0);
+	locked = 0;
+	last_pattern[0] = '\0';
 }
 /**
  * set_color_tag: construct regular expression for coloring tag.
