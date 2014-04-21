@@ -56,6 +56,7 @@ Gary Kline		advice about the name of parser.
 Geoffrey Robson		bug report about global (-t option didn't work correctly).
 George Neville-Neil	report about the useless inspection of gtags(1).
 Giuseppe Corbelli	Global.py for glimmer code editor and an advice about vim.
+Gordon Grimes		bug report about the java parser of gtags.
 Hageseter, Trond E.	bug report about gtags-parser.
 Hendrik Visage		bug report about gtags-parser(here document of PHP).
 Hideaki Okada		idea about -g option of global(1).
@@ -150,6 +151,7 @@ Tom Russell		bug report about parsing error at function definitions with comment
 Tom Tromey		GTAGS target in automake.
 Tomi Ollila		proposal of adding (provide 'gtags) to gtags.el.
 Toshiyasu Kojima	advice about deciding emacs version.
+Tu Do			bug reports about the C++ parser of gtags.
 Van Trinh		bug report about db(3) and patch information.
 Wes Wojtas		bug report about htags's segmentation fault.
 Whity Pig		bug fix patch for global(1) on Cygwin environment.
