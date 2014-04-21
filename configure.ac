@@ -362,6 +362,7 @@ AC_CONFIG_FILES([Makefile
 	gtags-cscope/Makefile
 	globash/Makefile
 	htags-refkit/Makefile
+	htags-server/Makefile
 	libglibc/Makefile
 	doc/Makefile
 	icons/Makefile

@@ -1,0 +1,147 @@
+#!/bin/sh
+#
+# Copyright (c) 2014
+#       Tama Communications Corporation
+#
+# This file is part of GNU GLOBAL.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# htags-server: private Web/CGI server using python or ruby
+#
+name=htags-server
+#
+# HTTP/CGI servers
+#
+python2_server() {
+	echo "Python2 http/cgi server"
+	echo "Serving HTTP on $2 port $3 ..."
+	"$1" <<-!
+	import cgi
+	import BaseHTTPServer,CGIHTTPServer
+	http = BaseHTTPServer.HTTPServer(('$2', $3), CGIHTTPServer.CGIHTTPRequestHandler)
+	http.serve_forever()
+	!
+}
+python3_server() {
+	echo "Python3 http/cgi server"
+	"$1" -m http.server --cgi --bind $2 $3
+}
+ruby_server() {
+	echo "Ruby WEBrick http/cgi server"
+	echo "Serving HTTP on $2 port $3 ..."
+	"$1" <<-!
+	require 'webrick'
+	include WEBrick
+	http = HTTPServer.new(
+		:DocumentRoot => './',
+		:BindAddress => '$2',
+		:Port => $3
+	)
+	trap("INT") {
+		http.shutdown
+	}
+	http.start
+	!
+}
+#
+# Utilities
+#
+find_command() {
+	for d in `echo "$PATH" | sed -e 's/^:/.:/' -e 's/:$/:./' \
+		-e 's/::/:.:/' -e 's/:/ /g'`
+	do
+		if [ -x "$d/$1" ]; then
+			echo "$d/$1"
+			break
+		fi
+	done
+}
+#
+# sanity check
+#
+if [ ! -d HTML ]; then
+	echo "Please invoke this command at the project root directory."
+	exit 1
+fi
+if ! cd HTML; then
+	echo "Cannot change directory."
+	exit 1
+fi
+if ! [ -f index.html -a -f help.html -a -d cgi-bin -a -d files -a -d defines ]; then
+	echo "It seems that this hyper-text is broken."
+	exit 1
+fi
+#
+# Parse arguments
+#
+bind=127.0.0.1
+port=8000
+use=
+while [ $# -gt 0 ]; do
+	case $1 in
+	-b|--bind)	shift; bind=$1;;
+	-u|--use)	shift; use=$1;;
+	--use=*)	use=`echo $1 | sed 's/--use=//'`;;
+	--bind=*)	bind=`echo $1 | sed 's/--bind=//'`;;
+	--help|-*)
+		echo "usage: $name [-b|--bind ip][-u use][port]"; exit 0;;
+	*)
+		port=$1;;
+	esac
+	shift
+done
+case $use in
+''|python|ruby)
+	;;
+*)	echo "Invalid language name '$use'."; exit 1;;
+esac
+case $port in
+[0-9]|[0-9][0-9]|[0-9][0-9][0-9]|[0-9][0-9][0-9][0-9]|[0-9][0-9][0-9][0-9][0-9])
+	;;
+*)	echo "Invalid port number '$port'."; exit 1;;
+esac
+#
+# Main procedure
+#
+if [ "$use" != 'ruby' ]; then
+	com=`find_command python`
+	if [ "$com" != '' ]; then
+		case `$com --version 2>&1` in
+		*'command not found')
+			echo "$com not found."; exit 1;;
+		Python' '2.*)
+			python2_server $com $bind $port; exit 0;;
+		Python' '3.*)
+			python3_server $com $bind $port; exit 0;;
+		*)
+			echo "This version of python is not supported."; exit 1;;
+		esac
+	fi
+fi
+if [ "$use" != 'python' ]; then
+	com=`find_command ruby`
+	if [ "$com" != '' ]; then
+		case `$com --version 2>&1` in
+		*'command not found')
+			echo "$com not found."; exit 1;;
+		ruby' '1.[89]*|ruby' '2.*)
+			ruby_server $com $bind $port; exit 0;;
+		*)
+			echo "This version of ruby is not supported."; exit 1;;
+		esac
+	fi
+fi
+echo "Suitable Python or Ruby not found."
+exit 1

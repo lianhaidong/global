@@ -1,6 +1,6 @@
 ## Process this file with automake to create Makefile.in
 #
-# Copyright (c) 2000, 2001 Tama Communications Corporation
+# Copyright (c) 2014 Tama Communications Corporation
 #
 # This file is free software; as a special exception the author gives
 # unlimited permission to copy and/or distribute it, with or without
@@ -10,13 +10,8 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
-info_TEXINFOS = global.texi
+dist_bin_SCRIPTS = htags-server
 
-global_TEXINFOS = fdl.texi reference.texi define.texi faq.texi \
-	global.ref gtags.ref htags.ref htags-server.ref gozilla.ref \
-	gtags-cscope.ref globash.ref
+man_MANS = htags-server.1
 
-EXTRA_DIST = texinfo.tex
-
-doxygen:
-	cd .. && GTAGSCONF=':htags_options=--insert-header=head.in:' doxygen doc/Doxyfile
+EXTRA_DIST = $(man_MANS) manual.in
