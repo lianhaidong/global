@@ -1534,6 +1534,7 @@ main(int argc, char **argv)
 		suggest = 1;
 	if (suggest) {
 		int gtags_not_found = 0;
+		char dbpath[MAXPATHLEN];
 
 		aflag = Iflag = nflag = vflag = 1;
 		setverbose();
@@ -1542,9 +1543,8 @@ main(int argc, char **argv)
 		if (arg_dbpath[0]) {
 			if (!test("f", makepath(arg_dbpath, dbname(GTAGS), NULL)))
 				gtags_not_found = 1;
-		} else {
-			if (!test("f", dbname(GTAGS)))
-				gtags_not_found = 1;
+		} else if (gtagsexist(".", dbpath, sizeof(dbpath), 0) == 0) {
+			gtags_not_found = 1;
 		}
 		if (gtags_not_found)
 			gflag = 1;
