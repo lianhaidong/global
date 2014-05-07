@@ -109,8 +109,16 @@
 		Tag file for references.
 	@item{@file{GPATH}}
 		Tag file for source files.
-	@item{@file{$HOME/.globalrc}, @file{/etc/gtags.conf}, @file{[sysconfdir]/gtags.conf}}
-		Configuration file.
+	@item{@file{$HOME/.globalrc}, @file{gtags.conf}}
+		@name{Gtags} load a configuration file according to the following
+		priority (Lower number means higher priority).
+		@begin_verbatim
+		(1) $GTAGSCONF
+		(2) [project root]/gtags.conf
+		(3) $HOME/.globalrc
+		(4) /etc/gtags.conf
+		(5) [sysconfdir]/gtags.conf
+		@end_verbatim
 	@item{@file{gtags.files}}
 		The list of candidates of target files.
 	@end_itemize
@@ -130,6 +138,8 @@
 	@item{@var{GTAGSLOGGING}}
 		If this variable is set, @file{$GTAGSLOGGING} is used as the path name
 		of a log file. There is no default value.
+	@item{@var{GTAGS_OPTIONS}}
+		The value of this variable is inserted in the head of arguments.
 	@item{@var{MAKEOBJDIR}}
 		If this variable is set, @file{$MAKEOBJDIR} is used as the name
 		of BSD-style objdir. The default is @file{obj}.
@@ -171,6 +181,11 @@
 		from the root of source directory.
 		The value may include glob patterns (*, ?, [...], [!...], [^...]).
 	@end_itemize
+
+	Addition to these, the variables listed in the ENVIRONMENT section except for
+	GTAGSCONF and GTAGSLABEL are also available as configuration variables.
+	Each environment variable is given more priority than configuration variable 
+	of the same name.
 @DIAGNOSTICS
 	@name{Gtags} exits with a non-0 value if an error occurred, 0 otherwise.
 @SEE ALSO

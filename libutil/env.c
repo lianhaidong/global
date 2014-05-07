@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2005 Tama Communications Corporation
+ * Copyright (c) 2003, 2005, 2014 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -32,8 +32,10 @@
 #include <home_etc.h>
 #endif
 
+#include "conf.h"
 #include "die.h"
 #include "env.h"
+#include "gparam.h"
 #include "strbuf.h"
 
 extern char **environ;
@@ -90,4 +92,56 @@ env_size(void)
 		size += strlen(*e) + 1;
 
 	return size;
+}
+/**
+ * setenv_from_config
+ */
+static const char *envname[] = {
+	"GLOBAL_OPTIONS",
+	"GREP_COLOR",
+	"GREP_COLORS",
+	"GTAGSBLANKENCODE",
+	"GTAGSCACHE",
+	/*"GTAGSCONF",*/
+	"GTAGSDBPATH",
+	"GTAGSFORCECPP",
+	"GTAGSGLOBAL",
+	"GTAGSGTAGS",
+	/*"GTAGSLABEL",*/
+	"GTAGSLIBPATH",
+	"GTAGSLOGGING",
+	"GTAGSROOT",
+	"GTAGSTHROUGH",
+	"GTAGS_OPTIONS",
+	"HTAGS_OPTIONS",
+	"MAKEOBJDIR",
+	"MAKEOBJDIRPREFIX",
+	"TMPDIR",
+};
+void
+setenv_from_config(void)
+{
+	int i, lim = sizeof(envname) / sizeof(char *);
+	STRBUF *sb = strbuf_open(0);
+	char *pp = getconfline();
+
+	for (i = 0; i < lim; i++) {
+		if (getenv(envname[i]) == NULL) {
+			strbuf_reset(sb);
+			if (getconfs(envname[i], sb))
+				set_env(envname[i], strbuf_value(sb));
+			else if (getconfb(envname[i]))
+				set_env(envname[i], "");
+		}
+	}
+	/*
+	 * For upper compatibility.
+	 * htags_options is deprecated.
+	 */
+	if (getenv("HTAGS_OPTIONS") == NULL) {
+		strbuf_reset(sb);
+		if (getconfs("htags_options", sb))
+			set_env("HTAGS_OPTIONS", strbuf_value(sb));
+	}
+	strbuf_close(sb);
 }

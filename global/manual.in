@@ -26,12 +26,12 @@
 @HEADER	GLOBAL,1,March 2014,GNU Project
 @NAME	global - print locations of given symbols
 @SYNOPSIS
-	@name{global} [-adGilnqrstTvx][-S dir][-e] @arg{pattern}
-	@name{global} -c[diIoOPrsT] @arg{prefix}
+	@name{global} [-adEFGilMnqrstTvx][-S dir][-e] @arg{pattern}
+	@name{global} -c[dFiIMoOPrsT] @arg{prefix}
 	@name{global} -f[adlnqrstvx][-L file-list][-S dir] @arg{files}
-	@name{global} -g[aGilnoOqtvVx][-L file-list][-S dir][-e] @arg{pattern} [@arg{files}]
-	@name{global} -I[ailnqtvx][-S dir][-e] @arg{pattern}
-	@name{global} -P[aGilnoOqtvVx][-S dir][-e] @arg{pattern}
+	@name{global} -g[aEGilMnoOqtvVx][-L file-list][-S dir][-e] @arg{pattern} [@arg{files}]
+	@name{global} -I[ailMnqtvx][-S dir][-e] @arg{pattern}
+	@name{global} -P[aEGilMnoOqtvVx][-S dir][-e] @arg{pattern}
 	@name{global} -p[qrv]
 	@name{global} -u[qv]
 @DESCRIPTION
@@ -106,10 +106,16 @@
 		Print locations of definitions.
 	@item{@option{-e}, @option{--regexp} @arg{pattern}}
 		Use @arg{pattern} as the pattern; useful to protect patterns starting with @samp{-}.
+	@item{@option{-E}, @option{--extended-regexp}}
+		Interpret @arg{pattern} as a extended regular expression.
+		This is the default.
 	@item{@option{--encode-path} @arg{chars}}
 		Convert path characters in @arg{chars} into a @samp{%} symbol, followed by the
 		two-digit hexadecimal representation of the character.
 		A blank will be converted to @samp{%20}.
+	@item{@option{-F}, @option{--first-match}}
+		End the search without go through all the tag files listed in @var{GTAGSLIBPATH}
+		when tags are found in a tag file. This is the default.
 	@item{@option{--from-here} @arg{context}}
 		Decide tag type by @arg{context}, which must be @samp{lineno:path}.
 		If this option is specified then @option{-s} and @option{-r} are ignored.
@@ -119,6 +125,10 @@
 	@item{@option{-G}, @option{--basic-regexp}}
 		Interpret @arg{pattern} as a basic regular expression.
 		The default is an extended regular expression.
+	@item{@option{--gtagsconf} @arg{file}}
+		Set environment variable @var{GTAGSCONF} to @arg{file}.
+	@item{@option{--gtagslabel} @arg{label}}
+		Set environment variable @var{GTAGSLABEL} to @arg{label}.
 	@item{@option{-i}, @option{--ignore-case}}
 		Ignore case distinctions in the pattern.
 	@item{@option{-L}, @option{--file-list} @arg{file}}
@@ -130,6 +140,8 @@
 	@item{@option{--literal}}
 		Execute literal search instead of regular expression search.
 		This option is only valid when the @option{-g} command is specified.
+	@item{@option{-M}, @option{--match-case}}
+		Search is case-sensitive. This is the default.
 	@item{@option{--match-part @arg{part}}}
 		Specify how path name completion should match, where @arg{part} is one of:
 		@val{first}, @val{last} or @val{all} (default).
@@ -234,8 +246,16 @@
 		If environment variable @var{GTAGSROOT} is not set
 		and file @file{GTAGSROOT} exists in the same directory as @file{GTAGS}
 		then @name{global} sets @var{GTAGSROOT} to the contents of the file.
-	@item{@file{$HOME/.globalrc}, @file{/etc/gtags.conf}, @file{[sysconfdir]/gtags.conf}}
-		Configuration files.
+	@item{@file{$HOME/.globalrc}, @file{gtags.conf}}
+		@name{Global} load a configuration file according to the following
+		priority (Lower number means higher priority).
+		@begin_verbatim
+		(1) $GTAGSCONF
+		(2) [project root]/gtags.conf
+		(3) $HOME/.globalrc
+		(4) /etc/gtags.conf
+		(5) [sysconfdir]/gtags.conf
+		@end_verbatim
 	@end_itemize
 @ENVIRONMENT
 	The following environment variables affect the execution of @name{global}:
@@ -245,6 +265,8 @@
 		The color to use for @option{--color}; @var{GREP_COLORS} has precedence.
 	@item{@var{GREP_COLORS}}
 		The color (@arg{mt} or @arg{ms}) to use for @option{--color}; see @xref{grep,1}.
+	@item{@var{GLOBAL_OPTIONS}}
+		The value of this variable is inserted in the head of arguments.
 	@item{@var{GTAGSBLANKENCODE}}
 		If this variable is set, the @option{--encode-path=" <TAB>"}
 		option is specified.
@@ -287,6 +309,11 @@
 	@item{@code{icase_path} (boolean)}
 		Ignore case distinctions in @arg{pattern}.
 	@end_itemize
+
+	Addition to these, the variables listed in the ENVIRONMENT section except for
+	GTAGSCONF and GTAGSLABEL are also available as configuration variables.
+	Each environment variable is given more priority than configuration variable
+	of the same name.
 @DIAGNOSTICS
 	@name{Global} exits with a non-0 value if an error occurred, 0 otherwise.
 @SEE ALSO

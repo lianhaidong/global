@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010 Tama Communications Corporation
+ * Copyright (c) 2010, 2014 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -28,5 +28,7 @@ void args_open_nop(void);
 void args_open_both(char *const *, const char *);
 const char *args_read(void);
 void args_close(void);
+void preparse_options(int, char *const *);
+char **prepend_options(int *, char *const *, const char *options);
 
 #endif /* ! _ARGS_H_ */

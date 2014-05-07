@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010 Tama Communications Corporation
+ * Copyright (c) 2010, 2014 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -20,9 +20,14 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+#include <ctype.h>
 #include <stdio.h>
+#include "checkalloc.h"
 #include "die.h"
+#include "env.h"
+#include "locatestring.h"
 #include "strbuf.h"
+#include "test.h"
 #include "gpathop.h"
 
 #define ARGS_NOP	0
@@ -161,4 +166,120 @@ args_close(void)
 	default:
 		die("something wrong.");
 	}
+}
+/**
+ * preparse_options
+ *
+ *	@param[in]	argc
+ *	@param[in]	argv
+ *
+ * Setup the GTAGSCONF and the GTAGSLABEL environment variable
+ * according to the --gtagsconf and --gtagslabel option.
+ */
+void
+preparse_options(int argc, char *const *argv)
+{
+	STRBUF *sb = strbuf_open(0);
+	int i;
+	char *p, *q;
+	char *confpath = NULL;
+	char *label = NULL;
+	char *opt_gtagsconf = "--gtagsconf";
+	char *opt_gtagslabel = "--gtagslabel";
+
+	for (i = 1; i < argc; i++) {
+		p = argv[i];
+
+		if ((p = locatestring(argv[i], opt_gtagsconf, MATCH_AT_FIRST))) {
+			if (*p == '\0') {
+				if (++i >= argc)
+					die("%s needs an argument.", opt_gtagsconf);
+				confpath = argv[i];
+			} else {
+				if (*p++ == '=' && *p)
+					confpath = p;
+			}
+		} else if ((p = locatestring(argv[i], opt_gtagslabel, MATCH_AT_FIRST))) {
+			if (*p == '\0') {
+				if (++i >= argc)
+					die("%s needs an argument.", opt_gtagslabel);
+				label = argv[i];
+			} else {
+				if (*p++ == '=' && *p)
+					label = p;
+			}
+		}
+	}
+	if (confpath) {
+		char real[MAXPATHLEN];
+
+		if (!test("f", confpath))
+			die("%s file not found.", opt_gtagsconf);
+		if (!realpath(confpath, real))
+			die("cannot get absolute path of %s file.", opt_gtagsconf);
+		set_env("GTAGSCONF", real);
+	}
+	if (label)
+		set_env("GTAGSLABEL", label);
+}
+/**
+ * prepend_options: 
+ *
+ *	@param[in/out]	argc
+ *	@param[in]	argv
+ *	@param[in]	options
+ */
+char **
+prepend_options(int *argc, char *const *argv, const char *options)
+{
+	STRBUF *sb = strbuf_open(0);
+	const char *p, *opt = check_strdup(options);
+	int count = 1;
+	int quote = 0;
+	const char **newargv;
+	int i = 0, j = 1;
+
+	for (p = opt; *p && isspace(*p); p++)
+		;
+	for (; *p; p++) {
+		int c = *p;
+
+		if (quote) {
+			if (quote == c)
+				quote = 0;
+			else
+				strbuf_putc(sb, c);
+		} else if (c == '\\') {
+			if (*(p + 1))
+				strbuf_putc(sb, *++p);
+		} else if (c == '\'' || c == '"') {
+			quote = c;
+		} else if (isspace(c)) {
+			strbuf_putc(sb, '\0');
+			count++;
+			while (*p && isspace(*p))
+				p++;
+			p--;
+		} else {
+			strbuf_putc(sb, *p);
+		}
+	}
+	newargv = (const char **)check_malloc(sizeof(char *) * (*argc + count + 1));
+	newargv[i++] = argv[0];
+	p = strbuf_value(sb);
+	while (count--) {
+		newargv[i++] = p;
+		p += strlen(p) + 1;
+	}
+	while (j < *argc)
+		newargv[i++] = argv[j++];
+	newargv[i] = NULL;
+	*argc = i;
+#ifdef DEBUG
+	for (i = 0; i < *argc; i++)
+		fprintf(stderr, "newargv[%d] = '%s'\n", i, newargv[i]);
+#endif
+	/* doesn't close string buffer. */
+
+	return (char **)newargv;
 }

@@ -153,9 +153,26 @@ static struct option const long_options[] = {
 	{ 0 }
 };
 
-static const char *langmap = DEFAULTLANGMAP;
-static const char *gtags_parser;
+static const char *langmap = DEFAULTLANGMAP;	/**< langmap */
+static const char *gtags_parser;		/**< gtags_parser */
+/**
+ * load configuration variables.
+ */
+static void
+configuration()
+{
+	STRBUF *sb = strbuf_open(0);
 
+	if (getconfb("extractmethod"))
+		extractmethod = 1;
+	strbuf_reset(sb);
+	if (getconfs("langmap", sb))
+		langmap = check_strdup(strbuf_value(sb));
+	strbuf_reset(sb);
+	if (getconfs("gtags_parser", sb))
+		gtags_parser = check_strdup(strbuf_value(sb));
+	strbuf_close(sb);
+}
 int
 main(int argc, char **argv)
 {
@@ -166,6 +183,28 @@ main(int argc, char **argv)
 	int option_index = 0;
 	STATISTICS_TIME *tim;
 
+	/*
+	 * Setup GTAGSCONF and GTAGSLABEL environment variable
+	 * according to the --gtagsconf and --gtagslabel option.
+	 */
+	preparse_options(argc, argv);
+	/*
+	 * Get the project root directory.
+	 */
+	if (!getcwd(cwd, MAXPATHLEN))
+		die("cannot get current directory.");
+	canonpath(cwd);
+	/*
+	 * Load configuration file.
+	 */
+	openconf(cwd);
+	configuration();
+	setenv_from_config();
+	{
+		char *env = getenv("GTAGS_OPTIONS");
+		if (env && *env)
+			argv = prepend_options(&argc, argv, env);
+	}
 	logging_arguments(argc, argv);
 	while ((optchar = getopt_long(argc, argv, "cd:f:iIn:oOqvwse", long_options, &option_index)) != EOF) {
 		switch (optchar) {
@@ -178,10 +217,8 @@ main(int argc, char **argv)
 				config_name = optarg;
 			break;
 		case OPT_GTAGSCONF:
-			gtagsconf = optarg;
-			break;
 		case OPT_GTAGSLABEL:
-			gtagslabel = optarg;
+			/* These options are already parsed in preparse_options() */
 			break;
 		case OPT_SINGLE_UPDATE:
 			iflag++;
@@ -230,16 +267,6 @@ main(int argc, char **argv)
 			break;
 		}
 	}
-	if (gtagsconf) {
-		char path[MAXPATHLEN];
-
-		if (realpath(gtagsconf, path) == NULL)
-			die("%s not found.", gtagsconf);
-		set_env("GTAGSCONF", path);
-	}
-	if (gtagslabel) {
-		set_env("GTAGSLABEL", gtagslabel);
-	}
 	if (qflag)
 		vflag = 0;
 	if (show_version)
@@ -254,6 +281,10 @@ main(int argc, char **argv)
 	if (argc > 0)
 		Oflag = 0;
 	if (show_config) {
+		int status = setupdbpath(0);
+		if (status < 0)
+			die_with_code(-status, gtags_dbpath_error);
+		openconf(get_root());
 		if (config_name)
 			printconf(config_name);
 		else
@@ -322,9 +353,6 @@ main(int argc, char **argv)
 		else if (!test("r", file_list))
 			die("'%s' is not readable.", file_list);
 	}
-	if (!getcwd(cwd, MAXPATHLEN))
-		die("cannot get current directory.");
-	canonpath(cwd);
 	/*
 	 * Logical current directory.
 	 * We force idutils to follow the same rule as GLOBAL.
@@ -401,18 +429,6 @@ main(int argc, char **argv)
 		die("directory '%s' not found.", dbpath);
 	if (vflag)
 		fprintf(stderr, "[%s] Gtags started.\n", now());
-	/*
-	 * load configuration file.
-	 */
-	openconf();
-	if (getconfb("extractmethod"))
-		extractmethod = 1;
-	strbuf_reset(sb);
-	if (getconfs("langmap", sb))
-		langmap = check_strdup(strbuf_value(sb));
-	strbuf_reset(sb);
-	if (getconfs("gtags_parser", sb))
-		gtags_parser = check_strdup(strbuf_value(sb));
 	/*
 	 * initialize parser.
 	 */

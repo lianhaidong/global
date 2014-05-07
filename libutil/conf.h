@@ -35,7 +35,7 @@
 #endif
 #define DEFAULTLABEL    "default"
 
-void openconf(void);
+void openconf(const char *);
 int getconfn(const char *, int *);
 int getconfs(const char *, STRBUF *);
 int getconfb(const char *);

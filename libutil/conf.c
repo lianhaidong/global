@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 1999, 2000, 2001, 2002, 2005, 2010, 2011
+ * Copyright (c) 1998, 1999, 2000, 2001, 2002, 2005, 2010, 2011,
+ *	2014
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -51,6 +52,7 @@
 static FILE *fp;
 static STRBUF *ib;
 static char *confline;
+static char *config_path;
 /**
  * 32 level nested @CODE{tc=} or @CODE{include=} is allowed.
  */
@@ -196,9 +198,12 @@ includelabel(STRBUF *sb, const char *label, int	level)
 }
 /**
  * configpath: get path of configuration file.
+ *
+ *	@param[in]	rootdir	Project root directory
+ *	@return		path name of the configuration file
  */
 static char *
-configpath(void)
+configpath(const char *rootdir)
 {
 	STATIC_STRBUF(sb);
 	const char *p;
@@ -212,6 +217,8 @@ configpath(void)
 	/*
 	 * if GTAGSCONF not set then check standard config files.
 	 */
+	else if (rootdir && *rootdir && test("r", makepath(rootdir, "gtags.conf", NULL)))
+		strbuf_puts(sb, makepath(rootdir, "gtags.conf", NULL));
 	else if ((p = get_home_directory()) && test("r", makepath(p, GTAGSRC, NULL)))
 		strbuf_puts(sb, makepath(p, GTAGSRC, NULL));
 #ifdef __DJGPP__
@@ -231,23 +238,22 @@ configpath(void)
 /**
  * openconf: load configuration file.
  *
+ *	@param[in]	rootdir	Project root directory
+ *
  * @par Globals used (output):
  *	#confline:	 specified entry
  */
 void
-openconf(void)
+openconf(const char *rootdir)
 {
 	STRBUF *sb;
-	const char *config;
 	extern int vflag;
 
-	assert(opened == 0);
 	opened = 1;
-
 	/*
 	 * if config file not found then return default value.
 	 */
-	if (!(config = configpath())) {
+	if (!(config_path = configpath(rootdir))) {
 		if (vflag)
 			fprintf(stderr, " Using default configuration.\n");
 		confline = check_strdup("");
@@ -255,8 +261,8 @@ openconf(void)
 	/*
 	 * if it is not an absolute path then assumed config value itself.
 	 */
-	else if (!isabspath(config)) {
-		confline = check_strdup(config);
+	else if (!isabspath(config_path)) {
+		confline = check_strdup(config_path);
 		if (!locatestring(confline, ":", MATCH_FIRST))
 			die("GTAGSCONF must be absolute path name.");
 	}
@@ -266,19 +272,19 @@ openconf(void)
 	else {
 		const char *label;
 
-		if (test("d", config))
-			die("config file '%s' is a directory.", config);
-		if (!test("f", config))
-			die("config file '%s' not found.", config);
-		if (!test("r", config))
-			die("config file '%s' is not readable.", config);
+		if (test("d", config_path))
+			die("config file '%s' is a directory.", config_path);
+		if (!test("f", config_path))
+			die("config file '%s' not found.", config_path);
+		if (!test("r", config_path))
+			die("config file '%s' is not readable.", config_path);
 		if ((label = getenv("GTAGSLABEL")) == NULL)
 			label = "default";
 	
-		if (!(fp = fopen(config, "r")))
-			die("cannot open '%s'.", config);
+		if (!(fp = fopen(config_path, "r")))
+			die("cannot open '%s'.", config_path);
 		if (vflag)
-			fprintf(stderr, " Using config file '%s'.\n", config);
+			fprintf(stderr, " Using config file '%s'.\n", config_path);
 		ib = strbuf_open(MAXBUFLEN);
 		sb = strbuf_open(0);
 		includelabel(sb, label, 0);
@@ -323,7 +329,7 @@ getconfn(const char *name, int *num)
 	char buf[MAXPROPLEN];
 
 	if (!opened)
-		openconf();
+		die("configuration file not opened.");
 	snprintf(buf, sizeof(buf), ":%s#", name);
 	if ((p = locatestring(confline, buf, MATCH_FIRST)) != NULL) {
 		p += strlen(buf);
@@ -349,7 +355,13 @@ getconfs(const char *name, STRBUF *sb)
 	int exist = 0;
 
 	if (!opened)
-		openconf();
+		die("configuration file not opened.");
+	/* 'path' is reserved name for the current path of configuration file */
+	if (!strcmp(name, "path")) {
+		if (config_path)
+			strbuf_puts(sb, config_path);
+		return 1;
+	}
 	if (!strcmp(name, "skip") || !strcmp(name, "gtags_parser") || !strcmp(name, "langmap"))
 		all = 1;
 	snprintf(buf, sizeof(buf), ":%s=", name);
@@ -417,7 +429,7 @@ getconfb(const char *name)
 	char buf[MAXPROPLEN];
 
 	if (!opened)
-		openconf();
+		die("configuration file not opened.");
 	snprintf(buf, sizeof(buf), ":%s:", name);
 	if (locatestring(confline, buf, MATCH_FIRST) != NULL)
 		return 1;
@@ -430,7 +442,7 @@ const char *
 getconfline(void)
 {
 	if (!opened)
-		openconf();
+		die("configuration file not opened.");
 	return confline;
 }
 void
