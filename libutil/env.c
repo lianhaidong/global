@@ -123,7 +123,6 @@ setenv_from_config(void)
 {
 	int i, lim = sizeof(envname) / sizeof(char *);
 	STRBUF *sb = strbuf_open(0);
-	char *pp = getconfline();
 
 	for (i = 0; i < lim; i++) {
 		if (getenv(envname[i]) == NULL) {

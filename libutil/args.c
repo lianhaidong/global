@@ -179,9 +179,8 @@ args_close(void)
 void
 preparse_options(int argc, char *const *argv)
 {
-	STRBUF *sb = strbuf_open(0);
 	int i;
-	char *p, *q;
+	char *p;
 	char *confpath = NULL;
 	char *label = NULL;
 	char *opt_gtagsconf = "--gtagsconf";
