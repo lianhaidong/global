@@ -296,12 +296,14 @@ static struct option const long_options[] = {
 	 */
 	/* flag value */
         {"caution", no_argument, &caution, 1},
+        {"colorize-warned-line", no_argument, &colorize_warned_line, 1},
         {"debug", no_argument, &debug, 1},
         {"disable-grep", no_argument, &enable_grep, 0},
         {"disable-idutils", no_argument, &enable_idutils, 0},
         {"full-path", no_argument, &full_path, 1},
         {"fixed-guide",  no_argument, &fixed_guide, 1},
         {"map-file", no_argument, &map_file, 1},
+        {"no-order-list", no_argument, &no_order_list, 1},
         {"overwrite-key", no_argument, &overwrite_key, 1},
         {"show-position", no_argument, &show_position, 1},
         {"statistics", no_argument, &statistics, STATISTICS_STYLE_TABLE},
