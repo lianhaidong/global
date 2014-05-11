@@ -281,10 +281,7 @@ main(int argc, char **argv)
 	if (argc > 0)
 		Oflag = 0;
 	if (show_config) {
-		int status = setupdbpath(0);
-		if (status < 0)
-			die_with_code(-status, gtags_dbpath_error);
-		openconf(get_root());
+		openconf(setupdbpath(0) == 0 ? get_root() : NULL);
 		if (config_name)
 			printconf(config_name);
 		else

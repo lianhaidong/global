@@ -363,6 +363,7 @@ main(int argc, char **argv)
 	int db;
 	int optchar;
 	int option_index = 0;
+	int status = 0;
 
 	/*
 	 * get path of following directories.
@@ -372,10 +373,8 @@ main(int argc, char **argv)
 	 *
 	 * if GTAGS not found, exit with an error message.
 	 */
-	{
-		int status = setupdbpath(0);
-		if (status < 0)
-			die_with_code(-status, gtags_dbpath_error);
+	status = setupdbpath(0);
+	if (status == 0) {
 		cwd = get_cwd();
 		root = get_root();
 		dbpath = get_dbpath();
@@ -589,6 +588,14 @@ main(int argc, char **argv)
 			break;
 		}
 	}
+	if (qflag)
+		vflag = 0;
+	if (show_version)
+		version(av, vflag);
+	if (show_help)
+		help();
+	if (dbpath == NULL)
+		die_with_code(-status, gtags_dbpath_error);
 	/*
 	 * decide format.
 	 * The --result option is given to priority more than the -t and -x option.
@@ -621,8 +628,6 @@ main(int argc, char **argv)
 	}
 	if (getenv("GTAGSTHROUGH"))
 		Tflag++;
-	if (qflag)
-		vflag = 0;
 	if (use_color) {
 #if defined(_WIN32) && !defined(__CYGWIN__)
 		if (!(getenv("ANSICON") || LoadLibrary("ANSI32.dll")) && use_color == 2)
@@ -633,9 +638,6 @@ main(int argc, char **argv)
 		if (Vflag)
 			use_color = 0;
 	}
-	if (show_help)
-		help();
-
 	argc -= optind;
 	argv += optind;
 	/*
@@ -687,8 +689,6 @@ main(int argc, char **argv)
 		if (gflag && av)
 			argv++;
 	}
-	if (show_version)
-		version(av, vflag);
 	if (single_update) {
 		if (command == 0) {
 			uflag++;
