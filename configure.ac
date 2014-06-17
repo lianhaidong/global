@@ -342,10 +342,15 @@ AC_SUBST(DEFAULTLANGMAP)
 AC_SUBST(DEFAULTINCLUDEFILESUFFIXES)
 
 dnl
-dnl Quoted langmap. It is only for gtags.conf.
+dnl Quoted langmap & prefix. It is only for gtags.conf.
 dnl
 DEFAULTLANGMAP_QUOTED=`echo $DEFAULTLANGMAP | sed 's/:/\\\\:/g'`
+case "$prefix" in
+NONE)   prefix_QUOTED=`echo $ac_default_prefix | sed 's/:/\\\\:/g'`;;
+*)      prefix_QUOTED=`echo $prefix | sed 's/:/\\\\:/g'`;;
+esac
 AC_SUBST(DEFAULTLANGMAP_QUOTED)
+AC_SUBST(prefix_QUOTED)
 
 AC_CONFIG_FILES([Makefile
 	gtags.conf

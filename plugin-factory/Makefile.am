@@ -14,11 +14,11 @@ plugindir = ${libdir}/gtags
 plugin_LTLIBRARIES = exuberant-ctags.la user-custom.la
 
 exuberant_ctags_la_SOURCES = exuberant-ctags.c
-exuberant_ctags_la_LDFLAGS = -module -avoid-version
+exuberant_ctags_la_LDFLAGS = -module -avoid-version -no-undefined
 
 # skeleton
 user_custom_la_SOURCES = user-custom.c
-user_custom_la_LDFLAGS = -module -avoid-version
+user_custom_la_LDFLAGS = -module -avoid-version -no-undefined
 
 gtagsdir = ${datadir}/gtags
 gtags_DATA = PLUGIN_HOWTO

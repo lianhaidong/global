@@ -51,7 +51,7 @@ builtin-parser:\
 user-custom|User custom plugin parser:\
 	:tc=common:\
 	:langmap=c\:.c.h:\
-	:gtags_parser=c\:@prefix@/lib/gtags/user-custom.la:
+	:gtags_parser=c\:@prefix_QUOTED@/lib/gtags/user-custom.la:
 #
 # Plug-in parser to use Exuberant Ctags.
 #
@@ -96,45 +96,45 @@ exuberant-ctags|plugin-example|setting to use Exuberant Ctags plug-in parser:\
 	:langmap=VHDL\:.vhdl.vhd:\
 	:langmap=Vim\:.vim:\
 	:langmap=YACC\:.y:\
-	:gtags_parser=Asm\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=Asp\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=Awk\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=Basic\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=BETA\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=C\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=C++\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=C#\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=Cobol\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=DosBatch\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=Eiffel\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=Erlang\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=Flex\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=Fortran\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=HTML\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=Java\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=JavaScript\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=Lisp\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=Lua\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=MatLab\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=OCaml\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=Pascal\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=Perl\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=PHP\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=Python\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=REXX\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=Ruby\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=Scheme\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=Sh\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=SLang\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=SML\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=SQL\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=Tcl\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=Tex\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=Vera\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=Verilog\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=VHDL\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=Vim\:@prefix@/lib/gtags/exuberant-ctags.la:\
-	:gtags_parser=YACC\:@prefix@/lib/gtags/exuberant-ctags.la:
+	:gtags_parser=Asm\:@prefix_QUOTED@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Asp\:@prefix_QUOTED@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Awk\:@prefix_QUOTED@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Basic\:@prefix_QUOTED@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=BETA\:@prefix_QUOTED@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=C\:@prefix_QUOTED@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=C++\:@prefix_QUOTED@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=C#\:@prefix_QUOTED@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Cobol\:@prefix_QUOTED@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=DosBatch\:@prefix_QUOTED@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Eiffel\:@prefix_QUOTED@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Erlang\:@prefix_QUOTED@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Flex\:@prefix_QUOTED@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Fortran\:@prefix_QUOTED@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=HTML\:@prefix_QUOTED@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Java\:@prefix_QUOTED@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=JavaScript\:@prefix_QUOTED@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Lisp\:@prefix_QUOTED@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Lua\:@prefix_QUOTED@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=MatLab\:@prefix_QUOTED@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=OCaml\:@prefix_QUOTED@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Pascal\:@prefix_QUOTED@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Perl\:@prefix_QUOTED@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=PHP\:@prefix_QUOTED@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Python\:@prefix_QUOTED@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=REXX\:@prefix_QUOTED@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Ruby\:@prefix_QUOTED@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Scheme\:@prefix_QUOTED@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Sh\:@prefix_QUOTED@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=SLang\:@prefix_QUOTED@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=SML\:@prefix_QUOTED@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=SQL\:@prefix_QUOTED@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Tcl\:@prefix_QUOTED@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Tex\:@prefix_QUOTED@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Vera\:@prefix_QUOTED@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Verilog\:@prefix_QUOTED@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=VHDL\:@prefix_QUOTED@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=Vim\:@prefix_QUOTED@/lib/gtags/exuberant-ctags.la:\
+	:gtags_parser=YACC\:@prefix_QUOTED@/lib/gtags/exuberant-ctags.la:
 #
 # Drupal configuration.
 #
