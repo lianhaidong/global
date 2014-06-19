@@ -68,7 +68,7 @@ This manual documents version @value{VERSION} of the GNU GLOBAL source code tag 
 
 @menu
 * Introduction::                        Overview of this tool.
-* Global::                              Command line GLOBAL.
+* Global::                              Command line.
 * Applications::                        Various applications.
 * Other topics::                        Other topics.
 * Reference::                           Command References.
@@ -88,7 +88,7 @@ This manual documents version @value{VERSION} of the GNU GLOBAL source code tag 
 GNU GLOBAL is a source code tag system that works the same way
 across diverse environments, such as Emacs editor, Vi editor,
 Less viewer, Bash shell, various web browsers, etc.
-You can locate specified tags, such as functions, macros, structs, classes,
+You can locate specified symbols, such as functions, macros, structs and classes
 in your source files and move there easily.
 It is useful for hacking large projects which contain many sub-directories,
 many @code{#ifdef} and many @code{main()} functions.
@@ -98,7 +98,7 @@ independence of any editor.
 @section Concept of project
 
 GNU GLOBAL can treat a source tree containing sub-directories as a project.
-Anywhere in the project, you can utilize the high performance tag database.
+Anywhere in the project, you can utilize a high performance tag database.
 You need not specify where the database is, as global(1) locates it by itself.
 Because of this feature, you can move freely in a project,
 and in and out of many projects.
@@ -138,7 +138,7 @@ GNU GLOBAL has the following features:
 
 @item supports various output formats.
 
-@item allows customizing of the set of candidate files to be tagged.
+@item allows customizing of a set of candidate files to be tagged.
 
 @item understands POSIX 1003.2 regular expression.
 
@@ -150,7 +150,7 @@ GNU GLOBAL has the following features:
 
 @item plug-in parser is available to treat new language.
 
-@item supports customizing with @file{gtags.conf}.
+@item supports customizing using @file{gtags.conf}.
 
 @item generates a hypertext of source code.
 
@@ -163,15 +163,17 @@ GNU GLOBAL has the following features:
 @item includes cscope-compatible program (gtags-cscope).
 
 @item includes grep-like command (-g command).
+
+@item supports grep-like symbol highlighting.
 @end itemize
 
 @c ***************************************************************************
 @c Global
 @c ***************************************************************************
 @node Global
-@chapter Command line GLOBAL
+@chapter Command line
 
-You can use the tag facilities from shell command line.
+You can use tag facilities from the shell command line.
 It is a big merit of GLOBAL compared with any other tag system.
 
 @menu
@@ -199,9 +201,9 @@ please move to the source directory and invoke gtags(1).
     $ gtags
 @end example
 
-Gtags traverses sub-directories, picks up source files and makes three tag files
-at the current directory.
-After this, all files under this directory are treated as a project.
+Gtags traverses sub-directories, picks up symbols from the source files
+and makes three tag files at the current directory.
+After this, all files and directories under the current directory are treated as a project.
 
 @example
     $ ls G*
@@ -217,7 +219,7 @@ After this, all files under this directory are treated as a project.
 @ @ @ path name database
 @end itemize
 
-You should prepare for considerable disk space for the tag files.
+You should prepare for considerable disk space for tag files.
 For example, Linux-2.6.32 source code requires the following disk space.
 
 @example
@@ -271,10 +273,9 @@ Consider the following source tree:
 @end example
 
 @itemize @bullet
-@item Once you make the tag files at the root directory of the source tree,
-you can execute global(1) from anywhere in the tree.
-By default, you get the relative path of the located files.
-You need not specify where the tag file is, as global(1) locates it by itself.
+@item Once you make tag files at the root directory of a project,
+you can invoke global(1) from anywhere in the project.
+By default, you get relative paths of the located files.
 
 @example
     $ cd /home/user/ROOT
@@ -288,7 +289,7 @@ You need not specify where the tag file is, as global(1) locates it by itself.
     ../DIR1/fileB.c         # @r{relative path from DIR2}
 @end example
 
-Global command is possible to use only when you are in a project.
+You can use global(1) only when you are in a project.
 If you are out of any project, it shows an error message like follows:
 
 @example
@@ -314,8 +315,8 @@ If you are out of any project, it shows an error message like follows:
     DIR2/fileC.c
 @end example
 
-@item The @option{-x} option shows the details.
-It is similar to the @option{-x} option in ctags(1).
+@item The @option{-x} option shows details.
+It is similar to the @option{-x} option of ctags(1).
 @opindex -x
 
 @example
@@ -326,7 +327,7 @@ It is similar to the @option{-x} option in ctags(1).
     func2              4 DIR2/fileC.c       func2()@{ i--; @}
 @end example
 
-@item The @option{-a} option produces the absolute path name.
+@item The @option{-a} option produces absolute path names.
 @opindex -a
 
 @example
@@ -351,18 +352,18 @@ It is similar to the @option{-x} option in ctags(1).
 @end example
 
 It is similar to egrep(1) but is far more convenient for source code reading,
-because it allows you to search through a project, and only in the source files.
+because it allows you to search through a project, and only in source files.
 
 Additionally, you can use various options:
 
 @table @option
 @item -O
 @opindex -O
-search only in the text files.
+search only in text files.
 
 @item -o
 @opindex -o
-search in both the source files and text files.
+search in both source files and text files.
 
 @item -l
 @opindex -l
@@ -370,10 +371,10 @@ search only under the current directory.
 @end table
 
 The @option{-e}, @option{-G} and @option{-i} options are available too.
-The usage is the same as egrep(1).
+The usage is almost same as egrep(1).
 
-You can even change the output format of global(1) to the grep style
-using the @option{--result=grep} option.
+You can even change the output format of global(1) to grep style
+using @option{--result=grep} option.
 @opindex --result
 Of course, these options can be used even by other commands.
 
@@ -402,7 +403,7 @@ Of course, these options can be used even by other commands.
     func3              6 DIR2/fileC.c   func3()@{
 @end example
 
-@item The @option{-l} option limits the range of the retrieval under the current directory.
+@item The @option{-l} option limits the range of retrieval under the current directory.
 @opindex -l
 
 @example
@@ -429,7 +430,7 @@ Of course, these options can be used even by other commands.
 @item If your source files are on a read-only device, such as CDROM,
 then you cannot make tag files at the root of the source tree.
 In such case, you can make tag files in another place using
-the @env{GTAGSROOT} environment variable.
+@env{GTAGSROOT} environment variable.
 
 @example
     $ mkdir /var/dbpath
@@ -442,6 +443,7 @@ the @env{GTAGSROOT} environment variable.
 
 There is another method for it. Since global(1) locates tag files also in
 @file{/usr/obj} + <current directory>, you can setup like follows:
+It is 'obj' directory.
 
 @example
     $ cd /cdrom/src                 # @r{the root of source tree}
@@ -450,17 +452,18 @@ There is another method for it. Since global(1) locates tag files also in
     $ global func
 @end example
 
-The value @file{/usr/obj} can be changed by environment variable
-@env{MAKEOBJDIRPREFIX}.
 The @option{-O, --objdir} option does it automatically for you.
 @opindex -O
 
+The path of obj directory can be changed by environment variable
+@env{MAKEOBJDIRPREFIX}.
+
 @item If you want to locate symbols that are not defined in the source tree,
-then you can specify library directories with the @env{GTAGSLIBPATH}
+then you can specify library directories with @env{GTAGSLIBPATH}
 environment variable.
 
-You should execute gtags at each directory of the path.
-If @file{GTAGS} is not found there, global ignores it.
+You should execute gtags(1) at each directory in the @env{GTAGSLIBPATH}.
+If @file{GTAGS} is not found there, global ignores such directories.
 
 @example
     $ pwd
@@ -625,7 +628,7 @@ Only first time, you will see the following message.
     GloBash needs a working directory. Do you create '/home/you/.globash'? ([y]/n)
 @end example
 
-Pressing the @key{ENTER} key, you will see a prompt like this:
+Pressing the @key{ENTER} key, you will see a prompt as follows:
 
 @example
     [/usr/src/sys]/kern _
@@ -644,7 +647,7 @@ When you try to go out of the project, globash warns like:
 @end example
 
 If you answer @kbd{y @key{RET}}
-or just @key{RET} in the above prompt then the tag stack and marker
+or just @key{RET} then the tag stack and marker
 (described later) will be removed.
 
 If you need help then please type @kbd{ghelp}.
@@ -694,7 +697,7 @@ If no argument is specified then the latest argument is used.
     [/usr/src/sys] x kmem_suballoc
 @end example
 
-@item You can select a tag by the @command{show} command.
+@item You can select a tag by @command{show} command.
 
 @example
     [/usr/src/sys] x main
@@ -706,7 +709,7 @@ If no argument is specified then the latest argument is used.
     (Load editor and show boot/alpha/boot1/boot1.c at line 227.)
 @end example
 
-The default editor is vi(1) but you can specify it statically by @env{EDITOR}
+The default editor is vi(1). You can specify it statically by @env{EDITOR}
 environment variable or temporarily by options.
 
 @example
@@ -758,7 +761,7 @@ by the @command{pop} or @kbd{CTRL-T} command.
     (Load editor and show boot/alpha/boot1/boot1.c at line 227.)
 @end example
 
-You can print the tag stack with the @command{tags} command.
+You can print the current tag stack with @command{tags} command.
 
 @item You can remember tags using the @command{mark} command.
 
@@ -783,7 +786,7 @@ You can print the tag stack with the @command{tags} command.
 @end example
 
 Marked tags are valid until you go out of the current project or quit
-the current Bash session.
+the current bash(1) session.
 
 @item You can remember directories using the @command{cookie} command,
 and return there using the @command{warp} command.
@@ -810,7 +813,7 @@ Cookie directories are valid until you delete them.
 @node Less viewer
 @section Less using GLOBAL
 
-You can use GLOBAL as the tag system of Less(1) viewer instead of ctags.
+You can use GLOBAL as a tag system of less(1) viewer instead of ctags.
 
 @menu
 * Features(Less)::                       Features.
@@ -824,7 +827,7 @@ You can use GLOBAL as the tag system of Less(1) viewer instead of ctags.
 
 @itemize @bullet
 @item
-You can use most of GLOBAL's facilities from Less viewer.
+You can use most of GLOBAL's facilities from less(1) viewer.
 @item
 Less viewer supports duplicated tag.
 @end itemize
@@ -835,7 +838,7 @@ Less viewer supports duplicated tag.
 
 First, do the preparation of global. @xref{Preparation}.
 
-Second, to use global from Less, you need to set environment variable
+Second, to use global from less(1), you need to set environment variable
 @env{LESSGLOBALTAGS} to @samp{global}.
 
 @example
@@ -853,7 +856,7 @@ Second, to use global from Less, you need to set environment variable
     $ less -t func1
 @end example
 
-Please note that if @file{tags} exists in the current directory then Less uses it.
+Please note that if @file{tags} exists in the current directory then less(1) uses it.
 If you want to use @file{GTAGS} even if @file{tags} exists
 then please specify the tag file explicitly like this:
 
@@ -870,7 +873,7 @@ then please specify the tag file explicitly like this:
 In the same way, you can use @file{GTAGS}, @file{GRTAGS} or
 @file{GPATH} as tag files.
 
-@item If a number of tags are located, Less goes to the first tag.
+@item If a number of tags are located, less(1) goes to the first tag.
 You can go to next tag by typing @kbd{t} and back by typing @kbd{T}.
 
 @table @kbd
@@ -881,12 +884,12 @@ go to previous tag.
 @end table
 
 @item
-In a Less session, you can use the @kbd{:t} command to locate a new symbol.
+In a less(1) session, you can use the @kbd{:t} command to locate a new symbol.
 But in this case, you cannot change the tag file from the one specified by
 the @option{-T} option.
 
-@item With the @option{-T-} option, Less reads standard input as a tag file.
-You can connect global and Less with a pipe. It is very convenient.
+@item With the @option{-T-} option, less(1) reads standard input as a tag file.
+You can connect global and less(1) with a pipe. It is very convenient.
 
 @example
     $ global -x func | less -T-
@@ -908,7 +911,7 @@ In the same way, you can use the following command lines:
     $ global -Px init | less -T-
 @end example
 
-@item If your editor doesn't support GLOBAL directly then you can use Less
+@item If your editor doesn't support GLOBAL directly then you can use less(1)
 as a footstool.
 
 @example
