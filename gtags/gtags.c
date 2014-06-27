@@ -191,7 +191,7 @@ main(int argc, char **argv)
 	/*
 	 * Get the project root directory.
 	 */
-	if (!getcwd(cwd, MAXPATHLEN))
+	if (!vgetcwd(cwd, MAXPATHLEN))
 		die("cannot get current directory.");
 	canonpath(cwd);
 	/*
@@ -351,11 +351,6 @@ main(int argc, char **argv)
 			die("'%s' is not readable.", file_list);
 	}
 	/*
-	 * Logical current directory.
-	 * We force idutils to follow the same rule as GLOBAL.
-	 */
-	set_env("PWD", cwd);
-	/*
 	 * Regularize the path name for single updating (--single-update).
 	 */
 	if (single_update) {
@@ -475,7 +470,15 @@ main(int argc, char **argv)
 		if (vflag)
 			fprintf(stderr, "[%s] Creating indexes for idutils.\n", now());
 		strbuf_reset(sb);
+		/*
+		 * Since idutils stores the value of PWD in ID file, we need to
+		 * force idutils to follow our style.
+		 */
+#if _WIN32 || __DJGPP__
 		strbuf_puts(sb, "mkid --files0-from=-");
+#else
+		strbuf_sprintf(sb, "PWD=%s mkid --files0-from=-", quote_shell(cwd));
+#endif
 		if (vflag)
 			strbuf_puts(sb, " -v");
 		strbuf_sprintf(sb, " --file=%s/ID", quote_shell(dbpath));

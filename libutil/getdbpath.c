@@ -211,7 +211,7 @@ setupdbpath(int verbose)
 	char *p;
 	static char msg[1024];
 
-	if (!getcwd(cwd, MAXPATHLEN)) {
+	if (!vgetcwd(cwd, MAXPATHLEN)) {
 		gtags_dbpath_error = "cannot get current directory.";
 		return -1;
 	}
@@ -229,10 +229,14 @@ setupdbpath(int verbose)
 			gtags_dbpath_error = msg;
 			return -1;
 		}
-		if (realpath(p, root) == NULL) {
-			snprintf(msg, sizeof(msg), "cannot get real path of '%s'.", p);
-			gtags_dbpath_error = msg;
-			return -1;
+		if (getenv("GTAGSLOGICALPATH")) {
+			strlimcpy(root, p, sizeof(root));
+		} else {
+			if (realpath(p, root) == NULL) {
+				snprintf(msg, sizeof(msg), "cannot get real path of '%s'.", p);
+				gtags_dbpath_error = msg;
+				return -1;
+			}
 		}
 		/*
 		 * GTAGSDBPATH is meaningful only when GTAGSROOT exist.
@@ -361,5 +365,12 @@ const char *
 get_cwd(void)
 {
 	return (const char *)cwd;
+}
+void
+dump_dbpath(void)
+{
+	fprintf(stderr, "db path: %s\n", dbpath);
+	fprintf(stderr, "root path: %s\n", root);
+	fprintf(stderr, "current directory: %s\n", cwd);
 }
 /** @} */

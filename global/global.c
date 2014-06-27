@@ -744,11 +744,6 @@ main(int argc, char **argv)
 	if (cflag && !Pflag && av && isregex(av))
 		die_with_code(2, "only name char is allowed with -c option.");
 	/*
-	 * Logical current directory.
-	 * We force idutils to follow the same rule as GLOBAL.
-	 */
-	set_env("PWD", cwd);
-	/*
 	 * print dbpath or rootdir.
 	 */
 	if (pflag) {
@@ -1199,7 +1194,11 @@ idutils(const char *pattern, const char *dbpath)
 	 * make lid command line.
 	 * Invoke lid with the --result=grep option to generate grep format.
 	 */
+#if _WIN32 || __DJGPP__
 	strbuf_puts(ib, lid);
+#else
+	strbuf_sprintf(ib, "PWD=%s %s", quote_shell(root), lid);
+#endif
 	strbuf_sprintf(ib, " --file=%s/ID", quote_shell(dbpath));
 	strbuf_puts(ib, " --separator=newline");
 	if (format == FORMAT_PATH)

@@ -1346,7 +1346,7 @@ main(int argc, char **argv)
 	/*
 	 * Load configuration values.
 	 */
-	if (!getcwd(cwdpath, sizeof(cwdpath)))
+	if (!vgetcwd(cwdpath, sizeof(cwdpath)))
 		die("cannot get current directory.");
 	openconf(cwdpath);
 	configuration();
@@ -1642,7 +1642,7 @@ main(int argc, char **argv)
 			die("'%s' is not writable directory.", av);
 		if (chdir(av) < 0)
 			die("directory '%s' not found.", av);
-		if (!getcwd(realpath, sizeof(realpath)))
+		if (!vgetcwd(realpath, sizeof(realpath)))
 			die("cannot get current directory");
 		if (chdir(cwdpath) < 0)
 			die("cannot return to original directory.");

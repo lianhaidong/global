@@ -31,5 +31,6 @@ const char *get_dbpath(void);
 const char *get_root(void);
 const char *get_root_with_slash(void);
 const char *get_cwd(void);
+void dump_dbpath(void);
 
 #endif /* ! _GETDBPATH_H_ */

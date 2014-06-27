@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2004, 2008, 2011
+ * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2004, 2008, 2011,
+ *	2014
  *	Tama Communications Corporation
  * #ifdef __DJGPP__
  * Contributed by Jason Hood <jadoxa@yahoo.com.au>, 2001.
@@ -29,8 +30,14 @@
 #else
 #include <strings.h>
 #endif
+#ifdef STDC_HEADERS
+#include <stdlib.h>
+#endif
 #include <sys/types.h>
 #include <sys/stat.h>
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
 
 #ifdef __DJGPP__
 #include <fcntl.h>			/* for _USE_LFN */
@@ -238,4 +245,21 @@ trimpath(const char *path)
 	if (*path == '.' && *(path + 1) == '/')
 		path += 2;
 	return path;
+}
+/**
+ * get the current directory
+ */
+char *
+vgetcwd(char *buf, size_t size) {
+	char *p;
+
+	if (getenv("GTAGSLOGICALPATH")) {
+		if ((p = getenv("PWD")) != NULL) {
+			strlimcpy(buf, p, size);
+			return buf;
+		}
+	}
+	if (getcwd(buf, size) != NULL)
+		return buf;
+	return NULL;
 }

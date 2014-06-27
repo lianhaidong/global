@@ -216,8 +216,15 @@ dump()
 ###########################################################################
 ### Customized cd
 __gtags_get_cwd() {
-	# always use -P option to ignore symbolic links.
-	builtin pwd -P
+	#
+	# If GTAGSLOGICALPATH is defined we use logical path
+	# else physical path. GTAGSLOGICALPATH is undocumented.
+	#
+	local x=${GTAGSLOGICALPATH-NODEF}
+	case "$x" in
+	NODEF)	builtin pwd -P;;
+	*)	builtin pwd -L;;
+	esac
 }
 __gtags_get_rootdir() {
 	$__gtags_global_command -pr 2>/dev/null

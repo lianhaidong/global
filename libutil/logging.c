@@ -29,6 +29,7 @@
 
 #include "gparam.h"
 #include "logging.h"
+#include "path.h"
 
 /** @file
 
@@ -116,7 +117,7 @@ logging_arguments(int argc, char **argv)
 	int i;
 	char buf[MAXPATHLEN];
 
-	if (getcwd(buf, sizeof(buf)))
+	if (vgetcwd(buf, sizeof(buf)))
 		logging_printf("In |%s|\n", buf);
 	for (i = 0; i < argc; i++) {
 		if (ignore)

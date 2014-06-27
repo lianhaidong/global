@@ -19,6 +19,12 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+June 28 2014, Shigio YAMAGUCHI
+
+	New environment variable GTAGSLOGICALPATH was added.
+	If it is set then GLOBAL use logical path (PWD), else
+	physical path. This variable is now undocumented.
+
 March 17 2014, Shigio YAMAGUCHI
 
 	libutil/pathconvert.c module was divided into the following two modules:

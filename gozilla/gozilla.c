@@ -319,7 +319,7 @@ main(int argc, char **argv)
 				char cwd[MAXPATHLEN];
 				char result[MAXPATHLEN];
 
-				if (getcwd(cwd, sizeof(cwd)) == NULL)
+				if (vgetcwd(cwd, sizeof(cwd)) == NULL)
 					die("cannot get current directory.");
 				if (rel2abs(argument, cwd, result, sizeof(result)) == NULL)
 					die("rel2abs failed.");
