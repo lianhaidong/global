@@ -1,11 +1,12 @@
 " File: gtags.vim
 " Author: Tama Communications Corporation
-" Version: 0.6.5
-" Last Modified: Oct 21, 2013
+" Version: 0.6.6
+" Last Modified: June 24, 2014
 "
 " Copyright and licence
 " ---------------------
-" Copyright (c) 2004, 2008, 2010, 2011, 2012 Tama Communications Corporation
+" Copyright (c) 2004, 2008, 2010, 2011, 2012, 2014
+" Tama Communications Corporation
 "
 " This file is part of GNU GLOBAL.
 "
@@ -151,6 +152,14 @@
 "	:Gtags -gO pattern		# only text file
 "
 " See global(1) for other options.
+"
+" The Gtagsa (Gtags + append) command is almost the same as Gtags command.
+" But it differs from Gtags in that it adds the results to the present list.
+" If you want to get the union of ':Gtags -d foo' and ':Gtags -r foo' then
+" you can invoke the following commands:
+"
+"       :Gtags  -d foo
+"       :Gtagsa -r foo
 "
 " The GtagsCursor command brings you to the definition or reference of
 " the current token.
@@ -346,7 +355,7 @@ endfunction
 "
 " Execute global and load the result into quickfix window.
 "
-function! s:ExecLoad(option, long_option, pattern)
+function! s:ExecLoad(option, long_option, pattern, flags)
     " Execute global(1) command and write the result to a temporary file.
     let l:isfile = 0
     let l:option = ''
@@ -407,10 +416,12 @@ function! s:ExecLoad(option, long_option, pattern)
     " Parse the output of 'global -x or -t' and show in the quickfix window.
     let l:efm_org = &efm
     let &efm = g:Gtags_Efm
-    if g:Gtags_No_Auto_Jump == 1
-        cgete l:result
+    if a:flags =~# 'a'
+        cadde l:result		" append mode
+    elseif g:Gtags_No_Auto_Jump == 1
+        cgete l:result		" does not jump
     else
-        cexpr! l:result
+        cexpr! l:result		" jump
     endif
     let &efm = l:efm_org
 endfunction
@@ -418,7 +429,7 @@ endfunction
 "
 " RunGlobal()
 "
-function! s:RunGlobal(line)
+function! s:RunGlobal(line, flags)
     let l:pattern = s:Extract(a:line, 'pattern')
 
     if l:pattern == '%'
@@ -441,7 +452,7 @@ function! s:RunGlobal(line)
             return
         endif
     endif
-    call s:ExecLoad(l:option, '', l:pattern)
+    call s:ExecLoad(l:option, '', l:pattern, a:flags)
 endfunction
 
 "
@@ -450,7 +461,7 @@ endfunction
 function! s:GtagsCursor()
     let l:pattern = expand("<cword>")
     let l:option = "--from-here=\"" . line('.') . ":" . expand("%") . "\""
-    call s:ExecLoad('', l:option, l:pattern)
+    call s:ExecLoad('', l:option, l:pattern, '')
 endfunction
 
 "
@@ -497,7 +508,8 @@ function! GtagsCandidateCore(lead, line, pos)
 endfunction
 
 " Define the set of Gtags commands
-command! -nargs=* -complete=custom,GtagsCandidate Gtags call s:RunGlobal(<q-args>)
+command! -nargs=* -complete=custom,GtagsCandidate Gtags call s:RunGlobal(<q-args>, '')
+command! -nargs=* -complete=custom,GtagsCandidate Gtagsa call s:RunGlobal(<q-args>, 'a')
 command! -nargs=0 GtagsCursor call s:GtagsCursor()
 command! -nargs=0 Gozilla call s:Gozilla()
 command! -nargs=0 GtagsUpdate call s:GtagsAutoUpdate()
