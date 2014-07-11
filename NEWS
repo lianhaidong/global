@@ -71,9 +71,8 @@ o global: New --color option. It use the environment variable GREP_COLOR
   $ global --color=always -x main
 
 [FIXED BUGS]
-o global: There was a lack of initialization of data. It could bring
-  unexpected segmentation violation; it often occurred during execution
-  of htags(1). Now it is fixed.
+o global: A lack of initialization of data brought unexpected segmentation
+  violation; it often occurred during execution of htags(1). Now it is fixed.
   This bug exists in the following version: 6.2.10, 6.2.11.
 
 Version 6.2.11 - March 12 2014
