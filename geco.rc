@@ -1,0 +1,155 @@
+#
+# Geco --- A quick view tool for GLOBAL using bash, percol and less
+#
+# Copyright (c) 2014 Tama Communications Corporation
+# 
+# This file is part of GNU GLOBAL.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# GLOBAL home page is at: http://www.gnu.org/software/global/
+# Author: Tama Communications Corporation
+# 
+# Geco is a quick view tool for GLOBAL using percol and less.
+# It is useful as a lanch pad for vi editor.
+#
+# Features:
+# o Command line input completion using __geco_completion()
+# o Tag selection using percol or peco
+# o File viewing using less
+#
+# Required:
+# o Bash
+# o Percol or peco
+# o Less
+#
+# Installation:
+# $ source /usr/local/share/gtags/geco.rc
+#
+# usage:
+# geco <options> <tag>
+#
+# $ geco mai[TAB] -> main		# input completion
+# $ geco main [ENTER]
+# QUERY> _				# tag selector
+# main              360 global/global.c  main(int argc, char **argv)
+# main              197 gozilla/gozilla.c main(int argc, char **argv)
+# main              145 gtags-cscope/gtags-cscope.c main(int argc, char **argv)
+# ...
+# v
+# +---------------------------------
+# |main(int argc, char **argv)		# show a selected location
+# |{
+# |        const char *av = NULL;
+# |        int db;
+# ...
+# |[global/global.c]
+# +---------------------------------
+# v
+# Commands in less.
+# 't': go to next tag
+# 'T': goto previous tag
+# 'v': load vi editor
+# 'q': quit less
+# ':t': => tag: <options> <tag>
+#
+# Geco's <options> is almost compatible with global(1).
+#
+# $ geco --help
+#
+# Just gecoless is also available.
+#
+# $ global -x main | gecoless
+#
+__gtags_global_command=${GTAGSGLOBAL-global}
+__gtags_geco_viewer=less
+__gtags_geco_selector=
+export LESSGLOBALTAGS=$(gtags --conf=datadir)/gtags/script/less-global
+export LESS=-TGTAGS
+for name in percol peco; do
+	path=$(type -p $name)
+	case $path in
+	'')	;;
+	*)	__gtags_geco_selector=$path
+		break;;
+	esac
+done
+gecoless()
+{
+	local line IFS=
+	case $__gtags_geco_selector in
+	'')	echo "geco: percol or peco is required."
+		return 1;;
+	esac
+	line=$(cat)
+	if [ "$line" != "" ]; then
+		echo $line | "$__gtags_geco_selector" | "$__gtags_geco_viewer" -T- 
+	else
+		echo "No such tag in tags file"
+		return 1
+	fi
+}
+geco()
+{
+	local arg GTAGSBLANKENCODE=
+	for a in "$@"; do
+		case $a in
+		-*)	;;
+		*)	arg=$a;;
+		esac
+	done
+	case $arg in
+	'')	"$__gtags_global_command" 2>&1 | sed -e '/global -p\[/d' -e '/global -u\[/d' -e 's/global/geco/'
+		return 1;;
+	esac
+	export GTAGSBLANKENCODE
+	"$__gtags_global_command" "$@" --result=ctags-x | gecoless
+}
+__geco_completion()
+{
+	local file flags i
+	local prefix="${COMP_WORDS[COMP_CWORD]}"
+
+	for (( i=0; i < ${#COMP_WORDS[@]}; i++ )); do
+		local opt=${COMP_WORDS[i]}
+		case $opt in
+		--definition)	flags="${flags}d";;
+		--file)		file=1;;
+		--idutils)	flags="${flags}I";;
+		--ignore-case)	flags="${flags}i";;
+		--only-other)	flags="${flags}O";;
+		--other)	flags="${flags}o";;
+		--path)		flags="${flags}P";;
+		--reference)	flags="${flags}r";;
+		--symbol)	flags="${flags}s";;
+		--*)		;;
+		-*)
+			case $opt in
+			-*f*)	file=1;;
+			esac
+			for c in d I i O o P r s; do
+				case $opt in
+				-*$c*)	flags="$flags$c";;
+				esac
+			done;;
+		esac
+	done
+	if [ "$file" = 1 ]; then
+		COMPREPLY=($(compgen -f $prefix 2>/dev/null))
+	else
+		COMPREPLY=($("$__gtags_global_command" -c$flags $prefix 2>/dev/null))
+	fi
+	return 0
+}
+complete -F __geco_completion geco global
