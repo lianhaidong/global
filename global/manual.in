@@ -277,6 +277,7 @@
 	@item{@var{GTAGSDBPATH}}
 		The directory in which the tag files exist.
 		This value is ignored when @var{GTAGSROOT} is not defined.
+		Use of this variable is not recommended.
 	@item{@var{GTAGSFORCECPP}}
 		If this variable is set, each file whose suffix is @file{.h} is treated
 		as a C++ source file.
@@ -293,6 +294,8 @@
 		of a log file. There is no default value.
 	@item{@var{GTAGSROOT}}
 		The root directory of the project.
+		Usually, it is recognized by existence of @file{GTAGS}.
+		Use of this variable is not recommended.
 	@item{@var{GTAGSTHROUGH}}
 		If this variable is set, the @option{-T} option is specified.
 	@item{@var{MAKEOBJDIR}}
@@ -311,7 +314,8 @@
 	@end_itemize
 
 	Addition to these, the variables listed in the ENVIRONMENT section except for
-	GTAGSCONF and GTAGSLABEL are also available as configuration variables.
+	GTAGSCONF, GTAGSLABEL, GTAGSROOT and GTAGSDBPATH  are also available
+	as configuration variables.
 	Each environment variable is given more priority than configuration variable
 	of the same name.
 @DIAGNOSTICS
