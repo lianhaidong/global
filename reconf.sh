@@ -64,7 +64,7 @@ for p in `echo $prog`; do
 		exit 1;;
 	esac
 	case $p in
-	perl)	;;
+	perl|libtool)	;;
 	*)	$p --version | head -n 1 >>BUILD_TOOLS;;
 	esac
 done
