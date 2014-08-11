@@ -19,6 +19,39 @@ ___________________________________
 GNU GLOBAL NEWS - User visible changes.
 At least, you should search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 6.3.1 - August 11 2014
+
+[CHANGES]
+New facilities:
+o gtags.vim: New 'Gtagsa' (Gtags with append) command.
+  This command appends tags to the current tag list.
+  If you want to get a union of 'global -d foo' and
+  'global -r foo' then please do as follows:
+
+    :Gtags -d foo
+    :Gtagsa -r foo
+
+o geco.rc: New command (Bash function).
+  You need bash, percol and less to use geco.
+
+    $ source /usr/local/share/gtags/geco.rc
+    $ geco --help       # show help
+    $ geco mai[TAB]     # auto completion
+              v
+    $ geco main [ENTER]
+    QUERY> init         # narrowing down
+    (less's screen)
+    :tag -r main        # tag jump again
+
+    The same options are available on the both prompts:
+    $ geco <options> arg
+    :tag <options> arg
+
+[INCOMPATIBLE CHANGES]
+o global: The following configuration variables were removed
+  since they will surely cause confusion.
+  GTAGSROOT, GTAGSDBPATH
+
 Version 6.3 - June 9 2014
 
 [CHANGES]
