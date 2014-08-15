@@ -1,7 +1,4 @@
 /*
- * ------------------------------------------------------------------------------
- * This file was Derived from https://github.com/yoshizow/global-pygments-plugin
- * ------------------------------------------------------------------------------
  * Copyright (c) 2010
  *	Tama Communications Corporation
  * Copyright (c) 2014
