@@ -11,18 +11,31 @@
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
 plugindir = ${libdir}/gtags
-plugin_LTLIBRARIES = exuberant-ctags.la user-custom.la
+plugin_LTLIBRARIES = exuberant-ctags.la pygments-parser.la user-custom.la
 
+# Exuberant Ctags parser
 exuberant_ctags_la_SOURCES = exuberant-ctags.c
 exuberant_ctags_la_LDFLAGS = -module -avoid-version -no-undefined
+
+# Pygments parser
+pygments_parser_la_SOURCES = pygments-parser.c
+pygments_parser_la_LDFLAGS = -module -avoid-version -no-undefined
 
 # skeleton
 user_custom_la_SOURCES = user-custom.c
 user_custom_la_LDFLAGS = -module -avoid-version -no-undefined
 
 gtagsdir = ${datadir}/gtags
-gtags_DATA = PLUGIN_HOWTO
+gtags_DATA = PLUGIN_HOWTO README.Pygments
 
-EXTRA_DIST = $(gtags_DATA)
+scriptdir = ${datadir}/gtags/script
+script_DATA = pygments_parser.py
 
-AM_CPPFLAGS = @AM_CPPFLAGS@
+EXTRA_DIST = $(gtags_DATA) ${script_DATA}
+
+AM_CPPFLAGS = @AM_CPPFLAGS@ -DDATADIR='"$(datadir)"'
+
+install-data-hook:
+	if cd $(DESTDIR)$(datadir)/gtags/script; then \
+		chmod 755 pygments_parser.py; \
+	fi

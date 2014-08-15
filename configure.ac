@@ -42,6 +42,10 @@ if test ${ac_cv_path_PERL} = no; then
 fi
 AC_CHECK_TOOL(AR, ar)
 
+AM_PATH_PYTHON([2.6])
+AC_DEFINE_UNQUOTED(PYTHON, "$PYTHON", [Path to python executable.])
+AC_SUBST(PYTHON)
+
 AC_GNU_SOURCE
 
 LT_PREREQ([2.2.6b])
@@ -376,6 +380,7 @@ AC_CONFIG_FILES([Makefile
 	script/Makefile
 	libparser/Makefile
 	plugin-factory/Makefile
+	plugin-factory/pygments_parser.py
 	libltdl/Makefile
 ])
 AC_OUTPUT
