@@ -27,8 +27,10 @@ token.c usable.c version.c is_unixy.c abs2rel.c split.c strlimcpy.c linetable.c 
 env.c char.c date.c langmap.c varray.c idset.c strhash.c xargs.c encodepath.c rewrite.c \
 compress.c checkalloc.c pool.c fileop.c statistics.c args.c logging.c
 
-AM_CFLAGS = -DBINDIR='"$(bindir)"' -DDATADIR='"$(datadir)"' -DLOCALSTATEDIR='"$(localstatedir)"' -DSYSCONFDIR='"$(sysconfdir)"'
-
-AM_CPPFLAGS = @AM_CPPFLAGS@
+AM_CPPFLAGS = @AM_CPPFLAGS@ \
+	-DBINDIR='"$(bindir)"' \
+	-DDATADIR='"$(datadir)"' \
+	-DLOCALSTATEDIR='"$(localstatedir)"' \
+	-DSYSCONFDIR='"$(sysconfdir)"'
 
 libgloutil_a_DEPENDENCIES = $(libgloutil_a_LIBADD)
