@@ -4,3 +4,4 @@ Makefile.in
 .libs
 *.la
 *.lo
+pygments_parser.py
