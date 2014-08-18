@@ -37,15 +37,17 @@
 #include <sys/file.h>
 #endif
 
-#include "locatestring.h"
 #include "char.h"
 #include "die.h"
+#include "locatestring.h"
+#include "strbuf.h"
 #include "test.h"
 
 /**
  * Decide whether or not the @a path is binary file.
  *
- *	@param[in]	path
+ *	@param[in]	path	path to test, <br>
+ *			if @VAR{NULL} then use the saved previous path, calls die() if is none.
  *	@return	0: is not binary, 1: is binary
  */
 static int
@@ -94,11 +96,19 @@ int
 test(const char *flags, const char *path)
 {
 	static struct stat sb;
+	STATIC_STRBUF(saved_path);
 	int c;
 
-	if (path != NULL)
+	if (path != NULL) {
 		if (stat(path, &sb) < 0)
 			return 0;
+		strbuf_clear(saved_path);
+		strbuf_puts(saved_path, path);
+	} else {
+		if (strbuf_empty(saved_path))
+			die("no saved previous path [test()]");
+		path = (const char *) strbuf_value(saved_path);
+	}
 	while ((c = *flags++) != 0) {
 		switch (c) {
 		case 'b':

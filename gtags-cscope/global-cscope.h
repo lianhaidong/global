@@ -334,7 +334,7 @@ void	setfield(void);
 void	shellpath(char *out, int limit, char *in);
 void    sourcedir(char *dirlist);
 void	myungetch(int c);
-void	warning(char *text);
+/* void	warning(char *text); */
 void	writestring(char *s);
 
 BOOL	command(int commandc);

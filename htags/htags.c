@@ -1408,6 +1408,7 @@ main(int argc, char **argv)
 				STATIC_STRBUF(sb);
 				if (!test("r", optarg))
 					die("file '%s' not found.", optarg);
+				strbuf_clear(sb);
 				loadfile_asis(optarg, sb);
 				html_header = strbuf_value(sb);
 			}

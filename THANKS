@@ -129,7 +129,7 @@ Sergio Talens-Oliag	writing on-line manual for systags(1).
 Shankar Chakkere	useful method to use vim editor with GLOBAL.
 Shigeyuki Yamano	idea about -h option of htags(1).
 Silas S. Brown		proofreading about manuals.
-Simon Dommett		bug report and fix patch on the usage of tolower().
+Simon Dommett		many bug reports and fix patches.
 			He also rewrote GLOBAL's comments in the Doxygen style.
 Sven Verdoolaege	support for gtags.pl(nvi-1.81.5).
 Steve Kirkendall	two commands of Elvis for external tag system.
