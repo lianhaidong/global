@@ -46,9 +46,8 @@
 /**
  * Decide whether or not the @a path is binary file.
  *
- *	@param[in]	path	path to test, <br>
- *			if @VAR{NULL} then use the saved previous path, calls die() if is none.
- *	@return	0: is not binary, 1: is binary
+ *	@param[in]	path
+ *	@return 0: is not binary, 1: is binary
  */
 static int
 is_binary(const char *path)
@@ -86,8 +85,8 @@ is_binary(const char *path)
  *			@CODE{"x"}	[ -x path ] is @a path an executable file/program? <br>
  *			@CODE{"b"}	[ -b path ] is @a path a binary file?
  *
- *	@param[in]	path	path <br>
- *			if @VAR{NULL} then previous path.
+ *	@param[in]	path	path to test, <br>
+ *			if @VAR{NULL} then use the saved previous path, calls die() if is none.
  *	@return		0: no, 1: ok
  *
  * You can specify more than one character. It assumed 'AND' test.
