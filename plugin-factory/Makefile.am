@@ -26,7 +26,7 @@ user_custom_la_SOURCES = user-custom.c
 user_custom_la_LDFLAGS = -module -avoid-version -no-undefined
 
 gtagsdir = ${datadir}/gtags
-gtags_DATA = PLUGIN_HOWTO README.pygments
+gtags_DATA = PLUGIN_HOWTO PLUGIN_HOWTO.pygments
 
 scriptdir = ${datadir}/gtags/script
 script_DATA = pygments_parser.py

@@ -1,6 +1,0 @@
-The following files were derived from https://github.com/yoshizow/global-pygments-plugin.
-
-				[github]
-README.pygments			README.md
-pygments-parser.c		plugin-factory/pygments-parser.c
-pygments_parser.py.in		pygments_parser.py.in

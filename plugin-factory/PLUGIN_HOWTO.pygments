@@ -1,0 +1,66 @@
+___________________________________
+|      |  |  |     |  _  |     |  |
+|  |___|  |  |  |  |    _|  |  |  |    GNU GLOBAL source code tag system
+|  |   |  |  |  |  |     |     |  |
+|  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Copyright (c) 2014 Tama Communications Corporation
+
+ This file is free software; as a special exception the author gives
+ unlimited permission to copy and/or distribute it, with or without
+ modifications, as long as this notice is preserved.
+
+ This program is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
+ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+                ----------------------------------
+
+How to use Pygments Plug-in Parser
+
+Pygments is a generic syntax highlighter for wide variety of
+programming languages. This plug-in use Pygments and Exuberant
+Ctags as a parser to treat both definitions and references.
+
+You need the following software:
+o Python 2.6 or later (3.x is not supported)
+o Pygments python package
+o Exuberant Ctags 5.5 or later (optional)
+
+[Installation]
+
+1. Check
+
+Make sure python and ctags can be invoked in your command line.
+$ type python
+python is /usr/bin/python
+$ type ctags
+ctags is /usr/local/bin/ctags
+
+2. Installation of GLOBAL
+
+$ ./configure
+$ make
+$ sudo make install
+
+3. Setup of plug-in parser
+
+The definition of Pygments plug-in parser is already prepared.
+
+$ export GTAGSCONF=/usr/local/share/gtags/gtags.conf
+$ export GTAGSLABEL=pygments
+
+[Execution of gtags]
+
+Please execute gtags(1) as usual.
+
+$ gtags
+
+                ----------------------------------
+
+Pygments plug-in parser was written by Yoshitaro MAKISE.
+For detals, please see the following site:
+[https://github.com/yoshizow/global-pygments-plugin]
+
+Though Pygments plug-in parser is considered a separate package,
+not part of GLOBAL proper, we included it for user's convenience.
