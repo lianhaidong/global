@@ -43,9 +43,10 @@ $ ./configure
 $ make
 $ sudo make install
 
-3. Setup of plug-in parser
+3. Setup of Pygments plug-in parser
 
-The definition of Pygments plug-in parser is already prepared.
+The definition of Pygments plug-in parser is prepared
+in the default configuration file. Please specify it.
 
 $ export GTAGSCONF=/usr/local/share/gtags/gtags.conf
 $ export GTAGSLABEL=pygments
@@ -56,11 +57,23 @@ Please execute gtags(1) as usual.
 
 $ gtags
 
+If it is doubtful whether Pygments plug-in parser is used,
+please try a debug option. It shows the libraries used by
+gtags.
+
+$ gtags --debug
+...
+File './lib/xmalloc.c' is handled as follows:
+        suffix:   |.c|
+        language: |C|
+        parser:   |parser|
+        library:  |/usr/local/lib/gtags/pygments-parser.la|
+
                 ----------------------------------
 
 Pygments plug-in parser was written by Yoshitaro MAKISE.
 For detals, please see the following site:
 [https://github.com/yoshizow/global-pygments-plugin]
 
-Though Pygments plug-in parser is considered a separate package,
-not part of GLOBAL proper, we included it for user's convenience.
+Though it is considered a separate package, not part of GLOBAL proper,
+we included it for user's convenience.
