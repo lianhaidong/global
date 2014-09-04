@@ -182,7 +182,6 @@ o Pygments plug-in parser by Yoshitaro MAKISE.
   Derived from https://github.com/yoshizow/global-pygments-plugin.
 
 						[github]
-	plugin-factory/README.pygments		README.md
 	plugin-factory/pygments-parser.c	plugin-factory/pygments-parser.c
 	plugin-factory/pygments_parser.py.in	pygments_parser.py.in
 

@@ -19,6 +19,17 @@ ___________________________________
 GNU GLOBAL NEWS - User visible changes.
 At least, you should search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 6.3.2 - September 4 2014
+
+[CHANGES]
+New facilities:
+o Pygments plug-in parser by Yoshitaro MAKISE.
+  By this parser, you can apply gtags(1) to wide variety of programming
+  languages supported by Pygments. The method of plug-in is very simple.
+  See 'plugin-factory/PLUGIN_HOWTO.pygments' for details.
+  It should mention especially that Pygments plug-in parser can treat both 
+  definitions and references using Exuberant Ctags together.
+
 Version 6.3.1 - August 11 2014
 
 [CHANGES]
