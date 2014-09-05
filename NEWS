@@ -98,10 +98,10 @@ o The following configuration variables:
   xhtml_version (will be always 1.0)
 
 [FIXED BUGS]
-o global: The highlight of symbols in library paths does not
+o global: Highlight of symbols in library paths does not
   work. Now it works.
 o htags: Htags with the --suggest option didn't find GTAGS
-  in the obj directories. Now it works.
+  in obj directories. Now it works.
 
 Version 6.2.12 - March 31 2014
 
