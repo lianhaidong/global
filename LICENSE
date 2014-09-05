@@ -281,3 +281,24 @@ Literal search code (global/literal.c derived from /usr/src/usr.bin/fgrep.c in 4
     Director, Licensing Services
     
     * UNIX is a registered trademark of The Open Group in the US and other countries.
+
+Pygments Plug-in Parser by Yoshitaro MAKISE
+
+    [https://github.com/yoshizow/global-pygments-plugin]
+    pygments_parser.py.in
+    pygments-parser.c
+
+    Copyright (c) 2014 Yoshitaro Makise
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
