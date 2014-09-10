@@ -159,7 +159,17 @@ Q8. I can't make GSYMS file.
 
 A8. No problem. GSYMS was merged into GRTAGS in GLOBAL-5.9 or later.
 ----------------------------------------------------------------------------
-Q9. Deleted.
+Q9. I'm using gtags-cscope.vim. How to use files which include spaces in path name?
+
+A9. Please apply 'vim74-gtags-cscope.patch' in the package to vim.
+
+$ tar jxvf vim-7.4.tar.bz2
+$ cd vim74
+$ patch -p1 < /usr/local/share/gtags/vim74-gtags-cscope.patch
+$ ./configure --enable-cscope
+$ make
+$ sudo make install
+
 ----------------------------------------------------------------------------
 Q10. Does GLOBAL support multi-byte code set?
      Which character code set is supported?

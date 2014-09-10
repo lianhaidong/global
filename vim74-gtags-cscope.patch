@@ -1,0 +1,57 @@
+/*
+ * This is a patch for vim-7.4 to treat output of gtags-cscope(1)
+ * correctly. Now, you can use files which include spaces in path name.
+ * 
+ * $ tar jxvf vim-7.4.tar.bz2
+ * $ cd vim74
+ * $ patch -p1 < [THIS PATCH]
+ *
+ * This file is placed into the public domain by the author,
+ * Shigio Yamaguchi <shigio@gnu.org>
+ */
+diff -cr vim74/src/if_cscope.c vim74-modify/src/if_cscope.c
+*** vim74/src/if_cscope.c	2013-06-30 21:59:21.000000000 +0900
+--- vim74-modify/src/if_cscope.c	2014-09-10 11:12:43.000000000 +0900
+***************
+*** 1813,1818 ****
+--- 1813,1842 ----
+  } /* cs_manage_matches */
+  
+  
++ #define outofrange(c)   (c < '0' || c > 'f')
++ #define h2int(c) (c >= 'a' ? c - 'a' + 10 : c - '0')
++ char *
++ urldecode(char *path)
++ {
++         char *p, *q;
++ 
++         for (p = q = path; *p; p++, q++) {
++                 if (*p == '%') {
++                         int c1, c2;
++                         c1 = *(p + 1);
++                         c2 = *(p + 2);
++                         if (!outofrange(c1) && !outofrange(c2)) {
++                                 *q = h2int(c1) * 16 + h2int(c2);
++                                 p += 2;
++                         }
++                 } else {
++                         *q = *p;
++                 }
++         }
++         *q = 0;
++         return path;
++ }
++ 
+  /*
+   * PRIVATE: cs_parse_results
+   *
+***************
+*** 1871,1876 ****
+--- 1895,1901 ----
+      if (strcmp(*search, "<unknown>") == 0)
+  	*search = NULL;
+  
++     urldecode(name);
+      name = cs_resolve_file(cnumber, name);
+      return name;
+  }
