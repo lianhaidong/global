@@ -1278,7 +1278,7 @@ Special characters @samp{%}, @samp{#} and input completion are available.
 @end itemize
 
 To our regret, the tag stack facility is not available.
-If you want to use the facility, please try gtags-cscope.
+If you want to use the facility, please try gtags-cscope.vim.
 @xref{Gtags-cscope}.
 @c ***************************************************************************
 @node   Preparation(Vim)
