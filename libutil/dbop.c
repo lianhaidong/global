@@ -233,8 +233,14 @@ start_sort_process(DBOP *dbop) {
 }
 static void
 terminate_sort_process(DBOP *dbop) {
-	while (waitpid(dbop->pid, NULL, 0) < 0 && errno == EINTR)
+	int ret, status;
+
+	while ((ret = waitpid(dbop->pid, &status, 0)) < 0 && errno == EINTR)
 		;
+	if (ret < 0)
+		die("waitpid(2) failed.");
+	if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
+		die("terminated abnormally. '%s'", POSIX_SORT);
 }
 #endif
 
