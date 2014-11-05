@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2002, 2003, 2004, 2006, 2011
+ * Copyright (c) 1997, 1998, 1999, 2000, 2002, 2003, 2004, 2006,
+ *	2011, 2014
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -252,7 +253,10 @@ main(int argc, char **argv)
 	 * Load aliases from .gozillarc.
 	 */
 	load_alias();
-
+	/*
+	 * Open configuration file.
+	 */
+	openconf(NULL);
 	/*
 	 * Decide browser.
 	 */
@@ -585,6 +589,33 @@ show_page_by_url(const char *browser, const char *url)
 }
 #else
 /* UNIX version */
+/*
+ * Make a html file to use OSX's open command.
+ */
+#include <pwd.h>
+static char urlfile[MAXPATHLEN];
+static char *
+make_url_file(const char *url)
+{
+	STATIC_STRBUF(sb);
+	FILE *op;
+	struct passwd *pw = getpwuid(getuid());
+
+	strbuf_clear(sb);
+	getconfs("localstatedir", sb);
+	snprintf(urlfile, sizeof(urlfile), "%s/gtags/lasturl-%s.html", strbuf_value(sb),
+			pw ? pw->pw_name : "nobody");
+	op = fopen(urlfile, "w");
+	if (op == NULL)
+		die("cannot make url file.");
+	fprintf(op, "<!-- You may remove this file. It was needed by gozilla(1) temporarily. -->\n");
+	fprintf(op, "<html><head>\n");
+	fprintf(op, "<meta http-equiv='refresh' content='0;url=\"%s\"' />\n", url);
+	fprintf(op, "</head></html>\n");
+	fclose(op);
+
+	return urlfile;
+}
 void
 show_page_by_url(const char *browser, const char *url)
 {
@@ -599,13 +630,21 @@ show_page_by_url(const char *browser, const char *url)
 	    locatestring(browser, "netscape-remote", MATCH_AT_LAST))
 	{
 		snprintf(com, sizeof(com), "%s -remote \"openURL(%s)\"", browser, url);
+		system(com);
+	}
+	/*
+	 * Load default browser of OSX.
+	 */
+	else if (!strcmp(browser, "osx-default")) {
+		snprintf(com, sizeof(com), "open \"%s\"", make_url_file(url));
+		system(com);
 	}
 	/*
 	 * Generic browser.
 	 */
 	else {
 		snprintf(com, sizeof(com), "%s \"%s\"", browser, url);
+		system(com);
 	}
-	system(com);
 }
 #endif

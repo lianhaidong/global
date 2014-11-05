@@ -82,6 +82,8 @@
 	@begin_itemize
 	@item{@var{BROWSER}}
 		Browser to use. By default, it is assumed @name{mozilla}.
+		If you want to load the default browser in OSX, you may set this variable
+		to @name{osx-default}.
 	@item{@var{GTAGSDBPATH}}
 		The directory in which the tag files exist.
 		This value is ignored when @var{GTAGSROOT} is not defined.

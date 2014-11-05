@@ -21,3 +21,9 @@ gozilla_DEPENDENCIES = $(LDADD)
 man_MANS = gozilla.1
 
 EXTRA_DIST = $(man_MANS) const.h manual.in
+
+# for osx-default
+gtagsdir = ${localstatedir}/gtags
+install-data-hook:
+	mkdir -p ${gtagsdir}
+	chmod 777 ${gtagsdir}
