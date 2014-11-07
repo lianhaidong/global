@@ -192,6 +192,19 @@ AC_ARG_WITH(db185-compat,
 AM_CONDITIONAL([USE_DB185_COMPAT], [test "$with_db185_compat" != no])
 
 LDADD='../libparser/libgloparser.a ../libutil/libgloutil.a '$DBLIBRARY' ../libglibc/libgloglibc.a'
+dnl
+dnl Use sqlite3 API.
+dnl
+AC_MSG_CHECKING(for sqlite3 support)
+AC_ARG_WITH(sqlite3,
+[  --with-sqlite3          use sqlite3 API ],
+[
+	LDFLAGS="$LDFLAGS -lsqlite3"
+	AC_DEFINE(USE_SQLITE3,1,[Define if you use sqlite3 API.])
+	AC_MSG_RESULT(yes)
+],[
+	AC_MSG_RESULT(no)
+])
 
 dnl
 dnl for home-etc support

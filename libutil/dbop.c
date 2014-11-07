@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005, 2006,
- *	2009, 2010
+ *	2009, 2010, 2014
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -49,6 +49,20 @@
 #include "strbuf.h"
 #include "strlimcpy.h"
 #include "test.h"
+
+#ifdef USE_SQLITE3
+int is_sqlite3(const char *);
+DBOP *dbop3_open(const char *, int, int, int);
+const char *dbop3_get(DBOP *, const char *);
+const char *dbop3_getflag(DBOP *);
+char *dbop3_quote(char *);
+void dbop3_put(DBOP *, const char *, const char *, const char *);
+void dbop3_delete(DBOP *, const char *);
+void dbop3_update(DBOP *, const char *, const char *);
+const char *dbop3_first(DBOP *, const char *, regex_t *, int);
+const char *dbop3_next(DBOP *);
+void dbop3_close(DBOP *);
+#endif
 
 /**
  * Though the prefix of the key of meta record is currently only a @CODE{' '} (blank),
@@ -244,6 +258,24 @@ terminate_sort_process(DBOP *dbop) {
 }
 #endif
 
+#ifdef USE_SQLITE3
+static const char *sqlite_header = "SQLite format 3";
+int
+is_sqlite3(const char *path) {
+	char buf[32];
+	int sqlite3 = 0;
+	int fd = open(path, 0);
+
+	if (fd >= 0) {
+		if (read(fd, buf, sizeof(buf)) == sizeof(buf)) {
+			if (!strncmp(sqlite_header, buf, strlen(sqlite_header)))
+				sqlite3 = 1;
+		}
+		close(fd);
+	}
+	return sqlite3;
+}
+#endif
 /**
  * dbop_open: open db database.
  *
@@ -265,6 +297,14 @@ dbop_open(const char *path, int mode, int perm, int flags)
 	DBOP *dbop;
 	BTREEINFO info;
 
+#ifdef USE_SQLITE3
+	if (mode != 1 && is_sqlite3(path))
+		flags |= DBOP_SQLITE3;
+	if (flags & DBOP_SQLITE3) {
+		dbop = dbop3_open(path, mode, perm, flags);
+		goto finish;
+	}
+#endif
 	/*
 	 * setup arguments.
 	 */
@@ -321,6 +361,7 @@ dbop_open(const char *path, int mode, int perm, int flags)
 	 */
 	if (mode != 0 && dbop->openflags & DBOP_SORTED_WRITE)
 		start_sort_process(dbop);
+finish:
 	return dbop;
 }
 /**
@@ -337,6 +378,10 @@ dbop_get(DBOP *dbop, const char *name)
 	DBT key, dat;
 	int status;
 
+#ifdef USE_SQLITE3
+	if (dbop->openflags & DBOP_SQLITE3)
+		return dbop3_get(dbop, name);
+#endif
 	key.data = (char *)name;
 	key.size = strlen(name)+1;
 
@@ -368,6 +413,12 @@ dbop_put(DBOP *dbop, const char *name, const char *data)
 	int status;
 	int len;
 
+#ifdef USE_SQLITE3
+	if (dbop->openflags & DBOP_SQLITE3) {
+		dbop3_put(dbop, name, data, NULL);
+		return;
+	}
+#endif
 	if (!(len = strlen(name)))
 		die("primary key size == 0.");
 	if (len > MAXKEYLEN)
@@ -395,31 +446,81 @@ dbop_put(DBOP *dbop, const char *name, const char *data)
 	}
 }
 /**
- * dbop_put_withlen: put data by a key.
+ * dbop_put_tag: put a tag
  *
  *	@param[in]	dbop	descripter
  *	@param[in]	name	key
  *	@param[in]	data	data
- *	@param[in]	length	length of @a data
+ */
+void
+dbop_put_tag(DBOP *dbop, const char *name, const char *data)
+{
+#ifdef USE_SQLITE3
+	if (dbop->openflags & DBOP_SQLITE3) {
+		int len;
+		char fid[MAXFIDLEN], *p = data, *q = fid;
+
+		/* extract fid */
+		while (*p && isdigit(*p))
+			*q++ = *p++;
+		*q = '\0';
+		/* trim line */
+		len = strlen(data);
+		if (data[len-1] == '\n')
+			len--;
+		if (data[len-1] == '\r')
+			len--;
+		if (data[len] == '\r' || data[len] == '\n') {
+			STATIC_STRBUF(sb);
+
+			strbuf_clear(sb);
+			strbuf_nputs(sb, data, len);
+			data = strbuf_value(sb);
+		}
+		dbop3_put(dbop, name, data, fid);
+		return;
+	}
+#endif
+	dbop_put(dbop, name, data);
+	return;
+}
+/**
+ * dbop_put_path: put data and flag by a key.
+ *
+ *	@param[in]	dbop	descripter
+ *	@param[in]	name	key
+ *	@param[in]	data	data
+ *	@param[in]	flag	flag
  *
  * @note This function doesn't support sorted writing.
  */
 void
-dbop_put_withlen(DBOP *dbop, const char *name, const char *data, int length)
+dbop_put_path(DBOP *dbop, const char *name, const char *data, const char *flag)
 {
+	STATIC_STRBUF(sb);
 	DB *db = dbop->db;
 	DBT key, dat;
 	int status;
 	int len;
 
+#ifdef USE_SQLITE3
+	if (dbop->openflags & DBOP_SQLITE3) {
+		dbop3_put(dbop, name, data, flag);
+		return;
+	}
+#endif
 	if (!(len = strlen(name)))
 		die("primary key size == 0.");
 	if (len > MAXKEYLEN)
 		die("primary key too long.");
+	strbuf_clear(sb);
+	strbuf_puts0(sb, data);
+	if (flag)
+		strbuf_puts0(sb, flag);
 	key.data = (char *)name;
 	key.size = strlen(name)+1;
-	dat.data = (char *)data;
-	dat.size = length;
+	dat.data = strbuf_value(sb);
+	dat.size = strbuf_getlen(sb);
 
 	status = (*db->put)(db, &key, &dat, 0);
 	switch (status) {
@@ -427,7 +528,7 @@ dbop_put_withlen(DBOP *dbop, const char *name, const char *data, int length)
 		break;
 	case RET_ERROR:
 	case RET_SPECIAL:
-		die(dbop->put_errmsg ? dbop->put_errmsg : "dbop_put_withlen failed.");
+		die(dbop->put_errmsg ? dbop->put_errmsg : "dbop_put_path failed.");
 	}
 }
 /**
@@ -443,6 +544,12 @@ dbop_delete(DBOP *dbop, const char *path)
 	DBT key;
 	int status;
 
+#ifdef USE_SQLITE3
+	if (dbop->openflags & DBOP_SQLITE3) {
+		dbop3_delete(dbop, path);
+		return;
+	}
+#endif
 	if (path) {
 		key.data = (char *)path;
 		key.size = strlen(path)+1;
@@ -462,6 +569,10 @@ dbop_delete(DBOP *dbop, const char *path)
 void
 dbop_update(DBOP *dbop, const char *key, const char *dat)
 {
+#ifdef USE_SQLITE3
+	if (dbop->openflags & DBOP_SQLITE3)
+		return dbop3_update(dbop, key, dat);
+#endif
 	dbop_put(dbop, key, dat);
 }
 /**
@@ -485,8 +596,13 @@ dbop_first(DBOP *dbop, const char *name, regex_t *preg, int flags)
 	int status;
 
 	dbop->preg = preg;
+	dbop->ioflags = flags;
 	if (flags & DBOP_PREFIX && !name)
 		flags &= ~DBOP_PREFIX;
+#ifdef USE_SQLITE3
+	if (dbop->openflags & DBOP_SQLITE3)
+		return dbop3_first(dbop, name, preg, flags);
+#endif
 	if (name) {
 		if (strlen(name) > MAXKEYLEN)
 			die("primary key too long.");
@@ -540,7 +656,6 @@ dbop_first(DBOP *dbop, const char *name, regex_t *preg, int flags)
 	case RET_SPECIAL:
 		return (NULL);
 	}
-	dbop->ioflags = flags;
 	if (flags & DBOP_KEY) {
 		strlimcpy(dbop->prev, (char *)key.data, sizeof(dbop->prev));
 		return (char *)key.data;
@@ -567,6 +682,10 @@ dbop_next(DBOP *dbop)
 		dbop->unread = 0;
 		return dbop->lastdat;
 	}
+#ifdef USE_SQLITE3
+	if (dbop->openflags & DBOP_SQLITE3)
+		return dbop3_next(dbop);
+#endif
 	while ((status = (*db->seq)(db, &key, &dat, R_NEXT)) == RET_SUCCESS) {
 		dbop->readcount++;
 		assert(dat.data != NULL);
@@ -638,6 +757,11 @@ dbop_getflag(DBOP *dbop)
 	int size;
 	const char *dat = dbop_lastdat(dbop, &size);
 	const char *flag = "";
+
+#ifdef USE_SQLITE3
+	if (dbop->openflags & DBOP_SQLITE3)
+		return dbop3_getflag(dbop);
+#endif
 	/*
 	 * Dat format is like follows.
 	 * dat 'xxxxxxx\0ffff\0'
@@ -661,7 +785,7 @@ dbop_getoption(DBOP *dbop, const char *key)
 
 	if ((p = dbop_get(dbop, key)) == NULL)
 		return NULL;
-	if (dbop->lastsize <= strlen(key))
+	if (dbop->lastsize < strlen(key))
 		die("invalid format (dbop_getoption).");
 	for (p += strlen(key); *p && isspace((unsigned char)*p); p++)
 		;
@@ -747,6 +871,12 @@ dbop_close(DBOP *dbop)
 		strbuf_close(sb);
 		terminate_sort_process(dbop);
 	}
+#ifdef USE_SQLITE3
+	if (dbop->openflags & DBOP_SQLITE3) {
+		dbop3_close(dbop);
+		return;
+	}
+#endif
 #ifdef USE_DB185_COMPAT
 	(void)db->close(db);
 #else
@@ -761,3 +891,508 @@ dbop_close(DBOP *dbop)
 	}
 	(void)free(dbop);
 }
+#ifdef USE_SQLITE3
+DBOP *
+dbop3_open(const char *path, int mode, int perm, int flags) {
+	int rc, rw = 0;
+	char *errmsg = 0;
+	DBOP *dbop;
+	sqlite3 *db3;
+	const char *tblname;
+	int cache_size = 0;
+	STRBUF *sql = strbuf_open_tempbuf();
+	char buf[1024];
+
+	/*
+	 * When the path is NULL string and private, temporary file is used.
+	 * The database will be removed when the session is closed.
+	 */
+	if (path == NULL) {
+		path = "";
+		tblname = "temp";
+	} else {
+		/*
+		 * In case of creation.
+		 */
+		if (mode == 1)
+			(void)truncate(path, 0);
+		tblname = "db";
+	}
+	/*
+	 * setup arguments.
+	 */
+	switch (mode) {
+	case 0:
+		rw = SQLITE_OPEN_READONLY;
+		break;
+	case 1:
+		rw = SQLITE_OPEN_CREATE|SQLITE_OPEN_READWRITE;
+		break;
+	case 2:
+		rw = SQLITE_OPEN_READWRITE;
+		break;
+	default:
+		assert(0);
+	}
+	/*
+	 * When the forth argument is NULL, sqlite3_vfs is used.
+	 */
+	rc = sqlite3_open_v2(path, &db3, rw, NULL);
+	if (rc != SQLITE_OK)
+		die("sqlite3_open_v2 failed. (rc = %d)", rc);
+	dbop = (DBOP *)check_calloc(sizeof(DBOP), 1);
+	strlimcpy(dbop->dbname, path, sizeof(dbop->dbname));
+	dbop->sb        = strbuf_open(0);
+	dbop->db3       = db3;
+	dbop->openflags	= flags;
+	dbop->perm	= (mode == 1) ? perm : 0;
+	dbop->mode      = mode;
+	dbop->lastdat	= NULL;
+	dbop->lastflag	= NULL;
+	dbop->lastsize	= 0;
+	dbop->sortout	= NULL;
+	dbop->sortin	= NULL;
+	dbop->stmt      = NULL;
+	dbop->tblname   = check_strdup(tblname);
+	/*
+	 * create table (GTAGS, GRTAGS, GSYMS, GPATH).
+	 */
+	if (mode == 1) {
+		/* drop table */
+		strbuf_clear(sql);
+		strbuf_puts(sql, "drop table ");
+		strbuf_puts(sql, dbop->tblname);
+		rc = sqlite3_exec(dbop->db3, strbuf_value(sql), NULL, NULL, &errmsg);
+        	if (rc != SQLITE_OK) {
+			/* ignore */
+		}
+		/* create table */
+		strbuf_clear(sql);
+		strbuf_puts(sql, "create table ");
+		strbuf_puts(sql, dbop->tblname);
+		strbuf_puts(sql, " (key text, dat text, extra text");
+		if (!(flags & DBOP_DUP))
+			strbuf_puts(sql, ", primary key(key)");
+		strbuf_putc(sql, ')');
+		rc = sqlite3_exec(dbop->db3, strbuf_value(sql), NULL, NULL, &errmsg);
+        	if (rc != SQLITE_OK)
+			die("create table error: %s", errmsg);
+	}
+	/*
+	rc = sqlite3_exec(dbop->db3, "pragma synchronous=off", NULL, NULL, &errmsg);
+       	if (rc != SQLITE_OK)
+		die("pragma synchronous=off error: %s", errmsg);
+	*/
+	/*
+         * Decide cache size.
+         * See libutil/gparam.h for the details.
+         */
+	cache_size = GTAGSCACHE;
+	if (getenv("GTAGSCACHE") != NULL)
+		cache_size = atoi(getenv("GTAGSCACHE"));
+	if (cache_size < GTAGSMINCACHE)
+		cache_size = GTAGSMINCACHE;
+	snprintf(buf, sizeof(buf), "pragma cache_size=%d", cache_size);
+	rc = sqlite3_exec(dbop->db3, buf,  NULL, NULL, &errmsg);
+       	if (rc != SQLITE_OK)
+		die("pragma cache_size error: %s", errmsg);
+	/*
+	 * Maximum file size is DBOP_PAGESIZE * 2147483646.
+	 * if DBOP_PAGESIZE == 8192 then maximum file size is 17592186028032 (17T).
+	 */
+	snprintf(buf, sizeof(buf), "pragma page_size=%d", DBOP_PAGESIZE);
+	rc = sqlite3_exec(dbop->db3, buf,  NULL, NULL, &errmsg);
+       	if (rc != SQLITE_OK)
+		die("pragma page_size error: %s", errmsg);
+	sqlite3_exec(dbop->db3, "pragma journal_mode=memory", NULL, NULL, &errmsg);
+       	if (rc != SQLITE_OK)
+		die("pragma journal_mode=memory error: %s", errmsg);
+	sqlite3_exec(dbop->db3, "pragma pragma synchronous=off", NULL, NULL, &errmsg);
+       	if (rc != SQLITE_OK)
+		die("pragma synchronous=off error: %s", errmsg);
+	rc = sqlite3_exec(dbop->db3, "begin transaction", NULL, NULL, &errmsg);
+       	if (rc != SQLITE_OK)
+		die("pragma begin transaction error: %s", errmsg);
+	strbuf_release_tempbuf(sql);
+	return dbop;
+}
+static int
+single_select_callback(void *v, int argc, char **argv, char **colname) {
+	STATIC_STRBUF(sb);
+	char *p;
+	DBOP *dbop = (DBOP *)v;
+
+	if (argc > 0) {
+		strbuf_clear(sb);
+		strbuf_puts(sb, argv[0]);
+		dbop->lastsize = strbuf_getlen(sb);
+		if (argv[1]) {
+			strbuf_putc(sb, '\0');
+			strbuf_puts(sb, argv[1]);
+		}
+		dbop->lastdat = strbuf_value(sb);
+		dbop->lastflag = argv[1] ? dbop->lastdat + dbop->lastsize + 1 : NULL;
+	} else {
+		dbop->lastdat = NULL;
+		dbop->lastflag = NULL;
+		dbop->lastsize = 0;
+	}
+	return SQLITE_OK;
+}
+const char *
+dbop3_get(DBOP *dbop, const char *name) {
+	int rc;
+	char *errmsg = 0;
+	STRBUF *sql = strbuf_open_tempbuf();
+
+	strbuf_sprintf(sql, "select dat, extra from %s where key = '%s' limit 1",
+			dbop->tblname, name); 
+	dbop->lastdat = NULL;
+	dbop->lastsize = 0;
+	dbop->lastflag = NULL;
+	rc = sqlite3_exec(dbop->db3, strbuf_value(sql), single_select_callback, dbop, &errmsg);
+       	if (rc != SQLITE_OK) {
+		sqlite3_close(dbop->db3);
+		die("dbop3_get failed: %s", errmsg);
+	}
+	strbuf_release_tempbuf(sql);
+	return dbop->lastdat;
+}
+const char *
+dbop3_getflag(DBOP *dbop)
+{
+	return dbop->lastflag ? dbop->lastflag : "";
+}
+char *
+dbop3_quote(char *string) {
+	STATIC_STRBUF(sb);
+	char *p;
+
+	strbuf_clear(sb);
+	for (p = string; *p; p++) {
+		if (*p == '\'')
+			strbuf_putc(sb, '\'');
+		strbuf_putc(sb, *p);
+	}
+	return strbuf_value(sb);
+}
+void
+dbop3_put(DBOP *dbop, const char *p1, const char *p2, const char *p3) {
+	int rc, len;
+	char *errmsg = 0;
+	STRBUF *sql = strbuf_open_tempbuf();
+
+	if (!(len = strlen(p1)))
+		die("primary key size == 0.");
+	if (len > MAXKEYLEN)
+		die("primary key too long.");
+	if (dbop->stmt_put3 == NULL) {
+		strbuf_sprintf(sql, "insert into %s values (?, ?, ?)", dbop->tblname);
+		rc = sqlite3_prepare_v2(dbop->db3, strbuf_value(sql), -1, &dbop->stmt_put3, NULL);
+		if (rc != SQLITE_OK) {
+			die("dbop3_put prepare failed. (rc = %d, sql = %s)", rc, strbuf_value(sql));
+		}
+	}
+	rc = sqlite3_bind_text(dbop->stmt_put3, 1, p1, -1, SQLITE_STATIC);
+       	if (rc != SQLITE_OK) {
+		die("dbop3_put 1 failed. (rc = %d)", rc);
+	}
+	rc = sqlite3_bind_text(dbop->stmt_put3, 2, p2, -1, SQLITE_STATIC);
+       	if (rc != SQLITE_OK) {
+		die("dbop3_put 2 failed. (rc = %d)", rc);
+	}
+	rc = sqlite3_bind_text(dbop->stmt_put3, 3, p3, -1, SQLITE_STATIC);
+       	if (rc != SQLITE_OK) {
+		die("dbop3_put 3 failed. (rc = %d)", rc);
+	}
+	rc = sqlite3_step(dbop->stmt_put3);
+       	if (rc != SQLITE_DONE) {
+		die("dbop3_put failed. (rc = %d)", rc);
+	}
+	rc = sqlite3_reset(dbop->stmt_put3);
+       	if (rc != SQLITE_OK) {
+		die("dbop3_put reset failed. (rc = %d)", rc);
+	}
+	if (dbop->writecount++ > DBOP_COMMIT_THRESHOLD) {
+		dbop->writecount = 0;
+		rc = sqlite3_exec(dbop->db3, "end transaction", NULL, NULL, &errmsg);
+		if (rc != SQLITE_OK)
+			die("pragma error: %s", errmsg);
+		rc = sqlite3_exec(dbop->db3, "begin transaction", NULL, NULL, &errmsg);
+		if (rc != SQLITE_OK)
+			die("pragma error: %s", errmsg);
+	}
+	strbuf_release_tempbuf(sql);
+}
+void
+dbop3_delete(DBOP *dbop, const char *path) {
+	int rc;
+	char *errmsg = 0;
+	STRBUF *sql = strbuf_open_tempbuf();
+
+	strbuf_puts(sql, "delete from ");
+	strbuf_puts(sql, dbop->tblname);
+	strbuf_puts(sql, " where");
+	if (path) {
+		if (*path == '(') {
+			strbuf_puts(sql, " extra in ");
+			strbuf_puts(sql, path); 
+		} else {
+			strbuf_puts(sql, " key = '");
+			strbuf_puts(sql, path);
+			strbuf_puts(sql, "'");
+		}
+	} else {
+		strbuf_puts(sql, " rowid = ");
+		strbuf_putn64(sql, dbop->lastrowid);
+	}
+	rc = sqlite3_exec(dbop->db3, strbuf_value(sql), NULL, NULL, &errmsg);
+       	if (rc != SQLITE_OK) {
+		sqlite3_close(dbop->db3);
+		die("dbop3_delete failed: %s", errmsg);
+	}
+	strbuf_release_tempbuf(sql);
+}
+void
+dbop3_update(DBOP *dbop, const char *key, const char *dat) {
+	int rc;
+	char *errmsg = 0;
+	STRBUF *sql = strbuf_open_tempbuf();
+
+	strbuf_sprintf(sql, "update %s set dat = '%s' where key = '%s'",
+					dbop->tblname, dbop3_quote((char *)dat), key);
+	rc = sqlite3_exec(dbop->db3, strbuf_value(sql), NULL, NULL, &errmsg);
+       	if (rc != SQLITE_OK) {
+		sqlite3_close(dbop->db3);
+		die("dbop3_update failed: %s", errmsg);
+	}
+	if (sqlite3_changes(dbop->db3) == 0) {
+		strbuf_clear(sql);
+		strbuf_sprintf(sql, "insert into %s values ('%s', '%s', NULL)",
+					dbop->tblname, key, dbop3_quote((char *)dat));
+		rc = sqlite3_exec(dbop->db3, strbuf_value(sql), NULL, NULL, &errmsg);
+		if (rc != SQLITE_OK) {
+			sqlite3_close(dbop->db3);
+			die("dbop3_updated failed: %s", errmsg);
+		}
+	}
+	strbuf_release_tempbuf(sql);
+}
+const char *
+dbop3_first(DBOP *dbop, const char *name, regex_t *preg, int flags) {
+	int rc;
+	char *key, *dat;
+	STRBUF *sql = strbuf_open_tempbuf();
+
+	strbuf_puts(sql, "select rowid, * from ");
+	strbuf_puts(sql, dbop->tblname);
+	if (name) {
+		strbuf_puts(sql, " where key ");
+		if (dbop->ioflags & DBOP_PREFIX) {
+			/*
+			 * In sqlite3, 'like' ignores case. 'glob' does not ignore case.
+			 */
+			strbuf_puts(sql, "glob '");
+			strbuf_puts(sql, name);
+			strbuf_puts(sql, "*'");
+		} else {
+			strbuf_puts(sql, "= '");
+			strbuf_puts(sql, name);
+			strbuf_puts(sql, "'");
+		}
+		strlimcpy(dbop->key, name, sizeof(dbop->key));
+		dbop->keylen = strlen(name);
+	}
+	strbuf_puts(sql, " order by key");
+	if (dbop->stmt) {
+		rc = sqlite3_finalize(dbop->stmt);
+		if (rc != SQLITE_OK)
+			die("dbop3_finalize failed. (rc = %d)", rc);
+		dbop->stmt = NULL;
+	}
+	rc = sqlite3_prepare_v2(dbop->db3, strbuf_value(sql), -1, &dbop->stmt, NULL);
+	if (rc != SQLITE_OK)
+		die("dbop3_first: sqlite3_prepare_v2 failed. (rc = %d)", rc);
+	/*
+	 *	0: rowid
+	 *	1: key
+	 *	2: dat
+	 *	3: flags
+	 */
+	for (;;) {
+		rc = sqlite3_step(dbop->stmt);
+		if (rc == SQLITE_ROW) {
+			dbop->readcount++;
+			dbop->lastrowid = (char *)sqlite3_column_int64(dbop->stmt, 0);
+			key = (char *)sqlite3_column_text(dbop->stmt, 1);
+			if (name) {
+				if (dbop->ioflags & DBOP_PREFIX) {
+					if (strncmp(key, dbop->key, dbop->keylen))
+						goto finish;
+				} else {
+					if (strcmp(key, dbop->key)) 
+						goto finish;
+				}
+				if (dbop->preg && regexec(dbop->preg, key, 0, 0, 0) != 0)
+					continue;
+			} else {
+				/* skip meta records */
+				if (ismeta(key) && !(dbop->openflags & DBOP_RAW))
+					continue;
+				if (dbop->preg && regexec(dbop->preg, key, 0, 0, 0) != 0)
+					continue;
+			}
+			break;
+		} else {
+			/*
+			 * Sqlite3 returns SQLITE_MISUSE if it is called after SQLITE_DONE.
+			 */
+			goto finish;
+		}
+	}
+	strbuf_clear(dbop->sb);
+	strbuf_puts0(dbop->sb, (char *)sqlite3_column_text(dbop->stmt, 2));
+	dbop->lastsize = strbuf_getlen(dbop->sb) - 1;
+	dbop->lastflag = (char *)sqlite3_column_text(dbop->stmt, 3);
+	if (dbop->lastflag)
+		strbuf_puts(dbop->sb, dbop->lastflag);
+	dbop->lastdat = strbuf_value(dbop->sb);
+	if (dbop->lastflag)
+		dbop->lastflag = dbop->lastdat + dbop->lastsize + 1;
+	dbop->lastkey = key;
+	dbop->lastkeysize = strlen(dbop->lastkey);
+	strbuf_release_tempbuf(sql);
+	if (flags & DBOP_KEY) {
+		strlimcpy(dbop->prev, key, sizeof(dbop->prev));
+		return key;
+	}
+	return dbop->lastdat;
+finish:
+	strbuf_release_tempbuf(sql);
+	dbop->lastdat = NULL;
+	dbop->lastsize = 0;
+	dbop->lastflag = NULL;
+	return dbop->lastdat;
+}
+const char *
+dbop3_next(DBOP *dbop) {
+	int rc;
+	char *key, *dat;
+
+	/*
+	 *	0: rowid
+	 *	1: key
+	 *	2: dat
+	 *	3: flags
+	 */
+	for (;;) {
+		rc = sqlite3_step(dbop->stmt);
+		if (rc == SQLITE_ROW) {
+			dbop->readcount++;
+			dbop->lastrowid = (char *)sqlite3_column_int64(dbop->stmt, 0);
+			key = (char *)sqlite3_column_text(dbop->stmt, 1);
+			dat = (char *)sqlite3_column_text(dbop->stmt, 2);
+			/* skip meta records */
+			if (!(dbop->openflags & DBOP_RAW)) {
+				if (dbop->ioflags & DBOP_KEY && ismeta(key))
+					continue;
+				else if (ismeta(dat))
+					continue;
+			}
+			if (dbop->ioflags & DBOP_KEY) {
+				if (!strcmp(dbop->prev, key))
+					continue;
+				if (strlen(key) > MAXKEYLEN)
+					die("primary key too long.");
+				strlimcpy(dbop->prev, key, sizeof(dbop->prev));
+			}
+			if (dbop->ioflags & DBOP_PREFIX) {
+				if (strncmp(key, dbop->key, dbop->keylen))
+					goto finish;
+			} else if (dbop->keylen) {
+				if (strcmp(key, dbop->key)) 
+					goto finish;
+			}
+			if (dbop->preg && regexec(dbop->preg, key, 0, 0, 0) != 0)
+				continue;
+			break;
+		} else {
+			/*
+			 * Sqlite3 returns SQLITE_MISUSE if it is called after SQLITE_DONE.
+			 */
+			goto finish;
+			die("dbop3_next: sqlite3_step failed. (rc = %d) %s", rc, sqlite3_errmsg(dbop->db3));
+		}
+	}
+	strbuf_clear(dbop->sb);
+	strbuf_puts0(dbop->sb, (char *)sqlite3_column_text(dbop->stmt, 2));
+	dbop->lastsize = strbuf_getlen(dbop->sb) - 1;
+	dbop->lastflag = (char *)sqlite3_column_text(dbop->stmt, 3);
+	if (dbop->lastflag)
+		strbuf_puts(dbop->sb, dbop->lastflag);
+	dbop->lastdat = strbuf_value(dbop->sb);
+	if (dbop->lastflag)
+		dbop->lastflag = dbop->lastdat + dbop->lastsize + 1;
+	dbop->lastkey = key;
+	dbop->lastkeysize = strlen(dbop->lastkey);
+	if (dbop->ioflags & DBOP_KEY) {
+		strlimcpy(dbop->prev, key, sizeof(dbop->prev));
+		return key;
+	}
+	return dbop->lastdat;
+finish:
+	dbop->lastdat = NULL;
+	dbop->lastsize = 0;
+	return dbop->lastdat;
+}
+void
+dbop3_close(DBOP *dbop) {
+	int rc;
+	char *errmsg = 0;
+
+	rc = sqlite3_exec(dbop->db3, "end transaction", NULL, NULL, &errmsg);
+       	if (rc != SQLITE_OK)
+		die("pragma error: %s", errmsg);
+	/*
+	 * create index
+	 */
+	if (dbop->mode == 1 && dbop->openflags & DBOP_DUP) {
+		STATIC_STRBUF(sql);
+
+		strbuf_clear(sql);
+		strbuf_puts(sql, "create index key_i on ");
+		strbuf_puts(sql, dbop->tblname);
+		strbuf_puts(sql, "(key)");
+		rc = sqlite3_exec(dbop->db3, strbuf_value(sql), NULL, NULL, &errmsg);
+		if (rc != SQLITE_OK)
+			die("create table error: %s", errmsg);
+		strbuf_clear(sql);
+		strbuf_puts(sql, "create index fid_i on ");
+		strbuf_puts(sql, dbop->tblname);
+		strbuf_puts(sql, "(extra)");
+		rc = sqlite3_exec(dbop->db3, strbuf_value(sql), NULL, NULL, &errmsg);
+		if (rc != SQLITE_OK)
+			die("create table error: %s", errmsg);
+	}
+	if (dbop->stmt) {
+		rc = sqlite3_finalize(dbop->stmt);
+		if (rc != SQLITE_OK)
+			die("sqlite3_finalize failed. (rc = %d)", rc);
+		dbop->stmt = NULL;
+	}
+	if (dbop->stmt_put3) {
+		rc = sqlite3_finalize(dbop->stmt_put3);
+		if (rc != SQLITE_OK)
+			die("dbop3_finalize failed. (rc = %d)", rc);
+		dbop->stmt_put3 = NULL;
+	}
+	rc = sqlite3_close(dbop->db3);
+	if (rc != SQLITE_OK)
+		die("sqlite3_close failed. (rc = %d)", rc);
+	dbop->db3 = NULL;
+	if (dbop->tblname)
+		free((void *)dbop->tblname);
+	strbuf_close(dbop->sb);
+	free(dbop);
+}
+#endif /* USE_SQLITE3 */

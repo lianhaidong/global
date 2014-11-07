@@ -46,6 +46,11 @@ static int _mode;
 static int opened;
 static int created;
 
+int openflags;
+void
+set_gpath_flags(int flags) {
+	openflags = flags;
+}
 /**
  * @file
  * @NAME{GPATH} format version
@@ -117,13 +122,12 @@ gpath_open(const char *dbpath, int mode)
 	_mode = mode;
 	if (mode == 1 && created)
 		mode = 0;
-	dbop = dbop_open(makepath(dbpath, dbname(GPATH), NULL), mode, 0644, 0);
+	dbop = dbop_open(makepath(dbpath, dbname(GPATH), NULL), mode, 0644, openflags);
 	if (dbop == NULL)
 		return -1;
 	if (mode == 1) {
 		dbop_putversion(dbop, create_version);
 		_nextkey = 1;
-		
 	} else {
 		int format_version;
 		const char *path = dbop_get(dbop, NEXTKEY);
@@ -167,18 +171,14 @@ gpath_put(const char *path, int type)
 	 * path => fid mapping.
 	 */
 	strbuf_clear(sb);
-	strbuf_puts0(sb, fid);
-	if (type == GPATH_OTHER)
-		strbuf_puts0(sb, "o");
-	dbop_put_withlen(dbop, path, strbuf_value(sb), strbuf_getlen(sb));
+	strbuf_puts(sb, fid);
+	dbop_put_path(dbop, path, strbuf_value(sb), type == GPATH_OTHER ? "o" : NULL);
 	/*
 	 * fid => path mapping.
 	 */
 	strbuf_clear(sb);
-	strbuf_puts0(sb, path);
-	if (type == GPATH_OTHER)
-		strbuf_puts0(sb, "o");
-	dbop_put_withlen(dbop, fid, strbuf_value(sb), strbuf_getlen(sb));
+	strbuf_puts(sb, path);
+	dbop_put_path(dbop, fid, strbuf_value(sb), type == GPATH_OTHER ? "o" : NULL);
 }
 /**
  * gpath_path2fid: convert path into id
@@ -348,6 +348,8 @@ gfind_read(GFIND *gfind)
 		 * *flag == 'o' means 'other files' like README.
 		 */
 		flag = dbop_getflag(gfind->dbop);
+		if (flag == NULL)
+			flag = "";
 		gfind->type = (*flag == 'o') ? GPATH_OTHER : GPATH_SOURCE;
 		if (gfind->type & gfind->target)
 			break;

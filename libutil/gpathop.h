@@ -50,6 +50,7 @@ typedef struct {
 	const char *path;	/**< return value of gfind_read() */
 } GFIND;
 
+void set_gpath_flags(int);
 int gpath_open(const char *, int);
 const char *gpath_path2fid(const char *, int *);
 const char *gpath_fid2path(const char *, int *);

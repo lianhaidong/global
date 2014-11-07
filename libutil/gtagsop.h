@@ -62,7 +62,11 @@
 #define GTAGS_COMPNAME		8
 			/** extract method from class definition */
 #define GTAGS_EXTRACTMETHOD	16
+			/** use sqlite3 database */
+#ifdef USE_SQLITE3
+#define GTAGS_SQLITE3	32
 			/** print information for debug */
+#endif
 #define GTAGS_DEBUG		65536
 /** @} */
 

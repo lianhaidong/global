@@ -19,6 +19,18 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+November 7 2014, Shigio YAMAGUCHI
+
+	Added support of sqlite3 API for tag files (alpha quality).
+	If you will test the code then please do as follows:
+	(You need to have sqlite3 library in your system.)
+
+        [building phase]
+        $ ./configure --with-sqlite3
+
+        [executing phase]
+        $ gtags --sqlite3
+
 June 28 2014, Shigio YAMAGUCHI
 
 	New environment variable GTAGSLOGICALPATH was added.

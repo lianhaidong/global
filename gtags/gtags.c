@@ -87,6 +87,9 @@ const char *file_list;
 const char *dump_target;
 char *single_update;
 int statistics = STATISTICS_STYLE_NONE;
+#ifdef USE_SQLITE3
+int use_sqlite3;
+#endif
 
 #define GTAGSFILES "gtags.files"
 
@@ -140,6 +143,9 @@ static struct option const long_options[] = {
 	/* flag value */
 	{"accept-dotfiles", no_argument, NULL, OPT_ACCEPT_DOTFILES},
 	{"debug", no_argument, &debug, 1},
+#ifdef USE_SQLITE3
+	{"sqlite3", no_argument, &use_sqlite3, 1},
+#endif
 	{"statistics", no_argument, &statistics, STATISTICS_STYLE_TABLE},
 	{"version", no_argument, &show_version, 1},
 	{"help", no_argument, &show_help, 1},
@@ -878,6 +884,10 @@ createtags(const char *dbpath, const char *root)
 	if (vflag)
 		fprintf(stderr, "[%s] Creating '%s' and '%s'.\n", now(), dbname(GTAGS), dbname(GRTAGS));
 	openflags = cflag ? GTAGS_COMPACT : 0;
+#ifdef USE_SQLITE3
+	if (use_sqlite3)
+		openflags |= GTAGS_SQLITE3;
+#endif
 	data.gtop[GTAGS] = gtags_open(dbpath, root, GTAGS, GTAGS_CREATE, openflags);
 	data.gtop[GTAGS]->flags = 0;
 	if (extractmethod)

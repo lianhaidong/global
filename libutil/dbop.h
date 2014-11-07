@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2006, 2009, 2010
+ * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2006, 2009, 2010,
+ *	2014
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -17,7 +18,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 #ifndef _DBOP_H_
 #define _DBOP_H_
 
@@ -27,6 +27,9 @@
 #else
 #include "db.h"
 #endif
+#ifdef USE_SQLITE3
+#include <sqlite3.h>
+#endif
 #include "regex.h"
 #include "strbuf.h"
 
@@ -35,6 +38,9 @@ typedef void* HANDLE;
 #endif
 
 #define DBOP_PAGESIZE	8192
+#ifdef USE_SQLITE3
+#define DBOP_COMMIT_THRESHOLD	800
+#endif
 #define VERSIONKEY	" __.VERSION"
 
 typedef	struct {
@@ -78,9 +84,24 @@ typedef	struct {
 	int pid;			/**< sort process id */
 #endif
 	/** @} */
-
+#ifdef USE_SQLITE3
+	/**
+	 * @name (4) sqlite3 part
+	 */
+	sqlite3 *db3;
+	STRBUF *sb;
+	const char *tblname;
+	sqlite3_stmt *stmt;
+	sqlite3_stmt *stmt_put3;
+	sqlite3_int64 lastrowid;
+	char *lastflag;
+#endif
 	/** statistics */
 	int readcount;
+#ifdef USE_SQLITE3
+	/** for commit */
+	int writecount;
+#endif
 } DBOP;
 
 /**
@@ -89,6 +110,10 @@ typedef	struct {
 /** @{ */
 		/** allow duplicate records	*/
 #define	DBOP_DUP	1
+#ifdef USE_SQLITE3
+		/* use sqlite3 database		*/
+#define DBOP_SQLITE3	2
+#endif
 /** @} */
 
 /**
@@ -108,7 +133,8 @@ typedef	struct {
 DBOP *dbop_open(const char *, int, int, int);
 const char *dbop_get(DBOP *, const char *);
 void dbop_put(DBOP *, const char *, const char *);
-void dbop_put_withlen(DBOP *, const char *, const char *, int);
+void dbop_put_tag(DBOP *, const char *, const char *);
+void dbop_put_path(DBOP *, const char *, const char *, const char *);
 void dbop_delete(DBOP *, const char *);
 void dbop_update(DBOP *, const char *, const char *);
 const char *dbop_first(DBOP *, const char *, regex_t *, int);

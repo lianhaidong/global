@@ -332,6 +332,7 @@ gtags_open(const char *dbpath, const char *root, int db, int mode, int flags)
 	GTOP *gtop;
 	char tagfile[MAXPATHLEN];
 	int dbmode;
+	int dbop_flags = DBOP_DUP;
 
 	gtop = (GTOP *)check_calloc(sizeof(GTOP), 1);
 	gtop->db = db;
@@ -353,6 +354,16 @@ gtags_open(const char *dbpath, const char *root, int db, int mode, int flags)
 	default:
 		assert(0);
 	}
+#ifdef USE_SQLITE3
+	/*
+	 * Don't use sorted writing with sqlite, because it is slow on the contrary.
+	 */
+	if (flags & GTAGS_SQLITE3) {
+		dbop_flags |= DBOP_SQLITE3;
+		set_gpath_flags(DBOP_SQLITE3);
+	} else
+#endif
+		dbop_flags |= DBOP_SORTED_WRITE;
 	/*
 	 * GRTAGS and GSYMS are virtual tag file. They are included in a real GRTAGS file.
 	 * In fact, GSYMS doesn't exist now.
@@ -361,7 +372,7 @@ gtags_open(const char *dbpath, const char *root, int db, int mode, int flags)
 	 * GSYMS:	tags which belongs to GRTAGS, and is not defined in GTAGS.
 	 */
 	strlimcpy(tagfile, makepath(dbpath, dbname(db == GSYMS ? GRTAGS : db), NULL), sizeof(tagfile));
-	gtop->dbop = dbop_open(tagfile, dbmode, 0644, DBOP_DUP|DBOP_SORTED_WRITE);
+	gtop->dbop = dbop_open(tagfile, dbmode, 0644, dbop_flags);
 	if (gtop->dbop == NULL) {
 		if (dbmode == 1)
 			die("cannot make %s.", dbname(db));
@@ -516,7 +527,7 @@ gtags_put_using(GTOP *gtop, const char *tag, int lno, const char *fid, const cha
 	strbuf_putn(gtop->sb, lno);
 	strbuf_putc(gtop->sb, ' ');
 	strbuf_puts(gtop->sb, (gtop->format & GTAGS_COMPRESS) ? compress(img, key) : img);
-	dbop_put(gtop->dbop, key, strbuf_value(gtop->sb));
+	dbop_put_tag(gtop->dbop, key, strbuf_value(gtop->sb));
 }
 /**
  * gtags_flush: Flush the pool for compact format.
@@ -543,7 +554,23 @@ gtags_delete(GTOP *gtop, IDSET *deleteset)
 {
 	const char *tagline;
 	int fid;
+	long id;
 
+#ifdef USE_SQLITE3
+	if (gtop->dbop->openflags & DBOP_SQLITE3) {
+		STRBUF *where = strbuf_open(0);
+		strbuf_puts(where, "(");
+		for (id = idset_first(deleteset); id != END_OF_ID; id = idset_next(deleteset)) {
+			strbuf_puts(where, "'");
+			strbuf_putn(where, id);
+			strbuf_puts(where, "',");
+		}
+		strbuf_unputc(where, ',');
+		strbuf_puts(where, ")");
+		dbop_delete(gtop->dbop, strbuf_value(where));
+		strbuf_close(where);
+	} else
+#endif
 	for (tagline = dbop_first(gtop->dbop, NULL, NULL, 0); tagline; tagline = dbop_next(gtop->dbop)) {
 		/*
 		 * Extract path from the tag line.
@@ -1034,7 +1061,7 @@ flush_pool(GTOP *gtop, const char *s_fid)
 						strbuf_putn(gtop->sb, n);
 					}
 					if (strbuf_getlen(gtop->sb) > DBOP_PAGESIZE / 4) {
-						dbop_put(gtop->dbop, key, strbuf_value(gtop->sb));
+						dbop_put_tag(gtop->dbop, key, strbuf_value(gtop->sb));
 						strbuf_setlen(gtop->sb, header_offset);
 					}
 				}
@@ -1058,14 +1085,14 @@ flush_pool(GTOP *gtop, const char *s_fid)
 					strbuf_putc(gtop->sb, ',');
 				strbuf_putn(gtop->sb, n);
 				if (strbuf_getlen(gtop->sb) > DBOP_PAGESIZE / 4) {
-					dbop_put(gtop->dbop, key, strbuf_value(gtop->sb));
+					dbop_put_tag(gtop->dbop, key, strbuf_value(gtop->sb));
 					strbuf_setlen(gtop->sb, header_offset);
 				}
 				last = n;
 			}
 		}
 		if (strbuf_getlen(gtop->sb) > header_offset) {
-			dbop_put(gtop->dbop, key, strbuf_value(gtop->sb));
+			dbop_put_tag(gtop->dbop, key, strbuf_value(gtop->sb));
 		}
 		/* Free line number table */
 		varray_close(vb);

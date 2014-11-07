@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2002, 2005, 2006, 2010
+ * Copyright (c) 1997, 1998, 1999, 2000, 2002, 2005, 2006, 2010, 2014
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -244,6 +244,31 @@ strbuf_puts_nl(STRBUF *sb, const char *s)
  */
 void
 strbuf_putn(STRBUF *sb, int n)
+{
+	if (n == 0) {
+		strbuf_putc(sb, '0');
+	} else {
+		char num[128];
+		int i = 0;
+
+		while (n) {
+			if (i >= sizeof(num))
+				die("Too big integer value.");
+			num[i++] = n % 10 + '0';
+			n = n / 10;
+		}
+		while (--i >= 0)
+			strbuf_putc(sb, num[i]);
+	}
+}
+/**
+ * strbuf_putn64: put digit string at the last of buffer.
+ *
+ *	@param[in]	sb	#STRBUF structure
+ *	@param[in]	n	number
+ */
+void
+strbuf_putn64(STRBUF *sb, long long n)
 {
 	if (n == 0) {
 		strbuf_putc(sb, '0');
