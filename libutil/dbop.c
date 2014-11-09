@@ -458,7 +458,8 @@ dbop_put_tag(DBOP *dbop, const char *name, const char *data)
 #ifdef USE_SQLITE3
 	if (dbop->openflags & DBOP_SQLITE3) {
 		int len;
-		char fid[MAXFIDLEN], *p = data, *q = fid;
+		char fid[MAXFIDLEN], *q = fid;
+		const char *p = data;
 
 		/* extract fid */
 		while (*p && isdigit(*p))
@@ -1019,7 +1020,6 @@ dbop3_open(const char *path, int mode, int perm, int flags) {
 static int
 single_select_callback(void *v, int argc, char **argv, char **colname) {
 	STATIC_STRBUF(sb);
-	char *p;
 	DBOP *dbop = (DBOP *)v;
 
 	if (argc > 0) {
@@ -1181,7 +1181,7 @@ dbop3_update(DBOP *dbop, const char *key, const char *dat) {
 const char *
 dbop3_first(DBOP *dbop, const char *name, regex_t *preg, int flags) {
 	int rc;
-	char *key, *dat;
+	char *key;
 	STRBUF *sql = strbuf_open_tempbuf();
 
 	strbuf_puts(sql, "select rowid, * from ");
@@ -1223,7 +1223,7 @@ dbop3_first(DBOP *dbop, const char *name, regex_t *preg, int flags) {
 		rc = sqlite3_step(dbop->stmt);
 		if (rc == SQLITE_ROW) {
 			dbop->readcount++;
-			dbop->lastrowid = (char *)sqlite3_column_int64(dbop->stmt, 0);
+			dbop->lastrowid = sqlite3_column_int64(dbop->stmt, 0);
 			key = (char *)sqlite3_column_text(dbop->stmt, 1);
 			if (name) {
 				if (dbop->ioflags & DBOP_PREFIX) {
@@ -1289,7 +1289,7 @@ dbop3_next(DBOP *dbop) {
 		rc = sqlite3_step(dbop->stmt);
 		if (rc == SQLITE_ROW) {
 			dbop->readcount++;
-			dbop->lastrowid = (char *)sqlite3_column_int64(dbop->stmt, 0);
+			dbop->lastrowid = sqlite3_column_int64(dbop->stmt, 0);
 			key = (char *)sqlite3_column_text(dbop->stmt, 1);
 			dat = (char *)sqlite3_column_text(dbop->stmt, 2);
 			/* skip meta records */
