@@ -18,3 +18,5 @@ libgloglibc_a_SOURCES = regex.c getopt.c getopt1.c snprintf.c obstack.c \
 		hash-string.c sqlite3.c
 
 libgloglibc_a_DEPENDENCIES = $(libgloglibc_a_LIBADD)
+
+AM_CPPFLAGS = @AM_CPPFLAGS@ -DSQLITE_THREADSAFE=0 -DSQLITE_OMIT_LOAD_EXTENSION
