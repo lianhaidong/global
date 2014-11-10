@@ -1013,7 +1013,7 @@ dbop3_open(const char *path, int mode, int perm, int flags) {
 		die("pragma synchronous=off error: %s", errmsg);
 	rc = sqlite3_exec(dbop->db3, "begin transaction", NULL, NULL, &errmsg);
        	if (rc != SQLITE_OK)
-		die("pragma begin transaction error: %s", errmsg);
+		die("begin transaction error: %s", errmsg);
 	strbuf_release_tempbuf(sql);
 	return dbop;
 }
@@ -1117,10 +1117,10 @@ dbop3_put(DBOP *dbop, const char *p1, const char *p2, const char *p3) {
 		dbop->writecount = 0;
 		rc = sqlite3_exec(dbop->db3, "end transaction", NULL, NULL, &errmsg);
 		if (rc != SQLITE_OK)
-			die("pragma error: %s", errmsg);
+			die("end transaction error: %s", errmsg);
 		rc = sqlite3_exec(dbop->db3, "begin transaction", NULL, NULL, &errmsg);
 		if (rc != SQLITE_OK)
-			die("pragma error: %s", errmsg);
+			die("begin transaction error: %s", errmsg);
 	}
 	strbuf_release_tempbuf(sql);
 }
@@ -1358,7 +1358,7 @@ dbop3_close(DBOP *dbop) {
 
 	rc = sqlite3_exec(dbop->db3, "end transaction", NULL, NULL, &errmsg);
        	if (rc != SQLITE_OK)
-		die("pragma error: %s", errmsg);
+		die("end transaction error: %s", errmsg);
 	/*
 	 * create index
 	 */
