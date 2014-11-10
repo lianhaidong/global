@@ -185,4 +185,9 @@ o Pygments plug-in parser by Yoshitaro MAKISE.
 	plugin-factory/pygments-parser.c	plugin-factory/pygments-parser.c
 	plugin-factory/pygments_parser.py.in	pygments_parser.py.in
 
+o SQLite3 by D. Richard Hipp.
+
+	libglibc/sqlite3.c
+	libglibc/sqlite3.h
+
 they are considered a separate package, not part of GLOBAL proper.

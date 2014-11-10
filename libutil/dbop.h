@@ -90,6 +90,7 @@ typedef	struct {
 	 */
 	sqlite3 *db3;
 	STRBUF *sb;
+	int done;
 	const char *tblname;
 	sqlite3_stmt *stmt;
 	sqlite3_stmt *stmt_put3;

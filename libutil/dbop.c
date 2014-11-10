@@ -1184,6 +1184,7 @@ dbop3_first(DBOP *dbop, const char *name, regex_t *preg, int flags) {
 	char *key;
 	STRBUF *sql = strbuf_open_tempbuf();
 
+	dbop->done = 0; 	/* This is turned on when it receives SQLITE_DONE. */
 	strbuf_puts(sql, "select rowid, * from ");
 	strbuf_puts(sql, dbop->tblname);
 	if (name) {
@@ -1220,8 +1221,13 @@ dbop3_first(DBOP *dbop, const char *name, regex_t *preg, int flags) {
 	 *	3: flags
 	 */
 	for (;;) {
+		/* Once it receives SQLITE_DONE, do not never return value */
+		if (dbop->done)
+			return NULL;
 		rc = sqlite3_step(dbop->stmt);
-		if (rc == SQLITE_ROW) {
+		if (rc == SQLITE_DONE)
+			goto finish;
+		else if (rc == SQLITE_ROW) {
 			dbop->readcount++;
 			dbop->lastrowid = sqlite3_column_int64(dbop->stmt, 0);
 			key = (char *)sqlite3_column_text(dbop->stmt, 1);
@@ -1244,10 +1250,7 @@ dbop3_first(DBOP *dbop, const char *name, regex_t *preg, int flags) {
 			}
 			break;
 		} else {
-			/*
-			 * Sqlite3 returns SQLITE_MISUSE if it is called after SQLITE_DONE.
-			 */
-			goto finish;
+			die("dbop3_first: something is wrong (rc = %d).", rc);
 		}
 	}
 	strbuf_clear(dbop->sb);
@@ -1269,6 +1272,7 @@ dbop3_first(DBOP *dbop, const char *name, regex_t *preg, int flags) {
 	return dbop->lastdat;
 finish:
 	strbuf_release_tempbuf(sql);
+	dbop->done = 1;
 	dbop->lastdat = NULL;
 	dbop->lastsize = 0;
 	dbop->lastflag = NULL;
@@ -1286,8 +1290,13 @@ dbop3_next(DBOP *dbop) {
 	 *	3: flags
 	 */
 	for (;;) {
+		/* Once it receives SQLITE_DONE, do not never return value */
+		if (dbop->done)
+			return NULL;
 		rc = sqlite3_step(dbop->stmt);
-		if (rc == SQLITE_ROW) {
+		if (rc == SQLITE_DONE)
+			goto finish;
+		else if (rc == SQLITE_ROW) {
 			dbop->readcount++;
 			dbop->lastrowid = sqlite3_column_int64(dbop->stmt, 0);
 			key = (char *)sqlite3_column_text(dbop->stmt, 1);
@@ -1317,11 +1326,7 @@ dbop3_next(DBOP *dbop) {
 				continue;
 			break;
 		} else {
-			/*
-			 * Sqlite3 returns SQLITE_MISUSE if it is called after SQLITE_DONE.
-			 */
-			goto finish;
-			die("dbop3_next: sqlite3_step failed. (rc = %d) %s", rc, sqlite3_errmsg(dbop->db3));
+			die("dbop3_next: something is wrong (rc = %d).", rc);
 		}
 	}
 	strbuf_clear(dbop->sb);
@@ -1341,6 +1346,7 @@ dbop3_next(DBOP *dbop) {
 	}
 	return dbop->lastdat;
 finish:
+	dbop->done = 1;
 	dbop->lastdat = NULL;
 	dbop->lastsize = 0;
 	return dbop->lastdat;
@@ -1365,14 +1371,14 @@ dbop3_close(DBOP *dbop) {
 		strbuf_puts(sql, "(key)");
 		rc = sqlite3_exec(dbop->db3, strbuf_value(sql), NULL, NULL, &errmsg);
 		if (rc != SQLITE_OK)
-			die("create table error: %s", errmsg);
+			die("create index error: %s", errmsg);
 		strbuf_clear(sql);
 		strbuf_puts(sql, "create index fid_i on ");
 		strbuf_puts(sql, dbop->tblname);
 		strbuf_puts(sql, "(extra)");
 		rc = sqlite3_exec(dbop->db3, strbuf_value(sql), NULL, NULL, &errmsg);
 		if (rc != SQLITE_OK)
-			die("create table error: %s", errmsg);
+			die("create index error: %s", errmsg);
 	}
 	if (dbop->stmt) {
 		rc = sqlite3_finalize(dbop->stmt);

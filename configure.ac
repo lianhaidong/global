@@ -199,7 +199,7 @@ AC_MSG_CHECKING(for sqlite3 support)
 AC_ARG_WITH(sqlite3,
 [  --with-sqlite3          use sqlite3 API ],
 [
-	LDFLAGS="$LDFLAGS -lsqlite3"
+	#LDFLAGS="$LDFLAGS -lsqlite3"
 	AC_DEFINE(USE_SQLITE3,1,[Define if you use sqlite3 API.])
 	AC_MSG_RESULT(yes)
 ],[
