@@ -4,7 +4,7 @@ ___________________________________
 |  |   |  |  |  |  |     |     |  |
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Copyright (c) 2011, 2013 Tama Communications Corporation
+ Copyright (c) 2011, 2013, 2014 Tama Communications Corporation
 
  This file is free software; as a special exception the author gives
  unlimited permission to copy and/or distribute it, with or without
@@ -17,13 +17,15 @@ ___________________________________
                 ----------------------------------
 
 Plugin-factory directory ('plugin-factory/' in the GLOBAL package) is a factory
-of plug-in parsers. It has two plug-in parsers which are installed into the
+of plug-in parser. It has three plug-in parsers which are installed into the
 system by default.
 
 Nop parser('user-custom.c')
 	A skeleton parser. Nothing has been implemented yet.
 Exuberant Ctags('exuberant-ctags.c')
 	A parser to use Exuberant Ctags.
+Pygments + Exuberant Ctags('pygments-parser.c')
+	A parser to use Pygments and Exuberant Ctags.
 
 How to write a plug-in parser?
 ==============================
@@ -60,7 +62,9 @@ o write a tag to GRTAGS
 	param->put(PARSER_REF_SYM, <tag name>, <line no>, <file name>, <line image>, param->arg);
 
 Note: 
-Gtags always makes GRTAGS even if you don't use PARSER_REF_SYM.
+o Gtags always makes 'GRTAGS' file even if you don't use PARSER_REF_SYM.
+o You can write a plug-in parser independently with GLOBAL except for 'parser.h'.
+  Plug-in factory is supplied only for your convenience.
 
 How to use Exuberant Ctags as a parser?
 =======================================
