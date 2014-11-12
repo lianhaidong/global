@@ -22,9 +22,6 @@
 #include <config.h>
 #endif
 #include <sys/types.h>
-#if !defined(_WIN32) || defined(__CYGWIN__)
-#include <sys/wait.h>
-#endif
 #include <assert.h>
 #include <ctype.h>
 #include <errno.h>
@@ -51,23 +48,14 @@
 #define LANGMAP_OPTION		"--langmap="
 #define INITIAL_BUFSIZE		1024
 
-static char *argv[] = {
-	EXUBERANT_CTAGS,
-	NULL,
-#ifdef USE_TYPE_STRING
-	"--gtags",
-#endif
-	"-xu",
-	"--filter",
-	"--filter-terminator=" TERMINATOR "\n",
-	"--format=1",
-	NULL
-};
-static pid_t pid;
 static FILE *ip, *op;
 static char *linebuf;
 static size_t bufsize;
 static char *ctagsnotfound = "Exuberant Ctags not found. Please see ./configure --help.";
+
+#ifdef __GNUC__
+static void terminate_ctags(void) __attribute__((destructor));
+#endif
 
 static void
 copy_langmap_converting_cpp(char *dst, const char *src)
@@ -89,6 +77,86 @@ copy_langmap_converting_cpp(char *dst, const char *src)
 	strcpy(dst, src);
 }
 
+#if defined(_WIN32) && !defined(__CYGWIN__)
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <fcntl.h>
+static HANDLE pid;
+static char argv[] = "ctags "
+#ifdef USE_TYPE_STRING
+	"--gtags "
+#endif
+	"-xu --filter --filter-terminator=" TERMINATOR "\n "
+	"--format=1 " LANGMAP_OPTION;
+static void
+start_ctags(const struct parser_param *param)
+{
+	HANDLE opipe[2], ipipe[2];
+	SECURITY_ATTRIBUTES sa;
+	STARTUPINFO si;
+	PROCESS_INFORMATION pi;
+	char* arg;
+
+	arg = malloc(sizeof(argv) + strlen(param->langmap));
+	if (arg == NULL)
+		param->die("short of memory.");
+	strcpy(arg, argv);
+	copy_langmap_converting_cpp(arg + sizeof(argv) - 1, param->langmap);
+
+	sa.nLength = sizeof(sa);
+	sa.bInheritHandle = TRUE;
+	sa.lpSecurityDescriptor = NULL;
+	if (!CreatePipe(&opipe[0], &opipe[1], &sa, 0) ||
+	    !CreatePipe(&ipipe[0], &ipipe[1], &sa, 0))
+		param->die("CreatePipe failed.");
+	SetHandleInformation(opipe[1], HANDLE_FLAG_INHERIT, 0);
+	SetHandleInformation(ipipe[0], HANDLE_FLAG_INHERIT, 0);
+	ZeroMemory(&si, sizeof(si));
+	si.cb = sizeof(si);
+	si.hStdInput = opipe[0];
+	si.hStdOutput = ipipe[1];
+	si.hStdError = GetStdHandle(STD_ERROR_HANDLE);
+	si.dwFlags = STARTF_USESTDHANDLES;
+	CreateProcess(NULL, arg, NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi);
+	CloseHandle(opipe[0]);
+	CloseHandle(ipipe[1]);
+	CloseHandle(pi.hThread);
+	pid = pi.hProcess;
+	op = fdopen(_open_osfhandle((long)opipe[1], _O_WRONLY), "w");
+	ip = fdopen(_open_osfhandle((long)ipipe[0], _O_RDONLY), "r");
+	if (ip == NULL || op == NULL)
+		param->die("fdopen failed.");
+
+	bufsize = INITIAL_BUFSIZE;
+	linebuf = malloc(bufsize);
+	if (linebuf == NULL)
+		param->die("short of memory.");
+}
+static void
+terminate_ctags(void) {
+	if (op == NULL)
+		return;
+	free(linebuf);
+	fclose(op);
+	fclose(ip);
+	WaitForSingleObject(pid, INFINITE);
+	CloseHandle(pid);
+}
+#else
+#include <sys/wait.h>
+static pid_t pid;
+static char *argv[] = {
+	EXUBERANT_CTAGS,
+	NULL,
+#ifdef USE_TYPE_STRING
+	"--gtags",
+#endif
+	"-xu",
+	"--filter",
+	"--filter-terminator=" TERMINATOR "\n",
+	"--format=1",
+	NULL
+};
 static void
 start_ctags(const struct parser_param *param)
 {
@@ -134,10 +202,6 @@ start_ctags(const struct parser_param *param)
 		param->die("short of memory.");
 }
 
-#ifdef __GNUC__
-static void terminate_ctags(void) __attribute__((destructor));
-#endif
-
 static void
 terminate_ctags(void)
 {
@@ -149,6 +213,7 @@ terminate_ctags(void)
 	while (waitpid(pid, NULL, 0) < 0 && errno == EINTR)
 		;
 }
+#endif
 
 static char *
 get_line(const struct parser_param *param)

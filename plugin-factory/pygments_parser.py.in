@@ -16,6 +16,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function
+import io
 import os
 import subprocess
 import sys
@@ -39,7 +41,12 @@ LANGUAGE_ALIASES = {
 
 # All punctuation characters except some characters which are valid
 # identifier characters in some languages
-PUNCTUATION_CHARACTERS = string.punctuation.translate(None, '-_.')
+if sys.version_info < (3,):
+    PUNCTUATION_CHARACTERS = string.punctuation.translate(None, '-_.')
+else:
+    PUNCTUATION_CHARACTERS = string.punctuation.translate(str.maketrans('', '', '-_.'))
+
+CLOSEFDS = sys.platform != 'win32';
 
 TERMINATOR = '###terminator###\n'
 
@@ -115,23 +122,33 @@ class PygmentsParser:
 
     def read_file(self, path):
         try:
-            with open(path, 'r') as f:
-                text = f.read()
-                return text
+            if sys.version_info < (3,):
+                with open(path, 'r') as f:
+                    text = f.read()
+                    return text
+            else:
+                with open(path, 'r', encoding='latin1') as f:
+                    text = f.read()
+                    return text
         except Exception as e:
-            print >> sys.stderr, e
+            print(e, file=sys.stderr)
             return None
 
 class CtagsParser:
     def __init__(self, ctags_command, options):
         self.process = subprocess.Popen([ctags_command, '-xu', '--filter', '--filter-terminator=' + TERMINATOR, '--format=1'], bufsize=-1,
-                                        stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=True)
-        self.child_stdout = self.process.stdout
+                                        stdin=subprocess.PIPE, stdout=subprocess.PIPE, close_fds=CLOSEFDS,
+                                        universal_newlines=True)
+        if sys.version_info < (3,):
+            self.child_stdout = self.process.stdout
+        else:
+            self.child_stdout = io.TextIOWrapper(self.process.stdout.buffer, encoding='latin1')
+            sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='latin1')
         self.child_stdin = self.process.stdin
         self.options = options
 
     def parse(self, path):
-        print >> self.child_stdin, path
+        print(path, file=self.child_stdin)
         self.child_stdin.flush()
         result = {}
         while True:
@@ -173,6 +190,9 @@ def parse_langmap(string):
             for ext in exts.split('.'):
                 if ext:
                     langmap['.' + ext] = lang
+                    if sys.platform == 'win32':
+                        langmap['.' + ext.upper()] = lang
+                        langmap['.' + ext.lower()] = lang
     return langmap
 
 def handle_requests(langmap, options):
@@ -188,13 +208,13 @@ def handle_requests(langmap, options):
             break
         path = path.rstrip()
         tags = parser.parse(path)
-        for (isdef, tag, lnum),image in tags.iteritems():
+        for (isdef, tag, lnum),image in tags.items():
             if isdef:
                 typ = 'D'
             else:
                 typ = 'R'
-            print typ, tag, lnum, path, image
-        print TERMINATOR,
+            print(typ, tag, lnum, path, image)
+        print(TERMINATOR, end='')
         sys.stdout.flush()
 
 def get_parser_options_from_env(parser_options):

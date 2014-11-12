@@ -32,6 +32,10 @@
 #else
 #include <strings.h>
 #endif
+#if defined(_WIN32) && !defined(__CYGWIN__)
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
 
 #include "gparam.h"
 #include "char.h"
@@ -398,10 +402,11 @@ getconfs(const char *name, STRBUF *sb)
 			if (test("d", DATADIR))
 				strbuf_puts(sb, DATADIR);
 			else {
-				const char *name = strrchr(_pgmptr, '\\');
-				if (name)
-					strbuf_nputs(sb, _pgmptr, name+1 - _pgmptr);
-				strbuf_puts(sb, "..\\share");
+				char path[MAX_PATH], *name;
+				GetModuleFileName(NULL, path, MAX_PATH);
+				name = strrchr(path, '\\');
+				strcpy(name+1, "..\\share");
+				strbuf_puts(sb, path);
 			}
 #else
 			strbuf_puts(sb, DATADIR);

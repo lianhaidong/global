@@ -22,9 +22,6 @@
 #include <config.h>
 #endif
 #include <sys/types.h>
-#if !defined(_WIN32) || defined(__CYGWIN__)
-#include <sys/wait.h>
-#endif
 #include <assert.h>
 #include <ctype.h>
 #include <errno.h>
@@ -43,7 +40,12 @@
 
 #include "parser.h"
 
+#if defined(_WIN32) && !defined(__CYGWIN__)
+#define PYTHON		"python"
+#define PYGMENTS_PARSER "../share/gtags/script/pygments_parser.py"
+#else
 #define PYGMENTS_PARSER (DATADIR "/gtags/script/pygments_parser.py")
+#endif
 
 /*
  * Function layer plugin parser sample
@@ -53,15 +55,13 @@
 #define LANGMAP_OPTION		"--langmap="
 #define INITIAL_BUFSIZE		1024
 
-static char *argv[] = {
-	PYGMENTS_PARSER,
-	NULL,
-	NULL
-};
-static pid_t pid;
 static FILE *ip, *op;
 static char *linebuf;
 static size_t bufsize;
+
+#ifdef __GNUC__
+static void terminate_process(void) __attribute__((destructor));
+#endif
 
 static void
 copy_langmap_converting_cpp(char *dst, const char *src)
@@ -82,6 +82,80 @@ copy_langmap_converting_cpp(char *dst, const char *src)
 	}
 	strcpy(dst, src);
 }
+
+#if defined(_WIN32) && !defined(__CYGWIN__)
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <fcntl.h>
+static HANDLE pid;
+static void
+start_process(const struct parser_param *param)
+{
+	HANDLE opipe[2], ipipe[2];
+	SECURITY_ATTRIBUTES sa;
+	STARTUPINFO si;
+	PROCESS_INFORMATION pi;
+	char* arg;
+	char parser[MAX_PATH*2];
+	size_t len;
+
+	GetModuleFileName(NULL, parser, MAX_PATH);
+	arg = strrchr(parser, '\\');
+	strcpy(arg+1, PYGMENTS_PARSER);
+	arg = malloc(sizeof(PYTHON) + strlen(parser) + sizeof(LANGMAP_OPTION) + strlen(param->langmap) + 1);
+	if (arg == NULL)
+		param->die("short of memory.");
+	len = sprintf(arg, "%s %s %s", PYTHON, parser, LANGMAP_OPTION);
+	copy_langmap_converting_cpp(arg + len, param->langmap);
+
+	sa.nLength = sizeof(sa);
+	sa.bInheritHandle = TRUE;
+	sa.lpSecurityDescriptor = NULL;
+	if (!CreatePipe(&opipe[0], &opipe[1], &sa, 0) ||
+	    !CreatePipe(&ipipe[0], &ipipe[1], &sa, 0))
+		param->die("CreatePipe failed.");
+	SetHandleInformation(opipe[1], HANDLE_FLAG_INHERIT, 0);
+	SetHandleInformation(ipipe[0], HANDLE_FLAG_INHERIT, 0);
+	ZeroMemory(&si, sizeof(si));
+	si.cb = sizeof(si);
+	si.hStdInput = opipe[0];
+	si.hStdOutput = ipipe[1];
+	si.hStdError = GetStdHandle(STD_ERROR_HANDLE);
+	si.dwFlags = STARTF_USESTDHANDLES;
+	if (!CreateProcess(NULL, arg, NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi))
+		param->die("no python");
+	CloseHandle(opipe[0]);
+	CloseHandle(ipipe[1]);
+	CloseHandle(pi.hThread);
+	pid = pi.hProcess;
+	op = fdopen(_open_osfhandle((long)opipe[1], _O_WRONLY), "w");
+	ip = fdopen(_open_osfhandle((long)ipipe[0], _O_RDONLY), "r");
+	if (ip == NULL || op == NULL)
+		param->die("fdopen failed.");
+
+	bufsize = INITIAL_BUFSIZE;
+	linebuf = malloc(bufsize);
+	if (linebuf == NULL)
+		param->die("short of memory.");
+}
+static void
+terminate_process(void) {
+	if (op == NULL)
+		return;
+	free(linebuf);
+	fclose(op);
+	fclose(ip);
+	WaitForSingleObject(pid, INFINITE);
+	CloseHandle(pid);
+}
+#else
+#include <sys/wait.h>
+static char *argv[] = {
+	PYGMENTS_PARSER,
+	NULL,
+	NULL
+};
+static pid_t pid;
 
 static void
 start_process(const struct parser_param *param)
@@ -126,10 +200,6 @@ start_process(const struct parser_param *param)
 		param->die("short of memory.");
 }
 
-#ifdef __GNUC__
-static void terminate_process(void) __attribute__((destructor));
-#endif
-
 static void
 terminate_process(void)
 {
@@ -141,6 +211,7 @@ terminate_process(void)
 	while (waitpid(pid, NULL, 0) < 0 && errno == EINTR)
 		;
 }
+#endif
 
 static char *
 get_line(const struct parser_param *param)

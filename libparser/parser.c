@@ -31,6 +31,11 @@
 #include <strings.h>
 #endif
 #include <ltdl.h>
+#if defined(_WIN32) && !defined(__CYGWIN__)
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#undef SLIST_ENTRY
+#endif
 
 #include "parser.h"
 #include "internal.h"
@@ -171,6 +176,11 @@ load_plugin_parser(const char *pluginspec)
 		if (p != NULL)
 			*p++ = '\0';
 		q = strchr(lt_dl_name, ':');
+#ifdef _WIN32
+		/* Assume a single-character name is a drive letter. */
+		if (q == lt_dl_name + 1)
+			q = strchr(q + 1, ':');
+#endif
 		if (q == NULL) {
 			parser_name = "parser";
 		} else {
@@ -179,11 +189,38 @@ load_plugin_parser(const char *pluginspec)
 				die_with_code(2, "syntax error in pluginspec '%s'.", pluginspec);
 			parser_name = q;
 		}
+#if defined(_WIN32) && !defined(__CYGWIN__)
+		/* Bypass libtool and load the DLL directly, relative to us. */
+		pent->handle = (lt_dlhandle)LoadLibrary(lt_dl_name);
+		if (pent->handle == NULL) {
+			q = strrchr(lt_dl_name, '/');
+			if (q == NULL)
+				q = strrchr(lt_dl_name, '\\');
+			if (q != NULL)
+				lt_dl_name = q + 1;
+			q = strrchr(lt_dl_name, '.');
+			if (q != NULL && strcmp(q, ".la") == 0)
+				*q = '\0';
+			pent->handle = (lt_dlhandle)LoadLibrary(lt_dl_name);
+			if (pent->handle == NULL) {
+				char dll[MAX_PATH*2];
+				GetModuleFileName(NULL, dll, MAX_PATH);
+				q = strrchr(dll, '\\');
+				sprintf(q+1, "..\\lib\\gtags\\%s", lt_dl_name);
+				pent->handle = (lt_dlhandle)LoadLibrary(dll);
+			}
+		}
+		if (pent->handle == NULL)
+			die_with_code(2, "cannot open shared object '%s'.", lt_dl_name);
+		pent->entry.lt_dl_name = lt_dl_name;
+		pent->entry.parser = (PVOID)GetProcAddress((HINSTANCE)pent->handle, parser_name);
+#else
 		pent->handle = lt_dlopen(lt_dl_name);
 		if (pent->handle == NULL)
 			die_with_code(2, "cannot open shared object '%s'.", lt_dl_name);
 		pent->entry.lt_dl_name = lt_dl_name;
 		pent->entry.parser = lt_dlsym(pent->handle, parser_name);
+#endif
 		if (pent->entry.parser == NULL)
 			die_with_code(2, "cannot find symbol '%s' in '%s'.", parser_name, lt_dl_name);
 		pent->entry.parser_name = parser_name;
@@ -205,7 +242,11 @@ unload_plugin_parser(void)
 		return;
 	while (!STAILQ_EMPTY(&plugin_list)) {
 		pent = STAILQ_FIRST(&plugin_list);
+#if defined(_WIN32) && !defined(__CYGWIN__)
+		FreeLibrary((HMODULE)pent->handle);
+#else
 		lt_dlclose(pent->handle);
+#endif
 		STAILQ_REMOVE_HEAD(&plugin_list, next);
 		free(pent);
 	}
