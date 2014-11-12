@@ -1,0 +1,68 @@
+___________________________________
+|      |  |  |     |  _  |     |  |
+|  |___|  |  |  |  |    _|  |  |  |    GNU GLOBAL source code tag system
+|  |   |  |  |  |  |     |     |  |
+|  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Copyright (c) 2014 Tama Communications Corporation
+
+ This file is free software; as a special exception the author gives
+ unlimited permission to copy and/or distribute it, with or without
+ modifications, as long as this notice is preserved.
+
+ This program is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
+ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+		----------------------------------
+
+This package includes some patches to change behavior of related tools.
+Please use them under self-responsibility.
+
+ctags-5.8.patch
+
+	Add makeSimpleReferenceTag() function which generates a reference tag.
+	(For Exuberant Ctags version 5.8)
+
+	You can write a ctags parser which works like follows:
+
+	$ ctags --gtags -x ...
+	D main              320 global/global.c  main(int argc, char **argv)
+	R NULL              325 global/global.c  const char *av = NULL;
+	=
+	^-- Type string (D: definition, R: reference)
+
+	Exuberant Ctags plug-in parser (plugin-factory/exuberant-ctags.c)
+	understand the type string.
+
+	How to apply the patch.
+	$ tar xzvf ctags-5.8.tar.gz
+	$ cd ctags-5.8
+	$ patch -p1 < /usr/local/share/gtags/ctags-5.8.patch
+
+elvis-2.2_0.patch
+
+	Disable sort of global(1)'s output.
+	(For Elvis version 2.2)
+
+	Elvis sorts the output of global(1) by the symbol name.
+	It is inconvenient when global is invoked with the -f <file> option.
+
+	How to apply the patch.
+	$ tar xzvf elvis-2.2_0.tar.gz
+	$ cd elvis-2.2_0
+	$ patch -p1 < /usr/local/share/gtags/elvis-2.2_0.patch 
+
+vim74-gtags-cscope.patch
+
+	With this patch, users of gtags-cscope.vim can treat files
+	whose name include spaces.
+	(For Vim version 7.4)
+
+	How to apply the patch.
+	$ tar jxvf vim-7.4.tar.bz2
+	$ cd vim74
+	$ patch -p1 < /usr/local/share/gtags/vim74-gtags-cscope.patch
+	$ ./configure --enable-cscope
+	$ make
+	$ sudo make install
