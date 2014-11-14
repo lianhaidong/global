@@ -31,7 +31,7 @@ typedef struct {
 	char basedir[MAXPATHLEN];
 	int start_point;
 	int db;			/**< for @NAME{gtags-cscope} */
-	char *tag_for_display;;
+	char *tag_for_display;
 } CONVERT;
 
 void set_print0(void);

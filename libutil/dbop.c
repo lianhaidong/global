@@ -938,7 +938,7 @@ dbop3_open(const char *path, int mode, int perm, int flags) {
 	sqlite3_exec(dbop->db3, "pragma journal_mode=memory", NULL, NULL, &errmsg);
        	if (rc != SQLITE_OK)
 		die("pragma journal_mode=memory error: %s", errmsg);
-	sqlite3_exec(dbop->db3, "pragma pragma synchronous=off", NULL, NULL, &errmsg);
+	sqlite3_exec(dbop->db3, "pragma synchronous=off", NULL, NULL, &errmsg);
        	if (rc != SQLITE_OK)
 		die("pragma synchronous=off error: %s", errmsg);
 	rc = sqlite3_exec(dbop->db3, "begin transaction", NULL, NULL, &errmsg);

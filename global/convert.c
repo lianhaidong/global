@@ -64,7 +64,7 @@ extern int use_color, fflag, gflag, Gflag, iflag, Iflag, Pflag;
 #define DEFAULT_COLOR "01;31"
 static REWRITE *rewrite;
 static char last_pattern[IDENTLEN];
-static int locked;;
+static int locked;
 static int (*code_fputs)(const char *s, FILE *op) = fputs;
 
 /**

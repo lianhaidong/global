@@ -630,7 +630,7 @@ get_prefix(const char *pattern, int flags)
 		if (save)
 			*q = save;
 	}
-	return prefix;;
+	return prefix;
 }
 /**
  * gtags_restart: restart dbop iterator using lower case prefix.
