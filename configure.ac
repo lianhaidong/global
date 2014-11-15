@@ -201,8 +201,10 @@ AC_ARG_WITH(sqlite3,
 [
 	#LDFLAGS="$LDFLAGS -lsqlite3"
 	AC_DEFINE(USE_SQLITE3,1,[Define if you use sqlite3 API.])
+	AM_CONDITIONAL(USE_SQLITE3, true)
 	AC_MSG_RESULT(yes)
 ],[
+	AM_CONDITIONAL(USE_SQLITE3, false)
 	AC_MSG_RESULT(no)
 ])
 
