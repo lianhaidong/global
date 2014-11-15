@@ -886,6 +886,14 @@ dbop3_open(const char *path, int mode, int perm, int flags) {
 	dbop->stmt      = NULL;
 	dbop->tblname   = check_strdup(tblname);
 	/*
+	 * Maximum file size is DBOP_PAGESIZE * 2147483646.
+	 * if DBOP_PAGESIZE == 8192 then maximum file size is 17592186028032 (17T).
+	 */
+	snprintf(buf, sizeof(buf), "pragma page_size=%d", DBOP_PAGESIZE);
+	rc = sqlite3_exec(dbop->db3, buf,  NULL, NULL, &errmsg);
+	if (rc != SQLITE_OK)
+		die("pragma page_size error: %s", errmsg);
+	/*
 	 * create table (GTAGS, GRTAGS, GSYMS, GPATH).
 	 */
 	if (mode == 1) {
@@ -923,18 +931,11 @@ dbop3_open(const char *path, int mode, int perm, int flags) {
 		cache_size = atoi(getenv("GTAGSCACHE"));
 	if (cache_size < GTAGSMINCACHE)
 		cache_size = GTAGSMINCACHE;
+	cache_size = (cache_size + DBOP_PAGESIZE - 1) / DBOP_PAGESIZE;
 	snprintf(buf, sizeof(buf), "pragma cache_size=%d", cache_size);
 	rc = sqlite3_exec(dbop->db3, buf,  NULL, NULL, &errmsg);
        	if (rc != SQLITE_OK)
 		die("pragma cache_size error: %s", errmsg);
-	/*
-	 * Maximum file size is DBOP_PAGESIZE * 2147483646.
-	 * if DBOP_PAGESIZE == 8192 then maximum file size is 17592186028032 (17T).
-	 */
-	snprintf(buf, sizeof(buf), "pragma page_size=%d", DBOP_PAGESIZE);
-	rc = sqlite3_exec(dbop->db3, buf,  NULL, NULL, &errmsg);
-       	if (rc != SQLITE_OK)
-		die("pragma page_size error: %s", errmsg);
 	sqlite3_exec(dbop->db3, "pragma journal_mode=memory", NULL, NULL, &errmsg);
        	if (rc != SQLITE_OK)
 		die("pragma journal_mode=memory error: %s", errmsg);
