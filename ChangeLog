@@ -27,7 +27,6 @@ November 7 2014, Shigio YAMAGUCHI
 
 	Added support of sqlite3 API for tag files (alpha quality).
 	If you will test the code then please do as follows:
-	(You need to have sqlite3 library in your system.)
 
         [building phase]
         $ ./configure --with-sqlite3
