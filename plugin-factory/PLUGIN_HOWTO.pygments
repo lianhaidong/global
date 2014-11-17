@@ -23,7 +23,7 @@ programming languages. This plug-in use Pygments and Exuberant
 Ctags as a parser to treat both definitions and references.
 
 You need the following software:
-o Python 2.6 or later (3.x is not supported)
+o Python 2.6 or later (3 is also supported)
 o Pygments python package
 o Exuberant Ctags 5.5 or later (optional)
 
