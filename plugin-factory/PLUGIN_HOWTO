@@ -30,7 +30,8 @@ Pygments + Exuberant Ctags('pygments-parser.c')
 How to write a plug-in parser?
 ==============================
 
-You should write a parser function in the nop parser like follows (pseudo code):
+You should write a parser function in 'plugin-factory/user-custom.c'
+like follows (pseudo code):
 
 #include "parser.h"
 void
@@ -65,6 +66,13 @@ Note:
 o Gtags always makes 'GRTAGS' file even if you don't use PARSER_REF_SYM.
 o You can write a plug-in parser independently with GLOBAL except for 'parser.h'.
   Plug-in factory is supplied only for your convenience.
+
+[build and install]
+
+$ cd plugin-factory
+$ make
+$ sudo make install
+
 
 How to use Exuberant Ctags as a parser?
 =======================================
