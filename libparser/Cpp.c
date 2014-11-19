@@ -182,19 +182,25 @@ Cpp(const struct parser_param *param)
 			else
 				pushbacktoken();
 			break;
+		case CPP_STRUCT:
 		case CPP_CLASS:
-			DBG_PRINT(level, "class");
-			if ((c = nexttoken(interested, cpp_reserved_word)) == SYMBOL) {
+			DBG_PRINT(level, cc == CPP_CLASS ? "class" : "struct");
+			while ((c = nexttoken(interested, cpp_reserved_word)) == CPP___ATTRIBUTE__)
+				process_attribute(param);
+			while (c == SYMBOL) {
 				strlimcpy(classname, token, sizeof(classname));
-				/*
-				 * Ignore forward definitions.
-				 * "class name;"
-				 */
-				if (peekc(0) != ';') {
-					startclass = 1;
-					PUT(PARSER_DEF, token, lineno, sp);
-				}
+				c = nexttoken(interested, cpp_reserved_word);
 			}
+			/*
+			 * Ignore forward definitions.
+			 * "class name;"
+			 */
+			if (c != ';') {
+				startclass = 1;
+				PUT(PARSER_DEF, classname, lineno, sp);
+			} else
+				pushbacktoken();
+
 			break;
 		case '{':  /* } */
 			DBG_PRINT(level, "{"); /* } */
@@ -309,7 +315,6 @@ Cpp(const struct parser_param *param)
 			if ((c = nexttoken(interested, cpp_reserved_word)) == SYMBOL)
 				PUT(PARSER_REF_SYM, token, lineno, sp);
 			break;
-		case CPP_STRUCT:
 		case CPP_ENUM:
 		case CPP_UNION:
 			while ((c = nexttoken(interested, cpp_reserved_word)) == CPP___ATTRIBUTE__)
