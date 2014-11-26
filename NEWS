@@ -19,6 +19,36 @@ ___________________________________
 GNU GLOBAL NEWS - User visible changes.
 At least, you should search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 6.3.3 - November 26 2014
+
+[CHANGES]
+New facilities:
+o Pygments plug-in parser: Support python 3.
+o gozilla: added support of OSX's default browser.
+  Please set environment variable BROWSER to 'osx-default'.
+
+	$ htags --suggest --map-file
+	$ export BROWSER=osx-default
+	$ gozilla +120 main.c	# shows line 120 in main.c
+	$ gozilla -d main	# shows definitions of main()
+
+o vim74-gtags-cscope.patch: New patch for vim + gtags-cscope to treat
+  file names which include spaces correctly. Please see README.PATCHES.
+
+Release for beta test:
+o Added --sqlite3 option which uses SQLite3 API instead of BSD/DB API for
+  making tag files. If you will test the code then please do as follows:
+
+	[configuration phase]
+	$ ./configure --with-sqlite3	# use sqlite3 API
+
+	[execution phase]
+	$ gtags --sqlite3		# make sqlite3 tag files
+
+[FIXED BUGS]
+o gtags-cscope.vim: There was a calling to undefined function.
+  Now it works.
+
 Version 6.3.2 - September 4 2014
 
 [CHANGES]
@@ -60,8 +90,9 @@ o geco.rc: New command (Bash function).
 
 [INCOMPATIBLE CHANGES]
 o global: The following configuration variables were removed
-  since they will surely cause confusion.
+  since they will surely cause confusion:
   GTAGSROOT, GTAGSDBPATH
+  These variables were added in Version 6.3.
 
 Version 6.3 - June 9 2014
 
