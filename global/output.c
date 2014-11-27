@@ -143,6 +143,8 @@ put_compact_format(CONVERT *cv, GTP *gtp, int flags)
 	 */
 	if (!isdigit(*p))
 		die("invalid compact format.");
+	if (flags & GTAGS_COMPNAME)
+		tagname = (char *)uncompress(tagname, gtp->tag);
 	if (flags & GTAGS_COMPLINE) {
 		/*
 		 * If GTAGS_COMPLINE flag is set, each line number is expressed as
@@ -179,8 +181,6 @@ put_compact_format(CONVERT *cv, GTP *gtp, int flags)
 					cur_lineno++;
 				}
 			}
-			if (flags & GTAGS_COMPNAME)
-				tagname = (char *)uncompress(tagname, gtp->tag);
 			convert_put_using(cv, tagname, gtp->path, n, src, fid);
 			count++;
 			last_lineno = last = n;
@@ -209,8 +209,6 @@ put_compact_format(CONVERT *cv, GTP *gtp, int flags)
 					cur_lineno++;
 				}
 			}
-			if (flags & GTAGS_COMPNAME)
-				tagname = (char *)uncompress(tagname, gtp->tag);
 			convert_put_using(cv, tagname, gtp->path, n, src, fid);
 			count++;
 			last_lineno = n;
