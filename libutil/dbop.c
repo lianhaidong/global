@@ -845,8 +845,15 @@ dbop3_open(const char *path, int mode, int perm, int flags) {
 		/*
 		 * In case of creation.
 		 */
-		if (mode == 1)
+		if (mode == 1) {
+#ifndef _WIN32
 			(void)truncate(path, 0);
+#else
+			FILE* f = fopen(path, "w");
+			if (f)
+				fclose(f);
+#endif
+		}
 		tblname = "db";
 	}
 	/*
@@ -866,7 +873,7 @@ dbop3_open(const char *path, int mode, int perm, int flags) {
 		assert(0);
 	}
 	/*
-	 * When the forth argument is NULL, sqlite3_vfs is used.
+	 * When the fourth argument is NULL, sqlite3_vfs is used.
 	 */
 	rc = sqlite3_open_v2(path, &db3, rw, NULL);
 	if (rc != SQLITE_OK)

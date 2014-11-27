@@ -91,7 +91,7 @@ execute(char *a, ...)	/* note: "exec" is already defined on u370 */
 #if !HAVE_FORK
 	/* HBB 20010313: in MSDOG, everything is completely different.
 	 * No fork()/exec()/wait(), but rather a single libc call: */
-        exitcode = spawnvp(P_WAIT, a, argv);
+	exitcode = spawnvp(P_WAIT, a, (const char* const*)argv);
 #else
 	if ((p = myfork()) == 0) {
 		myexecvp(a, argv);	/* child */
