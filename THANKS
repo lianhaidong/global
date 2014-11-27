@@ -125,6 +125,7 @@ Ruppert Koch		bug report about htags(1).
 Sadaichi Hayashida	idea about generating relative path.
 Satoru SATOH		profitable material for the support of XHTML.
 Sanpei Yoshiro Mihira	bug report of xargs.c in Windows 32.
+Sean Farley		bug report of gozilla's wrong installation method.
 Sergio Talens-Oliag	writing on-line manual for systags(1).
 Shankar Chakkere	useful method to use vim editor with GLOBAL.
 Shigeyuki Yamano	idea about -h option of htags(1).
@@ -161,6 +162,8 @@ xing du			bug report about gtags.vim. (The -P option didn't work)
 Yann Dirson		many bug reports and many valuable suggestions.
 Yoshiharu Ito		advice about SunOS 4.1.3, and a bug report about configure.ac.
 Yoshinori Tomita	advice about compat.h for Solaris.
+Yoshitaro Makise	bug fix patch for the uncompress problem of output.c.
+			He is also the author of Pygments plug-in parser.
 Y. Yoshinaga		advice about makefile for Debian GNU/Linux.
 Yun sheng		bug report about global -u, gtags.vim and gtags-cscope.vim.
 Yushi Oka		bug report about config path and improvements of gtags-mode
