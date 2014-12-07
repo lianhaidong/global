@@ -182,19 +182,50 @@ Cpp(const struct parser_param *param)
 			else
 				pushbacktoken();
 			break;
+		case CPP_STRUCT:
 		case CPP_CLASS:
-			DBG_PRINT(level, "class");
-			if ((c = nexttoken(interested, cpp_reserved_word)) == SYMBOL) {
-				strlimcpy(classname, token, sizeof(classname));
-				/*
-				 * Ignore forward definitions.
-				 * "class name;"
-				 */
-				if (peekc(0) != ';') {
+			DBG_PRINT(level, cc == CPP_CLASS ? "class" : "struct");
+			while ((c = nexttoken(NULL, cpp_reserved_word)) == CPP___ATTRIBUTE__ || c == '\n')
+				if (c == CPP___ATTRIBUTE__)
+					process_attribute(param);
+			if (c == SYMBOL) {
+				char *saveline;
+				int savelineno;
+				do {
+					if (c == SYMBOL) {
+						savelineno = lineno;
+						strbuf_reset(sb);
+						strbuf_puts(sb, sp);
+						saveline = strbuf_value(sb);
+						strlimcpy(classname, token, sizeof(classname));
+					}
+					c = nexttoken(NULL, cpp_reserved_word);
+					if (c == SYMBOL)
+						PUT(PARSER_REF_SYM, classname, savelineno, saveline);
+					else if (c == '<') {
+						int templates = 1;
+						for (;;) {
+							c = nexttoken(NULL, cpp_reserved_word);
+							if (c == SYMBOL)
+								PUT(PARSER_REF_SYM, token, lineno, sp);
+							else if (c == '<')
+								++templates;
+							else if (c == '>') {
+								if (--templates == 0)
+									break;
+							} else if (c == EOF)
+								die("failed to parse template [+%d %s].", savelineno, curfile);
+						}
+						c = nexttoken(NULL, cpp_reserved_word);
+					}
+				} while (c == SYMBOL || c == '\n');
+				if (c == ':' || c == '{') /* } */ {
 					startclass = 1;
-					PUT(PARSER_DEF, token, lineno, sp);
-				}
+					PUT(PARSER_DEF, classname, savelineno, saveline);
+				} else
+					PUT(PARSER_REF_SYM, classname, savelineno, saveline);
 			}
+			pushbacktoken();
 			break;
 		case '{':  /* } */
 			DBG_PRINT(level, "{"); /* } */
@@ -309,7 +340,6 @@ Cpp(const struct parser_param *param)
 			if ((c = nexttoken(interested, cpp_reserved_word)) == SYMBOL)
 				PUT(PARSER_REF_SYM, token, lineno, sp);
 			break;
-		case CPP_STRUCT:
 		case CPP_ENUM:
 		case CPP_UNION:
 			while ((c = nexttoken(interested, cpp_reserved_word)) == CPP___ATTRIBUTE__)

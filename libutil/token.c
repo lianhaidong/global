@@ -179,15 +179,13 @@ nexttoken(const char *interested, int (*reserved)(const char *, int))
 				sharp = 1;
 				continue;
 			}
-		} else if (c == ':' && cppmode) {
-			if (peekc(1) == ':') {
-				p = token;
-				*p++ = c;
-				*p++ = nextchar();
-				*p   = 0;
-				if (reserved && (c = (*reserved)(token, tlen)) == 0)
-					break;
-			}
+		} else if (c == ':' && cppmode && peekc(1) == ':') {
+			p = token;
+			*p++ = c;
+			*p++ = nextchar();
+			*p   = 0;
+			if (reserved && (c = (*reserved)(token, tlen)) == 0)
+				break;
 		} else if (c == '%' && ymode) {
 			/* recognize '%%' as a token if it is reserved word. */
 			if (atfirst) {
