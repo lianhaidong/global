@@ -24,7 +24,7 @@ Ctags as a parser to treat both definitions and references.
 
 You need the following software:
 o Python 2.6 or later (3 is also supported)
-o Pygments python package
+o Pygments python package 1.6 or later
 o Exuberant Ctags 5.5 or later (optional)
 
 [Installation]
