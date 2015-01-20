@@ -36,6 +36,9 @@
 #include "locatestring.h"
 #include "strlimcpy.h"
 #include "path.h"
+#if defined(_WIN32) || defined(__DJGPP__)
+#include "checkalloc.h"
+#endif
 
 #define COLOR_PATH
 #ifdef COLOR_PATH
@@ -261,6 +264,15 @@ normalize_pathname(const char *path, char *result, const int size)
 	const char *savep, *p = path;
 	char *final, *q = result;
 	char *endp = result + size - 1;
+#if defined(_WIN32) || defined(__DJGPP__)
+	char *spath = check_strdup(path), *pp = spath;
+	while (*pp) {
+		if (*pp == '\\')
+			*pp = '/';
+		++pp;
+	}
+	p = spath;
+#endif
 
 	/* accept the first '/' */
 	if (isabspath(p)) {
@@ -325,9 +337,15 @@ normalize_pathname(const char *path, char *result, const int size)
 		}
 	}
 	*q = '\0';
+#if defined(_WIN32) || defined(__DJGPP__)
+	free(spath);
+#endif
 	return result;
 erange:
 	errno = ERANGE;
+#if defined(_WIN32) || defined(__DJGPP__)
+	free(spath);
+#endif
 	return NULL;
 }
 /**
