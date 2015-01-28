@@ -84,6 +84,7 @@ int Gflag;				/* [option]		*/
 int iflag;				/* [option]		*/
 int Iflag;				/* command		*/
 int Lflag;				/* [option]		*/
+int Mflag;				/* [option]		*/
 int nflag;				/* [option]		*/
 int oflag;				/* [option]		*/
 int Oflag;				/* [option]		*/
@@ -440,6 +441,7 @@ main(int argc, char **argv)
 			file_list = optarg;
 			break;
 		case 'M':
+			Mflag++;
 			iflag = 0;
 			break;
 		case 'n':
@@ -1088,6 +1090,10 @@ completion_path(const char *dbpath, const char *prefix)
 		target = GPATH_OTHER;
 	if (iflag || getconfb("icase_path"))
 		flags |= IGNORE_CASE;
+#if _WIN32 || __DJGPP__
+	else if (!Mflag)
+		flags |= IGNORE_CASE;
+#endif
 	gp = gfind_open(dbpath, localprefix, target);
 	while ((path = gfind_read(gp)) != NULL) {
 		path++;					/* skip '.'*/
@@ -1422,8 +1428,9 @@ pathlist(const char *pattern, const char *dbpath)
 			flags |= REG_EXTENDED;
 		if (iflag || getconfb("icase_path"))
 			flags |= REG_ICASE;
-#ifdef _WIN32
-		flags |= REG_ICASE;
+#if _WIN32 || __DJGPP__
+		else if (!Mflag)
+			flags |= REG_ICASE;
 #endif /* _WIN32 */
 		/*
 		 * We assume '^aaa' as '^/aaa'.
