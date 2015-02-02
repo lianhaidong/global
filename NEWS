@@ -19,6 +19,16 @@ ___________________________________
 GNU GLOBAL NEWS - User visible changes.
 At least, you should search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 6.3.4 - February 2 2015
+
+[FIXED BUGS]
+o global: Global(1) exited with a message "Abbrev character must be
+  a lower alphabetic character ()" in some condition. Now it is fixed.
+o gozilla/Makefile.am: Installation made a directory outside of the DESTDIR.
+  Now it is fixed.
+o gtags: The C++ parser picked up compiler specific macros as a class name.
+  It is not desirable. Now it is fixed.
+
 Version 6.3.3 - November 26 2014
 
 [CHANGES]
