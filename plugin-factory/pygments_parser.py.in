@@ -197,9 +197,12 @@ def parse_langmap(string):
 
 def handle_requests(langmap, options):
     if EXUBERANT_CTAGS != '' and EXUBERANT_CTAGS != 'no':
-        ctags_parser = CtagsParser(EXUBERANT_CTAGS, options)
         pygments_parser = PygmentsParser(langmap, options)
-        parser = MergingParser(ctags_parser, pygments_parser)
+        try:
+            ctags_parser = CtagsParser(EXUBERANT_CTAGS, options)
+            parser = MergingParser(ctags_parser, pygments_parser)
+        except Exception as e:
+            parser = pygments_parser
     else:
         parser = PygmentsParser(langmap, options)
     while True:
