@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2005, 2012
+ * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2005, 2012, 2015
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -24,8 +24,8 @@
 void set_accept_dotfiles(void);
 int skipthisfile(const char *);
 int issourcefile(const char *);
-void find_open(const char *);
-void find_open_filelist(const char *, const char *);
+void find_open(const char *, int);
+void find_open_filelist(const char *, const char *, int);
 char *find_read(void);
 void find_close(void);
 

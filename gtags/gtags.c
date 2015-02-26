@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005, 2006, 2008,
- *	2009, 2010, 2012, 2014
+ *	2009, 2010, 2012, 2014, 2015
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -87,6 +87,7 @@ const char *file_list;
 const char *dump_target;
 char *single_update;
 int statistics = STATISTICS_STYLE_NONE;
+int explain;
 #ifdef USE_SQLITE3
 int use_sqlite3;
 #endif
@@ -143,6 +144,7 @@ static struct option const long_options[] = {
 	/* flag value */
 	{"accept-dotfiles", no_argument, NULL, OPT_ACCEPT_DOTFILES},
 	{"debug", no_argument, &debug, 1},
+	{"explain", no_argument, &explain, 1},
 #ifdef USE_SQLITE3
 	{"sqlite3", no_argument, &use_sqlite3, 1},
 #endif
@@ -275,6 +277,8 @@ main(int argc, char **argv)
 	}
 	if (qflag)
 		vflag = 0;
+	if (debug)
+		explain = 1;	/* for upper compatibility */
 	if (show_version)
 		version(NULL, vflag);
 	if (show_help)
@@ -603,9 +607,9 @@ incremental(const char *dbpath, const char *root)
 		}
 	} else {
 		if (file_list)
-			find_open_filelist(file_list, root);
+			find_open_filelist(file_list, root, explain);
 		else
-			find_open(NULL);
+			find_open(NULL, explain);
 		while ((path = find_read()) != NULL) {
 			const char *fid;
 			int n_fid = 0;
@@ -842,6 +846,8 @@ updatetags(const char *dbpath, const char *root, IDSET *deleteset, STRBUF *addli
 		flags |= PARSER_DEBUG;
 	if (wflag)
 		flags |= PARSER_WARNING;
+	if (explain)
+		flags |= PARSER_EXPLAIN;
 	/*
 	 * Add tags to GTAGS and GRTAGS.
 	 */
@@ -901,13 +907,15 @@ createtags(const char *dbpath, const char *root)
 		flags |= PARSER_DEBUG;
 	if (wflag)
 		flags |= PARSER_WARNING;
+	if (explain)
+		flags |= PARSER_EXPLAIN;
 	/*
 	 * Add tags to GTAGS and GRTAGS.
 	 */
 	if (file_list)
-		find_open_filelist(file_list, root);
+		find_open_filelist(file_list, root, explain);
 	else
-		find_open(NULL);
+		find_open(NULL, explain);
 	seqno = 0;
 	while ((path = find_read()) != NULL) {
 		if (*path == ' ') {

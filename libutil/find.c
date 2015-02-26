@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2005, 2006, 2008,
- *	2009, 2011, 2012, 2014 Tama Communications Corporation
+ *	2009, 2011, 2012, 2014, 2015 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -113,6 +113,7 @@ extern int debug;
 static const int allow_blank = 1;
 static const int check_looplink = 1;
 static int accept_dotfiles = 0;
+static int find_explain = 0;
 /**
  * trim: remove blanks and @CODE{'\\'}.
  */
@@ -422,8 +423,8 @@ skipthisfile(const char *path)
 			die("prepare_skip failed.");
 	}
 	if (regexec(skip, path, 0, 0, 0) == 0) {
-		if (debug)
-			fprintf(stderr, "File '%s' is skipped by skip variable (type 1).\n", path);
+		if (find_explain)
+			fprintf(stderr, " File '%s' is skipped by skip variable (regex).\n", path);
 		return 1;
 	}
 	/*
@@ -439,14 +440,14 @@ skipthisfile(const char *path)
 		 */
 		if (*(last - 1) == '/') {	/* it's a directory */
 			if (!STRNCMP(path + 1, first, last - first)) {
-				if (debug)
-					fprintf(stderr, "File '%s' is skipped by skip variable (type 2).\n", path);
+				if (find_explain)
+					fprintf(stderr, " Directory '%s' is skipped by skip variable (path).\n", path);
 				return 1;
 			}
 		} else {
 			if (!STRCMP(path + 1, first)) {
-				if (debug)
-					fprintf(stderr, "File '%s' is skipped by skip variable (type 3).\n", path);
+				if (find_explain)
+					fprintf(stderr, " File '%s' is skipped by skip variable (path).\n", path);
 				return 1;
 			}
 		}
@@ -585,13 +586,15 @@ set_accept_dotfiles(void)
  *
  *	@param[in]	start	start directory <br>
  *			If @VAR{NULL}, assumed @CODE{\".\"} directory.
+ *	@param[in]	explain	print verbose message
  */
 void
-find_open(const char *start)
+find_open(const char *start, int explain)
 {
 	struct stack_entry *curp;
 	assert(find_mode == 0);
 	find_mode = FIND_OPEN;
+	find_explain = explain;
 
 	if (!start)
 		start = "./";
@@ -619,12 +622,14 @@ find_open(const char *start)
  *	@param[in]	filename	file including list of file names. <br>
  *				When @FILE{-} is specified, read from standard input.
  *	@param[in]	root		root directory of source tree
+ *	@param[in]	explain	print verbose message
  */
 void
-find_open_filelist(const char *filename, const char *root)
+find_open_filelist(const char *filename, const char *root, int explain)
 {
 	assert(find_mode == 0);
 	find_mode = FILELIST_OPEN;
+	find_explain = explain;
 
 	if (!strcmp(filename, "-")) {
 		/*

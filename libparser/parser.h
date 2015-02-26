@@ -48,6 +48,8 @@ void parser_exit(void);
 #define PARSER_END_BLOCK	8
 			/** force level 1 block start */
 #define PARSER_BEGIN_BLOCK	16
+			/** gtags --explain */
+#define PARSER_EXPLAIN		32
 /** @} */
 
 typedef void (*PARSER_CALLBACK)(int, const char *, int, const char *, const char *, void *);
