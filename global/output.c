@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005, 2006,
- *      2007, 2008, 2010, 2011, 2012, 2013 Tama Communications Corporation
+ *      2007, 2008, 2010, 2011, 2012, 2013, 2015
+ * Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -36,7 +37,7 @@ static int last_lineno;			/**< last line number */
 static FILE *fp;			/**< file descripter */
 static const char *src;			/**< source code */
 
-static int put_compact_format(CONVERT *, GTP *, int);
+static int put_compact_format(CONVERT *, GTP *, const char *, int);
 static void put_standard_format(CONVERT *, GTP *, int);
 extern const char *root;
 extern int nosource;
@@ -69,11 +70,12 @@ end_output(void)
  *
  *	@param[in]	cv	convert descripter
  *	@param[in]	gtp	record descripter
+ *	@param[in]	root	project root directory
  *	@param[in]	flags	format flags
  *	@return		outputted number of records
  */
 int
-output_with_formatting(CONVERT *cv, GTP *gtp, int flags)
+output_with_formatting(CONVERT *cv, GTP *gtp, const char *root, int flags)
 {
 	int count = 0;
 
@@ -81,7 +83,7 @@ output_with_formatting(CONVERT *cv, GTP *gtp, int flags)
 		convert_put_path(cv, NULL, gtp->path);
 		count++;
 	} else if (flags & GTAGS_COMPACT) {
-		count += put_compact_format(cv, gtp, flags);
+		count += put_compact_format(cv, gtp, root, flags);
 	} else {
 		put_standard_format(cv, gtp, flags);
 		count++;
@@ -92,7 +94,7 @@ output_with_formatting(CONVERT *cv, GTP *gtp, int flags)
  * Compact format:
  */
 static int
-put_compact_format(CONVERT *cv, GTP *gtp, int flags)
+put_compact_format(CONVERT *cv, GTP *gtp, const char *root, int flags)
 {
 	STATIC_STRBUF(ib);
 	int count = 0;

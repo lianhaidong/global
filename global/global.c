@@ -1711,7 +1711,7 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 	for (gtp = gtags_first(gtop, pattern, flags); gtp; gtp = gtags_next(gtop)) {
 		if (Sflag && !locatestring(gtp->path, localprefix, MATCH_AT_FIRST))
 			continue;
-		count += output_with_formatting(cv, gtp, gtop->format);
+		count += output_with_formatting(cv, gtp, root, gtop->format);
 	}
 	convert_close(cv);
 	if (debug)

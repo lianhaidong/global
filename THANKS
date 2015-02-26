@@ -114,6 +114,7 @@ Paulius Bulotas		bug report and fix patch for gozilla(1).
 Pawel Wilk		idea about home_etc facility on PLD Linux/GNU.
 Per Nordlöw		bug report that gtags-parser(1) cannot treat 'extern "C" { ... }'.
 Philippe Defert		building on many plat-homes and the problem report.
+Pavel Nedev		bug report about a defect when GTAGSLIBPATH + compact format.
 Ray Simard		detailed investigation about POSIX dirent(3).
 Richard Stallman	advice about gtags.el and GNU style packaging.
 Rob Fitzgerald		bug fix patch for global(1).

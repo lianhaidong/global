@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014
+ * Copyright (c) 2014, 2015
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -25,7 +25,7 @@
 
 void start_output(void);
 void end_output(void);
-int output_with_formatting(CONVERT *, GTP *, int);
+int output_with_formatting(CONVERT *, GTP *, const char *, int);
 
 #endif /* ! _OUTPUT_H_ */
 
