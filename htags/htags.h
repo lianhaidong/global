@@ -28,7 +28,6 @@
 #else
 #define W32	0
 #endif
-#define SITEKEYDIRNAME "sitekeys"
 
 /*
  * dumb CMD.EXE requires the entire popen command to be quoted
@@ -79,16 +78,13 @@ extern int gtags_exist[GTAGLIM];
 extern const char *null_device;
 extern const char *tmpdir;
 extern const char *tree_view_type;
-extern const char *sitekey;
 
 extern int aflag;
-extern int cflag;
 extern int fflag;
 extern int Fflag;
 extern int gflag;
 extern int Iflag;
 extern int nflag;
-extern int Sflag;
 extern int qflag;
 extern int vflag;
 extern int wflag;
@@ -116,7 +112,6 @@ extern int use_cvs_module;
 extern const char *cvsweb_cvsroot;
 extern const char *gtagslabel;
 extern const char *title;
-extern const char *xhtml_version;
 extern const char *insert_header;
 extern const char *insert_footer;
 extern const char *html_header;
@@ -151,8 +146,6 @@ extern int show_position;
 extern int table_list;
 extern int table_flist;
 extern int colorize_warned_line;
-extern const char *script_alias;
-extern const char *gzipped_suffix;
 extern const char *normal_suffix;
 extern const char *HTML;
 extern const char *action;

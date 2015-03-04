@@ -144,11 +144,6 @@ const char *guide_path_begin	= "<li class='standout'><span>";
 const char *guide_path_end	= "</span></li>";
 /** @} */
 
-/**
- * 1: Enforce @NAME{XHTML1.0 strict} or @NAME{XHTML1.1}.
- */
-static int strict_xhtml = 0;
-
 static const char *fix_attr_value(const char *);
 
 /**
@@ -162,18 +157,6 @@ fputs_nl(const char *s, FILE *op)
 	fputs(s, op);
 	putc('\n', op);
 	return 0;
-}
-/**
- * @NAME{XHTML} support.
- *
- * If the @OPTION{--xhtml} option is specified, @XREF{htags,1} generates @NAME{XHTML} output.
- * We define each style for the tags in @FILE{style.css} in this directory.
- */
-void
-setup_xhtml(void)
-{
-	if (!strcmp(xhtml_version, "1.1") && !Fflag)
-		strict_xhtml = 1;
 }
 /**
  * @name These methods is used to tell lex() the current path infomation.
@@ -335,25 +318,12 @@ gen_page_generic_begin(const char *title, int place, int use_frameset, const cha
 	strbuf_clear(sb);
 	if (enable_xhtml) {
 		/*
-		 * Since some browser cannot treat "<?xml...>", we don't
-		 * write the declaration as long as XHTML1.1 is not required.
-		 */
-		if (strict_xhtml) {
-			strbuf_puts_nl(sb, "<?xml version='1.0' encoding='ISO-8859-1'?>");
-			strbuf_sprintf(sb, "<?xml-stylesheet type='text/css' href='%sstyle.css'?>\n", dir);
-		}
-		/*
 		 * If the --frame option are specified then we take
 		 * 'XHTML 1.0 Frameset' for index.html
-		 * and 'XHTML 1.0 Transitional' for other files,
-		 * else if the config variable 'xhtml_version' is
-		 * set to '1.1' then we take 'XHTML 1.1',
-		 * else 'XHTML 1.0 Transitional'.
+		 * and 'XHTML 1.0 Transitional' for other files.
 		 */
 		if (use_frameset)
 			strbuf_puts_nl(sb, "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Frameset//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd'>");
-		else if (!Fflag && strict_xhtml)
-			strbuf_puts_nl(sb, "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.1//EN' 'http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd'>");
 		else
 			strbuf_puts_nl(sb, "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>");
 	}
@@ -468,13 +438,9 @@ gen_name_string(const char *name)
 	if (enable_xhtml) {
 		/*
 		 * Since some browser cannot understand "<a id='xxx' />",
-		 * we put both of 'id=' and 'name=' as long as XHTML1.1
-		 * is not required. XHTML1.1 prohibit 'name='.
+		 * we put both of 'id=' and 'name='.
 		 */
-		if (strict_xhtml)
-			strbuf_sprintf(sb, "<a id='%s'></a>", name);
-		else
-			strbuf_sprintf(sb, "<a id='%s' name='%s'></a>", name, name);
+		strbuf_sprintf(sb, "<a id='%s' name='%s'></a>", name, name);
 	} else {
 		strbuf_sprintf(sb, "<a name='%s'></a>", name);
 	}

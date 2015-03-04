@@ -25,5 +25,7 @@ EXTRA_DIST = $(man_MANS) const.h manual.in
 # for osx-default
 gtagsdir = $(DESTDIR)${localstatedir}/gtags
 install-data-hook:
-	mkdir -p ${gtagsdir}
-	chmod 777 ${gtagsdir}
+	if [ ! -d $(gtagsdir) ]; then \
+		$(MKDIR_P) $(gtagsdir); \
+		chmod 777 $(gtagsdir); \
+	fi

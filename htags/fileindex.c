@@ -366,7 +366,7 @@ print_directory(int level, char *basedir)
 		char name[MAXPATHLEN];
 
 		snprintf(name, sizeof(name), "%s/files/%s.%s", distpath, path2fid(basedir), HTML);
-		fileop = open_output_file(name, cflag);
+		fileop = open_output_file(name, 0);
 		op = get_descripter(fileop);
 		print_directory_header(op, level, basedir);
 		if (tree_view) {
@@ -872,7 +872,7 @@ makeincludeindex(void)
 			char path[MAXPATHLEN];
 
 			snprintf(path, sizeof(path), "%s/%s/%d.%s", distpath, INCS, no, HTML);
-			fileop_INCLUDE = open_output_file(path, cflag);
+			fileop_INCLUDE = open_output_file(path, 0);
 			INCLUDE = get_descripter(fileop_INCLUDE);
 			fputs_nl(gen_page_begin(last, SUBDIR), INCLUDE);
 			fputs_nl(body_begin, INCLUDE);
@@ -917,7 +917,7 @@ makeincludeindex(void)
 			char path[MAXPATHLEN];
 
 			snprintf(path, sizeof(path), "%s/%s/%d.%s", distpath, INCREFS, no, HTML);
-			fileop_INCLUDE = open_output_file(path, cflag);
+			fileop_INCLUDE = open_output_file(path, 0);
 			INCLUDE = get_descripter(fileop_INCLUDE);
 			fputs_nl(gen_page_begin(last, SUBDIR), INCLUDE);
 			fputs_nl(body_begin, INCLUDE);

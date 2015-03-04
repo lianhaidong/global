@@ -52,20 +52,7 @@ if ($form{'other'}) {
 if ($form{'limit'}) {
 	$limit = $form{'limit'};
 }
-if ($form{'id'}) {
-	$sitekeys = "@LOCALSTATEDIR@/gtags/sitekeys/" . $form{'id'};
-	if (-f $sitekeys && open(KEY, $sitekeys)) {
-		$distpath = <KEY>;
-		chop($distpath);
-		close(KEY);
-	} else {
-		error_and_exit("couldn't open unique key file(1).");
-	}
-	chdir("$distpath/cgi-bin");
-	if ($?) {
-		error_and_exit("couldn't find tag directory in secure mode.");
-	}
-} elsif (-d "cgi-bin") {
+if (-d "cgi-bin") {
 	# This code avoids the bug of the python built-in web server.
 	chdir("cgi-bin");
 	if ($?) {

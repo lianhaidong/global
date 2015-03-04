@@ -156,7 +156,7 @@ makedupindex(void)
 						char path[MAXPATHLEN];
 
 						snprintf(path, sizeof(path), "%s/%s/%d.%s", distpath, dirs[db], count, HTML);
-						fileop = open_output_file(path, cflag);
+						fileop = open_output_file(path, 0);
 						op = get_descripter(fileop);
 						fputs_nl(gen_page_begin(tag, SUBDIR), op);
 						fputs_nl(body_begin, op);

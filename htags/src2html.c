@@ -466,11 +466,6 @@ put_anchor(char *name, int type, int lineno)
 				strbuf_puts(sb, "pattern=");
 				strbuf_puts(sb, name);
 				strbuf_puts(sb, quote_amp);
-				if (Sflag) {
-					strbuf_puts(sb, "id=");
-					strbuf_puts(sb, sitekey);
-					strbuf_puts(sb, quote_amp);
-				}
 				strbuf_puts(sb, "type=");
 				if (db == GTAGS)
 					strbuf_puts(sb, "definitions");
@@ -821,7 +816,7 @@ src2html(const char *src, const char *html, int notsource)
         curpfile = src;
         warned = 0;
 
-	fileop_out = open_output_file(html, cflag);
+	fileop_out = open_output_file(html, 0);
 	out = get_descripter(fileop_out);
 	strbuf_clear(outbuf);
 

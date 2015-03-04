@@ -171,7 +171,7 @@ makedefineindex(const char *file, int total, STRBUF *defines)
 				snprintf(alpha_f, sizeof(alpha_f), "%03d", c);
 			}
 			snprintf(buf, sizeof(buf), "%s/defines/%s.%s", distpath, alpha_f, HTML);
-			fileop_ALPHA = open_output_file(buf, cflag);
+			fileop_ALPHA = open_output_file(buf, 0);
 			ALPHA = get_descripter(fileop_ALPHA);
 			snprintf(buf, sizeof(buf), "[%s]", alpha);
 			fputs_nl(gen_page_begin(buf, SUBDIR), ALPHA);
