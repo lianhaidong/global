@@ -265,8 +265,6 @@
 		The color to use for @option{--color}; @var{GREP_COLORS} has precedence.
 	@item{@var{GREP_COLORS}}
 		The color (@arg{mt} or @arg{ms}) to use for @option{--color}; see @xref{grep,1}.
-	@item{@var{GLOBAL_OPTIONS}}
-		The value of this variable is inserted in the head of arguments.
 	@item{@var{GTAGSBLANKENCODE}}
 		If this variable is set, the @option{--encode-path=" <TAB>"}
 		option is specified.

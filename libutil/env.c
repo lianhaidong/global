@@ -97,7 +97,6 @@ env_size(void)
  * setenv_from_config
  */
 static const char *envname[] = {
-	"GLOBAL_OPTIONS",
 	"GREP_COLOR",
 	"GREP_COLORS",
 	"GTAGSBLANKENCODE",
