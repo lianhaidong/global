@@ -80,7 +80,7 @@
 		If @arg{dbpath} is specified, this option is ignored.
 	@item{@option{--single-update} @arg{file}}
 		Update tag files for a single file.
-		It is considered that @arg{file} was added or updated,
+		It is considered that @arg{file} was added, updated or deleted,
 		and there is no change in other files.
 		This option implies the @option{-i} option.
 	@item{@option{--sqlite3}}

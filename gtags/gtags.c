@@ -367,8 +367,6 @@ main(int argc, char **argv)
 		static char regular_path_name[MAXPATHLEN];
 		char *p = single_update;
 		
-		if (!test("f", p))
-			die("'%s' not found.", p);
 #if _WIN32 || __DJGPP__
 		for (; *p; p++)
 			if (*p == '\\')
@@ -590,6 +588,8 @@ incremental(const char *dbpath, const char *root)
 		fid = gpath_path2fid(single_update, &type);
 		if (fid == NULL) {
 			/* new file */
+			if (!test("f", single_update))
+				die("'%s' not found.", single_update);
 			type = issourcefile(single_update) ? GPATH_SOURCE : GPATH_OTHER;
 			if (type == GPATH_OTHER)
 				strbuf_puts0(addlist_other, single_update);
@@ -597,8 +597,15 @@ incremental(const char *dbpath, const char *root)
 				strbuf_puts0(addlist, single_update);
 				total++;
 			}
+		} else if (!test("f", single_update)) {
+			/* delete */
+			if (type != GPATH_OTHER) {
+				idset_add(deleteset, atoi(fid));
+				total++;
+			}
+			strbuf_puts0(deletelist, single_update);
 		} else {
-			/* update file */
+			/* update */
 			if (type == GPATH_OTHER)
 				goto exit;
 			idset_add(deleteset, atoi(fid));
