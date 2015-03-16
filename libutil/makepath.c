@@ -70,12 +70,11 @@ const char *
 makepath(const char *dir, const char *file, const char *suffix)
 {
 	STATIC_STRBUF(sb);
-	int length;
 	char sep = '/';
 
 	strbuf_clear(sb);
 	if (dir != NULL) {
-		if ((length = strlen(dir)) > MAXPATHLEN)
+		if (strlen(dir) > MAXPATHLEN)
 			die("path name too long. '%s'\n", dir);
 
 #if defined(_WIN32) || defined(__DJGPP__)
@@ -93,7 +92,7 @@ makepath(const char *dir, const char *file, const char *suffix)
 			strbuf_putc(sb, '.');
 		strbuf_puts(sb, suffix);
 	}
-	if ((length = strlen(strbuf_value(sb))) > MAXPATHLEN)
+	if (strbuf_getlen(sb) > MAXPATHLEN)
 		die("path name too long. '%s'\n", strbuf_value(sb));
 	return strbuf_value(sb);
 }

@@ -215,7 +215,7 @@ is_sqlite3(const char *path) {
  *	@param[in]	flags
  *			#DBOP_DUP: allow duplicate records. <br>
  *			#DBOP_SORTED_WRITE: use sorted writing. This requires @NAME{POSIX} sort.
- *	@return		descripter for @NAME{dbop_xxx()}
+ *	@return		descripter for @NAME{dbop_xxx()} or @VAR{NULL}
  *
  * Sorted wirting is fast because all writing is done by not insertion but addition.
  */
@@ -299,7 +299,7 @@ finish:
  *
  *	@param[in]	dbop	descripter
  *	@param[in]	name	name
- *	@return		pointer to data
+ *	@return		pointer to data or @VAR{NULL}
  */
 const char *
 dbop_get(DBOP *dbop, const char *name)
@@ -362,7 +362,7 @@ dbop_put(DBOP *dbop, const char *name, const char *data)
 		return;
 	}
 	key.data = (char *)name;
-	key.size = strlen(name)+1;
+	key.size = len+1;
 	dat.data = (char *)data;
 	dat.size = strlen(data)+1;
 
@@ -449,7 +449,7 @@ dbop_put_path(DBOP *dbop, const char *name, const char *data, const char *flag)
 	if (flag)
 		strbuf_puts0(sb, flag);
 	key.data = (char *)name;
-	key.size = strlen(name)+1;
+	key.size = len+1;
 	dat.data = strbuf_value(sb);
 	dat.size = strbuf_getlen(sb);
 
@@ -516,8 +516,8 @@ dbop_update(DBOP *dbop, const char *key, const char *dat)
  *	@param[in]	preg	compiled regular expression if any.
  *	@param[in]	flags	following dbop_next call take over this. <br>
  *			#DBOP_KEY:	read key part <br>
- *			#DBOP_PREFIX:	prefix read; only valied when sequential read
- *	@return		data
+ *			#DBOP_PREFIX:	prefix read; only valid when sequential read
+ *	@return		data or @VAR{NULL}
  */
 const char *
 dbop_first(DBOP *dbop, const char *name, regex_t *preg, int flags)
@@ -525,6 +525,7 @@ dbop_first(DBOP *dbop, const char *name, regex_t *preg, int flags)
 	DB *db = dbop->db;
 	DBT key, dat;
 	int status;
+	int len;
 
 	dbop->preg = preg;
 	dbop->ioflags = flags;
@@ -535,11 +536,11 @@ dbop_first(DBOP *dbop, const char *name, regex_t *preg, int flags)
 		return dbop3_first(dbop, name, preg, flags);
 #endif
 	if (name) {
-		if (strlen(name) > MAXKEYLEN)
+		if ((len = strlen(name)) > MAXKEYLEN)
 			die("primary key too long.");
 		strlimcpy(dbop->key, name, sizeof(dbop->key));
 		key.data = (char *)name;
-		key.size = strlen(name);
+		key.size = len;
 		/*
 		 * includes NULL character unless prefix read.
 		 */
@@ -597,7 +598,7 @@ dbop_first(DBOP *dbop, const char *name, regex_t *preg, int flags)
  * dbop_next: get next record. 
  * 
  *	@param[in]	dbop	dbop descripter
- *	@return		data
+ *	@return		data or @VAR{NULL}
  *
  * @note dbop_next() always skip meta records.
  */
@@ -681,6 +682,8 @@ dbop_lastdat(DBOP *dbop, int *size)
 }
 /**
  * get_flag: get flag value
+ * 
+ * @note Will return an empty string (not @VAR{NULL}), if not found/can't get.
  */
 const char *
 dbop_getflag(DBOP *dbop)
@@ -707,18 +710,22 @@ dbop_getflag(DBOP *dbop)
 }
 /**
  * dbop_getoption: get option
+ *
+ * @return the option's value or @VAR{NULL}
  */
 const char *
 dbop_getoption(DBOP *dbop, const char *key)
 {
 	static char buf[1024];
 	const char *p;
+	int keysize;
 
 	if ((p = dbop_get(dbop, key)) == NULL)
 		return NULL;
-	if (dbop->lastsize < strlen(key))
+	keysize = strlen(key);
+	if (dbop->lastsize < keysize)
 		die("invalid format (dbop_getoption).");
-	for (p += strlen(key); *p && isspace((unsigned char)*p); p++)
+	for (p += keysize; *p && isspace((unsigned char)*p); p++)
 		;
 	strlimcpy(buf, p, sizeof(buf));
 	return buf;

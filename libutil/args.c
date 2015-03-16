@@ -93,7 +93,7 @@ args_open_both(const char **args, const char *filename)
 /**
  * args_open_gfind: #args_open like interface for handling output of @NAME{gfind}.
  *
- *	@param[in]	agp	GFIND descriptor
+ *	@param[in]	agp	#GFIND descriptor
  */
 void
 args_open_gfind(GFIND *agp)
@@ -170,11 +170,11 @@ args_close(void)
 /**
  * preparse_options
  *
- *	@param[in]	argc
- *	@param[in]	argv
+ *	@param[in]	argc	main()'s argc integer
+ *	@param[in]	argv	main()'s argv string array
  *
- * Setup the GTAGSCONF and the GTAGSLABEL environment variable
- * according to the --gtagsconf and --gtagslabel option.
+ * Setup the @FILE{GTAGSCONF} and the @FILE{GTAGSLABEL} environment variables
+ * according to the @OPTION{--gtagsconf} and @OPTION{--gtagslabel} options.
  */
 void
 preparse_options(int argc, char *const *argv)
@@ -183,12 +183,10 @@ preparse_options(int argc, char *const *argv)
 	char *p;
 	char *confpath = NULL;
 	char *label = NULL;
-	char *opt_gtagsconf = "--gtagsconf";
-	char *opt_gtagslabel = "--gtagslabel";
+	const char *opt_gtagsconf = "--gtagsconf";
+	const char *opt_gtagslabel = "--gtagslabel";
 
 	for (i = 1; i < argc; i++) {
-		p = argv[i];
-
 		if ((p = locatestring(argv[i], opt_gtagsconf, MATCH_AT_FIRST))) {
 			if (*p == '\0') {
 				if (++i >= argc)
@@ -222,11 +220,15 @@ preparse_options(int argc, char *const *argv)
 		set_env("GTAGSLABEL", label);
 }
 /**
- * prepend_options: 
+ * prepend_options: creates a new argv main() array, by prepending (space separated)
+ *		options and arguments from the string argument @a options.
  *
- *	@param[in/out]	argc
- *	@param[in]	argv
- *	@param[in]	options
+ *	@param[in,out]	argc	pointer to main()'s argc integer
+ *	@param[in]	argv	main()'s argv string array
+ *	@param[in]	options	string
+ *	@return	The new argv array.
+ *
+ *	@remark The program's name is copied back into: returned[0] (argv[0]).
  */
 char **
 prepend_options(int *argc, char *const *argv, const char *options)

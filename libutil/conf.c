@@ -113,7 +113,7 @@ trim(char *l)
  * readrecord: read recoed indexed by label.
  *
  *	@param[in]	label	label in config file
- *	@return		record
+ *	@return		record or @VAR{NULL}
  *
  * @par Jobs:
  * - skip comment.
@@ -176,6 +176,8 @@ readrecord(const char *label)
  *	@param[out]	sb	string buffer
  *	@param[in]	label	record label
  *	@param[in]	level	nest level for check
+ *
+ * @remark This function may call itself (recursive)
  */
 static void
 includelabel(STRBUF *sb, const char *label, int	level)
@@ -204,7 +206,7 @@ includelabel(STRBUF *sb, const char *label, int	level)
  * configpath: get path of configuration file.
  *
  *	@param[in]	rootdir	Project root directory
- *	@return		path name of the configuration file
+ *	@return		path name of the configuration file or @VAR{NULL}
  */
 static char *
 configpath(const char *rootdir)
@@ -357,24 +359,26 @@ getconfs(const char *name, STRBUF *sb)
 	char buf[MAXPROPLEN];
 	int all = 0;
 	int exist = 0;
+	int bufsize;
 
 	if (!opened)
 		die("configuration file not opened.");
 	/* 'path' is reserved name for the current path of configuration file */
 	if (!strcmp(name, "path")) {
-		if (config_path)
+		if (config_path && sb)
 			strbuf_puts(sb, config_path);
 		return 1;
 	}
 	if (!strcmp(name, "skip") || !strcmp(name, "gtags_parser") || !strcmp(name, "langmap"))
 		all = 1;
 	snprintf(buf, sizeof(buf), ":%s=", name);
+	bufsize = strlen(buf);
 	p = confline;
 	while ((p = locatestring(p, buf, MATCH_FIRST)) != NULL) {
 		if (exist && sb)
 			strbuf_putc(sb, ',');		
 		exist = 1;
-		for (p += strlen(buf); *p; p++) {
+		for (p += bufsize; *p; p++) {
 			if (*p == ':')
 				break;
 			if (*p == '\\' && *(p + 1) == ':')	/* quoted character */
@@ -391,7 +395,8 @@ getconfs(const char *name, STRBUF *sb)
 	 */
 	if (!exist) {
 		if (!strcmp(name, "bindir")) {
-			strbuf_puts(sb, BINDIR);
+			if (sb)
+				strbuf_puts(sb, BINDIR);
 			exist = 1;
 		} else if (!strcmp(name, "datadir")) {
 #if defined(_WIN32) && !defined(__CYGWIN__)
@@ -399,24 +404,29 @@ getconfs(const char *name, STRBUF *sb)
 			 * Test if this directory exists, and if not, take the
 			 * directory relative to the binary.
 			 */
-			if (test("d", DATADIR))
-				strbuf_puts(sb, DATADIR);
-			else {
+			if (test("d", DATADIR)) {
+				if (sb)
+					strbuf_puts(sb, DATADIR);
+			} else {
 				char path[MAX_PATH], *name;
 				GetModuleFileName(NULL, path, MAX_PATH);
 				name = strrchr(path, '\\');
 				strcpy(name+1, "..\\share");
-				strbuf_puts(sb, path);
+				if (sb)
+					strbuf_puts(sb, path);
 			}
 #else
-			strbuf_puts(sb, DATADIR);
+			if (sb)
+				strbuf_puts(sb, DATADIR);
 #endif
 			exist = 1;
 		} else if (!strcmp(name, "localstatedir")) {
-			strbuf_puts(sb, LOCALSTATEDIR);
+			if (sb)
+				strbuf_puts(sb, LOCALSTATEDIR);
 			exist = 1;
 		} else if (!strcmp(name, "sysconfdir")) {
-			strbuf_puts(sb, SYSCONFDIR);
+			if (sb)
+				strbuf_puts(sb, SYSCONFDIR);
 			exist = 1;
 		}
 	}

@@ -86,13 +86,14 @@ assoc_put(ASSOC *assoc, const char *name, const char *value)
 	DB *db = assoc->db;
 	DBT key, dat;
 	int status;
+	int length;
 
 	if (db == NULL)
 		die("associate array is not prepared.");
-	if (strlen(name) == 0)
+	if ((length = strlen(name)) == 0)
 		die("primary key size == 0.");
 	key.data = (char *)name;
-	key.size = strlen(name)+1;
+	key.size = length+1;
 	dat.data = (char *)value;
 	dat.size = strlen(value)+1;
 
@@ -119,13 +120,14 @@ assoc_put_withlen(ASSOC *assoc, const char *name, const char *value, int length)
 	DB *db = assoc->db;
 	DBT key, dat;
 	int status;
+	int size;
 
 	if (db == NULL)
 		die("associate array is not prepared.");
-	if (strlen(name) == 0)
+	if ((size = strlen(name)) == 0)
 		die("primary key size == 0.");
 	key.data = (char *)name;
-	key.size = strlen(name)+1;
+	key.size = size+1;
 	dat.data = (char *)value;
 	dat.size = length;
 

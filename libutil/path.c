@@ -165,6 +165,10 @@ canonpath(char *path)
 #if (defined(_WIN32) && !defined(__CYGWIN__)) || defined(__DJGPP__)
 /**
  * realpath: get the complete path
+ *
+ * @param[in]	in_path
+ * @param[out]	out_path	result string
+ * @return	@a out_path
  */
 char *
 realpath(const char *in_path, char *out_path)
@@ -200,6 +204,8 @@ realpath(const char *in_path, char *out_path)
  *			-1: base directory not found <br>
  *			-2: permission error <br>
  *			-3: cannot make directory
+ *
+ *	@remark Directories are created in mode 0775.
  */
 int
 makedirectories(const char *base, const char *rest, int verbose)
@@ -238,6 +244,8 @@ makedirectories(const char *base, const char *rest, int verbose)
 }
 /**
  * trimpath: trim path name
+ *
+ * @remark Just skips over @CODE{"./"} at the beginning of @a path, if present.
  */
 const char *
 trimpath(const char *path)
@@ -248,6 +256,10 @@ trimpath(const char *path)
 }
 /**
  * get the current directory
+ *
+ * @param[out]	buf	result string
+ * @param[in]	size	size of @a buf
+ * @return	@a buf or NULL
  */
 char *
 vgetcwd(char *buf, size_t size) {

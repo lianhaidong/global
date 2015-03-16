@@ -304,7 +304,13 @@ setupdbpath(int verbose)
 			}
 			sb = strbuf_open(0);
 			s = strbuf_fgets(sb, fp, STRBUF_NOCRLF);
-			if (!test("d", s)) {
+			if (s == NULL) {
+				/* Empty file? */
+				if (verbose)
+					fprintf(stderr, "'%s' ignored; strbuf_fgets() returned NULL.\n", path);
+				goto ignore_lab;
+			}
+			if (!test("d", s)) {	/* XXX: if s == NULL, test() will use previous path used. */
 				if (verbose)
 					fprintf(stderr, "'%s' ignored because it doesn't include existent directory name.\n", path);
 			} else {
@@ -316,6 +322,7 @@ setupdbpath(int verbose)
 					s = realpath(makepath(root, s, NULL), buf);
 				strlimcpy(root, s, MAXPATHLEN);
 			}
+ignore_lab:;
 			fclose(fp);
 			strbuf_close(sb);
 			break;
@@ -328,12 +335,13 @@ setupdbpath(int verbose)
 	return 0;
 }
 /**
- * in_the_project: test whether path is in the project.
+ * in_the_project: test whether @a path is in the project.
  *
- *	@param[in]	target file or directory
+ *	@param[in]	path	target file or directory
  *	@return		0: out of the project, 1: in the project
  *
- * Please pass an absolute path name which does not include '.' or '..'.
+ * @note Please pass an absolute path name which does not include @FILE{.} (current directory) or
+ *       @FILE{..} (parent directory).
  */
 int
 in_the_project(const char *path)
