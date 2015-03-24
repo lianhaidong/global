@@ -4,7 +4,7 @@ ___________________________________
 |  |   |  |  |  |  |     |     |  |
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Copyright (c) 2000-2014 Tama Communications Corporation
+ Copyright (c) 2000-2015 Tama Communications Corporation
 
  This file is free software; as a special exception the author gives
  unlimited permission to copy and/or distribute it, with or without
@@ -18,6 +18,55 @@ ___________________________________
 
 GNU GLOBAL NEWS - User visible changes.
 At least, you should search '[INCOMPATIBLE CHANGES]' for each version.
+
+Version 6.4 - March 24 2015
+
+[CHANGES]
+New facilities:
+o gtags: Now --sqlite3 option is supported formally. This option uses
+  SQLite3 API instead of BSD/DB API for making tag files.
+  To use this option, you need to invoke configure script with
+  --with-sqlite3 in the build phase.
+
+        [configuration phase]
+        $ ./configure --with-sqlite3    # use sqlite3 API
+
+        [execution phase]
+        $ gtags --sqlite3               # make sqlite3 tag files
+
+o gtags: --single-update option supports deletion of a file.
+  Now the next command line works well.
+
+	$ rm test.c
+	$ gtags --single-update=test.c
+
+o gtags: New --explain option. This option explains handling files.
+  You can know the following information:
+  - Skipped reason for each skipped files.
+  - Used parser and its library path for each source file.
+
+[FIXED BUGS]
+o global: global(1) could not pick up source code from source files
+  in library projects (GTAGSLLIBPATH) if their tag files are compact
+  format. Now it works.
+
+[INCOMPATIBLE CHANGES]
+The following features of htags(1) were removed.
+o The -c (--compact) option.
+o The --system-cgi option.
+o The --overwrite-key option.
+o The -x (--xhtml[=version]) option.
+  All files are 1.0.
+o The following configuration variables:
+  colorize-warned-line (substitute: --colorize-warned-line)
+  gzipped_suffix (substitute: not available)
+  htags_options (substitute: HTAGS_OPTIONS)
+  ncol (substitute: -n, --line-number [n])
+  normal_suffix (will be always '.html')
+  no_order_list (substitute: --no-order-list)
+  script_alias (substitute: not available)
+  tabs (substitute: --tabs n)
+  xhtml_version (will be always 1.0)
 
 Version 6.3.4 - February 2 2015
 
@@ -47,13 +96,7 @@ o vim74-gtags-cscope.patch: New patch for vim + gtags-cscope to treat
 
 Release for beta test:
 o Added --sqlite3 option which uses SQLite3 API instead of BSD/DB API for
-  making tag files. If you will test the code then please do as follows:
-
-	[configuration phase]
-	$ ./configure --with-sqlite3	# use sqlite3 API
-
-	[execution phase]
-	$ gtags --sqlite3		# make sqlite3 tag files
+  making tag files.
 
 [FIXED BUGS]
 o gtags-cscope.vim: There was a calling to undefined function.
