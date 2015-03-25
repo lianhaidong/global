@@ -123,6 +123,7 @@ Ron Lee			Debian package, htmake(1) and many bug reports.
 Rongsong Shen		bug report about gtags(1).
 Rui Lopes		report about build error in *BSD and revision of term.
 Ruppert Koch		bug report about htags(1).
+S Kaicho		bug report about htags(1).
 Sadaichi Hayashida	idea about generating relative path.
 Satoru SATOH		profitable material for the support of XHTML.
 Sanpei Yoshiro Mihira	bug report of xargs.c in Windows 32.
