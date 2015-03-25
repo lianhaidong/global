@@ -170,8 +170,9 @@ WORD		{ALPHA}{ALPHANUM}*
 <STRING>\"		{
 				DBG_PRINT("<S:%s>", strbuf_value(string));
 				BEGIN PHP;
-					
-				return PHP_STRING;
+
+				if (strbuf_getlen(string) > 0)
+					return PHP_STRING;
 			}
 <STRING>\\.		strbuf_puts(string, LEXTEXT);
 <STRING>.		strbuf_putc(string, LEXTEXT[0]);
@@ -181,8 +182,9 @@ WORD		{ALPHA}{ALPHANUM}*
 <LITERAL>\'		{
 				DBG_PRINT("<L:%s>", strbuf_value(string));
 				BEGIN PHP;
-					
-				return PHP_STRING;
+
+				if (strbuf_getlen(string) > 0)
+					return PHP_STRING;
 			}
 <LITERAL>\\.		strbuf_puts(string, LEXTEXT);
 <LITERAL>.		strbuf_putc(string, LEXTEXT[0]);

@@ -768,6 +768,11 @@ put_syms(int type, const char *tag, int lno, const char *path, const char *line_
 			return;
 		}
 	}
+	if (p == tag) {
+		if (wflag)
+			warning("symbol name is null. (Ignored) [+%d %s]", lno, path);
+		return;
+	}
 	if (p - tag >= IDENTLEN) {
 		if (wflag)
 			warning("symbol name is too long. (Ignored) [+%d %s]", lno, path);
