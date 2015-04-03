@@ -67,8 +67,9 @@ Hiroshi MIURA		idea about printing file name on browser's status bar.
 Hirohito Kato		bug fix patch for gtags-parser to pick up objects in extern "C" {...} block.
 Hiroyuki KOBAYASHI	bug report and fix patch for gtags-parser(1).
 Jason Hood		port to DJGPP and Mingw32, and many bug reports & fixes.
-			He also contributed the --color option of global(1), and corrected a lot of
-			grammatical mistakes of online manuals.
+			He also contributed the --color option of global(1).
+			He also done many bug fixes and improvements of the C++ parser of gtags(1).
+			He also corrected a lot of grammatical mistakes of online manuals.
 Jean-Marc Saffroy	idea to skip all files whoes first character of name is '.'.
 			profitable information about LFS(Large file support).
 			idea and code about gtags-find-all-text-files of gtags.el.

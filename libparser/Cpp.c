@@ -208,9 +208,12 @@ Cpp(const struct parser_param *param)
 							c = nexttoken(NULL, cpp_reserved_word);
 							if (c == SYMBOL)
 								PUT(PARSER_REF_SYM, token, lineno, sp);
-							else if (c == '<')
-								++templates;
-							else if (c == '>') {
+							if (c == '<') {
+								if (peekc(1) == '<')
+									throwaway_nextchar();
+								else
+									++templates;
+							} else if (c == '>') {
 								if (--templates == 0)
 									break;
 							} else if (c == EOF)
