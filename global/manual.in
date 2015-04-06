@@ -58,6 +58,7 @@
 
 	@begin_itemize
 	@item{<no command> @arg{pattern}}
+		No command means tag search command.
 		Print tags which match to @arg{pattern}.
 		By default, print definition tags.
 	@item{@option{-c}, @option{--completion} [@arg{prefix}]}
@@ -139,7 +140,7 @@
 		Print only tags which exist under the current directory.
 	@item{@option{--literal}}
 		Execute literal search instead of regular expression search.
-		This option is only valid when the @option{-g} command is specified.
+		This option works with the tag search command and the @option{-g} command.
 	@item{@option{-M}, @option{--match-case}}
 		Search is case-sensitive. This is the default.
 	@item{@option{--match-part @arg{part}}}
