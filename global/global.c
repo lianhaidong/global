@@ -1741,7 +1741,7 @@ tagsearch(const char *pattern, const char *cwd, const char *root, const char *db
 	/*
 	 * trim pattern (^<no regex>$ => <no regex>)
 	 */
-	if (pattern) {
+	if (!literal && pattern) {
 		strlimcpy(p, pattern, sizeof(buffer));
 		if (*p++ == '^') {
 			char *q = p + strlen(p);
