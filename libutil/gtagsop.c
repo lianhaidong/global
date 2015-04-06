@@ -598,7 +598,7 @@ get_prefix(const char *pattern, int flags)
 
 	if (pattern == NULL || pattern[0] == 0) {
 		prefix = NULL;
-	} else if (!isregex(pattern)) {
+	} else if (flags & GTOP_NOREGEX || !isregex(pattern)) {
 		if (flags & GTOP_IGNORECASE) {
 			buffer[0] = toupper(*pattern);
 			buffer[1] = 0;
@@ -725,7 +725,7 @@ gtags_first(GTOP *gtop, const char *pattern, int flags)
 		gtop->preg = NULL;
 	} else if (flags & GTOP_IGNORECASE) {
 		regflags |= REG_ICASE;
-		if (!isregex(pattern) || flags & GTOP_NOREGEX) {
+		if (flags & GTOP_NOREGEX || !isregex(pattern)) {
 			gtop->prefix = get_prefix(pattern, flags);
 			if (gtop->openflags & GTAGS_DEBUG)
 				if (gtop->prefix != NULL)
@@ -733,7 +733,7 @@ gtags_first(GTOP *gtop, const char *pattern, int flags)
 			if (gtop->prefix == NULL)
 				die("gtags_first: impossible (1).");
 			strbuf_putc(regex, '^');
-			strbuf_puts(regex, pattern);
+			strbuf_puts(regex, quote_string(pattern));
 			if (!(flags & GTOP_PREFIX))
 				strbuf_putc(regex, '$');
 		} else if (*pattern == '^' && (gtop->prefix = get_prefix(pattern, flags)) != NULL) {
@@ -744,7 +744,7 @@ gtags_first(GTOP *gtop, const char *pattern, int flags)
 			strbuf_puts(regex, pattern);
 		}
 	} else {
-		if (!isregex(pattern) || flags & GTOP_NOREGEX) {
+		if (flags & GTOP_NOREGEX || !isregex(pattern)) {
 			if (flags & GTOP_PREFIX)
 				gtop->dbflags |= DBOP_PREFIX;
 			gtop->key = pattern;

@@ -1702,7 +1702,9 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 	 */
 	if (nofilter & SORT_FILTER)
 		flags |= GTOP_NOSORT;
-	if (Gflag)
+	if (literal)
+		flags |= GTOP_NOREGEX;
+	else if (Gflag)
 		flags |= GTOP_BASICREGEX;
 	if (format == FORMAT_PATH)
 		flags |= GTOP_PATH;
