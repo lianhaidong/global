@@ -1213,7 +1213,9 @@ idutils(const char *pattern, const char *dbpath)
 		strbuf_puts(ib, " --result=grep");
 	if (iflag)
 		strbuf_puts(ib, " --ignore-case");
-	if (isregex(pattern))
+	if (literal)
+		strbuf_puts(ib, " --literal");
+	else if (isregex(pattern))
 		strbuf_puts(ib, " --regexp");
 	strbuf_putc(ib, ' ');
 	strbuf_puts(ib, quote_shell(pattern));
