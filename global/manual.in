@@ -140,8 +140,8 @@
 		Print only tags which exist under the current directory.
 	@item{@option{--literal}}
 		Execute literal search instead of regular expression search.
-		This option works with the tag search command, @option{-g} command and
-		@option{-I} command.
+		This option works with the tag search command, @option{-g} command, 
+		@option{-P} command and @option{-I} command.
 	@item{@option{-M}, @option{--match-case}}
 		Search is case-sensitive. This is the default.
 	@item{@option{--match-part @arg{part}}}

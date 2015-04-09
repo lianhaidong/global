@@ -1437,7 +1437,10 @@ pathlist(const char *pattern, const char *dbpath)
 		/*
 		 * We assume '^aaa' as '^/aaa'.
 		 */
-		if (*pattern == '^' && *(pattern + 1) != '/') {
+		if (literal) {
+			strlimcpy(edit, quote_string(pattern), sizeof(edit));
+			pattern = edit;
+		} else if (*pattern == '^' && *(pattern + 1) != '/') {
 			snprintf(edit, sizeof(edit), "^/%s", pattern + 1);
 			pattern = edit;
 		}
