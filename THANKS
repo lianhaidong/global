@@ -60,14 +60,15 @@ Gordon Grimes		bug report about the java parser of gtags.
 Hageseter, Trond E.	bug report about gtags-parser.
 Hendrik Visage		bug report about gtags-parser(here document of PHP).
 Hideaki Okada		idea about -g option of global(1).
-Hideki Iwamoto		many bug reports, fixes  and improvements about GLOBAL. See also AUTHORS file.
+Hideki Iwamoto		many bug reports, fixes and improvements about GLOBAL.
+			See also AUTHORS file.
 Hideki Mori		advice about the name of parser.
 Hidetaka KOIE		bug report and advice about configure.in for Solaris7.
 Hiroshi MIURA		idea about printing file name on browser's status bar.
 Hirohito Kato		bug fix patch for gtags-parser to pick up objects in extern "C" {...} block.
 Hiroyuki KOBAYASHI	bug report and fix patch for gtags-parser(1).
 Jason Hood		port to DJGPP and Mingw32, and many bug reports & fixes.
-			He also contributed the --color option of global(1).
+			He also contributed to much of the --color and --literal option of global(1).
 			He also done many bug fixes and improvements of the C++ parser of gtags(1).
 			He also corrected a lot of grammatical mistakes of online manuals.
 Jean-Marc Saffroy	idea to skip all files whoes first character of name is '.'.
