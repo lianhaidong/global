@@ -68,7 +68,7 @@ This manual documents version @value{VERSION} of the GNU GLOBAL source code tag 
 
 @menu
 * Introduction::                        Overview of this tool.
-* Global::                              Command line.
+* Command line::                        Command line.
 * Applications::                        Various applications.
 * Other topics::                        Other topics.
 * Reference::                           Command References.
@@ -168,9 +168,9 @@ GNU GLOBAL has the following features:
 @end itemize
 
 @c ***************************************************************************
-@c Global
+@c Command line
 @c ***************************************************************************
-@node Global
+@node Command line
 @chapter Command line
 
 You can use tag facilities from the shell command line.
