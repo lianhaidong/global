@@ -62,11 +62,11 @@ o The following configuration variables:
   gzipped_suffix (substitute: not available)
   htags_options (substitute: HTAGS_OPTIONS)
   ncol (substitute: -n, --line-number [n])
-  normal_suffix (will be always '.html')
+  normal_suffix (always '.html')
   no_order_list (substitute: --no-order-list)
   script_alias (substitute: not available)
   tabs (substitute: --tabs n)
-  xhtml_version (will be always 1.0)
+  xhtml_version (always 1.0)
 
 Version 6.3.4 - February 2 2015
 
