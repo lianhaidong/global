@@ -114,7 +114,7 @@ YACC_IDENTIFIER	({ALPHA}|\.)({ALPHANUM}|\.)*
 		if (c == '\n') {
 			unput(c);
 		} else if (c) {
-			char path[MAXPATHLEN], *p = path;
+			char path[MAXPATHLEN], *p = path, *lim = p + MAXPATHLEN - 1;
 			int sep = 0;
 
 			if (c == '"')
@@ -124,8 +124,10 @@ YACC_IDENTIFIER	({ALPHA}|\.)({ALPHANUM}|\.)*
 			put_char(c);
 
 			/* pick up path name */
-			while ((c = input()) && c != EOF && c != '\n' && c != sep)
-				*p++ = c;
+			while ((c = input()) && c != EOF && c != '\n' && c != sep) {
+				if (p < lim)
+					*p++ = c;
+			}
 			*p = '\0';
 			if (c == EOF)
 				c = '\n';
