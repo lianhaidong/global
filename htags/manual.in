@@ -286,6 +286,8 @@
 
 	The @option{-f} and @option{-D} options generate CGI programs.
 	If you open the hypertext to the public, please recognize security dangers.
+
+	Htags does not support plug-in parser.
 @AUTHOR
 	Shigio YAMAGUCHI, Hideki IWAMOTO and others.
 @HISTORY
