@@ -51,7 +51,7 @@ Dirk Schultheis		advice about compat.h for Solaris.
 Emile Heyns		advice about writing code for generic UNIX.
 Erik Jonsson		algorithm for detecting binary file.
 Eric Paire		bug report about gtags-parser's memory violation.
-Frédéric Maitre		bug report about global(1) and gtags(1) at the system root directory.
+Frédéric Maitre	bug report about global(1) and gtags(1) at the system root directory.
 Gary Kline		advice about the name of parser.
 Geoffrey Robson		bug report about global (-t option didn't work correctly).
 George Neville-Neil	report about the useless inspection of gtags(1).
@@ -136,6 +136,7 @@ Shigeyuki Yamano	idea about -h option of htags(1).
 Silas S. Brown		proofreading about manuals.
 Simon Dommett		many bug reports and fix patches.
 			He also rewrote GLOBAL's comments in the Doxygen style.
+Stephen Huntley		bug report about htags(1).
 Sven Verdoolaege	support for gtags.pl(nvi-1.81.5).
 Steve Kirkendall	two commands of Elvis for external tag system.
 Takao Yamashita		advice about assembly parsing.
