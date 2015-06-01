@@ -72,3 +72,5 @@
 	Since Python and Ruby are not Web servers, you must not expect high security.
 @AUTHOR
 	Shigio YAMAGUCHI.
+@HISTORY
+	The @name{htags-server} command appeared in GLOBAL-6.3 (2014).
