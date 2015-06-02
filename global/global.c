@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005, 2006,
- *	2007, 2008, 2010, 2011, 2012, 2013, 2014
+ *	2007, 2008, 2010, 2011, 2012, 2013, 2014, 2015
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -85,6 +85,7 @@ int iflag;				/* [option]		*/
 int Iflag;				/* command		*/
 int Lflag;				/* [option]		*/
 int Mflag;				/* [option]		*/
+int Nflag;				/* [option]		*/
 int nflag;				/* [option]		*/
 int oflag;				/* [option]		*/
 int Oflag;				/* [option]		*/
@@ -175,6 +176,7 @@ static struct option const long_options[] = {
 	{"file-list", required_argument, NULL, 'L'},
 	{"match-case", no_argument, NULL, 'M'},
 	{"nofilter", optional_argument, NULL, 'n'},
+	{"nearness", no_argument, NULL, 'N'},
 	{"grep", no_argument, NULL, 'g'},
 	{"basic-regexp", no_argument, NULL, 'G'},
 	{"ignore-case", no_argument, NULL, 'i'},
@@ -391,7 +393,7 @@ main(int argc, char **argv)
 	openconf(root);
 	setenv_from_config();
 	logging_arguments(argc, argv);
-	while ((optchar = getopt_long(argc, argv, "acde:EifFgGIlL:MnoOpPqrsS:tTuvVx", long_options, &option_index)) != EOF) {
+	while ((optchar = getopt_long(argc, argv, "acde:EifFgGIlL:MnNoOpPqrsS:tTuvVx", long_options, &option_index)) != EOF) {
 		switch (optchar) {
 		case 0:
 			break;
@@ -454,6 +456,9 @@ main(int argc, char **argv)
 			} else {
 				nofilter = BOTH_FILTER;
 			}
+			break;
+		case 'N':
+			Nflag++;
 			break;
 		case 'o':
 			oflag++;
@@ -598,6 +603,8 @@ main(int argc, char **argv)
 		help();
 	if (dbpath == NULL)
 		die_with_code(-status, gtags_dbpath_error);
+	if (!strcmp(cwd, root))
+		Nflag = 0;	/* optimization */
 	/*
 	 * decide format.
 	 * The --result option is given to priority more than the -t and -x option.
@@ -1707,6 +1714,8 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 	 */
 	if (nofilter & SORT_FILTER)
 		flags |= GTOP_NOSORT;
+	else if (Nflag)
+		flags |= GTOP_NEARSORT;
 	if (literal)
 		flags |= GTOP_NOREGEX;
 	else if (Gflag)

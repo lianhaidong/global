@@ -5,7 +5,7 @@ ___________________________________
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  Copyright (c) 2000, 2001, 2002, 2003, 2004, 2006, 2007, 2008, 2009, 2010, 2012
-	2013, 2014
+	2013, 2014, 2015
 	Tama Communications Corporation
 
  This file is free software; as a special exception the author gives
@@ -53,6 +53,7 @@ Erik Jonsson		algorithm for detecting binary file.
 Eric Paire		bug report about gtags-parser's memory violation.
 Frédéric Maitre	bug report about global(1) and gtags(1) at the system root directory.
 Gary Kline		advice about the name of parser.
+Gautam Thaker		concept of Nearness sort (-N, --nearness).
 Geoffrey Robson		bug report about global (-t option didn't work correctly).
 George Neville-Neil	report about the useless inspection of gtags(1).
 Giuseppe Corbelli	Global.py for glimmer code editor and an advice about vim.

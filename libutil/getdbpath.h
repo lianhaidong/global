@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2008, 2011, 2014
+ * Copyright (c) 1997, 1998, 1999, 2000, 2008, 2011, 2014, 2015
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -31,6 +31,7 @@ const char *get_dbpath(void);
 const char *get_root(void);
 const char *get_root_with_slash(void);
 const char *get_cwd(void);
+const char *get_relative_cwd_with_slash(void);
 void dump_dbpath(void);
 
 #endif /* ! _GETDBPATH_H_ */

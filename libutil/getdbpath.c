@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2002, 2008, 2011, 2014
+ * Copyright (c) 1997, 1998, 1999, 2000, 2002, 2008, 2011, 2014, 2015
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -191,6 +191,7 @@ static char dbpath[MAXPATHLEN];
 static char root[MAXPATHLEN];
 static char root_with_slash[MAXPATHLEN];
 static char cwd[MAXPATHLEN];
+static char relative_cwd_with_slash[MAXPATHLEN+2];
 /**
  * setupdbpath: setup dbpath directory
  *
@@ -332,6 +333,11 @@ ignore_lab:;
 		strlimcpy(root_with_slash, root, sizeof(root_with_slash));
 	else
 		snprintf(root_with_slash, sizeof(root_with_slash), "%s/", root);
+	/*
+	 * relative from the project root directory.
+	 */
+	snprintf(relative_cwd_with_slash,
+		sizeof(relative_cwd_with_slash), "./%s/", cwd + strlen(root) + 1);
 	return 0;
 }
 /**
@@ -373,6 +379,11 @@ const char *
 get_cwd(void)
 {
 	return (const char *)cwd;
+}
+const char *
+get_relative_cwd_with_slash(void)
+{
+	return (const char *)relative_cwd_with_slash;
 }
 void
 dump_dbpath(void)

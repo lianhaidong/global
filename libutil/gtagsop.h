@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2005, 2006, 2007, 2010
- * 2013, 2014
+ * 2013, 2014, 2015
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -58,7 +58,7 @@
 #define GTAGS_COMPRESS		2
 			/** compression option for line number */
 #define GTAGS_COMPLINE		4
-			/** compression option for line number */
+			/** compression option for name */
 #define GTAGS_COMPNAME		8
 			/** extract method from class definition */
 #define GTAGS_EXTRACTMETHOD	16
@@ -87,8 +87,10 @@
 #define GTOP_IGNORECASE		16
 			/** use basic regular expression */
 #define GTOP_BASICREGEX		32
+			/** use 'nearness sort' */
+#define GTOP_NEARSORT		64
 			/** don't sort */
-#define GTOP_NOSORT		64
+#define GTOP_NOSORT		128
 /** @} */
 
 /**

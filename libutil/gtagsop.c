@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2005, 2006,
- *	2007, 2009, 2010, 2013, 2014
+ *	2007, 2009, 2010, 2013, 2014, 2015
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -44,6 +44,7 @@
 #include "dbop.h"
 #include "die.h"
 #include "format.h"
+#include "getdbpath.h"
 #include "gparam.h"
 #include "gtagsop.h"
 #include "locatestring.h"
@@ -62,6 +63,9 @@
 static int compare_path(const void *, const void *);
 static int compare_lineno(const void *, const void *);
 static int compare_tags(const void *, const void *);
+static int get_nearness(const char *, const char *);
+static int compare_nearpath(const void *, const void *);
+static int compare_neartags(const void *, const void *);
 static const char *seekto(const char *, int);
 static int is_defined_in_GTAGS(GTOP *, const char *);
 static char *get_prefix(const char *, int);
@@ -94,6 +98,47 @@ compare_tags(const void *v1, const void *v2)
 	const GTP *e1 = v1, *e2 = v2;
 	int ret;
 
+	if ((ret = strcmp(e1->path, e2->path)) != 0)
+		return ret;
+	return e1->lineno - e2->lineno;
+}
+static const char *curdir;
+static int
+get_nearness(const char *p1, const char *p2)
+{
+	int parts = 0;
+	for (; *p1 && *p2; p1++, p2++) {
+		if (*p1 != *p2)
+			break;
+		if (*p1 == '/')
+			parts++;
+	}
+	return parts;
+}
+#define COMPARE_NEARNESS(p1, p2) (get_nearness(p2, curdir) - get_nearness(p1, curdir))
+/**
+ * compare_nearpath: compare function for 'nearness sort'.
+ */
+static int
+compare_nearpath(const void *s1, const void *s2)
+{
+	int ret;
+
+	if ((ret = COMPARE_NEARNESS(*(char **)s1, *(char **)s2)) != 0)
+		return ret;
+	return strcmp(*(char **)s1, *(char **)s2);
+}
+/**
+ * compare_neartags: compare function for 'nearness sort'.
+ */
+static int
+compare_neartags(const void *v1, const void *v2)
+{
+	const GTP *e1 = v1, *e2 = v2;
+	int ret;
+
+	if ((ret = COMPARE_NEARNESS(e1->path, e2->path)) != 0)
+		return ret;
 	if ((ret = strcmp(e1->path, e2->path)) != 0)
 		return ret;
 	return e1->lineno - e2->lineno;
@@ -674,7 +719,10 @@ gtags_restart(GTOP *gtop)
  *			#GTOP_NOREGEX:	don't use regular expression. <br>
  *			#GTOP_IGNORECASE:	ignore case distinction. <br>
  *			#GTOP_BASICREGEX:	use basic regular expression. <br>
- *			#GTOP_NOSORT:	don't sort
+ *			#GTOP_NEARSORT:		use 'Nearness sort'. <br>
+ *			#GTOP_NOSORT:		don't sort
+ *
+ *			By default, sort is done by alphabetical order.
  *	@return		record
  */
 GTP *
@@ -707,7 +755,8 @@ gtags_first(GTOP *gtop, const char *pattern, int flags)
 		gtop->dbflags |= DBOP_KEY;
 	if (!(flags & GTOP_BASICREGEX))
 		regflags |= REG_EXTENDED;
-
+	if (flags & GTOP_NEARSORT)
+		curdir = get_relative_cwd_with_slash();
 	/*
 	 * decide a read method
 	 */
@@ -828,7 +877,8 @@ again0:
 		if (i != gtop->path_hash->entries)
 			die("Something is wrong. 'i = %lu, entries = %lu'" , i, gtop->path_hash->entries);
 		if (!(gtop->flags & GTOP_NOSORT))
-			qsort(gtop->path_array, gtop->path_hash->entries, sizeof(char *), compare_path);
+			qsort(gtop->path_array, gtop->path_hash->entries, sizeof(char *),
+				gtop->flags & GTOP_NEARSORT ? compare_nearpath : compare_path);
 		gtop->path_count = gtop->path_hash->entries;
 		gtop->path_index = 0;
 
@@ -1169,5 +1219,6 @@ segment_read(GTOP *gtop)
 	gtop->gtp_count = gtop->vb->length;
 	gtop->gtp_index = 0;
 	if (!(gtop->flags & GTOP_NOSORT))
-		qsort(gtop->gtp_array, gtop->gtp_count, sizeof(GTP), compare_tags);
+		qsort(gtop->gtp_array, gtop->gtp_count, sizeof(GTP),
+			gtop->flags & GTOP_NEARSORT ? compare_neartags : compare_tags);
 }

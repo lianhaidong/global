@@ -23,10 +23,10 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	GLOBAL,1,March 2015,GNU Project
+@HEADER	GLOBAL,1,May 2015,GNU Project
 @NAME	global - print locations of given symbols
 @SYNOPSIS
-	@name{global} [-adEFGilMnqrstTvx][-S dir][-e] @arg{pattern}
+	@name{global} [-adEFGilMnNqrstTvx][-S dir][-e] @arg{pattern}
 	@name{global} -c[dFiIMoOPrsT] @arg{prefix}
 	@name{global} -f[adlnqrstvx][-L file-list][-S dir] @arg{files}
 	@name{global} -g[aEGilMnoOqtvVx][-L file-list][-S dir][-e] @arg{pattern} [@arg{files}]
@@ -150,6 +150,20 @@
 		This option is valid only with the @option{-c} command in conjunction with @option{-P}.
 	@item{@option{-n}, @option{--nofilter}}
 		Suppress sort filter and path conversion filter.
+	@item{@option{-N}, @option{--nearness}}
+		Use Nearness sort method for the output of tag search command.
+		By default, alphabetical sort method is used.
+		Nearness sort is an extension facility of local search (-l, --local).
+		The result of nearness sort is concatenation of the followings ([1]-[n])
+		in this order.
+		@begin_verbatim
+		[1] Output of local search in the current directory.
+		[2] Output of local search in the parent directory except for [1].
+		[3] Output of local search in the grandparent directory except for [1]-[2].
+		(repeat untill the project root directory)
+		[n] Output of local search in the project root directory except for [1]-[n-1].
+		@end_verbatim
+		In each directory, they are sorted by alphabetical order.
 	@item{@option{-O}, @option{--only-other}}
 		Treat only text files other than source code, like @file{README}.
 		This option is valid only with the @option{-g} or @option{-P} command.
