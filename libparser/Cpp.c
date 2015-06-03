@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2008, 2009,
- *	2010
+ *	2010, 2015
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -353,7 +353,9 @@ Cpp(const struct parser_param *param)
 				} else {
 					PUT(PARSER_REF_SYM, token, lineno, sp);
 				}
-				c = nexttoken(interested, cpp_reserved_word);
+				do {
+					c = nexttoken(interested, cpp_reserved_word);
+				} while (c == '\n');
 			}
 			if (c == '{' /* } */ && cc == CPP_ENUM) {
 				enumerator_list(param);

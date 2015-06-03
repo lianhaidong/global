@@ -116,6 +116,7 @@ Paul Lew		advice about the build in Solaris environment.
 Paulius Bulotas		bug report and fix patch for gozilla(1).
 Pawel Wilk		idea about home_etc facility on PLD Linux/GNU.
 Per Nordlöw		bug report that gtags-parser(1) cannot treat 'extern "C" { ... }'.
+Peter Münster		bug report that gtags lose enum member.
 Philippe Defert		building on many plat-homes and the problem report.
 Pavel Nedev		bug report about a defect when GTAGSLIBPATH + compact format.
 Ray Simard		detailed investigation about POSIX dirent(3).
