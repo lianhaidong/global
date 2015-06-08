@@ -302,12 +302,13 @@ C_family(const struct parser_param *param, int type)
 			if (c == SYMBOL) {
 				if (peekc(0) == '{') /* } */ {
 					PUT(PARSER_DEF, token, lineno, sp);
+					do {
+						c = nexttoken(interested, c_reserved_word);
+					} while (c == '\n');
 				} else {
 					PUT(PARSER_REF_SYM, token, lineno, sp);
-				}
-				do {
 					c = nexttoken(interested, c_reserved_word);
-				} while (c == '\n');
+				}
 			}
 			if (c == '{' /* } */ && cc == C_ENUM) {
 				enumerator_list(param);
@@ -361,12 +362,14 @@ C_family(const struct parser_param *param, int type)
 					if (c == SYMBOL) {
 						if (peekc(0) == '{') /* } */ {
 							PUT(PARSER_DEF, token, lineno, sp);
+							do {
+								c = nexttoken(interest_enum, c_reserved_word);
+							} while (c == '\n');
 						} else {
 							PUT(PARSER_REF_SYM, token, lineno, sp);
+							c = nexttoken(interest_enum, c_reserved_word);
 						}
-						c = nexttoken(interest_enum, c_reserved_word);
 					}
-				
 					if (c_ == C_ENUM) {
 						if (c == '{') /* } */
 							c = enumerator_list(param);
