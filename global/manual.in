@@ -150,14 +150,13 @@
 		This option is valid only with the @option{-c} command in conjunction with @option{-P}.
 	@item{@option{-n}, @option{--nofilter}}
 		Suppress sort filter and path conversion filter.
-	@item{@option{-N}, @option{--nearness}}
+	@item{@option{-N}, @option{--nearness}[=@arg{start}]}
 		Use Nearness sort method for the output of tag search command.
 		By default, alphabetical sort method is used.
-		Nearness sort is an extension facility of local search (-l, --local).
 		The result of nearness sort is concatenation of the followings ([1]-[n])
-		in this order.
+		in this order. The default of @arg{start} is the current directory.
 		@begin_verbatim
-		[1] Output of local search in the current directory.
+		[1] Output of local search in the start directory.
 		[2] Output of local search in the parent directory except for [1].
 		[3] Output of local search in the grandparent directory except for [1]-[2].
 		(repeat untill the project root directory)

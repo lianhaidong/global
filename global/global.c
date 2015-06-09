@@ -116,6 +116,7 @@ char use_color;				/**< coloring */
 const char *cwd;			/**< current directory	*/
 const char *root;			/**< root of source tree	*/
 const char *dbpath;			/**< dbpath directory	*/
+const char *nearbase;			/**< nearbase directory	*/
 char *context_file;
 char *context_lineno;
 char *file_list;
@@ -176,7 +177,7 @@ static struct option const long_options[] = {
 	{"file-list", required_argument, NULL, 'L'},
 	{"match-case", no_argument, NULL, 'M'},
 	{"nofilter", optional_argument, NULL, 'n'},
-	{"nearness", no_argument, NULL, 'N'},
+	{"nearness", optional_argument, NULL, 'N'},
 	{"grep", no_argument, NULL, 'g'},
 	{"basic-regexp", no_argument, NULL, 'G'},
 	{"ignore-case", no_argument, NULL, 'i'},
@@ -459,6 +460,8 @@ main(int argc, char **argv)
 			break;
 		case 'N':
 			Nflag++;
+			if (optarg)
+				nearbase = optarg;
 			break;
 		case 'o':
 			oflag++;
@@ -603,8 +606,12 @@ main(int argc, char **argv)
 		help();
 	if (dbpath == NULL)
 		die_with_code(-status, gtags_dbpath_error);
-	if (!strcmp(cwd, root))
-		Nflag = 0;	/* optimization */
+	if (nearbase) {
+		if (!test("d", nearbase)) 
+			die("'%s' not found.", nearbase);
+		if (set_nearbase_path(nearbase) == NULL)
+			die("internal error: '%s'.", nearbase);
+	}
 	/*
 	 * decide format.
 	 * The --result option is given to priority more than the -t and -x option.

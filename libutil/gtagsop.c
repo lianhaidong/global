@@ -755,8 +755,10 @@ gtags_first(GTOP *gtop, const char *pattern, int flags)
 		gtop->dbflags |= DBOP_KEY;
 	if (!(flags & GTOP_BASICREGEX))
 		regflags |= REG_EXTENDED;
-	if (flags & GTOP_NEARSORT)
-		curdir = get_relative_cwd_with_slash();
+	if (flags & GTOP_NEARSORT) {
+		if ((curdir = get_nearbase_path()) == NULL)
+			curdir = get_relative_cwd_with_slash();
+	}
 	/*
 	 * decide a read method
 	 */
