@@ -53,6 +53,29 @@
 #include "literal.h"
 #include "convert.h"
 
+/*
+ * ensure GTAGSLIBPATH compares correctly
+ */
+#if defined(_WIN32) || defined(__DJGPP__)
+#define STRCMP stricmp
+#define back2slash(sb) do {		\
+	char *p = strbuf_value(sb);	\
+	for (; *p; p++) 		\
+		if (*p == '\\')         \
+			*p = '/';       \
+} while (0)
+#else
+#define STRCMP strcmp
+#define back2slash(sb)
+#endif
+
+/*
+ * enable [set] globbing, if available
+ */
+#ifdef __CRT_GLOB_BRACKET_GROUPS__
+int _CRT_glob = __CRT_GLOB_USE_MINGW__ | __CRT_GLOB_BRACKET_GROUPS__;
+#endif
+
 /**
  * @file global.c
  * @NAME{global} - print locations of the specified object.
@@ -339,12 +362,13 @@ finish:
 
 		sb = strbuf_open(0);
 		strbuf_puts(sb, getenv("GTAGSLIBPATH"));
+		back2slash(sb);
 		for (libdir = strbuf_value(sb); libdir; libdir = nextp) {
 			 if ((nextp = locatestring(libdir, PATHSEP, MATCH_FIRST)) != NULL)
                                 *nextp++ = 0;
 			if (!gtagsexist(libdir, libdbpath, sizeof(libdbpath), 0))
 				continue;
-			if (!strcmp(dbpath, libdbpath))
+			if (!STRCMP(dbpath, libdbpath))
 				continue;
 			dbop = dbop_open(makepath(libdbpath, dbname(GTAGS), NULL), 0, 0, 0);
 			if (dbop == NULL)
@@ -997,15 +1021,16 @@ completion(const char *dbpath, const char *root, const char *prefix, int db)
 		char *libdir, *nextp = NULL;
 
 		strbuf_puts(sb, getenv("GTAGSLIBPATH"));
+		back2slash(sb);
 		/*
-		* search for each tree in the library path.
-		*/
+		 * search for each tree in the library path.
+		 */
 		for (libdir = strbuf_value(sb); libdir; libdir = nextp) {
 			if ((nextp = locatestring(libdir, PATHSEP, MATCH_FIRST)) != NULL)
 				*nextp++ = 0;
 			if (!gtagsexist(libdir, libdbpath, sizeof(libdbpath), 0))
 				continue;
-			if (!strcmp(dbpath, libdbpath))
+			if (!STRCMP(dbpath, libdbpath))
 				continue;
 			if (!test("f", makepath(libdbpath, dbname(db), NULL)))
 				continue;
@@ -1788,6 +1813,7 @@ tagsearch(const char *pattern, const char *cwd, const char *root, const char *db
 		char *libdir, *nextp = NULL;
 
 		strbuf_puts(sb, getenv("GTAGSLIBPATH"));
+		back2slash(sb);
 		/*
 		 * search for each tree in the library path.
 		 */
@@ -1796,7 +1822,7 @@ tagsearch(const char *pattern, const char *cwd, const char *root, const char *db
 				*nextp++ = 0;
 			if (!gtagsexist(libdir, libdbpath, sizeof(libdbpath), 0))
 				continue;
-			if (!strcmp(dbpath, libdbpath))
+			if (!STRCMP(dbpath, libdbpath))
 				continue;
 			if (!test("f", makepath(libdbpath, dbname(db), NULL)))
 				continue;

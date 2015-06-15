@@ -38,6 +38,11 @@
 #include "path.h"
 #if defined(_WIN32) || defined(__DJGPP__)
 #include "checkalloc.h"
+#define LOCATEFLAG MATCH_AT_FIRST|IGNORE_CASE
+#define PATHCHAR(c) tolower(c)
+#else
+#define LOCATEFLAG MATCH_AT_FIRST
+#define PATHCHAR(c) c
 #endif
 
 #define COLOR_PATH
@@ -217,9 +222,9 @@ normalize(const char *path, const char *root, const char *cwd, char *result, con
 	 *      rootdir  /a/b/
 	 *      path     /a/b/c/d.c -> c/d.c -> ./c/d.c
 	 */
-	p = locatestring(abs, root, MATCH_AT_FIRST);
+	p = locatestring(abs, root, LOCATEFLAG);
 	if (p == NULL) {
-		p = locatestring(root, abs, MATCH_AT_FIRST);
+		p = locatestring(root, abs, LOCATEFLAG);
 		/*
 		 * abs == /usr/src should be considered to be equal to root == /usr/src/.
 		 */
@@ -402,7 +407,7 @@ abs2rel(const char *path, const char *base, char *result, const int size)
 				die("invalid escape sequence in the path. '%s'", path);
 		}
 #endif
-		if (*pp != *bp)
+		if (PATHCHAR(*pp) != PATHCHAR(*bp))
 			break;
 		if (*pp == '/')
 			branch = pp;

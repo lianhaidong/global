@@ -56,6 +56,13 @@
 #include "parser.h"
 #include "const.h"
 
+/*
+ * enable [set] globbing, if available
+ */
+#ifdef __CRT_GLOB_BRACKET_GROUPS__
+int _CRT_glob = __CRT_GLOB_USE_MINGW__ | __CRT_GLOB_BRACKET_GROUPS__;
+#endif
+
 /**
  @file
  @NAME{gtags} - create tag files for @NAME{global}.
