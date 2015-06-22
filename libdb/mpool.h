@@ -36,7 +36,7 @@
  * by a bucket which is threaded in up to two of three ways.  All active pages
  * are threaded on a hash chain (hashed by page number) and an lru chain.
  * Inactive pages are threaded on a free chain.  Each reference to a memory
- * pool is handed an opaque #MPOOL cookie which stores all of this information.
+ * pool is handed an opaque MPOOL cookie which stores all of this information.
  */
 #define	HASHSIZE	128
 #define	HASHKEY(pgno)	((pgno - 1) % HASHSIZE)

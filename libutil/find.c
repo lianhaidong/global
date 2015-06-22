@@ -77,17 +77,14 @@
 #define ROOT 0
 #endif
 
-/**
- * @file
+/*
  * usage of find_xxx()
  *
- * @code
  *	find_open(NULL);
  *	while (path = find_read()) {
  *		...
  *	}
  *	find_close();
- * @endcode
  *
  */
 static regex_t *skip;			/**< regex for skipping units */
@@ -114,8 +111,8 @@ static const int allow_blank = 1;
 static const int check_looplink = 1;
 static int accept_dotfiles = 0;
 static int find_explain = 0;
-/**
- * trim: remove blanks and @CODE{'\\'}.
+/*
+ * trim: remove blanks and '\'.
  */
 static void
 trim(char *s)
@@ -201,9 +198,9 @@ prepare_source(void)
 /**
  * prepare_skip: prepare skipping files.
  *
- *	@par Globals used (output):
- *		#listarray[]: 	skip list. <br>
- *		#list_count:	 count of skip list.
+ *	Globals used (output):
+ *		listarray[]: 	skip list.
+ *		list_count:	 count of skip list.
  *
  *	@return	compiled regular expression for skip files.
  */
@@ -382,7 +379,7 @@ prepare_skip(void)
 /**
  * issourcefile: check whether or not a source file.
  *
- *	@param[in]	path	path name (@STRONG{must} start with @FILE{./})
+ *	@param[in]	path	path name (must start with "./")
  *	@return		1: source file, 0: other file
  */
 int
@@ -400,13 +397,13 @@ issourcefile(const char *path)
 /**
  * skipthisfile: check whether or not we accept this file.
  *
- *	@param[in]	path	path name (@STRONG{must} start with @FILE{./})
+ *	@param[in]	path	path name (must start with "./")
  *	@return		1: skip, 0: don't skip
  *
- * @attention
- * @STRONG{Specification of required path name:}
- * - Path @STRONG{must} start with @FILE{./}.
- * - Directory path name @STRONG{must} end with @FILE{/}.
+ * [Note]
+ * Specification of required path name:
+ * - Path must start with "./".
+ * - Directory path name must end with "/".
  */
 int
 skipthisfile(const char *path)
@@ -455,10 +452,9 @@ skipthisfile(const char *path)
 	return 0;
 }
 
-/**
- * @name Directory Stack
+/*
+ * Directory Stack
  */
-/** @{ */
 static char dir[MAXPATHLEN];			/**< directory path */
 static VARRAY *stack;				/**< dynamic allocated array */
 struct stack_entry {
@@ -467,7 +463,6 @@ struct stack_entry {
 	char *dirp, *start, *end, *p;
 };
 static int current_entry;			/**< current entry of the stack */
-/** @} */
 
 /**
  * getrealpath: return a real path of dir using allocated area.
@@ -482,9 +477,9 @@ getrealpath(const char *dir)
 	return check_strdup(real);
 }
 /**
- * has_symlinkloop: whether or not @a dir has a symbolic link loops.
+ * has_symlinkloop: whether or not dir has a symbolic link loops.
  *
- *	@param[in]	dir	directory (@STRONG{should} end by @FILE{/})
+ *	@param[in]	dir	directory (should end by "/")
  *	@return		1: has a loop, 0: don't have a loop
  */
 int
@@ -527,15 +522,13 @@ has_symlinkloop(const char *dir)
 /**
  * getdirs: get directory list
  *
- *	@param[in]	dir	directory (@STRONG{should} end by @FILE{/})
+ *	@param[in]	dir	directory (should end by "/")
  *	@param[out]	sb	string buffer
  *	@return		-1: error, 0: normal
  *
- * @par format of directory list:
- * @code
+ * format of directory list:
  * |ddir1\0ffile1\0|
- * @endcode
- * means directory @FILE{dir1}, file @FILE{file1}.
+ * means directory "dir1", file "file1".
  */
 static int
 getdirs(const char *dir, STRBUF *sb)
@@ -582,10 +575,10 @@ set_accept_dotfiles(void)
 	accept_dotfiles = 1;
 }
 /**
- * find_open: start iterator without @VAR{GPATH}.
+ * find_open: start iterator without GPATH.
  *
- *	@param[in]	start	start directory <br>
- *			If @VAR{NULL}, assumed @CODE{\".\"} directory.
+ *	@param[in]	start	start directory,
+ *			If NULL, assumed "." (current) directory.
  *	@param[in]	explain	print verbose message
  */
 void
@@ -617,10 +610,10 @@ find_open(const char *start, int explain)
 	strlimcpy(cwddir, get_root(), sizeof(cwddir));
 }
 /**
- * find_open_filelist: find_open like interface for handling output of @XREF{find,1}.
+ * find_open_filelist: find_open like interface for handling output of find(1).
  *
- *	@param[in]	filename	file including list of file names. <br>
- *				When @FILE{-} is specified, read from standard input.
+ *	@param[in]	filename	file including list of file names.
+ *				When "-" is specified, read from standard input.
  *	@param[in]	root		root directory of source tree
  *	@param[in]	explain	print verbose message
  */
@@ -660,7 +653,7 @@ find_open_filelist(const char *filename, const char *root, int explain)
 	strlimcpy(cwddir, root, sizeof(cwddir));
 }
 /**
- * find_read: read path without @VAR{GPATH}.
+ * find_read: read path without GPATH.
  *
  *	@return		path
  */
@@ -681,7 +674,7 @@ find_read(void)
 	return path;
 }
 /**
- * find_read_traverse: read path without @VAR{GPATH}.
+ * find_read_traverse: read path without GPATH.
  *
  *	@return		path
  */

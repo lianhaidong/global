@@ -46,7 +46,7 @@ extern char **environ;
  *	@param[in]	var	environment variable
  *	@param[in]	val	value
  *
- * Machine independent version of @XREF{setenv,3}.
+ * Machine independent version of setenv(3).
  */
 void
 set_env(const char *var, const char *val)

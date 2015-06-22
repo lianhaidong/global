@@ -26,11 +26,10 @@
 #include "checkalloc.h"
 #include "pool.h"
 
-/** @file
+/*
 
 Pool: usage and memory status
 
-@code
 pool = pool_open();					[head]
 
 memory = pool_malloc(pool, 10);				[head] [..........]
@@ -40,7 +39,6 @@ string = pool_strdup(pool, "12345", 0);			[head] [12345]++++][++++++++++]
 string = pool_strdup_withterm(pool, "12345:678", ':');	[head] [12345][12345]+++++++++]
 								(...: alloc, +++: free)
 pool_close(pool);					(nothing)
-@endcode
 
 */
 
@@ -50,7 +48,7 @@ pool_close(pool);					(nothing)
 /**
  * pool_open: open memory pool
  *
- *	@return	pool	#POOL structure
+ *	@return	pool	POOL structure
  */
 POOL *
 pool_open(void)
@@ -64,7 +62,7 @@ pool_open(void)
 /**
  * pool_malloc: allocate memory from pool
  *
- *	@param[in]	pool	#POOL structure
+ *	@param[in]	pool	POOL structure
  *	@param[in]	size	memory size
  *	@return		allocated memory
  */
@@ -74,9 +72,9 @@ pool_malloc(POOL *pool, int size)
 	return obstack_alloc(&pool->obstack, size);
 }
 /**
- * pool_strdup: memory pool version of @NAME{strdup()}
+ * pool_strdup: memory pool version of strdup()
  *
- *	@param[in]	pool	#POOL structure
+ *	@param[in]	pool	POOL structure
  *	@param[in]	string	string
  *	@param[in]	size
  *	@return		allocated memory
@@ -89,9 +87,9 @@ pool_strdup(POOL *pool, const char *string, int size)
 	return obstack_copy0(&pool->obstack, string, size);
 }
 /**
- * pool_strdup_withterm: memory pool version of @NAME{strdup()}
+ * pool_strdup_withterm: memory pool version of strdup()
  *
- *	@param[in]	pool	#POOL structure
+ *	@param[in]	pool	POOL structure
  *	@param[in]	string	string
  *	@param[in]	term	terminate character
  *	@return		allocated memory
@@ -106,7 +104,7 @@ pool_strdup_withterm(POOL *pool, const char *string, int term)
 /**
  * pool_reset: reset memory pool
  *
- *	@param[in]	pool	#POOL structure
+ *	@param[in]	pool	POOL structure
  */
 void
 pool_reset(POOL *pool)
@@ -119,7 +117,7 @@ pool_reset(POOL *pool)
 /**
  * pool_close: close memory pool
  *
- *	@param[in]	pool	#POOL structure
+ *	@param[in]	pool	POOL structure
  */
 void
 pool_close(POOL *pool)

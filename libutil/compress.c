@@ -32,15 +32,13 @@
 #include "strlimcpy.h"
 #include "varray.h"
 
-/**
- * @file
+/*
  * Compress module
  *
- * Function compress() reduces the size of @NAME{GTAGS} by about 10-20% average.
+ * Function compress() reduces the size of GTAGS by about 10-20% average.
  *
- * @par PROTOCOL:
+ * PROTOCOL:
  *
- * @code{.txt}
  *	meta record: " __.COMPRESS ddefine ttypedef"
  *
  *	'ddefine' means	d => define
@@ -53,30 +51,24 @@
  *	"define"	@d
  *	"typedef"	@t
  *	<spaces>	@<digit> or @{<number>}
- * @endcode
  *
- * @par EXAMPLE OF COMPRESS:
+ * EXAMPLE OF COMPRESS:
  *
- * @code
  *	100 macro 23 #define macro(c) a;      b;
  *	             ~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *	             | [compress]   ^ [uncompress]
  *	             v              |
  *	100 macro 23 #@d @n(c) a;@6b;
  *	             ~~~~~~~~~~~~~~~~
- * @endcode
  *
- * @par DATA STRUCTURE
- * <br>
+ * DATA STRUCTURE
  *	- #ab2name table is used to convert from abbreviation character
- *	  to the string value. <br>
+ *	  to the string value.
  *	- #name2ab table is used to convert from string value to the
  *	  abbreviation character.
  *	  
- *	@code
  *	ab2name = ('a' => NULL, ... , 'd' => "define", ... 'z' => NULL)
  *	name2ab = ("define" => 'a', "typdef" => 't')
- *	@endcode
  */
 struct abbrmap {
 	int c;
@@ -140,7 +132,7 @@ abbrev_close(void)
 	name2ab = NULL;
 }
 /**
- * @remark for debugging.
+ * for debugging.
  */
 void
 abbrev_dump(void)

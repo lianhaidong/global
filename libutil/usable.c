@@ -49,8 +49,8 @@ static const char *suffix[] = {".exe", ".com", ".bat",};
  * usable: check if command is executable or not.
  *
  *	@param[in]	command
- *	@return		==NULL: not found. <br>
- *			!=NULL: absolute path of @a command.
+ *	@return		==NULL: not found.
+ *			!=NULL: absolute path of command.
  */
 char *
 usable(const char *command)
@@ -113,8 +113,8 @@ finish:
  *
  *      @param[in]      target_version
  *      @param[in]      required_version
- *      @return         -1: error <br>
- *                      0: does not meet the requirement <br>
+ *      @return         -1: error
+ *                      0: does not meet the requirement
  *                      1: meets the requirement
  */
 int

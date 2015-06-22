@@ -56,9 +56,9 @@ static int __bt_sprev(BTREE *, PAGE *, const DBT *, int *);
  *	@param[out] exactp	pointer to exact match flag
  *
  * @return
- *	The #EPG for matching record, if any, or the #EPG for the location
+ *	The EPG for matching record, if any, or the EPG for the location
  *	of the key, if it were inserted into the tree, is entered into
- *	the BTREE::bt_cur field of the tree.  A pointer to the field is returned.
+ *	the bt_cur field of the tree.  A pointer to the field is returned.
  */
 EPG *
 __bt_search(t, key, exactp)
@@ -134,7 +134,7 @@ next:		BT_PUSH(t, h->pgno, index);
 
 /**
  * __bt_snext --
- *	Check for an exact match after the @a key.
+ *	Check for an exact match after the key.
  *
  *	@param[in] t	tree
  *	@param[in] h	current page
@@ -142,7 +142,7 @@ next:		BT_PUSH(t, h->pgno, index);
  *	@param[out] exactp	pointer to exact match flag
  *
  * @return
- *	@VAR{TRUE} (1) if an exact match found, else @VAR{FALSE} (0).
+ *	TRUE (1) if an exact match found, else FALSE (0).
  */
 static int
 __bt_snext(t, h, key, exactp)
@@ -172,7 +172,7 @@ __bt_snext(t, h, key, exactp)
 
 /**
  * __bt_sprev --
- *	Check for an exact match before the @a key.
+ *	Check for an exact match before the key.
  *
  *	@param[in] t	tree
  *	@param[in] h	current page
@@ -180,7 +180,7 @@ __bt_snext(t, h, key, exactp)
  *	@param[out] exactp	pointer to exact match flag
  *
  * @return
- *	@VAR{TRUE} (1) if an exact match found, else @VAR{FALSE} (0).
+ *	TRUE (1) if an exact match found, else FALSE (0).
  */
 static int
 __bt_sprev(t, h, key, exactp)

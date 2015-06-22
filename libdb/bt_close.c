@@ -62,7 +62,7 @@ static int bt_meta(BTREE *);
  *	@param dbp	pointer to access method
  *	@param abandon	1: don't sync, 0: sync
  *
- * @return #RET_ERROR, #RET_SUCCESS
+ * @return RET_ERROR, RET_SUCCESS
  */
 int
 __bt_close(dbp, abandon)
@@ -122,7 +122,7 @@ __bt_close(dbp, abandon)
  *	@param dbp	pointer to access method
  *	@param flags
  *
- * @return #RET_SUCCESS, #RET_ERROR.
+ * @return RET_SUCCESS, RET_ERROR.
  */
 int
 __bt_sync(dbp, flags)
@@ -163,7 +163,7 @@ __bt_sync(dbp, flags)
  *
  *	@param t	tree
  *
- * @return #RET_ERROR, #RET_SUCCESS
+ * @return RET_ERROR, RET_SUCCESS
  */
 static int
 bt_meta(t)

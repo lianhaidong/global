@@ -30,11 +30,10 @@
 #include "hash-string.h"
 #include "pool.h"
 
-/** @file
+/*
 
 String Hash (associative array): usage and memory status
 
-@code
 hash = strhash_open(10);			// allocate hash buckets.
 
 entry = strhash_assign(hash, "name1", 0);	// get entry for the name.
@@ -69,7 +68,6 @@ char *s = (char *)entry->value;
 
 strhash_close(hash);				// free resources.
 						entry
-@endcode
 */
 
 #define obstack_chunk_alloc check_malloc
@@ -79,7 +77,7 @@ strhash_close(hash);				// free resources.
  * strhash_open: open string hash table.
  *
  *	@param[in]	buckets	 size of bucket table
- *	@return	sh	#STRHASH structure
+ *	@return	sh	STRHASH structure
  */
 STRHASH *
 strhash_open(int buckets)
@@ -98,14 +96,14 @@ strhash_open(int buckets)
 /**
  * strhash_assign: assign hash entry.
  *
- *	@param[in]	sh	#STRHASH structure
+ *	@param[in]	sh	STRHASH structure
  *	@param[in]	name	name
  *	@param[in]	force	if entry not found, create it.
  *	@return		pointer of the entry
  *
- * If specified entry is found then it is returned, else if the @CODE{force == 1}
- * then new allocated entry is returned. <br>
- * This procedure doesn't operate the contents of @CODE{entry->value}.
+ * If specified entry is found then it is returned, else if the force == 1
+ * then new allocated entry is returned.
+ * This procedure doesn't operate the contents of entry->value.
  */
 struct sh_entry *
 strhash_assign(STRHASH *sh, const char *name, int force)
@@ -134,7 +132,7 @@ strhash_assign(STRHASH *sh, const char *name, int force)
 /**
  * strhash_strdup: allocate memory and copy string.
  *
- *	@param[in]	sh	#STRHASH structure
+ *	@param[in]	sh	STRHASH structure
  *	@param[in]	string	string
  *	@param[in]	size	size of string
  *	@return		allocated string
@@ -148,7 +146,7 @@ strhash_strdup(STRHASH *sh, const char *string, int size)
 /**
  * strhash_first: get first entry
  *
- *	@param[in]	sh	#STRHASH structure
+ *	@param[in]	sh	STRHASH structure
  */
 struct sh_entry *
 strhash_first(STRHASH *sh)
@@ -160,7 +158,7 @@ strhash_first(STRHASH *sh)
 /**
  * strhash_next: get next entry
  *
- *	@param[in]	sh	#STRHASH structure
+ *	@param[in]	sh	STRHASH structure
  */
 struct sh_entry *
 strhash_next(STRHASH *sh)
@@ -183,7 +181,7 @@ strhash_next(STRHASH *sh)
 /**
  * strhash_reset: reset string hash.
  *
- *	@param[in]	sh	#STRHASH structure
+ *	@param[in]	sh	STRHASH structure
  */
 void
 strhash_reset(STRHASH *sh)
@@ -205,7 +203,7 @@ strhash_reset(STRHASH *sh)
 /**
  * strhash_close: close hash array.
  *
- *	@param[in]	sh	#STRHASH structure
+ *	@param[in]	sh	STRHASH structure
  */
 void
 strhash_close(STRHASH *sh)

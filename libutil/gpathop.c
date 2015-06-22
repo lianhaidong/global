@@ -51,60 +51,51 @@ void
 set_gpath_flags(int flags) {
 	openflags = flags;
 }
-/**
- * @file
- * @NAME{GPATH} format version
+/*
+ * GPATH format version
  *
- * -# @XREF{gtags,1} bury version number in #GPATH.
- * -# @XREF{global,1} pick up the version number from #GPATH. If the number
- *    is not acceptable version number then @NAME{global} give up work any more
- *    and display error message. <br>
- * -# If version number is not found then it assumes version 1.
- * -# @NAME{GPATH} version is independent with the other tag files.
+ * 1. gtags(1) bury version number in GPATH.
+ * 2. global(1) pick up the version number from GPATH. If the number
+ *    is not acceptable version number then global give up work any more
+ *    and display error message.
+ * 3. If version number is not found then it assumes version 1.
+ * 4. GPATH version is independent with the other tag files.
  *
- * @par [History of format version]
+ * [History of format version]
  *
- * @NAME{GLOBAL-4.8.7}		no idea about format version. <br>
- * @NAME{GLOBAL-5.0}		understand format version. <br>
+ * GLOBAL-4.8.7		no idea about format version.
+ * GLOBAL-5.0		understand format version.
  *			support format version 2.
  *
  * - Format version 1
- * @par
  *
- * #GPATH has only source files.
+ * GPATH has only source files.
  *
- * @par
- * @code{.txt}
  *      key             data
  *      --------------------
  *      ./aaa.c\0       11\0
- * @endcode
  *
  * - Format version 2
- * @par
  *
- * #GPATH has not only source files but also other files like @FILE{README}.
+ * GPATH has not only source files but also other files like "README".
  * You can distinguish them by the flag following data value.
- * At present, the flag value is only @CODE{'o'} (other files).
+ * At present, the flag value is only 'o' (other files).
  *
- * @par
- * @code{.txt}
  *      key             data
  *      --------------------
  *      ./aaa.c\0       11\0
  *      ./README\0      12\0o\0         <=== 'o' means other files.
- * @endcode
  */
 static int support_version = 2;	/**< acceptable format version   */
 static int create_version = 2;	/**< format version of newly created tag file */
 /**
  * gpath_open: open gpath tag file
  *
- *	@param[in]	dbpath	@VAR{GTAGSDBPATH}
- *	@param[in]	mode	0: read only <br>
- *			1: create <br>
+ *	@param[in]	dbpath	GTAGSDBPATH
+ *	@param[in]	mode	0: read only,
+ *			1: create,
  *			2: modify
- *	@return		0: normal <br>
+ *	@return		0: normal,
  *			-1: error
  */
 int
@@ -148,9 +139,9 @@ gpath_open(const char *dbpath, int mode)
  * gpath_put: put path name
  *
  *	@param[in]	path	path name
- *	@param[in]	type	path type <br>
- *			#GPATH_SOURCE: source file <br>
- *			#GPATH_OTHER: other file
+ *	@param[in]	type	path type
+ *			GPATH_SOURCE: source file,
+ *			GPATH_OTHER: other file
  */
 void
 gpath_put(const char *path, int type)
@@ -184,9 +175,9 @@ gpath_put(const char *path, int type)
  * gpath_path2fid: convert path into id
  *
  *	@param[in]	path	path name
- *	@param[out]	type	path type <br>
- *			#GPATH_SOURCE: source file <br>
- *			#GPATH_OTHER: other file
+ *	@param[out]	type	path type
+ *			GPATH_SOURCE: source file,
+ *			GPATH_OTHER: other file
  *	@return		file id
  */
 const char *
@@ -205,9 +196,9 @@ gpath_path2fid(const char *path, int *type)
  * gpath_fid2path: convert id into path
  *
  *	@param[in]	fid	file id
- *	@param[out]	type	path type <br>
- *			#GPATH_SOURCE: source file <br>
- *			#GPATH_OTHER: other file
+ *	@param[out]	type	path type
+ *			GPATH_SOURCE: source file,
+ *			GPATH_OTHER: other file
  *	@return		path name
  */
 const char *
@@ -276,26 +267,25 @@ gpath_close(void)
 }
 
 /**
- * @fn GFIND *gfind_open(const char *dbpath, const char *local, int target)
+ * GFIND *gfind_open(const char *dbpath, const char *local, int target)
  *
- * @remark gfind iterator using #GPATH.
+ * gfind iterator using GPATH.
  *
- * @par
- * @NAME{gfind_xxx()} does almost same with @NAME{find_xxx()} but much faster,
- * because @NAME{gfind_xxx()} use #GPATH (file index). <br>
- * If #GPATH exist then you should use this.
+ * gfind_xxx() does almost same with find_xxx() but much faster,
+ * because gfind_xxx() use GPATH (file index).
+ * If GPATH exist then you should use this.
  */
 
 /**
- * gfind_open: start iterator using #GPATH.
+ * gfind_open: start iterator using GPATH.
  *
  *	@param[in]	dbpath  dbpath
- *	@param[in]	local   local prefix <br>
- *			if @VAR{NULL} specified, it assumes @FILE{./};
- *	@param[in]      target  #GPATH_SOURCE: only source file <br>
- *			#GPATH_OTHER: only other file <br>
- *			#GPATH_BOTH: source file + other file
- *	@return		#GFIND structure
+ *	@param[in]	local   local prefix,
+ *			if NULL specified, it assumes "./";
+ *	@param[in]      target  GPATH_SOURCE: only source file,
+ *			GPATH_OTHER: only other file,
+ *			GPATH_BOTH: source file + other file
+ *	@return		GFIND structure
  */
 GFIND *
 gfind_open(const char *dbpath, const char *local, int target)
@@ -319,9 +309,9 @@ gfind_open(const char *dbpath, const char *local, int target)
 	return gfind;
 }
 /**
- * gfind_read: read path using #GPATH.
+ * gfind_read: read path using GPATH.
  *
- *	@param[in]	gfind	#GFIND structure
+ *	@param[in]	gfind	GFIND structure
  *	@return		path
  */
 const char *

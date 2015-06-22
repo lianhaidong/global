@@ -58,7 +58,7 @@ static STRBUF *ib;
 static char *confline;
 static char *config_path;
 /**
- * 32 level nested @CODE{tc=} or @CODE{include=} is allowed.
+ * 32 level nested tc= or include= is allowed.
  */
 static int allowed_nest_level = 32;
 static int opened;
@@ -74,12 +74,10 @@ static void includelabel(STRBUF *, const char *, int);
 /**
  * trim: trim string.
  *
- * @code
  * : var1=a b :
  *	|
  *	v
  * :var1=a b :
- * @endcode
  */
 static void
 trim(char *l)
@@ -113,9 +111,9 @@ trim(char *l)
  * readrecord: read recoed indexed by label.
  *
  *	@param[in]	label	label in config file
- *	@return		record or @VAR{NULL}
+ *	@return		record or NULL
  *
- * @par Jobs:
+ * Jobs:
  * - skip comment.
  * - append following line.
  * - format check.
@@ -171,13 +169,13 @@ readrecord(const char *label)
 	return NULL;
 }
 /**
- * includelabel: procedure for @CODE{tc=} (or @CODE{include=})
+ * includelabel: procedure for tc= (or include=)
  *
  *	@param[out]	sb	string buffer
  *	@param[in]	label	record label
  *	@param[in]	level	nest level for check
  *
- * @remark This function may call itself (recursive)
+ * This function may call itself (recursive)
  */
 static void
 includelabel(STRBUF *sb, const char *label, int	level)
@@ -206,7 +204,7 @@ includelabel(STRBUF *sb, const char *label, int	level)
  * configpath: get path of configuration file.
  *
  *	@param[in]	rootdir	Project root directory
- *	@return		path name of the configuration file or @VAR{NULL}
+ *	@return		path name of the configuration file or NULL
  */
 static char *
 configpath(const char *rootdir)
@@ -246,8 +244,8 @@ configpath(const char *rootdir)
  *
  *	@param[in]	rootdir	Project root directory
  *
- * @par Globals used (output):
- *	#confline:	 specified entry
+ * Globals used (output):
+ *	confline:	 specified entry
  */
 void
 openconf(const char *rootdir)
@@ -325,7 +323,7 @@ openconf(const char *rootdir)
  * getconfn: get property number
  *
  *	@param[in]	name	property name
- *	@param[out]	num	value (if not @VAR{NULL})
+ *	@param[out]	num	value (if not NULL)
  *	@return		1: found, 0: not found
  */
 int
@@ -349,7 +347,7 @@ getconfn(const char *name, int *num)
  * getconfs: get property string
  *
  *	@param[in]	name	property name
- *	@param[out]	sb	string buffer (if not @VAR{NULL})
+ *	@param[out]	sb	string buffer (if not NULL)
  *	@return		1: found, 0: not found
  */
 int
@@ -436,7 +434,7 @@ getconfs(const char *name, STRBUF *sb)
  * getconfb: get property bool value
  *
  *	@param[in]	name	property name
- *	@return		1: @VAR{TRUE}, 0: @VAR{FALSE}
+ *	@return		1: TRUE, 0: FALSE
  */
 int
 getconfb(const char *name)

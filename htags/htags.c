@@ -53,9 +53,8 @@
 #include "path2url.h"
 #include "const.h"
 
-/**
- * @file
- * @NAME{htags} - generate hypertext (XHTML or HTML) pages from a set of source files.
+/*
+ * htags - generate hypertext (XHTML or HTML) pages from a set of source files.
  */
 
 void src2html(const char *, const char *, int);
@@ -95,44 +94,43 @@ const char *null_device = NULL_DEVICE;
 const char *tmpdir = "/tmp";
 
 /**
- * @details
  * Order of items in the top page (This should be customisable variable in the future).
  *
- * @CODE{'c'}: caution <br>
- * @CODE{'s'}: search form <br>
- * @CODE{'m'}: mains <br>
- * @CODE{'d'}: definitions <br>
- * @CODE{'f'}: files <br>
- * @CODE{'t'}: call tree
+ * 'c': caution
+ * 's': search form
+ * 'm': mains
+ * 'd': definitions
+ * 'f': files
+ * 't': call tree
  */
 char *item_order = "csmdft";
 /*
  * options
  */
-int aflag;				/**< @OPTION{--alphabet(-a)} option	*/
-int fflag;				/**< @OPTION{--form(-f)} option		*/
-int Fflag;				/**< @OPTION{--frame(-F)} option		*/
-int gflag;				/**< @OPTION{--gtags(-g)} option		*/
-int Iflag;				/**< @OPTION{--icon(-I)} option		*/
-int nflag;				/**< @OPTION{--line-number(-n)} option	*/
+int aflag;				/**< --alphabet(-a) option	*/
+int fflag;				/**< --form(-f) option		*/
+int Fflag;				/**< --frame(-F) option		*/
+int gflag;				/**< --gtags(-g) option		*/
+int Iflag;				/**< --icon(-I) option		*/
+int nflag;				/**< --line-number(-n) option	*/
 int qflag;
-int vflag;				/**< @OPTION{--verbose(-v)} option		*/
-int wflag;				/**< @OPTION{--warning(-w)} option		*/
-int debug;				/**< @OPTION{--debug} option		*/
+int vflag;				/**< --verbose(-v) option		*/
+int wflag;				/**< --warning(-w) option		*/
+int debug;				/**< --debug option		*/
 
-int show_help;				/**< @OPTION{--help} command		*/
-int show_version;			/**< @OPTION{--version} command		*/
-int caution;				/**< @OPTION{--caution} option		*/
-int dynamic;				/**< @OPTION{--dynamic(-D)} option		*/
-int symbol;				/**< @OPTION{--symbol(-s)} option          */
-int suggest;				/**< @OPTION{--suggest} option		*/
-int suggest2;				/**< @OPTION{--suggest2} option		*/
-int auto_completion;			/**< @OPTION{--auto-completion}		*/
-int tree_view;				/**< @OPTION{--tree-view}			*/
-int fixed_guide;			/**< @OPTION{--fixed-guide}		*/
-const char *tree_view_type;		/**< @OPTION{--type-view=[type]}		*/
-char *auto_completion_limit = "0";	/**< @OPTION{--auto-completion=limit}	*/
-int statistics = STATISTICS_STYLE_NONE;	/**< @OPTION{--statistics} option		*/
+int show_help;				/**< --help command		*/
+int show_version;			/**< --version command		*/
+int caution;				/**< --caution option		*/
+int dynamic;				/**< --dynamic(-D) option		*/
+int symbol;				/**< --symbol(-s) option          */
+int suggest;				/**< --suggest option		*/
+int suggest2;				/**< --suggest2 option		*/
+int auto_completion;			/**< --auto-completion		*/
+int tree_view;				/**< --tree-view			*/
+int fixed_guide;			/**< --fixed-guide		*/
+const char *tree_view_type;		/**< --type-view=[type]		*/
+char *auto_completion_limit = "0";	/**< --auto-completion=limit	*/
+int statistics = STATISTICS_STYLE_NONE;	/**< --statistics option		*/
 
 int no_order_list;			/**< 1: doesn't use order list	*/
 int other_files;			/**< 1: list other files		*/
@@ -146,20 +144,18 @@ int use_cvs_module;
 const char *cvsweb_cvsroot;
 const char *gtagslabel;
 const char *title;
-const char *insert_header;		/**< @OPTION{--insert-header=\<file\>}	*/
-const char *insert_footer;		/**< @OPTION{--insert-footer=\<file\>}	*/
-const char *html_header;		/**< @OPTION{--html-header=\<file\>}		*/
+const char *insert_header;		/* --insert-header=<file>	*/
+const char *insert_footer;		/* --insert-footer=<file>	*/
+const char *html_header;		/* --html-header=<file>		*/
 const char *jscode;			/**< javascript code		*/
-/**
- * @name Constant values.
+/*
+ * Constant values.
  */
-/** @{ */
 const char *title_define_index = "DEFINITIONS";
 const char *title_file_index = "FILES";
 const char *title_call_tree = "CALL TREE";
 const char *title_callee_tree = "CALLEE TREE";
 const char *title_included_from = "INCLUDED FROM";
-/** @} */
 /*
  * Function header items.
  */
@@ -229,10 +225,9 @@ const char *icon_files[] = {
 	"text",
 	"pglobe"
 };
-/**
- * @name Configuration parameters.
+/*
+ * Configuration parameters.
  */
-/** @{ */
 int ncol = 4;				/**< columns of line number	*/
 int tabs = 8;				/**< tab skip			*/
 int flist_fields = 5;			/**< fields number of file list	*/
@@ -257,7 +252,6 @@ int definition_header=NO_HEADER;	/**< (NO|BEFORE|RIGHT|AFTER)_HEADER */
 const char *include_file_suffixes = DEFAULTINCLUDEFILESUFFIXES;	/**< include_file_suffixes */
 static const char *langmap = DEFAULTLANGMAP;	/**< langmap */
 int grtags_is_empty = 0;						/**< grtags_is_empty */
-/** @} */
 
 static struct option const long_options[] = {
 	/*
@@ -376,7 +370,7 @@ suddenly(int signo)
 /**
  * Setup signal hander.
  *
- * Makes signals @CODE{SIGINT}, @CODE{SIGTERM}, @CODE{SIGHUP} and @CODE{SIGQUIT}
+ * Makes signals SIGINT, SIGTERM, SIGHUP and SIGQUIT
  * call suddenly() if triggered.
  */
 static void
@@ -393,13 +387,13 @@ signal_setup(void)
 }
 
 /**
- * make directory in the dist (#distpath) directory.
+ * make directory in the dist (distpath) directory.
  *
  *     @param[in]      name    name of directory to create.
  *
- * Creates a file called @FILE{index.html} in the new directory.
+ * Creates a file called "index.html" in the new directory.
  *
- * @remark @NAME{mkdir()} creates the directory in mode @CODE{0775}, if doesn't exist.
+ * mkdir() creates the directory in mode 0775, if doesn't exist.
  */
 static void
 make_directory_in_distpath(const char *name)
@@ -423,7 +417,7 @@ make_directory_in_distpath(const char *name)
 	fclose(op);
 }
 /**
- * make file in the dist (#distpath) directory.
+ * make file in the dist (distpath) directory.
  */
 static void
 make_file_in_distpath(const char *name, const char *data)
@@ -561,7 +555,7 @@ load_with_replace(const char *file, STRBUF *result, int place)
  *
  *	@param[in]	dist	directory where the file should be created
  *	@param[in]	file	file name
- *	@param[in]	place	#TOPDIR, #SUBDIR, #CGIDIR
+ *	@param[in]	place	TOPDIR, SUBDIR, CGIDIR
  */
 static void
 generate_file(const char *dist, const char *file, int place)
@@ -579,7 +573,7 @@ generate_file(const char *dist, const char *file, int place)
 	strbuf_close(result);
 }
 /**
- * makeprogram: make @NAME{CGI} program
+ * makeprogram: make CGI program
  */
 static void
 makeprogram(const char *cgidir, const char *file)
@@ -673,10 +667,10 @@ makehelp(const char *file)
 	fclose(op);
 	html_count++;
 }
-/**
+/*
  * makesearchpart: make search part
  *
- *	@param[in]	target	\$target
+ *	@param[in]	target	$target
  *	@return		html
  */
 static char *
@@ -835,7 +829,7 @@ makesearchindex(const char *file)
 	html_count++;
 }
 /**
- * makehtaccess: make @FILE{.htaccess} skeleton file.
+ * makehtaccess: make ".htaccess" skeleton file.
  */
 static void
 makehtaccess(const char *cgidir, const char *file)
@@ -951,7 +945,7 @@ loadfile(const char *file, STRBUF *result)
 	load_with_replace(file, result, 0);
 }
 /**
- * makecommonpart: make a common part for @FILE{mains.html} and @FILE{index.html}
+ * makecommonpart: make a common part for "mains.html" and "index.html"
  *
  *	@param[in]	title
  *	@param[in]	defines
@@ -1143,7 +1137,7 @@ basic_check(void)
  * load configuration variables.
  */
 static void
-configuration()
+configuration(void)
 {
 	STRBUF *sb = strbuf_open(0);
 	char *p, *q;

@@ -25,18 +25,16 @@
 
 #include "checkalloc.h"
 #include "die.h"
-/**
- * @file
+/*
  * Functions which allocate memory with check.
-*/
+ */
 
 /**
- * @details
  * check_malloc: memory allocator
  *
- * Uses @NAME{malloc()}.
+ * Uses malloc().
  *
- * @note Does not return if memory is not available, calls die() instead.
+ * [Note] Does not return if memory is not available, calls die() instead.
  */
 void *
 check_malloc(size_t size)
@@ -48,12 +46,11 @@ check_malloc(size_t size)
 }
 
 /**
- * @details
  * check_calloc: memory allocator
  *
- * Uses @NAME{calloc()}.
+ * Uses calloc().
  *
- * @note Does not return if memory is not available, calls die() instead.
+ * [Note] Does not return if memory is not available, calls die() instead.
  */
 void *
 check_calloc(size_t number, size_t size)
@@ -64,12 +61,11 @@ check_calloc(size_t number, size_t size)
 	return p;
 }
 /**
- * @details
  * check_realloc: memory allocator
  *
- * Uses @NAME{realloc()}.
+ * Uses realloc().
  *
- * @note Does not return if memory is not available, calls die() instead.
+ * [Note] Does not return if memory is not available, calls die() instead.
  */
 void *
 check_realloc(void *area, size_t size)
@@ -80,7 +76,6 @@ check_realloc(void *area, size_t size)
 	return p;
 }
 /**
- * @details
  * check_strdup: allocate memory and copy string to it.
  *
  *	@param[in]	string	original string

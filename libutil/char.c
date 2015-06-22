@@ -64,12 +64,10 @@ isregex(const char *s)
 /**
  * quote string.
  *
- *  @remark Non-alphanumeric characters are quoted/escaped.
+ *  Non-alphanumeric characters are quoted/escaped.
  *
- *	@par Examples:
- *	@code
+ *	Examples:
  *	'a:a,a' => 'a\:a\,a'
- *	@endcode
  */
 const char *
 quote_string(const char *s)
@@ -87,10 +85,8 @@ quote_string(const char *s)
 /**
  * quote characters in the string.
  *
- *	@par Examples:
- *	@code
+ *	Examples:
  *	quote_char('a:a,a', :) => 'a\:a,a'
- *	@endcode
  */
 const char *
 quote_chars(const char *s, unsigned int c)
@@ -113,11 +109,9 @@ quote_chars(const char *s, unsigned int c)
 /**
  * quote for shell.
  *
- *	@par Examples:
- *	@code
+ *	Examples:
  *	aaa => 'aaa'
  *	a'a => 'a'\''aa'
- *	@endcode
  */
 const char *
 quote_shell(const char *s)

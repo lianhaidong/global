@@ -26,7 +26,7 @@
 #endif
 
 /**
- * #PATHSEP - Define OS-specific directory and path separators
+ * PATHSEP - Define OS-specific directory and path separators
  */
 #if (defined(_WIN32) && !defined(__CYGWIN__)) || defined(__DJGPP__)
 #define PATHSEP ";"

@@ -19,6 +19,22 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+June 22 2015, Shigio YAMAGUCHI
+
+	To recover easiness of reading source cord, removed Doxygen tags
+	in the source code except for the followings:
+	('description' should be plain text)
+
+	/**< description */
+
+	/**
+	 *	description
+	 *      @param[in]      var     description
+	 *      @param[out]     var     description
+	 *      @param[in,out]  var     description
+	 *      @return                 description
+	 */
+
 November 10 2014, Shigio YAMAGUCHI
 
 	Included SQLite3 version 3.8.7.1 into 'libglibc'.

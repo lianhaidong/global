@@ -22,10 +22,9 @@
 #define _CONF_H_
 
 #include "strbuf.h"
-/**
- * @file
- * Access library for @FILE{gtags.conf} (@FILE{.globalrc}).
- * File format is a subset of @NAME{XXXcap} (@NAME{termcap}, @NAME{printcap}) file.
+/*
+ * Access library for "gtags.conf" (".globalrc").
+ * File format is a subset of XXXcap (termcap, printcap) file.
  */
 #define GTAGSCONF       "/etc/gtags.conf"
 #define DEBIANCONF      "/etc/gtags/gtags.conf"

@@ -71,12 +71,12 @@ u_long	bt_rootsplit, bt_split, bt_sortsplit, bt_pfxsaved;
  *	@param sp	page to split
  *	@param key	key to insert
  *	@param data	data to insert
- *	@param flags	#P_BIGKEY/#P_BIGDATA flags
+ *	@param flags	P_BIGKEY/P_BIGDATA flags
  *	@param ilen	insert length
  *	@param argskip	index to leave open
  *
  * @return
- *	#RET_ERROR, #RET_SUCCESS
+ *	RET_ERROR, RET_SUCCESS
  */
 int
 __bt_split(t, sp, key, data, flags, ilen, argskip)
@@ -337,7 +337,7 @@ err2:	mpool_put(t->bt_mp, l, 0);
  *	@param ilen	insert length
  *
  * @return
- *	Pointer to page in which to insert or @CODE{NULL} on error.
+ *	Pointer to page in which to insert or NULL on error.
  */
 static PAGE *
 bt_page(t, h, lp, rp, skip, ilen)
@@ -441,7 +441,7 @@ bt_page(t, h, lp, rp, skip, ilen)
  *	@param ilen	insert length
  *
  * @return
- *	Pointer to page in which to insert or @CODE{NULL} on error.
+ *	Pointer to page in which to insert or NULL on error.
  */
 static PAGE *
 bt_root(t, h, lp, rp, skip, ilen)
@@ -487,7 +487,7 @@ bt_root(t, h, lp, rp, skip, ilen)
  *	@param r	right page
  *
  * @return
- *	#RET_ERROR, #RET_SUCCESS
+ *	RET_ERROR, RET_SUCCESS
  */
 static int
 bt_rroot(t, h, l, r)
@@ -526,7 +526,7 @@ bt_rroot(t, h, l, r)
  *	@param r	right page
  *
  * @return
- *	#RET_ERROR, #RET_SUCCESS
+ *	RET_ERROR, RET_SUCCESS
  */
 static int
 bt_broot(t, h, l, r)
@@ -779,7 +779,7 @@ bt_psplit(t, h, l, r, pskip, ilen)
  *	@param pg	page number of first page in the chain.
  *
  * @return
- *	#RET_SUCCESS, #RET_ERROR.
+ *	RET_SUCCESS, RET_ERROR.
  */
 static int
 bt_preserve(t, pg)
@@ -803,10 +803,10 @@ bt_preserve(t, pg)
  * @return
  *	The number of recno entries below a page.
  *
- * @par XXX
- * These values could be set by the #bt_psplit routine.  The problem is that the
+ * XXX
+ * These values could be set by the bt_psplit routine.  The problem is that the
  * entry has to be popped off of the stack etc. or the values have to be passed
- * all the way back to #bt_split/#bt_rroot and it's not very clean.
+ * all the way back to bt_split/bt_rroot and it's not very clean.
  */
 static recno_t
 rec_total(h)

@@ -56,14 +56,14 @@ static char sccsid[] = "@(#)bt_utils.c	8.8 (Berkeley) 7/20/94";
  *
  *	@param t	tree
  *	@param e	key/data pair to be returned
- *	@param key	user's key structure (@CODE{NULL} if not to be filled in)
- *	@param rkey	memory area to hold @a key
- *	@param data	user's data structure (@CODE{NULL} if not to be filled in)
- *	@param rdata	memory area to hold @a data
+ *	@param key	user's key structure (NULL if not to be filled in)
+ *	@param rkey	memory area to hold key
+ *	@param data	user's data structure (NULL if not to be filled in)
+ *	@param rdata	memory area to hold data
  *	@param copy	always copy the key/data item
  *
  * @return
- *	#RET_SUCCESS, #RET_ERROR.
+ *	RET_SUCCESS, RET_ERROR.
  */
 int
 __bt_ret(t, e, key, rkey, data, rdata, copy)
@@ -138,17 +138,17 @@ dataonly:
 	return (RET_SUCCESS);
 }
 
-/**
+/*
  * __BT_CMP -- Compare a key to a given record.
  *
  *	@param t	tree
- *	@param k1	#DBT pointer of first arg to comparison
- *	@param e	pointer to #EPG for comparison
+ *	@param k1	DBT pointer of first arg to comparison
+ *	@param e	pointer to EPG for comparison
  *
  * @return
- *	\< 0 if @a k1 is \< record <br>
- *	= 0 if @a k1 is = record <br>
- *	\> 0 if @a k1 is \> record
+ *	< 0 if k1 is < record
+ *	= 0 if k1 is = record
+ *	> 0 if k1 is > record
  */
 int
 __bt_cmp(t, k1, e)
@@ -201,16 +201,16 @@ __bt_cmp(t, k1, e)
 	return ((*t->bt_cmp)(k1, &k2));
 }
 
-/**
+/*
  * __BT_DEFCMP -- Default comparison routine.
  *
- *	@param a	#DBT \#1
- *	@param b 	#DBT \#2
+ *	@param a	DBT #1
+ *	@param b 	DBT #2
  *
  * @return
- *	\< 0 if @a a is \< @a b <br>
- *	= 0 if @a a is = @a b <br>
- *	\> 0 if @a a is \> @a b
+ *	< 0 if a is < b
+ *	= 0 if a is = b
+ *	> 0 if a is > b
  */
 int
 __bt_defcmp(a, b)
@@ -235,11 +235,11 @@ __bt_defcmp(a, b)
 /**
  * __BT_DEFPFX -- Default prefix routine.
  *
- *	@param a	#DBT \#1
- *	@param b 	#DBT \#2
+ *	@param a	DBT #1
+ *	@param b 	DBT #2
  *
  * @return
- *	Number of bytes needed to distinguish @a b from @a a.
+ *	Number of bytes needed to distinguish b from a.
  */
 size_t
 __bt_defpfx(a, b)

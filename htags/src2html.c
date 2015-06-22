@@ -40,14 +40,13 @@
 /* Parser switch							*/
 /*----------------------------------------------------------------------*/
 /**
- * @details
- * This is the linkage section of each parsers. <br>
- * If you want to support new language, you must define two procedures: <br>
- *	-# Initializing procedure (#init_proc).
+ * This is the linkage section of each parsers.
+ * If you want to support new language, you must define two procedures:
+ *	1. Initializing procedure (init_proc).
  *		Called once first with an input file descripter.
- *	-# Executing procedure (#exec_proc).
- *		Called repeatedly until returning @NAME{EOF}. <br>
- *		It should read from above descripter and write @NAME{HTML}
+ *	2. Executing procedure (exec_proc).
+ *		Called repeatedly until returning EOF.
+ *		It should read from above descripter and write HTML
  *		using output procedures in this module.
  */
 struct lang_entry {
@@ -56,30 +55,24 @@ struct lang_entry {
 	int (*exec_proc)(void);			/**< executing procedure */
 };
 
-/**
- * @name initializing procedures
- * For lang_entry::init_proc
+/*
+ * initializing procedures
  */
-/** @{ */
 void c_parser_init(FILE *);
 void yacc_parser_init(FILE *);
 void cpp_parser_init(FILE *);
 void java_parser_init(FILE *);
 void php_parser_init(FILE *);
 void asm_parser_init(FILE *);
-/** @} */
 
-/**
- * @name executing procedures
- * For lang_entry::exec_proc
+/*
+ * executing procedures
  */
-/** @{ */
 int c_lex(void);
 int cpp_lex(void);
 int java_lex(void);
 int php_lex(void);
 int asm_lex(void);
-/** @} */
 
 /**
  * The first entry is default language.
@@ -98,10 +91,10 @@ struct lang_entry lang_switch[] = {
 /**
  * get language entry.
  *
- * If the specified language (@a lang) is not found, it assumes the
- * default language, which is @NAME{C}.
+ * If the specified language (lang) is not found, it assumes the
+ * default language, which is C.
  *
- *	@param[in]	lang	language name (@VAR{NULL} means 'not specified'.)
+ *	@param[in]	lang	language name (NULL means 'not specified'.)
  *	@return		language entry
  */
 static struct lang_entry *
@@ -138,30 +131,28 @@ static const char *curpfile;
 static int warned;
 static int last_lineno;
 
-/**
+/*
  * Put a character to HTML as is.
  *
- * @note You should use this function to put a control character. <br>
+ * [Note] You should use this function to put a control character.
  *
- * @attention
- * No escaping of @CODE{'\<'}, @CODE{'\>'} and @CODE{'\&'} is performed.
+ * [Note] No escaping of '<', '>' and '&' is performed.
  *
- * @see put_char()
+ * See put_char()
  */
 void
 echoc(int c)
 {
         strbuf_putc(outbuf, c);
 }
-/**
+/*
  * Put a string to HTML as is.
  *
- * @note You should use this function to put a control sequence.
+ * [Note] You should use this function to put a control sequence.
  *
- * @attention
- * No escaping of @CODE{'\<'}, @CODE{'\>'} and @CODE{'\&'} is performed.
+ * [Note] No escaping of '<', '>' and '&' is performed.
  *
- * @see put_string()
+ * See put_string()
  */
 void
 echos(const char *s)
@@ -171,10 +162,10 @@ echos(const char *s)
 /*----------------------------------------------------------------------*/
 /* HTML output								*/
 /*----------------------------------------------------------------------*/
-/**
+/*
  * Quote character with HTML's way.
  *
- * (Fixes @CODE{'\<'}, @CODE{'\>'} and @CODE{'\&'} for HTML).
+ * (Fixes '<', '>' and '&' for HTML).
  */
 static const char *
 HTML_quoting(int c)
@@ -187,11 +178,11 @@ HTML_quoting(int c)
 		return quote_amp;
 	return NULL;
 }
-/**
+/*
  * fill_anchor: fill anchor into file name
  *
- *       @param[in]      root   \$root or index page
- *       @param[in]      path   \$path name
+ *       @param[in]      root   $root or index page
+ *       @param[in]      path   $path name
  *       @return              hypertext file name string
  */
 const char *
@@ -231,7 +222,7 @@ fill_anchor(const char *root, const char *path)
 /**
  * link_format: make hypertext from anchor array.
  *
- *	@param[in]	ref	(previous, next, first, last, top, bottom) <br>
+ *	@param[in]	ref	(previous, next, first, last, top, bottom)
  *		-1: top, -2: bottom, other: line number
  *	@return	HTML
  */
@@ -275,7 +266,7 @@ link_format(int ref[A_SIZE])
 /**
  * fixed_guide_link_format: make fixed guide
  *
- *	@param[in]	ref	(previous, next, first, last, top, bottom) <br>
+ *	@param[in]	ref	(previous, next, first, last, top, bottom)
  *		-1: top, -2: bottom, other: line number
  *	@param[in]	anchors
  *	@return	HTML
@@ -371,10 +362,10 @@ generate_guide(int lineno)
 /**
  * tooltip: generate tooltip string
  *
- *	@param[in]	type	@CODE{'I'}: 'Included from' <br>
- *			@CODE{'R'}: 'Defined at' <br>
- *			@CODE{'Y'}: 'Used at' <br>
- *			@CODE{'D'}, @CODE{'M'}: 'Referred from'
+ *	@param[in]	type	'I': 'Included from',
+ *			'R': 'Defined at',
+ *			'Y': 'Used at',
+ *			'D', 'M': 'Referred from'
  *	@param[in]	lno	line number
  *	@param[in]	opt	
  *	@return		tooltip string
@@ -422,9 +413,9 @@ tooltip(int type, int lno, const char *opt)
  * put_anchor: output HTML anchor.
  *
  *	@param[in]	name	tag
- *	@param[in]	type	tag type. @CODE{'R'}: @NAME{GTAGS} <br>
- *			@CODE{'Y'}: @NAME{GSYMS} <br>
- *			@CODE{'D'}, @CODE{'M'}, @CODE{'T'}: @NAME{GRTAGS}
+ *	@param[in]	type	tag type. 'R': GTAGS,
+ *			'Y': GSYMS,
+ *			'D', 'M', 'T': GRTAGS
  *	@param[in]	lineno	current line no
  */
 void
@@ -515,7 +506,7 @@ put_anchor(char *name, int type, int lineno)
  *	@param[in]	length
  *	@param[in]	lineno	current line no
  *
- * @remark The tag type is fixed at 'R' (@NAME{GTAGS})
+ * The tag type is fixed at 'R' (GTAGS)
  */
 void
 put_anchor_force(char *name, int length, int lineno)
@@ -562,7 +553,7 @@ put_include_anchor_direct(const char *file, const char *path)
 	strbuf_puts(outbuf, gen_href_end());
 }
 /**
- * Put a reserved word (@CODE{if}, @CODE{while}, ...)
+ * Put a reserved word (if, while, ...)
  */
 void
 put_reserved_word(const char *word)
@@ -571,8 +562,8 @@ put_reserved_word(const char *word)
 	strbuf_puts(outbuf, word);
 	strbuf_puts(outbuf, reserved_end);
 }
-/**
- * Put a macro (@CODE{\#define}, @CODE{\#undef}, ...) 
+/*
+ * Put a macro (#define, #undef, ...) 
  */
 void
 put_macro(const char *word)
@@ -603,7 +594,7 @@ unexpected_eof(int lineno)
 		warned = 1;
 }
 /**
- * Print warning message when unknown @NAME{yacc} directive is found.
+ * Print warning message when unknown yacc directive is found.
  */
 void
 unknown_yacc_directive(const char *word, int lineno)
@@ -622,10 +613,10 @@ missing_left(const char *word, int lineno)
 	if (colorize_warned_line)
 		warned = 1;
 }
-/**
+/*
  * Put a character with HTML quoting.
  *
- * @note If you want to put @CODE{'\<'}, @CODE{'\>'} or @CODE{'\&'}, you
+ * [Note] If you want to put '<', '>' or '&', you
  * 		should echoc() instead, as this function escapes (fixes) those
  *		characters for HTML.
  */
@@ -639,12 +630,12 @@ put_char(int c)
 	else
 		strbuf_putc(outbuf, c);
 }
-/**
+/*
  * Put a string with HTML quoting.
  *
- * @note If you want to put HTML tag itself, you should echos() instead,
- *		as this function escapes (fixes) the characters @CODE{'\<'},
- *		@CODE{'\>'} and @CODE{'\&'} for HTML.
+ * [Note] If you want to put HTML tag itself, you should echos() instead,
+ *		as this function escapes (fixes) the characters '<',
+ *		'>' and '&' for HTML.
  */
 void
 put_string(const char *s)
@@ -653,7 +644,7 @@ put_string(const char *s)
 		put_char(*s);
 }
 /**
- * Put brace (@c '{', @c '}')
+ * Put brace ('{', '}')
  */
 void
 put_brace(const char *text)
@@ -663,13 +654,11 @@ put_brace(const char *text)
 	strbuf_puts(outbuf, brace_end);
 }
 
-/**
- * @name common procedure for line control.
+/*
+ * common procedure for line control.
  */
-/** @{ */
 static char lineno_format[32];
 static const char *guide = NULL;
-/** @} */
 
 /**
  * Begin of line processing.
@@ -692,10 +681,10 @@ put_begin_of_line(int lineno)
  * End of line processing.
  *
  *	@param[in]	lineno	current line number
- *	@par Globals used (input):
- *		@NAME{outbuf}, HTML line image
+ *	Globals used (input):
+ *		outbuf, HTML line image
  *
- * The @EMPH{outbuf} (string buffer) has HTML image of the line. <br>
+ * The outbuf (string buffer) has HTML image of the line.
  * This function flush and clear it.
  */
 void
@@ -751,12 +740,12 @@ encode(STRBUF *sb, const char *url)
 	}
 }
 /**
- * get_cvs_module: return @NAME{CVS} module of source file.
+ * get_cvs_module: return CVS module of source file.
  *
  *	@param[in]	file		source path
- *	@param[out]	basename	If @a basename is not @CODE{NULL}, store pointer to <br>
+ *	@param[out]	basename	If basename is not NULL, store pointer to
  *				the last component of source path.
- *	@return		!=NULL : relative path from repository top <br>
+ *	@return		!=NULL : relative path from repository top,
  *			==NULL : CVS/Repository is not readable.
  */
 static const char *

@@ -32,7 +32,7 @@
 
 /* $Id$ */
 
-/** @file
+/*
  *	preprocessor macro and constant definitions
  *
  *	cscope - interactive C symbol cross-reference
@@ -46,24 +46,22 @@
 /** control character macro */
 #define ctrl(x)	(x & 037)
 
-/** @name
- *	fast string equality tests (avoids most @NAME{strcmp()} calls)
+/*
+ *	fast string equality tests (avoids most strcmp() calls)
  */
-/** @{ */
 #define	strequal(s1, s2)	(*(s1) == *(s2) && strcmp(s1, s2) == 0)
 #define	strnotequal(s1, s2)	(*(s1) != *(s2) || strcmp(s1, s2) != 0)
-/** @} */
 
 /** set the mark character for searching the cross-reference file */
 #define	setmark(c)	(blockmark = c, block[blocklen] = blockmark)
 
 /** get the next character in the cross-reference.
-	@STRONG{note} that @CODE{blockp} is assumed not to be null */
+	note that blockp is assumed not to be null */
 #define	getrefchar()	(*(++blockp + 1) != '\0' ? *blockp : \
 			(read_block() != NULL ? *blockp : '\0'))
 
 /** skip the next character in the cross-reference.
-   @STRONG{note} that @CODE{blockp} is assumed not to be null and that
+   note that blockp is assumed not to be null and that
    this macro will always be in a statement by itself */
 #define	skiprefchar()	if (*(++blockp + 1) == '\0') (void) read_block()
 
@@ -88,7 +86,7 @@
 /** symbol pattern length */
 #define	PATLEN	250
 
-/** max @NAME{strlen()} of the global temp string */
+/** max strlen() of the global temp string */
 #define TEMPSTRING_LEN 8191
 
 /** cross-reference output file */
@@ -120,8 +118,7 @@
 #define NUMLEN_STR STRINGIZE(NUMLEN)
 #define TEMPSTRING_LEN_STR STRINGIZE(TEMPSTRING_LEN)
 
-/** @name screen lines */
-/** @{ */
+/* screen lines */
 /** first input field line */
 #define	FLDLINE	(LINES - FIELDS - 1)
 
@@ -133,10 +130,8 @@
 
 /** first displayed reference line */
 #define REFLINE	3
-/** @} */
 
-/** @name input fields (value matches field order on screen) */
-/** @{ */
+/* input fields (value matches field order on screen) */
 #define	SYMBOL		0
 #define DEFINITION	1
 #define	CALLEDBY	2
@@ -147,7 +142,6 @@
 #define FILENAME	7
 #define INCLUDES	8
 #define	FIELDS		9
-/** @} */
 
 #if (BSD || V9) && !__NetBSD__ && !__FreeBSD__
 	/** no terminfo curses */

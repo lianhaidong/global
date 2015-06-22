@@ -34,12 +34,10 @@
 # endif
 #endif
 
-/**
- * @file
+/*
  * STATISTICS_TIME
  *
- * @par Usage:
- * @code
+ * Usage:
  *     main()
  *     {
  *         STATISTICS_TIME *tim;
@@ -56,30 +54,26 @@
  *         print_statistics(style);
  *         exit(0);
  *     }
- * @endcode
  */
 struct statistics_time;
 typedef struct statistics_time STATISTICS_TIME;
 
 /**
- * @par STATISTICS_STYLE_NONE:
+ * STATISTICS_STYLE_NONE:
  *    Resource deallocation only.
  *
- * @par STATISTICS_STYLE_LIST:
+ * STATISTICS_STYLE_LIST:
  *    Print statistics information like following, and deallocate resource.
  *
- * @code{.txt}
  *     - Time of making foo .... user  2.016s system 0.128s elapsed  1.437s 149.0%
  *     - Time of making bar0 ... user  0.268s system 0.040s elapsed  0.282s 109.1%
  *     - Time of making bar1 ... user  1.084s system 0.120s elapsed  1.208s  99.2%
  *     - Time of making bar2 ... user 18.325s system 2.112s elapsed 16.010s 127.3%
  *     - The entire time ....... user 21.721s system 2.420s elapsed 18.989s 127.4%
- * @endcode
  *
- * @par STATISTICS_STYLE_TABLE:
+ * STATISTICS_STYLE_TABLE:
  *    Print statistics information like following, and deallocate resource.
  *
- * @code{.txt}
  *     period              user[sec] system[sec] elapsed[sec]  %CPU
  *     ------------------- --------- ----------- ------------ -----
  *     Time of making foo      2.016       0.128        1.437 149.0
@@ -88,7 +82,6 @@ typedef struct statistics_time STATISTICS_TIME;
  *     Time of making bar2    18.325       2.112       16.010 127.3
  *     ------------------- --------- ----------- ------------ -----
  *     The entire time        21.721       2.420       18.989 127.4
- * @endcode
  */
 enum {
 	STATISTICS_STYLE_NONE,

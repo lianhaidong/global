@@ -30,7 +30,7 @@
  DAMAGE. 
  =========================================================================*/
 
-/** @file
+/*
  *	process execution functions
  *
  *	cscope - interactive C symbol cross-reference
@@ -60,7 +60,7 @@ static char const rcsid[] = "$Id$";
 
 static	sighandler_t oldsigquit; /**< old value of quit signal */
 static	sighandler_t oldsighup; /**< old value of hangup signal */
-static	sighandler_t oldsigtstp; /**< old value of @VAR{SIGTSTP} */
+static	sighandler_t oldsigtstp; /**< old value of SIGTSTP */
 
 #if HAVE_FORK /* none of these is needed, there */
 static	int	join(pid_t p);
@@ -117,8 +117,8 @@ execute(char *a, ...)	/* note: "exec" is already defined on u370 */
 
 #if HAVE_FORK /* None of the following functions is used there */
 
-/** myexecvp is an interface to the @NAME{execvp} system call to
- * modify @CODE{argv[0]} to reference the last component of its path-name.
+/** myexecvp is an interface to the execvp system call to
+ * modify argv[0] to reference the last component of its path-name.
  */
 static int
 myexecvp(char *a, char **args)

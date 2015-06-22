@@ -82,7 +82,7 @@ static char encoded_pattern[IDENTLEN];
 /**
  * literal_comple: compile literal for search.
  *
- *	@param[in]	pattern	literal string
+ *	@param[in]	pat	literal string
  *
  * Literal string is treated as is.
  */
@@ -106,14 +106,15 @@ literal_comple(const char *pat)
 /**
  * literal_search: execute literal search
  *
+ *	@param[in]	cv	CONVERT structure
  *	@param[in]	file	file to search
  *	@return		0: normal, -1: error
  */
-# define ccomp(a,b) (iflag ? lca(a)==lca(b) : a==b)
-# define lca(x) (isupper(x) ? tolower(x) : x)
 int
 literal_search(CONVERT *cv, const char *file)
 {
+# define ccomp(a,b) (iflag ? lca(a)==lca(b) : a==b)
+# define lca(x) (isupper(x) ? tolower(x) : x)
 	struct words *c;
 	int ccount;
 	char *p;
@@ -286,7 +287,7 @@ nword:	for(;;) {
 }
 
 void
-cfail() {
+cfail(void) {
 	struct words *queue[QSIZE];
 	struct words **front, **rear;
 	struct words *state;
@@ -344,6 +345,6 @@ init:	if ((s->inp) != 0) {
 	}
 }
 void
-overflo() {
+overflo(void) {
 	die("wordlist too large.");
 }

@@ -47,11 +47,10 @@ static char sccsid[] = "@(#)bt_page.c	8.3 (Berkeley) 7/14/94";
  *
  *	@param t	tree
  *	@param h	page to free
+ *	@return RET_ERROR, RET_SUCCESS
  *
- * @return #RET_ERROR, #RET_SUCCESS
- *
- * @par Side-effect:
- *	#mpool_put's the page.
+ * Side-effect:
+ *	mpool_put's the page.
  */
 int
 __bt_free(t, h)
@@ -75,7 +74,7 @@ __bt_free(t, h)
  *	@param t	tree
  *	@param npg	storage for page number.
  *
- * @return Pointer to a page, @CODE{NULL} on error.
+ * @return Pointer to a page, NULL on error.
  */
 PAGE *
 __bt_new(t, npg)

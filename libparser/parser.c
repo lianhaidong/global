@@ -144,12 +144,10 @@ static char *langmap_saved, *pluginspec_saved;
  *
  *	@param[in]	pluginspec	described below
  *
- * @par Syntax:
- * @code{.txt}
+ * Syntax:
  *   <pluginspec> ::= <map> | <map>","<pluginspec>
  *   <map>        ::= <language name>":"<shared object path>
  *                  | <language name>":"<shared object path>":"<function name>
- * @endcode
  */
 static void
 load_plugin_parser(const char *pluginspec)
@@ -271,7 +269,7 @@ static const struct lang_entry lang_switch[] = {
 /**
  * get language entry.
  *
- *      @param[in]      lang    language name (@CODE{NULL} means 'not specified'.)
+ *      @param[in]      lang    language name (NULL means 'not specified'.)
  *      @return              language entry
  */
 static const struct lang_entry *
@@ -302,35 +300,30 @@ get_lang_entry(const char *lang)
 }
 
 /**
- * @par Usage:
- * @code{.txt}
+ * Usage:
  * [gtags.conf]
  * +----------------------------
  * |...
  * |gtags_parser=<pluginspec>
  * |langmap=<langmap>
- * @endcode
  *
  * 1. Load langmap and pluginspec, and initialize parsers.
  *
- *	@par
- *	@CODE{parser_init(langmap, plugin_parser);}
+ *	parser_init(langmap, plugin_parser);
  *
  * 2. Execute parsers
  *
- *	@par
- *	@CODE{#parse_file(...);}
+ *	parse_file(...);
  *
  * 3. Unload parsers.
  *
- *	@par
- *	@CODE{parser_exit();}
+ *	parser_exit();
  */
-/**
+/*
  * parser_init: load langmap and shared libraries.
  *
- *	@param[in]	langmap		the value of @CODE{langmap=\<langmap\>}
- *	@param[in]	pluginspec	the value of @CODE{gtags_parser=\<pluginspec\>}
+ *	@param[in]	langmap		the value of langmap=<langmap>
+ *	@param[in]	pluginspec	the value of gtags_parser=<pluginspec>
  */
 void
 parser_init(const char *langmap, const char *pluginspec)
@@ -371,8 +364,8 @@ parser_exit(void)
  * parse_file: select and execute a parser.
  *
  *	@param[in]	path	path name
- *	@param[in]	flags	#PARSER_WARNING: print warning messages
- *	@param[in]	put	callback routine <br>
+ *	@param[in]	flags	PARSER_WARNING: print warning messages
+ *	@param[in]	put	callback routine,
  *			each parser use this routine for output
  *	@param[in]	arg	argument for callback routine
  */

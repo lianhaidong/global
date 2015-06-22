@@ -24,18 +24,15 @@
 #include "split.h"
 #include "die.h"
 
-/** @file
- * Substring manager like @NAME{perl}'s @NAME{split}.
+/*
+ * Substring manager like perl's split.
  *
- * @code
  * Initial status.
  *              +------------------------------------------------------
  *         line |main         100    ./main.c        main(argc, argv)\n
- * @endcode
  *
- * The result of @CODE{split(line, 4, &list)}:
+ * The result of split(line, 4, &list):
  *
- * @code
  *              +------------------------------------------------------
  * list    line |main\0       100\0  ./main.c\0      main(argc, argv)\n
  * +---------+   ^   ^        ^  ^   ^       ^       ^
@@ -57,11 +54,9 @@
  * | end    *--+
  * | save    | |
  * +---------+ =
- * @endcode
  *
- * The result of @CODE{split(line, 2, &list)}:
+ * The result of split(line, 2, &list):
  *
- * @code
  *              +------------------------------------------------------
  * list    line |main\0       100    ./main.c        main(argc, argv)\n
  * +---------+   ^   ^        ^
@@ -75,15 +70,13 @@
  * | end    *--+
  * | save    | |
  * +---------+ =
- * @endcode
  *
  * The result of recover().
- * @code
+ *
  *              +------------------------------------------------------
  *         line |main         100    ./main.c        main(argc, argv)\n
- * @endcode
  *
- * Recover() recover initial status of line with saved char in @NAME{savec}.
+ * Recover() recover initial status of line with saved char in savec.
  */
 
 #define isblank(c)	((c) == ' ' || (c) == '\t')
@@ -165,12 +158,12 @@ split_dump(SPLIT *list)
 	}
 }
 /**
- * parse_xid: extract fid from @a ctags_xid format record.
+ * parse_xid: extract fid from ctags_xid format record.
  *
  *	@param[in]	ctags_xid	ctags-xid record
- *	@param[out]	s_fid		file id(string) if not @VAR{NULL}
- *	@param[out]	n_fid		file id(integer) if not @VAR{NULL}
- *	@return			pointer to the @NAME{ctags_x} part
+ *	@param[out]	s_fid		file id(string) if not NULL
+ *	@param[out]	n_fid		file id(integer) if not NULL
+ *	@return			pointer to the ctags_x part
  */
 const char *
 parse_xid(const char *ctags_xid, char *s_fid, int *n_fid)
@@ -198,10 +191,8 @@ parse_xid(const char *ctags_xid, char *s_fid, int *n_fid)
  *      @param[in]      s       original string
  *      @return              next string
  *
- * @code
  *  s       v
  * "aaaaaa\0bbbbb\0"
- * @endcode
  */
 const char *
 nextstring(const char *s)
@@ -216,12 +207,10 @@ nextstring(const char *s)
  *	@param[in]	s	point the current element or the following blanks
  *	@return		next element
  *
- * @code{.txt}
  *	s     s   return value
  *	v     v   v
  *	xxxxx     yyyyy    zzzzzz
  *	(current) (next)
- * @endcode
  */
 const char *
 nextelement(const char *s)

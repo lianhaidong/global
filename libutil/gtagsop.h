@@ -47,11 +47,9 @@
 #define GTAGS_CREATE	1
 #define GTAGS_MODIFY	2
 
-/**
- * @name 
+/*
  * Defines for gtags_open()
 */
-/** @{ */
 			/** compact option */
 #define GTAGS_COMPACT		1
 			/** compression option */
@@ -65,16 +63,13 @@
 			/** use sqlite3 database */
 #ifdef USE_SQLITE3
 #define GTAGS_SQLITE3	32
-			/** print information for debug */
 #endif
+			/** print information for debug */
 #define GTAGS_DEBUG		65536
-/** @} */
 
-/**
- * @name 
+/*
  * Defines for gtags_first()
 */
-/** @{ */
 			/** read key part */
 #define GTOP_KEY		1
 			/** read path part */
@@ -91,7 +86,6 @@
 #define GTOP_NEARSORT		64
 			/** don't sort */
 #define GTOP_NOSORT		128
-/** @} */
 
 /**
  * This entry corresponds to one raw record.
@@ -104,49 +98,43 @@ typedef struct {
 } GTP;
 
 typedef struct {
-	DBOP *dbop;			/**< descripter of #DBOP */
-	DBOP *gtags;			/**< descripter of #GTAGS */
+	DBOP *dbop;			/**< descripter of DBOP */
+	DBOP *gtags;			/**< descripter of GTAGS */
 	int format_version;		/**< format version */
-	int format;			/**< #GTAGS_COMPACT, #GTAGS_COMPRESS */
+	int format;			/**< GTAGS_COMPACT, GTAGS_COMPRESS */
 	int mode;			/**< mode */
-	int db;				/**< 0:#GTAGS, 1:#GRTAGS, 2:#GSYMS */
+	int db;				/**< 0:GTAGS, 1:GRTAGS, 2:GSYMS */
 	int openflags;			/**< flags value of gtags_open() */
 	int flags;			/**< flags */
 	char root[MAXPATHLEN];	/**< root directory of source tree */
 
-	/**
-	 * Stuff for #GTOP_PATH.
+	/*
+	 * Stuff for GTOP_PATH.
 	 */
-	/** @{ */
-	int path_count;		/**< */
-	int path_index;		/**< */
-	char **path_array;	/**< */
-	/** @} */
+	int path_count;
+	int path_index;
+	char **path_array;
 
-	/**
+	/*
 	 * Stuff for segment_read().
 	 */
-	/** @{ */
-	int gtp_count;		/**< */
-	int gtp_index;		/**< */
-	GTP *gtp_array;		/**< */
-	GTP gtp;			/**< */
-	POOL *segment_pool;	/**< */
-	VARRAY *vb;			/**< */
+	int gtp_count;
+	int gtp_index;
+	GTP *gtp_array;
+	GTP gtp;
+	POOL *segment_pool;
+	VARRAY *vb;
 	char cur_tagname[IDENTLEN];	/**< current tag name */
-	/** @} */
 
-	/**
+	/*
 	 * Stuff for compact format
 	 */
-	/** @{ */
 	STRBUF *sb;			/**< string buffer */
-	/** @} */
 
 	/** used for compact format and path name only read */
 	STRHASH *path_hash;
 
-	/**
+	/*
 	 * Stuff for calling dbop
 	 */
 	const char *key;

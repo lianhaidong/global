@@ -25,12 +25,12 @@
 
 typedef struct {
 	FILE *op;
-	int type;		/**< #PATH_ABSOLUTE, #PATH_RELATIVE */
-	int format;		/**< defined in @FILE{format.h} */
+	int type;		/**< PATH_ABSOLUTE, PATH_RELATIVE */
+	int format;		/**< defined in "format.h" */
 	STRBUF *abspath;
 	char basedir[MAXPATHLEN];
 	int start_point;
-	int db;			/**< for @NAME{gtags-cscope} */
+	int db;			/**< for gtags-cscope */
 	char *tag_for_display;
 } CONVERT;
 

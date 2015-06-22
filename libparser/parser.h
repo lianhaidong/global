@@ -28,16 +28,13 @@
 void parser_init(const char *, const char *);
 void parser_exit(void);
 
-/** @name tag type */
-/** @{ */
+/* tag type */
 			/** definition */
 #define PARSER_DEF		1
 			/** reference or other symbol */
 #define PARSER_REF_SYM		2
-/** @} */
 
-/** @name flags */
-/** @{ */
+/* flags */
 			/** debug mode */
 #define PARSER_DEBUG		1
 			/** verbose mode */
@@ -50,7 +47,6 @@ void parser_exit(void);
 #define PARSER_BEGIN_BLOCK	16
 			/** gtags --explain */
 #define PARSER_EXPLAIN		32
-/** @} */
 
 typedef void (*PARSER_CALLBACK)(int, const char *, int, const char *, const char *, void *);
 

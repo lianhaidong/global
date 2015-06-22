@@ -65,25 +65,25 @@ void dbop3_close(DBOP *);
 #endif
 
 /**
- * Though the prefix of the key of meta record is currently only a @CODE{' '} (blank),
+ * Though the prefix of the key of meta record is currently only a ' ' (blank),
  * this will be enhanced in the future.
  */
 #define ismeta(p)	(*((char *)(p)) <= ' ')
 
 /**
- * Stuff for #DBOP_SORTED_WRITE
+ * Stuff for DBOP_SORTED_WRITE
  */
 #define SORT_SEP '\t'
 
 /**
  * Two functions required for sorted writing.
  *
- * @fn static void start_sort_process(DBOP *dbop)
+ * static void start_sort_process(DBOP *dbop)
  * (1) start_sort_process: start sort process for sorted writing
  *
  *	@param[in]	dbop	DBOP descriptor
  *
- * @fn static void terminate_sort_process(DBOP *dbop)
+ * static void terminate_sort_process(DBOP *dbop)
  * (2) terminate_sort_process: terminate sort process
  *
  *	@param[in]	dbop	DBOP descriptor
@@ -213,9 +213,9 @@ is_sqlite3(const char *path) {
  *	@param[in]	mode	0: read only, 1: create, 2: modify
  *	@param[in]	perm	file permission
  *	@param[in]	flags
- *			#DBOP_DUP: allow duplicate records. <br>
- *			#DBOP_SORTED_WRITE: use sorted writing. This requires @NAME{POSIX} sort.
- *	@return		descripter for @NAME{dbop_xxx()} or @VAR{NULL}
+ *			DBOP_DUP: allow duplicate records.
+ *			DBOP_SORTED_WRITE: use sorted writing. This requires POSIX sort.
+ *	@return		descripter for dbop_xxx() or NULL
  *
  * Sorted wirting is fast because all writing is done by not insertion but addition.
  */
@@ -299,7 +299,7 @@ finish:
  *
  *	@param[in]	dbop	descripter
  *	@param[in]	name	name
- *	@return		pointer to data or @VAR{NULL}
+ *	@return		pointer to data or NULL
  */
 const char *
 dbop_get(DBOP *dbop, const char *name)
@@ -423,7 +423,7 @@ dbop_put_tag(DBOP *dbop, const char *name, const char *data)
  *	@param[in]	data	data
  *	@param[in]	flag	flag
  *
- * @note This function doesn't support sorted writing.
+ * [Note] This function doesn't support sorted writing.
  */
 void
 dbop_put_path(DBOP *dbop, const char *name, const char *data, const char *flag)
@@ -510,14 +510,14 @@ dbop_update(DBOP *dbop, const char *key, const char *dat)
  * dbop_first: get first record. 
  * 
  *	@param[in]	dbop	dbop descripter
- *	@param[in]	name	key value or prefix <br>
- *			!=NULL: indexed read by key <br>
+ *	@param[in]	name	key value or prefix,
+ *			!=NULL: indexed read by key,
  *			==NULL: sequential read
  *	@param[in]	preg	compiled regular expression if any.
- *	@param[in]	flags	following dbop_next call take over this. <br>
- *			#DBOP_KEY:	read key part <br>
- *			#DBOP_PREFIX:	prefix read; only valid when sequential read
- *	@return		data or @VAR{NULL}
+ *	@param[in]	flags	following dbop_next call take over this.
+ *			DBOP_KEY:	read key part,
+ *			DBOP_PREFIX:	prefix read; only valid when sequential read
+ *	@return		data or NULL
  */
 const char *
 dbop_first(DBOP *dbop, const char *name, regex_t *preg, int flags)
@@ -598,9 +598,9 @@ dbop_first(DBOP *dbop, const char *name, regex_t *preg, int flags)
  * dbop_next: get next record. 
  * 
  *	@param[in]	dbop	dbop descripter
- *	@return		data or @VAR{NULL}
+ *	@return		data or NULL
  *
- * @note dbop_next() always skip meta records.
+ * [Note] dbop_next() always skip meta records.
  */
 const char *
 dbop_next(DBOP *dbop)
@@ -659,7 +659,7 @@ dbop_next(DBOP *dbop)
  * 
  *	@param[in]	dbop	dbop descripter
  *
- * @note dbop_next() will read this record later.
+ * [Note] dbop_next() will read this record later.
  */
 void
 dbop_unread(DBOP *dbop)
@@ -683,7 +683,7 @@ dbop_lastdat(DBOP *dbop, int *size)
 /**
  * get_flag: get flag value
  * 
- * @note Will return an empty string (not @VAR{NULL}), if not found/can't get.
+ * [Note] Will return an empty string (not NULL), if not found/can't get.
  */
 const char *
 dbop_getflag(DBOP *dbop)
@@ -711,7 +711,7 @@ dbop_getflag(DBOP *dbop)
 /**
  * dbop_getoption: get option
  *
- * @return the option's value or @VAR{NULL}
+ * @return the option's value or NULL
  */
 const char *
 dbop_getoption(DBOP *dbop, const char *key)

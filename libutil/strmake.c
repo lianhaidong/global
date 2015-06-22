@@ -35,12 +35,10 @@
  *	@param[in]	lim	limitter
  *	@return		result string
  *
- * @par Usage:
- * @code
+ * Usage:
  *	strmake("aaa:bbb", ":/=")	=> "aaa"
- * @endcode
  *
- * @note The result string area is function local. So, following call
+ * [Note] The result string area is function local. So, following call
  *	 to this function may destroy the area.
  */
 const char *
@@ -64,23 +62,21 @@ end:
  * strtrim: make string from original string with deleting blanks.
  *
  *	@param[in]	p	original string.
- *	@param[in]	flag	#TRIM_HEAD:	from only head <br>
- *			#TRIM_TAIL:	from only tail <br>
- *			#TRIM_BOTH:	from head and tail <br>
- *			#TRIM_ALL:	from all
- *	@param[out]	len	length of result string <br>
- *			if @CODE{len == NULL} then nothing returned.
+ *	@param[in]	flag	TRIM_HEAD:	from only head,
+ *			TRIM_TAIL:	from only tail,
+ *			TRIM_BOTH:	from head and tail,
+ *			TRIM_ALL:	from all
+ *	@param[out]	len	length of result string,
+ *			if len == NULL then nothing returned.
  *	@return		result string
  *
- * @par Usage:
- * @code
+ * Usage:
  *	strtrim(" # define ", TRIM_HEAD, NULL)	=> "# define "
  *	strtrim(" # define ", TRIM_TAIL, NULL)	=> " # define"
  *	strtrim(" # define ", TRIM_BOTH, NULL)	=> "# define"
  *	strtrim(" # define ", TRIM_ALL, NULL)	=> "#define"
- * @endcode
  *
- * @note The result string area is function local. So, following call
+ * [Note] The result string area is function local. So, following call
  *	 to this function may destroy the area.
  */
 const char *
@@ -127,13 +123,11 @@ strtrim(const char *p, int flag, int *len)
  *	@param[in]	term	terminate character
  *	@return		==0: equal, !=0: not equal
  *
- * @par Usage:
- * @code
+ * Usage:
  *	strcmp_withterm("aaa", "aaa", ':')		=> 0
  *	strcmp_withterm("aaa:bbb", "aaa", ':')		=> 0
  *	strcmp_withterm("aaa:bbb", "aaa:ccc", ':')	=> 0
  *	strcmp_withterm("aaa/bbb", "aaa/ccc", ':')	=> -1
- * @endcode
  */
 int
 strcmp_withterm(const char *s1, const char *s2, int term)

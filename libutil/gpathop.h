@@ -27,14 +27,12 @@
 
 #define NEXTKEY		" __.NEXTKEY"
 
-/**
- * @name File type
+/*
+ * File type
  */
-/** @{ */
 #define GPATH_SOURCE	1
 #define GPATH_OTHER	2
 #define GPATH_BOTH	3
-/** @} */
 
 typedef struct {
 	/** set by gfind_open() */

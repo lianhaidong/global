@@ -80,7 +80,7 @@ isabspath(const char *p)
  *	@param[in,out]	path	path
  *	@return		path
  *
- * @attention canonpath() rewrite argument buffer.
+ * canonpath() rewrite argument buffer.
  */
 char *
 canonpath(char *path)
@@ -168,7 +168,7 @@ canonpath(char *path)
  *
  * @param[in]	in_path
  * @param[out]	out_path	result string
- * @return	@a out_path
+ * @return	out_path
  */
 char *
 realpath(const char *in_path, char *out_path)
@@ -195,17 +195,17 @@ realpath(const char *in_path, char *out_path)
 #define SEP '/'
 
 /**
- * makedirectories: make directories on the path like @XREF{mkdir,1} with the @OPTION{-p} option.
+ * makedirectories: make directories on the path like mkdir(1) with the -p option.
  *
  *	@param[in]	base	base directory
  *	@param[in]	rest	path from the base
  *	@param[in]	verbose 1: verbose mode, 0: not verbose mode
- *	@return		0: success <br>
- *			-1: base directory not found <br>
- *			-2: permission error <br>
+ *	@return		0: success,
+ *			-1: base directory not found,
+ *			-2: permission error,
  *			-3: cannot make directory
  *
- *	@remark Directories are created in mode 0775.
+ *	Directories are created in mode 0775.
  */
 int
 makedirectories(const char *base, const char *rest, int verbose)
@@ -245,7 +245,7 @@ makedirectories(const char *base, const char *rest, int verbose)
 /**
  * trimpath: trim path name
  *
- * @remark Just skips over @CODE{"./"} at the beginning of @a path, if present.
+ * Just skips over "./" at the beginning of path, if present.
  */
 const char *
 trimpath(const char *path)
@@ -258,8 +258,8 @@ trimpath(const char *path)
  * get the current directory
  *
  * @param[out]	buf	result string
- * @param[in]	size	size of @a buf
- * @return	@a buf or NULL
+ * @param[in]	size	size of buf
+ * @return	buf or NULL
  */
 char *
 vgetcwd(char *buf, size_t size) {

@@ -31,20 +31,17 @@
 #include "logging.h"
 #include "path.h"
 
-/** @file
+/*
 
 Logging utility:
 
-@code
 +------------------------------------
 |main(int argc, char **argv)
 |{
 |	logging_printf("Start\n");
 |	logging_arguments(argc, argv);
 |	...
-@endcode
 
-@code{.sh}
 % setenv GTAGSLOGGING /tmp/log
 % global -x main
 % cat /tmp/log
@@ -53,7 +50,6 @@ Start
 1: |-x|
 2: |main|
 % _
-@endcode
 
 See logging_printf() for more details.
 */
@@ -72,19 +68,18 @@ logging_open(void)
 /**
  * logging_printf: print a message into the logging file.
  *
- *	@param[in]	s	@NAME{printf} style format (fmt) string
+ *	@param[in]	s	printf style format (fmt) string
  *
- *	@remark
  *		Log messages are appended to the logging file; which is opened using 
- *		@CODE{'fopen(xx, \"a\")'} on the first call to logging_printf() or
- *		logging_arguments(). <br>
+ *		'fopen(xx, "a")' on the first call to logging_printf() or
+ *		logging_arguments().
  *		The logging file's filename should be in the OS environment variable
- *		@FILE{GTAGSLOGGING}. <br>
- *		If @FILE{GTAGSLOGGING} is not setup or the logging file cannot be
+ *		"GTAGSLOGGING".
+ *		If "GTAGSLOGGING" is not setup or the logging file cannot be
  *		opened, logging is disabled; logging_printf() and logging_arguments()
  *		then do nothing.
  *
- *	@note The logging file stays @EMPH{open} for the life of the progam.
+ *	[Note] The logging file stays open for the life of the progam.
  */
 void
 logging_printf(const char *s, ...)
@@ -108,7 +103,7 @@ logging_printf(const char *s, ...)
  *	@param[in]	argc
  *	@param[in]	argv
  *
- *	@par Uses:
+ *	Uses:
  *		logging_printf()
  */
 void

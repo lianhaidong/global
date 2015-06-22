@@ -58,9 +58,9 @@ static int __bt_stkacq(BTREE *, PAGE **, CURSOR *);
 
 /**
  * __bt_delete
- *	Delete the item(s) referenced by a @a key.
+ *	Delete the item(s) referenced by a key.
  *
- * @return #RET_SPECIAL if the key is not found.
+ * @return RET_SPECIAL if the key is not found.
  */
 int
 __bt_delete(dbp, key, flags)
@@ -136,7 +136,7 @@ __bt_delete(dbp, key, flags)
  *	Acquire a stack so we can delete a cursor entry.
  *
  *	 @param t	tree
- *	 @param hp	pointer to current, pinned #PAGE pointer
+ *	 @param hp	pointer to current, pinned PAGE pointer
  *	 @param c	pointer to the cursor
  *
  * @return 0 on success, 1 on failure
@@ -279,12 +279,12 @@ ret:	mpool_put(t->bt_mp, h, 0);
 
 /**
  * __bt_bdelete --
- *	Delete all key/data pairs matching the specified @a key.
+ *	Delete all key/data pairs matching the specified key.
  *
  *	@param t	tree
  *	@param key	key to delete
  *
- * @return #RET_ERROR, #RET_SUCCESS and #RET_SPECIAL if the key not found.
+ * @return RET_ERROR, RET_SUCCESS and RET_SPECIAL if the key not found.
  */
 static int
 __bt_bdelete(t, key)
@@ -365,11 +365,10 @@ loop:	if ((e = __bt_search(t, key, &exact)) == NULL)
  *
  *	@param t	tree
  *	@param h	leaf page
+ *	@return RET_SUCCESS, RET_ERROR.
  *
- * @return #RET_SUCCESS, #RET_ERROR.
- *
- * @par Side-effects:
- *	#mpool_put's the page
+ * Side-effects:
+ *	mpool_put's the page
  */
 static int
 __bt_pdelete(t, h)
@@ -463,7 +462,7 @@ __bt_pdelete(t, h)
  *	@param h	page
  *	@param index	index on page to delete
  *
- * @return #RET_SUCCESS, #RET_ERROR.
+ * @return RET_SUCCESS, RET_ERROR.
  */
 int
 __bt_dleaf(t, key, h, index)
@@ -522,11 +521,11 @@ __bt_dleaf(t, key, h, index)
  *	Delete the cursor.
  *
  *	@param t	tree
- *	@param key	referenced key (or @CODE{NULL})
+ *	@param key	referenced key (or NULL)
  *	@param h	page
  *  @param index	index on page to delete
  *
- * @return #RET_SUCCESS, #RET_ERROR.
+ * @return RET_SUCCESS, RET_ERROR.
  */
 static int
 __bt_curdel(t, key, h, index)

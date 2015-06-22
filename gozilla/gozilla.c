@@ -45,8 +45,7 @@
 #include "const.h"
 
 /**
- @file
- @NAME{gozilla} - force @NAME{mozilla} browser to display specified part of a source file.
+ gozilla - force mozilla browser to display specified part of a source file.
 */
 
 static void usage(void);
@@ -100,13 +99,11 @@ help(void)
 /**
  * load_alias: load alias value.
  *
- * @code{.txt}
  * [$HOME/.gozillarc]
  * +-----------------------
  * |a:http://www.gnu.org
  * |f = file:/usr/share/xxx.html
  * |www	http://www.xxx.yyy/
- * @endcode
  */
 static void
 load_alias(void)
@@ -172,7 +169,7 @@ alias(const char *alias_name)
 }
 
 /**
- * locate_HTMLdir: locate HTML directory made by @XREF{htags,1}.
+ * locate_HTMLdir: locate HTML directory made by htags(1).
  *
  *	@return		HTML directory
  */
@@ -352,7 +349,7 @@ main(int argc, char **argv)
  *
  *	@param[in]	arg	definition name
  *	@param[in]	htmldir HTML directory
- *	@param[out]	URL	URL begin with @CODE{'file:'}
+ *	@param[out]	URL	URL begin with 'file:'
  */
 void
 getdefinitionURL(const char *arg, const char *htmldir, STRBUF *URL)
@@ -392,11 +389,11 @@ getdefinitionURL(const char *arg, const char *htmldir, STRBUF *URL)
 	strbuf_close(sb);
 }
 /**
- * getURL: get URL of the specified @a file.
+ * getURL: get URL of the specified file.
  *
  *	@param[in]	file	file name
  *	@param[in]	htmldir HTML directory
- *	@param[out]	URL	URL begin with @CODE{'file:'}
+ *	@param[out]	URL	URL begin with 'file:'
  */
 void
 getURL(const char *file, const char *htmldir, STRBUF *URL)
@@ -415,7 +412,7 @@ getURL(const char *file, const char *htmldir, STRBUF *URL)
 	strbuf_close(sb);
 }
 /**
- * isprotocol: return 1 if @a url has a procotol.
+ * isprotocol: return 1 if url has a procotol.
  *
  *	@param[in]	url	URL
  *	@return		1: protocol, 0: file
@@ -443,7 +440,7 @@ isprotocol(const char *url)
  * convertpath: convert source file into hypertext path.
  *
  *	@param[in]	dbpath	dbpath
- *	@param[in]	htmldir	HTML directory made by @XREF{htags,1}
+ *	@param[in]	htmldir	HTML directory made by htags(1)
  *	@param[in]	path	source file path
  *	@param[out]	sb	string buffer
  *	@return		0: normal, -1: error
@@ -502,22 +499,17 @@ convertpath(const char *dbpath, const char *htmldir, const char *path, STRBUF *s
 	return -1;
 }
 /**
- * makefileurl: make url which start with @CODE{'file:'}.
+ * makefileurl: make url which start with 'file:'.
  *
  *	@param[in]	path	path name (absolute)
  *	@param[in]	line	!=0: line number
  *	@param[out]	url	URL
  *
- * @par Examples:
- * @code
+ * Examples:
  * makefileurl('/dir/a.html', 10)   => 'file:///dir/a.html#L10'
- * @endcode
  *
- * @par
  * (Windows32 environment)
- * @code
  * makefileurl('c:/dir/a.html', 10) => 'file://c|/dir/a.html#L10'
- * @endcode
  */
 void
 makefileurl(const char *path, int line, STRBUF *url)
@@ -540,7 +532,7 @@ makefileurl(const char *path, int line, STRBUF *url)
 	}
 }
 /**
- * show_page_by_url: show page by @a url
+ * show_page_by_url: show page by url
  *
  *	@param[in]	browser browser name
  *	@param[in]	url	URL

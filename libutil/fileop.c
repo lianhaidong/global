@@ -53,13 +53,11 @@
 #define mkdir(path,mode) mkdir(path)
 #endif
 
-/**
- @file
+/*
 
 File operation: usage
 
- @par [WRITE]
- @code
+ [WRITE]
 	int compress = cflag ? 1 : 0;
 
 	FILEOP *fileop = open_output_file(path, compress);
@@ -68,17 +66,14 @@ File operation: usage
 	fputs("Hello", op);
 	...
 	close_file(fileop);
- @endcode
 
- @par [READ]
- @code
+ [READ]
 	FILEOP *fileop = open_input_file(path);
 	FILE *ip = get_descripter(fileop);
 
 	fgets(buf, sizeof(buf), ip);
 	...
 	close_file(fileop);
- @endcode
 */
 /**
  * open input file.
@@ -107,7 +102,7 @@ open_input_file(const char *path)
  *	@param[in]	compress 0: normal, 1: compress
  *	@return		file descripter
  *
- *	@note Uses the @NAME{gzip} program to compress, which should already be on your system.
+ *	[Note] Uses the gzip program to compress, which should already be on your system.
  */
 FILEOP *
 open_output_file(const char *path, int compress)
@@ -161,12 +156,7 @@ close_file(FILEOP *fileop)
 		fclose(fileop->fp);
 	free(fileop);
 }
-/**
- * copy file
- *
- *	@param[in]	src	source file
- *	@param[in]	dist	distination file
- */
+
 /*
 void
 copyfile(const char *src, const char *dist)

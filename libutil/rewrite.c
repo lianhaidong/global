@@ -31,11 +31,10 @@
 #include "checkalloc.h"
 #include "rewrite.h"
 
-/** @file
+/*
 Rewrite: sed style rewriting module.
 
 usage:
-
 REWRITE *rewrite = rewrite_open("xyz", "<&>", 0);
 
 rewrite_string(rewrite, "xyzABCxzy", 0);
@@ -57,7 +56,7 @@ rewrite_close(rewrite);
  *			accepts NULL
  *	@param[in]	replace (allows '&')
  *	@param[in]	flags for regcomp(3)
- *	@return	rewrite	#REWRITE structure
+ *	@return	rewrite	REWRITE structure
  *			NULL: invalid regular expression
  */
 REWRITE *
@@ -119,7 +118,7 @@ rewrite_pattern(REWRITE *rewrite, const char *pattern, int flags)
  *			NULL: just print string
  *	@param[in]	string
  *	@param[in]	offset start point of the rewriting
- *	@param[in]	file descriptor
+ *	<!-- @param[in]	file descriptor -->
  */
 const char *
 rewrite_string(REWRITE *rewrite, const char *string, int offset)

@@ -32,12 +32,12 @@
 
 /* $Id$ */
 
-/** @file
+/*
  *	version-cscope.h
  *
  *	cscope - interactive C symbol cross-reference
  *
- *	@note Changing the cross-reference file part of the program version
+ *	[Note] Changing the cross-reference file part of the program version
  *	forces rebuilding of the cross-reference.
  */
 

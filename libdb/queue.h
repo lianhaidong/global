@@ -35,14 +35,13 @@
 
 /* #include <machine/ansi.h>*/	/* for __offsetof */
 
-/**
- * @file
+/*
  * This file defines five types of data structures: singly-linked lists,
  * singly-linked tail queues, lists, tail queues, and circular queues.
  *
  * A singly-linked list is headed by a single forward pointer. The elements
  * are singly linked for minimum space and pointer manipulation overhead at
- * the expense of @CODE{O(n)} removal for arbitrary elements. New elements can be
+ * the expense of O(n) removal for arbitrary elements. New elements can be
  * added to the list after an existing element or at the head of the list.
  * Elements being removed from the head of the list should use the explicit
  * macro for this purpose for optimum efficiency. A singly-linked list may
@@ -53,7 +52,7 @@
  * A singly-linked tail queue is headed by a pair of pointers, one to the
  * head of the list and the other to the tail of the list. The elements are
  * singly linked for minimum space and pointer manipulation overhead at the
- * expense of @CODE{O(n)} removal for arbitrary elements. New elements can be added
+ * expense of O(n) removal for arbitrary elements. New elements can be added
  * to the list after an existing element, at the head of the list, or at the
  * end of the list. Elements being removed from the head of the tail queue
  * should use the explicit macro for this purpose for optimum efficiency.
@@ -83,9 +82,8 @@
  * A circle queue may be traversed in either direction, but has a more
  * complex end of list detection.
  *
- * For details on the use of these macros, see the @XREF{queue,3} manual page.
+ * For details on the use of these macros, see the queue(3) manual page.
  *
- * @code{.txt}
  *			SLIST	LIST	STAILQ	TAILQ	CIRCLEQ
  * _HEAD		+	+	+	+	+
  * _ENTRY		+	+	+	+	+
@@ -103,13 +101,11 @@
  * _INSERT_TAIL		-	-	+	+	+
  * _REMOVE_HEAD		+	-	+	-	-
  * _REMOVE		+	+	+	+	+
- * @endcode
  */
 
-/**
+/*
  * Singly-linked List definitions.
  */
-/** @{ */
 #define SLIST_HEAD(name, type)						\
 struct name {								\
 	struct type *slh_first;	/**< first element */			\
@@ -122,12 +118,10 @@ struct name {								\
 struct {								\
 	struct type *sle_next;	/**< next element */			\
 }
-/** @} */
  
-/**
+/*
  * Singly-linked List functions.
  */
-/** @{ */
 #define	SLIST_EMPTY(head)	((head)->slh_first == NULL)
 
 #define	SLIST_FIRST(head)	((head)->slh_first)
@@ -167,12 +161,10 @@ struct {								\
 		    curelm->field.sle_next->field.sle_next;		\
 	}								\
 } while (0)
-/** @} */
 
-/**
+/*
  * Singly-linked Tail queue definitions.
  */
-/** @{ */
 #define STAILQ_HEAD(name, type)						\
 struct name {								\
 	struct type *stqh_first;/**< first element */			\
@@ -186,12 +178,10 @@ struct name {								\
 struct {								\
 	struct type *stqe_next;	/**< next element */			\
 }
-/** @} */
 
-/**
+/*
  * Singly-linked Tail queue functions.
  */
-/** @{ */
 #define STAILQ_EMPTY(head) ((head)->stqh_first == NULL)
 
 #define	STAILQ_INIT(head) do {						\
@@ -254,12 +244,10 @@ struct {								\
 			(head)->stqh_last = &(curelm)->field.stqe_next;	\
 	}								\
 } while (0)
-/** @} */
 
-/**
+/*
  * List definitions.
  */
-/** @{ */
 #define LIST_HEAD(name, type)						\
 struct name {								\
 	struct type *lh_first;	/**< first element */			\
@@ -273,12 +261,10 @@ struct {								\
 	struct type *le_next;	/**< next element */			\
 	struct type **le_prev;	/**< address of previous next element */	\
 }
-/** @} */
 
-/**
+/*
  * List functions.
  */
-/** @{ */
 #define	LIST_EMPTY(head) ((head)->lh_first == NULL)
 
 #define LIST_FIRST(head)	((head)->lh_first)
@@ -320,12 +306,10 @@ struct {								\
 		    (elm)->field.le_prev;				\
 	*(elm)->field.le_prev = (elm)->field.le_next;			\
 } while (0)
-/** @} */
 
-/**
+/*
  * Tail queue definitions.
  */
-/** @{ */
 #define TAILQ_HEAD(name, type)						\
 struct name {								\
 	struct type *tqh_first;	/**< first element */			\
@@ -340,12 +324,10 @@ struct {								\
 	struct type *tqe_next;	/**< next element */			\
 	struct type **tqe_prev;	/**< address of previous next element */	\
 }
-/** @} */
 
-/**
+/*
  * Tail queue functions.
  */
-/** @{ */
 #define	TAILQ_EMPTY(head) ((head)->tqh_first == NULL)
 
 #define TAILQ_FOREACH(var, head, field)					\
@@ -413,12 +395,10 @@ struct {								\
 		(head)->tqh_last = (elm)->field.tqe_prev;		\
 	*(elm)->field.tqe_prev = (elm)->field.tqe_next;			\
 } while (0)
-/** @} */
 
-/**
+/*
  * Circular queue definitions.
  */
-/** @{ */
 #define CIRCLEQ_HEAD(name, type)					\
 struct name {								\
 	struct type *cqh_first;		/**< first element */		\
@@ -430,12 +410,10 @@ struct {								\
 	struct type *cqe_next;		/**< next element */		\
 	struct type *cqe_prev;		/**< previous element */		\
 }
-/** @} */
 
-/**
+/*
  * Circular queue functions.
  */
-/** @{ */
 #define CIRCLEQ_EMPTY(head) ((head)->cqh_first == (void *)(head))
 
 #define CIRCLEQ_FIRST(head) ((head)->cqh_first)
@@ -513,13 +491,12 @@ struct {								\
 		(elm)->field.cqe_prev->field.cqe_next =			\
 		    (elm)->field.cqe_next;				\
 } while (0)
-/** @} */
 
 #ifdef _KERNEL
 
 /*
- * @par XXX
- * @NAME{insque()} and @NAME{remque()} are an old way of handling certain queues.
+ * XXX
+ * insque() and remque() are an old way of handling certain queues.
  * They bogusly assumes that all queue heads look alike.
  */
 

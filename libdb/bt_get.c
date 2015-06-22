@@ -54,7 +54,7 @@ static char sccsid[] = "@(#)bt_get.c	8.6 (Berkeley) 7/20/94";
  *	@param data	data to return
  *	@param flags	currently unused
  *
- * @return #RET_ERROR, #RET_SUCCESS and #RET_SPECIAL if the key not found.
+ * @return RET_ERROR, RET_SUCCESS and RET_SPECIAL if the key not found.
  */
 int
 __bt_get(dbp, key, data, flags)

@@ -53,7 +53,7 @@ static char sccsid[] = "@(#)bt_debug.c	8.5 (Berkeley) 8/17/94";
 /**
  * BT_DUMP -- Dump the tree
  *
- *	@param dbp	pointer to the #DB
+ *	@param dbp	pointer to the DB
  */
 void
 __bt_dump(dbp)
@@ -96,7 +96,7 @@ __bt_dump(dbp)
 /**
  * BT_DMPAGE -- Dump the meta page
  *
- *	@param h	pointer to the #PAGE
+ *	@param h	pointer to the PAGE
  */
 void
 __bt_dmpage(h)
@@ -150,7 +150,7 @@ __bt_dnpage(dbp, pgno)
 /**
  * BT_DPAGE -- Dump the page
  *
- *	@param h	pointer to the #PAGE
+ *	@param h	pointer to the PAGE
  */
 void
 __bt_dpage(h)
@@ -243,7 +243,7 @@ __bt_dpage(h)
 /**
  * BT_STAT -- Gather/print the tree statistics
  *
- *	@param dbp	pointer to the #DB
+ *	@param dbp	pointer to the DB
  */
 void
 __bt_stat(dbp)

@@ -35,16 +35,15 @@
 					/** maybe 32 or 64 */
 #define LONG_BIT	(sizeof(long) * CHAR_BIT)
 
-/**
- * @CODE{idset->min} is initialized to #END_OF_ID.
- * (You may use @CODE{idset->max} instead of @CODE{idset->min}.)
+/*
+ * idset->min is initialized to END_OF_ID.
+ * (You may use idset->max instead of idset->min.)
  */
 #define IS_EMPTY(idset)	 ((idset)->min == END_OF_ID ? 1 : 0)
 
-/** @file
+/*
 Idset: usage and memory status
 
-@code
 				idset->set
 				[]
 
@@ -60,28 +59,23 @@ idset_contains(idset, 2) == true
 idset_contains(idset, 3) == false
 
 idset_close(idset)		[]
-@endcode
 
-Idset's index always start from 0 according to the custom of C language. <br>
-I you want to treat 1-20 then you @EMPH{must} invoke idset_open() with a argument 21.
+Idset's index always start from 0 according to the custom of C language.
+I you want to treat 1-20 then you must invoke idset_open() with a argument 21.
 
-@code
         idset = idset_open(21);
         idset_add(idset, 0);            => OK
         idset_add(idset, 1);            => OK
                 ...
         idset_add(idset, 20);           => OK
         idset_add(idset, 21);           => ERROR (idset_add: id is out of range.)
-@endcode
 
-The range of value is from 0 to the maximum value expressible by unsigned integer - 1. <br>
-You should define index as an unsigned integer, and use #END_OF_ID like follows:
+The range of value is from 0 to the maximum value expressible by unsigned integer - 1.
+You should define index as an unsigned integer, and use END_OF_ID like follows:
 
-@code
 	unsigned int id;
 	for (id = idset_first(set); id != END_OF_ID; id = idset_next(set))
 		-- processing about an id --
-@endcode
  */
 /**
  * bit mask table
@@ -113,7 +107,7 @@ idset_open(unsigned int size)
 	return idset;
 }
 /**
- * Return true if @a idset is empty.
+ * Return true if idset is empty.
  *
  *	@param[in]	idset	idset structure
  *	@return		1: empty, 0: not empty
@@ -124,7 +118,7 @@ idset_empty(IDSET *idset)
 	return IS_EMPTY(idset);
 }
 /**
- * Add @a id to the @a idset.
+ * Add id to the idset.
  *
  *	@param[in]	idset	idset structure
  *	@param[in]	id	id number
@@ -145,7 +139,7 @@ idset_add(IDSET *idset, unsigned int id)
 		idset->min = id;
 }
 /**
- * Whether or not @a idset includes specified @a id.
+ * Whether or not idset includes specified id.
  *
  *	@param[in]	idset	idset structure
  *	@param[in]	id	id number
@@ -164,7 +158,7 @@ idset_contains(IDSET *idset, unsigned int id)
  * Get first id.
  *
  *      @param[in]      idset   idset structure
- *      @return              id (#END_OF_ID: end of id)
+ *      @return              id (END_OF_ID: end of id)
  *
  */
 unsigned int
@@ -178,7 +172,7 @@ idset_first(IDSET *idset)
  * Get next id.
  *
  *      @param[in]      idset   idset structure
- *      @return              id (#END_OF_ID: end of id)
+ *      @return              id (END_OF_ID: end of id)
  *
  */
 unsigned int

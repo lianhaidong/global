@@ -53,8 +53,7 @@ static int __bt_first(BTREE *, const DBT *, EPG *, int *);
 static int __bt_seqadv(BTREE *, EPG *, int);
 static int __bt_seqset(BTREE *, EPG *, DBT *, int);
 
-/**
- * @file
+/*
  * Sequential scan support.
  *
  * The tree can be scanned sequentially, starting from either end of the
@@ -69,10 +68,10 @@ static int __bt_seqset(BTREE *, EPG *, DBT *, int);
  *	@param dbp	pointer to access method
  *	@param key	key for positioning and return value
  *	@param data	data return value
- *	@param flags	#R_CURSOR, #R_FIRST, #R_LAST, #R_NEXT, #R_PREV.
+ *	@param flags	R_CURSOR, R_FIRST, R_LAST, R_NEXT, R_PREV.
  *
  * @return
- *	#RET_ERROR, #RET_SUCCESS or #RET_SPECIAL if there's no next key.
+ *	RET_ERROR, RET_SUCCESS or RET_SPECIAL if there's no next key.
  */
 int
 __bt_seq(dbp, key, data, flags)
@@ -140,13 +139,12 @@ __bt_seq(dbp, key, data, flags)
  *	@param t	tree
  *	@param ep	storage for returned key
  *	@param key	key for initial scan position
- *	@param flags	#R_CURSOR, #R_FIRST, #R_LAST, #R_NEXT, #R_PREV
+ *	@param flags	R_CURSOR, R_FIRST, R_LAST, R_NEXT, R_PREV
+ *	@return		RET_ERROR, RET_SUCCESS or RET_SPECIAL if there's no next key.
  *
- * @par Side effects:
+ * Side effects:
  *	Pins the page the cursor references.
  *
- * @return
- *	#RET_ERROR, #RET_SUCCESS or #RET_SPECIAL if there's no next key.
  */
 static int
 __bt_seqset(t, ep, key, flags)
@@ -228,13 +226,11 @@ __bt_seqset(t, ep, key, flags)
  *
  *	@param t	tree
  *	@param ep
- *	@param flags	#R_NEXT, #R_PREV
+ *	@param flags	R_NEXT, R_PREV
+ *	@return		RET_ERROR, RET_SUCCESS or RET_SPECIAL if there's no next key.
  *
- * @par Side effects:
+ * Side effects:
  *	Pins the page the new key/data record is on.
- *
- * @return
- *	#RET_ERROR, #RET_SUCCESS or #RET_SPECIAL if there's no next key.
  */
 static int
 __bt_seqadv(t, ep, flags)
@@ -330,12 +326,12 @@ usecurrent:		F_CLR(c, CURS_AFTER | CURS_BEFORE);
  *
  *	@param t	the tree
  *	@param key	the key
- *  @param erval	return #EPG
+ *  @param erval	return EPG
  *	@param exactp	pointer to exact match flag
  *
  * @return
- *	The first entry in the tree greater than or equal to @a key,
- *	or #RET_SPECIAL if no such key exists.
+ *	The first entry in the tree greater than or equal to key,
+ *	or RET_SPECIAL if no such key exists.
  */
 static int
 __bt_first(t, key, erval, exactp)

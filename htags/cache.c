@@ -32,35 +32,26 @@
 #include "cache.h"
 
 static ASSOC *assoc[GTAGLIM];
-/**
- * @file
- *
+/*
  * Cache file is used for duplicate object entry.
  *
- * @par
  * If function 'func()' is defined more than once then the cache record
- * of @NAME{GTAGS} has @STRONG{(1)} the frequency and the name of duplicate object entry file,
- * else it has @STRONG{(2)} the tag definition. <br>
+ * of GTAGS has (1) the frequency and the name of duplicate object entry file,
+ * else it has (2) the tag definition.
  * It can be distinguished the first character of the cache record.
  * If it is a blank then it is the former else the latter.
  *
- * @par
- * @STRONG{(1)} Duplicate tag file
- * @code{.txt}
+ * (1) Duplicate tag file
  *	+-----------------------+
  *	|' '<fid>\0<frequency>\0|
  *	+-----------------------+
- * @endcode
- *    Duplicate tag file can be referred to as @FILE{D/\<fid\>.html}.
+ *    Duplicate tag file can be referred to as "D/<fid>.html".
  *	
- * @par
- * @STRONG{(2)} Tag definition
- * @code{.txt}
+ * (2) Tag definition
  *	+----------------------+
  *	|<line number>\0<fid>\0|
  *	+----------------------+
- * @endcode
- *    Tag is referred to as @FILE{S/\<fid\>.html\#\<line number\>}.
+ *    Tag is referred to as "S/<fid>.html#<line number>".
  */
 
 /**

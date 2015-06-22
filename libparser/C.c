@@ -53,17 +53,17 @@ static int enumerator_list(const struct parser_param *);
 
 #define MAXPIFSTACK	100
 
-/**
- * @name #ifdef stack.
+/*
+ * #ifdef stack.
  */
 static struct {
-	short start;		/**< level when @CODE{\#if} block started */
-	short end;		/**< level when @CODE{\#if} block end */
-	short if0only;		/**< @CODE{\#if 0} or notdef only */
+	short start;		/* level when '#if' block started */
+	short end;		/* level when '#if' block end */
+	short if0only;		/* '#if 0' or notdef only */
 } stack[MAXPIFSTACK], *cur;
-static int piflevel;		/**< condition macro level */
-static int level;		/**< brace level */
-static int externclevel;	/**< @CODE{extern "C"} block level */
+static int piflevel;		/* condition macro level */
+static int level;		/* brace level */
+static int externclevel;	/* 'extern "C"' block level */
 
 /**
  * yacc: read yacc file and pickup tag entries.
@@ -83,7 +83,7 @@ C(const struct parser_param *param)
 }
 /**
  *	@param[in]	param	source file
- *	@param[in]	type	#TYPE_C, #TYPE_YACC, #TYPE_LEX
+ *	@param[in]	type	TYPE_C, TYPE_YACC, TYPE_LEX
  */
 static void
 C_family(const struct parser_param *param, int type)
@@ -479,7 +479,7 @@ C_family(const struct parser_param *param, int type)
 	closetoken();
 }
 /**
- * process_attribute: skip attributes in @CODE{__attribute__((...))}.
+ * process_attribute: skip attributes in '__attribute__((...))'.
  */
 static void
 process_attribute(const struct parser_param *param)
@@ -650,7 +650,7 @@ condition_macro(const struct parser_param *param, int cc)
 }
 
 /**
- * enumerator_list: process @CODE{"symbol (= expression), ... \}"}
+ * enumerator_list: process "symbol (= expression), ... "}
  */
 static int
 enumerator_list(const struct parser_param *param)

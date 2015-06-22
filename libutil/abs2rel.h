@@ -20,9 +20,9 @@
 #ifndef _RELATIVE_H_
 #define _RELATIVE_H_
 
-char *normalize(const char *, const char *, const char *, char *, const int);
-char *normalize_pathname(const char *, char *, const int);
-char *abs2rel(const char *, const char *, char *, const int);
-char *rel2abs(const char *, const char *, char *, const int);
+char *normalize(const char *, const char *, const char *, char *, int);
+char *normalize_pathname(const char *, char *, int);
+char *abs2rel(const char *, const char *, char *, int);
+char *rel2abs(const char *, const char *, char *, int);
 
 #endif /* ! _RELATIVE_H_ */

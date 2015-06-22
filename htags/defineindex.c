@@ -36,13 +36,13 @@
 #include "path2url.h"
 #include "common.h"
 
-/**
+/*
  * makedefineindex: make definition index (including alphabetic index)
  *
  *	@param[in]	file		definition index file
  *	@param[in]	total		definitions total
- *	@param[out]	defines		\@defines
- *	@par Globals used (input):
+ *	@param[out]	defines		@defines
+ *	Globals used (input):
  *		tag cache	  XXX: should this be global output, not input?
  */
 int

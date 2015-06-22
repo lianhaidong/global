@@ -87,7 +87,7 @@ __dberr(void)
 /**
  * __DBPANIC -- Stop.
  *
- *	@param dbp	pointer to the #DB structure.
+ *	@param dbp	pointer to the DB structure.
  */
 void
 __dbpanic(dbp)

@@ -44,7 +44,7 @@
 #include "test.h"
 
 /**
- * Decide whether or not the @a path is binary file.
+ * Decide whether or not the path is binary file.
  *
  *	@param[in]	path
  *	@return 0: is not binary, 1: is binary
@@ -76,17 +76,17 @@ is_binary(const char *path)
 /**
  * test: 
  *
- *	@param[in]	flags	file flags <br>
- *			@CODE{"f"}	[ -f path ] is @a path a regular file (not a dir, link or pipe etc.)? <br>
- *			@CODE{"d"}	[ -d path ] is @a path a dir? <br>
- *			@CODE{"r"}	[ -r path ] can we read from @a path? <br>
- *			@CODE{"s"}	[ -s path ] has @a path got a non-zero size? <br>
- *			@CODE{"w"}	[ -w path ] can we write to @a path? <br>
- *			@CODE{"x"}	[ -x path ] is @a path an executable file/program? <br>
- *			@CODE{"b"}	[ -b path ] is @a path a binary file?
+ *	@param[in]	flags	file flags
+ *			"f"	[ -f path ] is path a regular file (not a dir, link or pipe etc.)?
+ *			"d"	[ -d path ] is path a dir?
+ *			"r"	[ -r path ] can we read from path?
+ *			"s"	[ -s path ] has path got a non-zero size?
+ *			"w"	[ -w path ] can we write to path?
+ *			"x"	[ -x path ] is path an executable file/program?
+ *			"b"	[ -b path ] is path a binary file?
  *
- *	@param[in]	path	path to test, <br>
- *			if @VAR{NULL} then use the saved previous path, calls die() if is none.
+ *	@param[in]	path	path to test,
+ *			if NULL then use the saved previous path, calls die() if is none.
  *	@return		0: no, 1: ok
  *
  * You can specify more than one character. It assumed 'AND' test.

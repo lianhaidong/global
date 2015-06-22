@@ -30,7 +30,7 @@
  DAMAGE. 
  =========================================================================*/
 
-/** @file
+/*
  *	command history
  *
  *	cscope - interactive C symbol or text cross-reference

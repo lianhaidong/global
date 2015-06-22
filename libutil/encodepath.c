@@ -79,7 +79,7 @@ set_encode_chars(const unsigned char *chars)
  * use_encoding: 
  */
 int
-use_encoding()
+use_encoding(void)
 {
 	return encoding;
 }

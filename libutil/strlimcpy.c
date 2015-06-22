@@ -28,13 +28,13 @@
  *
  *	@param[out]	dest	destination string
  *	@param[in]	source	source string
- *	@param[in]	limit	size of @a dest
+ *	@param[in]	limit	size of dest
  *
- * @note This function is similar to @NAME{strlcpy()} of @NAME{OpenBSD} but is different
- * because @NAME{strlimcpy} abort when it beyond the limit.
+ * [Note] This function is similar to strlcpy() of OpenBSD but is different
+ * because strlimcpy abort when it beyond the limit.
  */
 void
-strlimcpy(char *dest, const char *const source, const int limit)
+strlimcpy(char *dest, const char *const source, int limit)
 {
 	int n = (int)limit;
 	const char *s = source;

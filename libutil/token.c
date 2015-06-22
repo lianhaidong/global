@@ -39,13 +39,13 @@
  */
 int lineno;
 const char *sp, *cp, *lp;
-int crflag;			/**< 1: return '\\n', 0: doesn't return */
-int cmode;			/**< allow token which start with '\#' */
-int cppmode;			/**< allow '\::' as a token */
-int ymode;			/**< allow token which start with '\%' */
+int crflag;			/* 1: return '\n', 0: doesn't return */
+int cmode;			/* allow token which start with '#' */
+int cppmode;			/* allow '::' as a token */
+int ymode;			/* allow token which start with '%' */
 char token[MAXTOKEN];
 char curfile[MAXPATHLEN];
-int continued_line;		/**< previous line ends with '\\\\' */
+int continued_line;		/* previous line ends with '\' */
 
 static char ptok[MAXTOKEN];
 static int lasttok;
@@ -85,23 +85,23 @@ closetoken(void)
 	fclose(ip);
 }
 
-/**
+/*
  * nexttoken: get next token
  *
- *	@param[in]	interested	interested special character <br>
- *				if @VAR{NULL} then all character.
- *	@param[in]	reserved	converter from token to token number <br>
- *				if this is specified, nexttoken() return <br>
+ *	@param[in]	interested	interested special character
+ *				if NULL then all character.
+ *	@param[in]	reserved	converter from token to token number
+ *				if this is specified, nexttoken() return
  *				word number, else return symbol.
- *	@return	@VAR{EOF}(-1)	end of file <br>
- *		c ==0		symbol (#SYMBOL; #token has the value.) <br>
- *		c \< 256		interested special character <br>
- *		c \> 1000	reserved word
+ *	@return	EOF(-1)	end of file,
+ *		c ==0		symbol (SYMBOL; token has the value.),
+ *		c < 256		interested special character,
+ *		c > 1000	reserved word
  *
- * @note nexttoken() doesn't return followings:
+ * [Note] nexttoken() doesn't return followings:
  * - comment
- * - space (@CODE{' '}, @CODE{'\\t'}, @CODE{'\\f'}, @CODE{'\\v'}, @CODE{'\\r'})
- * - quoted string (@CODE{\"...\"}, @CODE{'.'})
+ * - space (' ', '\t', '\f', '\v', '\r')
+ * - quoted string ("...", '.')
  * - number
  */
 
@@ -355,11 +355,9 @@ throwaway_nextchar(void)
 /**
  * atfirst_exceptspace: return if current position is the first column
  *			except for space.
- * @code
  *	|      1 0
  *      |      v v
  *	|      # define
- * @endcode
  */
 int
 atfirst_exceptspace(void)

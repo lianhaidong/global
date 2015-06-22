@@ -55,19 +55,18 @@ settabs(int n)
 	tabs = n;
 }
 /**
- * @fn size_t read_file_detabing(char *buf, size_t size, FILE *ip, int *dest_saved, int *spaces_saved)
+ * size_t read_file_detabing(char *buf, size_t size, FILE *ip, int *dest_saved, int *spaces_saved)
  *
  * Read file converting tabs into spaces.
  *
  *	@param[out]	buf	
- *	@param[in]	size	size of @a buf
+ *	@param[in]	size	size of buf
  *	@param[in]	ip	input file
- *	@param[out]	dest_saved	current column in @a buf
+ *	@param[out]	dest_saved	current column in buf
  *	@param[out]	spaces_saved	left spaces
  *	@return		size of data
  *
- * @attention
- * @a dest_saved and @a spaces_saved are control variables. <br>
+ * dest_saved and spaces_saved are control variables.
  * You must initialize them with 0 (zero) when the input file is opened.
  */
 #define PUTSPACES \
@@ -118,7 +117,7 @@ read_file_detabing(char *buf, size_t size, FILE *ip, int *dest_saved, int *space
 /**
  * detab_replacing: convert tabs into spaces and print with replacing.
  *
- *	@param[in]	op	@CODE{FILE *}
+ *	@param[in]	op	FILE *
  *	@param[in]	buf	string including tabs
  *	@param[in]	replace	replacing function
  */

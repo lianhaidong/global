@@ -30,7 +30,7 @@
  DAMAGE. 
  =========================================================================*/
 
-/** @file
+/*
  *	memory allocation functions
  */
 
@@ -61,7 +61,7 @@ my_strdup(char *s)
 }
 
 
-/** version of @NAME{malloc} that only returns if successful */
+/** version of malloc that only returns if successful */
 void *
 mymalloc(size_t size)
 {
@@ -69,7 +69,7 @@ mymalloc(size_t size)
 }
 
 
-/** version of @NAME{calloc} that only returns if successful */
+/** version of calloc that only returns if successful */
 void *
 mycalloc(size_t nelem, size_t size)
 {
@@ -77,7 +77,7 @@ mycalloc(size_t nelem, size_t size)
 }
 
 
-/** version of @NAME{realloc} that only returns if successful */
+/** version of realloc that only returns if successful */
 void *
 myrealloc(void *p, size_t size)
 {

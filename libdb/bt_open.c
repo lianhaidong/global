@@ -34,8 +34,7 @@
 static char sccsid[] = "@(#)bt_open.c	8.10 (Berkeley) 8/17/94";
 #endif /* LIBC_SCCS and not lint */
 
-/**
- * @file
+/*
  * Implementation of btree access method for 4.4BSD.
  *
  * The design here was originally based on that of the btree access method
@@ -87,16 +86,16 @@ static int tmp(void);
 /**
  * __BT_OPEN -- Open a btree.
  *
- * Creates and fills a #DB struct, and calls the routine that actually
+ * Creates and fills a DB struct, and calls the routine that actually
  * opens the btree.
  *
- *	@param fname	filename (@CODE{NULL} for in-memory trees)
+ *	@param fname	filename (NULL for in-memory trees)
  *	@param flags	open flag bits
  *	@param mode	open permission bits
- *	@param openinfo	#BTREEINFO pointer
+ *	@param openinfo	BTREEINFO pointer
  *	@param dflags
  *
- * @return @CODE{NULL} on failure, pointer to #DB on success.
+ * @return NULL on failure, pointer to DB on success.
  *
  */
 DB *
@@ -364,7 +363,7 @@ err:	if (t) {
  *
  *	@param t	tree
  *
- * @return #RET_ERROR, #RET_SUCCESS
+ * @return RET_ERROR, RET_SUCCESS
  */
 static int
 nroot(t)

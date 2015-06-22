@@ -31,13 +31,12 @@
 #include "die.h"
 #include "locatestring.h"
 
-/** @file
+/*
 
 String locator: usage and memory status
 
         'v': result pointer
  
-@code
 string = "ABC XYZ XYZ ABC"
 
 pointer = locatestring(string, "XYZ", MATCH_FIRST);
@@ -67,13 +66,12 @@ pointer = locatestring(string, "ABC XYZ XYZ ABC", MATCH_COMPLETE);
 pointer = locatestring(string, "xyZ", MATCH_FIRST|IGNORE_CASE);
              v
         "ABC XYZ XYZ ABC"
-@endcode
  */
 
 /**
  * strincmp: strncmp with ignoring case.
  *
- *	Interface is same with @NAME{strncmp}.
+ *	Interface is same with strncmp.
  */
 static int
 strincmp(const char *string, const char *pattern, size_t len)
@@ -102,15 +100,15 @@ strincmp(const char *string, const char *pattern, size_t len)
  *
  *	@param[in]	string	string
  *	@param[in]	pattern	pattern
- *	@param[in]	flag	MATCH_FIRST:	match first <br>
- *			MATCH_AT_FIRST: match only at first column <br>
- *			MATCH_LAST:	match last <br>
- *			MATCH_AT_LAST:	match only at last column <br>
- *			MATCH_COMPLETE	match completely <br>
+ *	@param[in]	flag	MATCH_FIRST:	match first,
+ *			MATCH_AT_FIRST: match only at first column,
+ *			MATCH_LAST:	match last,
+ *			MATCH_AT_LAST:	match only at last column,
+ *			MATCH_COMPLETE	match completely,
  *			IGNORE_CASE:	Ignore case
  *	@return		pointer or NULL
- *			If the flag == MATCH_AT_FIRST then the pointer <br>
- *			points the following character of the matched <br>
+ *			If the flag == MATCH_AT_FIRST then the pointer
+ *			points the following character of the matched
  *			string, else points at the head of it.
  *
  * This function is made to avoid compatibility problems.

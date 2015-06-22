@@ -60,7 +60,7 @@ static const char *makeobjdir;		/**< obj directory		*/
 char const *gtags_dbpath_error;		/**< error message */
 
 /**
- * setupvariables: load variables regard to @NAME{BSD} @NAME{OBJ} directory.
+ * setupvariables: load variables regard to BSD OBJ directory.
  */
 static void
 setupvariables(int verbose)
@@ -87,7 +87,7 @@ setupvariables(int verbose)
  *
  *	@param[in]	candidate candidate root directory
  *	@param[in]	verbose	verbose mode 1: on, 0: off
- *	@return		objdir(@VAR{NULL}: not found)
+ *	@return		objdir(NULL: not found)
  */
 char *
 getobjdir(const char *candidate, int verbose)
@@ -130,14 +130,14 @@ getobjdir(const char *candidate, int verbose)
  * gtagsexist: test whether GTAGS's existence.
  *
  *	@param[in]	candidate candidate root directory
- *	@param[out]	dbpath	directory which @FILE{GTAGS} exist
- *	@param[in]	size	size of @a dbpath buffer
+ *	@param[out]	dbpath	directory which "GTAGS" exist
+ *	@param[in]	size	size of dbpath buffer
  *	@param[in]	verbose	verbose mode 1: on, 0: off
  *	@return		0: not found, 1: found
  *
- * Gtagsexist locate @FILE{GTAGS} file in @FILE{\$candidate/}, @FILE{\$candidate/obj/} and
- * @FILE{/usr/obj/\$candidate/} in this order by default. <br>
- * This behavior is same with @NAME{BSD} @XREF{make,1}'s one.
+ * Gtagsexist locate "GTAGS" file in "$candidate/", "$candidate/obj/" and
+ * "/usr/obj/$candidate/" in this order by default.
+ * This behavior is same with BSD make(1)'s one.
  */
 int
 gtagsexist(const char *candidate, char *dbpath, int size, int verbose)
@@ -194,18 +194,17 @@ static char root_with_slash[MAXPATHLEN];
 static char cwd[MAXPATHLEN];
 static char nearbase[MAXPATHLEN];
 static char relative_cwd_with_slash[MAXPATHLEN+2];
-/**
+/*
  * setupdbpath: setup dbpath directory
  *
  *	@param[in]	verbose	verbose mode 1: on, 0: off
+ *	@return	0: normal, 0<: error
+ *	Globals used (output):
+ *		cwd:	current directory,
+ *		root:	root of source tree,
+ *		dbpath: directory which "GTAGS" exist,
+ *		gtags_dbpath_error: set if status (return value) < 0
  *
- *	@par Globals used (output):
- *		#cwd:	current directory <br>
- *		#root:	root of source tree <br>
- *		#dbpath: directory which @FILE{GTAGS} exist <br>
- *		#gtags_dbpath_error: set if status (return value) \< 0
- *
- *	@return	0: normal, 0\<: error
  */
 int
 setupdbpath(int verbose)
@@ -343,13 +342,13 @@ ignore_lab:;
 	return 0;
 }
 /**
- * in_the_project: test whether @a path is in the project.
+ * in_the_project: test whether path is in the project.
  *
  *	@param[in]	path	target file or directory
  *	@return		0: out of the project, 1: in the project
  *
- * @note Please pass an absolute path name which does not include @FILE{.} (current directory) or
- *       @FILE{..} (parent directory).
+ * [Note] Please pass an absolute path name which does not include "." (current directory) or
+ *       ".." (parent directory).
  */
 int
 in_the_project(const char *path)
@@ -358,10 +357,9 @@ in_the_project(const char *path)
 		return 1;
 	return 0;
 }
-/**
- * @name return saved values.
+/*
+ * return saved values.
  */
-/** @{ */
 const char *
 get_dbpath(void)
 {
@@ -413,4 +411,3 @@ dump_dbpath(void)
 	fprintf(stderr, "current directory: %s\n", cwd);
 	fprintf(stderr, "nearbase: %s\n", nearbase);
 }
-/** @} */

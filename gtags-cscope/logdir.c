@@ -30,11 +30,11 @@
  DAMAGE. 
  =========================================================================*/
 
-/** @file
+/*
  *	logdir()
  *
- *	This routine does not use the @XREF{getpwent,3} library routine
- *	because the latter uses the @NAME{stdio} package.  The allocation of
+ *	This routine does not use the getpwent(3) library routine
+ *	because the latter uses the stdio package.  The allocation of
  *	storage in this package destroys the integrity of the shell's
  *	storage allocation.
  */

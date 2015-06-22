@@ -33,37 +33,34 @@
 #include "strbuf.h"
 
 /**
- * @details
  * makepath: make path from directory and file.
  *
- *	@param[in]	dir	directory(optional), @CODE{NULL} if not used.
+ *	@param[in]	dir	directory(optional), NULL if not used.
  *	@param[in]	file	file
- *	@param[in]	suffix	suffix(optional), @CODE{NULL} if not used.
+ *	@param[in]	suffix	suffix(optional), NULL if not used.
  *	@return		path
  *
- * @note Only makes a name, no real directories or files are created.
+ * [Note] Only makes a name, no real directories or files are created.
  *
- * The path in argument @a dir can be an absoulute or relative one (@EMPH{Not sure if
- * can be relative one on WIN32}). <br>
- * A @CODE{'.'} (dot) will be added to the @a suffix (file extension) argument, 
- * if not already present. Any existing suffix within @a file will not be removed. <br>
- * A separator (@CODE{'/'} or @CODE{'\\'}) will be added to @a dir, if not present,
- * then @a file is appended to the end of @a dir. @a file and @a dir are used as
+ * The path in argument dir can be an absoulute or relative one (Not sure if
+ * can be relative one on WIN32).
+ * A '.' (dot) will be added to the suffix (file extension) argument, 
+ * if not already present. Any existing suffix within file will not be removed.
+ * A separator ('/' or '\\') will be added to dir, if not present,
+ * then file is appended to the end of dir. file and dir are used as
  * given. None of the paths given or generated are checked for validity, but they
- * are checked for size (#MAXPATHLEN), (calls die() if too big).
+ * are checked for size (MAXPATHLEN), (calls die() if too big).
  *
- * @attention
- * It is necessary to note the usage of @NAME{makepath()}, because it returns
- * module local area. If @NAME{makepath()} is called again in the function which
- * is passed the return value of @NAME{makepath()}, then the value is overwritten. <br>
+ * It is necessary to note the usage of makepath(), because it returns
+ * module local area. If makepath() is called again in the function which
+ * is passed the return value of makepath(), then the value is overwritten.
  * This may cause the bug which is not understood easily.
  * You must not pass the return value except for the safe functions
  * described below.
  * 
- * @attention
  * Here are safe functions.
  * - functions in standard C library.
- * - following libutil functions: <br>
+ * - following libutil functions:
  *   test(), dbop_open(), strlimcpy(), strbuf_puts(), die()
  */
 const char *

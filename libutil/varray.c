@@ -28,15 +28,13 @@
 #include "die.h"
 #include "varray.h"
 
-/**
- @file
+/*
 
 Virtual array: usage and memory status
 
-_: allocated but not assigned. <br>
+_: allocated but not assigned.
 \@: assigned but the value is uncertainty.
 
-@code
 Function call                           Memory status
 ----------------------------------------------------------
                                         (not exist)
@@ -74,7 +72,6 @@ int i, *a = varray_assign(vb, 0, 0);
 for (i = 0; i < vb->length; i++)
 	printf("%d: %d\n", i, a[i]); // a[1], a[2], a[4] is uncertainty.
 
-@endcode
 */
 
 #define DEFAULT_EXPAND	100
@@ -83,9 +80,9 @@ static int debug = 0;
  * varray_open: open virtual array.
  *
  *	@param[in]	size	size of entry
- *	@param[in]	expand	expand array size <br>
- *			if 0 (zero) is specified then use #DEFAULT_EXPAND.
- *	@return	vb	#VARRAY structure
+ *	@param[in]	expand	expand array size
+ *			if 0 (zero) is specified then use DEFAULT_EXPAND.
+ *	@return	vb	VARRAY structure
  */
 VARRAY *
 varray_open(int size, int expand)
@@ -105,14 +102,14 @@ varray_open(int size, int expand)
 /**
  * varray_assign: assign varray entry.
  *
- *	@param[in]	vb	#VARRAY structure
+ *	@param[in]	vb	VARRAY structure
  *	@param[in]	index	index
  *	@param[in]	force	if entry not found, create it.
  *	@return		pointer of the entry
  *
  * If specified entry is found then it is returned, else it is allocated
  * and returned.
- * This procedure @EMPH{doesn't} operate the contents of the array.
+ * This procedure doesn't operate the contents of the array.
  */
 void *
 varray_assign(VARRAY *vb, int index, int force)
@@ -153,10 +150,10 @@ varray_assign(VARRAY *vb, int index, int force)
 /**
  * varray_append: append varray entry.
  *
- *	@param[in]	vb	#VARRAY structure
+ *	@param[in]	vb	VARRAY structure
  *	@return		pointer of the entry
  *
- * This procedure @EMPH{doesn't} operate the contents of the array.
+ * This procedure doesn't operate the contents of the array.
  */
 void *
 varray_append(VARRAY *vb)
@@ -166,7 +163,7 @@ varray_append(VARRAY *vb)
 /**
  * varray_reset: reset varray array.
  *
- *	@param[in]	vb	#VARRAY structure
+ *	@param[in]	vb	VARRAY structure
  */
 void
 varray_reset(VARRAY *vb)
@@ -176,7 +173,7 @@ varray_reset(VARRAY *vb)
 /**
  * varray_close: close varray array.
  *
- *	@param[in]	vb	#VARRAY structure
+ *	@param[in]	vb	VARRAY structure
  */
 void
 varray_close(VARRAY *vb)

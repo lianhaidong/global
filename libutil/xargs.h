@@ -24,25 +24,21 @@
 
 #include "strbuf.h"
 
-/**
- * @name Types
+/*
+ * Types
  */
-/** @{ */
 #define	XARGS_FILE	1
 #define XARGS_ARGV	2
 #define XARGS_STRBUF	3
 #define XARGS_FIND	4
-/** @} */
 
-/**
- * @name Options
+/*
+ * Options
  */
-/** @{ */
 #define XA_IGNORE_ERROR		1
 #define XA_SKIP_NOTSOURCE	2
 #define XA_PUT_GPATH		4
 #define XA_TRIM_LINE		8
-/** @} */
 
 typedef struct {
 	/*
@@ -54,46 +50,38 @@ typedef struct {
 	int end_of_arg;
 	int unread;
 	int seqno;		/**< sequencial number */
-	int type;		/**< @NAME{XARGS_XXX} Types */
-	/**
-	 * @name options
+	int type;		/**< XARGS_XXX Types */
+	/*
+	 * options
 	 *
-	 * These variables are set to directly by calling procedures. <br>
+	 * These variables are set to directly by calling procedures.
 	 * This might have to be reviewed.
 	 */
-	/** @{ */
 	int ignore_error;
-	int max_args;		/**< 0: no limit, \>0: limit */
+	int max_args;		/**< 0: no limit, >0: limit */
 	int put_gpath;
 	int trim_line;
 	int skip_assembly;
 	void (*verbose)(char *, int, int);
-	/** @} */
 
-	/**
-	 * @name XARGS_FILE
+	/*
+	 * XARGS_FILE
 	 */
-	/** @{ */
 	FILE *ip;
 	long fptr;
 	STRBUF *path;
-	/** @} */
 
-	/**
-	 * @name XARGS_ARGV
+	/*
+	 * XARGS_ARGV
 	 */
-	/** @{ */
 	int argc;
 	char *const *argv;
-	/** @} */
 
-	/**
-	 * @name XARGS_STRBUF
+	/*
+	 * XARGS_STRBUF
 	 */
-	/** @{ */
 	char *curp;
 	char *endp;
-	/** @} */
 
 	/*
 	 * XARGS_FIND

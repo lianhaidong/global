@@ -32,8 +32,6 @@
 #ifndef _DB_H_
 #define	_DB_H_
 
-/** @file */
-
 #include <sys/types.h>
 
 #ifdef HAVE_LIMITS_H
@@ -45,28 +43,23 @@
 
 #include "compat.h"
 
-/** @name Return values. */
-/** @{ */
+/* Return values. */
 #define	RET_ERROR	-1
 #define	RET_SUCCESS	 0
 #define	RET_SPECIAL	 1
-/** @} */
 
-/** @name */
-/** @{ */
-				/** >= \# of pages in a file */
+				/** >= # of pages in a file */
 #define	MAX_PAGE_NUMBER	0xffffffff
 				/** pgno_t */
 #define pgno_t		u_int32_t
-				/** >= \# of bytes in a page */
+				/** >= # of bytes in a page */
 #define	MAX_PAGE_OFFSET	65535
 				/** indx_t */
 #define indx_t		u_int16_t
-				/** >= \# of records in a tree */
+				/** >= # of records in a tree */
 #define	MAX_REC_NUMBER	0xffffffff
 				/** recno_t */
 #define recno_t		u_int32_t
-/** @} */
 
 /** Key/data structure -- a Data-Base Thang. */
 typedef struct {
@@ -74,8 +67,7 @@ typedef struct {
 	size_t	 size;			/**< data length */
 } DBT;
 
-/** @name Routine flags. */
-/** @{ */
+/* Routine flags. */
 		/** del, put, seq */
 #define	R_CURSOR	1
 		/** UNUSED */
@@ -86,34 +78,33 @@ typedef struct {
 #define	R_IAFTER	4
 		/** put (RECNO) */
 #define	R_IBEFORE	5
-		/** seq (#BTREE, RECNO) */
+		/** seq (BTREE, RECNO) */
 #define	R_LAST		6
 		/** seq */
 #define	R_NEXT		7
 		/** put */
 #define	R_NOOVERWRITE	8
-		/** seq (#BTREE, RECNO) */
+		/** seq (BTREE, RECNO) */
 #define	R_PREV		9
 		/** put (RECNO) */
 #define	R_SETCURSOR	10
 		/** sync (RECNO) */
 #define	R_RECNOSYNC	11
-/** @} */
 
 typedef enum { DB_BTREE, DB_HASH, DB_RECNO } DBTYPE;
 
 /**
  * !!!
- * The following flags are included in the @XREF{dbopen,3} call as part of the
- * @XREF{open,2} flags.  In order to avoid conflicts with the open flags, start
+ * The following flags are included in the dbopen(3) call as part of the
+ * open(2) flags.  In order to avoid conflicts with the open flags, start
  * at the top of the 16 or 32-bit number space and work our way down.  If
  * the open flags were significantly expanded in the future, it could be
- * a problem.  Wish I'd left another flags word in the @NAME{dbopen} call.
+ * a problem.  Wish I'd left another flags word in the dbopen call.
  *
  * !!!
- * @EMPH{None of this stuff is implemented yet}.  The only reason that it's here
+ * None of this stuff is implemented yet.  The only reason that it's here
  * is so that the access methods can skip copying the key/data pair when
- * the #DB_LOCK flag isn't set.
+ * the DB_LOCK flag isn't set.
  */
 #if UINT_MAX > 65535
 				/** Do locking. */
@@ -146,13 +137,10 @@ typedef struct __db {
 	int (*fd)	(const struct __db *);
 } DB;
 
-/** @name */
-/** @{ */
 #define	BTREEMAGIC	0x053162
 #define	BTREEVERSION	3
 		/** duplicate keys */
 #define	R_DUP		0x01
-/** @} */
 
 /** Structure used to pass parameters to the btree routines. */
 typedef struct {
@@ -200,13 +188,12 @@ typedef struct {
 	char	*bfname;	/**< btree file name */ 
 } RECNOINFO;
 
-/**
- * @name Little endian <==> big endian 32-bit swap macros.
- *	#M_32_SWAP	swap a memory location <br>
- *	#P_32_SWAP	swap a referenced memory location <br>
- *	#P_32_COPY	swap from one location to another
+/*
+ * Little endian <==> big endian 32-bit swap macros.
+ *	M_32_SWAP	swap a memory location
+ *	P_32_SWAP	swap a referenced memory location
+ *	P_32_COPY	swap from one location to another
  */
-/** @{ */
 #define	M_32_SWAP(a) {							\
 	u_int32_t _tmp = a;						\
 	((char *)&a)[0] = ((char *)&_tmp)[3];				\
@@ -227,15 +214,13 @@ typedef struct {
 	((char *)&(b))[2] = ((char *)&(a))[1];				\
 	((char *)&(b))[3] = ((char *)&(a))[0];				\
 }
-/** @} */
 
-/**
- * @name Little endian <==> big endian 16-bit swap macros.
- *	#M_16_SWAP	swap a memory location <br>
- *	#P_16_SWAP	swap a referenced memory location <br>
- *	#P_16_COPY	swap from one location to another
+/*
+ * Little endian <==> big endian 16-bit swap macros.
+ *	M_16_SWAP	swap a memory location
+ *	P_16_SWAP	swap a referenced memory location
+ *	P_16_COPY	swap from one location to another
  */
-/** @{ */
 #define	M_16_SWAP(a) {							\
 	u_int16_t _tmp = a;						\
 	((char *)&a)[0] = ((char *)&_tmp)[1];				\
@@ -250,7 +235,6 @@ typedef struct {
 	((char *)&(b))[0] = ((char *)&(a))[1];				\
 	((char *)&(b))[1] = ((char *)&(a))[0];				\
 }
-/** @} */
 
 DB	*dbopen(const char *, int, int, DBTYPE, const void *);
 

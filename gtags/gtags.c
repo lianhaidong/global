@@ -63,9 +63,8 @@
 int _CRT_glob = __CRT_GLOB_USE_MINGW__ | __CRT_GLOB_BRACKET_GROUPS__;
 #endif
 
-/**
- @file
- @NAME{gtags} - create tag files for @NAME{global}.
+/*
+ gtags - create tag files for global.
 */
 
 static void usage(void);
@@ -748,7 +747,7 @@ exit:
 	return updated;
 }
 /**
- * @fn static void put_syms(int type, const char *tag, int lno, const char *path, const char *line_image, void *arg)
+ * static void put_syms(int type, const char *tag, int lno, const char *path, const char *line_image, void *arg)
  *
  * callback functions for built-in parser
  */
@@ -805,7 +804,7 @@ put_syms(int type, const char *tag, int lno, const char *path, const char *line_
  *	@param[in]	dbpath		directory in which tag file exist
  *	@param[in]	root		root directory of source tree
  *	@param[in]	deleteset	bit array of fid of deleted or modified files 
- *	@param[in]	addlist		@CODE{\\0} separated list of added or modified files
+ *	@param[in]	addlist		'\0' separated list of added or modified files
  */
 void
 updatetags(const char *dbpath, const char *root, IDSET *deleteset, STRBUF *addlist)

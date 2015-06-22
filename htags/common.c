@@ -45,10 +45,9 @@
 #include "htags.h"
 #include "path2url.h"
 
-/**
- * @name Tag definitions
+/*
+ * Tag definitions
  */
-/** @{ */
 const char *html_begin		= "<html xmlns='http://www.w3.org/1999/xhtml'>";
 const char *html_end		= "</html>";
 const char *html_head_begin	= "<head>";
@@ -118,10 +117,8 @@ const char *br			= "<br />";
 const char *empty_element	= " /";
 const char *noframes_begin	= "<noframes>";
 const char *noframes_end	= "</noframes>";
-/** @} */
 
-/** @name tree view tag (--tree-view) */
-/** @{ */
+/* tree view tag (--tree-view) */
 const char *tree_control	= "<div id='control'>All <a href='#'>close</a> | <a href='#'>open</a></div>";
 const char *tree_loading	= "<span id='init' class='loading'>Under construction...</span>";
 const char *tree_begin		= "<ul id='tree'>";
@@ -132,24 +129,21 @@ const char *dir_title_end	= "</span>";
 const char *dir_end		= "</li>";
 const char *file_begin		= "<li><span class='file'>";
 const char *file_end		= "</span></li>";
-/** @} */
 
-/** @name fixed guide tag (--fixed-guide) */
-/** @{ */
+/* fixed guide tag (--fixed-guide) */
 const char *guide_begin		= "<div id='guide'><ul>";
 const char *guide_end		= "</ul></div>";
 const char *guide_unit_begin	= "<li>";
 const char *guide_unit_end	= "</li>";
 const char *guide_path_begin	= "<li class='standout'><span>";
 const char *guide_path_end	= "</span></li>";
-/** @} */
 
 static const char *fix_attr_value(const char *);
 
-/**
+/*
  * print string and new line.
  *
- * This function is a replacement of @CODE{fprintf(op, \"\%s\\n\", s)} in @NAME{htags}.
+ * This function is a replacement of fprintf(op, "%s\n", s) in htags.
  */
 int
 fputs_nl(const char *s, FILE *op)
@@ -158,14 +152,12 @@ fputs_nl(const char *s, FILE *op)
 	putc('\n', op);
 	return 0;
 }
-/**
- * @name These methods is used to tell lex() the current path infomation.
+/*
+ * These methods is used to tell lex() the current path infomation.
  */
-/** @{ */
 static char current_path[MAXPATHLEN];
 static char current_dir[MAXPATHLEN];
 static char current_file[MAXPATHLEN];
-/** @} */
 
 /**
  * save path infomation
@@ -204,7 +196,7 @@ get_current_file(void)
 /**
  * Generate upper directory.
  *
- * Just returns the parent path of @a dir. (Adds @FILE{../} to it).
+ * Just returns the parent path of dir. (Adds "../" to it).
  */
 const char *
 upperdir(const char *dir)
@@ -215,10 +207,10 @@ upperdir(const char *dir)
 	strbuf_sprintf(sb, "../%s", dir);
 	return strbuf_value(sb);
 }
-/**
- * Load text from file with replacing @CODE{\@PARENT_DIR\@} macro.
- * Macro @CODE{\@PARENT_DIR\@} is replaced with the parent directory
- * of the @FILE{HTML} directory.
+/*
+ * Load text from file with replacing @PARENT_DIR@ macro.
+ * Macro @PARENT_DIR@ is replaced with the parent directory
+ * of the "HTML" directory.
  */
 static const char *
 sed(FILE *ip, int place)
@@ -291,8 +283,8 @@ gen_insert_footer(int place)
  * Generate beginning of generic page
  *
  *	@param[in]	title	title of this page
- *	@param[in]	place	#SUBDIR: this page is in sub directory <br>
- *			#TOPDIR: this page is in the top directory
+ *	@param[in]	place	SUBDIR: this page is in sub directory,
+ *			TOPDIR: this page is in the top directory
  *	@param[in]	use_frameset
  *			use frameset document type or not
  *	@param[in]	header_item
@@ -349,8 +341,8 @@ gen_page_generic_begin(const char *title, int place, int use_frameset, const cha
  * Generate beginning of normal page
  *
  *	@param[in]	title	title of this page
- *	@param[in]	place	#SUBDIR: this page is in sub directory <br>
- *			#TOPDIR: this page is in the top directory
+ *	@param[in]	place	SUBDIR: this page is in sub directory,
+ *			TOPDIR: this page is in the top directory
  */
 const char *
 gen_page_begin(const char *title, int place)
@@ -368,8 +360,8 @@ gen_page_index_begin(const char *title, const char *header_item)
 {
 	return gen_page_generic_begin(title, TOPDIR, 0, header_item);
 }
-/**
- * Generate beginning of frameset page (@CODE{\<frameset\>})
+/*
+ * Generate beginning of frameset page (<frameset>)
  *
  *	@param[in]	title	title of this page
  */
@@ -378,8 +370,8 @@ gen_page_frameset_begin(const char *title)
 {
 	return gen_page_generic_begin(title, TOPDIR, 1, NULL);
 }
-/**
- * Generate end of page (@CODE{\</html\>})
+/*
+ * Generate end of page (</html>)
  */
 const char *
 gen_page_end(void)
@@ -387,16 +379,16 @@ gen_page_end(void)
 	return html_end;
 }
 
-/**
- * Generate image tag (@CODE{\<img\>})
+/*
+ * Generate image tag (<img>)
  *
- *	@param[in]	where	Where is the icon directory? <br>
- *			#CURRENT: current directory <br>
- *			#PARENT: parent directory
+ *	@param[in]	where	Where is the icon directory?
+ *			CURRENT: current directory,
+ *			PARENT: parent directory
  *	@param[in]	file	icon file without suffix.
- *	@param[in]	alt	alt string (the @CODE{alt} attribute is always added)
+ *	@param[in]	alt	alt string (the 'alt' attribute is always added)
  *
- *	@note Images are assumed to be in the @FILE{icons} or @FILE{../icons} directory, only.
+ *	[Note] Images are assumed to be in the "icons" or "../icons" directory, only.
  */
 const char *
 gen_image(int where, const char *file, const char *alt)
@@ -424,10 +416,10 @@ gen_name_number(int number)
 	snprintf(buf, sizeof(buf), "L%d", number);
 	return gen_name_string(buf);
 }
-/**
- * Generate name tag (@CODE{\<a name='xxx'\>}).
+/*
+ * Generate name tag (<a name='xxx'>).
  *
- * Uses attribute @CODE{'id'}, if is @NAME{XHTML}.
+ * Uses attribute 'id', if is XHTML.
  */
 const char *
 gen_name_string(const char *name)
@@ -446,20 +438,20 @@ gen_name_string(const char *name)
 	}
 	return strbuf_value(sb);
 }
-/**
- * Generate anchor begin tag (@CODE{\<a href='dir/file.suffix\#key'\>}).
+/*
+ * Generate anchor begin tag (<a href='dir/file.suffix#key'>).
  * (complete format)
  *
  *	@param[in]	dir	directory
  *	@param[in]	file	file
- *	@param[in]	suffix	suffix (file extension e.g. @CODE{'.txt'}). A @CODE{'.'} (dot) will be added.
+ *	@param[in]	suffix	suffix (file extension e.g. '.txt'). A '.' (dot) will be added.
  *	@param[in]	key	key
- *	@param[in]	title	@CODE{title='xxx'} attribute; if @VAR{NULL}, doesn't add it.
- *	@param[in]	target	@CODE{target='xxx'} attribute; if @VAR{NULL}, doesn't add it.
+ *	@param[in]	title	title='xxx' attribute; if NULL, doesn't add it.
+ *	@param[in]	target	target='xxx' attribute; if NULL, doesn't add it.
  *	@return		generated anchor tag
  *
- *	@note @a dir, @a file, @a suffix, @a key, @a target and @a title may be @VAR{NULL}.
- *	@note Single quote (@CODE{'}) characters are used with the attribute values.
+ *	[Note] dir, file, suffix, key, target and title may be NULL.
+ *	[Note] Single quote (') characters are used to delimit the attribute values.
  */
 const char *
 gen_href_begin_with_title_target(const char *dir, const char *file, const char *suffix, const char *key, const char *title, const char *target)
@@ -504,8 +496,7 @@ gen_href_begin_with_title_target(const char *dir, const char *file, const char *
 /**
  * Generate simple anchor begin tag.
  *
- * @par Uses:
- *		gen_href_begin_with_title_target()
+ * Uses: gen_href_begin_with_title_target()
  */
 const char *
 gen_href_begin_simple(const char *file)
@@ -515,8 +506,7 @@ gen_href_begin_simple(const char *file)
 /**
  * Generate anchor begin tag without title and target.
  *
- * @par Uses:
- *		gen_href_begin_with_title_target()
+ * Uses: gen_href_begin_with_title_target()
  */
 const char *
 gen_href_begin(const char *dir, const char *file, const char *suffix, const char *key)
@@ -526,16 +516,15 @@ gen_href_begin(const char *dir, const char *file, const char *suffix, const char
 /**
  * Generate anchor begin tag without target.
  *
- * @par Uses:
- *		gen_href_begin_with_title_target()
+ * Uses: gen_href_begin_with_title_target()
  */
 const char *
 gen_href_begin_with_title(const char *dir, const char *file, const char *suffix, const char *key, const char *title)
 {
 	return gen_href_begin_with_title_target(dir, file, suffix, key, title, NULL);
 }
-/**
- * Generate anchor end tag (@CODE{\</a\>}).
+/*
+ * Generate anchor end tag (</a>).
  */
 const char *
 gen_href_end(void)
@@ -577,7 +566,7 @@ gen_list_begin(void)
 /**
  * Generate list body.
  *
- * @NAME{ctags_x} with the @CODE{--encode-path=\" \\t\"}
+ * ctags_x with the --encode-path=" \t"
  */
 const char *
 gen_list_body(const char *srcdir, const char *ctags_x, const char *fid)	/* virtually const */
@@ -671,10 +660,10 @@ gen_list_end(void)
 {
 	return table_list ? table_end : verbatim_end;
 }
-/**
- * Generate beginning of form (@CODE{\<form\>})
+/*
+ * Generate beginning of form (<form>)
  *
- *	@param[in]	target	target attribute or @VAR{NULL} for no target.
+ *	@param[in]	target	target attribute or NULL for no target.
  */
 const char *
 gen_form_begin(const char *target)
@@ -688,51 +677,51 @@ gen_form_begin(const char *target)
 	strbuf_puts(sb, ">");
 	return strbuf_value(sb);
 }
-/**
- * Generate end of form (@CODE{\</form\>})
+/*
+ * Generate end of form (</form>)
  */
 const char *
 gen_form_end(void)
 {
 	return "</form>";
 }
-/**
- * Generate input tag (@CODE{\<input\>})
- * @par Uses:
- *		gen_input_with_title_checked()
+/*
+ * Generate input tag (<input>)
+ *
+ * Uses: gen_input_with_title_checked()
  */
 const char *
 gen_input(const char *name, const char *value, const char *type)
 {
 	return gen_input_with_title_checked(name, value, type, 0, NULL);
 }
-/**
- * Generate input radiobox tag (@CODE{\<input type='radio'\>})
- * @par Uses:
- *		gen_input_with_title_checked()
+/*
+ * Generate input radiobox tag (<input type='radio'>)
+ *
+ * Uses: gen_input_with_title_checked()
  */
 const char *
 gen_input_radio(const char *name, const char *value, int checked, const char *title)
 {
 	return gen_input_with_title_checked(name, value, "radio", checked, title);
 }
-/**
- * Generate input checkbox tag (@CODE{\<input type='checkbox'\>})
- * @par Uses:
- *		gen_input_with_title_checked()
+/*
+ * Generate input checkbox tag (<input type='checkbox'>)
+ *
+ * Uses: gen_input_with_title_checked()
  */
 const char *
 gen_input_checkbox(const char *name, const char *value, const char *title)
 {
 	return gen_input_with_title_checked(name, value, "checkbox", 0, title);
 }
-/**
- * Generate input radio tag (@CODE{\<input\>})
+/*
+ * Generate input radio tag (<input>)
  *
- *	@note @a name, @a value, @a type and @a title may be @VAR{NULL}, thus only those
- *		with a non-@VAR{NULL} value will have there attribute added. <br>
+ *	[Note] name, value, type and title may be NULL, thus only those
+ *		with a non-NULL value will have there attribute added.
  *		The argument names are the same as the corresponding HTML attribute names.
- *	@note Single quote (@CODE{'}) characters are used with the attribute values.
+ *	[Note] Single quote (') characters are used to delimit the attribute values.
  */
 const char *
 gen_input_with_title_checked(const char *name, const char *value, const char *type, int checked, const char *title)
@@ -758,8 +747,8 @@ gen_input_with_title_checked(const char *name, const char *value, const char *ty
 	strbuf_sprintf(sb, "%s>", empty_element);
 	return strbuf_value(sb);
 }
-/**
- * Generate beginning of frameset (@CODE{\<frameset\>})
+/*
+ * Generate beginning of frameset (<frameset>)
  *
  *	@param[in]	contents	target
  */
@@ -772,19 +761,19 @@ gen_frameset_begin(const char *contents)
 	strbuf_sprintf(sb, "<frameset %s>", contents);
 	return strbuf_value(sb);
 }
-/**
- * Generate end of frameset (@CODE{\</frameset\>})
+/*
+ * Generate end of frameset (</frameset>)
  */
 const char *
 gen_frameset_end(void)
 {
 	return "</frameset>";
 }
-/**
- * Generate beginning of frame (@CODE{\<frame\>})
+/*
+ * Generate beginning of frame (<frame>)
  *
- *	@param[in]	name	target (value for @CODE{name} and @CODE{id} attributes)
- *	@param[in]	src	value for @CODE{src} attribute
+ *	@param[in]	name	target (value for name and id attributes)
+ *	@param[in]	src	value for src attribute
  */
 const char *
 gen_frame(const char *name, const char *src)
@@ -797,12 +786,12 @@ gen_frame(const char *name, const char *src)
 }
 
 
-/** HTML attribute delimiter character ( ' or &quot; only) */
+/** HTML attribute delimiter character ( ' or " only) */
 #define ATTR_DELIM '\''
 
-/**
- * Check and fix an attribute's value; convert all @c ' (single quote) characters
- * into @CODE{\&\#39;} within it.
+/*
+ * Check and fix an attribute's value; convert all ' (single quote) characters
+ * into &#39; within it.
  */
 static const char *
 fix_attr_value(const char *value)

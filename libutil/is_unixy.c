@@ -32,9 +32,9 @@
 #include "is_unixy.h"
 
 /**
- * is_unixy: whether running in a @NAME{unix}-like shell or not
+ * is_unixy: whether running in a unix-like shell or not
  *
- *	@return		1: unixy shell, 0: @NAME{DOS} shell (@FILE{COMMAND.COM})
+ *	@return		1: unixy shell, 0: DOS shell ("COMMAND.COM")
  */
 int
 is_unixy(void)

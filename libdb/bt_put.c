@@ -61,11 +61,11 @@ static EPG *bt_fast(BTREE *, const DBT *, const DBT *, int *);
  *	@param dbp	pointer to access method
  *	@param key	key
  *	@param data	data
- *	@param flags	#R_NOOVERWRITE
+ *	@param flags	R_NOOVERWRITE
  *
  * @return
- *	#RET_ERROR, #RET_SUCCESS and #RET_SPECIAL if the key is already in the
- *	tree and #R_NOOVERWRITE specified.
+ *	RET_ERROR, RET_SUCCESS and RET_SPECIAL if the key is already in the
+ *	tree and R_NOOVERWRITE specified.
  */
 int
 __bt_put(dbp, key, data, flags)
@@ -262,7 +262,7 @@ u_long bt_cache_hit, bt_cache_miss;
  *	@param data
  *	@param exactp
  *
- * @return #EPG for new record or @CODE{NULL} if not found.
+ * @return EPG for new record or NULL if not found.
  */
 static EPG *
 bt_fast(t, key, data, exactp)

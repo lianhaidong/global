@@ -30,7 +30,7 @@
  DAMAGE. 
  =========================================================================*/
 
-/** @file
+/*
  *	display functions
  *
  *	cscope - interactive C symbol cross-reference
@@ -411,7 +411,7 @@ atchange(void)
 	move(PRLINE, (int) sizeof(selprompt) - 1);
 }
 
-/** @fn BOOL search(void)
+/** BOOL search(void)
  *	search for the symbol or text pattern
  */
 
@@ -622,7 +622,7 @@ postmsg2(char *msg)
 	}
 }
 
-/** display an error mesg - @NAME{stdout} or on second msg line */
+/** display an error mesg - stdout or on second msg line */
 void
 posterr(char *msg, ...) 
 {
@@ -640,7 +640,7 @@ posterr(char *msg, ...)
     }
 }
 
-/** display a fatal error mesg -- @NAME{stderr} @STRONG{*after*} shutting down curses */
+/** display a fatal error mesg -- stderr *after* shutting down curses */
 void
 postfatal(const char *msg, ...)
 {
@@ -659,7 +659,7 @@ postfatal(const char *msg, ...)
 	myexit(1);
 }
 
-/** position references found file at specified @a line */
+/** position references found file at specified line */
 
 void
 seekline(unsigned int line) 
@@ -682,7 +682,7 @@ seekline(unsigned int line)
 	}
 }
 
-/** get the @NAME{OGS} subsystem and book names */
+/** get the OGS subsystem and book names */
 
 void
 ogsnames(char *file, char **subsystem, char **book)
@@ -711,7 +711,7 @@ ogsnames(char *file, char **subsystem, char **book)
 	}
 }
 
-/** get the requested @a path @a components */
+/** get the requested path components */
 
 char *
 pathcomponents(char *path, int components)

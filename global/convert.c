@@ -230,7 +230,9 @@ set_color_tag(const char *pattern)
 		die("invalid regular expression. '%s'", strbuf_value(sb));
 }
 /**
- * set_print0: change newline to @CODE{'\0'}.
+ * void set_print0(void)
+ *
+ * set_print0: change newline to '\0'.
  */
 static int newline = '\n';
 void
@@ -239,7 +241,7 @@ set_print0(void)
 	newline = '\0';
 }
 /**
- * Path filter for the output of @XREF{global,1}.
+ * Path filter for the output of global(1).
  * The path name starts with "./" which is the project root directory.
  */
 static const char *
@@ -337,13 +339,13 @@ convert_pathname(CONVERT *cv, const char *path)
 /**
  * convert_open: open convert filter
  *
- *	@param[in]	type	#PATH_ABSOLUTE, #PATH_RELATIVE, #PATH_THROUGH
+ *	@param[in]	type	PATH_ABSOLUTE, PATH_RELATIVE, PATH_THROUGH
  *	@param[in]	format	tag record format
  *	@param[in]	root	root directory of source tree
  *	@param[in]	cwd	current directory
  *	@param[in]	dbpath	dbpath directory
  *	@param[in]	op	output file
- *	@param[in]	db	tag type (#GTAGS, #GRTAGS, #GSYMS, #GPATH, #NOTAGS) <br>
+ *	@param[in]	db	tag type (GTAGS, GRTAGS, GSYMS, GPATH, NOTAGS)
  */
 CONVERT *
 convert_open(int type, int format, const char *root, const char *cwd, const char *dbpath, FILE *op, int db)
@@ -385,10 +387,10 @@ convert_open(int type, int format, const char *root, const char *cwd, const char
 /**
  * convert_put: convert path into relative or absolute and print.
  *
- *	@param[in]	cv	#CONVERT structure
- *	@param[in]	ctags_x	tag record (@NAME{ctags-x} format)
+ *	@param[in]	cv	CONVERT structure
+ *	@param[in]	ctags_x	tag record (ctags-x format)
  *
- * @note This function is only called by @NAME{global} with the @OPTION{--path} option.
+ * [Note] This function is only called by global with the --path option.
  */
 void
 convert_put(CONVERT *cv, const char *ctags_x)
@@ -514,9 +516,9 @@ convert_put(CONVERT *cv, const char *ctags_x)
 	(void)fputc(newline, cv->op);
 }
 /**
- * convert_put_path: convert @a path into relative or absolute and print.
+ * convert_put_path: convert path into relative or absolute and print.
  *
- *	@param[in]	cv	#CONVERT structure
+ *	@param[in]	cv	CONVERT structure
  *      @param[in]      pattern pattern
  *	@param[in]	path	path name
  */
@@ -531,14 +533,14 @@ convert_put_path(CONVERT *cv, const char *pattern, const char *path)
 	(void)fputc(newline, cv->op);
 }
 /**
- * convert_put_using: convert @a path into relative or absolute and print.
+ * convert_put_using: convert path into relative or absolute and print.
  *
- *	@param[in]	cv	#CONVERT structure
+ *	@param[in]	cv	CONVERT structure
  *      @param[in]      tag     tag name
  *      @param[in]      path    path name
  *      @param[in]      lineno  line number
  *      @param[in]      rest    line image
- *	@param[in]	fid	file id (only when @CODE{fid != NULL})
+ *	@param[in]	fid	file id (only when fid != NULL)
  */
 void
 convert_put_using(CONVERT *cv, const char *tag, const char *path, int lineno, const char *rest, const char *fid)

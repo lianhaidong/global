@@ -31,8 +31,8 @@
  =========================================================================*/
 
 
-/**	@file
- *	@NAME{gtags-cscope} - interactive C symbol cross-reference (@NAME{cscope})
+/*
+ *	gtags-cscope - interactive C symbol cross-reference (cscope)
  *
  *	main functions
  */
@@ -68,8 +68,7 @@
 #define mkdir(path,mode) mkdir(path)
 #endif
 
-/** @name defaults for unset environment variables */
-/** @{ */
+/* defaults for unset environment variables */
 /** text editor */
 #if defined(__DJGPP__) || (defined(_WIN32) && !defined(__CYGWIN__))
 #define EDITOR	"tde"
@@ -77,22 +76,21 @@
 #define EDITOR	"vi"
 #endif
 
-/** no @NAME{\$HOME} --\> use root directory */
+/** no $HOME --> use root directory */
 #define HOME	"/"
 /** shell executable */
 #define	SHELL	"sh"
 
-/** default: used by @NAME{vi} and @NAME{emacs} */
+/** default: used by vi and emacs */
 #define LINEFLAG "+%s"
 /** temp dir */
 #define TMPDIR	"/tmp"
-/** @} */
 
 static char const rcsid[] = "$Id$";
 
 char	*editor, *shell, *lineflag;	/**< environment variables */
-char	*global_command;	/**< @FILE{global} by default */
-char	*gtags_command;		/**< @FILE{gtags} by default */
+char	*global_command;	/**< "global" by default */
+char	*gtags_command;		/**< "gtags" by default */
 char	*home;			/**< Home directory */
 BOOL	lineflagafterfile;
 char	*argv0;			/**< command name */
@@ -101,19 +99,19 @@ int	dispcomponents = 1;	/**< file path components to display */
 BOOL	displayversion;		/**< display the C Compilation System version */
 #endif
 BOOL	editallprompt = YES;	/**< prompt between editing files */
-BOOL	incurses = NO;		/**< in @NAME{curses} */
+BOOL	incurses = NO;		/**< in curses */
 BOOL	isuptodate;		/**< consider the crossref up-to-date */
 BOOL	linemode = NO;		/**< use line oriented user interface */
 BOOL	verbosemode = NO;	/**< print extra information on line mode */
 BOOL	absolutepath = NO;	/**< print absolute path name */
-BOOL	ignoresigint = NO;	/**< ignore @NAME{SIGINT} signal */
-BOOL	ogs;			/**< display @NAME{OGS} book and subsystem names */
+BOOL	ignoresigint = NO;	/**< ignore SIGINT signal */
+BOOL	ogs;			/**< display OGS book and subsystem names */
 char	*prependpath;		/**< prepend path to file names */
 FILE	*refsfound;		/**< references found file */
 char	temp1[PATHLEN + 1];	/**< temporary file name */
 char	temp2[PATHLEN + 1];	/**< temporary file name */
 char	tempdirpv[PATHLEN + 1];	/**< private temp directory */
-char	tempstring[TEMPSTRING_LEN + 1]; /**< use this as a buffer, instead of @CODE{yytext}, 
+char	tempstring[TEMPSTRING_LEN + 1]; /**< use this as a buffer, instead of yytext, 
 				 * which had better be left alone */
 char	*tmpdir;		/**< temporary directory */
 

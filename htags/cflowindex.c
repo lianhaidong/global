@@ -31,10 +31,10 @@
 #include "common.h"
 
 /**
- * makecflowindex: make call-tree based on @NAME{cflow}'s output
+ * makecflowindex: make call-tree based on cflow's output
  *
  *	@param[in]	output		output file name
- *	@param[in]	cflow_file	input file which is the output of @NAME{Cflow} with @OPTION{--format=posix}
+ *	@param[in]	cflow_file	input file which is the output of Cflow with --format=posix
  */
 int
 makecflowindex(const char *output, const char *cflow_file)

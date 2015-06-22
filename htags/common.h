@@ -22,24 +22,18 @@
 /*
  * Parameter values.
  */
-/**
- * @name Defines for gen_image()
- * See: gen_image()
+/*
+ * Defines for gen_image()
  */
-/** @{ */
 #define CURRENT	0
 #define PARENT 1
-/** @} */
 
-/**
- * @name Defines for gen_page_begin()
- * See: gen_page_begin()
+/*
+ * Defines for gen_page_begin()
  */
-/** @{ */
 #define TOPDIR 0
 #define SUBDIR 1
 #define CGIDIR 2
-/** @} */
 
 /*
  * tag

@@ -49,7 +49,7 @@ static int retry;
 /**
  * get a path from input stream.
  *
- * @note Each path name must start with @CODE{"./"}.
+ * [Note] Each path name must start with "./".
  */
 static const char *
 getpath(void)
@@ -87,8 +87,8 @@ static const char *insert_comma(unsigned int);
  * extract_lastname: extract the last name of include line.
  *
  *	@param[in]	image	source image of include
- *	@param[in]	is_php	1: is @NAME{PHP} source
- *	@return		last name or @VAR{NULL} on error.
+ *	@param[in]	is_php	1: is PHP source
+ *	@return		last name or NULL on error.
  */
 static const char *
 extract_lastname(const char *image, int is_php)
@@ -171,16 +171,14 @@ extract_lastname(const char *image, int is_php)
 	return NULL;
 }
 /**
- * get the last part of the @a path.
+ * get the last part of the path.
  *
  *	@param[in]	path	path name
  *	@return		last part
  *
- * @par Examples:
- * @code
+ * Examples:
  * lastpart("a/b")	=> "b"
  * lastpart("a")	=> "a"
- * @endcode
  */
 static const char *
 lastpart(const char *path)
@@ -190,16 +188,14 @@ lastpart(const char *path)
 	return p ? p + 1 : path;
 }
 /**
- * get the directory part of the @a path.
+ * get the directory part of the path.
  *
  *	@param[in]	path	path name
  *	@param[out]	result	result buffer
  *	@return		directory part
  *
- * @par Examples:
- * @code
+ * Examples:
  * dirpart("a/b/c")	=> "a/b"
- * @endcode
  */
 static const char *
 dirpart(const char *path, char *result)
@@ -213,18 +209,16 @@ dirpart(const char *path, char *result)
 	return result;
 }
 /**
- * get the local path name if the path is under the @a dir.
+ * get the local path name if the path is under the dir.
  *
  *	@param[in]	path	path name
  *	@param[in]	dir	directory name
- *	@return		local path name or @VAR{NULL}
+ *	@return		local path name or NULL
  *
- * @par Examples:
- * @code
+ * Examples:
  * localpath("a/b/c", "a/b")	=> "c"
  * localpath("a/b/c/d", "a/b")	=> "c/d"
  * localpath("a/b/c", "a/d")	=> NULL
- * @endcode
  */
 static const char *
 localpath(const char *path, char *dir)
@@ -236,17 +230,15 @@ localpath(const char *path, char *dir)
 	return NULL;
 }
 /**
- * append @CODE{'/'} after the path name
+ * append '/' after the path name
  *
  *	@param[in]	path	path name
  *	@return		appended path name
  *
- *	@note Doesn't check if ends with a @CODE{'/'} already.
+ *	[Note] Doesn't check if ends with a '/' already.
  *
- * @par Examples:
- * @code
+ * Examples:
  * appendslash("a")	=> "a/"
- * @endcode
  */
 static const char *
 appendslash(const char *path)
@@ -259,15 +251,13 @@ appendslash(const char *path)
 	return strbuf_value(sb);
 }
 /**
- * remove @CODE{"./"} at the head of the path name
+ * remove "./" at the head of the path name
  *
  *	@param[in]	path	path name
  *	@return		removed path name
  *
- * @par Examples:
- * @code
+ * Examples:
  * removedotslash("./a") => "a"
- * @endcode
  */
 static const char *
 removedotslash(const char *path)
@@ -280,10 +270,8 @@ removedotslash(const char *path)
  *	@param[in]	n	number
  *	@return		edited string
  *
- * @par Examples:
- * @code
+ * Examples:
  * 10000 => 10,000
- * @endcode
  */
 static const char *
 insert_comma(unsigned int n)
@@ -331,9 +319,9 @@ regex_t is_include_file;
 int src_count;
 
 /**
- * @fn static int print_directory(int level, char *basedir)
+ * static int print_directory(int level, char *basedir)
  *
- * print contents of one directory and the descendant. (@STRONG{recursively called})
+ * print contents of one directory and the descendant. (recursively called)
  *
  *	@param[in]	level	directory nest level
  *	@param[in,out]	basedir	current directory
@@ -341,7 +329,7 @@ int src_count;
  * This function read find style records, and print directory tree.
  */
 /**
- * File list of the top level directory (when @CODE{level == 0}) is not written
+ * File list of the top level directory (when level == 0) is not written
  * to a file directly. Instead, it is written to string buffer, because
  * it appears in some places.
  */

@@ -39,7 +39,7 @@ static int nextkey;
 /**
  * load_gpath: load gpath tag file.
  *
- * load the contents of @NAME{GPATH} file into the memory.
+ * load the contents of GPATH file into the memory.
  */
 void
 load_gpath(const char *dbpath)
@@ -67,7 +67,7 @@ load_gpath(const char *dbpath)
 /**
  * unload_gpath: unload gpath tag file.
  *
- * unload the contents of @NAME{GPATH} file from memory.
+ * unload the contents of GPATH file from memory.
  */
 void
 unload_gpath(void)

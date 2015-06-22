@@ -30,7 +30,7 @@
  DAMAGE. 
  =========================================================================*/
 
-/** @file
+/*
  *	terminal input functions
  *
  *	cscope - interactive C symbol cross-reference
@@ -249,7 +249,7 @@ askforchar(void)
     mygetch();
 }
 
-/** ask user to press the @NAME{RETURN} key after reading the message */
+/** ask user to press the RETURN key after reading the message */
 
 void
 askforreturn(void)
@@ -262,7 +262,7 @@ askforreturn(void)
     }
 }
 
-/** expand the @CODE{~} and @CODE{\$} shell meta characters in a path */
+/** expand the ~ and $ shell meta characters in a path */
 
 void
 shellpath(char *out, int limit, char *in) 

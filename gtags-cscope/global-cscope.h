@@ -32,7 +32,7 @@
 
 /* $Id$ */
 
-/** @file
+/*
  *	global type, data, and function definitions
  *
  *	cscope - interactive C symbol cross-reference
@@ -202,11 +202,10 @@ struct cmd {			/** command history struct */
 	char	*text;			/**< input field text */
 };
 
-/** @name main.c global data */
-/** @{ */
+/* main.c global data */
 extern	char	*editor, *home, *shell, *lineflag;	/**< environment variables */
-extern	char	*global_command;			/**< @FILE{global} by default */
-extern	char	*gtags_command;				/**< @FILE{gtags} by default */
+extern	char	*global_command;			/**< "global" by default */
+extern	char	*gtags_command;				/**< "gtags" by default */
 extern	char	*home;		/**< Home directory */
 extern 	BOOL	lineflagafterfile;
 extern	char	*argv0;		/**< command name */
@@ -215,7 +214,7 @@ extern	int	dispcomponents;	/**< file path components to display */
 extern	BOOL	displayversion;	/**< display the C Compilation System version */
 #endif
 extern	BOOL	editallprompt;	/**< prompt between editing files */
-extern	BOOL	incurses;	/**< in @NAME{curses} */
+extern	BOOL	incurses;	/**< in curses */
 extern	BOOL	isuptodate;	/**< consider the crossref up-to-date */
 extern	BOOL	linemode;	/**< use line oriented user interface */
 extern	BOOL	absolutepath;	/**< print absolute path name */
@@ -227,10 +226,8 @@ extern	char	temp1[];	/**< temporary file name */
 extern	char	temp2[];	/**< temporary file name */
 extern	char	tempstring[TEMPSTRING_LEN + 1]; /**< global dummy string buffer */
 extern	char	*tmpdir;	/**< temporary directory */
-/** @} */
 
-/** @name command.c global data */
-/** @{ */
+/* command.c global data */
 extern	BOOL	caseless;	/**< ignore letter case when searching */
 extern	BOOL	*change;	/**< change this line */
 extern	BOOL	changing;	/**< changing text */
@@ -238,10 +235,8 @@ extern	int	selecting;
 extern	unsigned int curdispline;
 extern	char	newpat[];	/**< new pattern */
 extern	char	Pattern[];	/**< symbol or text pattern */
-/** @} */
 
-/** @name display.c global data */
-/** @{ */
+/* display.c global data */
 extern 	int	booklen;	/**< OGS book name display field length */
 extern	int	*displine;	/**< screen line of displayed reference */
 extern	unsigned int disprefs;	/**< displayed references */
@@ -258,12 +253,9 @@ extern	long	searchcount;	/**< count of files searched */
 extern	int	subsystemlen;	/**< OGS subsystem name display field length */
 extern	unsigned int totallines; /**< total reference lines */
 extern	const char dispchars[];	/**< display chars for jumping to lines */
-/** @} */
 
-/** @name mouse.c global data */
-/** @{ */
+/* mouse.c global data */
 extern	BOOL	mouse;		/**< mouse interface */
-/** @} */
 
 #if UNIXPC
 extern	BOOL	unixpcmouse;		/**< UNIX PC mouse interface */

@@ -30,8 +30,6 @@
 #include "regex.h"
 #include "strbuf.h"
 
-/** @file */
-
 #define REWRITE_LEFT 0
 #define REWRITE_CENTER 1
 #define REWRITE_RIGHT 2

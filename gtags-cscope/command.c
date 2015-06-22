@@ -30,10 +30,10 @@
  DAMAGE. 
  =========================================================================*/
 
-/**	@file
+/*
  *	command functions
  *
- *	@NAME{gtags-cscope} - interactive C symbol or text cross-reference (@NAME{cscope})
+ *	gtags-cscope - interactive C symbol or text cross-reference (cscope)
  */
 
 #include "global-cscope.h"

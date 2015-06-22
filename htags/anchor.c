@@ -46,20 +46,18 @@ static struct anchor *curp;
 static struct anchor *end;
 static struct anchor *CURRENT;
 
-/** compare routine for @XREF{qsort,3} */
+/** compare routine for qsort(3) */
 static int
 cmp(const void *s1, const void *s2)
 {
 	return ((struct anchor *)s1)->lineno - ((struct anchor *)s2)->lineno;
 }
-/**
- * @name Pointers (as lineno).
+/*
+ * Pointers (as lineno).
  */
-/** @{ */
 static int FIRST;
 static int LAST;
 static struct anchor *CURRENTDEF;
-/** @} */
 
 /**
  * anchor_prepare: setup input stream.
@@ -277,7 +275,7 @@ anchor_next(void)
  *
  *	@param[in]	name	name of anchor
  *	@param[in]	length	lenght of the name
- *	@param[in]	type	==0: not specified <br>
+ *	@param[in]	type	==0: not specified,
  *			!=0: D, M, T, R, Y
  *	@param[in]	lineno	line number
  */
@@ -308,10 +306,9 @@ anchor_get(const char *name, int length, int type, int lineno)
  * define_line: check whether or not this is a define line.
  *
  *	@param[in]	lineno	line number
- *	@par Globals used (output):
- *		#curp	pointer to the current cluster
- *
  *	@return		1: definition, 0: not definition
+ *	Globals used (output):
+ *		curp	pointer to the current cluster
  */
 int
 define_line(int lineno)

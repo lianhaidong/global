@@ -48,17 +48,16 @@ static void repeat_find_next(void);
 static FILE *execute_command(XARGS *);
 static XARGS *xargs_open_generic(const char *, int);
 
-/**
- @file
+/*
  *
- * @details
  * usage: a piece of code to achieve the following command line.
  *
- * @code{.sh}
- *	find . -type f -print | xargs grep pattern
- * @endcode
+ * [command line]
  *
- * @code
+ *	find . -type f -print | xargs grep pattern
+ *
+ * [code]
+ *
  * char *p;
  * FILE *ip = popen("find . -type f -print", "r");
  * XARGS *xp = xargs_open_with_file("grep pattern", ip)
@@ -66,14 +65,13 @@ static XARGS *xargs_open_generic(const char *, int);
  * while ((p = xargs_read(xp)) != NULL)
  *	puts(p);
  * xargs_close(xp);
- * @endcode
  */
 /**
  * exec_line_limit: upper limit of bytes of exec line.
  *
  *	@param[in]	length	command line length
- *	@return	0: unknown or cannot afford long line. <br>
- *		\> 0: upper limit of exec line
+ *	@return	0: unknown or cannot afford long line.
+ *		> 0: upper limit of exec line
  */
 static int
 exec_line_limit(int length)
@@ -118,7 +116,7 @@ exec_line_limit(int length)
 	return limit;
 }
 /**
- * @fn static char *repeat_find_read(void)
+ * static char *repeat_find_read(void)
  *
  * repeatable find_read
  */
@@ -137,12 +135,12 @@ repeat_find_next(void)
 }
 
 /**
- * Specified limitation by user. (e.g. @CODE{gtags --max-args})
+ * Specified limitation by user. (e.g. gtags --max-args)
  */
 #define LT_MAX ((xp->max_args == 0 || count < xp->max_args))
 
 /**
- * Common processing for each @NAME{XARGS_XXXX} type.
+ * Common processing for each XARGS_XXXX type.
  */
 #ifdef _WIN32
 #define QUOTE	'"'
@@ -180,12 +178,12 @@ repeat_find_next(void)
  * execute_command
  *
  *	@param[in]	xp	xargs structure
- *	@return		!=NULL: file pointer <br>
+ *	@return		!=NULL: file pointer
  *			==NULL: end of argument
  *
- * This function constructs command line from the following, <br>
- *	@STRONG{command}: @CODE{xp-\>command} <br>
- *	@STRONG{argument}: each argument provider <br>
+ * This function constructs command line from the following,
+ *	command: xp->command
+ *	argument: each argument provider
  * execute it on a pipe line, and return the file pointer.
  */
 static FILE *
@@ -275,7 +273,7 @@ execute_command(XARGS *xp)
  * xargs_open_generic: allocate generic part of xargs structure.
  *
  *	@param[in]	command	command line except for the arguments.
- *	@param[in]	max_args 0: no limit, \>0: max argument
+ *	@param[in]	max_args 0: no limit, >0: max argument
  *	@return		xargs structure	
  */
 static XARGS *
@@ -319,16 +317,16 @@ xargs_open_generic(const char *command, int max_args)
 
 	return xp;
 }
-/**
+/*
  * xargs_open_with_file: open xargs stream using file
  *
  *	@param[in]	command	command skeleton.
- *	@param[in]	max_args 0: no limit, \>0: max argument
+ *	@param[in]	max_args 0: no limit, >0: max argument
  *	@param[in]	ip	file pointer
  *	@return		xargs structure
  *
- * The @CODE{'\%s'} in the command skeleton is replaced with given arguments. <br>
- * If @CODE{'\%s'} doesn't exist, the arguments is appended to the tail of the
+ * The '%s' in the command skeleton is replaced with given arguments.
+ * If '%s' doesn't exist, the arguments is appended to the tail of the
  * skeleton.
  */
 XARGS *
@@ -342,17 +340,17 @@ xargs_open_with_file(const char *command, int max_args, FILE *ip)
 	xp->fptr = 0;
 	return xp;
 }
-/**
- * xargs_open_with_argv: open xargs stream using @a argv
+/*
+ * xargs_open_with_argv: open xargs stream using argv
  *
  *	@param[in]	command	command skeleton.
- *	@param[in]	max_args 0: no limit, \>0: max argument
+ *	@param[in]	max_args 0: no limit, >0: max argument
  *	@param[in]	argc	argument number
  *	@param[in]	argv	argument array
  *	@return		xargs structure
  *
- * The @CODE{'\%s'} in the command skeleton is replaced with given arguments. <br>
- * If @CODE{'\%s'} doesn't exist, the arguments is appended to the tail of the
+ * The '%s' in the command skeleton is replaced with given arguments.
+ * If '%s' doesn't exist, the arguments is appended to the tail of the
  * skeleton.
  */
 XARGS *
@@ -365,16 +363,16 @@ xargs_open_with_argv(const char *command, int max_args, int argc, char *const *a
 	xp->argv = argv;
 	return xp;
 }
-/**
+/*
  * xargs_open_with_strbuf: open xargs stream using string buffer
  *
  *	@param[in]	command	command skeleton.
- *	@param[in]	max_args 0: no limit, \>0: max argument
+ *	@param[in]	max_args 0: no limit, >0: max argument
  *	@param[in]	sb	string buffer
  *	@return		xargs structure
  *
- * The @CODE{'\%s'} in the command skeleton is replaced with given arguments. <br>
- * If @CODE{'\%s'} doesn't exist, the arguments is appended to the tail of the
+ * The '%s' in the command skeleton is replaced with given arguments.
+ * If '%s' doesn't exist, the arguments is appended to the tail of the
  * skeleton.
  */
 XARGS *
@@ -387,15 +385,15 @@ xargs_open_with_strbuf(const char *command, int max_args, STRBUF *sb)
 	xp->endp = xp->curp + strbuf_getlen(sb);
 	return xp;
 }
-/**
- * xargs_open_with_find: open xargs stream using @NAME{find()}.
+/*
+ * xargs_open_with_find: open xargs stream using find().
  *
  *	@param[in]	command	command skeleton.
- *	@param[in]	max_args 0: no limit, \>0: max argument
+ *	@param[in]	max_args 0: no limit, >0: max argument
  *	@return		xargs structure
  *
- * The @CODE{'\%s'} in the command skeleton is replaced with given arguments. <br>
- * If @CODE{'\%s'} doesn't exist, the arguments is appended to the tail of the
+ * The '%s' in the command skeleton is replaced with given arguments.
+ * If '%s' doesn't exist, the arguments is appended to the tail of the
  * skeleton.
  */
 XARGS *

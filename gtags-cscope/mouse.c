@@ -30,7 +30,7 @@
  DAMAGE. 
  =========================================================================*/
 
-/** @file
+/*
  *	mouse functions
  *
  *	cscope - interactive C symbol cross-reference
@@ -42,7 +42,7 @@ BOOL	mouse = NO;			/**< mouse interface */
 
 #ifdef UNIXPC	/* build command requires #ifdef instead of #if */
 #include <sys/window.h>
-BOOL	unixpcmouse = NO;	/**< running with a mouse on the @NAME{Unix} @NAME{PC}? */
+BOOL	unixpcmouse = NO;	/**< running with a mouse on the Unix PC? */
 static int uw_hs, uw_vs;	/**< character height and width */
 #endif
 
@@ -195,7 +195,7 @@ loadmenu(MENU *menu)
 	(void) fflush(stdout);
 }
 
-/** reinitialize the mouse in case @NAME{curses} changed the attributes */
+/** reinitialize the mouse in case curses changed the attributes */
 
 void
 mousereinit(void)

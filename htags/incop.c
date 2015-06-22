@@ -66,7 +66,7 @@ init_inc(void)
 /**
  * put_inc: put include file.
  *
- *	@param[in]	file	file name (the last component of the @a path)
+ *	@param[in]	file	file name (the last component of the path)
  *	@param[in]	path	path name or command line.
  *	@param[in]	id	path id
  */

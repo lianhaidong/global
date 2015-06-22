@@ -53,10 +53,10 @@ args_open(const char **args)
 	argslist = args;
 }
 /**
- * args_open_filelist: #args_open like interface for handling output of @XREF{find,1}.
+ * args_open_filelist: args_open like interface for handling output of find(1).
  *
- *	@param[in]	filename	file including list of file names. <br>
- *				When @FILE{-} is specified, read from standard input.
+ *	@param[in]	filename	file including list of file names.
+ *				When "-" is specified, read from standard input.
  */
 void
 args_open_filelist(const char *filename)
@@ -71,11 +71,11 @@ args_open_filelist(const char *filename)
 	}
 }
 /**
- * args_open_both: #args_open like interface for argument and file list.
+ * args_open_both: args_open like interface for argument and file list.
  *
  *	@param[in]	args		args array
- *	@param[in]	filename	file including list of file names. <br>
- *				When @FILE{-} is specified, read from standard input.
+ *	@param[in]	filename	file including list of file names.
+ *				When "-" is specified, read from standard input.
  */
 void
 args_open_both(const char **args, const char *filename)
@@ -91,9 +91,9 @@ args_open_both(const char **args, const char *filename)
 	}
 }
 /**
- * args_open_gfind: #args_open like interface for handling output of @NAME{gfind}.
+ * args_open_gfind: args_open like interface for handling output of gfind.
  *
- *	@param[in]	agp	#GFIND descriptor
+ *	@param[in]	agp	GFIND descriptor
  */
 void
 args_open_gfind(GFIND *agp)
@@ -109,7 +109,7 @@ args_open_nop(void)
 /**
  * args_read: read path From args.
  *
- *	@return		path (@VAR{NULL}: end of argument)
+ *	@return		path (NULL: end of argument)
  */
 const char *
 args_read(void)
@@ -173,8 +173,8 @@ args_close(void)
  *	@param[in]	argc	main()'s argc integer
  *	@param[in]	argv	main()'s argv string array
  *
- * Setup the @FILE{GTAGSCONF} and the @FILE{GTAGSLABEL} environment variables
- * according to the @OPTION{--gtagsconf} and @OPTION{--gtagslabel} options.
+ * Setup the "GTAGSCONF" and the "GTAGSLABEL" environment variables
+ * according to the --gtagsconf and --gtagslabel options.
  */
 void
 preparse_options(int argc, char *const *argv)
@@ -221,14 +221,14 @@ preparse_options(int argc, char *const *argv)
 }
 /**
  * prepend_options: creates a new argv main() array, by prepending (space separated)
- *		options and arguments from the string argument @a options.
+ *		options and arguments from the string argument options.
  *
  *	@param[in,out]	argc	pointer to main()'s argc integer
  *	@param[in]	argv	main()'s argv string array
  *	@param[in]	options	string
  *	@return	The new argv array.
  *
- *	@remark The program's name is copied back into: returned[0] (argv[0]).
+ *	The program's name is copied back into: returned[0] (argv[0]).
  */
 char **
 prepend_options(int *argc, char *const *argv, const char *options)
