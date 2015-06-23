@@ -159,7 +159,7 @@
 		[1] Output of local search in the start directory.
 		[2] Output of local search in the parent directory except for [1].
 		[3] Output of local search in the grandparent directory except for [1]-[2].
-		(repeat untill the project root directory)
+		(repeat until the project root directory)
 		[n] Output of local search in the project root directory except for [1]-[n-1].
 		@end_verbatim
 		In each directory, they are sorted by alphabetical order.
