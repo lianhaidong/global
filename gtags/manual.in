@@ -116,8 +116,9 @@
 	@item{@file{GPATH}}
 		Tag file for source files.
 	@item{@file{$HOME/.globalrc}, @file{gtags.conf}}
-		@name{Gtags} load a configuration file according to the following
-		priority (Lower number means higher priority).
+		@name{Gtags} load configuration variables from the configuration file.
+		@name{Gtags} selects it according to the following priority
+		(Lower number means higher priority).
 		@begin_verbatim
 		(1) $GTAGSCONF
 		(2) [project root]/gtags.conf
@@ -125,6 +126,8 @@
 		(4) /etc/gtags.conf
 		(5) [sysconfdir]/gtags.conf
 		@end_verbatim
+		By default, @name{gtags} read a record with a label 'default'.
+		If @var{GTAGSLABEL} is set, @name{gtags} read the record.
 	@item{@file{gtags.files}}
 		The list of candidates of target files.
 	@end_itemize

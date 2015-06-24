@@ -262,8 +262,9 @@
 		and file @file{GTAGSROOT} exists in the same directory as @file{GTAGS}
 		then @name{global} sets @var{GTAGSROOT} to the contents of the file.
 	@item{@file{$HOME/.globalrc}, @file{gtags.conf}}
-		@name{Global} load a configuration file according to the following
-		priority (Lower number means higher priority).
+		@name{Gtags} load configuration variables from the configuration file.
+		@name{Gtags} selects it according to the following priority
+		(Lower number means higher priority).
 		@begin_verbatim
 		(1) $GTAGSCONF
 		(2) [project root]/gtags.conf
@@ -271,6 +272,8 @@
 		(4) /etc/gtags.conf
 		(5) [sysconfdir]/gtags.conf
 		@end_verbatim
+		By default, @name{gtags} read a record with a label 'default'.
+		If @var{GTAGSLABEL} is set, @name{gtags} read the record.
 	@end_itemize
 @ENVIRONMENT
 	The following environment variables affect the execution of @name{global}:
