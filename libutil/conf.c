@@ -57,6 +57,7 @@ static FILE *fp;
 static STRBUF *ib;
 static char *confline;
 static char *config_path;
+static char *config_label;
 /**
  * 32 level nested tc= or include= is allowed.
  */
@@ -251,17 +252,13 @@ void
 openconf(const char *rootdir)
 {
 	STRBUF *sb;
-	extern int vflag;
 
 	opened = 1;
 	/*
 	 * if config file not found then return default value.
 	 */
-	if (!(config_path = configpath(rootdir))) {
-		if (vflag)
-			fprintf(stderr, " Using default configuration.\n");
+	if (!(config_path = configpath(rootdir)))
 		confline = check_strdup("");
-	}
 	/*
 	 * if it is not an absolute path then assumed config value itself.
 	 */
@@ -274,24 +271,20 @@ openconf(const char *rootdir)
 	 * else load value from config file.
 	 */
 	else {
-		const char *label;
-
 		if (test("d", config_path))
 			die("config file '%s' is a directory.", config_path);
 		if (!test("f", config_path))
 			die("config file '%s' not found.", config_path);
 		if (!test("r", config_path))
 			die("config file '%s' is not readable.", config_path);
-		if ((label = getenv("GTAGSLABEL")) == NULL)
-			label = "default";
+		if ((config_label = getenv("GTAGSLABEL")) == NULL)
+			config_label = "default";
 	
 		if (!(fp = fopen(config_path, "r")))
 			die("cannot open '%s'.", config_path);
-		if (vflag)
-			fprintf(stderr, " Using config file '%s'.\n", config_path);
 		ib = strbuf_open(MAXBUFLEN);
 		sb = strbuf_open(0);
-		includelabel(sb, label, 0);
+		includelabel(sb, config_label, 0);
 		confline = check_strdup(strbuf_value(sb));
 		strbuf_close(ib);
 		strbuf_close(sb);
@@ -457,6 +450,22 @@ getconfline(void)
 	if (!opened)
 		die("configuration file not opened.");
 	return confline;
+}
+/**
+ * getconfigpath: get path of configuration file.
+ */
+const char *
+getconfigpath()
+{
+	return config_path;
+}
+/**
+ * getconfiglabel: get label of configuration file.
+ */
+const char *
+getconfiglabel()
+{
+	return config_label;
 }
 void
 closeconf(void)

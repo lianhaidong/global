@@ -433,16 +433,32 @@ main(int argc, char **argv)
 	}
 	if (!test("d", dbpath))
 		die("directory '%s' not found.", dbpath);
-	if (vflag)
+	/*
+	 * Start processing.
+	 */
+	if (vflag) {
+		const char *config_path = getconfigpath();
+		const char *config_label = getconfiglabel();
+
 		fprintf(stderr, "[%s] Gtags started.\n", now());
+		if (config_path)
+			fprintf(stderr, " Using configuration file '%s'.\n", config_path);
+		else {
+			fprintf(stderr, " Using default configuration.\n");
+			if (getenv("GTAGSLABEL"))
+				fprintf(stderr, " GTAGSLABEL(--gtagslabel) ignored since configuration file not found.\n");
+		}
+		if (config_label)
+			fprintf(stderr, " Using configuration label '%s'.\n", config_label);
+		if (file_list)
+			fprintf(stderr, " Using '%s' as a file list.\n", file_list);
+	}
 	/*
 	 * initialize parser.
 	 */
 	if (vflag && gtags_parser)
 		fprintf(stderr, " Using plug-in parser.\n");
 	parser_init(langmap, gtags_parser);
-	if (vflag && file_list)
-		fprintf(stderr, " Using '%s' as a file list.\n", file_list);
 	/*
 	 * Start statistics.
 	 */

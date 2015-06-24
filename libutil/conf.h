@@ -39,6 +39,8 @@ int getconfn(const char *, int *);
 int getconfs(const char *, STRBUF *);
 int getconfb(const char *);
 const char *getconfline(void);
+const char *getconfigpath(void);
+const char *getconfiglabel(void);
 void closeconf(void);
 
 #endif /* ! _CONF_H_ */
