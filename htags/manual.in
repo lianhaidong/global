@@ -236,7 +236,8 @@
 	@item{@var{GTAGSCACHE}}
 		The size of the B-tree cache. The default is 50000000 (bytes).
 	@item{@var{GTAGSCONF}}
-		Configuration file. The default is @file{$HOME/.globalrc}.
+		Configuration file.
+		About the default, please see @file{gtags.conf} in the FILES section.
 	@item{@var{GTAGSLABEL}}
 		Configuration label. The default is @val{default}.
 	@item{@var{HTAGS_OPTIONS}}

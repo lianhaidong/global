@@ -273,7 +273,8 @@
 
 	@begin_itemize
 	@item{@var{GTAGSCONF}}
-		Configuration file. The default is @file{$HOME/.globalrc}.
+		Configuration file.
+		About the default, please see @file{gtags.conf} in the FILES section.
 	@item{@var{GTAGSGLOBAL}}
 		If this variable is set, @file{$GTAGSGLOBAL} is used as the name
                 of @xref{global,1}. The default is @name{global}.
@@ -312,8 +313,19 @@
 		If environment variable @var{GTAGSROOT} is not set
 		and file @file{GTAGSROOT} exists in the same directory as @file{GTAGS}
 		then @name{global} sets @var{GTAGSROOT} to the contents of the file.
-	@item{@file{$HOME/.globalrc}, @file{/etc/gtags.conf}, @file{[sysconfdir]/gtags.conf}}
-		Configuration files.
+	@item{@file{$HOME/.globalrc}, @file{gtags.conf}}
+		@name{Gtags} load configuration variables from the configuration file.
+		@name{Gtags} selects it according to the following priority
+		(Lower number means higher priority).
+		@begin_verbatim
+		(1) $GTAGSCONF
+		(2) [project root]/gtags.conf
+		(3) $HOME/.globalrc
+		(4) /etc/gtags.conf
+		(5) [sysconfdir]/gtags.conf
+		@end_verbatim
+		By default, @name{gtags} read a record with a label 'default'.
+		If @var{GTAGSLABEL} is set, @name{gtags} read the record.
 	@end_itemize
 @SEE ALSO
 	@xref{gtags,1},
