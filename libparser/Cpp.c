@@ -48,8 +48,8 @@ static int enumerator_list(const struct parser_param *);
 
 #define MAXPIFSTACK	100
 
-/**
- * @name #ifdef stack.
+/*
+ * #ifdef stack.
  */
 
 static struct {
