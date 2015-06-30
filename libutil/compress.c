@@ -62,9 +62,9 @@
  *	             ~~~~~~~~~~~~~~~~
  *
  * DATA STRUCTURE
- *	- #ab2name table is used to convert from abbreviation character
+ *	- ab2name table is used to convert from abbreviation character
  *	  to the string value.
- *	- #name2ab table is used to convert from string value to the
+ *	- name2ab table is used to convert from string value to the
  *	  abbreviation character.
  *	  
  *	ab2name = ('a' => NULL, ... , 'd' => "define", ... 'z' => NULL)
