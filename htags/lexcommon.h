@@ -22,7 +22,7 @@
 #include "incop.h"
 #include "tab.h"
 
-/**
+/*
  * Definition of LEXTEXT, LEXLENG, LEXIN and LEXRESTART.
  *
  * These symbols are substitutions of yytext, yyleng, yyin and yyrestart.
@@ -53,7 +53,7 @@ to generate language specific symbols.
 static int lexcommon_lineno;
 static int begin_line;
 
-/**
+/*
  * If you want newline to terminate string, set this variable to 1.
  */
 static int newline_terminate_string = 0;

@@ -33,7 +33,7 @@
 Virtual array: usage and memory status
 
 _: allocated but not assigned.
-\@: assigned but the value is uncertainty.
+@: assigned but the value is uncertainty.
 
 Function call                           Memory status
 ----------------------------------------------------------

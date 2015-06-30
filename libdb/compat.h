@@ -132,7 +132,7 @@ static int __sigtemp;		/**< For the use of sigprocmask */
 #endif
 
 /*
- * @def O_ACCMODE
+ * O_ACCMODE
  *
  * 32-bit machine.  The DB routines are theoretically independent of
  * the size of u_shorts and u_longs, but I don't know that anyone has
@@ -147,7 +147,7 @@ static int __sigtemp;		/**< For the use of sigprocmask */
 #define	_POSIX2_RE_DUP_MAX	255
 #endif
 
-/**
+/*
  * If you can't provide lock values in the open(2) call.  Note, this
  * allows races to happen.
  */
