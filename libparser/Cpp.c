@@ -129,6 +129,7 @@ Cpp(const struct parser_param *param)
 			}
 			break;
 		case CPP_USING:
+			crflag = 0;
 			/*
 			 * using namespace name;
 			 * using ...;
@@ -141,8 +142,27 @@ Cpp(const struct parser_param *param)
 						warning("missing namespace name. [+%d %s].", lineno, curfile);
 					pushbacktoken();
 				}
-			} else
+			} else if (c  == SYMBOL) {
+				char savetok[MAXTOKEN], *saveline;
+				int savelineno = lineno;
+
+				strlimcpy(savetok, token, sizeof(savetok));
+				strbuf_reset(sb);
+				strbuf_puts(sb, sp);
+				saveline = strbuf_value(sb);
+				if ((c = nexttoken(interested, cpp_reserved_word)) == '=') {
+					PUT(PARSER_DEF, savetok, savelineno, saveline);
+				} else {
+					PUT(PARSER_REF_SYM, savetok, savelineno, saveline);
+					while (c == SYMBOL) {
+						PUT(PARSER_REF_SYM, token, lineno, sp);
+						c = nexttoken(interested, cpp_reserved_word);
+					}
+				}
+			} else {
 				pushbacktoken();
+			}
+			crflag = 1;
 			break;
 		case CPP_NAMESPACE:
 			crflag = 0;
