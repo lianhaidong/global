@@ -143,6 +143,9 @@
 	@item{@var{GTAGSFORCECPP}}
 		If this variable is set, each file whose suffix is @file{.h} is treated
 		as a C++ source file.
+	@item{@var{GTAGSFORCEENDBLOCK}}
+		If this variable is set, each @} at the first column brings end of block
+		of 0 level.
 	@item{@var{GTAGSLABEL}}
 		Configuration label. The default is @val{default}.
 	@item{@var{GTAGSLOGGING}}

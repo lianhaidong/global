@@ -1617,6 +1617,8 @@ parsefile(char *const *argv, const char *cwd, const char *root, const char *dbpa
 	if (wflag)
 		flags |= PARSER_WARNING;
 	*/
+	if (getenv("GTAGSFORCEENDBLOCK"))
+		flags |= PARSER_END_BLOCK;
 	if (db == GRTAGS + GSYMS)
 		data.target = TARGET_REF|TARGET_SYM;
 	else

@@ -882,6 +882,8 @@ updatetags(const char *dbpath, const char *root, IDSET *deleteset, STRBUF *addli
 		flags |= PARSER_WARNING;
 	if (explain)
 		flags |= PARSER_EXPLAIN;
+	if (getenv("GTAGSFORCEENDBLOCK"))
+		flags |= PARSER_END_BLOCK;
 	/*
 	 * Add tags to GTAGS and GRTAGS.
 	 */
@@ -943,6 +945,8 @@ createtags(const char *dbpath, const char *root)
 		flags |= PARSER_WARNING;
 	if (explain)
 		flags |= PARSER_EXPLAIN;
+	if (getenv("GTAGSFORCEENDBLOCK"))
+		flags |= PARSER_END_BLOCK;
 	/*
 	 * Add tags to GTAGS and GRTAGS.
 	 */
