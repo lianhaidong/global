@@ -446,6 +446,7 @@ Cpp(const struct parser_param *param)
 				char savetok[MAXTOKEN];
 				int savelineno = 0;
 				int typedef_savelevel = level;
+				int templates = 0;
 
 				savetok[0] = 0;
 
@@ -522,7 +523,7 @@ Cpp(const struct parser_param *param)
 					PUT(PARSER_REF_SYM, token, lineno, sp);
 				}
 				savetok[0] = 0;
-				while ((c = nexttoken("(),;", cpp_reserved_word)) != EOF) {
+				while ((c = nexttoken("()<>,;", cpp_reserved_word)) != EOF) {
 					switch (c) {
 					case SHARP_IFDEF:
 					case SHARP_IFNDEF:
@@ -539,6 +540,10 @@ Cpp(const struct parser_param *param)
 						level++;
 					else if (c == ')')
 						level--;
+					else if (c == '<')
+						templates++;
+					else if (c == '>')
+						templates--;
 					else if (c == SYMBOL) {
 						if (level > typedef_savelevel) {
 							PUT(PARSER_REF_SYM, token, lineno, sp);
@@ -553,7 +558,7 @@ Cpp(const struct parser_param *param)
 						}
 					} else if (c == ',' || c == ';') {
 						if (savetok[0]) {
-							PUT(PARSER_DEF, savetok, lineno, sp);
+							PUT(templates ? PARSER_REF_SYM : PARSER_DEF, savetok, lineno, sp);
 							savetok[0] = 0;
 						}
 					}
