@@ -668,6 +668,9 @@ function_definition(const struct parser_param *param)
 		case CPP___ATTRIBUTE__:
 			process_attribute(param);
 			continue;
+		case SHARP_DEFINE:
+			pushbacktoken();
+			return 0;
 		default:
 			break;
 		}
