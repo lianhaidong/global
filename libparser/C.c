@@ -561,6 +561,9 @@ function_definition(const struct parser_param *param, char arg1[MAXTOKEN])
 		case C___ATTRIBUTE__:
 			process_attribute(param);
 			continue;
+		case SHARP_DEFINE:
+			pushbacktoken();
+			return 0;
 		default:
 			break;
 		}
