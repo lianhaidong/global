@@ -238,8 +238,8 @@ Version 6.2.12 - March 31 2014
 
 [CHANGES]
 New facilities:
-o global: New --color option. It use the environment variable GREP_COLOR
-  (default is red) to highlight the matching string like grep (1).
+o global: New --color option. It use environment variable GREP_COLOR
+  (default is red) to highlight matching string like grep (1).
   (--colour and GREP_COLORS are not supported this time)
   Please try the following command line:
 
@@ -287,8 +287,8 @@ o global: Combination of the -v and -g option showed wrong matched
   number (always 0). Now it works.
 o global: The --from-here option did not work with a path name
   which includes symbolic links. Now it works.
-o global: The -I command failed when the logical and physical
-  path name of the current working directory were not identical.
+o global: The -I command failed when logical and physical path name
+  of the current working directory were not identical.
   Now it works.
 o htags: Htags couldn't find tag files in obj directories.
   Now it works.
@@ -397,7 +397,7 @@ This bug exists only in GLOBAL-6.2.3.
 Version 6.2.3 - May 26 2012
 
 [FIXED BUGS]
-o Built-in parser: When attribute specifier appeared immediately after the
+o Built-in parser: When attribute specifier appeared immediately after
   `struct', `union' or `enum' keyword, GLOBAL could not pick up tag name.
   Now it works correctly.
 
@@ -504,7 +504,7 @@ o global: New environment variable GTAGSTHROUGH. If this variable is set,
 o global: New output format 'ctags-mod'. It is used in gtags.vim.
 o global: New environment variable GTAGSBLANKENCODE.
 o htags: Changed the cflow loader to accept "_' and HTML special chars (&XXXX;).
-o gtags.vim: Now allows the use of the -s and -r option at the same time.
+o gtags.vim: Now allows use of the -s and -r option at the same time.
 o gtags.vim: Now custom variables: 'Gtags_Auto_Map' (default 0).
 o gtags.el: New custom variable 'gtags-grep-all-text-files'.
 o gtags-cscope: New -a option.
@@ -515,7 +515,7 @@ o gtags-cscope.vim: New custom variables: 'GtagsCscope_Use_Old_Key_Map',
 o gtags.el: Now each gtags-find-xxx command follows 'case-fold-search' variable.
 o gtags.el: Mouse key mappings for xemacs is not done any longer.
 o gtags.el: Changed the prefix character of the commands from 'ESC' to 'Ctrl-c'
-  to avoid the collisions with the default key mapping. If you want to use the old
+  to avoid collisions with the default key mapping. If you want to use the old
   key mapping, please write the followings in your '.emacs' file.
 
 	(setq gtags-suggested-key-mapping t)
@@ -524,7 +524,7 @@ o gtags.el: Changed the prefix character of the commands from 'ESC' to 'Ctrl-c'
 o gtags.el: New policy of key mapping:
   - If 'gtags-suggested-key-mapping' is false, any key mapping is not done.
   - If 'gtags-disable-pushy-mouse-mapping' is true, any mouse mapping is not done.
-o gtags-cscope.vim: The default value of the 'GtagsCscope_Auto_Map' and
+o gtags-cscope.vim: The default value of 'GtagsCscope_Auto_Map' and
   'GtagsCscope_Auto_Load' was changed to 0. Additionally, the default key mapping
   was changed to the one derived from 'cscope_maps.vim' that was made
   by the cscope team.
@@ -539,7 +539,7 @@ o gtags.vim: Changed the -P sub-command not to accept NULL input.
 o gtags-cscope: Title changed.
   Find this C symbol: -> Find this symbol
   Find functions calling this function: -> Find locations calling this function:
-o gtags.conf: The lines which start with a '#' on the continuation lines is considered
+o gtags.conf: The lines which start with a '#' on continuation lines is considered
   to be a comment line.
 
   [example]
@@ -626,7 +626,7 @@ o gtags.vim: New custom variable Gtags_Use_Tags_Format.
 [INCOMPATIBLE CHANGES]
 o htags: Ceases making ID database arbitrarily when the -g option is specified.
 o htags: The --no-map-file option was removed. Instead, new --map-file option
-  was added. Htags doesn't make the mapping files (FILEMAP, MAP) any longer.
+  was added. Htags doesn't make mapping files (FILEMAP, MAP) any longer.
 o htags: The -c (--compact) option was deleted from the option list of the
   --suggest2 option.
 
@@ -643,10 +643,10 @@ o global: New -V(--invert-match) option for the -g command.
 o global: New --print0 option.
 o global: New --file-list=file option.
 o htags: New --html-header option.
-o gtags.vim: Activate input completion also on the prompt 'Gtags for pattern:'.
+o gtags.vim: Activate input completion also on prompt 'Gtags for pattern:'.
 
 [FIXED BUGS]
-o global: --from-here option didn't locate definitions in the GTAGSLIBPATH.
+o global: --from-here option didn't locate definitions in GTAGSLIBPATH.
 o global: Under Cygwin environment, global blocks for a few seconds if there is no GTAGS.
 o htags: Htags with the -g and -d option didn't work correctly.
 
@@ -681,7 +681,7 @@ New facilities:
 o gtags: New gtags.files file.
 
   If a file called 'gtags.files' exists in the current directory,
-  gtags(1) treats it as a list of files which are candidates of the target.
+  gtags(1) treats it as a list of files which are candidates of target.
   The following two brings a same result.
   
   $ gtags -f files
@@ -1032,7 +1032,7 @@ Version 5.7 - March 25 2008
 
 [CHANGES]
 New functions:
-o gtags: Allows the symbolic links which point to a directory.
+o gtags: Allows symbolic links which point to a directory.
   In older version, such symbolic links were ignored with warning messages.
 
 	[Example]
