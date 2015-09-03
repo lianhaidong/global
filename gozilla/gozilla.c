@@ -617,7 +617,10 @@ show_page_by_url(const char *browser, const char *url)
 	 * Browsers which have openURL() command.
 	 */
 	if (locatestring(browser, "mozilla", MATCH_AT_LAST) ||
+	/*
+	 * Firefox have removed the -remote command live option since version 39.
 	    locatestring(browser, "firefox", MATCH_AT_LAST) ||
+	 */
 	    locatestring(browser, "netscape", MATCH_AT_LAST) ||
 	    locatestring(browser, "netscape-remote", MATCH_AT_LAST))
 	{
