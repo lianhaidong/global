@@ -110,6 +110,7 @@ extern int debug;
 static const int allow_blank = 1;
 static const int check_looplink = 1;
 static int accept_dotfiles = 0;
+static int skip_unreadable = 0;
 static int find_explain = 0;
 /*
  * trim: remove blanks and '\'.
@@ -554,6 +555,16 @@ getdirs(const char *dir, STRBUF *sb)
 			warning("cannot stat '%s'. ignored.", trimpath(dp->d_name));
 			continue;
 		}
+		if (st.st_mode == S_IFIFO || st.st_mode == S_IFCHR || st.st_mode == S_IFBLK) {
+			warning("file is not regular file '%s'. ignored.", trimpath(dp->d_name));
+			continue;
+		}
+		if (access(makepath(dir, dp->d_name, NULL), R_OK) < 0) {
+			if (!skip_unreadable)
+				die("cannot read file '%s'.", trimpath(dp->d_name));
+			warning("cannot read '%s'. ignored.", trimpath(dp->d_name));
+			continue;
+		}
 		if (S_ISDIR(st.st_mode))
 			strbuf_putc(sb, 'd');
 		else if (S_ISREG(st.st_mode))
@@ -573,6 +584,14 @@ void
 set_accept_dotfiles(void)
 {
 	accept_dotfiles = 1;
+}
+/**
+ * set_skip_unreadable: make find to ignore unreadable files.
+ */
+void
+set_skip_unreadable(void)
+{
+	skip_unreadable = 1;
 }
 /**
  * find_open: start iterator without GPATH.

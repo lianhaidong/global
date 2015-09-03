@@ -99,6 +99,7 @@ Leo Liu			idea about the --path-style=shorter option.
 Marc Herbert		bug fix of libutil/xargs.c.
 Marcello Nuccio		bug report about globash.rc.
 Marco Corvi		advice about Digital Unix 4.0C.
+Marcus Harnisch		suggestion about the --skip-unreadable option of gtags(1).
 Marius Gedminas		bug report and fix patch for htags(1).
 Mark Nudelman		GLOBAL tag support on less(1).
 Marty Leisner		advice about --version option and some bug reports.

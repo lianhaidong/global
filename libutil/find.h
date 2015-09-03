@@ -22,6 +22,7 @@
 #define _FIND_H_
 
 void set_accept_dotfiles(void);
+void set_skip_unreadable(void);
 int skipthisfile(const char *);
 int issourcefile(const char *);
 void find_open(const char *, int);

@@ -83,6 +83,8 @@
 		It is considered that @arg{file} was added, updated or deleted,
 		and there is no change in other files.
 		This option implies the @option{-i} option.
+	@item{@option{--skip-unreadable}}
+		Skip unreadable files.
 	@item{@option{--sqlite3}}
 		Use Sqlite 3 API to make tag files. By default, BSD/DB 1.85 API is used.
 		To use this option, you need to invoke configure script with

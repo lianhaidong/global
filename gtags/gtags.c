@@ -147,6 +147,7 @@ static struct option const long_options[] = {
 #define OPT_PATH		131
 #define OPT_SINGLE_UPDATE	132
 #define OPT_ACCEPT_DOTFILES	133
+#define OPT_SKIP_UNREADABLE	134
 	/* flag value */
 	{"accept-dotfiles", no_argument, NULL, OPT_ACCEPT_DOTFILES},
 	{"debug", no_argument, &debug, 1},
@@ -154,6 +155,7 @@ static struct option const long_options[] = {
 #ifdef USE_SQLITE3
 	{"sqlite3", no_argument, &use_sqlite3, 1},
 #endif
+	{"skip-unreadable", no_argument, NULL, OPT_SKIP_UNREADABLE},
 	{"statistics", no_argument, &statistics, STATISTICS_STYLE_TABLE},
 	{"version", no_argument, &show_version, 1},
 	{"help", no_argument, &show_help, 1},
@@ -240,6 +242,9 @@ main(int argc, char **argv)
 			break;
 		case OPT_ACCEPT_DOTFILES:
 			set_accept_dotfiles();
+			break;
+		case OPT_SKIP_UNREADABLE:
+			set_skip_unreadable();
 			break;
 		case 'c':
 			cflag++;
