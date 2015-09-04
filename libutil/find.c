@@ -555,7 +555,7 @@ getdirs(const char *dir, STRBUF *sb)
 			warning("cannot stat '%s'. ignored.", trimpath(dp->d_name));
 			continue;
 		}
-		if (st.st_mode == S_IFIFO || st.st_mode == S_IFCHR || st.st_mode == S_IFBLK) {
+		if (S_ISSOCK(st.st_mode) || S_ISFIFO(st.st_mode) || S_ISCHR(st.st_mode) || S_ISBLK(st.st_mode)) {
 			warning("file is not regular file '%s'. ignored.", trimpath(dp->d_name));
 			continue;
 		}
