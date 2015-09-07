@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, 2011 Tama Communications Corporation
+ * Copyright (c) 2004, 2011, 2015 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -26,7 +26,9 @@
 #define DEFAULTSKIP     "@DEFAULTSKIP@"
 #define DEFAULTINCLUDEFILESUFFIXES "@DEFAULTINCLUDEFILESUFFIXES@"
 
+void set_langmap_wflag(void);
 void setup_langmap(const char *);
+const char *trim_langmap(const char *);
 const char *decide_lang(const char *);
 void make_suffixes(const char *, STRBUF *);
 

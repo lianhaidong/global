@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002, 2004, 2005, 2008
+ * Copyright (c) 2002, 2004, 2005, 2008, 2015
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -33,12 +33,24 @@
 #include "die.h"
 #include "locatestring.h"
 #include "strbuf.h"
+#include "strmake.h"
+#include "strhash.h"
 #include "langmap.h"
 
+static void trim_suffix_list(STRBUF *, STRHASH *);
 static int match_suffix_list(const char *, const char *);
 
 static STRBUF *active_map;
+static int wflag;
 
+/**
+ * set warning flag on.
+ */
+void
+set_langmap_wflag()
+{
+	wflag = 1;
+}
 /**
  * construct language map.
  *
@@ -72,9 +84,79 @@ setup_langmap(const char *map)
 		die_with_code(2, "syntax error in langmap '%s'.", map);
 	/* strbuf_close(active_map); */
 }
+/**
+ * trim suffix list
+ *
+ * Remove duplicated suffixs from the suffix list.
+ */
+static void
+trim_suffix_list(STRBUF *list, STRHASH *hash) {
+	STATIC_STRBUF(sb);
+	const char *p, *suffix;;
+
+	strbuf_clear(sb);
+	strbuf_puts(sb, strbuf_value(list));
+	strbuf_reset(list);
+	for (p = strbuf_value(sb); *p; p += strlen(suffix)) {
+		struct sh_entry *sh;
+
+		suffix = strmake(++p, ".");
+		if ((sh = strhash_assign(hash, suffix, 0)) != NULL) {
+			if (!sh->value && wflag)
+				warning("langmap: suffix '%s' is duplicated. all except for the head is ignored.", suffix);
+			sh->value = (void *)1;
+		} else {
+			strbuf_putc(list, '.');
+			strbuf_puts(list, suffix);
+			(void)strhash_assign(hash, suffix, 1);
+		}
+	}
+}
+/**
+ * trim langmap
+ *
+ * Removes duplicated suffixes.
+ */
+const char *
+trim_langmap(const char *map)
+{
+	STATIC_STRBUF(sb);
+	const char *p = map;
+	STRBUF *name = strbuf_open(0);
+	STRBUF *list = strbuf_open(0);
+	STRHASH *hash = strhash_open(10);
+
+	strbuf_clear(sb);
+	while (*p) {
+		strbuf_reset(name);
+		strbuf_reset(list);
+		strbuf_puts(name, strmake(p, ":"));
+		p += strbuf_getlen(name) + 1;
+		strbuf_puts(list, strmake(p, ","));
+		p += strbuf_getlen(list);
+		if (*p)
+			p++;
+		if (strbuf_getlen(name) == 0)
+			die_with_code(2, "syntax error in langmap '%s'.", map);
+		if (strchr(strbuf_value(name), ','))
+			die_with_code(2, "syntax error in langmap '%s'.", map);
+		trim_suffix_list(list, hash);
+		if (strbuf_getlen(list) > 0) {
+			if (strbuf_getlen(sb) > 0)
+				strbuf_putc(sb, ',');
+			strbuf_puts(sb, strbuf_value(name));
+			strbuf_putc(sb, ':');
+			strbuf_puts(sb, strbuf_value(list));
+		}
+	}
+	strbuf_close(name);
+	strbuf_close(list);
+	strhash_close(hash);
+	return strbuf_value(sb);
+}
 
 /**
- * decide the language of the suffix.
+ * decide language of the suffix.
  *
  * 		Though '*.h' files are shared by C and C++, GLOBAL treats them
  * 		as C source files by default. If you set an environment variable
@@ -102,12 +184,11 @@ decide_lang(const char *suffix)
 			return lang;
 		lang = list + strlen(list) + 1;
 	}
-
 	return NULL;
 }
 
 /**
- * return true if the suffix matches with one in the list.
+ * return true if the suffix exists in the list.
  */
 static int
 match_suffix_list(const char *suffix, const char *list)
@@ -128,7 +209,12 @@ match_suffix_list(const char *suffix, const char *list)
 }
 
 /**
- * make suffix value from langmap value.
+ * make a suffix list from the langmap.
+ *
+ * "c:.c.h,java:.java,cpp:.C.H"
+ *	|
+ *	v
+ * ".c.h.java.C.H"
  */
 void
 make_suffixes(const char *langmap, STRBUF *sb)

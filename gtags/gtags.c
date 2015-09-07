@@ -276,6 +276,7 @@ main(int argc, char **argv)
 			break;
 		case 'w':
 			wflag++;
+			set_langmap_wflag();
 			break;
 		case 'v':
 			vflag++;

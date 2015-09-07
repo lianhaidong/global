@@ -331,6 +331,7 @@ parser_init(const char *langmap, const char *pluginspec)
 	/* setup language mapping. */
 	if (langmap == NULL)
 		langmap = DEFAULTLANGMAP;
+	langmap = trim_langmap(langmap);
 	setup_langmap(langmap);
 	langmap_saved = check_strdup(langmap);
 
