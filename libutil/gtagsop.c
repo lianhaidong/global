@@ -574,11 +574,11 @@ gtags_delete(GTOP *gtop, IDSET *deleteset)
 {
 	const char *tagline;
 	int fid;
-	long id;
 
 #ifdef USE_SQLITE3
 	if (gtop->dbop->openflags & DBOP_SQLITE3) {
 		STRBUF *where = strbuf_open(0);
+		long id;
 		strbuf_puts(where, "(");
 		for (id = idset_first(deleteset); id != END_OF_ID; id = idset_next(deleteset)) {
 			strbuf_puts(where, "'");

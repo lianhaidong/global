@@ -556,10 +556,10 @@ main(int argc, char **argv)
 			while (*p && isdigit(*p))
 				p++;
 			if (*p != ':')
-				die_with_code(2, usage);
+				die_with_code(2, "%s", usage);
 			*p++ = '\0';
 			if (!*p)
-				die_with_code(2, usage);
+				die_with_code(2, "%s", usage);
 			context_file = p;
 			}
 			break;
@@ -624,7 +624,7 @@ main(int argc, char **argv)
 	if (show_help)
 		help();
 	if (dbpath == NULL)
-		die_with_code(-status, gtags_dbpath_error);
+		die_with_code(-status, "%s", gtags_dbpath_error);
 	if (nearbase) {
 		if (!test("d", nearbase)) 
 			die("'%s' not found.", nearbase);

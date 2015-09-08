@@ -416,26 +416,6 @@ make_directory_in_distpath(const char *name)
 	fputc('\n', op);
 	fclose(op);
 }
-/**
- * make file in the dist (distpath) directory.
- */
-static void
-make_file_in_distpath(const char *name, const char *data)
-{
-	FILE *op;
-	const char *path = makepath(distpath, name, NULL);
-
-	op = fopen(path, "w");
-	if (op) {
-		if (data && *data) {
-			fputs(data, op);
-			fputc('\n', op);
-		}
-		fclose(op);
-	} else {
-		die("cannot make file '%s'.", path); 
-	}
-}
 void
 load_with_replace(const char *file, STRBUF *result, int place)
 {
@@ -1140,8 +1120,6 @@ static void
 configuration(void)
 {
 	STRBUF *sb = strbuf_open(0);
-	char *p, *q;
-	int n;
 
 	/*
 	 * Config variables.
@@ -1518,7 +1496,7 @@ main(int argc, char **argv)
 	} else {
 		int status = setupdbpath(0);
 		if (status < 0)
-			die_with_code(-status, gtags_dbpath_error);
+			die_with_code(-status, "%s", gtags_dbpath_error);
 		strlimcpy(dbpath, get_dbpath(), sizeof(dbpath));
 	}
 	if (!title) {

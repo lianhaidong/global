@@ -40,8 +40,6 @@
 
 #include "alloc.h"
 
-static char const rcsid[] = "$Id$";
-
 static	struct cmd *tail, *current;
 
 /**

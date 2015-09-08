@@ -77,8 +77,6 @@ typedef jmp_buf sigjmp_buf;
 #define vsnprintf(one,two,three,four) vsprintf(one,three,four)
 #endif
 
-static char const rcsid[] = "$Id$";
-
 int	booklen;		/**< OGS book name display field length */
 int	*displine;		/**< screen line of displayed reference */
 unsigned int disprefs;		/**< displayed references */

@@ -163,7 +163,7 @@ makecflowindex(const char *output, const char *cflow_file)
 		/*
 		 * print anchor
 		 */
-		fprintf(op, gen_name_number(atoi(anchor)));
+		fprintf(op, "%s", gen_name_number(atoi(anchor)));
 		/*
 		 * print until name
 		 */
@@ -178,7 +178,7 @@ makecflowindex(const char *output, const char *cflow_file)
 
 			*path_end = *lineno_end = 0;
 			if (test("f", path) && (fid = path2fid_readonly(path)) != NULL)
-				fprintf(op, gen_href_begin(SRCS, fid, HTML, lineno));
+				fprintf(op, "%s", gen_href_begin(SRCS, fid, HTML, lineno));
 			else
 				path = lineno = NULL;		/* not to print </a> */
 			*path_end = path_save;
@@ -187,7 +187,7 @@ makecflowindex(const char *output, const char *cflow_file)
 			int lineno_save = *lineno_end;
 
 			*lineno_end = 0;
-			fprintf(op, gen_href_begin(NULL, NULL, NULL, lineno));
+			fprintf(op, "%s", gen_href_begin(NULL, NULL, NULL, lineno));
 			*lineno_end = lineno_save;
 		}
 		fwrite(name, name_end - name, 1, op);

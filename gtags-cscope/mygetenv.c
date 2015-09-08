@@ -30,8 +30,6 @@
  DAMAGE. 
  =========================================================================*/
 
-static char const rcsid[] = "$Id$";
-
 #include "library.h"
 
 #include <stdlib.h>

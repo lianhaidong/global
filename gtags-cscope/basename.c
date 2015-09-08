@@ -34,8 +34,6 @@
  *	get a file's base name from its path name
  */
 
-static char const rcsid[] = "$Id$";
-
 #include "global-cscope.h"
 
 char *

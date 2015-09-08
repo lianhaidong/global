@@ -133,7 +133,7 @@ start_sort_process(DBOP *dbop) {
 		static int informed;
 
 		if (!informed) {
-			warning(sortnotfound);
+			warning("%s", sortnotfound);
 			informed = 1;
 		}
 		return;
@@ -291,7 +291,9 @@ dbop_open(const char *path, int mode, int perm, int flags)
 	 */
 	if (mode != 0 && dbop->openflags & DBOP_SORTED_WRITE)
 		start_sort_process(dbop);
+#ifdef USE_SQLITE3
 finish:
+#endif
 	return dbop;
 }
 /**
@@ -372,7 +374,7 @@ dbop_put(DBOP *dbop, const char *name, const char *data)
 		break;
 	case RET_ERROR:
 	case RET_SPECIAL:
-		die(dbop->put_errmsg ? dbop->put_errmsg : "dbop_put failed.");
+		die("%s", dbop->put_errmsg ? dbop->put_errmsg : "dbop_put failed.");
 	}
 }
 /**
@@ -459,7 +461,7 @@ dbop_put_path(DBOP *dbop, const char *name, const char *data, const char *flag)
 		break;
 	case RET_ERROR:
 	case RET_SPECIAL:
-		die(dbop->put_errmsg ? dbop->put_errmsg : "dbop_put_path failed.");
+		die("%s", dbop->put_errmsg ? dbop->put_errmsg : "dbop_put_path failed.");
 	}
 }
 /**

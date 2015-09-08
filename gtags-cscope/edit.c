@@ -45,8 +45,6 @@
 #include "path.h"
 #include "encodepath.h"
 
-static char const rcsid[] = "$Id$";
-
 /** edit this displayed reference */
 
 void

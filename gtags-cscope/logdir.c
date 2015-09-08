@@ -45,8 +45,6 @@
 
 #define	OURBUFSIZ	160	/* renamed: avoid conflict with <stdio.h> */
 
-static char const rcsid[] = "$Id$";
-
 static char line[OURBUFSIZ+1];
 
 /* Internal prototypes: */

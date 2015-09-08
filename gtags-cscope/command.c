@@ -50,9 +50,6 @@
 #endif
 #include <ctype.h>
 
-static char const rcsid[] = "$Id$";
-
-
 int	selecting;
 unsigned int   curdispline = 0;
 

@@ -49,8 +49,6 @@
 #include <sys/termios.h>
 #endif
 
-static char const rcsid[] = "$Id$";
-
 static	jmp_buf	env;		/**< setjmp/longjmp buffer */
 static	int	prevchar;	/**< previous, ungotten character */
 

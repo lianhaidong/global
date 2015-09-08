@@ -58,8 +58,6 @@
 # include <io.h>		/* for setmode() */
 #endif
 
-static char const rcsid[] = "$Id$";
-
 static pid_t popen_pid[20];
 static RETSIGTYPE (*tstat)(int);
 

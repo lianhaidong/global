@@ -86,8 +86,6 @@
 /** temp dir */
 #define TMPDIR	"/tmp"
 
-static char const rcsid[] = "$Id$";
-
 char	*editor, *shell, *lineflag;	/**< environment variables */
 char	*global_command;	/**< "global" by default */
 char	*gtags_command;		/**< "gtags" by default */
