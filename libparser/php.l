@@ -119,8 +119,8 @@ NUMBER		-?({L}|{D1}|{D2})
 ALPHA		[a-zA-Z_\x80-\xff]
 ALPHANUM	[a-zA-Z_\x80-\xff0-9]
 WORD		{ALPHA}{ALPHANUM}*
-%start	PHP STRING LITERAL HEREDOCUMENT
-%option 8bit caseless noyywrap nounput yylineno never-interactive prefix="php_"
+%start	PHP STRING LITERAL HEREDOCUMENT REPLACE
+%option stack 8bit caseless noyywrap nounput yylineno never-interactive prefix="php_"
 %%
 \n			{
 				ECHO;
@@ -177,6 +177,11 @@ WORD		{ALPHA}{ALPHANUM}*
 <STRING>\\.		strbuf_puts(string, LEXTEXT);
 <STRING>.		strbuf_putc(string, LEXTEXT[0]);
 
+<PHP>\`			yy_push_state(REPLACE);
+<REPLACE>\`		{
+				yy_pop_state();
+				return PHP_STRING;
+			}
  /* Literal */
 <PHP>\'			{ strbuf_reset(string); BEGIN LITERAL; }
 <LITERAL>\'		{
@@ -212,7 +217,7 @@ WORD		{ALPHA}{ALPHANUM}*
  /* Cast */
 <PHP>\([ \t]*(bool|boolean|int|integer|real|double|float|string|array|object)[ \t]*\)
 			;
-<PHP,STRING,HEREDOCUMENT>$\{{WORD}\} {
+<PHP,STRING,HEREDOCUMENT,REPLACE>$\{{WORD}\} {
 				/*
 				 * 0123456	yyleng = 6
 				 * ${abc}\0
@@ -226,7 +231,7 @@ WORD		{ALPHA}{ALPHANUM}*
 
 				return PHP_VARIABLE;
 			}
-<PHP,STRING,HEREDOCUMENT>${WORD} {
+<PHP,STRING,HEREDOCUMENT,REPLACE>${WORD} {
 				/*
 				 * 01234	yyleng = 4
 				 * $abc\0
