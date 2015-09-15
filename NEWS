@@ -19,6 +19,54 @@ ___________________________________
 GNU GLOBAL NEWS - User visible changes.
 At least, you should search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 6.5.1 - Sep 15 2015
+
+[CHANGES]
+New facilities:
+o gtags(c, c++): New environment variable GTAGSFORCEENDBLOCK.
+  If this variable is set, each '}' at the first column brings
+  end of all blocks.
+o gtags: New --skip-unreadable option.
+  If this option is specified, gtags skips unreadable files
+  instead of exiting the command.
+
+[FIXED BUGS]
+o gtags: There was a difference of interpretation of the langmap
+  between gtags and ctags. Now there is no difference.
+
+o gtags (C++): Gtags did not pick up 'my_type1' as a definition
+  in the following example:
+	[xxx.cpp]
+	+------------------------
+	|using my_type1 = double;
+  Now it picks up the symbol as a definition.
+
+o gtags (C++): gtags picked up 'DomainId_t' as a definition
+        in the following example:
+	[xxx.cc]
+	+------------------------
+        |typedef std::map<DomainId_t, int> map_t2;
+  Now it does not pick up it as a definition.
+
+o gtags (C, C++): Gtags did not pick up 'pr_debug' as a definition
+  in the following example:
+	[xxx.h]
+	+------------------------
+	|extern void dump_stack(void) __cold;
+	|#define pr_debug() printk()
+  Now it picks up it as a definition.
+
+o gtags (PHP): Gtags did not treat back-quote correctly.
+	[xxx.php]
+	+------------------------
+	|<?php `ls $echo ~/*`; ?>
+  Now it works.
+
+[INCOMPATIBLE CHANGES]
+o gozilla: Now, gozilla invokes firefox as a generic browser, that is, using
+  command line 'firefox url'. Because firefox have removed the -remote command
+  since version 39.
+
 Version 6.5 - June 10 2015
 
 [CHANGES]
