@@ -117,8 +117,8 @@
 		Tag file for references.
 	@item{@file{GPATH}}
 		Tag file for source files.
-	@item{@file{$HOME/.globalrc}, @file{gtags.conf}}
-		@name{Gtags} load configuration variables from the configuration file.
+	@item{@file{gtags.conf}, @file{$HOME/.globalrc}}
+		@name{Gtags} load configuration variables from a configuration file.
 		@name{Gtags} selects it according to the following priority
 		(Lower number means higher priority).
 		@begin_verbatim
@@ -128,8 +128,9 @@
 		(4) /etc/gtags.conf
 		(5) [sysconfdir]/gtags.conf
 		@end_verbatim
-		By default, @name{gtags} read a record with a label 'default'.
-		If @var{GTAGSLABEL} is set, @name{gtags} read the record.
+		Configuration file includes one or more records; you should select a record
+		using label. By default, @name{gtags} use 'default' label. If @var{GTAGSLABEL}
+		is set, its value is used as a label.
 	@item{@file{gtags.files}}
 		The list of candidates of target files.
 	@end_itemize

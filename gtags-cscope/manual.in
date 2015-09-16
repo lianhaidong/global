@@ -313,8 +313,8 @@
 		If environment variable @var{GTAGSROOT} is not set
 		and file @file{GTAGSROOT} exists in the same directory as @file{GTAGS}
 		then @name{global} sets @var{GTAGSROOT} to the contents of the file.
-	@item{@file{$HOME/.globalrc}, @file{gtags.conf}}
-		@name{Gtags} load configuration variables from the configuration file.
+	@item{@file{gtags.conf}, @file{$HOME/.globalrc}}
+		@name{Gtags} load configuration variables from a configuration file.
 		@name{Gtags} selects it according to the following priority
 		(Lower number means higher priority).
 		@begin_verbatim
@@ -324,8 +324,9 @@
 		(4) /etc/gtags.conf
 		(5) [sysconfdir]/gtags.conf
 		@end_verbatim
-		By default, @name{gtags} read a record with a label 'default'.
-		If @var{GTAGSLABEL} is set, @name{gtags} read the record.
+		Configuration file includes one or more records; you should select a record
+		using label. By default, @name{gtags} use 'default' label. If @var{GTAGSLABEL}
+		is set, its value is used as a label.
 	@end_itemize
 @SEE ALSO
 	@xref{gtags,1},
