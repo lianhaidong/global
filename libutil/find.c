@@ -71,6 +71,7 @@
 #define STRCMP stricmp
 #define STRNCMP strnicmp
 #define ROOT 2
+#define S_ISSOCK(mode) (0)
 #else
 #define STRCMP strcmp
 #define STRNCMP strncmp

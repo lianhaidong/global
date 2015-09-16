@@ -288,6 +288,13 @@ convert_pathname(CONVERT *cv, const char *path)
 			a = strbuf_value(cv->abspath);
 			b = cv->basedir;
 #if defined(_WIN32) || defined(__DJGPP__)
+			/*
+			 * use absolute if on different drives.
+			 */
+			if (tolower(*a) != tolower(*b)) {
+				path = a;
+				break;
+			}
 			while (*a != '/')
 				a++;
 			while (*b != '/')
