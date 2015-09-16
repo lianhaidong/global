@@ -153,7 +153,7 @@ fputs_nl(const char *s, FILE *op)
 	return 0;
 }
 /*
- * These methods is used to tell lex() the current path infomation.
+ * These methods are used to tell lex() the current path information.
  */
 static char current_path[MAXPATHLEN];
 static char current_dir[MAXPATHLEN];
