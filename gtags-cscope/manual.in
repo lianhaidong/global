@@ -69,7 +69,7 @@
 	Find this C symbol:
 	Find this function definition:
 	Find functions called by this function (N/A):
-	Find functions calling this function:
+	Find locations calling this function:
 	Find this text string:
 	Change this text string:
 	Find this egrep pattern:
