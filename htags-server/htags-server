@@ -25,6 +25,7 @@ name=htags-server
 # HTTP/CGI servers
 #
 python2_server() {
+	echo "Please access to 'http://$2:$3'"
 	echo "Python2 http/cgi server"
 	echo "Serving HTTP on $2 port $3 ..."
 	"$1" <<-!
@@ -35,10 +36,12 @@ python2_server() {
 	!
 }
 python3_server() {
+	echo "Please access to 'http://$2:$3'"
 	echo "Python3 http/cgi server"
 	"$1" -m http.server --cgi --bind $2 $3
 }
 ruby_server() {
+	echo "Please access to 'http://$2:$3'"
 	echo "Ruby WEBrick http/cgi server"
 	echo "Serving HTTP on $2 port $3 ..."
 	"$1" <<-!
