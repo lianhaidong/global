@@ -4,7 +4,7 @@
 	@name{gtags-cscope} [-bCdehLlVv][-F file ][-012345678 @arg{pattern}][-p n]
 @DESCRIPTION
 	@name{gtags-cscope} is an interactive, screen-oriented tool that allows the user to
-	browse through C source files for specified elements of code.
+	browse through source files for specified elements of code.
 
 	@name{gtags-cscope} builds the symbol cross-reference the first time it is used on
 	the source files for the program being browsed. On a subsequent invocation, 
@@ -12,6 +12,9 @@
 	has changed or the list of source files is different. When the
 	cross-reference is rebuilt, it is updated incrementally, which makes rebuilding faster
 	than the initial build.
+
+	@name{gtags-cscope} is a tool which just borrows user interface of cscope; it is GLOBAL
+	itself for the substance.
 @OPTIONS
 	Some command line arguments can only occur as the only argument in
 	the execution of @name{gtags-cscope}.  They cause the program to just print out
@@ -66,10 +69,10 @@
 	After the cross-reference is ready, @name{gtags-cscope} will display this menu:
 
 	@begin_verbatim
-	Find this C symbol:
+	Find this symbol:
 	Find this function definition:
 	Find functions called by this function (N/A):
-	Find locations calling this function:
+	Find references of this function:
 	Find this text string:
 	Change this text string:
 	Find this egrep pattern:
