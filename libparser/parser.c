@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 1999, 2000, 2001, 2002, 2003, 2005, 2010, 2011
+ * Copyright (c) 1998, 1999, 2000, 2001, 2002, 2003, 2005, 2010, 2011,
+ *	2015
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -214,8 +215,18 @@ load_plugin_parser(const char *pluginspec)
 		pent->entry.parser = (PVOID)GetProcAddress((HINSTANCE)pent->handle, parser_name);
 #else
 		pent->handle = lt_dlopen(lt_dl_name);
-		if (pent->handle == NULL)
-			die_with_code(2, "cannot open shared object '%s'.", lt_dl_name);
+		if (pent->handle == NULL) {
+			/*
+			 * Retry after removing the extension, because some packages
+			 * don't have '.la' files.
+			 */
+			q = strrchr(lt_dl_name, '.');
+			if (q)
+				*q = '\0';
+			pent->handle = lt_dlopenext(lt_dl_name);
+			if (pent->handle == NULL)
+				die_with_code(2, "cannot open shared object '%s'.", lt_dl_name);
+		}
 		pent->entry.lt_dl_name = lt_dl_name;
 		pent->entry.parser = lt_dlsym(pent->handle, parser_name);
 #endif

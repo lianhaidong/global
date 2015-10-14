@@ -89,6 +89,7 @@ Justin Wojdacki		bug report about htags(1).
 K. Chowksey		new command gtags-select-tag-other-window and gtags-find-tag-other-window.
 Kai Tetzlaff		cooperation in Windows version.
 Katsuyuki Okabe		advice about deciding emacs version.
+Kevin Farshaw		replacement of @prefix@/lib with @libdir@ in gtags.conf.
 Klaus Borchers		advice about deciding emacs version.
 Koen Hufkens		advice about HP-UX 10.x.
 Koie Hidetaka		bug report about global.conf.

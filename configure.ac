@@ -3,7 +3,7 @@ dnl Configuration script for GLOBAL.
 dnl Process this file with autoconf to produce a configure script.
 dnl
 dnl Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2008, 2010,
-dnl	2011, 2012, 2013, 2014
+dnl	2011, 2012, 2013, 2014, 2015
 dnl	Tama Communications Corporation
 dnl
 dnl This file is part of GNU GLOBAL.
@@ -347,15 +347,30 @@ AC_SUBST(DEFAULTLANGMAP)
 AC_SUBST(DEFAULTINCLUDEFILESUFFIXES)
 
 dnl
-dnl Quoted langmap & prefix. It is only for gtags.conf.
+dnl Quoted langmap & libdir. It is only for gtags.conf.
 dnl
 DEFAULTLANGMAP_QUOTED=`echo $DEFAULTLANGMAP | sed 's/:/\\\\:/g'`
-case "$prefix" in
-NONE)   prefix_QUOTED=`echo $ac_default_prefix | sed 's/:/\\\\:/g'`;;
-*)      prefix_QUOTED=`echo $prefix | sed 's/:/\\\\:/g'`;;
-esac
+dnl We need to provide a valid libdir_QUOTED to consumers.
+dnl The value of $libdir depends on the flags passed to configure.
+dnl The desired behavior is as follows:
+dnl
+dnl 1. If --libdir is set by user, use that.
+dnl 2 If libdir not set by user, ac defaults to '${exec_prefix}/lib' (embedded variable sic)
+dnl   2a.  if exec_prefix is unset (NONE) set to ${prefix}/lib
+dnl   2b.  if exec_prefix is set, evaluate '${exec_prefix}/lib' into a simple string first.
+__real_libdir="$libdir"
+if test "$__real_libdir" = '${exec_prefix}/lib'; then
+	if test "$exec_prefix" != NONE; then
+		__real_libdir="$exec_prefix/lib"
+	else if test "$prefix" != NONE; then
+		__real_libdir="$prefix/lib"
+	else 
+		__real_libdir="$ac_default_prefix/lib"
+	fi fi
+fi
+libdir_QUOTED=`echo "$__real_libdir" | sed 's/:/\\\\:/g'`
 AC_SUBST(DEFAULTLANGMAP_QUOTED)
-AC_SUBST(prefix_QUOTED)
+AC_SUBST(libdir_QUOTED)
 
 AC_CONFIG_FILES([Makefile
 	gtags.conf

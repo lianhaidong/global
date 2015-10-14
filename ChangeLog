@@ -4,7 +4,7 @@ ___________________________________
 |  |   |  |  |  |  |     |     |  |
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Copyright (c) 2000-2014
+ Copyright (c) 2000-2015
 	Tama Communications Corporation
 
  This file is free software; as a special exception the author gives
@@ -18,6 +18,27 @@ ___________________________________
 		----------------------------------
 
 ChangeLog about GNU GLOBAL
+
+Oct 14 2015, Shigio YAMAGUCHI
+
+	[configure.ac]
+	Replaced @prefix_QUOTED@ with @libdir_QUOTED@ in gtags.conf.in.
+	From now on, you can use the --prefix, --exec-prefix and --libdir
+	options to set a value of @libdir_QUOTED@. This wad done by Kevin Farshaw.
+
+	[libparser/parser.c]
+	Changed dynamic loading code using ld_dlopenext().
+	(Fedora packaging guidelines prohibit .la files)
+
+	if (ld_dlopen('foo.la') == FAILED)
+		error_and_exit();
+	|
+	v
+	if (ld_dlopen('foo.la') == FAILED)
+		if (ld_dlopenext('foo') == FAILED)
+			error_and_exit();
+
+	From now on, extension of DDL is needless.
 
 June 22 2015, Shigio YAMAGUCHI
 
