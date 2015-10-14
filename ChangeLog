@@ -24,7 +24,7 @@ Oct 14 2015, Shigio YAMAGUCHI
 	[configure.ac]
 	Replaced @prefix_QUOTED@ with @libdir_QUOTED@ in gtags.conf.in.
 	From now on, you can use the --prefix, --exec-prefix and --libdir
-	options to set a value of @libdir_QUOTED@. This wad done by Kevin Farshaw.
+	options to set a value of @libdir_QUOTED@. This was done by Kevin Farshaw.
 
 	[libparser/parser.c]
 	Changed dynamic loading code using ld_dlopenext().
