@@ -46,6 +46,7 @@
 #include "locatestring.h"
 #include "queue.h"
 #include "strbuf.h"
+#include "strmake.h"
 #include "test.h"
 
 #define NOTFUNCTION	".notfunction"
@@ -179,6 +180,11 @@ load_plugin_parser(const char *pluginspec)
 		/* Assume a single-character name is a drive letter. */
 		if (q == lt_dl_name + 1)
 			q = strchr(q + 1, ':');
+#else
+		/* skip quoted ':' */
+		while (q && *q == ':' && *(q - 1) == '\\') {
+			q = strchr(q + 1, ':');
+		}
 #endif
 		if (q == NULL) {
 			parser_name = "parser";
@@ -188,6 +194,9 @@ load_plugin_parser(const char *pluginspec)
 				die_with_code(2, "syntax error in pluginspec '%s'.", pluginspec);
 			parser_name = q;
 		}
+#ifndef _WIN32
+		strremovechar((char *)lt_dl_name, '\\');
+#endif
 #if defined(_WIN32) && !defined(__CYGWIN__)
 		/* Bypass libtool and load the DLL directly, relative to us. */
 		pent->handle = (lt_dlhandle)LoadLibrary(lt_dl_name);

@@ -368,7 +368,7 @@ if test "$__real_libdir" = '${exec_prefix}/lib'; then
 		__real_libdir="$ac_default_prefix/lib"
 	fi fi
 fi
-libdir_QUOTED=`echo "$__real_libdir" | sed 's/:/\\\\:/g'`
+libdir_QUOTED=`echo "$__real_libdir" | sed 's/:/\\\\\\\\\\\\:/g'`
 AC_SUBST(DEFAULTLANGMAP_QUOTED)
 AC_SUBST(libdir_QUOTED)
 

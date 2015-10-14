@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 1999, 2000, 2004, 2006, 2010
+ * Copyright (c) 1998, 1999, 2000, 2004, 2006, 2010, 2015
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -166,4 +166,22 @@ strcpy_withterm(char *b, const char *s, int size, int term)
 	*b = '\0';
 
 	return s;
+}
+/**
+ * remove character c in the string s.
+ *
+ *	@param[in]	s	string
+ *	@param[in]	c	should be removed
+ */
+void
+strremovechar(char *s, int c)
+{
+	STATIC_STRBUF(sb);
+	char *p;
+
+	strbuf_clear(sb);
+	for (p = s; *p; p++)
+		if (*p != c)
+			strbuf_putc(sb, *p);
+	strcpy(s, strbuf_value(sb));
 }
