@@ -411,6 +411,10 @@ getconfs(const char *name, STRBUF *sb)
 				strbuf_puts(sb, DATADIR);
 #endif
 			exist = 1;
+		} else if (!strcmp(name, "libdir")) {
+			if (sb)
+				strbuf_puts(sb, LIBDIR);
+			exist = 1;
 		} else if (!strcmp(name, "localstatedir")) {
 			if (sb)
 				strbuf_puts(sb, LOCALSTATEDIR);

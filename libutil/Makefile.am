@@ -30,6 +30,7 @@ compress.c checkalloc.c pool.c fileop.c statistics.c args.c logging.c
 AM_CPPFLAGS = @AM_CPPFLAGS@ \
 	-DBINDIR='"$(bindir)"' \
 	-DDATADIR='"$(datadir)"' \
+	-DLIBDIR='"$(libdir)"' \
 	-DLOCALSTATEDIR='"$(localstatedir)"' \
 	-DSYSCONFDIR='"$(sysconfdir)"'
 
