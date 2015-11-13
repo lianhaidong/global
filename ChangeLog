@@ -19,6 +19,12 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+Nov 13 2015, Shigio YAMAGUCHI
+
+	[configure.ac]
+	New test for Universal Ctags.
+	Note: This is for a test. Formal ctags does not have these options yet.
+
 Oct 14 2015, Shigio YAMAGUCHI
 
 	[configure.ac]

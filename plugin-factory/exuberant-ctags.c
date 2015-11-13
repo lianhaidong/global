@@ -85,6 +85,10 @@ static HANDLE pid;
 static char argv[] = "ctags "
 #ifdef USE_TYPE_STRING
 	"--gtags "
+#else
+#ifdef USE_EXTRA_FIELDS
+	"--_xformat=\"%R %-16N %4n %-16F %C\" --extra=+r --fields=+r "
+#endif
 #endif
 	"-xu --filter --filter-terminator=" TERMINATOR "\n "
 	"--format=1 " LANGMAP_OPTION;
@@ -150,6 +154,10 @@ static char *argv[] = {
 	NULL,
 #ifdef USE_TYPE_STRING
 	"--gtags",
+#else
+#ifdef USE_EXTRA_FIELDS
+	"--_xformat=\"%R %-16N %4n %-16F %C\" --extra=+r --fields=+r "
+#else
 #endif
 	"-xu",
 	"--filter",
@@ -248,7 +256,7 @@ put_line(char *ctags_x, const struct parser_param *param)
 	int type = PARSER_DEF;
 	char *p, *tagname, *filename;
 
-#ifdef USE_TYPE_STRING
+#if defined(USE_TYPE_STRING) || defined(USE_EXTRA_FIELDS)
 	/*
 	 * Output of ctags:
 	 * ctags -x ...
