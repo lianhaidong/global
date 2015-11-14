@@ -83,12 +83,10 @@ copy_langmap_converting_cpp(char *dst, const char *src)
 #include <fcntl.h>
 static HANDLE pid;
 static char argv[] = "ctags "
-#ifdef USE_TYPE_STRING
+#if defined(USE_TYPE_STRING)
 	"--gtags "
-#else
-#ifdef USE_EXTRA_FIELDS
+#elif defined(USE_EXTRA_FIELDS)
 	"--_xformat=\"%R %-16N %4n %-16F %C\" --extra=+r --fields=+r "
-#endif
 #endif
 	"-xu --filter --filter-terminator=" TERMINATOR "\n "
 	"--format=1 " LANGMAP_OPTION;
@@ -152,12 +150,10 @@ static pid_t pid;
 static char *argv[] = {
 	EXUBERANT_CTAGS,
 	NULL,
-#ifdef USE_TYPE_STRING
+#if defined(USE_TYPE_STRING)
 	"--gtags",
-#else
-#ifdef USE_EXTRA_FIELDS
-	"--_xformat=\"%R %-16N %4n %-16F %C\" --extra=+r --fields=+r "
-#else
+#elif defined(USE_EXTRA_FIELDS)
+	"--_xformat=\"%R %-16N %4n %-16F %C\" --extra=+r --fields=+r ",
 #endif
 	"-xu",
 	"--filter",
