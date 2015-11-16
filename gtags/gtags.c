@@ -535,7 +535,7 @@ main(int argc, char **argv)
 		op = popen(strbuf_value(sb), "w");
 		if (op == NULL)
 			die("cannot execute '%s'.", strbuf_value(sb));
-		gp = gfind_open(dbpath, NULL, GPATH_BOTH);
+		gp = gfind_open(dbpath, NULL, GPATH_BOTH, 0);
 		while ((path = gfind_read(gp)) != NULL) {
 			fputs(path, op);
 			fputc('\0', op);

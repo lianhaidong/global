@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2005, 2006
+ * Copyright (c) 1997, 1998, 1999, 2000, 2005, 2006, 2015
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -24,6 +24,8 @@
 
 #include "gparam.h"
 #include "dbop.h"
+#include "pool.h"
+#include "varray.h"
 
 #define NEXTKEY		" __.NEXTKEY"
 
@@ -33,13 +35,22 @@
 #define GPATH_SOURCE	1
 #define GPATH_OTHER	2
 #define GPATH_BOTH	3
+/*
+ * flags
+ */
+#define GPATH_NEARSORT	1
 
 typedef struct {
 	/** set by gfind_open() */
 	DBOP *dbop;
 	const char *prefix;
 	int target;
+	int flags;
 	int version;
+	/** set by gfind_open() */
+	VARRAY *path_array;
+	POOL *pool;
+	int index;
 	/** set by gfind_open() and gfind_read() */
 	int first;
 	int eod;		/**< end of data */
@@ -56,7 +67,7 @@ void gpath_put(const char *, int);
 void gpath_delete(const char *);
 void gpath_close(void);
 int gpath_nextkey(void);
-GFIND *gfind_open(const char *, const char *, int);
+GFIND *gfind_open(const char *, const char *, int, int);
 const char *gfind_read(GFIND *);
 void gfind_close(GFIND *);
 

@@ -49,6 +49,7 @@
 #include "gtagsop.h"
 #include "locatestring.h"
 #include "makepath.h"
+#include "nearsort.h"
 #include "path.h"
 #include "gpathop.h"
 #include "split.h"
@@ -63,8 +64,6 @@
 static int compare_path(const void *, const void *);
 static int compare_lineno(const void *, const void *);
 static int compare_tags(const void *, const void *);
-static int get_nearness(const char *, const char *);
-static int compare_nearpath(const void *, const void *);
 static int compare_neartags(const void *, const void *);
 static const char *seekto(const char *, int);
 static int is_defined_in_GTAGS(GTOP *, const char *);
@@ -102,32 +101,7 @@ compare_tags(const void *v1, const void *v2)
 		return ret;
 	return e1->lineno - e2->lineno;
 }
-static const char *curdir;
-static int
-get_nearness(const char *p1, const char *p2)
-{
-	int parts = 0;
-	for (; *p1 && *p2; p1++, p2++) {
-		if (*p1 != *p2)
-			break;
-		if (*p1 == '/')
-			parts++;
-	}
-	return parts;
-}
-#define COMPARE_NEARNESS(p1, p2) (get_nearness(p2, curdir) - get_nearness(p1, curdir))
-/**
- * compare_nearpath: compare function for 'nearness sort'.
- */
-static int
-compare_nearpath(const void *s1, const void *s2)
-{
-	int ret;
-
-	if ((ret = COMPARE_NEARNESS(*(char **)s1, *(char **)s2)) != 0)
-		return ret;
-	return strcmp(*(char **)s1, *(char **)s2);
-}
+static const char *nearbase;
 /**
  * compare_neartags: compare function for 'nearness sort'.
  */
@@ -137,7 +111,7 @@ compare_neartags(const void *v1, const void *v2)
 	const GTP *e1 = v1, *e2 = v2;
 	int ret;
 
-	if ((ret = COMPARE_NEARNESS(e1->path, e2->path)) != 0)
+	if ((ret = COMPARE_NEARNESS(e1->path, e2->path, nearbase)) != 0)
 		return ret;
 	if ((ret = strcmp(e1->path, e2->path)) != 0)
 		return ret;
@@ -730,10 +704,9 @@ gtags_first(GTOP *gtop, const char *pattern, int flags)
 		gtop->dbflags |= DBOP_KEY;
 	if (!(flags & GTOP_BASICREGEX))
 		regflags |= REG_EXTENDED;
-	if (flags & GTOP_NEARSORT) {
-		if ((curdir = get_nearbase_path()) == NULL)
-			curdir = get_relative_cwd_with_slash();
-	}
+	if (flags & GTOP_NEARSORT)
+		if ((nearbase = get_nearbase_path()) == NULL)
+			die("cannot get nearbase path.");
 	/*
 	 * decide a read method
 	 */

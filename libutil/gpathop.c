@@ -34,9 +34,11 @@
 #include "checkalloc.h"
 #include "die.h"
 #include "dbop.h"
+#include "getdbpath.h"
 #include "gtagsop.h"
-#include "makepath.h"
 #include "gpathop.h"
+#include "makepath.h"
+#include "nearsort.h"
 #include "strbuf.h"
 #include "strlimcpy.h"
 
@@ -50,6 +52,19 @@ int openflags;
 void
 set_gpath_flags(int flags) {
 	openflags = flags;
+}
+/**
+ * compare_nearpath: compare function for 'nearness sort'.
+ */
+static const char *nearbase;
+int
+compare_nearpath(const void *s1, const void *s2)
+{
+	int ret;
+
+	if ((ret = COMPARE_NEARNESS(*(char **)s1, *(char **)s2, nearbase)) != 0)
+		return ret;
+	return strcmp(*(char **)s1, *(char **)s2);
 }
 /*
  * GPATH format version
@@ -267,7 +282,7 @@ gpath_close(void)
 }
 
 /**
- * GFIND *gfind_open(const char *dbpath, const char *local, int target)
+ * GFIND *gfind_open(const char *dbpath, const char *local, int target, int flags)
  *
  * gfind iterator using GPATH.
  *
@@ -285,10 +300,11 @@ gpath_close(void)
  *	@param[in]      target  GPATH_SOURCE: only source file,
  *			GPATH_OTHER: only other file,
  *			GPATH_BOTH: source file + other file
+ *	@param[in]	flags	GPATH_NEARSORT
  *	@return		GFIND structure
  */
 GFIND *
-gfind_open(const char *dbpath, const char *local, int target)
+gfind_open(const char *dbpath, const char *local, int target, int flags)
 {
 	GFIND *gfind = (GFIND *)check_calloc(sizeof(GFIND), 1);
 
@@ -301,11 +317,33 @@ gfind_open(const char *dbpath, const char *local, int target)
 	gfind->eod = 0;
 	gfind->target = target;
 	gfind->type = GPATH_SOURCE;
+	gfind->flags = flags;
+	gfind->path_array = NULL;
 	gfind->version = dbop_getversion(gfind->dbop);
 	if (gfind->version > support_version)
 		die("GPATH seems new format. Please install the latest GLOBAL.");
 	else if (gfind->version < support_version)
 		die("GPATH seems older format. Please remake tag files."); 
+	/*
+	 * Nearness sort.
+	 * In fact, this timing of sort is not good for performance.
+	 * Reconsideration is needed later.
+	 */
+	if (gfind->flags & GPATH_NEARSORT) {
+		const char *path = NULL;
+		VARRAY *varray = varray_open(sizeof(char *), 100);
+		POOL *pool = pool_open();
+		while ((path = gfind_read(gfind)) != NULL) {
+			char **a = varray_append(varray);
+			*a = pool_strdup(pool, path, 0);
+		}
+		if ((nearbase = get_nearbase_path()) == NULL)
+			die("cannot get nearbase path.");
+		qsort(varray_assign(varray, 0, 0), varray->length, sizeof(char *), compare_nearpath);
+		gfind->path_array = varray;
+		gfind->pool = pool;
+		gfind->index = 0;
+	}
 	return gfind;
 }
 /**
@@ -319,6 +357,13 @@ gfind_read(GFIND *gfind)
 {
 	const char *flag;
 
+	if (gfind->path_array) {
+		char **a = NULL;
+		if (gfind->index >= gfind->path_array->length)
+			return NULL;
+		a = varray_assign(gfind->path_array, gfind->index++, 0);
+		return *a;
+	}
 	gfind->type = GPATH_SOURCE;
 	if (gfind->eod)
 		return NULL;
@@ -353,6 +398,10 @@ void
 gfind_close(GFIND *gfind)
 {
 	dbop_close(gfind->dbop);
+	if (gfind->flags & GPATH_NEARSORT) {
+		pool_close(gfind->pool);
+		varray_close(gfind->path_array);
+	}
 	free((void *)gfind->prefix);
 	free(gfind);
 }

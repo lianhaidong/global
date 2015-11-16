@@ -151,8 +151,11 @@
 	@item{@option{-n}, @option{--nofilter}}
 		Suppress sort filter and path conversion filter.
 	@item{@option{-N}, @option{--nearness}[=@arg{start}]}
-		Use Nearness sort method for the output of tag search command.
-		By default, alphabetical sort method is used.
+		Use Nearness sort method for the output. By default, alphabetical sort
+		method is used.
+		This option is effective for the tag search command, @option{-P} command
+		and @option{-g} command. As an exception, @option{-g} command ignores this
+		option when files are specified by arguments.
 		The result of nearness sort is concatenation of the followings ([1]-[n])
 		in this order. The default of @arg{start} is the current directory.
 		@begin_verbatim

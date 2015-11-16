@@ -625,11 +625,20 @@ main(int argc, char **argv)
 		help();
 	if (dbpath == NULL)
 		die_with_code(-status, "%s", gtags_dbpath_error);
-	if (nearbase) {
-		if (!test("d", nearbase)) 
-			die("'%s' not found.", nearbase);
+	
+	if (Nflag) {
+		if (nearbase) {
+			if (!test("d", nearbase)) 
+				die("'%s' not found or not a directory.", nearbase);
+		} else {
+			nearbase = get_cwd();
+		}
+		/*
+		 * Nearbase is saved with regular form. You can get it
+		 * by get_nearbase_path() later.
+		 */
 		if (set_nearbase_path(nearbase) == NULL)
-			die("internal error: '%s'.", nearbase);
+			die("invalid nearness directory (--nearness=%s).", nearbase);
 	}
 	/*
 	 * decide format.
@@ -1128,7 +1137,7 @@ completion_path(const char *dbpath, const char *prefix)
 	else if (!Mflag)
 		flags |= IGNORE_CASE;
 #endif
-	gp = gfind_open(dbpath, localprefix, target);
+	gp = gfind_open(dbpath, localprefix, target, 0);
 	while ((path = gfind_read(gp)) != NULL) {
 		path++;					/* skip '.'*/
 		if (prefix == NULL) {
@@ -1332,6 +1341,7 @@ grep(const char *pattern, char *const *argv, const char *dbpath)
 	int target = GPATH_SOURCE;
 	regex_t	preg;
 	int user_specified = 1;
+	int gfind_flags = 0;
 
 	/*
 	 * convert spaces into %FF format.
@@ -1357,6 +1367,8 @@ grep(const char *pattern, char *const *argv, const char *dbpath)
 		target = GPATH_BOTH;
 	if (Oflag)
 		target = GPATH_OTHER;
+	if (Nflag)
+		gfind_flags |= GPATH_NEARSORT;
 	if (literal) {
 		literal_comple(pattern);
 	} else {
@@ -1378,7 +1390,7 @@ grep(const char *pattern, char *const *argv, const char *dbpath)
 	else if (file_list)
 		args_open_filelist(file_list);
 	else {
-		args_open_gfind(gp = gfind_open(dbpath, localprefix, target));
+		args_open_gfind(gp = gfind_open(dbpath, localprefix, target, gfind_flags));
 		user_specified = 0;
 	}
 	while ((path = args_read()) != NULL) {
@@ -1451,11 +1463,14 @@ pathlist(const char *pattern, const char *dbpath)
 	regex_t preg;
 	int count;
 	int target = GPATH_SOURCE;
+	int gfind_flags = 0;
 
 	if (oflag)
 		target = GPATH_BOTH;
 	if (Oflag)
 		target = GPATH_OTHER;
+	if (Nflag)
+		gfind_flags |= GPATH_NEARSORT;
 	if (pattern) {
 		int flags = 0;
 		char edit[IDENTLEN];
@@ -1487,7 +1502,7 @@ pathlist(const char *pattern, const char *dbpath)
 	cv->tag_for_display = "path";
 	count = 0;
 
-	gp = gfind_open(dbpath, localprefix, target);
+	gp = gfind_open(dbpath, localprefix, target, gfind_flags);
 	while ((path = gfind_read(gp)) != NULL) {
 		/*
 		 * skip localprefix because end-user doesn't see it.

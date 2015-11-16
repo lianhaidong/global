@@ -866,7 +866,7 @@ makehtml(int total)
 		free(name);
 	}
 #endif
-	gp = gfind_open(dbpath, NULL, other_files ? GPATH_BOTH : GPATH_SOURCE);
+	gp = gfind_open(dbpath, NULL, other_files ? GPATH_BOTH : GPATH_SOURCE, 0);
 	while ((path = gfind_read(gp)) != NULL) {
 		if (gp->type == GPATH_OTHER)
 			fputc(' ', anchor_stream);
@@ -881,7 +881,7 @@ makehtml(int total)
 	/*
 	 * For each path in GPATH, convert the path into HTML file.
 	 */
-	gp = gfind_open(dbpath, NULL, other_files ? GPATH_BOTH : GPATH_SOURCE);
+	gp = gfind_open(dbpath, NULL, other_files ? GPATH_BOTH : GPATH_SOURCE, 0);
 	while ((path = gfind_read(gp)) != NULL) {
 		char html[MAXPATHLEN];
 
@@ -1569,7 +1569,7 @@ main(int argc, char **argv)
          * other than source file. The oflag requires new version of GPATH.
 	 */
 	if (other_files) {
-		GFIND *gp = gfind_open(dbpath, NULL, 0);
+		GFIND *gp = gfind_open(dbpath, NULL, 0, 0);
 		if (gp->version < 2)
 			die("GPATH is old format. Please remake it by invoking gtags(1).");
 		gfind_close(gp);

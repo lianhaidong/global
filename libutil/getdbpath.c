@@ -192,7 +192,6 @@ static char dbpath[MAXPATHLEN];
 static char root[MAXPATHLEN];
 static char root_with_slash[MAXPATHLEN];
 static char cwd[MAXPATHLEN];
-static char nearbase[MAXPATHLEN];
 static char relative_cwd_with_slash[MAXPATHLEN+2];
 /*
  * setupdbpath: setup dbpath directory
@@ -385,29 +384,10 @@ get_relative_cwd_with_slash(void)
 {
 	return (const char *)relative_cwd_with_slash;
 }
-const char *
-set_nearbase_path(const char *path)
-{
-	char norm[MAXPATHLEN], real[MAXPATHLEN];
-
-	if (normalize_pathname(path, norm, sizeof(norm)) == NULL)
-		return NULL;
-	path = norm;
-	if (root[0] == '\0' || realpath(path, real) == NULL)
-		return NULL;
-	snprintf(nearbase, sizeof(nearbase), "./%s/", real + strlen(root) + 1);
-	return nearbase;
-}
-const char *
-get_nearbase_path(void)
-{
-	return nearbase[0] ? (const char *)nearbase : NULL;
-}
 void
 dump_dbpath(void)
 {
 	fprintf(stderr, "db path: %s\n", dbpath);
 	fprintf(stderr, "root path: %s\n", root);
 	fprintf(stderr, "current directory: %s\n", cwd);
-	fprintf(stderr, "nearbase: %s\n", nearbase);
 }

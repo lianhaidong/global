@@ -48,6 +48,7 @@
 #include "locatestring.h"
 #include "logging.h"
 #include "makepath.h"
+#include "nearsort.h"
 #include "path.h"
 #include "pool.h"
 #include "rewrite.h"
