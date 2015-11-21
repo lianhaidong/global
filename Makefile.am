@@ -24,7 +24,7 @@ gtagsdir = ${datadir}/gtags
 gtags_DATA = AUTHORS COPYING COPYING.LIB ChangeLog FAQ INSTALL LICENSE NEWS README THANKS \
 	BOKIN_MODEL BOKIN_MODEL_FAQ DONORS BUILD_TOOLS README.PATCHES \
         gtags.conf gtags.el gtags.pl gtags.vim gtags-cscope.vim \
-	elvis.rc elvis-2.2_0.patch ctags-5.8.patch geco.rc \
+	elvis.rc elvis-2.2_0.patch geco.rc \
 	vim74-gtags-cscope.patch
 
 EXTRA_DIST = ${gtags_DATA} reconf.sh convert.pl mainpage.dox head.in

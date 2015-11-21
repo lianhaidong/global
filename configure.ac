@@ -286,7 +286,7 @@ AC_ARG_WITH(exuberant-ctags,
 ])
 if test "$EXUBERANT_CTAGS" != '' && test "$EXUBERANT_CTAGS" != no && test -x "$EXUBERANT_CTAGS"; then
 	dnl
-	dnl For ctags applied ctags-5.8.patch.
+	dnl For ctags applied ctags-5.8.patch. (Deprecated)
 	dnl
 	AC_MSG_CHECKING(whether exuberant ctags --gtags works)
 	if (sh -c "'$EXUBERANT_CTAGS' --gtags -x /dev/null") > /dev/null 2>&1; then

@@ -19,11 +19,11 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
-Nov 13 2015, Shigio YAMAGUCHI
+Nov 21 2015, Shigio YAMAGUCHI
 
-	[configure.ac]
-	New test for Universal Ctags.
-	Note: This is for a test. Formal ctags does not have these options yet.
+	Removed ctags-5.8.patch, because Universal Ctags supports reference tags
+	by itself now.
+	Added new test for Universal Ctags.
 
 Oct 14 2015, Shigio YAMAGUCHI
 

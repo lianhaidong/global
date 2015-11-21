@@ -19,28 +19,6 @@ ___________________________________
 This package includes some patches to change behavior of related tools.
 Please use them under self-responsibility.
 
-ctags-5.8.patch
-
-	Add makeSimpleReferenceTag() function which generates a reference tag.
-	With this patch, you can write a parser for both ctags and gtags.
-	(For Exuberant Ctags version 5.8)
-
-	You can write a ctags parser which works like follows:
-
-	$ ctags --gtags -x ...
-	D main              320 global/global.c  main(int argc, char **argv)
-	R NULL              325 global/global.c  const char *av = NULL;
-	=
-	^-- Type string (D: definition, R: reference)
-
-	Exuberant Ctags plug-in parser (plugin-factory/exuberant-ctags.c)
-	understand the type string.
-
-	How to apply the patch.
-	$ tar xzvf ctags-5.8.tar.gz
-	$ cd ctags-5.8
-	$ patch -p1 < /usr/local/share/gtags/ctags-5.8.patch
-
 elvis-2.2_0.patch
 
 	Disable sort of global(1)'s output.
