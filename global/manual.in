@@ -156,8 +156,9 @@
 		This option is effective for the tag search command, @option{-P} command
 		and @option{-g} command. As an exception, @option{-g} command ignores this
 		option when files are specified by arguments.
-		The result of nearness sort is concatenation of the followings ([1]-[n])
-		in this order. The default of @arg{start} is the current directory.
+		The nearness is defined by how many parent directories to go up to rearch
+		the target. The result of nearness sort is concatenation of the followings
+		([1]-[n]) in this order. The default of @arg{start} is the current directory.
 		@begin_verbatim
 		[1] Output of local search in the start directory.
 		[2] Output of local search in the parent directory except for [1].
