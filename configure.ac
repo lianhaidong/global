@@ -360,30 +360,10 @@ AC_SUBST(DEFAULTLANGMAP)
 AC_SUBST(DEFAULTINCLUDEFILESUFFIXES)
 
 dnl
-dnl Quoted langmap & libdir. It is only for gtags.conf.
+dnl Quoted langmap. It is only for gtags.conf.
 dnl
 DEFAULTLANGMAP_QUOTED=`echo $DEFAULTLANGMAP | sed 's/:/\\\\:/g'`
-dnl We need to provide a valid libdir_QUOTED to consumers.
-dnl The value of $libdir depends on the flags passed to configure.
-dnl The desired behavior is as follows:
-dnl
-dnl 1. If --libdir is set by user, use that.
-dnl 2 If libdir not set by user, ac defaults to '${exec_prefix}/lib' (embedded variable sic)
-dnl   2a.  if exec_prefix is unset (NONE) set to ${prefix}/lib
-dnl   2b.  if exec_prefix is set, evaluate '${exec_prefix}/lib' into a simple string first.
-__real_libdir="$libdir"
-if test "$__real_libdir" = '${exec_prefix}/lib'; then
-	if test "$exec_prefix" != NONE; then
-		__real_libdir="$exec_prefix/lib"
-	else if test "$prefix" != NONE; then
-		__real_libdir="$prefix/lib"
-	else 
-		__real_libdir="$ac_default_prefix/lib"
-	fi fi
-fi
-libdir_QUOTED=`echo "$__real_libdir" | sed 's/:/\\\\\\\\\\\\:/g'`
 AC_SUBST(DEFAULTLANGMAP_QUOTED)
-AC_SUBST(libdir_QUOTED)
 
 AC_CONFIG_FILES([Makefile
 	gtags.conf

@@ -19,6 +19,10 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+Nov 30 2015, Shigio YAMAGUCHI
+
+	Replaced @libdir_QUOTED@ with configuration variable in gtags.conf.in.
+
 Nov 21 2015, Shigio YAMAGUCHI
 
 	Removed ctags-5.8.patch, because Universal Ctags supports reference tags
