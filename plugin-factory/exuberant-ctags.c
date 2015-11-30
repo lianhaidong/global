@@ -86,7 +86,9 @@ static char argv[] = "ctags "
 #if defined(USE_TYPE_STRING)
 	"--gtags "
 #elif defined(USE_EXTRA_FIELDS)
-	"--_xformat=\"%R %-16N %4n %-16F %C\" --extra=+r --fields=+r "
+	"--_xformat=%R %-16N %4n %-16F %C",
+	"--extra=+r",
+	"--fields=+r",
 #endif
 	"-xu --filter --filter-terminator=" TERMINATOR "\n "
 	"--format=1 " LANGMAP_OPTION;
@@ -153,12 +155,13 @@ static char *argv[] = {
 #if defined(USE_TYPE_STRING)
 	"--gtags",
 #elif defined(USE_EXTRA_FIELDS)
-	"--_xformat=\"%R %-16N %4n %-16F %C\" --extra=+r --fields=+r ",
+	"--_xformat=%R %-16N %4n %-16F %C",
+	"--extra=+r",
+	"--fields=+r",
 #endif
 	"-xu",
 	"--filter",
 	"--filter-terminator=" TERMINATOR "\n",
-	"--format=1",
 	NULL
 };
 static void
