@@ -22,5 +22,6 @@
 #define _MAKEPATH_H_
 
 const char *makepath(const char *, const char *, const char *);
+const char *makepath_with_tilde(const char *file);
 
 #endif /* ! _MAKEPATH_H_ */

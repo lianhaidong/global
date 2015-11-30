@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000
+ * Copyright (c) 1997, 1998, 1999, 2000, 2015
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -29,8 +29,10 @@
 
 #include "gparam.h"
 #include "die.h"
+#include "locatestring.h"
 #include "makepath.h"
 #include "strbuf.h"
+#include "strmake.h"
 
 /**
  * makepath: make path from directory and file.
@@ -92,4 +94,68 @@ makepath(const char *dir, const char *file, const char *suffix)
 	if (strbuf_getlen(sb) > MAXPATHLEN)
 		die("path name too long. '%s'\n", strbuf_value(sb));
 	return strbuf_value(sb);
+}
+#include <sys/types.h>
+#include <pwd.h>
+#include <limits.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <errno.h>
+/**
+ * makepath_with_tilde: make path from a file with a tilde.
+ *
+ *	@param[in]	file	file
+ *	@return		path
+ */
+const char *
+makepath_with_tilde(const char *file)
+{
+	struct passwd *pw;
+
+	switch (*file) {
+	/*
+	 * path includes tilde
+	 */
+	case '~':
+		errno = 0;
+		/*
+		 * ~/dir/...
+		 */
+		if (*++file == '/') {
+			file++;
+			uid_t uid = getuid();
+			while ((pw = getpwent()) != NULL) {
+				if (pw->pw_uid == uid)
+					break;
+			}
+		}
+		/*
+		 * ~user/dir/...
+		 */
+		else {
+			const char *name = strmake(file, "/");
+			file = locatestring(file, "/", MATCH_FIRST);
+			if (file != NULL)
+				file++;
+			else
+				file = "";
+			while ((pw = getpwent()) != NULL) {
+				if (!strcmp(pw->pw_name, name))
+					break;
+			}
+		}
+		if (errno)
+			die("cannot open passwd file. (errno = %d)", errno);
+		if (pw == NULL)
+			die("home directory not found.");
+		endpwent();
+		return makepath(pw->pw_dir, file, NULL);
+	/*
+	 * absolute path
+	 */
+	case '/':
+		return file;
+	default:
+		return NULL;	/* cannot accept */
+	}
 }

@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 1999, 2000, 2001, 2002, 2005, 2010, 2011,
- *	2014
+ *	2014, 2015
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -65,8 +65,8 @@ static int allowed_nest_level = 32;
 static int opened;
 
 static void trim(char *);
-static const char *readrecord(const char *);
-static void includelabel(STRBUF *, const char *, int);
+static const char *readrecord(FILE *, const char *);
+static void includelabel(FILE *, STRBUF *, const char *, int);
 
 #ifndef isblank
 #define isblank(c)	((c) == ' ' || (c) == '\t')
@@ -120,7 +120,7 @@ trim(char *l)
  * - format check.
  */
 static const char *
-readrecord(const char *label)
+readrecord(FILE *fp, const char *label)
 {
 	char *p;
 	int flag = STRBUF_NOCRLF|STRBUF_SHARPSKIP;
@@ -172,6 +172,7 @@ readrecord(const char *label)
 /**
  * includelabel: procedure for tc= (or include=)
  *
+ *	@param[in]	fp	file pointer
  *	@param[out]	sb	string buffer
  *	@param[in]	label	record label
  *	@param[in]	level	nest level for check
@@ -179,13 +180,26 @@ readrecord(const char *label)
  * This function may call itself (recursive)
  */
 static void
-includelabel(STRBUF *sb, const char *label, int	level)
+includelabel(FILE *fp, STRBUF *sb, const char *label, int level)
 {
 	const char *savep, *p, *q;
+	char *file;
 
 	if (++level > allowed_nest_level)
 		die("nested include= (or tc=) over flow.");
-	if (!(savep = p = readrecord(label)))
+	/*
+	 * Label can include a '@' and a following path name.
+	 * Label: <label>[@<path>]
+	 */
+	if ((file = locatestring(label, "@", MATCH_FIRST)) != NULL) {
+		*file++ = '\0';
+		if ((p = makepath_with_tilde(file)) == NULL)
+			die("config file must be absolute path. (%s)", file);
+		fp = fopen(p, "r");
+		if (fp == NULL)
+			die("cannot open config file. (%s)", p);
+	}
+	if (!(savep = p = readrecord(fp, label)))
 		die("label '%s' not found.", label);
 	while ((q = locatestring(p, ":include=", MATCH_FIRST)) || (q = locatestring(p, ":tc=", MATCH_FIRST))) {
 		STRBUF *inc = strbuf_open(0);
@@ -194,12 +208,14 @@ includelabel(STRBUF *sb, const char *label, int	level)
 		q = locatestring(q, "=", MATCH_FIRST) + 1;
 		for (; *q && *q != ':'; q++)
 			strbuf_putc(inc, *q);
-		includelabel(sb, strbuf_value(inc), level);
+		includelabel(fp, sb, strbuf_value(inc), level);
 		p = q;
 		strbuf_close(inc);
 	}
 	strbuf_puts(sb, p);
 	free((void *)savep);
+	if (file)
+		fclose(fp);
 }
 /**
  * configpath: get path of configuration file.
@@ -284,7 +300,7 @@ openconf(const char *rootdir)
 			die("cannot open '%s'.", config_path);
 		ib = strbuf_open(MAXBUFLEN);
 		sb = strbuf_open(0);
-		includelabel(sb, config_label, 0);
+		includelabel(fp, sb, config_label, 0);
 		confline = check_strdup(strbuf_value(sb));
 		strbuf_close(ib);
 		strbuf_close(sb);
@@ -337,15 +353,67 @@ getconfn(const char *name, int *num)
 	return 0;
 }
 /**
+ * replace_variables: replace variables in the string.
+ *
+ *	@param[in]	sb
+ */
+int recursive_call = 0;
+static void
+replace_variables(STRBUF *sb)
+{
+	STRBUF *result = strbuf_open(0);
+	STRBUF *word = strbuf_open(0);
+	const char *p = strbuf_value(sb);
+
+	/*
+	 * Simple of detecting infinite loop.
+	 */
+	if (++recursive_call > 32)
+		die("Seems to be a never-ending referring.");
+	for (;;) {
+		for (; *p; p++) {
+			if (*p == '$')
+				break;
+			if (*p == '\\' && *(p + 1) != 0)
+				p++;
+			strbuf_putc(result, *p);
+		}
+		if (*p == 0)
+			break;
+		/*
+		 * $<word> or ${<word>}
+		 */
+		if (*p == '$') {
+			strbuf_reset(word);
+			if (*++p == '{') {
+				for (p++; *p && *p != '}'; p++)
+					strbuf_putc(word, *p);;
+				if (*p++ != '}')
+					die("invalid variable.");
+			} else {
+				for (; *p && (isalnum(*p) || *p == '_'); p++)
+					strbuf_putc(word, *p);
+			}
+			getconfs(strbuf_value(word), result);
+		}
+	}
+	strbuf_reset(sb);
+	strbuf_puts(sb, strbuf_value(result));
+	strbuf_close(result);
+	strbuf_close(word);
+	recursive_call--;
+}
+/**
  * getconfs: get property string
  *
  *	@param[in]	name	property name
- *	@param[out]	sb	string buffer (if not NULL)
+ *	@param[out]	result	string buffer (if not NULL)
  *	@return		1: found, 0: not found
  */
 int
-getconfs(const char *name, STRBUF *sb)
+getconfs(const char *name, STRBUF *result)
 {
+	STRBUF *sb = NULL;
 	const char *p;
 	char buf[MAXPROPLEN];
 	int all = 0;
@@ -356,10 +424,11 @@ getconfs(const char *name, STRBUF *sb)
 		die("configuration file not opened.");
 	/* 'path' is reserved name for the current path of configuration file */
 	if (!strcmp(name, "path")) {
-		if (config_path && sb)
-			strbuf_puts(sb, config_path);
+		if (config_path && result)
+			strbuf_puts(result, config_path);
 		return 1;
 	}
+	sb = strbuf_open(0);
 	if (!strcmp(name, "skip") || !strcmp(name, "gtags_parser") || !strcmp(name, "langmap"))
 		all = 1;
 	snprintf(buf, sizeof(buf), ":%s=", name);
@@ -425,6 +494,10 @@ getconfs(const char *name, STRBUF *sb)
 			exist = 1;
 		}
 	}
+	replace_variables(sb);
+	if (result)
+		strbuf_puts(result, strbuf_value(sb));
+	strbuf_close(sb);
 	return exist;
 }
 /**
