@@ -122,8 +122,9 @@ makepath_with_tilde(const char *file)
 		 * ~/dir/...
 		 */
 		if (*++file == '/') {
+			uid_t uid;
 			file++;
-			uid_t uid = getuid();
+			uid = getuid();
 			while ((pw = getpwent()) != NULL) {
 				if (pw->pw_uid == uid)
 					break;
