@@ -250,6 +250,7 @@ const char *action = "cgi-bin/global.cgi"; /**< default action		*/
 const char *completion_action = "cgi-bin/completion.cgi";	/**< completion_action */
 int definition_header=NO_HEADER;	/**< (NO|BEFORE|RIGHT|AFTER)_HEADER */
 const char *include_file_suffixes = DEFAULTINCLUDEFILESUFFIXES;	/**< include_file_suffixes */
+static const char *langmap = DEFAULTLANGMAP;	/**< langmap */
 int grtags_is_empty = 0;						/**< grtags_is_empty */
 
 static struct option const long_options[] = {
@@ -1142,6 +1143,9 @@ configuration(void)
 	strbuf_reset(sb);
 	if (getconfs("include_file_suffixes", sb))
 		include_file_suffixes = check_strdup(strbuf_value(sb));
+	strbuf_reset(sb);
+	if (getconfs("langmap", sb))
+		langmap = check_strdup(strbuf_value(sb));
 	strbuf_close(sb);
 }
 /**
@@ -1240,6 +1244,10 @@ main(int argc, char **argv)
 		die("cannot get current directory.");
 	openconf(cwdpath);
 	configuration();
+	/*
+	 * setup_langmap() is needed to use decide_lang().
+	 */
+	setup_langmap(langmap);
 	save_environment(argc, argv);
 	/*
 	 * insert htags_options at the head of argv.
