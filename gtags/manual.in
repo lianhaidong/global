@@ -122,19 +122,7 @@
 	@item{@file{GPATH}}
 		Tag file for source files.
 	@item{@file{gtags.conf}, @file{$HOME/.globalrc}}
-		@name{Gtags} load configuration variables from a configuration file.
-		@name{Gtags} selects it according to the following priority
-		(Lower number means higher priority).
-		@begin_verbatim
-		(1) $GTAGSCONF
-		(2) [project root]/gtags.conf
-		(3) $HOME/.globalrc
-		(4) /etc/gtags.conf
-		(5) [sysconfdir]/gtags.conf
-		@end_verbatim
-		Configuration file includes one or more records; you should select a record
-		using label. By default, @name{gtags} use 'default' label. If @var{GTAGSLABEL}
-		is set, its value is used as a label.
+		See @xref{gtags.conf,5}.
 	@item{@file{gtags.files}}
 		The list of candidates of target files.
 	@end_itemize
@@ -146,7 +134,6 @@
 		The size of the B-tree cache. The default is 50000000 (bytes).
 	@item{@var{GTAGSCONF}}
 		Configuration file.
-		About the default, please see @file{gtags.conf} in the FILES section.
 	@item{@var{GTAGSFORCECPP}}
 		If this variable is set, each file whose suffix is @file{.h} is treated
 		as a C++ source file.
@@ -202,16 +189,12 @@
 		from the root directory of the project. You cannot use glob patterns
 		for a path name.
 	@end_itemize
-
-	Addition to these, the variables listed in the ENVIRONMENT section except for
-	GTAGSCONF and GTAGSLABEL are also available as configuration variables.
-	Each environment variable is given more priority than configuration variable 
-	of the same name.
 @DIAGNOSTICS
 	@name{Gtags} exits with a non-0 value if an error occurred, 0 otherwise.
 @SEE ALSO
 	@xref{global,1},
-	@xref{htags,1}.
+	@xref{htags,1},
+	@xref{gtags.conf,5}.
 
         GNU GLOBAL source code tag system@br
         (http://www.gnu.org/software/global/).

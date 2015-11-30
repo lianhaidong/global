@@ -35,3 +35,7 @@ AM_CPPFLAGS = @AM_CPPFLAGS@ \
 	-DSYSCONFDIR='"$(sysconfdir)"'
 
 libgloutil_a_DEPENDENCIES = $(libgloutil_a_LIBADD)
+
+man_MANS = gtags.conf.5
+
+EXTRA_DIST = $(man_MANS) manual.in

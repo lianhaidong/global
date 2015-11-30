@@ -77,6 +77,8 @@
 		Mapping file for converting tag name into the path of tag list.
 	@item{@file{$HOME/.gozillarc}}
 		Alias file. Please read the source code for details.
+	@item{@file{gtags.conf}, @file{$HOME/.globalrc}}
+		See @xref{gtags.conf,5}.
 	@end_itemize
 @ENVIRONMENT
 	@begin_itemize
@@ -111,7 +113,8 @@
 	@xref{htags,1},
 	@xref{firefox,1},
 	@xref{epiphany,1},
-	@xref{mozilla,1}.
+	@xref{mozilla,1},
+	@xref{gtags.conf,5}.
 
 	GNU GLOBAL source code tag system@br
 	(http://www.gnu.org/software/global/).

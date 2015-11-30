@@ -100,7 +100,8 @@
 		Use color to highlight the pattern within the line; @arg{when} may be one of:
 		@arg{never}, @arg{always} or @arg{auto} (default).
 		The default color is bold red text on current background; the environment
-		variable @var{GREP_COLORS} or @var{GREP_COLOR} defines it.
+		variable @var{GREP_COLORS}(only @var{mt} and @var{ms} are effective at present)
+		or @var{GREP_COLOR} defines it.
 		This option is effective to the following commands:
 		<no command>, -f, -g, -I, -P.
 	@item{@option{-d}, @option{--definition}}
@@ -266,19 +267,7 @@
 		and file @file{GTAGSROOT} exists in the same directory as @file{GTAGS}
 		then @name{global} sets @var{GTAGSROOT} to the contents of the file.
 	@item{@file{gtags.conf}, @file{$HOME/.globalrc}}
-		@name{Gtags} load configuration variables from a configuration file.
-		@name{Gtags} selects it according to the following priority
-		(Lower number means higher priority).
-		@begin_verbatim
-		(1) $GTAGSCONF
-		(2) [project root]/gtags.conf
-		(3) $HOME/.globalrc
-		(4) /etc/gtags.conf
-		(5) [sysconfdir]/gtags.conf
-		@end_verbatim
-		Configuration file includes one or more records; you should select a record
-		using label. By default, @name{gtags} use 'default' label. If @var{GTAGSLABEL}
-		is set, its value is used as a label.
+		See @xref{gtags.conf,5}.
 	@end_itemize
 @ENVIRONMENT
 	The following environment variables affect the execution of @name{global}:
@@ -295,7 +284,6 @@
 		The size of the B-tree cache. The default is 50000000 (bytes).
 	@item{@var{GTAGSCONF}}
 		Configuration file.
-		About the default, please see @file{gtags.conf} in the FILES section.
 	@item{@var{GTAGSDBPATH}}
 		The directory in which the tag files exist.
 		This value is ignored when @var{GTAGSROOT} is not defined.
@@ -335,17 +323,13 @@
 		Ignore case distinctions in @arg{pattern}.
 	@end_itemize
 
-	Addition to these, the variables listed in the ENVIRONMENT section except for
-	GTAGSCONF, GTAGSLABEL, GTAGSROOT and GTAGSDBPATH  are also available
-	as configuration variables.
-	Each environment variable is given more priority than configuration variable
-	of the same name.
 @DIAGNOSTICS
 	@name{Global} exits with a non-0 value if an error occurred, 0 otherwise.
 @SEE ALSO
 	@xref{gtags,1},
 	@xref{htags,1},
-	@xref{less,1}.
+	@xref{less,1},
+	@xref{gtags.conf,5}.
 
         GNU GLOBAL source code tag system@br
         (http://www.gnu.org/software/global/).

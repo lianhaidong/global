@@ -108,6 +108,8 @@ for d in `echo $commands`; do
 	perl ./convert.pl --c $d/manual.in > $d/const.h
 	echo "+ $d/const.h"
 done
+perl ./convert.pl --info libutil/manual.in > doc/gtags.conf.ref
+perl ./convert.pl --man  libutil/manual.in > libutil/gtags.conf.5
 
 echo "- Clean up config.cache..."
 rm -f config.cache

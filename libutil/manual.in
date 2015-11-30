@@ -1,0 +1,129 @@
+#
+# Copyright (c) 2015
+#	Tama Communications Corporation
+#
+# This file is part of GNU GLOBAL.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+@HEADER	GTAGS.CONF,5,Nov 2015,GNU Project
+@NAME	gtags.conf - configuration data for GNU GLOBAL
+@SYNOPSIS
+	@file{gtags.conf}
+	@file{~/.globalrc}
+@DESCRIPTION
+	@file{gtags.conf} has configuration data for @xref{global,1}, @xref{gozilla,1},
+	@xref{gtags,1} and @xref{htags,1}. They look for the following files in this order,
+	and read from the first one that exists and is readable.
+	@begin_verbatim
+	(1) --gtagsconf @arg{file}
+	(2) $GTAGSCONF
+	(3) [project root]/gtags.conf
+	(4) $HOME/.globalrc
+	(5) /etc/gtags.conf
+	(6) [sysconfdir]/gtags.conf
+	@end_verbatim
+
+	The format is almost similar to @xref{termcap,5} except for some extensions described
+	later.
+	The file includes one or more records; you should select a record using a label.
+	Default label is 'default'. If @var{GTAGSLABEL} is set, its value is used. Please be
+	aware of the meaning of 'default' it is different from one of @xref{termcap,5}.
+
+	Lines starting with '#' are ignored.
+	A record consists of one or more fields sepalated by ':' and ends with a newline.
+	The first field must have a label name. Each field of the rest has a variable definition.
+	There are three types in those variables.
+	(1) boolean: This type has no value; existence of variable means true else false.
+	(2) number: This type has a number value after '#'.
+	(3) string: This type has a string value after '='.
+	Most variables are relevant to string type.
+
+	If data includes ':' or newline, you need quote it by '\\'.
+	An empty field is permitted, but it doesn't make sense.
+
+@Variable substitution
+	Variable substitution similar to @xref{sh,1} is available.
+	You can refer any string variables using '$' prefix. For example, the following
+	@var{b} has a value 'XYZ'.
+	@begin_verbatim
+	:a=Y:b=X${a}Z:
+	@end_verbatim
+@Including another record
+	@name{Tc} is a special variable; it read in definitions in another record.
+	It is similar to the @name{tc} of @xref{termcap,5}.
+	Syntax is as follows:
+	@begin_verbatim
+	:tc=@var{label}[@@var{file}]:
+	@end_verbatim
+	If only a label is given, @name{tc} read from a record specified by the label
+	in the same file. If '@file' is also given, @name{tc} read from a record
+	specified by the label in the specified file.
+	Different from @xref{termcap,5}, you can use @name{tc} anytime anywhere.
+@CONFIGURATION
+	About variables for each command, please see each manual.
+
+	You can use the following environment variables as a string variable.
+	If these variables are set then environment variables of the same name are set before
+	command execution.
+	@begin_verbatim
+	@var{GREP_COLOR}
+	@var{GREP_COLORS}
+	@var{GTAGSBLANKENCODE}
+	@var{GTAGSCACHE}
+	@var{GTAGSFORCECPP}
+	@var{GTAGSGLOBAL}
+	@var{GTAGSGTAGS}
+	@var{GTAGSLIBPATH}
+	@var{GTAGSLOGGING}
+	@var{GTAGSTHROUGH}
+	@var{GTAGS_OPTIONS}
+	@var{HTAGS_OPTIONS}
+	@var{MAKEOBJDIR}
+	@var{MAKEOBJDIRPREFIX}
+	@var{TMPDIR}
+	@end_verbatim
+
+	The following variables are also available as a string variable.
+	By default, each of them has a directory path given by the configure
+	script.
+	@begin_verbatim
+	@var{bindir}
+        @var{datadir}
+        @var{libdir}
+        @var{localstatedir}
+        @var{sysconfdir}
+	@end_verbatim
+@ENVIRONMENT
+	The following environment variables affect the execution of the commands.
+
+	@begin_itemize
+	@item{@var{GTAGSCONF}}
+		If this variable is set, the value is used as a configuration file.
+	@item{@var{GTAGSLABEL}}
+		If this variable is set, the value is used as a label of the configuration file.
+		The default is @arg{default}.
+	@end_itemize
+@DIAGNOSTICS
+	@name{Global} exits with a non-0 value if an error occurred, 0 otherwise.
+@SEE ALSO
+	@xref{global,1},
+	@xref{gozilla,1},
+	@xref{gtags,1},
+	@xref{htags,1}.
+
+        GNU GLOBAL source code tag system@br
+        (http://www.gnu.org/software/global/).
+@HISTORY
+	The @name{gtags.conf} file appeared in GLOBAL-3.0 (1998).
