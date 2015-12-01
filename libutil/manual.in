@@ -115,8 +115,6 @@
 		If this variable is set, the value is used as a label of the configuration file.
 		The default is @arg{default}.
 	@end_itemize
-@DIAGNOSTICS
-	@name{Global} exits with a non-0 value if an error occurred, 0 otherwise.
 @SEE ALSO
 	@xref{global,1},
 	@xref{gozilla,1},
