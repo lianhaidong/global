@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010
+ * Copyright (c) 2010, 2015
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -83,15 +83,17 @@ copy_langmap_converting_cpp(char *dst, const char *src)
 #include <fcntl.h>
 static HANDLE pid;
 static char argv[] = "ctags "
-#if defined(USE_TYPE_STRING)
-	"--gtags "
-#elif defined(USE_EXTRA_FIELDS)
+#if defined(USE_EXTRA_FIELDS)
 	"--_xformat=%R %-16N %4n %-16F %C",
 	"--extra=+r",
 	"--fields=+r",
+#else
+	"--format=1",
 #endif
-	"-xu --filter --filter-terminator=" TERMINATOR "\n "
-	"--format=1 " LANGMAP_OPTION;
+	"-xu",
+	"--filter",
+	"--filter-terminator=" TERMINATOR "\n",
+	LANGMAP_OPTION;
 static void
 start_ctags(const struct parser_param *param)
 {
@@ -152,12 +154,12 @@ static pid_t pid;
 static char *argv[] = {
 	EXUBERANT_CTAGS,
 	NULL,
-#if defined(USE_TYPE_STRING)
-	"--gtags",
-#elif defined(USE_EXTRA_FIELDS)
+#if defined(USE_EXTRA_FIELDS)
 	"--_xformat=%R %-16N %4n %-16F %C",
 	"--extra=+r",
 	"--fields=+r",
+#else
+	"--format=1",
 #endif
 	"-xu",
 	"--filter",
@@ -255,13 +257,13 @@ put_line(char *ctags_x, const struct parser_param *param)
 	int type = PARSER_DEF;
 	char *p, *tagname, *filename;
 
-#if defined(USE_TYPE_STRING) || defined(USE_EXTRA_FIELDS)
+#if defined(USE_EXTRA_FIELDS)
 	/*
 	 * Output of ctags:
 	 * ctags -x ...
 	 * main              326 global/global.c  main(int argc, char **argv)
 	 *
-	 * ctags -x --gtags ...
+	 * ctags -x --_xformat="%R %-16N %4n %-16F %C" --extra=+r --fields=+r
 	 * D main              326 global/global.c  main(int argc, char **argv)
 	 */
 	switch (*ctags_x) {
