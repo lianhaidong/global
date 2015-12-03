@@ -370,14 +370,13 @@ Cpp(const struct parser_param *param)
 			if (c == SYMBOL) {
 				if (peekc(0) == '{') /* } */ {
 					PUT(PARSER_DEF, token, lineno, sp);
-					do {
-						c = nexttoken(interested, cpp_reserved_word);
-					} while (c == '\n');
 				} else {
 					PUT(PARSER_REF_SYM, token, lineno, sp);
-					c = nexttoken(interested, cpp_reserved_word);
 				}
+				c = nexttoken(interested, cpp_reserved_word);
 			}
+			while (c == '\n')
+				c = nexttoken(interested, cpp_reserved_word);
 			if (c == '{' /* } */ && cc == CPP_ENUM) {
 				enumerator_list(param);
 			} else {
@@ -468,15 +467,13 @@ Cpp(const struct parser_param *param)
 					if (c == SYMBOL) {
 						if (peekc(0) == '{') /* } */ {
 							PUT(PARSER_DEF, token, lineno, sp);
-							do {
-								c = nexttoken(interest_enum, cpp_reserved_word);
-							} while (c == '\n');
 						} else {
 							PUT(PARSER_REF_SYM, token, lineno, sp);
-							c = nexttoken(interest_enum, cpp_reserved_word);
 						}
 						c = nexttoken(interest_enum, cpp_reserved_word);
 					}
+					while (c == '\n')
+						c = nexttoken(interest_enum, cpp_reserved_word);
 					if (c_ == CPP_ENUM) {
 						if (c == '{') /* } */
 							c = enumerator_list(param);
