@@ -359,7 +359,7 @@ strbuf_fgets(STRBUF *sb, FILE *ip, int flags)
 				;
 		}
 		if (c == EOF)
-			return sb->sbuf;
+			NULL;
 		/* push back the first character of the line */
 		ungetc(c, ip);
 	}
