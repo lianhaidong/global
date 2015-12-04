@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1997, 1998, 1999, 2000, 2002, 2005, 2006, 2010, 2014
+ * Copyright (c) 1997, 1998, 1999, 2000, 2002, 2005, 2006, 2010, 2014,
+ *	2015
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -348,14 +349,26 @@ strbuf_fgets(STRBUF *sb, FILE *ip, int flags)
 	if (sb->curp >= sb->endp)
 		__strbuf_expandbuf(sb, EXPANDSIZE);	/* expand buffer */
 
+	if (flags & STRBUF_SHARPSKIP) {
+		int c = 0;
+
+		/* skip comment lines */
+		while ((c = fgetc(ip)) == '#') {
+	 		/* read and thrown away until the last of the line */
+			while ((c = fgetc(ip)) != EOF && c != '\n')
+				;
+		}
+		if (c == EOF)
+			return sb->sbuf;
+		/* push back the first character of the line */
+		ungetc(c, ip);
+	}
 	for (;;) {
 		if (!fgets(sb->curp, sb->endp - sb->curp, ip)) {
 			if (sb->curp == sb->sbuf)
 				return NULL;
 			break;
 		}
-		if (flags & STRBUF_SHARPSKIP && *(sb->curp) == '#')
-			continue;
 		sb->curp += strlen(sb->curp);
 		if (sb->curp > sb->sbuf && *(sb->curp - 1) == '\n')
 			break;
