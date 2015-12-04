@@ -65,7 +65,7 @@
 	It is similar to the @name{tc} of @xref{termcap,5}.
 	Syntax is as follows:
 	@begin_verbatim
-	:tc=@var{label}[@@var{file}]:
+	tc=@var{label}[@@var{file}]
 	@end_verbatim
 	If only a label is given, @name{tc} read from a record specified by the label
 	in the same file. If '@file' is also given, @name{tc} read from a record
