@@ -299,6 +299,8 @@ C_family(const struct parser_param *param, int type)
 		case C_UNION:
 			while ((c = nexttoken(interested, c_reserved_word)) == C___ATTRIBUTE__)
 				process_attribute(param);
+			while (c == '\n')
+				c = nexttoken(interested, c_reserved_word);
 			if (c == SYMBOL) {
 				if (peekc(0) == '{') /* } */ {
 					PUT(PARSER_DEF, token, lineno, sp);
@@ -357,6 +359,8 @@ C_family(const struct parser_param *param, int type)
 
 					while ((c = nexttoken(interest_enum, c_reserved_word)) == C___ATTRIBUTE__)
 						process_attribute(param);
+					while (c == '\n')
+						c = nexttoken(interest_enum, c_reserved_word);
 					/* read tag name if exist */
 					if (c == SYMBOL) {
 						if (peekc(0) == '{') /* } */ {
