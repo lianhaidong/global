@@ -55,7 +55,7 @@
 
 @Variable substitution
 	Variable substitution similar to @xref{sh,1} is available.
-	You can refer any string variables using '$' prefix. For example, the following
+	You can refer any string variable using '$' prefix. For example, the following
 	@var{b} has a value 'XYZ'.
 	@begin_verbatim
 	:a=Y:b=X${a}Z:

@@ -19,6 +19,64 @@ ___________________________________
 GNU GLOBAL NEWS - User visible changes.
 At least, you should search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 6.5.2 - Dec 16 2015
+
+[CHANGES]
+New facilities:
+o Improvements of gtags.conf
+  - Including from another file: Label syntax is expanded. (:tc=label[@file]:)
+  - Variable substitution: B shell like variable substitution is available.
+  - Addition of variables: 'bindir', 'datadir', 'libdir' and 'localstatedir'.
+    By default, these variables has a value given by the configure script.
+  - gtags.conf(5): Online manual of the configuration file.
+o global: Now the -N(--nearness) option also works with the -P and -g command
+  as well as the tag search command.
+o gtags.vim: New custom variable 'Gtags_Close_When_Single' (default 0).
+  If this variable is set to 1, quickfix window is closed when single tag.
+
+Changed:
+o gtags-cscope: Title changed to reduce misunderstanding.
+  Find locations calling this function: -> Find references of this function:
+
+[FIXED BUGS]
+o gtags.el: a strange error message in gtags-visit-rootdir was fixed.
+
+	$ cp /dev/null main.c
+	$ ls
+	main.c
+	$ emacs -f gtags-mode main.c
+	[Emacs mini buffer]
+	M-x gtags-visit-rootdir[ENTER]
+	Visit root directory: /tmp/test/[ENTER]
+	/tmp/test/main.c is not directory.      <= STRANGE ERROR
+
+o gtags (C, C++): Gtags couldn't handle enums in the case that there are
+  newlines between "enum" and " {". Now it can handle correctly.
+
+	+-------------
+	|typedef enum 
+	|{
+	|  E_FIRST = 1,
+	|  E_SECOND
+	|} FIRST_SECOND;
+	+-------------
+	$ global -x '.*'
+	E_FIRST             3 test.h             E_FIRST = 1,
+	FIRST_SECOND        5 test.h           } FIRST_SECOND;	<= E_SECOND not found
+	$ _
+
+	+-------------
+	|enum
+	|tag
+	|{ ... };
+	+-------------
+	$ global -x '.*'
+	$ _			<= tag not found
+
+o gtags.conf: some part of a comment line (start with '#') was not skipped
+  when the line is very large. Now it is skipped correctly.
+o gtags: If the DLL path includes ':', loading failed. Now it works.
+
 Version 6.5.1 - Sep 15 2015
 
 [CHANGES]
