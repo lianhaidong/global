@@ -26,14 +26,14 @@
 	@file{gtags.conf} has configuration data for @xref{global,1}, @xref{gozilla,1},
 	@xref{gtags,1} and @xref{htags,1}. They look for the following files in this order,
 	and read from the first one that exists and is readable.
-	@begin_verbatim
-	(1) --gtagsconf @arg{file}
-	(2) $GTAGSCONF
-	(3) [project root]/gtags.conf
-	(4) $HOME/.globalrc
-	(5) /etc/gtags.conf
-	(6) [sysconfdir]/gtags.conf
-	@end_verbatim
+	@begin_itemize
+	@item{(1) --gtagsconf @arg{file}}
+	@item{(2) $GTAGSCONF}
+	@item{(3) [project root]/gtags.conf}
+	@item{(4) $HOME/.globalrc}
+	@item{(5) /etc/gtags.conf}
+	@item{(6) [sysconfdir]/gtags.conf}
+	@end_itemize
 
 	The format is almost similar to @xref{termcap,5} except for some extensions described
 	later.
@@ -45,66 +45,66 @@
 	A record consists of one or more fields sepalated by ':' and ends with a newline.
 	The first field must have a label name. Each field of the rest has a variable definition.
 	There are three types in those variables.
-	(1) boolean: This type has no value; existence of variable means true else false.
-	(2) number: This type has a number value after '#'.
-	(3) string: This type has a string value after '='.
+	@begin_itemize
+	@item{Boolean: This type has no value; existence of variable means true else false.}
+	@item{Number: This type has a number value after '#'.}
+	@item{String: This type has a string value after '='.}
+	@end_itemize
 	Most variables are relevant to string type.
 
 	If data includes ':' or newline, you need quote it by '\\'.
 	An empty field is permitted, but it doesn't make sense.
 
+	When there is more than one definition, the previous one is adopted. 
+	Exceptionally, all values of @name{skip}, @name{langmap} and @name{gtags_parser} are
+	adopted and connected respectively.
 @Variable substitution
 	Variable substitution similar to @xref{sh,1} is available.
 	You can refer any string variable using '$' prefix. For example, the following
-	@var{b} has a value 'XYZ'.
+	@name{b} has a value 'XYZ'.
 	@begin_verbatim
 	:a=Y:b=X${a}Z:
 	@end_verbatim
 @Including another record
 	@name{Tc} is a special variable; it read in definitions in another record.
 	It is similar to the @name{tc} of @xref{termcap,5}.
-	Syntax is as follows:
-	@begin_verbatim
-	tc=@var{label}[@@var{file}]
-	@end_verbatim
-	If only a label is given, @name{tc} read from a record specified by the label
-	in the same file. If '@file' is also given, @name{tc} read from a record
-	specified by the label in the specified file.
+	Syntax is as follows:@br
+	@name{tc}=@arg{label}[@@@arg{file}]@br
+	If only a @arg{label} is given, @name{tc} read from a record specified by the @arg{label}
+	in the same file. If @@@arg{file} is also given, @name{tc} read from a record
+	specified by the @arg{label} in the specified @arg{file}.
+	@arg{File} should be an absolute path, and should not include variables.
 	Different from @xref{termcap,5}, you can use @name{tc} anytime anywhere.
 @CONFIGURATION
 	About variables for each command, please see each manual.
 
 	You can use the following environment variables as a string variable.
 	If these variables are set then environment variables of the same name are set before
-	command execution.
-	@begin_verbatim
-	@var{GREP_COLOR}
-	@var{GREP_COLORS}
-	@var{GTAGSBLANKENCODE}
-	@var{GTAGSCACHE}
-	@var{GTAGSFORCECPP}
-	@var{GTAGSGLOBAL}
-	@var{GTAGSGTAGS}
-	@var{GTAGSLIBPATH}
-	@var{GTAGSLOGGING}
-	@var{GTAGSTHROUGH}
-	@var{GTAGS_OPTIONS}
-	@var{HTAGS_OPTIONS}
-	@var{MAKEOBJDIR}
-	@var{MAKEOBJDIRPREFIX}
-	@var{TMPDIR}
-	@end_verbatim
+	command execution.@br
+	@name{GREP_COLOR}@br
+	@name{GREP_COLORS}@br
+	@name{GTAGSBLANKENCODE}@br
+	@name{GTAGSCACHE}@br
+	@name{GTAGSFORCECPP}@br
+	@name{GTAGSGLOBAL}@br
+	@name{GTAGSGTAGS}@br
+	@name{GTAGSLIBPATH}@br
+	@name{GTAGSLOGGING}@br
+	@name{GTAGSTHROUGH}@br
+	@name{GTAGS_OPTIONS}@br
+	@name{HTAGS_OPTIONS}@br
+	@name{MAKEOBJDIR}@br
+	@name{MAKEOBJDIRPREFIX}@br
+	@name{TMPDIR}@br
 
 	The following variables are also available as a string variable.
 	By default, each of them has a directory path given by the configure
-	script.
-	@begin_verbatim
-	@var{bindir}
-        @var{datadir}
-        @var{libdir}
-        @var{localstatedir}
-        @var{sysconfdir}
-	@end_verbatim
+	script.@br
+	@name{bindir}@br
+        @name{datadir}@br
+        @name{libdir}@br
+        @name{localstatedir}@br
+        @name{sysconfdir}@br
 @ENVIRONMENT
 	The following environment variables affect the execution of the commands.
 

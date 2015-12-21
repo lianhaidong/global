@@ -23,7 +23,7 @@
 #       o texinfo format reference manual.
 #
 @HEADER GOZILLA,1,March 2010,GNU Project
-@NAME   gozilla - force mozilla to display specified part of a source file.
+@NAME   gozilla - force mozilla to display specified part of a source file
 @SYNOPSIS
 	@name{gozilla} [-b browser][-p][+no] file
 	@name{gozilla} [-b browser][-p] -d name

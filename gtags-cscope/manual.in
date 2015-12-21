@@ -1,5 +1,5 @@
 @HEADER GTAGS-CSCOPE,1,March 2011,GNU Project
-@NAME   gtags-cscope - interactively examine a C program.
+@NAME   gtags-cscope - interactively examine a C program
 @SYNOPSIS
 	@name{gtags-cscope} [-bCdehLlVv][-F file ][-012345678 @arg{pattern}][-p n]
 @DESCRIPTION

@@ -23,7 +23,7 @@
 #	o texinfo format reference manual.
 #
 @HEADER	HTAGS,1,June 2013,GNU Project
-@NAME	htags - generate a hypertext from a set of source files.
+@NAME	htags - generate a hypertext from a set of source files
 @SYNOPSIS
 	@name{htags} [-aDfFghInosTvw][-d @arg{dbpath}][-m @arg{name}][-t @arg{title}][@arg{dir}]
 @DESCRIPTION

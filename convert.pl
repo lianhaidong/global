@@ -266,6 +266,7 @@ sub convert {
 	s/\@{/{/g;
 	s/\@}/}/g;
 	s/\@br$/\n.br/;
+	s/\@\@/@/g;
 }
 sub gen {
 	local($arg) = '[^,]+';

@@ -24,7 +24,7 @@
 #	o texinfo format reference manual.
 #
 @HEADER	GTAGS,1,February 2015,GNU Project
-@NAME	gtags - create tag files for global.
+@NAME	gtags - create tag files for global
 @SYNOPSIS
 	@name{gtags} [-ciIOqvw][-d @arg{tag-file}][-f @arg{file}][@arg{dbpath}]
 @DESCRIPTION

@@ -99,7 +99,7 @@ done
 
 echo "- Collecting reference manuals ..."
 commands="global gtags htags htags-server gozilla gtags-cscope globash";
-perl ./convert.pl --menu $commands > doc/reference.texi
+perl ./convert.pl --menu $commands libutil > doc/reference.texi
 for d in `echo $commands`; do
 	perl ./convert.pl --info $d/manual.in > doc/$d.ref
 	echo "+ doc/$d.ref"
