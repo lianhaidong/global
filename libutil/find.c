@@ -386,7 +386,6 @@ issourcefile(const char *path)
 int
 skipthisfile(const char *path)
 {
-	const char *first, *last;
 	regmatch_t m;
 	int i;
 
