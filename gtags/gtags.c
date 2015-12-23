@@ -289,8 +289,6 @@ main(int argc, char **argv)
 	}
 	if (qflag)
 		vflag = 0;
-	if (debug)
-		explain = 1;	/* for upper compatibility */
 	if (show_version)
 		version(NULL, vflag);
 	if (show_help)

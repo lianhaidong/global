@@ -90,9 +90,6 @@
  */
 static regex_t *skip;			/**< regex for skipping units */
 static regex_t *suff;			/**< regex for suffixes */
-static STRBUF *list;
-static int list_count;
-static char **listarray;		/**< list for skipping full path */
 static FILE *ip;
 static FILE *temp;
 static char rootdir[PATH_MAX];
@@ -224,17 +221,6 @@ prepare_skip(void)
 	flags |= REG_ICASE;
 #endif
 	/*
-	 * initialize common data.
-	 */
-	if (!list)
-		list = strbuf_open(0);
-	else
-		strbuf_reset(list);
-	list_count = 0;
-	if (listarray)
-		(void)free(listarray);
-	listarray = (char **)0;
-	/*
 	 * load skip data.
 	 */
 	if (!getconfs("skip", reg)) {
@@ -284,95 +270,85 @@ prepare_skip(void)
 			strbuf_putc(sb, *p);
 		}
 		skipf = strbuf_value(sb);
+		/* '/' means project root directory */
 		if (*skipf == '/') {
-			list_count++;
-			strbuf_puts0(list, skipf);
+			strbuf_puts(reg, "^\\./");
+			skipf++;
 		} else {
 			strbuf_putc(reg, '/');
-			for (q = skipf; *q; q++) {
-				/*
-				 * replaces wild cards into regular expressions.
-				 *
-				 * '*' -> '.*'
-				 * '?' -> '.'
-				 * '[...]' -> '[...]'
-				 * '[!...]' -> '[^...]'
-				 */
-				if (*q == '[') {
-					char *c = q;
-					STATIC_STRBUF(class);
-					int isclass = 1;
+		}
+		for (q = skipf; *q; q++) {
+			/*
+			 * replaces wild cards into regular expressions.
+			 *
+			 * '*' -> '[^/]*'
+			 * '?' -> '[^/]'
+			 * '[...]' -> '[...]'
+			 * '[!...]' -> '[^...]'
+			 */
+			if (*q == '[') {
+				char *c = q;
+				STATIC_STRBUF(class);
+				int isclass = 1;
 
-					strbuf_clear(class);
-					strbuf_putc(class, *c++);		/* '[' */
-					if (*c == '\0')
+				strbuf_clear(class);
+				strbuf_putc(class, *c++);		/* '[' */
+				if (*c == '\0')
+					isclass = 0;
+				else if (*c == ']')
+					strbuf_putc(class, *c++);
+				else if (*c == '!') {
+					strbuf_putc(class, '^');
+					c++;
+				} else
+					strbuf_putc(class, *c++);
+				if (isclass) {
+					while (*c && *c != ']')
+						strbuf_putc(class, *c++);
+					if (*c == ']')
+						strbuf_putc(class, *c);	/* ']' */
+					else
 						isclass = 0;
-					else if (*c == ']')
-						strbuf_putc(class, *c++);
-					else if (*c == '!') {
-						strbuf_putc(class, '^');
-						c++;
-					} else
-						strbuf_putc(class, *c++);
-					if (isclass) {
-						while (*c && *c != ']')
-							strbuf_putc(class, *c++);
-						if (*c == ']')
-							strbuf_putc(class, *c);	/* ']' */
-						else
-							isclass = 0;
-					}
-					if (isclass) {
-						strbuf_puts(reg, strbuf_value(class));
-						q = c;
-					} else {
-						/* 'class' is thrown away */
-						strbuf_putc(reg, '\\');
-						strbuf_putc(reg, *q);
-					}
-				} else if (*q == '*')
-					strbuf_puts(reg, ".*");
-				else if (*q == '?')
-					strbuf_putc(reg, '.');
-				else if (*q == '\\' && *(q + 1) == ',')
-					strbuf_putc(reg, *++q);
-				else if (isregexchar(*q)) {
+				}
+				if (isclass) {
+					strbuf_puts(reg, strbuf_value(class));
+					q = c;
+				} else {
+					/* 'class' is thrown away */
 					strbuf_putc(reg, '\\');
 					strbuf_putc(reg, *q);
-				} else {
-					if (*q == '\\' && *(q + 1) != '\0') {
-						strbuf_putc(reg, *q++);
-						strbuf_putc(reg, *q);
-					} else
-						strbuf_putc(reg, *q);
 				}
+			} else if (*q == '*')
+				strbuf_puts(reg, "[^/]*");
+			else if (*q == '?')
+				strbuf_puts(reg, "[^/]");
+			else if (*q == '\\' && *(q + 1) == ',')
+				strbuf_putc(reg, *++q);
+			else if (isregexchar(*q)) {
+				strbuf_putc(reg, '\\');
+				strbuf_putc(reg, *q);
+			} else {
+				if (*q == '\\' && *(q + 1) != '\0') {
+					strbuf_putc(reg, *q++);
+					strbuf_putc(reg, *q);
+				} else
+					strbuf_putc(reg, *q);
 			}
-			if (*(q - 1) != '/')
-				strbuf_putc(reg, '$');
-			if (*p == ',')
-				strbuf_putc(reg, '|');
 		}
+		if (*(q - 1) != '/')
+			strbuf_putc(reg, '$');
+		if (*p == ',')
+			strbuf_putc(reg, '|');
 	}
 	strbuf_unputc(reg, '|');
 	strbuf_putc(reg, ')');
 	/*
 	 * compile regular expression.
 	 */
-#ifdef DEGUB
 	if (debug)
 		fprintf(stderr, "converted skip list:\n%s\n", strbuf_value(reg));
-#endif
 	if (regcomp(&skip_area, strbuf_value(reg), flags) != 0)
 		die("cannot compile regular expression.");
-	if (list_count > 0) {
-		int i;
-		listarray = (char **)check_malloc(sizeof(char *) * list_count);
-		p = strbuf_value(list);
-		for (i = 0; i < list_count; i++) {
-			listarray[i] = p;
-			p += strlen(p) + 1;
-		}
-	}
 	strbuf_close(reg);
 	free(skiplist);
 
@@ -411,6 +387,7 @@ int
 skipthisfile(const char *path)
 {
 	const char *first, *last;
+	regmatch_t m;
 	int i;
 
 	/*
@@ -421,35 +398,28 @@ skipthisfile(const char *path)
 		if (skip == NULL)
 			die("prepare_skip failed.");
 	}
-	if (regexec(skip, path, 0, 0, 0) == 0) {
-		if (find_explain)
-			fprintf(stderr, " File '%s' is skipped by skip variable (regex).\n", path);
-		return 1;
-	}
-	/*
-	 * list check.
-	 */
-	if (list_count == 0)
-		return 0;
-	for (i = 0; i < list_count; i++) {
-		first = listarray[i];
-		last = first + strlen(first);
-		/*
-		 * the path must start with "./".
-		 */
-		if (*(last - 1) == '/') {	/* it's a directory */
-			if (!STRNCMP(path + 1, first, last - first)) {
-				if (find_explain)
-					fprintf(stderr, " Directory '%s' is skipped by skip variable (path).\n", path);
-				return 1;
+	if (regexec(skip, path, 1, &m, 0) == 0) {
+		if (debug) {
+			int len = strlen(path);
+			for (i = 0; i < len; i++) {
+				if (m.rm_so == i)
+					fputc('[', stderr);
+				if (m.rm_eo == i)
+					fputc(']', stderr);
+				fputc(path[i], stderr);
 			}
-		} else {
-			if (!STRCMP(path + 1, first)) {
-				if (find_explain)
-					fprintf(stderr, " File '%s' is skipped by skip variable (path).\n", path);
-				return 1;
-			}
+			if (m.rm_eo == len)
+				fputc(']', stderr);
+			fprintf(stderr, " => SKIPPED\n");
 		}
+		if (find_explain) {
+			char *type = locatestring(path, "/", MATCH_AT_LAST) ? "Directory" : "File";
+			fprintf(stderr, " %s '%s' is skipped by skip variable (regex).\n", type, path);
+		}
+		return 1;
+	} else {
+		if (debug)
+			fprintf(stderr, "%s\n", path);
 	}
 	return 0;
 }
