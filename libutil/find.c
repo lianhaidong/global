@@ -54,6 +54,7 @@
 #include "die.h"
 #include "find.h"
 #include "getdbpath.h"
+#include "gtagsop.h"
 #include "is_unixy.h"
 #include "langmap.h"
 #include "locatestring.h"
@@ -128,9 +129,46 @@ trim(char *s)
 	*p = 0;
 }
 /**
+ * get the reason for skipping
+ *
+ *	@param[in]	path	path name (must start with "./")
+ *	@return		<directory or not> | <reason for skipping>
+ *		directory or not: 1: directory, 0: file
+ *		reason: 1: dot file, 2: tag file, 0: others
+ */
+static int
+getreason(const char *path)
+{
+	int db, type = 0, is_directory = 0;
+	const char *p;
+
+	assert(p != NULL);
+	/* seek to the last character */
+	p = path + strlen(path) - 1;
+	if (*p == '/') {
+		is_directory = 1;
+		p--;
+	}
+	/* seek to the basename */
+	for (; path < p; p--)
+		if (*p == '/')
+			break;
+	if (*p == '/')
+		p++;
+	/* check for dot files */
+	if (*p == '.') {
+		type = 1;
+	} else {
+		/* check for tag files */
+		for (db = 0; db < GTAGLIM; db++)
+			if (!strcmp(dbname(db), p))
+				type = 2;
+	}
+	return is_directory << 8 | type;
+}
+/**
  * prepare_source: preparing regular expression.
  *
- *	<!-- @param[in]	flags	flags for regcomp. -->
  *	@return	compiled regular expression for source files.
  */
 static regex_t *
@@ -346,7 +384,7 @@ prepare_skip(void)
 	 * compile regular expression.
 	 */
 	if (debug)
-		fprintf(stderr, "converted skip list:\n%s\n", strbuf_value(reg));
+		fprintf(stderr, "Regular expression of skip list:\n%s\n", strbuf_value(reg));
 	if (regcomp(&skip_area, strbuf_value(reg), flags) != 0)
 		die("cannot compile regular expression.");
 	strbuf_close(reg);
@@ -412,8 +450,21 @@ skipthisfile(const char *path)
 			fprintf(stderr, " => SKIPPED\n");
 		}
 		if (find_explain) {
-			char *type = locatestring(path, "/", MATCH_AT_LAST) ? "Directory" : "File";
-			fprintf(stderr, " %s '%s' is skipped by skip variable (regex).\n", type, path);
+			int type = getreason(path);
+			const char *kind = (type >> 8) ? "Directory" : "File";
+
+			fprintf(stderr, " - %s '%s' is skipped", kind, trimpath(path));
+			switch (type & 0xff) {
+			case 1:
+				fprintf(stderr, " because the name begins with a dot.\n");
+				break;
+			case 2:
+				fprintf(stderr, " because it is a tag file.\n");
+				break;
+			case 0:		
+				fprintf(stderr, " by the skip list.\n");
+				break;
+			}
 		}
 		return 1;
 	} else {

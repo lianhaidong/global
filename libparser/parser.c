@@ -42,8 +42,10 @@
 #include "internal.h"
 #include "checkalloc.h"
 #include "die.h"
+#include "gtagsop.h"
 #include "langmap.h"
 #include "locatestring.h"
+#include "path.h"
 #include "queue.h"
 #include "strbuf.h"
 #include "strmake.h"
@@ -410,7 +412,7 @@ parse_file(const char *path, int flags, PARSER_CALLBACK put, void *arg)
 	 */
 	ent = get_lang_entry(lang);
 	if (flags & PARSER_EXPLAIN) {
-		fprintf(stderr, " File '%s' is handled as follows:\n", path);
+		fprintf(stderr, " - File '%s' is handled as follows:\n", trimpath(path));
 		fprintf(stderr, "\tsuffix:   |%s|\n", suffix);
 		fprintf(stderr, "\tlanguage: |%s|\n", lang);
 		fprintf(stderr, "\tparser:   |%s|\n", ent->parser_name);
