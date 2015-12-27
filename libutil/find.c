@@ -142,7 +142,6 @@ getreason(const char *path)
 	int db, type = 0, is_directory = 0;
 	const char *p;
 
-	assert(p != NULL);
 	/* seek to the last character */
 	p = path + strlen(path) - 1;
 	if (*p == '/') {
