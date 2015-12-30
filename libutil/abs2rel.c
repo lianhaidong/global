@@ -359,7 +359,7 @@ erange:
 char *
 abs2rel(const char *path, const char *base, char *result, int size)
 {
-	const char *pp, *bp, *branch;
+	const char *pp, *bp, *branch, *branch_b;
 	/*
 	 * endp points the last position which is safe in the result buffer.
 	 */
@@ -384,6 +384,7 @@ abs2rel(const char *path, const char *base, char *result, int size)
 	 * seek to branched point.
 	 */
 	branch = path;
+	branch_b = base;
 	for (pp = path, bp = base; *pp && *bp; pp++, bp++) {
 #ifdef COLOR_PATH
 		/* skip escape sequence */
@@ -401,8 +402,10 @@ abs2rel(const char *path, const char *base, char *result, int size)
 #endif
 		if (PATHCHAR(*pp) != PATHCHAR(*bp))
 			break;
-		if (*pp == '/')
+		if (*pp == '/') {
 			branch = pp;
+			branch_b = bp;
+		}
 	}
 	if ((*pp == 0 || (*pp == '/' && *(pp + 1) == 0)) &&
 	    (*bp == 0 || (*bp == '/' && *(bp + 1) == 0))) {
@@ -435,7 +438,7 @@ abs2rel(const char *path, const char *base, char *result, int size)
 	 * up to root.
 	 */
 	rp = result;
-	for (bp = base + (branch - path); *bp; bp++)
+	for (bp = branch_b; *bp; bp++)
 		if (*bp == '/' && *(bp + 1) != 0) {
 			if (rp + 3 > endp)
 				goto erange;

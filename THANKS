@@ -167,6 +167,7 @@ Tu Do			bug reports about the C++ parser of gtags.
 Van Trinh		bug report about db(3) and patch information.
 Wes Wojtas		bug report about htags's segmentation fault.
 Whity Pig		bug fix patch for global(1) on Cygwin environment.
+William Xu		bug report about the --color option (abs2rel's bug).
 Wolfgang Helbig		bug report about generating wrong path name.
 xing du			bug report about gtags.vim. (The -P option didn't work)
 Yann Dirson		many bug reports and many valuable suggestions.
