@@ -265,10 +265,8 @@ prepare_skip(void)
 		return NULL;
 	}
 	skiplist = check_strdup(strbuf_value(reg));
-#ifdef DEGUB
 	if (debug)
-		fprintf(stderr, "original skip list: %s\n", skiplist);
-#endif
+		fprintf(stderr, "DBG: Original skip list:\n%s\n", skiplist);
 	/* trim(skiplist);*/
 	strbuf_reset(reg);
 	/*
@@ -383,7 +381,7 @@ prepare_skip(void)
 	 * compile regular expression.
 	 */
 	if (debug)
-		fprintf(stderr, "Regular expression of skip list:\n%s\n", strbuf_value(reg));
+		fprintf(stderr, "DBG: Regular expression of the skip list:\n%s\n", strbuf_value(reg));
 	if (regcomp(&skip_area, strbuf_value(reg), flags) != 0)
 		die("cannot compile regular expression.");
 	strbuf_close(reg);
@@ -437,6 +435,7 @@ skipthisfile(const char *path)
 	if (regexec(skip, path, 1, &m, 0) == 0) {
 		if (debug) {
 			int len = strlen(path);
+			fprintf(stderr, "DBG: ");
 			for (i = 0; i < len; i++) {
 				if (m.rm_so == i)
 					fputc('[', stderr);
