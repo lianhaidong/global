@@ -134,7 +134,7 @@ int format;
 int type;				/**< path conversion type */
 int match_part;				/**< match part only	*/
 int abslib;				/**< absolute path only in library project */
-char use_color;				/**< coloring */
+int use_color;				/**< coloring */
 const char *cwd;			/**< current directory	*/
 const char *root;			/**< root of source tree	*/
 const char *dbpath;			/**< dbpath directory	*/
