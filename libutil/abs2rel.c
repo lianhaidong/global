@@ -432,8 +432,10 @@ abs2rel(const char *path, const char *base, char *result, int size)
 			die("invalid escape sequence in the path. '%s'", path);
 	}
 #endif
-	if ((*pp == 0 && *bp == '/') || (*pp == '/' && *bp == 0))
+	if ((*pp == 0 && *bp == '/') || (*pp == '/' && *bp == 0)) {
 		branch = pp;
+		branch_b = bp;
+	}
 	/*
 	 * up to root.
 	 */
