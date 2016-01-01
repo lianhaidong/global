@@ -84,15 +84,15 @@ copy_langmap_converting_cpp(char *dst, const char *src)
 static HANDLE pid;
 static char argv[] = "ctags "
 #if defined(USE_EXTRA_FIELDS)
-	"--_xformat=%R %-16N %4n %-16F %C",
-	"--extra=+r",
-	"--fields=+r",
+	"\"--_xformat=%R %-16N %4n %-16F %C\" "
+	"--extra=+r "
+	"--fields=+r "
 #else
-	"--format=1",
+	"--format=1 "
 #endif
-	"-xu",
-	"--filter",
-	"--filter-terminator=" TERMINATOR "\n",
+	"-xu "
+	"--filter "
+	"\"--filter-terminator=" TERMINATOR "\n\" "
 	LANGMAP_OPTION;
 static void
 start_ctags(const struct parser_param *param)

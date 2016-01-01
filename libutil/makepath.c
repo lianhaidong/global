@@ -95,6 +95,7 @@ makepath(const char *dir, const char *file, const char *suffix)
 		die("path name too long. '%s'\n", strbuf_value(sb));
 	return strbuf_value(sb);
 }
+#if !defined(_WIN32) || defined(__CYGWIN__)
 #include <sys/types.h>
 #include <pwd.h>
 #include <limits.h>
@@ -157,6 +158,29 @@ makepath_with_tilde(const char *file)
 	case '/':
 		return file;
 	default:
+#if defined(_WIN32) || defined(__DJGPP__)
+		if (isabspath(file))
+			return file;
+#endif
 		return NULL;	/* cannot accept */
 	}
 }
+#else /* Win32 */
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+const char *
+makepath_with_tilde(const char *file)
+{
+	if (isabspath(file))
+		return file;
+
+	if (*file == '~' && (file[1] == '/' || file[1] == '\\')) {
+		char home[MAX_PATH];
+		if (GetEnvironmentVariable("HOME", home, sizeof(home)) ||
+		    GetEnvironmentVariable("USERPROFILE", home, sizeof(home)))
+			return makepath(home, file + 2, NULL);
+	}
+
+	return NULL;	/* cannot accept */
+}
+#endif

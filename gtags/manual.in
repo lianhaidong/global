@@ -54,12 +54,11 @@
 		Print the value of config variable @arg{name}.
 		If @arg{name} is not specified then print all names and values.
 		In addition to the variables listed in the ENVIRONMENT section,
-		you can refer install directories by read only variables:
-		@var{bindir}, @var{libdir}, @var{datadir}, @var{localstatedir}
-		and @var{sysconfdir}.
+		you can refer to install directories by read only variables:
+		@var{bindir}, @var{libdir}, @var{datadir}, @var{localstatedir} and @var{sysconfdir}.
 	@item{@option{-d}, @option{--dump} @arg{tag-file}}
-		Dump a tag file as text to the standard output. Output format is 'key<tab>data'.
-		This is for debugging.
+		Dump a tag file as text to the standard output. Output format is
+		'key<tab>data'. This is for debugging.
 	@item{@option{--explain}}
 		Explain handling files.
 	@item{@option{-f}, @option{--file} @arg{file}}

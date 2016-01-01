@@ -32,6 +32,7 @@
 
 #include "getdbpath.h"
 #include "gparam.h"
+#include "path.h"
 #include "locatestring.h"
 #include "nearsort.h"
 

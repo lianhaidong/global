@@ -100,7 +100,7 @@
 		Use color to highlight the pattern within the line; @arg{when} may be one of:
 		@arg{never}, @arg{always} or @arg{auto} (default).
 		The default color is bold red text on current background; the environment
-		variable @var{GREP_COLORS}(only @var{mt} and @var{ms} are effective at present)
+		variable @var{GREP_COLORS} (only @var{mt} and @var{ms} are effective at present)
 		or @var{GREP_COLOR} defines it.
 		This option is effective to the following commands:
 		<no command>, -f, -g, -I, -P.
@@ -116,8 +116,8 @@
 		two-digit hexadecimal representation of the character.
 		A blank will be converted to @samp{%20}.
 	@item{@option{-F}, @option{--first-match}}
-		End the search without go through all the tag files listed in @var{GTAGSLIBPATH}
-		when tags are found in a tag file. This is the default.
+		End the search without going through all the tag files listed in
+		@var{GTAGSLIBPATH} when tags are found in a tag file. This is the default.
 	@item{@option{--from-here} @arg{context}}
 		Decide tag type by @arg{context}, which must be @samp{lineno:path}.
 		If this option is specified then @option{-s} and @option{-r} are ignored.
@@ -157,14 +157,14 @@
 		This option is effective for the tag search command, @option{-P} command
 		and @option{-g} command. As an exception, @option{-g} command ignores this
 		option when files are specified by arguments.
-		The nearness is defined by how many parent directories to go up to rearch
-		the target. The result of nearness sort is concatenation of the followings
+		The nearness is defined by how many parent directories to go up to reach
+		the target. The result of nearness sort is concatenation of the following
 		([1]-[n]) in this order. The default of @arg{start} is the current directory.
 		@begin_verbatim
 		[1] Output of local search in the start directory.
 		[2] Output of local search in the parent directory except for [1].
 		[3] Output of local search in the grandparent directory except for [1]-[2].
-		(repeat until the project root directory)
+		... (repeat until the project root directory)
 		[n] Output of local search in the project root directory except for [1]-[n-1].
 		@end_verbatim
 		In each directory, they are sorted by alphabetical order.
@@ -235,9 +235,9 @@
 	main              10 src/main.c  main (argc, argv) {
 	$ global -f src/main.c
 	main              10 src/main.c  main (argc, argv) {
-	func1		  55 src/main.c  func1() {		  
-	func2		  72 src/main.c  func2() {		  
-	func3		 120 src/main.c  func3() {		  
+	func1             55 src/main.c  func1() {
+	func2             72 src/main.c  func2() {
+	func3            120 src/main.c  func3() {
 	$ global -x '^[sg]et'
 	set_num           20 lib/util.c  set_num(values) {
 	get_num           30 lib/util.c  get_num() {

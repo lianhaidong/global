@@ -120,7 +120,7 @@ universal-ctags|exuberant-ctags|plugin-example|setting to use Exuberant Ctags pl
 	:langmap=WindRes\:.rc:\
 	:langmap=YACC\:.y:\
 	:langmap=Zephir\:.zep:\
-	:langmap=coffee\:.coffee:\
+	:langmap=CoffeeScript\:.coffee:\
 	:langmap=ctags\:.ctags:\
 	:langmap=gdbinit\:.gdb.gdbinit:\
 	:langmap=m4\:.m4.spt:\
@@ -182,7 +182,7 @@ universal-ctags|exuberant-ctags|plugin-example|setting to use Exuberant Ctags pl
 	:gtags_parser=WindRes\:$ctagslib:\
 	:gtags_parser=YACC\:$ctagslib:\
 	:gtags_parser=Zephir\:$ctagslib:\
-	:gtags_parser=coffee\:$ctagslib:\
+	:gtags_parser=CoffeeScript\:$ctagslib:\
 	:gtags_parser=ctags\:$ctagslib:\
 	:gtags_parser=gdbinit\:$ctagslib:\
 	:gtags_parser=m4\:$ctagslib:

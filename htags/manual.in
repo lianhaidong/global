@@ -112,7 +112,8 @@
 		You can choose the position using @arg{position},
 		which allows one of @val{before}, @val{right} or @val{after} (default).
 	@item{@option{--html-header} @arg{file}}
-		Insert a header record derived from @arg{file} into the HTML header of each file.
+		Insert a header record derived from @arg{file}
+		into the HTML header of each file.
 	@item{@option{-I}, @option{--icon}}
 		Use icons instead of text for some links.
 	@item{@option{--insert-footer} @arg{file}}
@@ -141,8 +142,8 @@
 		Make anchors not only for definitions and references
 		but also other symbols.
 	@item{@option{--show-position}}
-		Print the position string per function definition. The string can be interpreted
-		by general editors in UNIX. The default is false.
+		Print the position string per function definition. The string can be
+		interpreted by general editors in UNIX. The default is false.
 	@item{@option{--statistics}}
 		Print statistics information.
 	@item{@option{--suggest}}

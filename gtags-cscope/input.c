@@ -48,6 +48,11 @@
 #if HAVE_SYS_TERMIOS_H
 #include <sys/termios.h>
 #endif
+#if defined(_WIN32) && !defined(__CYGWIN__)
+#define WIN32_LEAN_AND_MEAN
+#define __OBJC__	/* work around BOOL redefinition */
+#include <windows.h>
+#endif
 
 static	jmp_buf	env;		/**< setjmp/longjmp buffer */
 static	int	prevchar;	/**< previous, ungotten character */
@@ -78,12 +83,21 @@ myungetch(int c)
 int
 mygetch(void)
 {
+#if !defined(_WIN32) || !defined(__CYGWIN__)
+    /* longjmp won't work, it's in a different thread */
     sighandler_t savesig; /* old value of signal */
+#endif
     int c;
 
     /* change an interrupt signal to a break key character */
     if (setjmp(env) == 0) {
+#if defined(_WIN32) && !defined(__CYGWIN__)
+	/* turn off Ctrl+C handling (PDCurses does this, but it gets turned on
+	   again by CMD during system) */
+	SetConsoleMode( GetStdHandle( STD_INPUT_HANDLE ), 0 );
+#else
 	savesig = signal(SIGINT, catchint);
+#endif
 	refresh();	/* update the display */
 	mousereinit();	/* curses can change the menu number */
 	if(prevchar) {
@@ -101,7 +115,9 @@ mygetch(void)
     } else {	/* longjmp to here from signal handler */
 	c = KEY_BREAK;
     }
+#if !defined(_WIN32) || !defined(__CYGWIN__)
     signal(SIGINT, savesig);
+#endif
     return(c);
 }
 

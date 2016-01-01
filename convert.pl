@@ -170,6 +170,9 @@ sub convert {
 	while (s/\@xref\{($arg),($arg)\}/$1($2)/) {
 		;
 	}
+	while (s/\@(begin|end)_verbatim//) {
+		;
+	}
 }
 sub gen {
 	local($help_const) = 0;
@@ -267,6 +270,7 @@ sub convert {
 	s/\@}/}/g;
 	s/\@br$/\n.br/;
 	s/\@\@/@/g;
+	s/^\./\\&./;
 }
 sub gen {
 	local($arg) = '[^,]+';
@@ -392,6 +396,7 @@ sub gen {
 				} elsif ($verbatim) {
 					s/\{/@\{/g;
 					s/\}/@\}/g;
+					s/^\s+//;
 					print;
 					next;
 				} elsif (/^\@/) {
