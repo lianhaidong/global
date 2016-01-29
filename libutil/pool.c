@@ -113,6 +113,13 @@ pool_reset(POOL *pool)
 	 * Free all memory in pool->obstack but leave it valid for further allocation.
 	 */
 	obstack_free(&pool->obstack, pool->first_object);
+
+	/*
+	 * The above calling `obstack_free' frees first object,
+	 * and the value of `pool->first_object' becomes invalid.
+	 * Therefore it's necessary to allocate an object again.
+	 */
+	pool->first_object = obstack_alloc(&pool->obstack, 1);
 }
 /**
  * pool_close: close memory pool
