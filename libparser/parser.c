@@ -131,16 +131,8 @@ struct plugin_entry {
 	struct lang_entry entry;
 };
 
-#ifndef IS__DOXYGEN_
 static STAILQ_HEAD(plugin_list, plugin_entry)
 	plugin_list = STAILQ_HEAD_INITIALIZER(plugin_list);
-
-#else
-static struct plugin_list {
-	struct plugin_entry *stqh_first; /**< first element */
-	struct plugin_entry **stqh_last; /**< addr of last next element */
-} plugin_list = { NULL, &(plugin_list).stqh_first };
-#endif
 static char *langmap_saved, *pluginspec_saved;
 
 /**

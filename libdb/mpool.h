@@ -43,20 +43,8 @@
 
 /** The BKT structures are the elements of the queues. */
 typedef struct _bkt {
-
-#ifndef IS__DOXYGEN_
 	CIRCLEQ_ENTRY(_bkt) hq;		/**< hash queue */
 	CIRCLEQ_ENTRY(_bkt) q;		/**< lru queue */
-#else
-	struct {
-		struct _bkt *cqe_next;
-		struct _bkt *cqe_prev;
-	} hq;						/**< hash queue */
-	struct {
-		struct _bkt *cqe_next;
-		struct _bkt *cqe_prev;
-	} q;						/**< lru queue */
-#endif
 	void    *page;			/**< page */
 	pgno_t   pgno;			/**< page number */
 
