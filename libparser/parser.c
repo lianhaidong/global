@@ -41,6 +41,7 @@
 #include "parser.h"
 #include "internal.h"
 #include "checkalloc.h"
+#include "conf.h"
 #include "die.h"
 #include "gtagsop.h"
 #include "langmap.h"
@@ -376,6 +377,27 @@ parser_exit(void)
 }
 
 /**
+ * getconf: return the value of the config variable by name.
+ */
+char *
+getconf(const char *name)
+{
+	int num = 0;
+	STATIC_STRBUF(sb);
+
+	strbuf_clear(sb);
+	if (getconfs(name, sb))
+		;
+	else if (getconfn(name, &num))
+		strbuf_putn(sb, num);
+	else if (getconfb(name))
+		strbuf_putn(sb, 1);
+	else
+		return NULL;
+	return check_strdup(strbuf_value(sb));
+}
+
+/**
  * parse_file: select and execute a parser.
  *
  *	@param[in]	path	path name
@@ -420,6 +442,7 @@ parse_file(const char *path, int flags, PARSER_CALLBACK put, void *arg)
 	param.arg = arg;
 	param.isnotfunction = isnotfunction;
 	param.langmap = langmap_saved;
+	param.getconf = getconf;
 	param.die = die;
 	param.warning = warning;
 	param.message = message;

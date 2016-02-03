@@ -19,6 +19,20 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+February 3 2016, Shigio YAMAGUCHI
+
+	[Plug-in parser]
+	Added new plug-in parser 'universal-ctags.la'.
+	It is made using exuberant-ctags.c and -DUSE_EXTRA_FIELDS compile option.
+
+	[gtags.conf]
+	Added new entry 'universal-ctags'.
+	Added new variables 'ctagscom'.
+
+	[Plug-in interface]
+	Added new plug-in interface function getconf().
+	You can access config variables of gtags(1) from plug-in parsers.
+
 Nov 30 2015, Shigio YAMAGUCHI
 
 	Replaced @libdir_QUOTED@ with configuration variable in gtags.conf.in.

@@ -60,6 +60,7 @@ struct parser_param {
 	void *arg;
 	int (*isnotfunction)(const char *);
 	const char *langmap;
+	char *(*getconf)(const char *);
 	void (*die)(const char *, ...);
 	void (*warning)(const char *, ...);
 	void (*message)(const char *, ...);

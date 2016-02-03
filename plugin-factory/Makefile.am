@@ -11,11 +11,19 @@
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
 plugindir = ${libdir}/gtags
-plugin_LTLIBRARIES = exuberant-ctags.la pygments-parser.la user-custom.la
+plugin_LTLIBRARIES = \
+		exuberant-ctags.la \
+		universal-ctags.la \
+		pygments-parser.la \
+		user-custom.la
 
 # Exuberant Ctags parser
 exuberant_ctags_la_SOURCES = exuberant-ctags.c
 exuberant_ctags_la_LDFLAGS = -module -avoid-version -no-undefined
+# Univercal Ctags parser
+universal_ctags_la_SOURCES = exuberant-ctags.c
+universal_ctags_la_CFLAGS  = -DUSE_EXTRA_FIELDS
+universal_ctags_la_LDFLAGS = -module -avoid-version -no-undefined
 
 # Pygments parser
 pygments_parser_la_SOURCES = pygments-parser.c

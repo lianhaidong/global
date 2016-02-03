@@ -3,7 +3,7 @@ dnl Configuration script for GLOBAL.
 dnl Process this file with autoconf to produce a configure script.
 dnl
 dnl Copyright (c) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2008, 2010,
-dnl	2011, 2012, 2013, 2014, 2015
+dnl	2011, 2012, 2013, 2014, 2015, 2016
 dnl	Tama Communications Corporation
 dnl
 dnl This file is part of GNU GLOBAL.
@@ -256,16 +256,17 @@ AC_ARG_WITH(pread-pwrite,
 ])
 
 dnl
-dnl for gtags.conf and function layer plugin parser sample.
+dnl for Exuberant ctags plug-in parser.
 dnl
 AC_MSG_CHECKING(for exuberant ctags program)
 AC_ARG_WITH(exuberant-ctags,
 [  --with-exuberant-ctags=PROGRAM  specify Exuberant Ctags program ],
 [
-	EXUBERANT_CTAGS="$withval"
         if test "$withval" = no; then
+		EXUBERANT_CTAGS=
                 AC_MSG_RESULT(no)
 	else
+		EXUBERANT_CTAGS="$withval"
                 AC_MSG_RESULT([using $EXUBERANT_CTAGS])
 	fi
 ],
@@ -278,27 +279,49 @@ AC_ARG_WITH(exuberant-ctags,
 		fi
 	done
 	if test "$withval" = ''; then
+		EXUBERANT_CTAGS=
 		AC_MSG_RESULT(no)
 	else
 		EXUBERANT_CTAGS="$withval"
 		AC_MSG_RESULT([using $EXUBERANT_CTAGS])
 	fi
 ])
-if test "$EXUBERANT_CTAGS" != '' && test "$EXUBERANT_CTAGS" != no && test -x "$EXUBERANT_CTAGS"; then
-	dnl
-	dnl For universal ctags
-	dnl
-	AC_MSG_CHECKING(whether Universal ctags --_xformat=... --extra=+r --fields=+r works)
-	if (sh -c "'$EXUBERANT_CTAGS' --_xformat='%R %-16N %4n %-16F %C' --extra=+r --fields=+r -x /dev/null") > /dev/null 2>&1; then
-		AC_DEFINE(USE_EXTRA_FIELDS,1,[Define if ctags --_xformat --extra=+r --fields=+r option is available.])
-		AC_MSG_RESULT(yes)
+dnl
+dnl for Universal ctags plug-in parser.
+dnl
+AC_MSG_CHECKING(for universal ctags program)
+AC_ARG_WITH(universal-ctags,
+[  --with-universal-ctags=PROGRAM  specify Universal Ctags program ],
+[
+        if test "$withval" = no; then
+		UNIVERSAL_CTAGS=
+                AC_MSG_RESULT(no)
 	else
-		AC_MSG_RESULT(no)
+		UNIVERSAL_CTAGS="$withval"
+                AC_MSG_RESULT([using $UNIVERSAL_CTAGS])
 	fi
-fi
-
+],
+[
+	withval=
+	for d in `echo $PATH | sed -e 's/^:/.:/' -e 's/::/:.:/g' -e 's/:$/:./' -e 's/:/ /g'`
+	do
+		if test -x "$d/ctags" && (sh -c "'$d/ctags' --_xformat='%R %-16N %4n %-16F %C' --extra=+r --fields=+r -x /dev/null") > /dev/null 2>&1; then
+			withval="$d/ctags"
+			break
+		fi
+	done
+	if test "$withval" = ''; then
+		UNIVERSAL_CTAGS=
+		AC_MSG_RESULT(no)
+	else
+		UNIVERSAL_CTAGS="$withval"
+		AC_MSG_RESULT([using $UNIVERSAL_CTAGS])
+	fi
+])
 AC_DEFINE_UNQUOTED(EXUBERANT_CTAGS, "$EXUBERANT_CTAGS", [Exuberant Ctags program.])
+AC_DEFINE_UNQUOTED(UNIVERSAL_CTAGS, "$UNIVERSAL_CTAGS", [Universal Ctags program.])
 AC_SUBST(EXUBERANT_CTAGS)
+AC_SUBST(UNIVERSAL_CTAGS)
 
 dnl
 dnl for POSIX sort program.

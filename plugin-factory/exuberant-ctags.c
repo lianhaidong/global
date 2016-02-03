@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2015
+ * Copyright (c) 2010, 2015, 2016
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -39,6 +39,9 @@
 #endif
 
 #include "parser.h"
+#include "checkalloc.h"
+#include "conf.h"
+#include "strbuf.h"
 
 /*
  * Function layer plugin parser sample
@@ -51,7 +54,19 @@
 static FILE *ip, *op;
 static char *linebuf;
 static size_t bufsize;
-static char *ctagsnotfound = "Exuberant Ctags not found. Please see ./configure --help.";
+/*
+ * 'ctagscom' has the path of ctags command.
+ * In the configuration phase, the default value is set by the configure script.
+ * In execution phase, plug-in parser get the value from the configuration file
+ * (gtags.conf, $HOME/.globalrc) if it is defined.
+ */
+#if defined(USE_EXTRA_FIELDS)
+static const char *ctagscom = UNIVERSAL_CTAGS;
+static const char *ctagsnotfound = "Universal Ctags not found. Please see ./configure --help.";
+#else
+static const char *ctagscom = EXUBERANT_CTAGS;
+static const char *ctagsnotfound = "Exuberant Ctags not found. Please see ./configure --help.";
+#endif
 
 #ifdef __GNUC__
 static void terminate_ctags(void) __attribute__((destructor));
@@ -152,7 +167,7 @@ terminate_ctags(void) {
 #include <sys/wait.h>
 static pid_t pid;
 static char *argv[] = {
-	EXUBERANT_CTAGS,
+	"ctags",
 	NULL,
 #if defined(USE_EXTRA_FIELDS)
 	"--_xformat=%R %-16N %4n %-16F %C",
@@ -170,8 +185,11 @@ static void
 start_ctags(const struct parser_param *param)
 {
 	int opipe[2], ipipe[2];
+	char *path = param->getconf("ctagscom");
 
-	if (strlen(EXUBERANT_CTAGS) == 0 || !strcmp(EXUBERANT_CTAGS, "no"))
+	if (path && strlen(path) > 0 && strcmp(path, "no") != 0)
+		ctagscom = path;
+	if (!ctagscom || !strlen(ctagscom) || !strcmp(ctagscom, "no"))
 		param->die(ctagsnotfound);
 	argv[1] = malloc(sizeof(LANGMAP_OPTION) + strlen(param->langmap));
 	if (argv[1] == NULL)
@@ -191,12 +209,13 @@ start_ctags(const struct parser_param *param)
 			param->die("dup2 failed.");
 		close(opipe[0]);
 		close(ipipe[1]);
-		execvp(EXUBERANT_CTAGS, argv);
+		execvp(ctagscom, argv);
 		param->die("execvp failed.");
 	}
 	/* parent process */
 	if (pid < 0)
 		param->die("fork failed.");
+	free(path);
 	free(argv[1]);
 	close(opipe[0]);
 	close(ipipe[1]);
