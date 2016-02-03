@@ -73,7 +73,7 @@ static void yyerror(const struct parser_param *, const char *);
 %token ASM_EQU			/* .equ */
 
 %start input
-%name-prefix="asm_"
+%name-prefix "asm_"
 
 %parse-param { const struct parser_param *param }
 %lex-param { const struct parser_param *param }
