@@ -24,7 +24,7 @@ To build the parser, you need to have the following package installed:
 
 	- GNU gperf 3.0.3	to look up reserved words.
 	- flex 2.5.35		to generate php and assembly parser.
-	- GNU bison 1.875	to generate assembly parser.
+	- GNU bison 3.0.4	to generate assembly parser.
 
 2. Reserved word processing using GNU gperf.
 
