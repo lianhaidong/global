@@ -196,6 +196,11 @@ def parse_langmap(string):
     return langmap
 
 def handle_requests(langmap, options):
+    # Update ctags's path from the configuration file
+    global EXUBERANT_CTAGS
+    path = load_ctags_path()
+    if path != '':
+       EXUBERANT_CTAGS = path
     if EXUBERANT_CTAGS != '' and EXUBERANT_CTAGS != 'no':
         pygments_parser = PygmentsParser(langmap, options)
         try:
@@ -227,6 +232,14 @@ def get_parser_options_from_env(parser_options):
             s = s.strip()
             if s == 'strippunctuation':
                 parser_options.strip_punctuation = True
+
+def load_ctags_path():
+    path = ''
+    p = subprocess.Popen("gtags --config=ctagscom", shell=True,
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if p.wait() == 0:
+        path = p.stdout.readline().rstrip()
+    return path
 
 def main():
     opt_parser = optparse.OptionParser()
