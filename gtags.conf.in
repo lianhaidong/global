@@ -67,7 +67,7 @@ exuberant-ctags|plugin-example|setting to use Exuberant Ctags plug-in parser:\
 	:tc=common-ctags-maps:
 #
 # A common map for both Exuberant Ctags and Universal Ctags.
-# Don't include ctagscom and ctagslib in this entry.
+# Don't include definitions of ctagscom and ctagslib in this entry.
 #
 common-ctags-maps:\
 # Ant      *.build.xml				(out of support)
@@ -222,6 +222,7 @@ universal-ctags|setting to use Universal Ctags plug-in parser:\
 # Plug-in parser to use Pygments.
 #
 pygments-parser|Pygments plug-in parser:\
+	:ctagscom=@EXUBERANT_CTAGS@:\
 	:pygmentslib=$libdir/gtags/pygments-parser.la:\
 	:tc=common:\
 	:langmap=ABAP\:.abap:\

@@ -43,6 +43,8 @@
 		Tag file for source files.
 	@item{@file{~/.globashrc}}
 		Start-up file.
+	@item{@file{~/.globash/}}
+		Session directory.
 	@end_itemize
 @ENVIRONMENT
 	The following environment variables affect the execution of @name{globash}:

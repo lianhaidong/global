@@ -269,6 +269,8 @@ openconf(const char *rootdir)
 {
 	STRBUF *sb;
 
+	if (opened)
+		return;
 	opened = 1;
 	/*
 	 * if config file not found then return default value.
@@ -496,7 +498,9 @@ getconfs(const char *name, STRBUF *result)
 	}
 	replace_variables(sb);
 	if (result)
-		strbuf_puts(result, strbuf_value(sb));
+		strbuf_puts(result, !strcmp(name, "langmap") ? 
+			trim_langmap(strbuf_value(sb)) :
+			strbuf_value(sb));
 	strbuf_close(sb);
 	return exist;
 }
