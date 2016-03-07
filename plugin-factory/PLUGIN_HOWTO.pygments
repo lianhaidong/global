@@ -58,10 +58,10 @@ Please execute gtags(1) as usual.
 $ gtags
 
 If it is doubtful whether Pygments plug-in parser is used,
-please try a debug option. It shows the libraries used by
+please try --explaina option. It shows the libraries used by
 gtags.
 
-$ gtags --debug
+$ gtags --explain
 ...
 File './lib/xmalloc.c' is handled as follows:
         suffix:   |.c|
