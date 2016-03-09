@@ -6,11 +6,11 @@ c.c
 const.h
 const.pl
 cpp.c
-global.cgi.tmpl
+global.cgi
 htags
 htags.1
 htags.pl
 java.c
 php.c
 .libs
-completion.cgi.tmpl
+completion.cgi
