@@ -1,4 +1,4 @@
-#! @PERL@
+#! @PERLPATH@
 #------------------------------------------------------------------
 # YOU ARE COMING TO THE DESTINATION ALMOST. PLEASE DO A LITTLE EFFORT.
 #
@@ -21,21 +21,30 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
+$global_command = '@GLOBALPATH@';
 sub header {
 	"Content-type: text/html\n\n" .
-	"@page_begin@\n@body_begin@\n";
+	"<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>\
+<html xmlns='http://www.w3.org/1999/xhtml'>\
+<head>\
+<title>Result</title>\
+<meta name='robots' content='noindex,nofollow' />\
+<meta name='generator' content='GLOBAL-6.5.2' />\
+<meta http-equiv='Content-Style-Type' content='text/css' />\
+<link rel='stylesheet' type='text/css' href='$basedir/style.css' />\
+</head>\n<body>\n";
 }
 sub tailer {
-	"@body_end@\n@page_end@\n";
+	"</body>\n</html>\n";
 }
 sub title {
-	"@title_begin@" . $_[0] . "@title_end@\n";
+	"<h1 class='title'>" . $_[0] . "</h1>\n";
 }
 sub error {
-	"@error_begin@Error@error_end@\n";
+	"<h2 class='error'>Error</h2>\n";
 }
 sub message {
-	"@message_begin@" . $_[0] . "@message_end@\n";
+	"<h3 class='message'>" . $_[0] . "</h3>\n";
 }
 @pairs = split (/&/, $ENV{'QUERY_STRING'});
 foreach $p (@pairs) {
@@ -63,12 +72,9 @@ if ($form{'id'}) {
 sub error_and_exit {
 	print header();
 	print error();
-	print message($_[0] . "<a href='$basedir/mains.@normal_suffix@'>[return]</a>");
+	print message($_[0] . "<a href='$basedir/mains.html'>[return]</a>");
 	print tailer();
 	exit 0;
-}
-if (! -x '@globalpath@') {
-	error_and_exit("Server side command not found.");
 }
 if ($form{'pattern'} eq '') {
 	error_and_exit("Pattern not specified.");
@@ -126,9 +132,9 @@ if ($?) {
 #
 $flags = '-' . $flag . $iflag . $oflag . 'e';
 if ($^O eq 'MSWin32') {
-	open(PIPE, '@globalpath@' . " --result=ctags-xid $flags $pattern |");
+	open(PIPE, "$global_command" . " --result=ctags-xid $flags $pattern |");
 } else {
-	open(PIPE, "-|") || exec '@globalpath@', '--result=ctags-xid', $flags, $pattern;
+	open(PIPE, "-|") || exec "$global_command", '--result=ctags-xid', $flags, $pattern;
 	if ($?) {
 		error_and_exit("Cannot execute global.");
 	}
@@ -150,7 +156,7 @@ if (@line == 0) {
 	# not found
 	print header();
 	print title($pattern);
-	print message("Pattern not found. <a href='$basedir/mains.@normal_suffix@'>[return]</a>");
+	print message("Pattern not found. <a href='$basedir/mains.html'>[return]</a>");
 	print tailer();
 	exit 0;
 } elsif (@line == 1) {
@@ -167,7 +173,7 @@ if (@line == 0) {
 }
 print header();
 print "<h1 class='title'>" . $pattern . "</h1>\n";
-print "Following $words are matched to above pattern.@hr@\n";
+print "Following $words are matched to above pattern.<hr />\n";
 #
 # Input format:
 #
@@ -175,7 +181,7 @@ print "Following $words are matched to above pattern.@hr@\n";
 # ---------------------------------------------
 # 100 main  32 ./main.c main(argc, argv)
 #
-print "@verbatim_begin@\n";
+print "<pre>\n";
 $count = 0;
 while ($_ = input()) {
 	chop;
@@ -186,8 +192,8 @@ while ($_ = input()) {
 	s!(^[^ \t]+)!<a href='$basedir/S/$fid.$html#L$lno'>$1<\/a>!;
 	print "<span class='curline'>$_</span>\n";
 }
-print "@verbatim_end@\n";
+print "</pre>\n";
 close(PIPE);
-print "@hr@$count objects located.\n";
+print "<hr />$count objects located.\n";
 print tailer();
 exit 0;

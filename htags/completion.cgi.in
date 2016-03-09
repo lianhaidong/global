@@ -1,4 +1,4 @@
-#! @PERL@
+#! @PERLPATH@
 #
 # Copyright (c) 2010 Tama Communications Corporation
 #
@@ -11,12 +11,10 @@
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
 $script_name = 'completion.cgi';
+$global_command = '@GLOBALPATH@';
 sub error_and_exit {
 	print STDERR "$script_name: " . $_[0];
 	exit 1;
-}
-if (! -x '@globalpath@') {
-	error_and_exit("server side command not found.");
 }
 @pairs = split (/&/, $ENV{'QUERY_STRING'});
 foreach $p (@pairs) {
@@ -69,9 +67,9 @@ if (-f "../GTAGSROOT" && open(GTAGSROOT, "../GTAGSROOT")) {
 chdir($gtagsroot);
 print "Content-Type: text/html\n\n";
 if ($^O eq 'MSWin32') {
-	open(PIPE, '@globalpath@' . " -${flags}e $q |");
+	open(PIPE, $global_command . " -${flags}e $q |");
 } else {
-	open(PIPE, "-|") || exec '@globalpath@', '-'.$flags.'e', $q;
+	open(PIPE, "-|") || exec $global_command, '-'.$flags.'e', $q;
 }
 if ($limit > 0) {
 	while (<PIPE>) {

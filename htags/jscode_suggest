@@ -8,12 +8,12 @@ function getCheck(name) {
 	return $('input[name=' + name + ']').attr('checked') ? 1 : 0;
 }
 $(function() {
-	$('#pattern').suggest('@completion_action@',{
+	$('#pattern').suggest('cgi-bin/completion.cgi',{
 		minchars: 2,
 		delay: 100,
 		extraParams : {
 			type:  function() { return getType(); },
-			limit: '@limit@',
+			limit: '0',
 			icase: function() { return getCheck('icase'); },
 			other: function() { return getCheck('other'); },
 		}

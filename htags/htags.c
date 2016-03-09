@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005,
- *      2006, 2007, 2008, 2010, 2011 Tama Communications Corporation
+ *      2006, 2007, 2008, 2010, 2011, 2016
+ *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -76,7 +77,6 @@ int w32 = W32;				/**< Windows32 environment	*/
 const char *www = "http://www.gnu.org/software/global/";
 int html_count = 0;
 int sep = '/';
-int need_bless;
 const char *save_config;
 const char *save_argv;
 
@@ -416,149 +416,35 @@ make_directory_in_distpath(const char *name)
 	fputc('\n', op);
 	fclose(op);
 }
+/**
+ * Load file.
+ */
 void
-load_with_replace(const char *file, STRBUF *result, int place)
+loadfile(const char *file, STRBUF *result)
 {
 	STRBUF *sb = strbuf_open(0);
-	FILE *ip;
-	regex_t preg;
-	regmatch_t pmatch[2];
-	char *_;
-	int i;
-
-        struct map {
-		const char *name;
-		const char *value;
-        } tab[] = {
-		/* dynamic initialization */
-		{"@page_begin@", NULL},
-		{"@page_end@", NULL},
-
-		/* static initialization */
-		{"@body_begin@", body_begin},
-		{"@body_end@", body_end},
-		{"@title_begin@", title_begin},
-		{"@title_end@", title_end},
-		{"@error_begin@", error_begin},
-		{"@error_end@", error_end},
-		{"@message_begin@", message_begin},
-		{"@message_end@", message_end},
-		{"@verbatim_begin@", verbatim_begin},
-		{"@verbatim_end@", verbatim_end},
-		{"@normal_suffix@", normal_suffix},
-		{"@hr@", hr},
-		{"@br@", br},
-		{"@HTML@", HTML},
-		{"@DATADIR@", datadir},
-		{"@LOCALSTATEDIR@", localstatedir},
-		{"@action@", action},
-		{"@completion_action@", completion_action},
-		{"@limit@", auto_completion_limit},
-		{"@null_device@", null_device},
-		{"@globalpath@", global_path},
-		{"@gtagspath@", gtags_path},
-        };
-	int tabsize = sizeof(tab) / sizeof(struct map);
-
-	tab[0].value = gen_page_begin("Result", place);
-	tab[1].value = gen_page_end();
-	/*
-	 * construct regular expression.
-	 */
-	strbuf_putc(sb, '(');
-	for (i = 0; i < tabsize; i++) {
-		strbuf_puts(sb, tab[i].name);
-		strbuf_putc(sb, '|');
-	}
-	strbuf_unputc(sb, '|');
-	strbuf_putc(sb, ')');
-	if (regcomp(&preg, strbuf_value(sb), REG_EXTENDED) != 0)
-		die("cannot compile regular expression.");
-	/*
-	 * construct skeleton file name in the system datadir directory.
-	 */
-	strbuf_reset(sb);
-	strbuf_sprintf(sb, "%s/gtags/%s.tmpl", datadir, file);
-	ip = fopen(strbuf_value(sb), "r");
-	if (!ip) {
-#ifdef __DJGPP__
-		strbuf_reset(sb);
-		strbuf_sprintf(sb, "%s/gtags/%s", datadir, file);
-		ip = fopen(strbuf_value(sb), "r");
-		if (!ip)
-#endif
-			die("skeleton file '%s' not found.", strbuf_value(sb));
-	}
-	strbuf_reset(sb);
-	/*
-	 * Read template file and evaluate macros.
-	 */
-	while ((_ = strbuf_fgets(sb, ip, STRBUF_NOCRLF)) != NULL) {
-		const char *p;
-
-		/* Pick up macro name */
-		for (p = _; !regexec(&preg, p, 2, pmatch, 0); p += pmatch[0].rm_eo) {
-			const char *start = p + pmatch[0].rm_so;
-			int length = pmatch[0].rm_eo - pmatch[0].rm_so;
-
-			/* print before macro */
-			for (i = 0; i < pmatch[0].rm_so; i++)
-				strbuf_putc(result, p[i]);
-			for (i = 0; i < tabsize; i++)
-				if (!strncmp(start, tab[i].name, length))
-					break;
-			if (i >= tabsize)
-				die("something wrong.");
-			/* print macro value */
-			if (i < tabsize) {
-				const char *q;
-				/*
-				 * Double quote should be quoted using '\\'.
-				 */
-				for (q = tab[i].value; *q; q++) {
-					if (*q == '"')
-						strbuf_putc(result, '\\');
-					else if (*q == '\n')
-						strbuf_putc(result, '\\');
-					strbuf_putc(result, *q);
-				}
-			}
-		}
-		strbuf_puts_nl(result, p);
-	}
+	FILE *ip = fopen(file, "r");
+	if (!ip)
+		die("file '%s' not found.", file);
+	while (strbuf_fgets(sb, ip, STRBUF_NOCRLF) != NULL)
+		strbuf_puts_nl(result, strbuf_value(sb));
 	fclose(ip);
 	strbuf_close(sb);
-	regfree(&preg);
-}
-/**
- * generate_file: generate file with replacing macro.
- *
- *	@param[in]	dist	directory where the file should be created
- *	@param[in]	file	file name
- *	@param[in]	place	TOPDIR, SUBDIR, CGIDIR
- */
-static void
-generate_file(const char *dist, const char *file, int place)
-{
-	FILE *op;
-	STRBUF *result = strbuf_open(0);
-
-	op = fopen(makepath(dist, file, NULL), "w");
-	if (!op)
-		die("cannot create file '%s'.", file);
-	load_with_replace(file, result, place);
-	fputs(strbuf_value(result), op);
-	fclose(op);
-	html_count++;
-	strbuf_close(result);
 }
 /**
  * makeprogram: make CGI program
  */
 static void
-makeprogram(const char *cgidir, const char *file)
+makeprogram(const char *cgidir, const char *file, int perm)
 {
-	generate_file(cgidir, file, CGIDIR);
+	char src[MAXPATHLEN];
+	const char *dst = makepath(cgidir, file, NULL);
+
+	snprintf(src, sizeof(src), "%s/gtags/%s", datadir, file);
+	copyfile(src, dst);
+	if (chmod(dst, perm) < 0)
+		die("cannot chmod CGI program (%s).", dst);
+	html_count++;
 }
 /**
  * makerebuild: make rebuild script
@@ -812,11 +698,12 @@ makesearchindex(const char *file)
  * makehtaccess: make ".htaccess" skeleton file.
  */
 static void
-makehtaccess(const char *cgidir, const char *file)
+makehtaccess(const char *cgidir, const char *file, int perm)
 {
 	FILE *op;
+	const char *dst = makepath(distpath, file, NULL);
 
-	op = fopen(makepath(distpath, file, NULL), "w");
+	op = fopen(dst, "w");
 	if (!op)
 		die("cannot make .htaccess skeleton file.");
 	fputs_nl("#", op);
@@ -837,6 +724,8 @@ makehtaccess(const char *cgidir, const char *file)
 	fputs_nl("Options +ExecCGI", op);
 	fputs_nl("AddHandler cgi-script .cgi", op);
 	fclose(op);
+	if (chmod(dst, perm) < 0)
+		die("cannot chmod .htaccess skeleton.");
 }
 /**
  * makehtml: make html files
@@ -903,26 +792,6 @@ makehtml(int total)
 		src2html(path, html, gp->type == GPATH_OTHER);
 	}
 	gfind_close(gp);
-}
-/**
- * Load file.
- */
-void
-loadfile_asis(const char *file, STRBUF *result)
-{
-	STRBUF *sb = strbuf_open(0);
-	FILE *ip = fopen(file, "r");
-	if (!ip)
-		die("file '%s' not found.", file);
-	while (strbuf_fgets(sb, ip, STRBUF_NOCRLF) != NULL)
-		strbuf_puts_nl(result, strbuf_value(sb));
-	fclose(ip);
-	strbuf_close(sb);
-}
-void
-loadfile(const char *file, STRBUF *result)
-{
-	load_with_replace(file, result, 0);
 }
 /**
  * makecommonpart: make a common part for "mains.html" and "index.html"
@@ -1303,7 +1172,7 @@ main(int argc, char **argv)
 				if (!test("r", optarg))
 					die("file '%s' not found.", optarg);
 				strbuf_clear(sb);
-				loadfile_asis(optarg, sb);
+				loadfile(optarg, sb);
 				html_header = strbuf_value(sb);
 			}
 			break;
@@ -1435,10 +1304,6 @@ main(int argc, char **argv)
 		fflag = dynamic = 1;			/* needs a HTTP server */
 		auto_completion = tree_view = 1;	/* needs javascript */
 	}
-/*
-	if (tree_view || auto_completion || fixed_guide)
-		die("The --html option cannot accept the --tree-view, --auto-completion and --fixed-guide option.");
-*/
 	if (call_file && !test("fr", call_file))
 		die("cflow file not found. '%s'", call_file);
 	if (callee_file && !test("fr", callee_file))
@@ -1625,9 +1490,9 @@ main(int argc, char **argv)
 		strbuf_clear(sb);
 		strbuf_puts_nl(sb, "<script type='text/javascript' src='js/jquery.js'></script>");
 		if (auto_completion)
-			loadfile("jscode_suggest", sb);
+			loadfile(makepath(datadir, "gtags/jscode_suggest", NULL), sb);
 		if (tree_view)
-			loadfile("jscode_treeview", sb);
+			loadfile(makepath(datadir, "gtags/jscode_treeview", NULL), sb);
 		jscode = strbuf_value(sb);
 	}
 	/*
@@ -1659,24 +1524,14 @@ main(int argc, char **argv)
 	 */
 	if (fflag || dynamic) {
 		char cgidir[MAXPATHLEN];
-		int perm;
 
 		snprintf(cgidir, sizeof(cgidir), "%s/cgi-bin", distpath);
 		message("[%s] (1) making CGI program ...", now());
-		perm = 0755;
-		if (fflag || dynamic) {
-			makeprogram(cgidir, "global.cgi");
-			if (chmod(makepath(cgidir, "global.cgi", NULL), perm) < 0)
-				die("cannot chmod CGI program.");
-		}
-		if (auto_completion) {
-			makeprogram(cgidir, "completion.cgi");
-			if (chmod(makepath(cgidir, "completion.cgi", NULL), perm) < 0)
-				die("cannot chmod CGI program.");
-		}
-		makehtaccess(cgidir, ".htaccess");
-		if (chmod(makepath(distpath, ".htaccess", NULL), 0644) < 0)
-			die("cannot chmod .htaccess skeleton.");
+		if (fflag || dynamic)
+			makeprogram(cgidir, "global.cgi", 0755);
+		if (auto_completion)
+			makeprogram(cgidir, "completion.cgi", 0755);
+		makehtaccess(cgidir, ".htaccess", 0644);
 	} else {
 		message("[%s] (1) making CGI program ...(skipped)", now());
 	}
@@ -1805,13 +1660,10 @@ main(int argc, char **argv)
 		char dist[MAXPATHLEN];
 #ifdef __DJGPP__
 		const char *template = "";
-		snprintf(src, sizeof(src), "%s/gtags/style.css.tmpl", datadir);
-		if (test("f", src))
-		       template = ".tmpl";
-		snprintf(src, sizeof(src), "%s/gtags/style.css%s", datadir, template);
+		snprintf(src, sizeof(src), "%s/gtags/style.css", datadir);
 		snprintf(dist, sizeof(dist), "%s/style.css", distpath);
 #else
-		snprintf(src, sizeof(src), "%s/gtags/style.css.tmpl", datadir);
+		snprintf(src, sizeof(src), "%s/gtags/style.css", datadir);
 		snprintf(dist, sizeof(dist), "%s/style.css", distpath);
 #endif
 		copyfile(src, dist);

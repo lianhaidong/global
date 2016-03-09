@@ -19,6 +19,15 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+March 9 2016, Shigio YAMAGUCHI
+
+	Now, the following files in datadir are static.
+	- completion.cgi
+	- global.cgi
+	- jscode_suggest
+	- jscode_treeview
+	- style.css
+
 February 3 2016, Shigio YAMAGUCHI
 
 	[Plug-in parser]

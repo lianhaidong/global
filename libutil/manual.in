@@ -35,9 +35,12 @@
 	@item{(6) [sysconfdir]/gtags.conf}
 	@end_itemize
 
-	The format is almost similar to @xref{termcap,5} except for some extensions described
+	[sysconfdir] is @file{/usr/local/etc} by default; you can change it by the --sysconfdir
+	option of configure script.
+
+	The format is almost same to @xref{termcap,5} except for some extensions described
 	later.
-	The file includes one or more records; you should select a record using a label.
+	The file includes one or more records. You should select a record using a label.
 	Default label is 'default'. If @var{GTAGSLABEL} is set, its value is used. Please be
 	aware of the meaning of 'default' it is different from one of @xref{termcap,5}.
 

@@ -259,7 +259,8 @@
 	@name{Htags} exits with a non-0 value if an error occurred, 0 otherwise.
 @SEE ALSO
 	@xref{global,1},
-	@xref{gtags,1}.
+	@xref{gtags,1},
+	@xref{gtags.conf,5}.
 
         GNU GLOBAL source code tag system@br
         (http://www.gnu.org/software/global/).
