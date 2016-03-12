@@ -119,7 +119,7 @@
 		End the search without going through all the tag files listed in
 		@var{GTAGSLIBPATH} when tags are found in a tag file. This is the default.
 	@item{@option{--from-here} @arg{context}}
-		Decide tag type by @arg{context}, which must be @samp{lineno:path}.
+		Decide tag type by @arg{context}. Its syntax should be @samp{lineno:path}.
 		If this option is specified then @option{-s} and @option{-r} are ignored.
 		Regular expression is not allowed for @arg{pattern}.
 		This option assumes use in conversational environments such as

@@ -34,7 +34,8 @@
 	picks up symbols and writes the cross-reference data into the tag files
 	(@file{GTAGS}, @file{GRTAGS} and @file{GPATH}).
 
-	If @file{gtags.files} exists or the @option{-f} option is specified,
+	If @file{gtags.files} exists in the current directory
+	or a file is specified by the @option{-f} option,
 	target files are limited by it. Lines starting with @samp{. } are comments.
 
 	@LANGMAPSTATEMENT@
@@ -62,10 +63,12 @@
 	@item{@option{--explain}}
 		Explain handling files.
 	@item{@option{-f}, @option{--file} @arg{file}}
-		Browse through all files whose names are listed in @arg{file}.
+		Give a list of candidates of target files.
+		Files which are not on the list are ignored.
 		The argument @arg{file} can be set to @val{-} to accept a list of
 		files from the standard input.
 		File names must be separated by newline.
+		You may use find
 	@item{@option{--gtagsconf} @arg{file}}
 		Set environment variable @var{GTAGSCONF} to @arg{file}.
 	@item{@option{--gtagslabel} @arg{label}}
