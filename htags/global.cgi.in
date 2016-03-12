@@ -131,14 +131,18 @@ if ($?) {
 # of each line.
 #
 $flags = '-' . $flag . $iflag . $oflag . 'e';
-if ($^O eq 'MSWin32') {
-	open(PIPE, "$global_command" . " --result=ctags-xid $flags $pattern |");
-} else {
+#
+# This code is commented out, because it's suspected of having a security hole.
+# To use this code, please uncomment in your own responsibility.
+#
+#if ($^O eq 'MSWin32') {
+#	open(PIPE, "$global_command" . " --result=ctags-xid $flags $pattern |");
+#} else {
 	open(PIPE, "-|") || exec "$global_command", '--result=ctags-xid', $flags, $pattern;
 	if ($?) {
 		error_and_exit("Cannot execute global.");
 	}
-}
+#}
 local(%ctab) = ('&', '&amp;', '<', '&lt;', '>', '&gt;');
 $pattern =~ s/([&<>])/$ctab{$1}/ge;
 local($tag, $lno, $filename);
@@ -166,13 +170,12 @@ if (@line == 0) {
 	# Python's built-in webserver doesn't support redirects issued from CGI scripts.
 	print "<html>\n";
 	print qq(<head><meta http-equiv="Refresh" content="0; url=$basedir/S/$fid.$html#L$lno" /></head>\n);
-	print "<body></body>\n";
-	print "</html>\n";
-	#
+	print "<body>";
+	print tailer();
 	exit 0;
 }
 print header();
-print "<h1 class='title'>" . $pattern . "</h1>\n";
+print title($pattern);
 print "Following $words are matched to above pattern.<hr />\n";
 #
 # Input format:

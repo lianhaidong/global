@@ -66,11 +66,15 @@ if (-f "../GTAGSROOT" && open(GTAGSROOT, "../GTAGSROOT")) {
 }
 chdir($gtagsroot);
 print "Content-Type: text/html\n\n";
-if ($^O eq 'MSWin32') {
-	open(PIPE, $global_command . " -${flags}e $q |");
-} else {
+#
+# This code is commented out, because it's suspected of having a security hole.
+# To use this code, please uncomment in your own responsibility.
+#
+#if ($^O eq 'MSWin32') {
+#	open(PIPE, $global_command . " -${flags}e $q |");
+#} else {
 	open(PIPE, "-|") || exec $global_command, '-'.$flags.'e', $q;
-}
+#}
 if ($limit > 0) {
 	while (<PIPE>) {
 		print if ($limit-- > 0);
