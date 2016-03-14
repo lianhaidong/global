@@ -67,7 +67,7 @@ if (-f "../GTAGSROOT" && open(GTAGSROOT, "../GTAGSROOT")) {
 chdir($gtagsroot);
 print "Content-Type: text/html\n\n";
 #
-# This code is commented out, because it's suspected of having a security hole.
+# This code was commented out, because it may have a security hole in the future.
 # To use this code, please uncomment in your own responsibility.
 #
 #if ($^O eq 'MSWin32') {
