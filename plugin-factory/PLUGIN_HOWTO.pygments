@@ -58,7 +58,7 @@ Please execute gtags(1) as usual.
 $ gtags
 
 If it is doubtful whether Pygments plug-in parser is used,
-please try --explaina option. It shows the libraries used by
+please try --explain option. It shows the libraries used by
 gtags.
 
 $ gtags --explain
