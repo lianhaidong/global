@@ -24,6 +24,13 @@
 # The format is similar to termcap(5). You can specify a target with
 # GTAGSLABEL environment variable. Default target is 'default'.
 #
+# If you want to have a common record for yourself, it is recommended to
+# use the following method:
+#
+# default:\
+#	:tc=default@~/.globalrc:\	<= Load the default record from ~/.globalrc.
+#	:tc=native:
+#
 default:\
 	:tc=native:
 native:\
