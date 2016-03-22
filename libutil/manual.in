@@ -38,14 +38,14 @@
 	[sysconfdir] is @file{/usr/local/etc} by default; you can change it by the --sysconfdir
 	option of configure script.
 
-	The format is almost same to @xref{termcap,5} except for some extensions described
+	The format is similar to @xref{termcap,5} except for some extensions described
 	later.
 	The file includes one or more records. You should select a record using a label.
 	Default label is 'default'. If @var{GTAGSLABEL} is set, its value is used. Please be
-	aware of the meaning of 'default' it is different from one of @xref{termcap,5}.
+	aware the meaning of 'default' is different to that of @xref{termcap,5}.
 
 	Lines starting with '#' are ignored.
-	A record consists of one or more fields sepalated by ':' and ends with a newline.
+	A record consists of one or more fields separated by ':' and ends with a newline.
 	The first field must have a label name. Each field of the rest has a variable definition.
 	There are three types in those variables.
 	@begin_itemize
@@ -55,7 +55,7 @@
 	@end_itemize
 	Most variables are relevant to string type.
 
-	If data includes ':' or newline, you need quote it by '\\'.
+	If data includes ':' or newline, you need to quote it by '\\'.
 	An empty field is permitted, but it doesn't make sense.
 
 	When there is more than one definition, the previous one is adopted. 
@@ -63,18 +63,18 @@
 	adopted and connected respectively.
 @Variable substitution
 	Variable substitution similar to @xref{sh,1} is available.
-	You can refer any string variable using '$' prefix. For example, the following
+	You can refer to any string variable using '$' prefix. For example, the following
 	@name{b} has a value 'XYZ'.
 	@begin_verbatim
 	:a=Y:b=X${a}Z:
 	@end_verbatim
 @Including another record
-	@name{Tc} is a special variable; it read in definitions in another record.
+	@name{Tc} is a special variable; it reads in definitions in another record.
 	It is similar to the @name{tc} of @xref{termcap,5}.
 	Syntax is as follows:@br
 	@name{tc}=@arg{label}[@@@arg{file}]@br
-	If only a @arg{label} is given, @name{tc} read from a record specified by the @arg{label}
-	in the same file. If @@@arg{file} is also given, @name{tc} read from a record
+	If only a @arg{label} is given, @name{tc} is read from a record specified by the @arg{label}
+	in the same file. If @@@arg{file} is also given, @name{tc} is read from a record
 	specified by the @arg{label} in the specified @arg{file}.
 	@arg{File} should be an absolute path, and should not include variables.
 	Different from @xref{termcap,5}, you can use @name{tc} anytime anywhere.
@@ -104,10 +104,10 @@
 	By default, each of them has a directory path given by the configure
 	script.@br
 	@name{bindir}@br
-        @name{datadir}@br
-        @name{libdir}@br
-        @name{localstatedir}@br
-        @name{sysconfdir}@br
+	@name{datadir}@br
+	@name{libdir}@br
+	@name{localstatedir}@br
+	@name{sysconfdir}@br
 @ENVIRONMENT
 	The following environment variables affect the execution of the commands.
 
@@ -124,7 +124,7 @@
 	@xref{gtags,1},
 	@xref{htags,1}.
 
-        GNU GLOBAL source code tag system@br
-        (http://www.gnu.org/software/global/).
+	GNU GLOBAL source code tag system@br
+	(http://www.gnu.org/software/global/).
 @HISTORY
 	The @name{gtags.conf} file appeared in GLOBAL-3.0 (1998).

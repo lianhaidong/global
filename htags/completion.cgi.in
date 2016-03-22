@@ -66,15 +66,16 @@ if (-f "../GTAGSROOT" && open(GTAGSROOT, "../GTAGSROOT")) {
 }
 chdir($gtagsroot);
 print "Content-Type: text/html\n\n";
-#
-# This code was commented out, because it may have a security hole in the future.
-# To use this code, please uncomment in your own responsibility.
-#
-#if ($^O eq 'MSWin32') {
-#	open(PIPE, $global_command . " -${flags}e $q |");
-#} else {
+if ($^O eq 'MSWin32') {
+	#
+	# This code was commented out, because it may have a security hole in the
+	# future.  To use this code, please uncomment in your own responsibility.
+	#
+	#open(PIPE, $global_command . " -${flags}e \"$q\" |");
+	error_and_exit("Feature not implemented.");
+} else {
 	open(PIPE, "-|") || exec $global_command, '-'.$flags.'e', $q;
-#}
+}
 if ($limit > 0) {
 	while (<PIPE>) {
 		print if ($limit-- > 0);

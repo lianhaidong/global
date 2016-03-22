@@ -68,7 +68,7 @@
 		The argument @arg{file} can be set to @val{-} to accept a list of
 		files from the standard input.
 		File names must be separated by newline.
-		You may use find
+		You may use @xref{find,1}.
 	@item{@option{--gtagsconf} @arg{file}}
 		Set environment variable @var{GTAGSCONF} to @arg{file}.
 	@item{@option{--gtagslabel} @arg{label}}

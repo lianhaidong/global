@@ -131,18 +131,19 @@ if ($?) {
 # of each line.
 #
 $flags = '-' . $flag . $iflag . $oflag . 'e';
-#
-# This code was commented out, because it may have a security hole in the future.
-# To use this code, please uncomment in your own responsibility.
-#
-#if ($^O eq 'MSWin32') {
-#	open(PIPE, "$global_command" . " --result=ctags-xid $flags $pattern |");
-#} else {
+if ($^O eq 'MSWin32') {
+	#
+	# This code was commented out, because it may have a security hole in the
+	# future.  To use this code, please uncomment in your own responsibility.
+	#
+	#open(PIPE, "$global_command" . " --result=ctags-xid $flags \"$pattern\" |");
+	error_and_exit("Feature not implemented.");
+} else {
 	open(PIPE, "-|") || exec "$global_command", '--result=ctags-xid', $flags, $pattern;
 	if ($?) {
 		error_and_exit("Cannot execute global.");
 	}
-#}
+}
 local(%ctab) = ('&', '&amp;', '<', '&lt;', '>', '&gt;');
 $pattern =~ s/([&<>])/$ctab{$1}/ge;
 local($tag, $lno, $filename);

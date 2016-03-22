@@ -470,10 +470,15 @@ getconfs(const char *name, STRBUF *result)
 				if (sb)
 					strbuf_puts(sb, DATADIR);
 			} else {
-				char path[MAX_PATH], *name;
+				char path[MAX_PATH], *name, *p;
 				GetModuleFileName(NULL, path, MAX_PATH);
-				name = strrchr(path, '\\');
-				strcpy(name+1, "..\\share");
+				for (p = name = path; *p; ++p) {
+					if (*p == '\\') {
+						*p = '/';
+						name = p+1;
+					}
+				}
+				strcpy(name, "../share");
 				if (sb)
 					strbuf_puts(sb, path);
 			}

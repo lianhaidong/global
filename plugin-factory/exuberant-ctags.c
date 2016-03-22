@@ -97,7 +97,7 @@ copy_langmap_converting_cpp(char *dst, const char *src)
 #include <windows.h>
 #include <fcntl.h>
 static HANDLE pid;
-static char argv[] = "ctags "
+static char argv[] = "\" "
 #if defined(USE_EXTRA_FIELDS)
 	"\"--_xformat=%R %-16N %4n %-16F %C\" "
 	"--extra=+r "
@@ -117,12 +117,20 @@ start_ctags(const struct parser_param *param)
 	STARTUPINFO si;
 	PROCESS_INFORMATION pi;
 	char* arg;
+	char *path = param->getconf("ctagscom");
 
-	arg = malloc(sizeof(argv) + strlen(param->langmap));
+	if (path && strlen(path) > 0 && strcmp(path, "no") != 0)
+		ctagscom = path;
+	if (!ctagscom || !strlen(ctagscom) || !strcmp(ctagscom, "no"))
+		param->die(ctagsnotfound);
+
+	arg = malloc(1 + strlen(ctagscom) + sizeof(argv) + strlen(param->langmap));
 	if (arg == NULL)
 		param->die("short of memory.");
-	strcpy(arg, argv);
-	copy_langmap_converting_cpp(arg + sizeof(argv) - 1, param->langmap);
+	*arg = '"';
+	strcpy(arg+1, ctagscom);
+	strcat(arg, argv);
+	copy_langmap_converting_cpp(arg + strlen(arg), param->langmap);
 
 	sa.nLength = sizeof(sa);
 	sa.bInheritHandle = TRUE;
@@ -138,7 +146,8 @@ start_ctags(const struct parser_param *param)
 	si.hStdOutput = ipipe[1];
 	si.hStdError = GetStdHandle(STD_ERROR_HANDLE);
 	si.dwFlags = STARTF_USESTDHANDLES;
-	CreateProcess(NULL, arg, NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi);
+	if (!CreateProcess(NULL, arg, NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi))
+		param->die(ctagsnotfound);
 	CloseHandle(opipe[0]);
 	CloseHandle(ipipe[1]);
 	CloseHandle(pi.hThread);

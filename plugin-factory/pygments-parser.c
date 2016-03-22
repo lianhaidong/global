@@ -18,6 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifdef __MINGW32__
+#define __USE_MINGW_ANSI_STDIO 0	/* no need for C99 sprintf here */
+#endif
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -102,10 +105,10 @@ start_process(const struct parser_param *param)
 	GetModuleFileName(NULL, parser, MAX_PATH);
 	arg = strrchr(parser, '\\');
 	strcpy(arg+1, PYGMENTS_PARSER);
-	arg = malloc(sizeof(PYTHON) + strlen(parser) + sizeof(LANGMAP_OPTION) + strlen(param->langmap) + 1);
+	arg = malloc(sizeof(PYTHON) + strlen(parser) + sizeof(LANGMAP_OPTION) + strlen(param->langmap) + 2 + 1);
 	if (arg == NULL)
 		param->die("short of memory.");
-	len = sprintf(arg, "%s %s %s", PYTHON, parser, LANGMAP_OPTION);
+	len = sprintf(arg, "%s \"%s\" %s", PYTHON, parser, LANGMAP_OPTION);
 	copy_langmap_converting_cpp(arg + len, param->langmap);
 
 	sa.nLength = sizeof(sa);

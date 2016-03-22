@@ -1658,14 +1658,8 @@ main(int argc, char **argv)
 	if (enable_xhtml) {
 		char src[MAXPATHLEN];
 		char dist[MAXPATHLEN];
-#ifdef __DJGPP__
-		const char *template = "";
 		snprintf(src, sizeof(src), "%s/gtags/style.css", datadir);
 		snprintf(dist, sizeof(dist), "%s/style.css", distpath);
-#else
-		snprintf(src, sizeof(src), "%s/gtags/style.css", datadir);
-		snprintf(dist, sizeof(dist), "%s/style.css", distpath);
-#endif
 		copyfile(src, dist);
 	}
 	if (auto_completion || tree_view) {
