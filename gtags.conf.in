@@ -90,7 +90,7 @@ common-ctags-maps:\
 	:langmap=Cobol\:.cbl.cob.CBL.COB:\
 	:langmap=DosBatch\:.bat.cmd:\
 	:langmap=Eiffel\:.e:\
-	:langmap=Erlang\: .erl.ERL.hrl.HRL:\
+	:langmap=Erlang\:.erl.ERL.hrl.HRL:\
 	:langmap=Flex\:.as.mxml:\
 	:langmap=Fortran\:.f.for.ftn.f77.f90.f95:\
 	:langmap=HTML\:.htm.html:\
@@ -169,7 +169,9 @@ universal-ctags|setting to use Universal Ctags plug-in parser:\
 	:ctagslib=$libdir/gtags/universal-ctags.la:\
 	:tc=common-ctags-maps:\
 	:langmap=Ada\:.adb.ads.Ada:\
-	:langmap=Ant\:.ant.xml:\
+# Please uncomment to use this entry.
+#	:langmap=Ant\:.xml:\
+	:langmap=Ant\:.ant:\
 	:langmap=Clojure\:.clj:\
 	:langmap=CoffeeScript\:.coffee:\
 	:langmap=C++\:.inl:\
@@ -199,8 +201,9 @@ universal-ctags|setting to use Universal Ctags plug-in parser:\
 	:langmap=Vim\:.vba:\
 	:langmap=WindRes\:.rc:\
 	:langmap=Zephir\:.zep:\
-	:langmap=DBusIntrospect\:.xml:\
-	:langmap=Glade\:.glade:\
+# Please uncomment to use this entry.
+#	:langmap=DBusIntrospect\:.xml:\
+#	:langmap=Glade\:.glade:\
 	:gtags_parser=Ada\:$ctagslib:\
 	:gtags_parser=Ant\:$ctagslib:\
 	:gtags_parser=Clojure\:$ctagslib:\
