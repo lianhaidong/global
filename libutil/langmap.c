@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002, 2004, 2005, 2008, 2015
+ * Copyright (c) 2002, 2004, 2005, 2008, 2015, 2016
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -30,12 +30,14 @@
 #include <strings.h>
 #endif
 
+#include "checkalloc.h"
 #include "die.h"
 #include "locatestring.h"
 #include "strbuf.h"
 #include "strmake.h"
 #include "strhash.h"
 #include "langmap.h"
+#include "varray.h"
 
 static void trim_suffix_list(STRBUF *, STRHASH *);
 static int match_suffix_list(const char *, const char *);
@@ -112,19 +114,34 @@ trim_suffix_list(STRBUF *list, STRHASH *hash) {
 		}
 	}
 }
-/**
- * trim langmap
+/*
+ * merge and trim a langmap
  *
- * Removes duplicated suffixes.
+ * (1) duplicated suffixes except for the first one are ignored.
+ * (2) one more entries which belong to a language are gathered by one.
+ *
+ * Example:
+ * C++:.cpp.c++,Java:.java.cpp,C++:.inl
+ *      |                 ----(1)  ----(2)
+ *	v
+ * C++:.cpp.c++.inl,Java:.java
  */
 const char *
 trim_langmap(const char *map)
 {
+	typedef struct {
+		char *name;	/* language: C++ */
+		char *list;	/* suffixes: .cpp.c++ */
+	} SUFFIX;
 	STATIC_STRBUF(sb);
 	const char *p = map;
 	STRBUF *name = strbuf_open(0);
 	STRBUF *list = strbuf_open(0);
 	STRHASH *hash = strhash_open(10);
+	VARRAY *vb = varray_open(sizeof(SUFFIX), 32);
+	int index = 0;
+	SUFFIX *ent = NULL;
+	int i;
 
 	strbuf_clear(sb);
 	while (*p) {
@@ -140,18 +157,49 @@ trim_langmap(const char *map)
 			die_with_code(2, "syntax error in langmap '%s'.", map);
 		if (strchr(strbuf_value(name), ','))
 			die_with_code(2, "syntax error in langmap '%s'.", map);
+		/*
+		 * ignores duplicated suffixes.
+		 */
 		trim_suffix_list(list, hash);
-		if (strbuf_getlen(list) > 0) {
-			if (strbuf_getlen(sb) > 0)
-				strbuf_putc(sb, ',');
-			strbuf_puts(sb, strbuf_value(name));
-			strbuf_putc(sb, ':');
-			strbuf_puts(sb, strbuf_value(list));
+		if (strbuf_getlen(list) == 0)
+			continue;
+		/*
+		 * examine whether it appeared already.
+		 */
+		ent = NULL;
+		for (i = 0; i < vb->length; i++) {
+			SUFFIX *ent0 = varray_assign(vb, i, 0);
+			if (!strcmp(ent0->name, strbuf_value(name))) {
+				ent = ent0;
+				break;
+			}
 		}
+		if (ent == NULL) {
+			/* set initial values to a new entry */
+			ent = varray_assign(vb, index++, 1);
+			ent->name = check_strdup(strbuf_value(name));
+			ent->list = check_strdup(strbuf_value(list));
+		} else {
+			/* append values to the entry */
+			ent->list = check_realloc(ent->list,
+				strlen(ent->list) + strbuf_getlen(list) + 1);
+			strcat(ent->list, strbuf_value(list));
+		}
+	}
+	for (i = 0; i < vb->length; i++) {
+		ent = varray_assign(vb, i, 0);
+		if (i > 0)
+			strbuf_putc(sb, ',');
+		strbuf_puts(sb, ent->name);
+		strbuf_putc(sb, ':');
+		strbuf_puts(sb, ent->list);
+		free(ent->name);
+		free(ent->list);
 	}
 	strbuf_close(name);
 	strbuf_close(list);
 	strhash_close(hash);
+	varray_close(vb);
 	return strbuf_value(sb);
 }
 
