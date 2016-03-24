@@ -139,7 +139,6 @@ trim_langmap(const char *map)
 	STRBUF *list = strbuf_open(0);
 	STRHASH *hash = strhash_open(10);
 	VARRAY *vb = varray_open(sizeof(SUFFIX), 32);
-	int index = 0;
 	SUFFIX *ent = NULL;
 	int i;
 
@@ -176,7 +175,7 @@ trim_langmap(const char *map)
 		}
 		if (ent == NULL) {
 			/* set initial values to a new entry */
-			ent = varray_assign(vb, index++, 1);
+			ent = varray_append(vb);
 			ent->name = check_strdup(strbuf_value(name));
 			ent->list = check_strdup(strbuf_value(list));
 		} else {
