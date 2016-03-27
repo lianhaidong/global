@@ -19,6 +19,27 @@ ___________________________________
 GNU GLOBAL NEWS - User visible changes.
 At least, you should search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 6.5.4 - Mar 27 2016
+
+This is a bug fix release.
+
+[CHANGES]
+Changed:
+o gtags.conf: The entries which include '.xml' were commented out,
+  because they require libxml.a. If you use them, please uncomment them.
+
+[FIXED BUGS]
+Serious bug:
+o universal-ctags.la: Universal ctags plug-in parser did not work
+  on almost files. Now it works.
+
+	$ echo 'void a() {}' >a.inl
+	$ echo 'void b() {}' >b.cpp
+	$ gtags --gtagslabel=new-ctags
+	$ global -x '.*'
+	a                   1 a.inl            void a() {}
+	(b.cpp is ignored.)
+
 Version 6.5.3 - Mar 18 2016
 
 [CHANGES]
