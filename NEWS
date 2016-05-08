@@ -38,7 +38,7 @@ o universal-ctags.la: Universal ctags plug-in parser did not work
 	$ gtags --gtagslabel=new-ctags
 	$ global -x '.*'
 	a                   1 a.inl            void a() {}
-	(b.cpp is ignored.)
+	(b.cpp was ignored.)
 
 Version 6.5.3 - Mar 18 2016
 
