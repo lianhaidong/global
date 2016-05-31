@@ -22,7 +22,7 @@ dnl You should have received a copy of the GNU General Public License
 dnl along with this program.  If not, see <http://www.gnu.org/licenses/>.
 dnl
 AC_INIT([GNU GLOBAL],[6.5.4])
-AC_DEFINE(COPYRIGHT_YEAR,[2016],[Copyright Year])
+AC_DEFINE(COPYRIGHT_YEAR,["1996-2016"],[Copyright Year])
 AC_CONFIG_SRCDIR(global/global.c)
 AC_CONFIG_HEADERS([config.h:config-h.in])
 AC_PREREQ(2.59)
