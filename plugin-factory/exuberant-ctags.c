@@ -200,6 +200,7 @@ start_ctags(const struct parser_param *param)
 		ctagscom = path;
 	if (!ctagscom || !strlen(ctagscom) || !strcmp(ctagscom, "no"))
 		param->die(ctagsnotfound);
+	argv[0] = ctagscom;
 	argv[1] = malloc(sizeof(LANGMAP_OPTION) + strlen(param->langmap));
 	if (argv[1] == NULL)
 		param->die("short of memory.");

@@ -44,6 +44,7 @@ Darryl Okahata		benchmark report about global(1).
 David Aspinwall		port to Cygwin 32 environment.
 David Brownlee		advice about fine coding style of C.
 David Keegan		patch for support of java 1.5 enums.
+David Panariti		patch for a bug fix of exuberant-ctags.c.
 Dimitri van Heesch      integration of Doxygen and GLOBAL.
 Don Fisher		bug report about the buffer overflow in htags(1).
 Dunford, Martin		advice about Windows 32 version of GLOBAL.
