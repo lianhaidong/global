@@ -61,10 +61,10 @@ static size_t bufsize;
  * (gtags.conf, $HOME/.globalrc) if it is defined.
  */
 #if defined(USE_EXTRA_FIELDS)
-static const char *ctagscom = UNIVERSAL_CTAGS;
+static char *ctagscom = UNIVERSAL_CTAGS;
 static const char *ctagsnotfound = "Universal Ctags not found. Please see ./configure --help.";
 #else
-static const char *ctagscom = EXUBERANT_CTAGS;
+static char *ctagscom = EXUBERANT_CTAGS;
 static const char *ctagsnotfound = "Exuberant Ctags not found. Please see ./configure --help.";
 #endif
 
