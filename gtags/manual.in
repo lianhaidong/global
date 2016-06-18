@@ -68,7 +68,8 @@
 		The argument @arg{file} can be set to @val{-} to accept a list of
 		files from the standard input.
 		File names must be separated by newline.
-		You may use @xref{find,1}.
+		To make the list, you may use @xref{find,1} which has rich options
+		for selecting files.
 	@item{@option{--gtagsconf} @arg{file}}
 		Set environment variable @var{GTAGSCONF} to @arg{file}.
 	@item{@option{--gtagslabel} @arg{label}}
@@ -189,7 +190,13 @@
 		The value may include glob patterns (*, ?, [...], [!...], [^...]).
 		If the value starts with @samp{/}, it is assumed a relative path name
 		from the root directory of the project. You cannot use glob patterns
-		for a path name.
+		for a path name.@br
+		@br
+		This variable is out-of-date, and is not recommended.
+		Instead, you can use @option{-f} option which can be combined with
+		@xref{find,1}. Since @xref{find,1} has rich options to select files,
+		you can do everything. Additionally, this technique can also be applied
+		to any other tagging systems like @xref{ctags,1}, @xref{cscope,1}, and etc. 
 	@end_itemize
 @DIAGNOSTICS
 	@name{Gtags} exits with a non-0 value if an error occurred, 0 otherwise.
