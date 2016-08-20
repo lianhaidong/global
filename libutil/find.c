@@ -80,8 +80,7 @@
 #define ROOT 0
 #endif
 #ifndef PATH_MAX
-#error Since this platform does not have PATH_MAX, you should define it
-#error using an appropriate value for the platform.
+#error Since this platform does not have PATH_MAX, you should define it using an appropriate value for the platform.
 /* #define PATH_MAX     1024 */
 #endif
 /*
