@@ -236,8 +236,11 @@ Cpp(const struct parser_param *param)
 							} else if (c == '>') {
 								if (--templates == 0)
 									break;
-							} else if (c == EOF)
-								die("failed to parse template [+%d %s].", savelineno, curfile);
+							} else if (c == EOF) {
+								if (param->flags & PARSER_WARNING) 
+									warning("failed to parse template [+%d %s].", savelineno, curfile);
+								goto finish;
+							}
 						}
 						c = nexttoken(NULL, cpp_reserved_word);
 					}
@@ -581,6 +584,7 @@ Cpp(const struct parser_param *param)
 			break;
 		}
 	}
+finish:
 	strbuf_close(sb);
 	if (param->flags & PARSER_WARNING) {
 		if (level != 0)
