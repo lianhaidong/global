@@ -1,6 +1,6 @@
 #
 # Copyright (c) 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005
-#	2007, 2008, 2009, 2010, 2012, 2014, 2015
+#	2007, 2008, 2009, 2010, 2012, 2014, 2015, 2016
 #	Tama Communications Corporation
 #
 # This file is part of GNU GLOBAL.
@@ -23,7 +23,7 @@
 #	o man format reference manual.
 #	o texinfo format reference manual.
 #
-@HEADER	GTAGS,1,February 2015,GNU Project
+@HEADER	GTAGS,1,September 2016,GNU Project
 @NAME	gtags - create tag files for global
 @SYNOPSIS
 	@name{gtags} [-ciIOqvw][-d @arg{tag-file}][-f @arg{file}][@arg{dbpath}]
@@ -199,6 +199,9 @@
 	@end_itemize
 @DIAGNOSTICS
 	@name{Gtags} exits with a non-0 value if an error occurred, 0 otherwise.
+
+	Note that files created by @name{gtags} with a non-zero exit code should be
+	considered corrupted.
 @SEE ALSO
 	@xref{global,1},
 	@xref{htags,1},

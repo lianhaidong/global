@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005, 2006,
- *	2009, 2010, 2014
+ *	2009, 2010, 2014, 2016
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -274,6 +274,20 @@ dbop_open(const char *path, int mode, int perm, int flags)
 	db = dbopen(path, rw, 0600, DB_BTREE, &info);
 	if (!db)
 		return NULL;
+	/*
+	 * if file size == 0 then it should be corrupted.
+	 */
+	if (mode != 1) {
+		int fd = (*db->fd)(db);
+		struct stat stat;
+
+ 		if (fstat(fd, &stat) < 0)
+			die("fstat failed.");
+		if (stat.st_size == 0) {
+			errno = EFTYPE;
+			return NULL;
+		}
+	}
 	dbop = (DBOP *)check_calloc(sizeof(DBOP), 1);
 	if (path == NULL)
 		dbop->dbname[0] = '\0';

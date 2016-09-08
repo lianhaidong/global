@@ -25,6 +25,7 @@
 #include <assert.h>
 #include <ctype.h>
 #include <stdio.h>
+#include <errno.h>
 #ifdef STDC_HEADERS
 #include <stdlib.h>
 #endif
@@ -370,7 +371,10 @@ gtags_open(const char *dbpath, const char *root, int db, int mode, int flags)
 	if (gtop->dbop == NULL) {
 		if (dbmode == 1)
 			die("cannot make %s.", dbname(db));
-		die("%s not found.", dbname(db));
+		else if (errno == EFTYPE)
+			die("%s seems corrupted.", tagfile);
+		else
+			die("%s not found.", dbname(db));
 	}
 	if (gtop->mode == GTAGS_READ && db != GTAGS) {
 		const char *gtags = makepath(dbpath, dbname(GTAGS), NULL);

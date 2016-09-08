@@ -60,6 +60,7 @@ Geoffrey Robson		bug report about global (-t option didn't work correctly).
 George Neville-Neil	report about the useless inspection of gtags(1).
 Giuseppe Corbelli	Global.py for glimmer code editor and an advice about vim.
 Gordon Grimes		bug report about the java parser of gtags.
+Gustaf Waldemarson	bug report and advices about tag files corruption.
 Hageseter, Trond E.	bug report about gtags-parser.
 Hendrik Visage		bug report about gtags-parser(here document of PHP).
 Hideaki Okada		idea about -g option of global(1).
