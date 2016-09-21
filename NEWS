@@ -19,6 +19,34 @@ ___________________________________
 GNU GLOBAL NEWS - User visible changes.
 At least, you should search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 6.5.5 - Sep 21 2016
+
+This is a bug fix release.
+
+[FIXED BUGS]
+o exuberant-ctags.la: The path name of ctags command couldn't changed.
+  Now, it can be changed by configuration variable 'ctagscom'.
+o Tag files got corrupted when the built-in C++ parser gave up parsing and aborted.
+  Now, it is avoided.
+
+o Some inappropriate error messages was changed.
+
+  Error1: NULL file (file size == 0)
+
+	$ cp /dev/null GTAGS
+	$ global -x main
+
+	(GLOBAL-6.5.4)	global: /tmp/test/GTAGS seems older format. Please remake tag files.
+	(GLOBAL-6.5.5)	global: /tmp/test/GTAGS seems to be corrupted.
+
+  Error2: Corrupted file
+
+	$ echo aaa >GTAGS
+	$ global -x main
+
+	(GLOBAL-6.5.4)	global: GTAGS not found.
+	(GLOBAL-6.5.5)	global: /tmp/test/GTAGS seems to be corrupted.
+
 Version 6.5.4 - Mar 27 2016
 
 This is a bug fix release.
