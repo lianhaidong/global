@@ -12,8 +12,8 @@
 #
 noinst_LIBRARIES = libgloglibc.a
 
-INCS = regex.h getopt.h obstack.h hash-string.h getopt_int.h
-SRCS = regex.c getopt.c getopt1.c snprintf.c obstack.c hash-string.c
+INCS = regex.h getopt.h obstack.h hash-string.h getopt_int.h fnmatch.h
+SRCS = regex.c getopt.c getopt1.c snprintf.c obstack.c hash-string.c fnmatch.c
 
 if USE_SQLITE3
 noinst_HEADERS = $(INCS) sqlite3.h

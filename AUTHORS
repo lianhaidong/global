@@ -88,6 +88,7 @@ o BSD DB Library by University of California, Berkeley.
 
 o GNU C Library by Free Software Foundation, Inc.
   (http://www.gnu.org/software/libc/libc.html)
+  I derived fnmatch.[ch] from Universal Ctags not to make a difference.
 
 	libglibc/getopt.c
 	libglibc/getopt.h
@@ -99,6 +100,8 @@ o GNU C Library by Free Software Foundation, Inc.
 	libglibc/obstack.h
 	libglibc/hash-string.c
 	libglibc/hash-string.h
+	libglibc/fnmatch.c
+	libglibc/fnmatch.h
 
 o Icon files by Kevin Hughes.
   Derived from Apache-1.3.1 package.

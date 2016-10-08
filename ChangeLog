@@ -19,6 +19,15 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+October 8 2016, Shigio YAMAGUCHI
+
+	Added the following library source code. Though it's a GNU version,
+	I derived them from the latest Universal Ctags archive not to make
+	differences.
+
+        libglibc/fnmatch.c
+        libglibc/fnmatch.h
+
 March 9 2016, Shigio YAMAGUCHI
 
 	Now, the following files in datadir are static.
