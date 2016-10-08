@@ -171,6 +171,10 @@
 		If the function name is not specified, 'parser' is assumed.
 		As a special exception, @name{gtags} collects values
 		from multiple @code{gtags_parser} variables.
+	@item{@code{gtags_hook} (command line)}
+		Specify a command line which should be executed before the gtags's job.
+		"./" in it always means the project root directory, since @name{gtags} is
+		always invoked there.
 	@item{@code{icase_path} (boolean)}
 		Ignore case distinctions in the path.
 		Suffixes check is affected by this capability.
