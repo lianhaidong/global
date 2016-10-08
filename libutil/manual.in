@@ -42,7 +42,7 @@
 	later.
 	The file includes one or more records. You should select a record using a label.
 	Default label is 'default'. If @var{GTAGSLABEL} is set, its value is used. Please be
-	aware the meaning of 'default' is different to that of @xref{termcap,5}.
+	aware the meaning of 'default' is different from that of @xref{termcap,5}.
 
 	Lines starting with '#' are ignored.
 	A record consists of one or more fields separated by ':' and ends with a newline.
