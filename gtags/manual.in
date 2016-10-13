@@ -200,6 +200,8 @@
 		@xref{find,1}. Since @xref{find,1} has rich options to select files,
 		you can do everything. Additionally, this technique can also be applied
 		to any other tagging systems like @xref{ctags,1}, @xref{cscope,1}, and etc. 
+		@br
+		Skip list is also effective when you use the @option{-f} or @file{gtags.files}.
 	@end_itemize
 @DIAGNOSTICS
 	@name{Gtags} exits with a non-0 value if an error occurred, 0 otherwise.
