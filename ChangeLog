@@ -80,7 +80,7 @@ Oct 14 2015, Shigio YAMAGUCHI
 		if (ld_dlopenext('foo') == FAILED)
 			error_and_exit();
 
-	From now on, extension of DDL is needless.
+	From now on, extension of DLL is needless.
 
 June 22 2015, Shigio YAMAGUCHI
 
@@ -284,7 +284,7 @@ May 20 2010, Shigo YAMAGUCHI
 
 	* Changed the architecture of gtags(1) from 2 pass to 1 pass.
 
-	[Current]
+	[Old]
 
         Pass 1:                      +-------+ 
           source files =============>| gtags |============> GTAGS
