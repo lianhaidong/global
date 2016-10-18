@@ -148,6 +148,10 @@
 	@item{@var{GTAGSLOGGING}}
 		If this variable is set, @file{$GTAGSLOGGING} is used as the path name
 		of a log file. There is no default value.
+	@item{@var{GTAGS_COMMANDLINE}}
+		@name{Gtags} set the effective command line of its own to this variable
+		before calling the hook command (See gtags_hook).
+		This is a read only variable.
 	@item{@var{GTAGS_OPTIONS}}
 		The value of this variable is inserted in the head of arguments.
 	@item{@var{MAKEOBJDIR}}

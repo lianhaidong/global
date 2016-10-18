@@ -216,17 +216,20 @@ main(int argc, char **argv)
 	openconf(cwd);
 	configuration();
 	setenv_from_config();
-	/*
-	 * Execute gtags_hook before the jogs.
-	 */
-	if (getconfs("gtags_hook", sb)) {
-		if (system(strbuf_value(sb)))
-			fprintf(stderr, "gtags-hook failed: %s\n", strbuf_value(sb));
-	}
 	{
 		char *env = getenv("GTAGS_OPTIONS");
 		if (env && *env)
 			argv = prepend_options(&argc, argv, env);
+	}
+	/*
+	 * Execute gtags_hook before the jogs.
+	 */
+	if (getconfs("gtags_hook", sb)) {
+		char *p = serialize_options(argc, argv);
+		set_env("GTAGS_COMMANDLINE", p);
+		free(p);
+		if (system(strbuf_value(sb)))
+			fprintf(stderr, "gtags-hook failed: %s\n", strbuf_value(sb));
 	}
 	logging_arguments(argc, argv);
 	while ((optchar = getopt_long(argc, argv, "cd:f:iIn:oOqvwse", long_options, &option_index)) != EOF) {

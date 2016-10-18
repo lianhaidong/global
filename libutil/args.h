@@ -30,5 +30,6 @@ const char *args_read(void);
 void args_close(void);
 void preparse_options(int, char *const *);
 char **prepend_options(int *, char *const *, const char *options);
+char *serialize_options(int, char *const *);
 
 #endif /* ! _ARGS_H_ */

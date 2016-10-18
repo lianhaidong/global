@@ -284,3 +284,28 @@ prepend_options(int *argc, char *const *argv, const char *options)
 
 	return (char **)newargv;
 }
+/**
+ * serialize_options
+ */
+char *
+serialize_options(int argc, char *const *argv)
+{
+	STRBUF *sb = strbuf_open(0);
+	char *string = NULL;
+	char *p = NULL;
+	int i;
+	for (i = 0; i < argc; i++) {
+		if (i > 0)
+			strbuf_putc(sb, ' ');
+		for (p = argv[i]; *p; p++) {
+			/* quote spaces using url encoding */
+			if (*p == ' ')
+				strbuf_puts(sb, "%20");
+			else
+				strbuf_putc(sb, *p);
+		}
+	}
+	string = check_strdup(strbuf_value(sb));
+	strbuf_close(sb);
+	return string;
+}
