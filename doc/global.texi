@@ -1842,14 +1842,13 @@ Command layer plug-in parser was abolished.
 Please write function layer plug-in parser instead.
 See @file{plugin-factory/} to discover the function layer plug-in parser.
 
-You can use Exuberant ctags as a plug-in parser too.
-This requires Exuberant ctags version 5.5 or later.
+You can use Universal Ctags as a plug-in parser too.
 
 @example
     # Installation of GLOBAL
     # It assumed that ctags command is installed in '/usr/local/bin'.
 
-    $ ./configure --with-exuberant-ctags=/usr/local/bin/ctags
+    $ ./configure --with-universal-ctags=/usr/local/bin/ctags
     $ make
     $ sudo make install
 
@@ -1857,8 +1856,8 @@ This requires Exuberant ctags version 5.5 or later.
     # It assumed that GLOBAL is installed in '/usr/local'.
 
     $ export GTAGSCONF=/usr/local/share/gtags/gtags.conf
-    $ export GTAGSLABEL=ctags
-    $ gtags                         # gtags invokes Exuberant Ctags internally
+    $ export GTAGSLABEL=new-ctags
+    $ gtags                         # gtags invokes Universal Ctags internally
 @end example
 
 @c ***************************************************************************
