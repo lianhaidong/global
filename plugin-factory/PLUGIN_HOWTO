@@ -22,10 +22,10 @@ system by default.
 
 Nop parser('user-custom.c')
 	A skeleton parser. Nothing has been implemented yet.
-Exuberant Ctags('exuberant-ctags.c')
-	A parser to use Exuberant Ctags.
-Pygments + Exuberant Ctags('pygments-parser.c')
-	A parser to use Pygments and Exuberant Ctags.
+Universal Ctags('exuberant-ctags.c')
+	A parser to use Universal Ctags.
+Pygments + Universal Ctags('pygments-parser.c')
+	A parser to use Pygments and Universal Ctags.
 
 How to write a plug-in parser?
 ==============================
@@ -74,10 +74,10 @@ $ make
 $ sudo make install
 
 
-How to use Exuberant Ctags as a parser?
+How to use Universal Ctags as a parser?
 =======================================
 
-'exuberant-ctags.la' is a shared library to use Exuberant Ctags,
+'universal-ctags.la' is a shared library to use Universal Ctags,
 and is installed to /usr/local/lib/gtags by default.
 
 To use this parser, please do like follows:
@@ -86,7 +86,7 @@ To use this parser, please do like follows:
 
         It assumed that ctags command is installed in '/usr/local/bin'.
 
-        $ ./configure --with-exuberant-ctags=/usr/local/bin/ctags
+        $ ./configure --with-universal-ctags=/usr/local/bin/ctags
         $ make
         $ sudo make install
 
@@ -96,4 +96,4 @@ To use this parser, please do like follows:
 
         $ export GTAGSCONF=/usr/local/share/gtags/gtags.conf
         $ export GTAGSLABEL=ctags
-        $ gtags                         # invokes Exuberant Ctags internally
+        $ gtags                         # invokes Universal Ctags internally

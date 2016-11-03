@@ -38,10 +38,11 @@
 
 	Since @name{htags} generates a static hypertext as long as the @option{-D} or @option{-f}
 	option is not specified, you can move it anywhere and browse it by any browser without
-	any HTTP server.
+	any HTTP server. If you use the @option{-D} or @option{-f} option, you need to use
+	HTTP server. Though any HTTP server is available, @xref{htags-server,1} is recommended.
 
 	This command has so many options.
-	If you are new to @name{htags}, it is recommended to use the @option{--suggest} option.
+	If you are new to @name{htags}, it is recommended to use @option{--suggest} option.
 	With that option, @name{htags} chooses popular options on your behalf.
 @OPTIONS
 	The following options are available:
@@ -258,6 +259,7 @@
 @DIAGNOSTICS
 	@name{Htags} exits with a non-0 value if an error occurred, 0 otherwise.
 @SEE ALSO
+	@xref{htags-server,1},
 	@xref{global,1},
 	@xref{gtags,1},
 	@xref{gtags.conf,5}.
