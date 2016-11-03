@@ -35,6 +35,7 @@ Alexander Gusak		bug report about c++ parser's segmentation violation.
 Bakken, Luke		bug fix method about stat() in htags(1).
 Bert Gijsbers		investigation about mandoc macro and a bug report.
 Bob Bentley		bug report about bless.sh and gtags.
+Brian Carlstrom		bug fix patch for gtags.
 Bvk chaitanya		bug report about global (it cannot find gtags).
 Chris Nogradi		patch for libutil/token.c to skip comments correctly.
 Christoph Conrad	bug report and advice about S.u.S.E Linux 5.1.

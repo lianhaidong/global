@@ -221,6 +221,7 @@ nexttoken(const char *interested, int (*reserved)(const char *, int))
 			}
 			if (tlen == sizeof(token)) {
 				warning("symbol name is too long. (Ignored) [+%d %s]", lineno, curfile);
+				token[0] = '\0';
 				continue;
 			}
 			*p = 0;
