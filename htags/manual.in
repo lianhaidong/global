@@ -189,7 +189,9 @@
 	$ htags -sanohITvt 'Welcome to XXX source tour!'
 	$ firefox HTML/index.html
 
-	$ htags --suggest
+	$ htags --suggest2
+	$ htags-server >& log &
+	$ firefox http://127.0.0.1:8000
 	@end_verbatim
 @FILES
 	@begin_itemize
