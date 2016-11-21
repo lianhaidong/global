@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (c) 2014
+# Copyright (c) 2014, 2016
 #       Tama Communications Corporation
 #
 # This file is part of GNU GLOBAL.
@@ -25,38 +25,111 @@ name=htags-server
 # HTTP/CGI servers
 #
 python2_server() {
-	echo "Please access at 'http://$2:$3'"
-	echo "Python2 http/cgi server"
-	echo "Serving HTTP on $2 port $3 ..."
-	"$1" <<-!
-	import cgi
-	import BaseHTTPServer,CGIHTTPServer
-	http = BaseHTTPServer.HTTPServer(('$2', $3), CGIHTTPServer.CGIHTTPRequestHandler)
-	http.serve_forever()
-	!
+	"$1" <<!
+import SocketServer,BaseHTTPServer,CGIHTTPServer
+import sys
+
+host = '$2'
+port = $3
+retry = $retry
+limit = port + retry
+while True:
+	try:
+		http = BaseHTTPServer.HTTPServer((host, port), CGIHTTPServer.CGIHTTPRequestHandler)
+	except SocketServer.socket.error as e:
+		in_use = 'port ' + str(port) + ' already in use';
+		if e.args[0] == 48:
+			if retry == 0:
+				sys.exit('Error: ' + in_use + '.')
+			print('Warning: ' + in_use + '(skipped)')
+			port += 1
+			if port > limit:
+				sys.exit('Error: gave up.')
+		else:
+			sys.exit('Error: SocketServer.socket failed. errono = ' + str(e.args[0]))
+	else:
+		break
+url = 'http://' + host + ':' + str(port)
+print('Please access at ' + url)
+print('Python2 http/cgi server')
+print('Serving HTTP on ' + host + ' port ' + str(port) + ' ...')
+http.serve_forever()
+!
 }
 python3_server() {
-	echo "Please access at 'http://$2:$3'"
-	echo "Python3 http/cgi server"
-	"$1" -m http.server --cgi --bind $2 $3
+	"$1" <<!
+import http.server
+import socketserver
+import sys
+
+host = '$2'
+port = $3
+retry = $retry
+limit = port + retry
+while True:
+	try:
+		http = http.server.HTTPServer((host, port), http.server.CGIHTTPRequestHandler)
+	except socketserver.socket.error as e:
+		in_use = 'port ' + str(port) + ' already in use';
+		if e.args[0] == 48:
+			if retry == 0:
+				sys.exit('Error: ' + in_use + '.')
+			print('Warning: ' + in_use + '(skipped)')
+			port += 1
+			if port > limit:
+				sys.exit('Error: gave up')
+		else:
+			sys.exit('Error: socketserver.socket failed. errono = ' + str(e.args[0]))
+	else:
+		break
+url = 'http://' + host + ':' + str(port)
+print('Please access at ' + url)
+print('Python3 http/cgi server')
+http.serve_forever()
+!
 }
 ruby_server() {
-	echo "Please access at 'http://$2:$3'"
-	echo "Ruby WEBrick http/cgi server"
-	echo "Serving HTTP on $2 port $3 ..."
-	"$1" <<-!
-	require 'webrick'
-	include WEBrick
+	"$1" <<!
+require 'webrick'
+include WEBrick
+
+host = '$2'
+port = $3
+retry_count = $retry
+limit = port + retry_count
+already_inuse = Regexp.new('^Address already in use')
+begin
 	http = HTTPServer.new(
 		:DocumentRoot => './',
-		:BindAddress => '$2',
-		:Port => $3
+		:BindAddress => host,
+		:Port => port
 	)
-	trap("INT") {
-		http.shutdown
-	}
-	http.start
-	!
+rescue => e
+	if already_inuse =~ e.message
+		if retry_count == 0
+			puts 'Error: port ' + port.to_s + ' already in use.'
+			exit(1)
+		end
+		puts 'Warning: port ' + port.to_s + ' already in use (skipped)'
+		port += 1
+		if port > limit
+			puts 'Error: gave up'
+			exit(1)
+		end
+		retry 
+	end
+end
+url = 'http://' + host + ':' + port.to_s
+puts 'Please access at ' + url
+puts 'Ruby WEBrick http/cgi server'
+puts 'Serving HTTP on ' + host + ' port ' + port.to_s + ' ...'
+trap("INT") {
+	http.shutdown
+	puts 'Interrupted!'
+	exit(1)
+}
+http.start
+!
 }
 #
 # Utilities
@@ -91,15 +164,18 @@ fi
 #
 bind=127.0.0.1
 port=8000
+retry=0
 use=
 while [ $# -gt 0 ]; do
 	case $1 in
 	-b|--bind)	shift; bind=$1;;
 	-u|--use)	shift; use=$1;;
+	--retry=*)	retry=`echo $1 | sed 's/--retry=//'`;;
+	--retry)	retry=20;;
 	--use=*)	use=`echo $1 | sed 's/--use=//'`;;
 	--bind=*)	bind=`echo $1 | sed 's/--bind=//'`;;
 	--help|-*)
-		echo "usage: $name [-b|--bind ip][-u use][port]"; exit 0;;
+		echo "usage: $name [-b|--bind ip][-u use][--retry[=n]][port]"; exit 0;;
 	*)
 		port=$1;;
 	esac
