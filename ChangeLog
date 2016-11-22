@@ -19,6 +19,14 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+October 22 2016, Shigio YAMAGUCHI
+
+	Removed the following files:
+	BOKIN_MODEL
+	BOKIN_MODEL_FAQ
+
+	BOKIN model was finished. Now GLOBAL is not a BOKINware.
+
 October 8 2016, Shigio YAMAGUCHI
 
 	Added the following library source code. Though it's a GNU version,
