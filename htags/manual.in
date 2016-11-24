@@ -36,10 +36,11 @@
 	@name{Htags} makes a directory named @file{HTML}, and puts a hypertext in it.
 	You can start browsing at @file{HTML/index.html}.
 
-	Since @name{htags} generates a static hypertext as long as the @option{-D} or @option{-f}
-	option is not specified, you can move it anywhere and browse it by any browser without
-	any HTTP server. If you use the @option{-D} or @option{-f} option, you need to use
-	HTTP server. Though any HTTP server is available, @xref{htags-server,1} is recommended.
+	Since @name{htags} generates a static hypertext as long as neither @option{-D}
+	nor @option{-f} option is not specified, you can move it anywhere and browse it
+	by any browser without any HTTP server. If you use @option{-D} or @option{-f}
+	option, you need to use HTTP server. Though any HTTP server is available,
+	@xref{htags-server,1} is recommended.
 
 	This command has so many options.
 	If you are new to @name{htags}, it is recommended to use @option{--suggest} option.
