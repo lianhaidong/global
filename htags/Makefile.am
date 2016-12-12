@@ -29,11 +29,13 @@ man_MANS = htags.1
 gtagsdir = ${datadir}/gtags
 gtags_DATA = global.cgi completion.cgi \
 	jscode_suggest jscode_treeview style.css
-EXTRA_DIST = $(man_MANS) $(gtags_DATA) manual.in global.cgi.in completion.cgi.in \
+EXTRA_DIST = $(man_MANS) manual.in global.cgi.in completion.cgi.in \
+		jscode_suggest jscode_treeview style.css \
 		const.h c.l cpp.l java.l php.l asm.l
+CLEANFILES = global.cgi completion.cgi
 # CGI scripts
 convert=sed -e 's!@PERLPATH@!$(PERL)!g' -e 's!@GLOBALPATH@!$(bindir)/global!g'
-global.cgi: global.cgi.in
-	$(convert) $< > $@
-completion.cgi: completion.cgi.in
-	$(convert) $< > $@
+global.cgi: global.cgi.in Makefile
+	$(convert) global.cgi.in > global.cgi
+completion.cgi: completion.cgi.in Makefile
+	$(convert) completion.cgi.in > completion.cgi
