@@ -7,8 +7,16 @@
 #
 # You should start HTTP server so that this script is executed as a CGI script.
 # Setup procedure for it depends on the HTTP server which you are using.
-# If you are using Apache, 'HTML/.htaccess' might be helpful for you.
 #
+# Use of htags-server(1) is recommended. It's simple.
+#	$ htags -Df
+#	$ htags-server
+#	Please access at http://127.0.0.1:8000
+#	Python2 http/cgi server
+#	Serving HTTP on 127.0.0.1 port 8000 ...
+# You can see the output of htags through 'http://127.0.0.1:8000'.
+#
+# If you are using Apache, 'HTML/.htaccess' might be helpful for you.
 #------------------------------------------------------------------
 #
 # Copyright (c) 1997, 2004, 2006, 2008, 2010 Tama Communications Corporation
