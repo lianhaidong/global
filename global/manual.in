@@ -179,6 +179,13 @@
 	@item{@option{--path-style} @arg{format}}
 		Print path names using @arg{format}, which may be one of:
 		@val{relative}, @val{absolute}, @val{shorter}, @val{abslib} or @val{through}.
+		@val{relative} means relative path. @val{absolute} means absolute path.
+		@val{shorter} means the shorter one of relative and absolute path.
+		@val{abslib} means absolute path for libraries (GTAGSLIBPATH) and relative path
+		for the rest.
+		@val{through} means the relative path from the project root directory
+		(internal format of GPATH).
+		The default is @val{relative}.
 		The @option{--path-style} option is given more priority than the @option{-a} option.
 	@item{@option{--print0}}
 		Print each record followed by a null character instead of a newline.
