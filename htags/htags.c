@@ -715,7 +715,7 @@ makehtaccess(const char *cgidir, const char *file, int perm)
 	fputs_nl("# as a CGI script.", op);
 	fputs_nl("#", op);
 	fputs_nl("Options +ExecCGI", op);
-	fputs_nl("<FilesMatch \"(global|completion)\\.cgi$\">", op);
+	fputs_nl("<FilesMatch \"^(global|completion)\\.cgi$\">", op);
 	fputs_nl("    SetHandler cgi-script", op);
 	fputs_nl("</FilesMatch>", op);
 	fclose(op);
@@ -1673,6 +1673,7 @@ main(int argc, char **argv)
 		message("\n[Information]\n");
 		message(" o Htags was invoked with the -f, -c, -D or --auto-completion option. You should");
 		message("   start http server so that cgi-bin/*.cgi is executed as a CGI script.");
+		message("   Use of htags-server(1) is recommended.");
  		message("\n If you are using Apache, 'HTML/.htaccess' might be helpful for you.\n");
 		message(" Good luck!\n");
 	}
