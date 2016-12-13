@@ -875,7 +875,8 @@
 	    (find-file-other-window file)))
         (if delete (kill-buffer prev-buffer)))
       (setq gtags-current-buffer (current-buffer))
-      (goto-line line)
+      (goto-char (point-min))
+      (forward-line (1- line))
       (gtags-mode 1))))
 
 ;; make complete list (do nothing)
