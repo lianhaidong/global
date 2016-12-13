@@ -376,7 +376,7 @@
 	The function field of the display is almost <unknown> since
 	@name{GLOBAL} doesn't recognize it.
 
-	'Find functions called by this function' is not implemented.
+	\'Find functions called by this function' is not implemented.
 @AUTHOR
 	Joe Steffen (original author) and others.
 @HISTORY
