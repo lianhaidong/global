@@ -1,7 +1,7 @@
 \input texinfo   @c -*-texinfo-*-
 @c %**start of header
 @setfilename global.info
-@settitle GNU GLOBAL source code tag system
+@settitle GNU GLOBAL source code tagging system
 @comment %**end of header
 
 @include version.texi
@@ -13,12 +13,12 @@
 @ifinfo
 @dircategory Development
 @direntry
-* GLOBAL: (global).             GNU GLOBAL source code tag system.
+* GLOBAL: (global).             GNU GLOBAL source code tagging system.
 @end direntry
 @end ifinfo
 
 @ifinfo
-This file documents the GNU GLOBAL source code tag system.
+This file documents the GNU GLOBAL source code tagging system.
 
 Copyright @copyright{} 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2008, 2010,
 2011, 2012, 2013 Tama Communications Corporation
@@ -44,7 +44,7 @@ Copyright @copyright{} 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2008, 2010,
 2011, 2012, 2013 Tama Communications Corporation
 @sp 2
 This manual is for @acronym{GNU} GLOBAL (version @value{VERSION},
-@value{UPDATED}), a source code tag system that works the same way
+@value{UPDATED}), a source code tagging system that works the same way
 across diverse environments.
 @sp 2
 Published by Tama Communications Corporation @*
@@ -62,9 +62,9 @@ Free Documentation License".
 
 @ifnottex
 @node Top
-@top GNU GLOBAL source code tag system
+@top GNU GLOBAL source code tagging system
 
-This manual documents version @value{VERSION} of the GNU GLOBAL source code tag system.
+This manual documents version @value{VERSION} of the GNU GLOBAL source code tagging system.
 
 @menu
 * Introduction::                        Overview of this tool.
@@ -85,7 +85,7 @@ This manual documents version @value{VERSION} of the GNU GLOBAL source code tag 
 
 @section What is GNU GLOBAL?
 
-GNU GLOBAL is a source code tag system that works the same way
+GNU GLOBAL is a source code tagging system that works the same way
 across diverse environments, such as Emacs editor, Vi editor,
 Less viewer, Bash shell, various web browsers, etc.
 You can locate specified symbols, such as functions, macros, structs and classes
@@ -174,7 +174,7 @@ GNU GLOBAL has the following features:
 @chapter Command line
 
 You can use tag facilities from the shell command line.
-It is a big merit of GLOBAL compared with any other tag system.
+It is a big merit of GLOBAL compared with any other tagging system.
 
 @menu
 * Preparation::                         Preparation.
@@ -813,7 +813,7 @@ Cookie directories are valid until you delete them.
 @node Less viewer
 @section Less using GLOBAL
 
-You can use GLOBAL as a tag system of less(1) viewer instead of ctags.
+You can use GLOBAL as a tagging system of less(1) viewer instead of ctags.
 
 @menu
 * Features(Less)::                       Features.
@@ -953,7 +953,7 @@ as a footstool.
 @node Nvi-1.81.5 editor
 @section Nvi-1.81.5 using GLOBAL
 
-You can use GLOBAL as the tag system of Nvi editor instead of ctags.
+You can use GLOBAL as a tagging system of Nvi editor instead of ctags.
 
 @menu
 * Features(Nvi-1.81.5)::                Features.
@@ -1473,7 +1473,7 @@ Suggested map:
 @node Emacs editor
 @section Extended Emacs using GLOBAL
 
-You can use GLOBAL as the tag system of Emacs editor instead of etags.
+You can use GLOBAL as a tagging system of Emacs editor instead of etags.
 
 @menu
 * Features(Emacs)::                     Features.
@@ -1776,11 +1776,11 @@ But in this case, you must not move the HTML directory from the source directory
 @node Doxygen documentation system
 @section Doxygen using GLOBAL
 
-You can use GLOBAL as the source browser of Doxygen.
+You can use GLOBAL as a source browser of Doxygen.
 
 Doxygen Release 1.4.3 or later has config option @code{USE_HTAGS}.
 When enabled in combination with @code{SOURCE_BROWSER=YES}, htags(1) is
-used as the source browser instead of Doxygen's own. 
+used as a source browser instead of Doxygen's own. 
 
 Here is an example.
 
