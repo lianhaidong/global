@@ -341,6 +341,7 @@ generate_guide(int lineno)
 {
 	STATIC_STRBUF(sb);
 	int i = 0;
+	int useform = 1;
 
 	strbuf_clear(sb);
 	if (definition_header == RIGHT_HEADER)
@@ -352,9 +353,10 @@ generate_guide(int lineno)
 			strbuf_putc(sb, ' ');
 	strbuf_sprintf(sb, "%s/* ", comment_begin);
 	strbuf_puts(sb, link_format(anchor_getlinks(lineno)));
-	if (show_position)
-		strbuf_sprintf(sb, "%s%s[+%d %s]%s",
+	if (show_position) {
+		strbuf_sprintf(sb, "%s%s value='+%d %s' %s",
 			quote_space, position_begin, lineno, curpfile, position_end);
+	}
 	strbuf_sprintf(sb, " */%s", comment_end);
 
 	return strbuf_value(sb);
@@ -857,7 +859,7 @@ src2html(const char *src, const char *html, int notsource)
 
 	fputs(link_format(anchor_getlinks(0)), out);
 	if (show_position)
-		fprintf(out, "%s%s[+1 %s]%s", quote_space, position_begin, src, position_end);
+		fprintf(out, "%s%s value='+1 %s' %s", quote_space, position_begin, src, position_end);
 	fputs(" */", out);
 	fputs_nl(comment_end, out);
 	fputs_nl(hr, out);
@@ -996,7 +998,7 @@ src2html(const char *src, const char *html, int notsource)
 	fputs("/* ", out);
 	fputs(link_format(anchor_getlinks(-1)), out);
 	if (show_position)
-		fprintf(out, "%s%s[+%d %s]%s", quote_space, position_begin, last_lineno, src, position_end);
+		fprintf(out, "%s%s value='+%d %s' %s", quote_space, position_begin, last_lineno, src, position_end);
 	fputs(" */", out);
 	fputs_nl(comment_end, out);
 	if (insert_footer) {
