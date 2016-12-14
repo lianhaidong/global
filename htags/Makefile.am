@@ -27,9 +27,9 @@ htags_DEPENDENCIES = $(LDADD)
 man_MANS = htags.1
 
 gtagsdir = ${datadir}/gtags
-gtags_DATA = global.cgi completion.cgi \
+gtags_DATA = global.cgi completion.cgi dot_htaccess \
 	jscode_suggest jscode_treeview style.css
-EXTRA_DIST = $(man_MANS) manual.in global.cgi.in completion.cgi.in \
+EXTRA_DIST = $(man_MANS) manual.in global.cgi.in completion.cgi.in dot_htaccess \
 		jscode_suggest jscode_treeview style.css \
 		const.h c.l cpp.l java.l php.l asm.l
 CLEANFILES = global.cgi completion.cgi
