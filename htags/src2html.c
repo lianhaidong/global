@@ -341,7 +341,6 @@ generate_guide(int lineno)
 {
 	STATIC_STRBUF(sb);
 	int i = 0;
-	int useform = 1;
 
 	strbuf_clear(sb);
 	if (definition_header == RIGHT_HEADER)
