@@ -500,7 +500,7 @@ makehelp(const char *file)
 		}
 	}
 	if (show_position)
-		fprintf(op, "[+line file]");
+		fprintf(op, "%s%s value='+<line number> <file>' %s", quote_space, position_begin, position_end);
 	fputs(" */", op);
 	if (!Iflag)
 		fputs_nl(verbatim_end, op);
@@ -521,10 +521,10 @@ makehelp(const char *file)
 	}
 	if (show_position) {
 		fputs(define_term_begin, op);
-		fputs("[+line file]", op);
+		fprintf(op, "%s%s value='+<line number> <file>' %s", quote_space, position_begin, position_end);
 		fputs(define_term_end, op);
 		fputs(define_desc_begin, op);
-		fputs("Current position (line number and file name).", op);
+		fputs("The current position (line number and file name).", op);
 		fputs_nl(define_desc_end, op);
 	}
 	fputs_nl(define_list_end, op);
