@@ -35,7 +35,7 @@ EXTRA_DIST = $(man_MANS) manual.in global.cgi.in completion.cgi.in dot_htaccess 
 CLEANFILES = global.cgi completion.cgi
 # CGI scripts
 convert=sed -e 's!@PERLPATH@!$(PERL)!g' -e 's!@GLOBALPATH@!$(bindir)/global!g'
-global.cgi: global.cgi.in Makefile
-	$(convert) global.cgi.in > global.cgi
-completion.cgi: completion.cgi.in Makefile
-	$(convert) completion.cgi.in > completion.cgi
+global.cgi: $(srcdir)/global.cgi.in Makefile
+	$(convert) $(srcdir)/global.cgi.in > global.cgi
+completion.cgi: $(srcdir)/completion.cgi.in Makefile
+	$(convert) $(srcdir)/completion.cgi.in > completion.cgi
