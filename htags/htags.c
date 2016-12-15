@@ -701,7 +701,7 @@ static void
 makehtaccess(const char *file, int perm)
 {
 	char src[MAXPATHLEN];
-	char *dst = makepath(distpath, file, NULL);
+	const char *dst = makepath(distpath, file, NULL);
 
 	snprintf(src, sizeof(src), "%s/gtags/dot_htaccess", datadir);
 	copyfile(src, dst);
