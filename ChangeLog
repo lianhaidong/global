@@ -19,6 +19,16 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+December 16 2016, Shigio YAMAGUCHI
+
+	Rewrote the following CGI scripts using perl5 syntax:
+	global.cgi.in
+	completion.cgi.in
+
+	There were many perl5.* incompatible with each other in the past.
+	Even then perl4 syntax always worked correctly. But this problem
+	was a thing of the past. Perl4 syntax is now meaningless.
+
 October 22 2016, Shigio YAMAGUCHI
 
 	Removed the following files:
