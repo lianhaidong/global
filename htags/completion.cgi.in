@@ -1,6 +1,6 @@
 #! @PERLPATH@
 #
-# Copyright (c) 2010 Tama Communications Corporation
+# Copyright (c) 2010, 2016 Tama Communications Corporation
 #
 # This file is free software; as a special exception the author gives
 # unlimited permission to copy and/or distribute it, with or without
@@ -10,24 +10,30 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
-$script_name = 'completion.cgi';
-$global_command = '@GLOBALPATH@';
+use strict;
+use warnings;
+my $script_name = 'completion.cgi';
+my $global_command = '@GLOBALPATH@';
 sub error_and_exit {
-	print STDERR "$script_name: " . $_[0];
+	print STDERR "$script_name: " . $_[0] . "\n";
 	exit 1;
 }
-@pairs = split (/&/, $ENV{'QUERY_STRING'});
-foreach $p (@pairs) {
-	($name, $value) = split(/=/, $p);
+my $query_string = defined($ENV{'QUERY_STRING'}) ? $ENV{'QUERY_STRING'} : '';
+my @pairs = split (/&/, $query_string);
+my %form;
+foreach (@pairs) {
+	my($name, $value) = split(/=/, $_);
 	$value =~ tr/+/ /;
 	$value =~ s/%([\dA-Fa-f][\dA-Fa-f])/pack("C", hex($1))/eg;
 	$form{$name} = $value;
 }
-$q = $form{'q'};
-if (!$q) {
+if (!defined($form{'q'})) {
 	error_and_exit("request value is null.");
 }
-$type = $form{'type'};
+my $q = $form{'q'};
+my $type = $form{'type'};
+my $flags = '';
+my $limit = 0;
 if ($type eq 'definition' || $type eq 'reference') {
 	$flags = 'c';
 } elsif ($type eq 'symbol') {
@@ -57,6 +63,7 @@ if (-d "cgi-bin") {
 		error_and_exit("Couldn't change 'cgi-bin' directory.");
 	}
 }
+my $gtagsroot = '';
 if (-f "../GTAGSROOT" && open(GTAGSROOT, "../GTAGSROOT")) {
 	$gtagsroot = <GTAGSROOT>;
 	chop($gtagsroot);
