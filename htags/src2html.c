@@ -840,8 +840,10 @@ src2html(const char *src, const char *html, int notsource)
 		} else {
 			encode(sb, src);
 		}
+		strbuf_puts(sb, "?view=log");
 		if (cvsweb_cvsroot) {
-			strbuf_puts(sb, "?cvsroot=");
+			strbuf_puts(sb, quote_amp);
+			strbuf_puts(sb, "cvsroot=");
 			strbuf_puts(sb, cvsweb_cvsroot);
 		}
 		fputs(quote_space, out);
