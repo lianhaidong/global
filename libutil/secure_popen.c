@@ -23,27 +23,13 @@
 #endif
 #include <stdio.h>
 #include <errno.h>
-#include <sys/stat.h>
+#include <sys/wait.h>
 #ifdef STDC_HEADERS
 #include <stdlib.h>
 #endif
-/*
-#ifdef HAVE_STRING_H
-#include <string.h>
-#else
-#include <strings.h>
-#endif
-*/
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-/*
-#ifdef HAVE_FCNTL_H
-#include <fcntl.h>
-#else
-#include <sys/file.h>
-#endif
-*/
 
 #include "die.h"
 #include "secure_popen.h"
