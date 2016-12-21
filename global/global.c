@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005, 2006,
- *	2007, 2008, 2010, 2011, 2012, 2013, 2014, 2015
+ *	2007, 2008, 2010, 2011, 2012, 2013, 2014, 2015, 2016
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -1062,8 +1062,10 @@ completion_idutils(const char *dbpath, const char *root, const char *prefix)
 {
 	FILE *ip;
 	STRBUF *sb = strbuf_open(0);
-	const char *lid = usable("lid");
+	char *lid = usable("lid");
 	char *line, *p;
+	char *argv[10];
+	int i = 0;
 
 	if (prefix && *prefix == 0)	/* In the case global -c '' */
 		prefix = NULL;
@@ -1073,6 +1075,9 @@ completion_idutils(const char *dbpath, const char *root, const char *prefix)
 	 */
 	if (!lid)
 		die("lid(idutils) not found.");
+	if (chdir(root) < 0)
+		die("cannot move to '%s' directory.", root);
+#if defined(_WIN32) && !defined(__CYGWIN__)
 	strbuf_puts(sb, lid);
 	strbuf_sprintf(sb, " --file=%s/ID", quote_shell(dbpath));
 	strbuf_puts(sb, " --key=token");
@@ -1087,10 +1092,36 @@ completion_idutils(const char *dbpath, const char *root, const char *prefix)
 	}
 	if (debug)
 		fprintf(stderr, "completion_idutils: %s\n", strbuf_value(sb));
-	if (chdir(root) < 0)
-		die("cannot move to '%s' directory.", root);
 	if (!(ip = popen(strbuf_value(sb), "r")))
 		die("cannot execute '%s'.", strbuf_value(sb));
+#else
+	/*
+	 * This function is called from the CGI scripts of htags(1).
+	 * In order not to cause unnecessary anxiety, popen(3) is not used in Unix.
+	 */
+	strbuf_puts0(sb, makepath(dbpath, "ID", NULL));
+	if (prefix) {
+		strbuf_putc(sb, '^');
+		strbuf_puts0(sb, prefix);
+	}
+	p = strbuf_value(sb);
+	argv[i++] = lid;
+	argv[i++] = "--file";
+	argv[i++] = p;					/* dbpath/ID */
+	argv[i++] = "--key=token";
+	if (iflag)
+		argv[i++] = "--ignore-case";
+	if (prefix)
+		argv[i++] = next_string(p);		/* ^prefix */
+	argv[i] = NULL;
+	if (debug) {
+		fprintf(stderr, "completion_idutils: \n");
+		for (i = 0; argv[i] != NULL; i++) 
+			fprintf(stderr, "argv[%d] = |%s|\n", i, argv[i]);
+	}
+	if (!(ip = secure_popen(lid, "r", argv)))
+		die("cannot execute '%s'.", lid);
+#endif
 	while ((line = strbuf_fgets(sb, ip, STRBUF_NOCRLF)) != NULL) {
 		for (p = line; *p && *p != ' '; p++)
 			;
@@ -1101,8 +1132,13 @@ completion_idutils(const char *dbpath, const char *root, const char *prefix)
 		*p = '\0';
 		puts(line);
 	}
+#if defined(_WIN32) && !defined(__CYGWIN__)
 	if (pclose(ip) != 0)
 		die("terminated abnormally (errno = %d).", errno);
+#else
+	if (secure_pclose(ip) != 0)
+		die("terminated abnormally (errno = %d).", errno);
+#endif
 	strbuf_close(sb);
 }
 /**
@@ -1226,15 +1262,21 @@ idutils(const char *pattern, const char *dbpath)
 	STRBUF *ib = strbuf_open(0);
 	char encoded_pattern[IDENTLEN];
 	char path[MAXPATHLEN];
-	const char *lid;
+	char *lid;
 	int linenum, count;
 	char *p, *q, *grep;
+	char *argv[20];
+	int i = 0;
 
 	lid = usable("lid");
 	if (!lid)
 		die("lid(idutils) not found.");
 	if (!test("f", makepath(dbpath, "ID", NULL)))
 		die("ID file not found.");
+	/*
+	 * PWD is needed for lid.
+	 */
+	set_env("PWD", root);
 	/*
 	 * convert spaces into %FF format.
 	 */
@@ -1243,11 +1285,8 @@ idutils(const char *pattern, const char *dbpath)
 	 * make lid command line.
 	 * Invoke lid with the --result=grep option to generate grep format.
 	 */
-#if _WIN32 || __DJGPP__
+#if defined(_WIN32) && !defined(__CYGWIN__)
 	strbuf_puts(ib, lid);
-#else
-	strbuf_sprintf(ib, "PWD=%s %s", quote_shell(root), lid);
-#endif
 	strbuf_sprintf(ib, " --file=%s/ID", quote_shell(dbpath));
 	strbuf_puts(ib, " --separator=newline");
 	if (format == FORMAT_PATH)
@@ -1266,6 +1305,40 @@ idutils(const char *pattern, const char *dbpath)
 		fprintf(stderr, "idutils: %s\n", strbuf_value(ib));
 	if (!(ip = popen(strbuf_value(ib), "r")))
 		die("cannot execute '%s'.", strbuf_value(ib));
+#else
+	/*
+	 * This function is called from the CGI scripts of htags(1).
+	 * In order not to cause unnecessary anxiety, popen(3) is not used in Unix.
+	 */
+	strbuf_puts0(ib, makepath(dbpath, "ID", NULL));
+	strbuf_puts0(ib, pattern);
+	p = strbuf_value(ib);
+	argv[i++] = lid;
+	argv[i++] = "--file";
+	argv[i++] = p;					/* dbpath/ID */
+	argv[i++] = "--separator=newline";
+	if (format == FORMAT_PATH) {
+		argv[i++] = "--result=filenames";
+		argv[i++] = "--key=none";
+	} else {
+		argv[i++] = "--result=grep";
+	}
+	if (iflag)
+		argv[i++] = "--ignore-case";
+	if (literal)
+		argv[i++] = "--literal";
+	else if (isregex(pattern))
+		argv[i++] = "--regexp";
+	argv[i++] = next_string(p);			/* pattern */
+	argv[i] = NULL;
+	if (debug) {
+		fprintf(stderr, "idutils: \n");
+		for (i = 0; argv[i] != NULL; i++) 
+			fprintf(stderr, "argv[%d] = |%s|\n", i, argv[i]);
+	}
+	if (!(ip = secure_popen(lid, "r", argv)))
+		die("cannot execute '%s'.", strbuf_value(ib));
+#endif
 	cv = convert_open(type, format, root, cwd, dbpath, stdout, NOTAGS);
 	cv->tag_for_display = encoded_pattern;
 	count = 0;
@@ -1310,8 +1383,13 @@ idutils(const char *pattern, const char *dbpath)
 			break;
 		}
 	}
+#if defined(_WIN32) && !defined(__CYGWIN__)
 	if (pclose(ip) != 0)
 		die("terminated abnormally (errno = %d).", errno);
+#else
+	if (secure_pclose(ip) != 0)
+		die("terminated abnormally (errno = %d).", errno);
+#endif
 	convert_close(cv);
 	strbuf_close(ib);
 	if (vflag) {

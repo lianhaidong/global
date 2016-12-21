@@ -134,5 +134,6 @@ void strbuf_vsprintf(STRBUF *, const char *, va_list)
 	__attribute__ ((__format__ (__printf__, 2, 0)));
 STRBUF *strbuf_open_tempbuf(void);
 void strbuf_release_tempbuf(STRBUF *);
+char *next_string(char *);
 
 #endif /* ! _STRBUF_H */

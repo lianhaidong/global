@@ -521,3 +521,13 @@ strbuf_release_tempbuf(STRBUF *sb)
 {
 	used = 0;
 }
+/**
+ * next_string:
+ */
+char *
+next_string(char *p)
+{
+	while (*p++)
+		;
+	return p;
+}

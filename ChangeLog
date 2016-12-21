@@ -19,6 +19,15 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+December 21 2016, Shigio YAMAGUCHI
+
+	Rewrote the following functions without popen(3) in order not to cause
+	unnecessary security anxiety.
+	completion_idutils()
+	idutils()
+
+	These functions are called from CGI scripts of htags(1).
+
 December 16 2016, Shigio YAMAGUCHI
 
 	Rewrote the following CGI scripts using perl5 syntax:

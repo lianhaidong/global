@@ -52,6 +52,7 @@
 #include "path.h"
 #include "pool.h"
 #include "rewrite.h"
+#include "secure_popen.h"
 #include "split.h"
 #include "statistics.h"
 #include "strbuf.h"
