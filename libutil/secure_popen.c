@@ -82,7 +82,7 @@ secure_popen(const char *command, const char *type, char *const argv[])
 			if (dup2(fd[0], STDIN_FILENO) < 0)
 				die("dup2 failed.");
 		}
-		execvp(argv[0], argv);
+		execvp(command, argv);
 		die("execvp failed.");
 	}
 	/* parent process */
