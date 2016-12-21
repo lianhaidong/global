@@ -52,7 +52,6 @@ secure_popen(const char *command, const char *type, char *const argv[])
 {
 	FILE *ip;
 	int fd[2];
-	int i = 0;
 
 	if (pipe(fd) < 0)
 		return (NULL);
