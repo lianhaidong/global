@@ -1072,9 +1072,17 @@ completion_idutils(const char *dbpath, const char *root, const char *prefix)
 	/*
 	 * make lid command line.
 	 * Invoke lid with the --result=grep option to generate grep format.
+	 *
+	 * When lid(1) not found in the PATH, use LID macro if it exists.
+	 * This is needed because lid is called indirectly from CGI scripts. 
+	 * In the CGI scripts, PATH is limited to '/bin:/usr/bin:/usr/local/bin'.
 	 */
-	if (!lid)
-		die("lid(idutils) not found.");
+	if (!lid) {
+		if (strcmp(LID, "no") != 0 && test("fx", LID))
+			lid = LID;
+		else
+			die("lid(idutils) not found.");
+	}
 	if (chdir(root) < 0)
 		die("cannot move to '%s' directory.", root);
 #if defined(_WIN32) && !defined(__CYGWIN__)
@@ -1262,15 +1270,23 @@ idutils(const char *pattern, const char *dbpath)
 	STRBUF *ib = strbuf_open(0);
 	char encoded_pattern[IDENTLEN];
 	char path[MAXPATHLEN];
-	char *lid;
+	char *lid = usable("lid");
 	int linenum, count;
 	char *p, *q, *grep;
 	char *argv[20];
 	int i = 0;
 
-	lid = usable("lid");
-	if (!lid)
-		die("lid(idutils) not found.");
+	/*
+	 * When lid(1) not found in the PATH, use LID macro if it exists.
+	 * This is needed because lid is called indirectly from CGI scripts. 
+	 * In the CGI scripts, PATH is limited to '/bin:/usr/bin:/usr/local/bin'.
+	 */
+	if (!lid) {
+		if (strcmp(LID, "no") != 0 && test("fx", LID))
+			lid = LID;
+		else
+			die("lid(idutils) not found.");
+	}
 	if (!test("f", makepath(dbpath, "ID", NULL)))
 		die("ID file not found.");
 	/*

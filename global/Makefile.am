@@ -16,7 +16,7 @@ global_SOURCES = global.c literal.c output.c convert.c
 
 noinst_HEADERS = literal.h convert.h output.h
 
-AM_CPPFLAGS = @AM_CPPFLAGS@
+AM_CPPFLAGS = @AM_CPPFLAGS@ -DLID='"$(LID)"'
 
 LDADD = @LDADD@
 

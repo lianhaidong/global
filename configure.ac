@@ -38,6 +38,7 @@ dnl Currently, absolute path name of perl is required only for CGI script.
 dnl So, if you don't use the -f(--form) option of htags(1), it is not required.
 dnl
 AC_PATH_PROG(PERL, perl, [/usr/bin/env perl])
+AC_PATH_PROG(LID, lid, no)
 AC_CHECK_TOOL(AR, ar)
 dnl
 dnl for "plugin-factory/pygments_parser.py"
