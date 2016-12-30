@@ -1,4 +1,4 @@
-#! @PERLPATH@
+#! @PERLPATH@ -T
 #------------------------------------------------------------------
 # YOU ARE COMING TO THE DESTINATION ALMOST. PLEASE DO A LITTLE EFFORT.
 #
@@ -32,6 +32,13 @@
 #
 use strict;
 use warnings;
+#
+# Set PATH and remove some environment variables to satisfy taint mode.
+# If you installed idutils outside of the PATH, you should add the place
+# to the PATH.
+#
+$ENV{'PATH'} = '/bin:/usr/bin:/usr/local/bin';
+delete @ENV{'IFS', 'CDPATH', 'ENV', 'BASH_ENV'};
 my $global_command = '@GLOBALPATH@';
 my $basedir = "..";
 sub header {
@@ -78,6 +85,14 @@ if ($form{'pattern'} eq '') {
 	error_and_exit("Pattern not specified.");
 }
 my $pattern = $form{'pattern'};
+#
+# Execute a ceremony to satisfy taint mode.
+#
+if ($pattern =~ /\A(.*)\z/) {
+        $pattern = $1;
+} else {
+        $pattern = '';
+}
 my $flag = '';
 my $words = 'definitions';
 if ($form{'type'} eq 'reference') {

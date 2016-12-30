@@ -1,4 +1,4 @@
-#! @PERLPATH@
+#! @PERLPATH@ -T
 #
 # Copyright (c) 2010, 2016 Tama Communications Corporation
 #
@@ -12,6 +12,13 @@
 #
 use strict;
 use warnings;
+#
+# Set PATH and remove some environment variables to satisfy taint mode.
+# If you installed idutils outside of the PATH, you should add the place 
+# to the PATH. 
+#
+$ENV{'PATH'} = '/bin:/usr/bin:/usr/local/bin';
+delete @ENV{'IFS', 'CDPATH', 'ENV', 'BASH_ENV'};
 my $script_name = 'completion.cgi';
 my $global_command = '@GLOBALPATH@';
 sub error_and_exit {
@@ -31,6 +38,14 @@ if (!defined($form{'q'})) {
 	error_and_exit("request value is null.");
 }
 my $q = $form{'q'};
+#
+# Execute a ceremony to satisfy taint mode.
+#
+if ($q =~ /\A(.*)\z/) {
+        $q = $1;
+} else {
+        $q = '';
+}
 my $type = $form{'type'};
 my $flags = '';
 my $limit = 0;

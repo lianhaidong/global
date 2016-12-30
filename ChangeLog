@@ -19,6 +19,12 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+December 30 2016, Shigio YAMAGUCHI
+
+	Added taint mode to the following CGI scripts:
+	global.cgi.in
+	completion.cgi.in
+
 December 21 2016, Shigio YAMAGUCHI
 
 	Rewrote the following functions without popen(3) in order not to cause
