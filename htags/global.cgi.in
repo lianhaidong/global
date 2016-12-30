@@ -48,7 +48,7 @@ sub header {
 <head>\
 <title>Result</title>\
 <meta name='robots' content='noindex,nofollow' />\
-<meta name='generator' content='GLOBAL-6.5.2' />\
+<meta name='generator' content='@GENERATOR@' />\
 <meta http-equiv='Content-Style-Type' content='text/css' />\
 <link rel='stylesheet' type='text/css' href='$basedir/style.css' />\
 </head>\n<body>\n";
