@@ -40,21 +40,21 @@
 
 	Syntax is similar to @xref{termcap,5} except for some extensions described later.
 	A file includes one or more records. You should select a record using a label.
-	Default label is 'default'. If @var{GTAGSLABEL} is set, its value is used.
-	Please be aware the meaning of 'default' is different from that of @xref{termcap,5}.
+	Default label is @samp{default}. If @var{GTAGSLABEL} is set, its value is used.
+	Please be aware the meaning of @samp{default} is different from that of @xref{termcap,5}.
 
-	Lines starting with '#' are ignored.
-	A record consists of one or more fields separated by ':' and ends with a newline.
+	Lines starting with @samp{#} are ignored.
+	A record consists of one or more fields separated by @samp{:} and ends with a newline.
 	The first field must have a label name. Each field of the rest has a variable definition.
 	There are three types in those variables.
 	@begin_itemize
 	@item{Boolean: This type has no value; existence of variable means true else false.}
-	@item{Number: This type has a number value after '#'.}
-	@item{String: This type has a string value after '='.}
+	@item{Number: This type has a number value after @samp{#}.}
+	@item{String: This type has a string value after @samp{=}.}
 	@end_itemize
 	Most variables are relevant to string type.
 
-	If data includes ':' or newline, you need to quote it by '\\'.
+	If data includes @samp{:} or newline, you need to quote it by @samp{\}.
 	An empty field is permitted, but it doesn't make sense.
 
 	When there is more than one definition, the previous one is adopted. 
@@ -62,8 +62,8 @@
 	adopted and connected respectively.
 @Variable substitution
 	Variable substitution similar to @xref{sh,1} is available.
-	You can refer to any string variable using '$' prefix. For example, the following
-	@name{b} has a value 'XYZ'.
+	You can refer to any string variable using @samp{$} prefix. For example, the following
+	@name{b} has a value @samp{XYZ}.
 	@begin_verbatim
 	:a=Y:b=X${a}Z:
 	@end_verbatim

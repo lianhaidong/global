@@ -1,6 +1,6 @@
 ___________________________________
 |      |  |  |     |  _  |     |  |
-|  |___|  |  |  |  |    _|  |  |  |    GNU GLOBAL source code tag system
+|  |___|  |  |  |  |    _|  |  |  |    GNU GLOBAL source code tagging system
 |  |   |  |  |  |  |     |     |  |
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -147,7 +147,7 @@ Simon Dommett		many bug reports and fix patches.
 			He also rewrote GLOBAL's comments in the Doxygen style.
 Stephen Huntley		bug report about htags(1).
 Sven Verdoolaege	support for gtags.pl(nvi-1.81.5).
-Steve Kirkendall	two commands of Elvis for external tag system.
+Steve Kirkendall	two commands of Elvis for external tagging system.
 Takao Yamashita		advice about assembly parsing.
 Takeshi Hojo		idea about compact format of gtags(1).
 Tero Saarni		bug report about long line problem of htags(1).

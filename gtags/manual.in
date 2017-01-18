@@ -68,7 +68,7 @@
 		The argument @arg{file} can be set to @val{-} to accept a list of
 		files from the standard input.
 		File names must be separated by newline.
-		To make the list, you may use @xref{find,1} which has rich options
+		To make the list you may use @xref{find,1}, which has rich options
 		for selecting files.
 	@item{@option{--gtagsconf} @arg{file}}
 		Set environment variable @var{GTAGSCONF} to @arg{file}.
@@ -149,9 +149,9 @@
 		If this variable is set, @file{$GTAGSLOGGING} is used as the path name
 		of a log file. There is no default value.
 	@item{@var{GTAGS_COMMANDLINE}}
-		This variable can only be referenced from the hook (See gtags_hook).
-		@name{Gtags} set its own effective command line to this variable before
-		calling the hook. Each argument is sepalated by whitespace, and
+		This variable can only be referenced from the hook (see gtags_hook).
+		@name{Gtags} sets its own effective command line to this variable before
+		calling the hook. Each argument is separated by whitespace, and
 		real whitespace is represented as '%20'. This is read only.
 	@item{@var{GTAGS_OPTIONS}}
 		The value of this variable is inserted in the head of arguments.
@@ -179,7 +179,7 @@
 	@item{@code{gtags_hook} (command line)}
 		Specify a command line which should be executed at the beginning of @name{gtags}
 		after loading configuration file. You can use this hook to update
-		@file{gtags.files} dynamically..
+		@file{gtags.files} dynamically.
 		"./" in it always means the project root directory, since @name{gtags} is
 		always invoked there.
 	@item{@code{icase_path} (boolean)}
@@ -202,11 +202,11 @@
 		@br
 		If the value starts with @samp{/}, it is assumed a relative path name
 		from the root directory of the project. You cannot use glob patterns
-		for a path name. However, this directions is out-of-date, and is not
+		for a path name. However, this direction is out-of-date, and is not
 		recommended. Instead, you can use @option{-f} option which can be combined with
 		@xref{find,1}. Since @xref{find,1} has rich options to select files,
 		you can do everything. Additionally, this technique can also be applied
-		to any other tagging systems like @xref{ctags,1}, @xref{cscope,1}, and etc. 
+		to any other tagging systems like @xref{ctags,1}, @xref{cscope,1}, etc. 
 		@br
 		Skip list is also effective when you use the @option{-f} or @file{gtags.files}.
 	@end_itemize

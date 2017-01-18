@@ -24,7 +24,7 @@
 "
 " Overview
 " --------
-" The gtags-cscope.vim plugin script integrates the GNU GLOBAL source code tag system
+" The gtags-cscope.vim plugin script integrates the GNU GLOBAL source code tagging system
 " with Vim using cscope interface.
 "
 " Installation

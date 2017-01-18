@@ -14,10 +14,10 @@
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #
 # *
-# Configuration file for GNU GLOBAL source code tag system.
+# Configuration file for GNU GLOBAL source code tagging system.
 #
 # Basically, GLOBAL doesn't need this configuration file ('gtags.conf'),
-# because it has default values in itsself. If you have this file as
+# because it has default values in itself. If you have this file as
 # '/etc/gtags.conf' or "$HOME/.globalrc" then GLOBAL overwrite the default
 # values with values in the file.
 # Configuration file is also necessary to use plug-in parsers.

@@ -33,6 +33,9 @@
 #include "makepath.h"
 #include "strbuf.h"
 #include "strmake.h"
+#if defined(_WIN32) || defined(__DJGPP__)
+#include "path.h"
+#endif
 
 /**
  * makepath: make path from directory and file.

@@ -29,6 +29,9 @@
 #include "strbuf.h"
 #include "test.h"
 #include "gpathop.h"
+#if (defined(_WIN32) && !defined(__CYGWIN__)) || defined(__DJGPP__)
+#include "path.h"
+#endif
 
 #define ARGS_NOP	0
 #define ARGS_ARGS	1

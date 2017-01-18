@@ -106,7 +106,7 @@
 ;;; Customizing gtags-mode
 ;;;
 (defgroup gtags nil
-  "Minor mode for GLOBAL source code tag system."
+  "Minor mode for GLOBAL source code tagging system."
   :group 'tools
   :prefix "gtags-")
 

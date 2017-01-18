@@ -22,7 +22,7 @@
 # Author: Tama Communications Corporation
 # 
 # Geco is a quick view tool for GLOBAL using percol and less.
-# It is useful as a lanch pad for vi editor.
+# It is useful as a launch pad for vi editor.
 #
 # Features:
 # o Command line input completion using __geco_completion()
@@ -93,7 +93,7 @@ gecoless()
 {
 	local line IFS=
 	case $__gtags_geco_selector in
-	'')	echo "geco: percol or peco is required."
+	'')	echo "geco: percol, peco or fzf is required."
 		return 1;;
 	esac
 	line=$(cat)

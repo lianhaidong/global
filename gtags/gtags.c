@@ -222,7 +222,7 @@ main(int argc, char **argv)
 			argv = prepend_options(&argc, argv, env);
 	}
 	/*
-	 * Execute gtags_hook before the jogs.
+	 * Execute gtags_hook before the jobs.
 	 */
 	if (getconfs("gtags_hook", sb)) {
 		char *p = serialize_options(argc, argv);
@@ -357,7 +357,7 @@ main(int argc, char **argv)
 			die("invalid version string of mkid: %s", strbuf_value(sb));
 		switch (check_version(p + 1, REQUIRED_MKID_VERSION)
 #ifdef _WIN32
-			|| strcmp(p + 1, "3.2.99") == 0
+			| strcmp(p + 1, "3.2.99") == 0
 #endif
 			)  {
 		case 1:		break;	/* OK */

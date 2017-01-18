@@ -1,6 +1,6 @@
 ___________________________________
 |      |  |  |     |  _  |     |  |
-|  |___|  |  |  |  |    _|  |  |  |    GNU GLOBAL source code tag system
+|  |___|  |  |  |  |    _|  |  |  |    GNU GLOBAL source code tagging system
 |  |   |  |  |  |  |     |     |  |
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -16,7 +16,7 @@ ___________________________________
 
 		----------------------------------
 
-GNU GLOBAL is a source code tag system that works the same way across diverse
+GNU GLOBAL is a source code tagging system that works the same way across diverse
 environments. It supports C, C++, Yacc, Java, PHP4 and assembly source code.
 
 * Supported OS
