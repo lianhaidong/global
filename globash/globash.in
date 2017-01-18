@@ -32,6 +32,7 @@ if [ -n "$HOME_ETC" ]; then
 else
         GHOME="$HOME/.globash"
 fi
+ECHO='/bin/echo'
 #
 # global command name
 #
@@ -39,53 +40,53 @@ __gtags_global_command=${GTAGSGLOBAL-global}
 __gtags_gtags_command=${GTAGSGTAGS-gtags}
 prompt="Do you create '$GHOME'? ([y]/n)"
 if [ ! -d "$GHOME" ]; then
-	echo -n "GloBash needs a working directory. $prompt"
+	$ECHO -n "GloBash needs a working directory. $prompt"
 	while read ans; do
 		case $ans in
 		YES|Yes|yes|Y|y|"")
-			echo -n "Creating..."
+			$ECHO "Creating..."
 			if mkdir "$GHOME"; then
-				echo "Done."
+				$ECHO "Done."
 				break
 			else
-				echo "cannot make '$GHOME' directory."
+				$ECHO "cannot make '$GHOME' directory."
 				exit 1
 			fi
 			;;
 		NO|No|no|N|n)
-			echo "Bye ..."
+			$ECHO "Bye ..."
 			exit 1;;
 		esac
-		echo -n "$prompt"
+		$ECHO -n "$prompt"
 	done
-	echo
-	echo "___________________________________________"
-	echo "|      |  |  |     |  _  |     |     |  |  |"
-	echo "|  |___|  |  |  |  |    _|  |  |  ---|  |  |    A special shell for GLOBAL"
-	echo "|  |   |  |  |  |  |     |     |     |     |"
-	echo "|  ~~  |   ~~|     |  ~  |  |  |---  |  |  |          using GNU bash"
-	echo "___________________________________________|"
-	echo
-	echo "Copyright (c) 2001, 2002, 2004, 2006, 2009, 2010, 2011"
-	echo "Tama Communications Corporation"
-	echo
-	echo "Welcome to GloBash!"
-	echo
+	$ECHO
+	$ECHO "___________________________________________"
+	$ECHO "|      |  |  |     |  _  |     |     |  |  |"
+	$ECHO "|  |___|  |  |  |  |    _|  |  |  ---|  |  |    A special shell for GLOBAL"
+	$ECHO "|  |   |  |  |  |  |     |     |     |     |"
+	$ECHO "|  ~~  |   ~~|     |  ~  |  |  |---  |  |  |          using GNU bash"
+	$ECHO "___________________________________________|"
+	$ECHO
+	$ECHO "Copyright (c) 2001, 2002, 2004, 2006, 2009, 2010, 2011"
+	$ECHO "Tama Communications Corporation"
+	$ECHO
+	$ECHO "Welcome to GloBash!"
+	$ECHO
 fi
 prompt="Do you create tag files in the current directory? ([y]/n)"
 if [ "`$__gtags_global_command -p 2>/dev/null`" = "" ]; then
-	echo -n "GTAGS not found. $prompt"
+	$ECHO -n "GTAGS not found. $prompt"
 	while read ans; do
 		case $ans in
-		Y|y|"")	echo -n "Creating..."
+		Y|y|"")	$ECHO -n "Creating..."
 			$__gtags_gtags_command
-			echo "Done."
+			$ECHO "Done."
 			break;;
-		N|n)	echo "Please make tag files using gtags(1) before starting this command. Bye."
+		N|n)	$ECHO "Please make tag files using gtags(1) before starting this command. Bye."
 			exit 1;;
 		esac
-		echo -n "$prompt"
+		$ECHO -n "$prompt"
 	done
-	echo
+	$ECHO
 fi
 exec bash --rcfile "@DATADIR@/globash.rc"
