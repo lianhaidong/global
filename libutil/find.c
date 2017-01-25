@@ -79,10 +79,6 @@
 #define STRNCMP strncmp
 #define ROOT 0
 #endif
-#ifndef PATH_MAX
-#error Since this platform does not have PATH_MAX, you should define it using an appropriate value for the platform.
-/* #define PATH_MAX     1024 */
-#endif
 /*
  * usage of find_xxx()
  *
@@ -97,16 +93,12 @@ static regex_t *skip;			/**< regex for skipping units */
 static regex_t *suff;			/**< regex for suffixes */
 static FILE *ip;
 static FILE *temp;
-static char rootdir[PATH_MAX];
+static char *rootdir;
 static char cwddir[MAXPATHLEN];
 static int find_mode;
 static int find_eof;
 #define FIND_OPEN	1
 #define FILELIST_OPEN	2
-
-static void trim(char *);
-static char *find_read_traverse(void);
-static char *find_read_filelist(void);
 
 extern int qflag;
 extern int debug;
@@ -491,14 +483,14 @@ static int current_entry;			/**< current entry of the stack */
 /**
  * getrealpath: return a real path of dir using allocated area.
  */
-char *
+static char *
 getrealpath(const char *dir)
 {
-	char real[PATH_MAX];
+	char *real;
 
-	if (realpath(dir, real) == NULL)
+	if ((real = realpath(dir, NULL)) == NULL)
 		die("cannot get real path of '%s'.", trimpath(dir));
-	return check_strdup(real);
+	return real;
 }
 /**
  * has_symlinkloop: whether or not dir has a symbolic link loops.
@@ -506,16 +498,16 @@ getrealpath(const char *dir)
  *	@param[in]	dir	directory (should end by "/")
  *	@return		1: has a loop, 0: don't have a loop
  */
-int
+static int
 has_symlinkloop(const char *dir)
 {
 	struct stack_entry *sp;
-	char real[PATH_MAX], *p;
-	int i;
+	char *real, *p;
+	int i, ret = 0;
 
 	if (!strcmp(dir, "./"))
 		return 0;
-	if (realpath(dir, real) == NULL)
+	if ((real = realpath(dir, NULL)) == NULL)
 		die("cannot get real path of '%s'.", trimpath(dir));
 #ifdef SLOOPDEBUG
 	fprintf(stderr, "======== has_symlinkloop ======\n");
@@ -524,8 +516,10 @@ has_symlinkloop(const char *dir)
 	fprintf(stderr, "\tcheck '%s' < '%s'\n", real, rootdir);
 #endif
 	p = locatestring(rootdir, real, MATCH_AT_FIRST);
-	if (p && (*p == '/' || *p == '\0' || !strcmp(real, "/")))
-		return 1;
+	if (p && (*p == '/' || *p == '\0' || !strcmp(real, "/"))) {
+		ret = 1;
+		goto out;
+	}
 	sp = varray_assign(stack, 0, 0);
 #ifdef SLOOPDEBUG
 	fprintf(stderr, "TEST-2\n");
@@ -534,13 +528,17 @@ has_symlinkloop(const char *dir)
 #ifdef SLOOPDEBUG
 		fprintf(stderr, "%d:\tcheck '%s' == '%s'\n", i, real, sp[i].real);
 #endif
-		if (!strcmp(sp[i].real, real))
-			return 1;
+		if (!strcmp(sp[i].real, real)) {
+			ret = 1;
+			goto out;
+		}
 	}
 #ifdef SLOOPDEBUG
 	fprintf(stderr, "===============================\n");
 #endif
-	return 0;
+out:
+	free(real);
+	return ret;
 }
 
 /**
@@ -633,7 +631,7 @@ find_open(const char *start, int explain)
 
 	if (!start)
 		start = "./";
-        if (realpath(start, rootdir) == NULL)
+        if ((rootdir = realpath(start, NULL)) == NULL)
                 die("cannot get real path of '%s'.", trimpath(dir));
 	/*
 	 * setup stack.
@@ -662,6 +660,7 @@ find_open(const char *start, int explain)
 void
 find_open_filelist(const char *filename, const char *root, int explain)
 {
+	size_t rootdir_len;
 	assert(find_mode == 0);
 	find_mode = FILELIST_OPEN;
 	find_explain = explain;
@@ -687,40 +686,99 @@ find_open_filelist(const char *filename, const char *root, int explain)
 	}
 	/*
 	 * rootdir always ends with '/'.
+	 *
+	 * rootdir_len is two characters longer than root to be able
+	 * to append a "/" if needed and the string terminator
+	 * ofcourse.
 	 */
-	if (!strcmp(root+ROOT, "/"))
-		strlimcpy(rootdir, root, sizeof(rootdir));
-	else
-		snprintf(rootdir, sizeof(rootdir), "%s/", root);
+	rootdir_len = strlen(root) + 2;
+	rootdir = malloc(rootdir_len);
+	if (!rootdir)
+		die("short of memory.");
+
+	snprintf(rootdir, rootdir_len, "%s%s", root,
+		 strcmp(root+ROOT, "/") ? "/" : "");
+
 	strlimcpy(cwddir, root, sizeof(cwddir));
 }
 /**
- * find_read: read path without GPATH.
+ * find_read_filelist: read path from file
  *
  *	@return		path
  */
-char *
-find_read(void)
+static char *
+find_read_filelist(void)
 {
+	STATIC_STRBUF(ib);
+	static char buf[MAXPATHLEN + 1];
 	static char *path;
 
-	assert(find_mode != 0);
-	if (find_eof)
-		path = NULL;
-	else if (find_mode == FILELIST_OPEN)
-		path = find_read_filelist();
-	else if (find_mode == FIND_OPEN)
-		path = find_read_traverse();
-	else
-		die("find_read: internal error.");
-	return path;
+	strbuf_clear(ib);
+	for (;;) {
+		path = strbuf_fgets(ib, ip, STRBUF_NOCRLF);
+		if (path == NULL) {
+			/* EOF */
+			find_eof = 1;
+			return NULL;
+		}
+		if (*path == '\0') {
+			/* skip empty line.  */
+			continue;
+		}
+		/*
+		 * Lines which start with ". " are considered to be comments.
+		 */
+		if (*path == '.' && *(path + 1) == ' ')
+			continue;
+		/*
+		 * Skip the following:
+		 * o directory
+		 * o file which does not exist
+		 * o dead symbolic link
+		 */
+		if (!test("f", path)) {
+			if (test("d", path))
+				warning("'%s' is a directory. ignored.", trimpath(path));
+			else
+				warning("'%s' not found. ignored.", trimpath(path));
+			continue;
+		}
+		/*
+		 * normalize path name.
+		 *
+		 *	rootdir  /a/b/
+		 *	buf      /a/b/c/d.c -> c/d.c -> ./c/d.c
+		 */
+		if (normalize(path, rootdir, cwddir, buf, sizeof(buf)) == NULL) {
+			warning("'%s' is out of source tree. ignored.", trimpath(path));
+			continue;
+		}
+		path = buf;
+		/*
+		 * Now GLOBAL can treat the path which includes blanks.
+		 * This message is obsoleted.
+		 */
+		if (!allow_blank && locatestring(path, " ", MATCH_LAST)) {
+			warning("'%s' ignored, because it includes blank.", trimpath(path));
+			continue;
+		}
+		if (skipthisfile(path))
+			continue;
+		/*
+		 * A blank at the head of path means
+		 * other than source file.
+		 */
+		if (!issourcefile(path))
+			*--path = ' ';
+		return path;
+	}
 }
 /**
  * find_read_traverse: read path without GPATH.
  *
  *	@return		path
  */
-char *
+static char *
 find_read_traverse(void)
 {
 	static char val[MAXPATHLEN];
@@ -816,76 +874,25 @@ find_read_traverse(void)
 	return NULL;
 }
 /**
- * find_read_filelist: read path from file
+ * find_read: read path without GPATH.
  *
  *	@return		path
  */
-static char *
-find_read_filelist(void)
+char *
+find_read(void)
 {
-	STATIC_STRBUF(ib);
-	static char buf[MAXPATHLEN + 1];
 	static char *path;
 
-	strbuf_clear(ib);
-	for (;;) {
-		path = strbuf_fgets(ib, ip, STRBUF_NOCRLF);
-		if (path == NULL) {
-			/* EOF */
-			find_eof = 1;
-			return NULL;
-		}
-		if (*path == '\0') {
-			/* skip empty line.  */
-			continue;
-		}
-		/*
-		 * Lines which start with ". " are considered to be comments.
-		 */
-		if (*path == '.' && *(path + 1) == ' ')
-			continue;
-		/*
-		 * Skip the following:
-		 * o directory
-		 * o file which does not exist
-		 * o dead symbolic link
-		 */
-		if (!test("f", path)) {
-			if (test("d", path))
-				warning("'%s' is a directory. ignored.", trimpath(path));
-			else
-				warning("'%s' not found. ignored.", trimpath(path));
-			continue;
-		}
-		/*
-		 * normalize path name.
-		 *
-		 *	rootdir  /a/b/
-		 *	buf      /a/b/c/d.c -> c/d.c -> ./c/d.c
-		 */
-		if (normalize(path, rootdir, cwddir, buf, sizeof(buf)) == NULL) {
-			warning("'%s' is out of source tree. ignored.", trimpath(path));
-			continue;
-		}
-		path = buf;
-		/*
-		 * Now GLOBAL can treat the path which includes blanks.
-		 * This message is obsoleted.
-		 */
-		if (!allow_blank && locatestring(path, " ", MATCH_LAST)) {
-			warning("'%s' ignored, because it includes blank.", trimpath(path));
-			continue;
-		}
-		if (skipthisfile(path))
-			continue;
-		/*
-		 * A blank at the head of path means
-		 * other than source file.
-		 */
-		if (!issourcefile(path))
-			*--path = ' ';
-		return path;
-	}
+	assert(find_mode != 0);
+	if (find_eof)
+		path = NULL;
+	else if (find_mode == FILELIST_OPEN)
+		path = find_read_filelist();
+	else if (find_mode == FIND_OPEN)
+		path = find_read_traverse();
+	else
+		die("find_read: internal error.");
+	return path;
 }
 /**
  * find_close: close iterator.
@@ -907,6 +914,8 @@ find_close(void)
 	} else {
 		die("find_close: internal error.");
 	}
+	if (rootdir)
+		free(rootdir);
 	if (suff)
 		regfree(suff);
 	if (skip)
