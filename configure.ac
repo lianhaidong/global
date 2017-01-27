@@ -66,6 +66,17 @@ AC_HEADER_DIRENT
 if test ${ac_header_dirent} = no; then
         AC_MSG_ERROR([dirent(3) is required but not found.])
 fi
+
+AC_MSG_CHECKING(whether POSIX.1-2008 realpath is equipped)
+AC_CACHE_VAL(ac_cv_posix1_2008_realpath,
+[AC_RUN_IFELSE([AC_LANG_SOURCE([[
+main(){ (void)realpath("/./tmp", (void *)0); }
+]])],[ac_cv_posix1_2008_realpath=yes],
+[ac_cv_posix1_2008_realpath=no])])
+AC_MSG_RESULT($ac_cv_posix1_2008_realpath)
+if test "$ac_cv_posix1_2008_realpath" = no; then
+        AC_MSG_ERROR([POSIX.1-2008 realpath(3) is required.])
+fi
 AC_HEADER_STDC
 AC_HEADER_STAT
 AC_HEADER_TIME
