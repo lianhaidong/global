@@ -70,7 +70,7 @@ fi
 AC_MSG_CHECKING(whether POSIX.1-2008 realpath is equipped)
 AC_CACHE_VAL(ac_cv_posix1_2008_realpath,
 [AC_RUN_IFELSE([AC_LANG_SOURCE([[
-main(){ (void)realpath("/./tmp", (void *)0); }
+main(){ (void)realpath("/./tmp", (void *)0); return 0; }
 ]])],[ac_cv_posix1_2008_realpath=yes],
 [ac_cv_posix1_2008_realpath=no])])
 AC_MSG_RESULT($ac_cv_posix1_2008_realpath)
