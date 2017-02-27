@@ -120,7 +120,10 @@
 		@var{GTAGSLIBPATH} when tags are found in a tag file. This is the default.
 	@item{@option{--from-here} @arg{context}}
 		Decide tag type by @arg{context}. Its syntax should be @samp{lineno:path}.
-		If this option is specified then @option{-s} and @option{-r} are ignored.
+		If the context is a definition of the pattern then use @option{-r}, else if
+		it is a reference then use @option{-d}, else use @option{-s}.
+		If this option is specified then @option{-d}, @option{-r} and @option{-s}
+		on the command line are ignored.
 		Regular expression is not allowed for @arg{pattern}.
 		This option assumes use in conversational environments such as
 		editors and IDEs.
