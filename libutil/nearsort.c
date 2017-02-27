@@ -34,6 +34,7 @@
 #include "gparam.h"
 #include "path.h"
 #include "locatestring.h"
+#include "test.h"
 #include "nearsort.h"
 
 static char nearbase[MAXPATHLEN];
