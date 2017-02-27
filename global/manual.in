@@ -152,20 +152,21 @@
 	@item{@option{-n}, @option{--nofilter}}
 		Suppress sort filter and path conversion filter.
 	@item{@option{-N}, @option{--nearness}[=@arg{start}]}
-		Use Nearness sort method for the output. By default, alphabetical sort
-		method is used.
+		Use Nearness sort method (sorting by closest from @arg{start}) for the output.
+		By default, alphabetical sort method is used.
 		This option is effective for the tag search command, @option{-P} command
 		and @option{-g} command. As an exception, @option{-g} command ignores this
 		option when files are specified by arguments.
 		The nearness is defined by how many parent directories to go up to reach
 		the target. The result of nearness sort is concatenation of the following
-		([1]-[n]) in this order. The default of @arg{start} is the current directory.
+		([0]-[n]) in this order. The default of @arg{start} is the current directory.
 		@begin_verbatim
-		[1] Output of local search in the start directory.
-		[2] Output of local search in the parent directory except for [1].
-		[3] Output of local search in the grandparent directory except for [1]-[2].
+		[0] If @arg{start} is a file, output of local search in the file.
+		[1] Output of local search in the start directory except for [0].
+		[2] Output of local search in the parent directory except for [0]-[1].
+		[3] Output of local search in the grandparent directory except for [0]-[2].
 		... (repeat until the project root directory)
-		[n] Output of local search in the project root directory except for [1]-[n-1].
+		[n] Output of local search in the project root directory except for [0]-[n-1].
 		@end_verbatim
 		In each directory, they are sorted by alphabetical order.
 	@item{@option{-O}, @option{--only-other}}

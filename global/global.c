@@ -627,18 +627,14 @@ main(int argc, char **argv)
 		die_with_code(-status, "%s", gtags_dbpath_error);
 	
 	if (Nflag) {
-		if (nearbase) {
-			if (!test("d", nearbase)) 
-				die("'%s' not found or not a directory.", nearbase);
-		} else {
+		if (!nearbase)
 			nearbase = get_cwd();
-		}
 		/*
 		 * Nearbase is saved with regular form. You can get it
 		 * by get_nearbase_path() later.
 		 */
 		if (set_nearbase_path(nearbase) == NULL)
-			die("invalid nearness directory (--nearness=%s).", nearbase);
+			die("invalid nearness file or directory (--nearness=%s).", nearbase);
 	}
 	/*
 	 * decide format.

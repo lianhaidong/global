@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2015
+ * Copyright (c) 2014, 2015, 2017
  *      Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -43,12 +43,26 @@ set_nearbase_path(const char *path)
 {
 	char real[MAXPATHLEN];
 	const char *root = get_root();
+	char *slash = "/";
 
 	if (root[0] == '\0' || realpath(path, real) == NULL)
 		return NULL;
+#ifdef DEBUG
+	fprintf(stderr, "realpath = %s\n", real);
+#endif
 	if (locatestring(real, root, MATCH_AT_FIRST) == NULL)
 		return NULL;
-	snprintf(nearbase, sizeof(nearbase), "./%s/", real + strlen(root) + 1);
+	/*
+	 * A slash should be added to the end of the directory.
+	 * Avoid the following cases.
+	 * .//, ./aaa.c/
+	 */
+	if (*(real + strlen(root)) == 0 || test("f", real))
+		slash = "";
+	snprintf(nearbase, sizeof(nearbase), "./%s%s", real + strlen(root) + 1, slash);
+#ifdef DEBUG
+	fprintf(stderr, "nearbase = %s\n", nearbase);
+#endif
 	return nearbase;
 }
 const char *
@@ -60,11 +74,24 @@ int
 get_nearness(const char *p1, const char *p2)
 {
 	int parts = 0;
+#ifdef DEBUG
+	fprintf(stderr, "get_nearness(%s, %s)", p1, p2);
+#endif
 	for (; *p1 && *p2; p1++, p2++) {
 		if (*p1 != *p2)
 			break;
 		if (*p1 == '/')
 			parts++;
 	}
+	/*
+	 * When the argument of --nearness option is a file,
+	 * the file is given the highest priority.
+	 */
+	if (*p1 == 0 && *p2 == 0 && *(p1 - 1) != '/')
+		parts++;
+#ifdef DEBUG
+        fprintf(stderr, " => %d\n", parts);
+
+#endif
 	return parts;
 }
