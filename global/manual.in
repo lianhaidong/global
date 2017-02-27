@@ -161,7 +161,7 @@
 		the target. The result of nearness sort is concatenation of the following
 		([0]-[n]) in this order. The default of @arg{start} is the current directory.
 		@begin_verbatim
-		[0] If @arg{start} is a file, output of local search in the file.
+		[0] If the start is a file, output of local search in the file.
 		[1] Output of local search in the start directory except for [0].
 		[2] Output of local search in the parent directory except for [0]-[1].
 		[3] Output of local search in the grandparent directory except for [0]-[2].
