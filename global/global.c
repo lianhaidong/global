@@ -292,7 +292,7 @@ decide_tag_by_context(const char *tag, const char *file, int lineno)
 	 * Algorithm:
 	 *
 	 * (1) If context <file, lineno> is a definition of <tag> then use GRTAGS
-	 * (2) else if there is at least one definition of <tag> then use GRTAGS
+	 * (2) else if there is at least one definition of <tag> then use GTAGS
 	 * (3) else use GSYMS.
 	 */
 	gtop = gtags_open(dbpath, root, GTAGS, GTAGS_READ, 0);
