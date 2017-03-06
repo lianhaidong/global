@@ -54,6 +54,7 @@ Earl Chew		bug fix patch for gtags-visit-rootdir of gtags.el.
 Emile Heyns		advice about writing code for generic UNIX.
 Erik Jonsson		algorithm for detecting binary file.
 Eric Paire		bug report about gtags-parser's memory violation.
+Fabian Wiget		bug report about --from-here with -i option.
 Frédéric Maitre	bug report about global(1) and gtags(1) at the system root directory.
 Gary Kline		advice about the name of parser.
 Gautam Thaker		concept of Nearness sort (-N, --nearness).

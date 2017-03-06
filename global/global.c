@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005, 2006,
- *	2007, 2008, 2010, 2011, 2012, 2013, 2014, 2015, 2016
+ *	2007, 2008, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -268,11 +268,14 @@ decide_tag_by_context(const char *tag, const char *file, int lineno)
 } while (0)
 	STRBUF *sb = NULL;
 	char path[MAXPATHLEN], s_fid[MAXFIDLEN];
-	const char *tagline, *p;
-	DBOP *dbop;
+	const char *p;
+	GTOP *gtop;
+	GTP *gtp;
 	int db = GSYMS;
-	int iscompline = 0;
+	int flags = GTOP_NOREGEX;
 
+	if (iflag)
+		flags |= GTOP_IGNORECASE;
 	if (normalize(file, get_root_with_slash(), cwd, path, sizeof(path)) == NULL)
 		die("'%s' is out of the source project.", file);
 	/*
@@ -284,22 +287,23 @@ decide_tag_by_context(const char *tag, const char *file, int lineno)
 		die("path name in the context is not found.");
 	strlimcpy(s_fid, p, sizeof(s_fid));
 	gpath_close();
+
 	/*
-	 * read btree records directly to avoid the overhead.
+	 * Algorithm:
+	 *
+	 * (1) If context <file, lineno> is a definition of <tag> then use GRTAGS
+	 * (2) else if there is at least one definition of <tag> then use GRTAGS
+	 * (3) else use GSYMS.
 	 */
-	dbop = dbop_open(makepath(dbpath, dbname(GTAGS), NULL), 0, 0, 0);
-	if (dbop == NULL)
-		die("cannot open GTAGS.");
-	if (dbop_getoption(dbop, COMPLINEKEY))
-		iscompline = 1;
-	tagline = dbop_first(dbop, tag, NULL, 0);
-	if (tagline) {
+	gtop = gtags_open(dbpath, root, GTAGS, GTAGS_READ, 0);
+	gtp = gtags_first(gtop, tag, flags);
+	if (gtp) {
 		db = GTAGS;
-		for (; tagline; tagline = dbop_next(dbop)) {
+		for (; gtp; gtp = gtags_next(gtop)) {
 			/*
-			 * examine whether the definition record include the context.
+			 * Examine whether each definition record includes the context.
 			 */
-			p = locatestring(tagline, s_fid, MATCH_AT_FIRST);
+			p = locatestring(gtp->tagline, s_fid, MATCH_AT_FIRST);
 			if (p != NULL && *p == ' ') {
 				for (p++; *p && *p != ' '; p++)
 					;
@@ -309,7 +313,7 @@ decide_tag_by_context(const char *tag, const char *file, int lineno)
 				 * Standard format	n <blank> <image>$
 				 * Compact format	d,d,d,d$
 				 */
-				if (!iscompline) {			/* Standard format */
+				if (!(gtop->format & GTAGS_COMPACT)) {	/* Standard format */
 					if (atoi(p) == lineno) {
 						db = GRTAGS;
 						goto finish;
@@ -350,7 +354,7 @@ decide_tag_by_context(const char *tag, const char *file, int lineno)
 		}
 	}
 finish:
-	dbop_close(dbop);
+	gtags_close(gtop);
 	if (db == GSYMS && getenv("GTAGSLIBPATH")) {
 		char libdbpath[MAXPATHLEN];
 		char *libdir = NULL, *nextp = NULL;
@@ -358,22 +362,17 @@ finish:
 		sb = strbuf_open(0);
 		strbuf_puts(sb, getenv("GTAGSLIBPATH"));
 		back2slash(sb);
-		for (libdir = strbuf_value(sb); libdir; libdir = nextp) {
-			 if ((nextp = locatestring(libdir, PATHSEP, MATCH_FIRST)) != NULL)
-                                *nextp++ = 0;
+		for (libdir = strbuf_value(sb); db != GTAGS && libdir; libdir = nextp) {
+			if ((nextp = locatestring(libdir, PATHSEP, MATCH_FIRST)) != NULL)
+				*nextp++ = 0;
 			if (!gtagsexist(libdir, libdbpath, sizeof(libdbpath), 0))
 				continue;
 			if (!STRCMP(dbpath, libdbpath))
 				continue;
-			dbop = dbop_open(makepath(libdbpath, dbname(GTAGS), NULL), 0, 0, 0);
-			if (dbop == NULL)
-				continue;
-			tagline = dbop_first(dbop, tag, NULL, 0);
-			dbop_close(dbop);
-			if (tagline != NULL) {
+			gtop = gtags_open(libdbpath, root, GTAGS, GTAGS_READ, 0);
+			if ((gtp = gtags_first(gtop, tag, flags)) != NULL)
 				db = GTAGS;
-				break;
-			}
+			gtags_close(gtop);
 		}
 		strbuf_close(sb);
 	}

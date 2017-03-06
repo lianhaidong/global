@@ -121,7 +121,8 @@
 	@item{@option{--from-here} @arg{context}}
 		Decide tag type by @arg{context}. Its syntax should be @samp{lineno:path}.
 		If the context is a definition of the pattern then use @option{-r}, else if
-		it is a reference then use @option{-d}, else use @option{-s}.
+		there is at least one definition of the pattern then use @option{-d},
+		else use @option{-s}.
 		If this option is specified then @option{-d}, @option{-r} and @option{-s}
 		on the command line are ignored.
 		Regular expression is not allowed for @arg{pattern}.
