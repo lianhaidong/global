@@ -140,6 +140,7 @@ Sadaichi Hayashida	idea about generating relative path.
 Satoru SATOH		profitable material for the support of XHTML.
 Sanpei Yoshiro Mihira	bug report of xargs.c in Windows 32.
 Sean Farley		bug report of gozilla's wrong installation method.
+Seigo Ishigane		patch for pygments_parser.py.in needed in python3 + Windows.
 Sergio Talens-Oliag	writing on-line manual for systags(1).
 Shankar Chakkere	useful method to use vim editor with GLOBAL.
 Shigeyuki Yamano	idea about -h option of htags(1).

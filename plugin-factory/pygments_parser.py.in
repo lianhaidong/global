@@ -238,7 +238,10 @@ def load_ctags_path():
     p = subprocess.Popen("gtags --config=ctagscom", shell=True,
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     if p.wait() == 0:
-        path = p.stdout.readline().rstrip()
+        if sys.platform == 'win32' and sys.version_info >= (3,):
+            path = io.TextIOWrapper(p.stdout, encoding='latin1').readline().rstrip()
+        else:
+            path = p.stdout.readline().rstrip()
     return path
 
 def main():
