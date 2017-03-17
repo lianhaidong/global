@@ -305,6 +305,8 @@ php(const struct parser_param *param)
 			PUT(PARSER_DEF, strbuf_value(string), LEXLINENO);
 			break;
 		case PHP_CLASS:
+		case PHP_INTERFACE:
+		case PHP_TRAIT:
 			if (LEXLEX(param) != PHP_TOKEN)
 				break;
 			PUT(PARSER_DEF, LEXTEXT, LEXLINENO);
