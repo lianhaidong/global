@@ -320,12 +320,12 @@
 		Use of this variable is not recommended.
 	@item{@var{GTAGSTHROUGH}}
 		If this variable is set, the @option{-T} option is specified.
-	@item{@var{MAKEOBJDIR}}
-		If this variable is set, @file{$MAKEOBJDIR} is used as the name
-		of BSD-style objdir. The default is @file{obj}.
-	@item{@var{MAKEOBJDIRPREFIX}}
-		If this variable is set, @file{$MAKEOBJDIRPREFIX} is used as the prefix
-		of BSD-style objdir. The default is @file{/usr/obj}.
+	@item{@var{GTAGSOBJDIR}, @var{MAKEOBJDIR}}
+		If eigher of the two variable is set, it is used as the name of BSD-style objdir.
+		The former is given priority. The default is @file{obj}.
+	@item{@var{GTAGSOBJDIRPREFIX}, @var{MAKEOBJDIRPREFIX}}
+		If eigher of the two variable is set, it is used as the prefix of BSD-style objdir.
+		The former is given priority. The default is @file{/usr/obj}.
 	@end_itemize
 @CONFIGURATION
 	The following configuration variables affect the execution of @name{global}:

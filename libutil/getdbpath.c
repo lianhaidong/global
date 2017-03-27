@@ -55,9 +55,9 @@
 #define ROOT 0
 #endif
 
-static const char *makeobjdirprefix;	/**< obj partition		*/
-static const char *makeobjdir;		/**< obj directory		*/
-char const *gtags_dbpath_error;		/**< error message */
+static const char *gtagsobjdirprefix;	/**< tag partition	*/
+static const char *gtagsobjdir;		/**< tag directory	*/
+char const *gtags_dbpath_error;		/**< error message	*/
 
 /**
  * setupvariables: load variables regard to BSD OBJ directory.
@@ -67,19 +67,23 @@ setupvariables(int verbose)
 {
 	const char *p;
 
-	if ((p = getenv("MAKEOBJDIRPREFIX")) != NULL) {
-		makeobjdirprefix = p;
+	if ((p = getenv("GTAGSOBJDIRPREFIX")) != NULL ||
+	    (p = getenv("MAKEOBJDIRPREFIX")) != NULL)
+	{
+		gtagsobjdirprefix = p;
 		if (verbose)
-			fprintf(stderr, "MAKEOBJDIRPREFIX is set to '%s'.\n", p);
+			fprintf(stderr, "GTAGSOBJDIRPREFIX is set to '%s'.\n", p);
 	} else {
-		makeobjdirprefix = "/usr/obj";
+		gtagsobjdirprefix = "/usr/obj";
 	}
-	if ((p = getenv("MAKEOBJDIR")) != NULL) {
-		makeobjdir = p;
+	if ((p = getenv("GTAGSOBJDIR")) != NULL ||
+	    (p = getenv("MAKEOBJDIR")) != NULL)
+	{
+		gtagsobjdir = p;
 		if (verbose)
-			fprintf(stderr, "MAKEOBJDIR is set to '%s'.\n", p);
+			fprintf(stderr, "GTAGSOBJDIR is set to '%s'.\n", p);
 	} else {
-		makeobjdir = "obj";
+		gtagsobjdir = "obj";
 	}
 }
 /**
@@ -95,11 +99,11 @@ getobjdir(const char *candidate, int verbose)
 	static char path[MAXPATHLEN];
 
 	/*
-	 * setup makeobjdir and makeobjdirprefix (only first time).
+	 * setup gtagsobjdir and gtagsobjdirprefix (only first time).
 	 */
-	if (makeobjdir == NULL)
+	if (gtagsobjdir == NULL)
 		setupvariables(0);
-	snprintf(path, sizeof(path), "%s/%s", candidate, makeobjdir);
+	snprintf(path, sizeof(path), "%s/%s", candidate, gtagsobjdir);
 	if (test("d", path)) {
 		if (!test("drw", path))
 			die("Found objdir '%s', but you don't have read/write permission for it.", path);
@@ -108,8 +112,8 @@ getobjdir(const char *candidate, int verbose)
 		return path;
 	}
 #if !defined(_WIN32) && !defined(__DJGPP__)
-	if (test("d", makeobjdirprefix)) {
-		snprintf(path, sizeof(path), "%s%s", makeobjdirprefix, candidate);
+	if (test("d", gtagsobjdirprefix)) {
+		snprintf(path, sizeof(path), "%s%s", gtagsobjdirprefix, candidate);
 		if (test("d", path)) {
 			if (!test("drw", path))
 				die("Found objdir '%s', but you don't have read/write permission for it.", path);
@@ -117,7 +121,7 @@ getobjdir(const char *candidate, int verbose)
 				fprintf(stderr, "Using objdir '%s'.\n", path);
 			return path;
 		}
-		if (makedirectories(makeobjdirprefix, candidate + 1, verbose) < 0)
+		if (makedirectories(gtagsobjdirprefix, candidate + 1, verbose) < 0)
 			die("Found the base for objdir '%s', but you cannot create new directory in it.", path);
 		if (verbose)
 			fprintf(stderr, "Using objdir '%s'.\n", path);
@@ -146,9 +150,9 @@ gtagsexist(const char *candidate, char *dbpath, int size, int verbose)
 	const char *candidate_without_slash;
 
 	/*
-	 * setup makeobjdir and makeobjdirprefix (only first time).
+	 * setup gtagsobjdir and gtagsobjdirprefix (only first time).
 	 */
-	if (makeobjdir == NULL)
+	if (gtagsobjdir == NULL)
 		setupvariables(verbose);
 
 	if (strcmp(candidate, "/") == 0)
@@ -165,24 +169,24 @@ gtagsexist(const char *candidate, char *dbpath, int size, int verbose)
 		return 1;
 	}
 	snprintf(path, sizeof(path),
-		"%s/%s/%s", candidate_without_slash, makeobjdir, dbname(GTAGS));
+		"%s/%s/%s", candidate_without_slash, gtagsobjdir, dbname(GTAGS));
 	if (verbose)
 		fprintf(stderr, "checking %s\n", path);
 	if (test("fr", path)) {
 		if (verbose)
 			fprintf(stderr, "GTAGS found at '%s'.\n", path);
-		snprintf(dbpath, size, "%s/%s", candidate_without_slash, makeobjdir);
+		snprintf(dbpath, size, "%s/%s", candidate_without_slash, gtagsobjdir);
 		return 1;
 	}
 #if !defined(_WIN32) && !defined(__DJGPP__)
 	snprintf(path, sizeof(path),
-		"%s%s/%s", makeobjdirprefix, candidate_without_slash, dbname(GTAGS));
+		"%s%s/%s", gtagsobjdirprefix, candidate_without_slash, dbname(GTAGS));
 	if (verbose)
 		fprintf(stderr, "checking %s\n", path);
 	if (test("fr", path)) {
 		if (verbose)
 			fprintf(stderr, "GTAGS found at '%s'.\n", path);
-		snprintf(dbpath, size, "%s%s", makeobjdirprefix, candidate_without_slash);
+		snprintf(dbpath, size, "%s%s", gtagsobjdirprefix, candidate_without_slash);
 		return 1;
 	}
 #endif
