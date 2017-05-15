@@ -25,6 +25,5 @@
 const char *set_nearbase_path(const char *);
 const char *get_nearbase_path(void);
 int get_nearness(const char *, const char *);
-int compare_nearpath(const void *, const void *);
 
 #endif /* ! _NEARSORT_H_ */

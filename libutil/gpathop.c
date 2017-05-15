@@ -57,7 +57,7 @@ set_gpath_flags(int flags) {
  * compare_nearpath: compare function for 'nearness sort'.
  */
 static const char *nearbase;
-int
+static int
 compare_nearpath(const void *s1, const void *s2)
 {
 	int ret;

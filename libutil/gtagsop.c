@@ -66,6 +66,7 @@ static int compare_path(const void *, const void *);
 static int compare_lineno(const void *, const void *);
 static int compare_tags(const void *, const void *);
 static int compare_neartags(const void *, const void *);
+static int compare_nearpath(const void *, const void *);
 static const char *seekto(const char *, int);
 static int is_defined_in_GTAGS(GTOP *, const char *);
 static char *get_prefix(const char *, int);
@@ -117,6 +118,15 @@ compare_neartags(const void *v1, const void *v2)
 	if ((ret = strcmp(e1->path, e2->path)) != 0)
 		return ret;
 	return e1->lineno - e2->lineno;
+}
+static int
+compare_nearpath(const void *s1, const void *s2)
+{
+	int ret;
+
+	if ((ret = COMPARE_NEARNESS(*(char **)s1, *(char **)s2, nearbase)) != 0)
+		return ret;
+	return strcmp(*(char **)s1, *(char **)s2);
 }
 /**
  * static const char *seekto(const char *string, int n)
