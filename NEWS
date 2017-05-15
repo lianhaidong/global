@@ -19,7 +19,7 @@ ___________________________________
 GNU GLOBAL NEWS - User visible changes.
 At least, you should search '[INCOMPATIBLE CHANGES]' for each version.
 
-Version 6.5.7 - 15 May 2016
+Version 6.5.7 - 15 May 2017
 
 [CHANGES]
 o global: Now global(1) accept a file as --nearness option.
