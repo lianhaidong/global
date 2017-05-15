@@ -146,6 +146,7 @@ char *scope;
 char *encode_chars;
 char *single_update;
 char *path_style;
+char *print_target;
 
 /*
  * Path filter
@@ -178,6 +179,7 @@ help(void)
 #define OPT_USE_COLOR		135
 #define OPT_GTAGSCONF		136
 #define OPT_GTAGSLABEL		137
+#define OPT_PRINT		138
 #define SORT_FILTER     1
 #define PATH_FILTER     2
 #define BOTH_FILTER     (SORT_FILTER|PATH_FILTER)
@@ -229,6 +231,7 @@ static struct option const long_options[] = {
 	{"match-part", required_argument, NULL, OPT_MATCH_PART},
 	{"path-style", required_argument, NULL, OPT_PATH_STYLE},
 	{"path-convert", required_argument, NULL, OPT_PATH_CONVERT},
+	{"print", required_argument, NULL, OPT_PRINT},
 	{"print0", no_argument, &print0, 1},
 	{"version", no_argument, &show_version, 1},
 	{"help", no_argument, &show_help, 1},
@@ -590,6 +593,9 @@ main(int argc, char **argv)
 		case OPT_PATH_STYLE:
 			path_style = optarg;
 			break;
+		case OPT_PRINT:
+			print_target = optarg;
+			break;
 		case OPT_RESULT:
 			if (!strcmp(optarg, "ctags-x"))
 				format = FORMAT_CTAGS_X;
@@ -624,7 +630,18 @@ main(int argc, char **argv)
 		help();
 	if (dbpath == NULL)
 		die_with_code(-status, "%s", gtags_dbpath_error);
-	
+	if (print_target) {
+		const char *target;
+		if (!strcmp("dbpath", print_target))
+			target = dbpath;
+		else if (!strcmp("root", print_target))
+			target = root;
+		else if (!strcmp("conf", print_target))
+			target = getconfigpath();
+		if (target != NULL)
+			fprintf(stdout, "%s\n", target);
+		exit(0);
+	}
 	if (Nflag) {
 		if (!nearbase)
 			nearbase = get_cwd();

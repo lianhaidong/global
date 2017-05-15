@@ -82,6 +82,11 @@
 		If no pattern is given, print all paths in the project.
 	@item{@option{-p}, @option{--print-dbpath}}
 		Print location of @file{GTAGS}.
+	@item{@option{--print} @arg{name}}
+		Print location of @arg{name}, which may be one of:
+		@val{root}, @val{dbpath} or @val{conf}.
+		@val{root} means project's root directory. @val{dbpath} means a directory
+		where tag databases exist. @val{conf} means configuration file.
 	@item{@option{-u}, @option{--update}}
 		Update tag files incrementally.
 		This command internally invokes @xref{gtags,1}.
