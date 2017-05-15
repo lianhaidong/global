@@ -30,13 +30,15 @@
 	@item{(1) --gtagsconf @arg{file}}
 	@item{(2) $GTAGSCONF}
 	@item{(3) [project root]/gtags.conf}
-	@item{(4) $HOME/.globalrc}
-	@item{(5) /etc/gtags.conf}
-	@item{(6) [sysconfdir]/gtags.conf}
+	@item{(4) [project root]/[objdir]/gtags.conf}
+	@item{(5) $HOME/.globalrc}
+	@item{(6) /etc/gtags.conf}
+	@item{(7) [sysconfdir]/gtags.conf}
 	@end_itemize
 
 	[sysconfdir] is @file{/usr/local/etc} by default; you can change it by the --sysconfdir
-	option of the configure script.
+	option of the configure script. [objdir] is @file{obj} by default; you can change it
+	by @var{GTAGSOBJDIR} or @var{MAKEOBJDIR}.
 
 	Syntax is similar to @xref{termcap,5} except for some extensions described later.
 	A file includes one or more records. You should select a record using a label.

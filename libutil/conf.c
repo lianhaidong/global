@@ -217,6 +217,22 @@ includelabel(FILE *fp, STRBUF *sb, const char *label, int level)
 	if (file)
 		fclose(fp);
 }
+static char *
+gtagsobjdir(const char *rootdir) {
+	const char *objdir = "obj";
+	STATIC_STRBUF(sb);
+	strbuf_clear(sb);
+	if (rootdir == NULL)
+		return NULL;
+	if (getenv("GTAGSOBJDIR"))
+		objdir = getenv("GTAGSOBJDIR");
+	else if (getenv("MAKEOBJDIR"))
+		objdir = getenv("MAKEOBJDIR");
+	strbuf_puts(sb, rootdir);
+	strbuf_putc(sb, '/');
+	strbuf_puts(sb, objdir);
+	return strbuf_value(sb);
+}
 /**
  * configpath: get path of configuration file.
  *
@@ -226,6 +242,7 @@ includelabel(FILE *fp, STRBUF *sb, const char *label, int level)
 static char *
 configpath(const char *rootdir)
 {
+	const char *objdir = gtagsobjdir(rootdir);
 	STATIC_STRBUF(sb);
 	const char *p;
 
@@ -240,6 +257,8 @@ configpath(const char *rootdir)
 	 */
 	else if (rootdir && *rootdir && test("r", makepath(rootdir, "gtags.conf", NULL)))
 		strbuf_puts(sb, makepath(rootdir, "gtags.conf", NULL));
+	else if (objdir && test("r", makepath(objdir, "gtags.conf", NULL)))
+		strbuf_puts(sb, makepath(objdir, "gtags.conf", NULL));
 	else if ((p = get_home_directory()) && test("r", makepath(p, GTAGSRC, NULL)))
 		strbuf_puts(sb, makepath(p, GTAGSRC, NULL));
 #ifdef __DJGPP__
