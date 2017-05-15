@@ -631,7 +631,7 @@ main(int argc, char **argv)
 	if (dbpath == NULL)
 		die_with_code(-status, "%s", gtags_dbpath_error);
 	if (print_target) {
-		const char *target;
+		const char *target = NULL;
 		if (!strcmp("dbpath", print_target))
 			target = dbpath;
 		else if (!strcmp("root", print_target))
