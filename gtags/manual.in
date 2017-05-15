@@ -176,6 +176,7 @@
 		If the function name is not specified, 'parser' is assumed.
 		As a special exception, @name{gtags} collects values
 		from multiple @code{gtags_parser} variables.
+		For these mappings, the first match is adopted.
 	@item{@code{gtags_hook} (command line)}
 		Specify a command line which should be executed at the beginning of @name{gtags}
 		after loading configuration file. You can use this hook to update
@@ -190,6 +191,7 @@
 		the language name, a colon, and a list of file extensions.
 		As a special exception, @name{gtags} collects values
 		from multiple @code{langmap} variables.
+		For these mappings, the first match is adopted.
 		Default mapping is:@br
 		@samp{@DEFAULTLANGMAP@}.
 	@item{@code{skip} (comma separated list)}

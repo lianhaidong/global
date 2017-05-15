@@ -1,6 +1,6 @@
 #
 # Copyright (c) 1998, 1999, 2000, 2001, 2002, 2003, 2010, 2011, 2013,
-#	2015, 2016
+#	2015, 2016, 2017
 #	Tama Communications Corporation
 #
 # This file is part of GNU GLOBAL.
@@ -46,6 +46,17 @@ new-ctags:\
 	:tc=universal-ctags:tc=htags:
 pygments:\
 	:tc=pygments-parser:tc=htags:
+#
+# [How to merge two or more parsers?]
+#
+# Rule: The first matched langmap is adopted.
+#
+# ":tc=builtin-parser:tc=pygments-parser:" means:
+#	If built-in parser exists for the target, it is used.
+#	Else if pygments parser exists it is used.
+#
+native-pygments:\
+	:tc=builtin-parser:tc=pygments-parser:htags:
 #---------------------------------------------------------------------
 # Configuration for gtags(1)
 # See gtags(1).
