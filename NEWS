@@ -19,6 +19,67 @@ ___________________________________
 GNU GLOBAL NEWS - User visible changes.
 At least, you should search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 6.5.7 - 15 May 2016
+
+[CHANGES]
+o global: Now global(1) accept a file as --nearness option.
+  If it is a file, tags in the file are shown first.
+o global: Added aliases for MAKEOBJDIR and MAKEOBJDIRPREFIX.
+  GTAGSOBJDIR: alias for MAKEOBJDIR
+  GTAGSOBJDIRPREFIX: alias for MAKEOBJDIRPREFIX
+  These aliases are given higher priority than the originals.
+o global: New command --print=<name>.
+  <name> may be one of: root, dbpath or conf.
+  This is a generic version of the -p (--print-dbpath) command.
+	'global -p' is equal to 'global --print=dbpath'
+	'global -pr' is equal to 'global --print=root'
+o gtags: Updated the built-in PHP parser to support namespaces and traits,
+  which were introduced in PHP5. The following keywords have been removed:
+	- failure: not a keyword
+	- header: normal built-in function
+	- is_array: normal built-in function
+	- is_set: typo -> isset
+	- printf: normal built-in function
+	- setcookie: normal built-in function
+	- success: not a keyword
+
+[FIXED BUGS]
+o globash: Echo command with -n option didn't work on some OS. Now it works.
+o global: The --nearness option without -x option brought segmentation fault.
+	$ global --nearness=. main
+	Segmentation fault: 11
+  Now it works.
+o global: --from-here with -i option did not ignore case of function name
+  in the context. Now it works.
+	Input:
+	[main.c]
+	1: main() {
+	2:         func();
+	3:         Func();
+	4: }
+	5: func() {}
+	6: Func() {}
+
+	$ global -xi --from-here=6:main.c func
+	(global-6.5.6)
+	Func                6 main.c           Func() {}
+	func                5 main.c           func() {}
+	(global-6.5.7)
+	Func                3 main.c            Func();
+	func                2 main.c            func();
+
+[INCOMPATIBLE CHANGES]
+o gtags.conf: Added new candidate path.
+        (1) --gtagsconf file
+        (2) $GTAGSCONF
+        (3) [project root]/gtags.conf
+        (4) [project root]/[objdir]/gtags.conf       <- [NEW]
+        (5) $HOME/.globalrc
+        (6) /etc/gtags.conf
+        (7) [sysconfdir]/gtags.conf
+
+        The default of [objdir] is 'obj'. You can change it by
+        the environment variables (GTAGSOBJDIR or MAKEOBJDIR).
 
 Version 6.5.6 - December 19 2016
 
