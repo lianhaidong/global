@@ -135,7 +135,7 @@ trim(char *s)
 static int
 getreason(const char *path)
 {
-	int db, type = 0, is_directory = 0;
+	int type = 0, is_directory = 0;
 	const char *p;
 
 	/* seek to the last character */
@@ -529,13 +529,15 @@ out:
 static int
 ignore(const char *path)
 {
+	int db;
+
 	if (path[0] == '.') {
 		if (path[1] == '\0')
 			return 1;
 		else if (path[1] == '.' && path[1] == '\0')
 			return 1;
 	} else if (path[0] == 'G') {
-		for (int db = 0; db < GTAGLIM; db++)
+		for (db = 0; db < GTAGLIM; db++)
 			if (!strcmp(dbname(db), path))
 				return 1;
 	}
