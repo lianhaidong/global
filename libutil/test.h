@@ -21,8 +21,8 @@
 #ifndef _TEST_H_
 #define _TEST_H_
 
+int is_binary(const char *);
 int test(const char *, const char *);
 int filesize(const char *);
-
 
 #endif /* ! _TEST_H_ */

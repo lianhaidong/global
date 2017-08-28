@@ -158,33 +158,34 @@ gpath_open(const char *dbpath, int mode)
  *			GPATH_SOURCE: source file,
  *			GPATH_OTHER: other file
  */
-void
+const char *
 gpath_put(const char *path, int type)
 {
-	char fid[MAXFIDLEN];
+	static char sfid[MAXFIDLEN];
 	STATIC_STRBUF(sb);
 
 	assert(opened > 0);
 	if (_mode == 1 && created)
-		return;
+		return "";
 	if (dbop_get(dbop, path) != NULL)
-		return;
+		return "";
 	/*
 	 * generate new file id for the path.
 	 */
-	snprintf(fid, sizeof(fid), "%d", _nextkey++);
+	snprintf(sfid, sizeof(sfid), "%d", _nextkey++);
 	/*
 	 * path => fid mapping.
 	 */
 	strbuf_clear(sb);
-	strbuf_puts(sb, fid);
+	strbuf_puts(sb, sfid);
 	dbop_put_path(dbop, path, strbuf_value(sb), type == GPATH_OTHER ? "o" : NULL);
 	/*
 	 * fid => path mapping.
 	 */
 	strbuf_clear(sb);
 	strbuf_puts(sb, path);
-	dbop_put_path(dbop, fid, strbuf_value(sb), type == GPATH_OTHER ? "o" : NULL);
+	dbop_put_path(dbop, sfid, strbuf_value(sb), type == GPATH_OTHER ? "o" : NULL);
+	return (const char *)sfid;
 }
 /**
  * gpath_path2fid: convert path into id
@@ -226,6 +227,37 @@ gpath_fid2path(const char *fid, int *type)
 		*type = (*flag == 'o') ? GPATH_OTHER : GPATH_SOURCE;
 	}
 	return path;
+}
+/*
+ * gpath_path2nfid: convert path into id
+ *
+ *	i)	path	path name
+ *	o)	type	path type
+ *			GPATH_SOURCE: source file
+ *			GPATH_OTHER: other file
+ *	r)		file id (integer)
+ */
+int
+gpath_path2nfid(const char *path, int *type)
+{
+	const char *sfid = gpath_path2fid(path, type);
+	return sfid == NULL ? 0 : atoi(sfid);
+}
+/*
+ * gpath_nfid2path: convert id into path
+ *
+ *	i)	nfid	file id (integer)
+ *	o)	type	path type
+ *			GPATH_SOURCE: source file
+ *			GPATH_OTHER: other file
+ *	r)		path name
+ */
+const char *
+gpath_nfid2path(int nfid, int *type)
+{
+	char sfid[MAXFIDLEN];
+	snprintf(sfid, sizeof(sfid), "%d", nfid);
+	return gpath_fid2path(sfid, type);
 }
 /**
  * gpath_delete: delete specified path record

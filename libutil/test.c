@@ -49,7 +49,7 @@
  *	@param[in]	path
  *	@return 0: is not binary, 1: is binary
  */
-static int
+int
 is_binary(const char *path)
 {
 	int ip;
