@@ -509,13 +509,12 @@ Cpp(const struct parser_param *param)
 							} else if (c == '{')
 								level++;
 							else if (c == '}') {
+								savetok[0] = 0;
 								if (--level == typedef_savelevel)
 									break;
 							} else if (c == SYMBOL) {
-								/* put latest token if any */
-								if (savetok[0]) {
-									PUT(PARSER_REF_SYM, savetok, savelineno, sp);
-								}
+								if (level > typedef_savelevel)
+									PUT(PARSER_REF_SYM, token, lineno, sp);
 								/* save lastest token */
 								strlimcpy(savetok, token, sizeof(savetok));
 								savelineno = lineno;
