@@ -1168,7 +1168,7 @@ segment_read(GTOP *gtop)
 		fid = (const char *)strmake(tagline, " ");
 		path = gpath_fid2path(fid, NULL);
 		if (path == NULL)
-			die("gtags_first: path not found. (fid=%s)", fid);
+			die("GPATH is corrupted.(file id '%s' not found)", fid);
 		sh = strhash_assign(gtop->path_hash, path, 1);
 		gtp->path = sh->name;
 		lineno = seekto(gtp->tagline, SEEKTO_LINENO);
