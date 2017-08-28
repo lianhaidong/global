@@ -130,7 +130,7 @@ trim(char *s)
  *	@param[in]	path	path name (must start with "./")
  *	@return		<directory or not> | <reason for skipping>
  *		directory or not: 1: directory, 0: file
- *		reason: 1: dot file, 2: tag file, 0: others
+ *		reason: 1: dot file, 0: others
  */
 static int
 getreason(const char *path)
@@ -151,14 +151,8 @@ getreason(const char *path)
 	if (*p == '/')
 		p++;
 	/* check for dot files */
-	if (*p == '.') {
+	if (*p == '.')
 		type = 1;
-	} else {
-		/* check for tag files */
-		for (db = 0; db < GTAGLIM; db++)
-			if (!strcmp(dbname(db), p))
-				type = 2;
-	}
 	return is_directory << 8 | type;
 }
 /**
@@ -272,18 +266,13 @@ prepare_skip(void)
 	/*
 	 * Hard coded skip files:
 	 * (1) files which start with '.'
-	 * (2) tag files
+	 * (2) tag files (ignored in getdirs)
 	 */
 	/* skip files which start with '.' e.g. .cvsignore */
 	if (!accept_dotfiles) {
 		strbuf_puts(reg, "/\\.[^/]+$|");
 		strbuf_puts(reg, "/\\.[^/]+/|");
 	}
-	/* skip tag files */
-	strbuf_puts(reg, "/GTAGS$|");
-	strbuf_puts(reg, "/GRTAGS$|");
-	strbuf_puts(reg, "/GSYMS$|");
-	strbuf_puts(reg, "/GPATH$|");
 	for (p = skiplist; *p; ) {
 		char *skipf;
 		STATIC_STRBUF(sb);
@@ -452,9 +441,6 @@ skipthisfile(const char *path)
 			case 1:
 				fprintf(stderr, " because the name begins with a dot.\n");
 				break;
-			case 2:
-				fprintf(stderr, " because it is a tag file.\n");
-				break;
 			case 0:		
 				fprintf(stderr, " by the skip list.\n");
 				break;
@@ -540,7 +526,21 @@ out:
 	free(real);
 	return ret;
 }
-
+static int
+ignore(const char *path)
+{
+	if (path[0] == '.') {
+		if (path[1] == '\0')
+			return 1;
+		else if (path[1] == '.' && path[1] == '\0')
+			return 1;
+	} else if (path[0] == 'G') {
+		for (int db = 0; db < GTAGLIM; db++)
+			if (!strcmp(dbname(db), path))
+				return 1;
+	}
+	return 0;
+}
 /**
  * getdirs: get directory list
  *
@@ -568,9 +568,7 @@ getdirs(const char *dir, STRBUF *sb)
 		return -1;
 	}
 	while ((dp = readdir(dirp)) != NULL) {
-		if (!strcmp(dp->d_name, "."))
-			continue;
-		if (!strcmp(dp->d_name, ".."))
+		if (ignore(dp->d_name))
 			continue;
 		if (stat(makepath(dir, dp->d_name, NULL), &st) < 0) {
 			warning("cannot stat '%s'. ignored.", trimpath(dp->d_name));
