@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2005, 2006, 2008,
- *	2009, 2011, 2012, 2014, 2015, 2016
+ *	2009, 2011, 2012, 2014, 2015, 2016, 2017
  * Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -135,7 +135,7 @@ trim(char *s)
 static int
 getreason(const char *path)
 {
-	int type = 0, is_directory = 0;
+	int db, type = 0, is_directory = 0;
 	const char *p;
 
 	/* seek to the last character */
@@ -151,8 +151,14 @@ getreason(const char *path)
 	if (*p == '/')
 		p++;
 	/* check for dot files */
-	if (*p == '.')
+	if (*p == '.') {
 		type = 1;
+	} else {
+		/* check for tag files */
+		for (db = 0; db < GTAGLIM; db++)
+			if (!strcmp(dbname(db), p))
+				type = 2;
+	}
 	return is_directory << 8 | type;
 }
 /**
@@ -266,13 +272,18 @@ prepare_skip(void)
 	/*
 	 * Hard coded skip files:
 	 * (1) files which start with '.'
-	 * (2) tag files (ignored in getdirs)
+	 * (2) tag files
 	 */
 	/* skip files which start with '.' e.g. .cvsignore */
 	if (!accept_dotfiles) {
 		strbuf_puts(reg, "/\\.[^/]+$|");
 		strbuf_puts(reg, "/\\.[^/]+/|");
 	}
+	/* skip tag files */
+	strbuf_puts(reg, "/GTAGS$|");
+	strbuf_puts(reg, "/GRTAGS$|");
+	strbuf_puts(reg, "/GSYMS$|");
+	strbuf_puts(reg, "/GPATH$|");
 	for (p = skiplist; *p; ) {
 		char *skipf;
 		STATIC_STRBUF(sb);
@@ -441,6 +452,9 @@ skipthisfile(const char *path)
 			case 1:
 				fprintf(stderr, " because the name begins with a dot.\n");
 				break;
+			case 2:
+				fprintf(stderr, " because it is a tag file.\n");
+				break;
 			case 0:		
 				fprintf(stderr, " by the skip list.\n");
 				break;
@@ -526,12 +540,18 @@ out:
 	free(real);
 	return ret;
 }
+/**
+ * skips '.', '..'.
+ * It also skips '.xxxx' and tag files for performance.
+ */
 static int
 ignore(const char *path)
 {
 	int db;
 
 	if (path[0] == '.') {
+		if (!accept_dotfiles)
+			return 1;
 		if (path[1] == '\0')
 			return 1;
 		else if (path[1] == '.' && path[1] == '\0')

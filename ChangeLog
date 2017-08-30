@@ -19,6 +19,17 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+August 30 2017, Shigio YAMAGUCHI
+
+	[libutil/find.c]
+	In addition to the skip by regular expression, the following
+	files are skipped in ignore() function previously now.
+	o Files which start with '.'
+	o Tag files (GPATH, GTAGS, GRTAGS)
+
+	The regular expression is left, because xxx_filelist() functions
+	require it.
+
 December 30 2016, Shigio YAMAGUCHI
 
 	Added taint mode to the following CGI scripts:
