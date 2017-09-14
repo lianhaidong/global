@@ -266,7 +266,7 @@ main(int argc, char **argv)
 	 */
 #if !(_WIN32 || __DJGPP__)
 	if (!browser)
-		browser = "mozilla";
+		browser = "firefox";
 #endif
 
 	/*
