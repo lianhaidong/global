@@ -550,16 +550,17 @@ ignore(const char *path)
 	int db;
 
 	if (path[0] == '.') {
-		if (!accept_dotfiles)
+		if (path[1] == '\0' || (path[1] == '.' && path[2] == '\0'))
 			return 1;
-		if (path[1] == '\0')
+		if (!find_explain && !accept_dotfiles)
 			return 1;
-		else if (path[1] == '.' && path[1] == '\0')
-			return 1;
-	} else if (path[0] == 'G') {
-		for (db = 0; db < GTAGLIM; db++)
-			if (!strcmp(dbname(db), path))
-				return 1;
+	}
+	if (!find_explain) {
+		if (path[0] == 'G') {
+			for (db = 0; db < GTAGLIM; db++)
+				if (!strcmp(dbname(db), path))
+					return 1;
+		}
 	}
 	return 0;
 }
