@@ -128,6 +128,10 @@
 		See @xref{gtags.conf,5}.
 	@item{@file{gtags.files}}
 		The list of candidates of target files.
+	@item{@file{.notfunction}}
+		The list of symbols which is not a definition.
+		If this file exists in the project root directory, @name{gtags} does not
+		regard the symbols listed in this file as definitions.
 	@end_itemize
 @ENVIRONMENT
 	The following environment variables affect the execution of @name{gtags}:
