@@ -850,7 +850,7 @@ main(int argc, char **argv)
 	 * decide tag type.
 	 */
 	if (context_file) {
-		if (isregex(av))
+		if (!literal && isregex(av))
 			die_with_code(2, "regular expression is not allowed with the --from-here option.");
 		db = decide_tag_by_context(av, context_file, atoi(context_lineno));
 	} else {
