@@ -102,12 +102,16 @@ typedef	struct {
 /*
  * openflags
  */
-		/** allow duplicate records	*/
-#define	DBOP_DUP	1
+			/** allow duplicate records	*/
+#define	DBOP_DUP		1
 #ifdef USE_SQLITE3
-		/** use sqlite3 database		*/
-#define DBOP_SQLITE3	2
+			/** use sqlite3 database		*/
+#define DBOP_SQLITE3		2
 #endif
+			/** raw read */
+#define DBOP_RAW		4
+			/** sorted write */
+#define DBOP_SORTED_WRITE	8
 
 /*
  * ioflags
@@ -116,10 +120,6 @@ typedef	struct {
 #define DBOP_KEY		1
 			/** prefixed read */
 #define DBOP_PREFIX		2
-			/** raw read */
-#define DBOP_RAW		4
-			/** sorted write */
-#define DBOP_SORTED_WRITE	8
 
 DBOP *dbop_open(const char *, int, int, int);
 const char *dbop_get(DBOP *, const char *);
