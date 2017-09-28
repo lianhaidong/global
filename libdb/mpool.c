@@ -229,7 +229,25 @@ mpool_get(mp, pgno, flags)
 #ifdef STATISTICS
 	++mp->pageread;
 #endif
-	off = mp->pagesize * pgno;
+
+	/*
+	 * If both of `off_t' and `long' are 32 bits, the right operand
+	 * of the multiplication is converted to `unsigned long',
+	 * and the multiplication is done with unsigned 32 bits.
+	 * It is equivalent to the case without cast.
+	 *
+	 * If `off_t' is 64 bits and `long' is 32 bits, the left operand
+	 * of the multiplication is converted to `off_t',
+	 * and the multiplication is done with signed 64 bits.
+	 * Adding cast avoids integer overflow.
+	 *
+	 * If both of `off_t' and `long' are 64 bits, the right operand
+	 * of the multiplication is converted to `unsigned long',
+	 * and the multiplication is done with unsigned 64 bits.
+	 * It is equivalent to the case without cast.
+	 */
+	off = mp->pagesize * (off_t)pgno;
+
 #ifdef HAVE_PREAD
 	if ((nr = pread(mp->fd, bp->page, mp->pagesize, off)) != mp->pagesize) {
 		if (nr >= 0)
@@ -425,7 +443,9 @@ mpool_write(mp, bp)
 	if (mp->pgout)
 		(mp->pgout)(mp->pgcookie, bp->pgno, bp->page);
 
-	off = mp->pagesize * bp->pgno;
+	/* See the comment in mpool_get for cast addition. */
+	off = mp->pagesize * (off_t)bp->pgno;
+
 #ifdef HAVE_PWRITE
 	if (pwrite(mp->fd, bp->page, mp->pagesize, off) != mp->pagesize)
 		return (RET_ERROR);
