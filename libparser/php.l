@@ -293,6 +293,7 @@ php(const struct parser_param *param)
 	if (linetable_open(param->file) == -1)
 		die("'%s' cannot open.", param->file);
 
+	BEGIN(INITIAL);
 	LEXRESTART(NULL);
 	LEXLINENO = 1;
 	while ((token = LEXLEX(param)) != 0) {

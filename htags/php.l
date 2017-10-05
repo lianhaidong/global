@@ -248,5 +248,6 @@ WORD		{ALPHA}{ALPHANUM}*
 void
 php_parser_init(FILE *ip)
 {
+	BEGIN(INITIAL);
 	DEFAULT_BEGIN_OF_FILE_ACTION
 }
