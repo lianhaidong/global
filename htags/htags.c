@@ -1243,11 +1243,9 @@ main(int argc, char **argv)
                         break;
                 case 'q':
                         qflag++;
-			setquiet();
                         break;
                 case 'v':
                         vflag++;
-			setverbose();
                         break;
                 case 'w':
                         wflag++;
@@ -1257,6 +1255,12 @@ main(int argc, char **argv)
                         break;
 		}
 	}
+	if (qflag) {
+		vflag = 0;
+		setquiet();
+	}
+	if (vflag)
+		setverbose();
 	/*
 	 * Leaving everything to htags.
 	 * Htags selects popular options for you.

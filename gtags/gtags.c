@@ -85,6 +85,8 @@ int vflag;					/**< verbose mode */
 int show_version;
 int show_help;
 int show_config;
+int skip_unreadable;
+int accept_dotfiles;
 char *gtagsconf;
 char *gtagslabel;
 int debug;
@@ -251,10 +253,10 @@ main(int argc, char **argv)
 			single_update = optarg;
 			break;
 		case OPT_ACCEPT_DOTFILES:
-			set_accept_dotfiles();
+			accept_dotfiles = 1;
 			break;
 		case OPT_SKIP_UNREADABLE:
-			set_skip_unreadable();
+			skip_unreadable = 1;
 			break;
 		case 'c':
 			cflag++;
@@ -282,23 +284,26 @@ main(int argc, char **argv)
 			break;
 		case 'q':
 			qflag++;
-			setquiet();
 			break;
 		case 'w':
 			wflag++;
-			set_langmap_wflag();
 			break;
 		case 'v':
 			vflag++;
-			setverbose();
 			break;
 		default:
 			usage();
 			break;
 		}
 	}
-	if (qflag)
+	if (qflag) {
 		vflag = 0;
+		setquiet();
+	}
+	if (vflag)
+		setverbose();
+	if (wflag)
+		set_langmap_wflag();
 	if (show_version)
 		version(NULL, vflag);
 	if (show_help)
@@ -450,6 +455,10 @@ main(int argc, char **argv)
 	/*
 	 * Start processing.
 	 */
+	if (accept_dotfiles)
+		set_accept_dotfiles();
+	if (skip_unreadable)
+		set_skip_unreadable();
 	if (vflag) {
 		const char *config_path = getconfigpath();
 		const char *config_label = getconfiglabel();
