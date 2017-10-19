@@ -39,6 +39,7 @@ Brian Carlstrom		bug fix patch for gtags.
 Bvk chaitanya		bug report about global (it cannot find gtags).
 Chris Nogradi		patch for libutil/token.c to skip comments correctly.
 Christoph Conrad	bug report and advice about S.u.S.E Linux 5.1.
+Motoki NODA		bug fix patch for 'global -xsi xxx'.
 Daisuke Kawahara	bug report about redefinition in gtags.el.
 Dan Fandrich		port to Windows 32 environment.
 Darryl Okahata		benchmark report about global(1).
