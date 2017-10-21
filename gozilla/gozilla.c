@@ -273,7 +273,7 @@ main(int argc, char **argv)
 	 * Replace alias name.
 	 */
 	if (definition == NULL) {
-		if (argc == 0)
+		if (argc <= 0)
 			usage();
 		strbuf_puts(arg, argv[0]);
 		/*
