@@ -37,7 +37,7 @@ gtagsdir = ${datadir}/gtags
 gtags_DATA = PLUGIN_HOWTO PLUGIN_HOWTO.pygments
 
 scriptdir = ${datadir}/gtags/script
-script_DATA = pygments_parser.py
+script_DATA = pygments_parser.py maps2conf.pl
 
 EXTRA_DIST = $(gtags_DATA) ${script_DATA}
 
@@ -45,5 +45,5 @@ AM_CPPFLAGS = @AM_CPPFLAGS@ -DDATADIR='"$(datadir)"'
 
 install-data-hook:
 	if cd $(DESTDIR)$(datadir)/gtags/script; then \
-		chmod 755 pygments_parser.py; \
+		chmod 755 $(script_DATA); \
 	fi
