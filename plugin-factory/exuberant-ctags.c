@@ -100,7 +100,7 @@ static HANDLE pid;
 static char argv[] = "\" "
 #if defined(USE_EXTRA_FIELDS)
 	"\"--_xformat=%R %-16N %4n %-16F %C\" "
-	"--extra=+r "
+	"--extras=+r "
 	"--fields=+r "
 #else
 	"--format=1 "
@@ -180,7 +180,7 @@ static char *argv[] = {
 	NULL,
 #if defined(USE_EXTRA_FIELDS)
 	"--_xformat=%R %-16N %4n %-16F %C",
-	"--extra=+r",
+	"--extras=+r",
 	"--fields=+r",
 #else
 	"--format=1",
@@ -292,7 +292,7 @@ put_line(char *ctags_x, const struct parser_param *param)
 	 * ctags -x ...
 	 * main              326 global/global.c  main(int argc, char **argv)
 	 *
-	 * ctags -x --_xformat="%R %-16N %4n %-16F %C" --extra=+r --fields=+r
+	 * ctags -x --_xformat="%R %-16N %4n %-16F %C" --extras=+r --fields=+r
 	 * D main              326 global/global.c  main(int argc, char **argv)
 	 */
 	switch (*ctags_x) {
