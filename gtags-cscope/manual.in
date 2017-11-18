@@ -363,6 +363,7 @@
 		and file @file{GTAGSROOT} exists in the same directory as @file{GTAGS}
 		then @name{global} sets @var{GTAGSROOT} to the contents of the file.
 	@item{@file{gtags.conf}, @file{$HOME/.globalrc}}
+		Configuration data for GNU GLOBAL.
                 See @xref{gtags.conf,5}.
 	@end_itemize
 @SEE ALSO

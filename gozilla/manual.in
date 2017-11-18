@@ -78,6 +78,7 @@
 	@item{@file{$HOME/.gozillarc}}
 		Alias file. Please read the source code for details.
 	@item{@file{gtags.conf}, @file{$HOME/.globalrc}}
+		Configuration data for GNU GLOBAL.
 		See @xref{gtags.conf,5}.
 	@end_itemize
 @ENVIRONMENT

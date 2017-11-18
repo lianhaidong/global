@@ -203,6 +203,7 @@
 	@item{@file{GPATH}}
 		Tag file for source files.
 	@item{@file{gtags.conf}, @file{$HOME/.globalrc}}
+		Configuration data for GNU GLOBAL.
 		See @xref{gtags.conf,5}.
 	@item{@file{HTML/FILEMAP}}
 		Mapping file for converting file name into the path of the file.
