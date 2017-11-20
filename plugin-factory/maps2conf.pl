@@ -2,7 +2,7 @@
 #
 # maps2conf.pl: Generates langmaps which is suitable for gtags.conf.
 #
-# [usage] maps2conf.pl <label> <ctags-path> <plugin-path> [<label>]
+# [usage] maps2conf.pl <ctags-path> <plugin-path> [<label>]
 #
 # $ maps2conf.pl /usr/local/bin/ctags '$libdir/gtags/universal-ctags.la'
 #
