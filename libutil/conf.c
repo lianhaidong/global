@@ -408,7 +408,7 @@ replace_variables(STRBUF *sb)
 			strbuf_reset(word);
 			if (*++p == '{') {
 				for (p++; *p && *p != '}'; p++)
-					strbuf_putc(word, *p);;
+					strbuf_putc(word, *p);
 				if (*p++ != '}')
 					die("invalid variable.");
 			} else {
