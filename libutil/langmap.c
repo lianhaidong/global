@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002, 2004, 2005, 2008, 2015, 2016
+ * Copyright (c) 2002, 2004, 2005, 2008, 2015, 2016, 2017
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -38,9 +38,10 @@
 #include "strhash.h"
 #include "langmap.h"
 #include "varray.h"
+#include "fnmatch.h"
 
 static void trim_suffix_list(STRBUF *, STRHASH *);
-static int match_suffix_list(const char *, const char *);
+static int match_suffix_list(const char *, const char *, const char *);
 
 static STRBUF *active_map;
 static int wflag;
@@ -94,23 +95,42 @@ setup_langmap(const char *map)
 static void
 trim_suffix_list(STRBUF *list, STRHASH *hash) {
 	STATIC_STRBUF(sb);
-	const char *p, *suffix;;
+	const char *p, *next;
 
 	strbuf_clear(sb);
 	strbuf_puts(sb, strbuf_value(list));
 	strbuf_reset(list);
-	for (p = strbuf_value(sb); *p; p += strlen(suffix)) {
+	p = strbuf_value(sb);
+	while (*p) {
+		STATIC_STRBUF(suffix);
 		struct sh_entry *sh;
 
-		suffix = strmake(++p, ".");
-		if ((sh = strhash_assign(hash, suffix, 0)) != NULL) {
+		strbuf_clear(suffix);
+		switch (*p) {
+		case '.':	
+			strbuf_putc(suffix, *p); 
+			for (p++; *p && *p != '.'; p++)
+				strbuf_putc(suffix, *p); 
+			break;
+		case '(':
+			strbuf_putc(suffix, *p); 
+			for (p++; *p && *p != ')'; p++)
+				strbuf_putc(suffix, *p); 
+			if (!*p)
+				die_with_code(2, "syntax error in the suffix list '%s'.", strbuf_value(sb));
+			strbuf_putc(suffix, *p++);
+			break;
+		default:
+			die_with_code(2, "syntax error in the suffix list '%s'.", strbuf_value(sb));
+			break;
+		}
+		if ((sh = strhash_assign(hash, strbuf_value(suffix), 0)) != NULL) {
 			if (!sh->value && wflag)
-				warning("langmap: suffix '%s' is duplicated. all except for the head is ignored.", suffix);
+				warning("langmap: suffix '%s' is duplicated. all except for the head is ignored.", strbuf_value(suffix));
 			sh->value = (void *)1;
 		} else {
-			strbuf_putc(list, '.');
-			strbuf_puts(list, suffix);
-			(void)strhash_assign(hash, suffix, 1);
+			strbuf_puts(list, strbuf_value(suffix));
+			(void)strhash_assign(hash, strbuf_value(suffix), 1);
 		}
 	}
 }
@@ -227,7 +247,38 @@ decide_lang(const char *suffix)
 	/* check whether or not list includes suffix. */
 	while (lang < tail) {
 		list = lang + strlen(lang) + 1;
-		if (match_suffix_list(suffix, list))
+		if (match_suffix_list(suffix, NULL, list))
+			return lang;
+		lang = list + strlen(list) + 1;
+	}
+	return NULL;
+}
+/**
+ * decide language of the path.
+ */
+const char *
+decide_lang_path(const char *path)
+{
+	const char *lang, *list, *tail;
+	const char *suffix = locatestring(path, ".", MATCH_LAST);
+	const char *basename = locatestring(path, "/", MATCH_LAST);
+
+	if (basename)
+		basename++;
+	/*
+	 * Though '*.h' files are shared by C and C++, GLOBAL treats them
+	 * as C source files by default. If you set an environment variable
+	 * 'GTAGS_FORCECPP' then C++ parser will be invoked.
+	 */
+	if (!strcmp(suffix, ".h") && getenv("GTAGSFORCECPP") != NULL)
+		return "cpp";
+	lang = strbuf_value(active_map);
+	tail = lang + strbuf_getlen(active_map);
+
+	/* check whether or not list includes suffix. */
+	while (lang < tail) {
+		list = lang + strlen(lang) + 1;
+		if (match_suffix_list(suffix, basename, list))
 			return lang;
 		lang = list + strlen(list) + 1;
 	}
@@ -236,60 +287,46 @@ decide_lang(const char *suffix)
 
 /**
  * return true if the suffix exists in the list.
+ * suffix may include '(<glob pattern>)'.
  */
-static int
-match_suffix_list(const char *suffix, const char *list)
-{
-	const char *p;
-
-	while (*list) {
-		if ((p = locatestring(list, suffix, MATCH_AT_FIRST
-#if defined(_WIN32) || defined(__DJGPP__)
-							     |IGNORE_CASE
-#endif
-			)) != NULL && (*p == '\0' || *p == '.'))
-			return 1;
-		for (list++; *list && *list != '.'; list++)
-			;
-	}
-	return 0;
+STATIC_STRBUF(lastmatch);
+const char *
+get_last_match() {
+	return strbuf_value(lastmatch);
 }
-
-/**
- * make a suffix list from the langmap.
- *
- * "c:.c.h,java:.java,cpp:.C.H"
- *	|
- *	v
- * ".c.h.java.C.H"
- */
-void
-make_suffixes(const char *langmap, STRBUF *sb)
+static int
+match_suffix_list(const char *suffix, const char *basename, const char *list)
 {
 	const char *p;
-	int onsuffix = 0;		/* not on suffix string */
-	int first_dot = 1;
 
-	for (p = langmap; *p; p++) {
-		/*
-		 * "c:.c.h,java:.java,cpp:.C.H"
-		 */
-		if ((onsuffix == 0 && *p == ',') || (onsuffix == 1 && *p == ':'))
-			die_with_code(2, "syntax error in langmap '%s'.", langmap);
-		if (*p == ':')
-			onsuffix = 1;
-		else if (*p == ',')
-			onsuffix = 0;
-		else if (onsuffix) {
-			if (*p == '.') {
-				if (first_dot)
-					first_dot = 0;
-				else
-					strbuf_putc(sb, ',');
-			} else 
-				strbuf_putc(sb, *p);
+	strbuf_clear(lastmatch);
+	suffix++;	/* skip '.' */
+	/*
+	 * list includes suffixes and/or patterns.
+	 */
+	while (*list) {
+		if (*list == '.') {
+			p = strmake(++list, ".(");
+			if (locatestring(p, suffix, MATCH_COMPLETE
+#if defined(_WIN32) || defined(__DJGPP__)
+								|IGNORE_CASE
+#endif
+			)) {
+				strbuf_putc(lastmatch, '.');
+				strbuf_puts(lastmatch, p);
+				return 1;
+			}
+			list += strlen(p);
+		} else if (*list == '(') {
+			p = strmake(++list, ")");
+			if (basename && fnmatch(p, basename, 0) == 0) {
+				strbuf_putc(lastmatch, '(');
+				strbuf_puts(lastmatch, p);
+				strbuf_putc(lastmatch, ')');
+				return 1;
+			}
+			list += strlen(p) + 1;
 		}
 	}
-	if (onsuffix == 0)
-		die_with_code(2, "syntax error in langmap '%s'.", langmap);
+	return 0;
 }

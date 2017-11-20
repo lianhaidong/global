@@ -176,7 +176,7 @@
 	@begin_itemize
 	@item{@code{gtags_parser} (comma separated list)}
 		Specify the mapping of language names and plug-in parsers.
-		Each part delimited by the comma consists of the language name, a colon,
+		Each part delimited by the comma consists of a language name, a colon,
 		the shared object path, an optional colon followed by a function name.
 		If the function name is not specified, 'parser' is assumed.
 		As a special exception, @name{gtags} collects values
@@ -193,7 +193,9 @@
 		Suffixes check is affected by this capability.
 	@item{@code{langmap} (comma separated list)}
 		Language mapping. Each comma-separated map consists of
-		the language name, a colon, and a list of file extensions.
+		a language name, a colon, and a list of file extensions.
+		You can specify a glob pattern surrounded by parentheses instead of an extension
+		for the files without extensions (e.g. Make:([Mm]akefile).mak.mk).
 		As a special exception, @name{gtags} collects values
 		from multiple @code{langmap} variables.
 		For these mappings, the first match is adopted.

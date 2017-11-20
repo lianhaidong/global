@@ -413,11 +413,7 @@ parse_file(const char *path, int flags, PARSER_CALLBACK put, void *arg)
 	const struct lang_entry *ent;
 	struct parser_param param;
 
-	/* get suffix of the path. */
-	suffix = locatestring(path, ".", MATCH_LAST);
-	if (suffix == NULL)
-		return;
-	lang = decide_lang(suffix);
+	lang = decide_lang_path(path);
 	if (lang == NULL)
 		return;
 	/*
@@ -427,7 +423,7 @@ parse_file(const char *path, int flags, PARSER_CALLBACK put, void *arg)
 	ent = get_lang_entry(lang);
 	if (flags & PARSER_EXPLAIN) {
 		fprintf(stderr, " - File '%s' is handled as follows:\n", trimpath(path));
-		fprintf(stderr, "\tsuffix:   |%s|\n", suffix);
+		fprintf(stderr, "\tsuffix:   |%s|\n", get_last_match());
 		fprintf(stderr, "\tlanguage: |%s|\n", lang);
 		fprintf(stderr, "\tparser:   |%s|\n", ent->parser_name);
 		fprintf(stderr, "\tlibrary:  |%s|\n", ent->lt_dl_name ? ent->lt_dl_name : "builtin library");

@@ -20,8 +20,6 @@
 #ifndef _LANGMAP_H_
 #define _LANGMAP_H_
 
-#include "strbuf.h"
-
 #define DEFAULTLANGMAP  "@DEFAULTLANGMAP@"
 #define DEFAULTSKIP     "@DEFAULTSKIP@"
 #define DEFAULTINCLUDEFILESUFFIXES "@DEFAULTINCLUDEFILESUFFIXES@"
@@ -30,6 +28,7 @@ void set_langmap_wflag(void);
 void setup_langmap(const char *);
 const char *trim_langmap(const char *);
 const char *decide_lang(const char *);
-void make_suffixes(const char *, STRBUF *);
+const char *decide_lang_path(const char *);
+const char *get_last_match(void);
 
 #endif

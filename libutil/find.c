@@ -107,23 +107,6 @@ static const int check_looplink = 1;
 static int accept_dotfiles = 0;
 static int skip_unreadable = 0;
 static int find_explain = 0;
-/*
- * trim: remove blanks and '\'.
- */
-static void
-trim(char *s)
-{
-	char *p;
-
-	for (p = s; *s; s++) {
-		if (isspace((unsigned char)*s))
-			continue;	
-		if (*s == '\\' && *(s + 1))
-			s++;
-		*p++ = *s;
-	}
-	*p = 0;
-}
 /**
  * get the reason for skipping
  *
@@ -171,8 +154,9 @@ prepare_source(void)
 {
 	static regex_t suff_area;
 	STRBUF *sb = strbuf_open(0);
-	char *sufflist = NULL;
-	char *langmap = NULL;
+	char *default_langmap = DEFAULTLANGMAP;
+	char *langmap = default_langmap;
+	char *p;
 	int flags = REG_EXTENDED;
 
 	/*
@@ -187,44 +171,57 @@ prepare_source(void)
 	 * make suffix list.
 	 */
 	strbuf_reset(sb);
-	if (getconfs("langmap", sb)) {
+	if (getconfs("langmap", sb))
 		langmap =  check_strdup(strbuf_value(sb));
-	}
 	strbuf_reset(sb);
-	make_suffixes(langmap ? langmap : DEFAULTLANGMAP, sb);
-	sufflist = check_strdup(strbuf_value(sb));
-	trim(sufflist);
-	{
-		const char *suffp;
-
-		strbuf_reset(sb);
-		strbuf_puts(sb, "\\.(");       /* ) */
-		for (suffp = sufflist; suffp; ) {
-			const char *p;
-
-			for (p = suffp; *p && *p != ','; p++) {
-				if (!isalnum((unsigned char)*p))
-					strbuf_putc(sb, '\\');
-				strbuf_putc(sb, *p);
+	p = langmap;
+	strbuf_puts(sb, "/(");
+	if (debug)
+		fprintf(stderr, "langmap = %s\n", langmap);
+	while (*p) {
+		/* skip language name */
+		for (; *p && *p != ':'; p++)
+			;
+		if (*p != ':')
+			die_with_code(2, "syntax error in the langmap '%s'.", langmap);
+		p++;
+		while (*p == '.' || *p == '(') {
+			if (*p == '.') {	/* suffix */
+				strbuf_puts(sb, "[^/]+\\.");
+				for (p++; *p && *p != '.' && *p != '(' && *p != ','; p++) {
+					if (!isalnum(*p))
+						strbuf_putc(sb, '\\');
+					strbuf_putc(sb, *p);
+				}
+			} else if (*p == '(') {	/* glob pattern */
+				for (p++; *p && *p != ')'; p++) {
+					if (*p == '.')
+						strbuf_puts(sb, "\\.");
+					else if (*p == '*')
+						strbuf_puts(sb, "[^/]+");
+					else if (*p == '?')
+						strbuf_puts(sb, "[^/]");
+					else
+						strbuf_putc(sb, *p);
+				}
+				if (*p == 0)
+					die_with_code(2, "syntax error in the langmap '%s'.", langmap);
+				p++;
 			}
-			if (!*p)
-				break;
-			assert(*p == ',');
 			strbuf_putc(sb, '|');
-			suffp = ++p;
 		}
-		strbuf_puts(sb, ")$");
-		/*
-		 * compile regular expression.
-		 */
-		if (regcomp(&suff_area, strbuf_value(sb), flags) != 0)
-			die("cannot compile regular expression.");
+		if (*p == ',')
+			p++;
 	}
+	strbuf_unputc(sb, '|');
+	strbuf_puts(sb, ")$");
+	if (debug)
+		fprintf(stderr, "prepare_source: %s\n", strbuf_value(sb));
+	if (regcomp(&suff_area, strbuf_value(sb), flags) != 0)
+		die("cannot compile regular expression.");
 	strbuf_close(sb);
-	if (langmap)
+	if (langmap != default_langmap)
 		free(langmap);
-	if (sufflist)
-		free(sufflist);
 	return &suff_area;
 }
 /**
@@ -263,7 +260,6 @@ prepare_skip(void)
 	skiplist = check_strdup(strbuf_value(reg));
 	if (debug)
 		fprintf(stderr, "DBG: Original skip list:\n%s\n", skiplist);
-	/* trim(skiplist);*/
 	strbuf_reset(reg);
 	/*
 	 * construct regular expression.
