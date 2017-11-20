@@ -409,7 +409,7 @@ getconf(const char *name)
 void
 parse_file(const char *path, int flags, PARSER_CALLBACK put, void *arg)
 {
-	const char *lang, *suffix;
+	const char *lang;
 	const struct lang_entry *ent;
 	struct parser_param param;
 

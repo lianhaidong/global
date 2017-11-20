@@ -95,7 +95,7 @@ setup_langmap(const char *map)
 static void
 trim_suffix_list(STRBUF *list, STRHASH *hash) {
 	STATIC_STRBUF(sb);
-	const char *p, *next;
+	const char *p;
 
 	strbuf_clear(sb);
 	strbuf_puts(sb, strbuf_value(list));
