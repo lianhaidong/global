@@ -182,9 +182,10 @@ prepare_source(void)
 		/* skip language name */
 		for (; *p && *p != ':'; p++)
 			;
-		if (*p != ':')
+		if (*p == 0)
 			die_with_code(2, "syntax error in the langmap '%s'.", langmap);
 		p++;
+		/* pick up a suffix or a glob pattern */
 		while (*p == '.' || *p == '(') {
 			if (*p == '.') {	/* suffix */
 				strbuf_puts(sb, "[^/]+\\.");
@@ -198,10 +199,21 @@ prepare_source(void)
 					if (*p == '.')
 						strbuf_puts(sb, "\\.");
 					else if (*p == '*')
-						strbuf_puts(sb, "[^/]+");
+						strbuf_puts(sb, "[^/]*");
 					else if (*p == '?')
 						strbuf_puts(sb, "[^/]");
-					else
+					else if (*p == '[') {
+						strbuf_putc(sb, '[');
+						if (*++p == '!') {
+							strbuf_putc(sb, '^');
+							p++;
+						}
+						for (; *p && *p != ']'; p++)
+							strbuf_putc(sb, *p);
+						if (*p == 0)
+							die_with_code(2, "syntax error in the langmap '%s'.", langmap);
+						strbuf_putc(sb, ']');
+					} else
 						strbuf_putc(sb, *p);
 				}
 				if (*p == 0)
