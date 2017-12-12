@@ -56,7 +56,7 @@ pygments:\
 #	Else if pygments parser exists it is used.
 #
 native-pygments:\
-	:tc=builtin-parser:tc=pygments-parser:htags:
+	:tc=builtin-parser:tc=pygments-parser:tc=htags:
 #---------------------------------------------------------------------
 # Configuration for gtags(1)
 # See gtags(1).
