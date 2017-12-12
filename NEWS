@@ -4,7 +4,7 @@ ___________________________________
 |  |   |  |  |  |  |     |     |  |
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Copyright (c) 2000-2016 Tama Communications Corporation
+ Copyright (c) 2000-2017 Tama Communications Corporation
 
  This file is free software; as a special exception the author gives
  unlimited permission to copy and/or distribute it, with or without
@@ -18,6 +18,54 @@ ___________________________________
 
 GNU GLOBAL NEWS - User visible changes.
 At least, you should search '[INCOMPATIBLE CHANGES]' for each version.
+
+Version 6.6 - December 12 2017
+
+[CHANGES]
+New facilities:
+o gtags: Added support for glob patterns in langmap variable in gtags.conf(5).
+  Now, you can treat source files without extension like ctags(1).
+  (e.g. :langmap=Make\:.mak.mk([Mm]akefile):)
+
+Changed:
+o gozilla: Changed the default browser from 'mozilla' to 'firefox'.
+o gtags.conf.in: Updated to adapt to the latest ctags(s).
+  Removed: common-ctags-maps
+  Updated: exuberant-ctags, universal-ctags
+
+[INCOMPATIBLE CHANGES]
+o universal-ctags.la: The --extra option in Exuberant-ctags is renamed
+  to --extras (plural) in Universal-ctags for making consistent with
+  --kinds-<LANG> and --fields.
+
+[FIXED BUGS]
+o gtags: (parser error) picked up a typedef name as both of definition
+  and reference. Now it works.
+	Input:
+	[a.h]
+	typedef struct a A;
+
+	$ global -x A
+	A                   1 a.h              typedef struct a A;
+	$ global -x A -r
+	(global-6.5.7)
+	A                   1 a.h              typedef struct a A;
+	(global-6.6)
+	no output
+
+o global: the -i option does not work correctly in some conditions.
+  Now it works.
+o global: didn't accept pattern as a string literal with the --from-here
+  option, even if the --literal option was specified. Now, global(1)
+  accepts pattern as a string literal with the --literal option.
+o libdb: there was 4 Gbyte limitation on the system where `off_t' is 64 bits
+  and `long' is 32 bits. Now it is eliminated.
+o libparser: php parser was not reset state for each source file.
+  So, it was producing unintelligible results. Now it is fixed.
+o gozilla: with wrong argument caused segmentation violation.
+	$ gozilla -d
+	Segmentation fault: 11
+  Now it displays usage.
 
 Version 6.5.7 - 15 May 2017
 

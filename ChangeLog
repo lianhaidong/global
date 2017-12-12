@@ -19,6 +19,24 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+December 12 2017, Shigio YAMAGUCHI
+
+	[plugin-factory/maps2conf.pl]
+	Added new script 'maps2conf.pl', which converts from the output of 
+        'ctags --list-maps' into a gtags.conf record. It supports Exuberant Ctags
+	and Universal Ctags.
+
+	[usage]
+	perl maps2conf.pl <ctags-path> <plugin-path> [<label>]
+
+	The default of <label> is 'default'. You can use this script to make
+	'gtags.conf' file for ctags plug-in parser. Please try this:
+
+	$ perl maps2conf.pl /usr/local/bin/ctags '$libdir/gtags/universal-ctags.la' >gtags.conf
+	$ gtags         # use Universal Ctags as a parser
+
+	It assumed that '/usr/local/bin/ctags' above is Universal Ctags.
+
 August 30 2017, Shigio YAMAGUCHI
 
 	[libutil/find.c]
