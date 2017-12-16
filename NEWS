@@ -19,6 +19,22 @@ ___________________________________
 GNU GLOBAL NEWS - User visible changes.
 At least, you should search '[INCOMPATIBLE CHANGES]' for each version.
 
+Version 6.6.1 - December 16 2017
+
+[FIXED BUG]
+o gozilla: A critical vulnerability (CVE-2017-17531) was found in a unknown
+  function of gozilla(1). It allows remote attackers to execute arbitrary
+  code via a crafted URL. All gozilla(1) before GLOBAL-6.6.1 have the vulnerability.
+  Now it is fixed.
+
+- What is the unknown function?
+Gozilla accepts a URL as an argument, and invokes a web browser with the URL.
+Though it is undocumented, it is implied in the online manual as follows:
+
+> BUGS
+>         Gozilla can accept not only source files but also text files,
+>         directories, HTML files and even URLs, because it is omnivorous.
+
 Version 6.6 - December 12 2017
 
 [CHANGES]

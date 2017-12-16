@@ -611,7 +611,8 @@ make_url_file(const char *url)
 void
 show_page_by_url(const char *browser, const char *url)
 {
-	char com[1024];
+	STRBUF  *sb = strbuf_open(0);
+	STRBUF  *arg = strbuf_open(0);
 
 	/*
 	 * Browsers which have openURL() command.
@@ -624,22 +625,33 @@ show_page_by_url(const char *browser, const char *url)
 	    locatestring(browser, "netscape", MATCH_AT_LAST) ||
 	    locatestring(browser, "netscape-remote", MATCH_AT_LAST))
 	{
-		snprintf(com, sizeof(com), "%s -remote \"openURL(%s)\"", browser, url);
-		system(com);
+		strbuf_puts(sb, quote_shell(browser));
+		strbuf_putc(sb, ' ');
+		strbuf_puts(sb, "-remote");
+		strbuf_putc(sb, ' ');
+		strbuf_sprintf(arg, "openURL(%s)", url);
+		strbuf_puts(sb, quote_shell(strbuf_value(arg)));
+		system(strbuf_value(sb));
 	}
 	/*
 	 * Load default browser of OSX.
 	 */
 	else if (!strcmp(browser, "osx-default")) {
-		snprintf(com, sizeof(com), "open \"%s\"", make_url_file(url));
-		system(com);
+		strbuf_puts(sb, "open");
+		strbuf_putc(sb, ' ');
+		strbuf_puts(sb, quote_shell(make_url_file(url)));
+		system(strbuf_value(sb));
 	}
 	/*
 	 * Generic browser.
 	 */
 	else {
-		snprintf(com, sizeof(com), "%s \"%s\"", browser, url);
-		system(com);
+		strbuf_puts(sb, quote_shell(browser));
+		strbuf_putc(sb, ' ');
+		strbuf_puts(sb, quote_shell(url));
+		system(strbuf_value(sb));
 	}
+	strbuf_close(sb);
+	strbuf_close(arg);
 }
 #endif
