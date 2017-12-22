@@ -79,9 +79,9 @@ export LESSGLOBALTAGS=$(gtags --conf=datadir)/gtags/script/less-global
 export LESS=-TGTAGS
 __gtags_geco_selectors_list='percol peco fzf'	# Default list
 if [ "$GECO_SELECTORS" != "" ]; then
-	geco_selectors_list=$GECO_SELECTORS
+	__gtags_geco_selectors_list=$GECO_SELECTORS
 fi
-for name in $geco_selectors_list; do
+for name in $__gtags_geco_selectors_list; do
 	path=$(type -p $name)
 	case $path in
 	'')	;;
