@@ -23,13 +23,13 @@
 #       o texinfo format reference manual.
 #
 @HEADER GOZILLA,1,March 2010,GNU Project
-@NAME   gozilla - force mozilla to display specified part of a source file
+@NAME   gozilla - force a browser to display specified part of a source file
 @SYNOPSIS
 	@name{gozilla} [-b browser][-p][+no] file
 	@name{gozilla} [-b browser][-p] -d name
 @DESCRIPTION
-	@name{Gozilla} forces @name{mozilla} to display specified part of a source file.
-	@name{Gozilla} can be used with other browsers like firefox and epiphany.
+	@name{Gozilla} forces firefox to display specified part of a source file.
+	@name{Gozilla} can be used with other browsers like chrome and epiphany.
 
 	In advance of using this command, you must execute @xref{gtags,1}
 	and @xref{htags,1} at the root directory of the project to make tag files.
@@ -51,7 +51,7 @@
 	@item{@option{+no}}
 		Line number.
 	@item{@option{-b} @arg{browser}}
-		Browser to use. By default, it is assumed @name{mozilla}.
+		Browser to use. By default, it is assumed @name{firefox}.
 	@item{@option{-d} @arg{name}}
 		Print definitions.
 	@item{@option{--help}}
@@ -84,7 +84,7 @@
 @ENVIRONMENT
 	@begin_itemize
 	@item{@var{BROWSER}}
-		Browser to use. By default, it is assumed @name{mozilla}.
+		Browser to use. By default, it is assumed @name{firefox}.
 		If you want to load the default browser in OSX, you may set this variable
 		to @name{osx-default}.
 	@item{@var{GTAGSDBPATH}}
@@ -99,12 +99,10 @@
 	$ htags
 	$ global -x main
 	main              82 ctags.c          main(argc, argv)
-	$ mozilla &
 	$ gozilla +82 ctags.c
 	$ gozilla -d main
 
-	$ firefox &
-	$ gozilla -b firefox +82 ctags.c
+	$ gozilla -b lynx +82 ctags.c
 	@end_verbatim
 @DIAGNOSTICS
 	@name{Gozilla} exits with a non-0 value if an error occurred, 0 otherwise.
@@ -112,9 +110,9 @@
 	@xref{global,1},
 	@xref{gtags,1},
 	@xref{htags,1},
-	@xref{firefox,1},
 	@xref{epiphany,1},
 	@xref{mozilla,1},
+	@xref{firefox,1},
 	@xref{gtags.conf,5}.
 
 	GNU GLOBAL source code tag system@br
