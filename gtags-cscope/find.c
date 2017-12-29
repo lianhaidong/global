@@ -19,6 +19,7 @@
 #include "global-cscope.h"
 #include "char.h"
 #include "gparam.h"
+#include "strbuf.h"
 
 #define FAILED "global command failed"
 
@@ -27,10 +28,24 @@ static char comline[MAXFILLEN];
 static char *
 common(void)
 {
-	static char com[80];
-	snprintf(com, sizeof(com), "%s --encode-path=\" \t\" --result=cscope%s%s",
-		global_command, (caseless == YES) ? " -i" : "", (absolutepath == YES) ? " -a" : ""); 
-	return com;
+	STATIC_STRBUF(sb);
+	strbuf_clear(sb);
+	strbuf_sprintf(sb, "%s --encode-path=\" \t\" --result=cscope", quote_shell(global_command));
+	if (caseless == YES)
+		strbuf_puts(sb, " -i");
+	if (absolutepath == YES)
+		strbuf_puts(sb, " -a");
+	return strbuf_value(sb);
+}
+static int
+mysystem(char *function, char *command)
+{
+#ifdef DEBUG
+	FILE *fp = fopen("/tmp/log", "a");
+	fprintf(fp, "%s: %s\n", function, command);
+	fclose(fp);
+#endif
+	return system(command);
 }
 /*
  * [display.c]
@@ -40,11 +55,19 @@ common(void)
 char *
 findsymbol(char *pattern)
 {
-	snprintf(comline, sizeof(comline), "%s -d %s > %s", common(), quote_shell(pattern), temp1);
-	if (system(comline) != 0)
+	STRBUF  *sb = strbuf_open(0);
+	int status;
+	strbuf_sprintf(sb, "%s -d %s > %s", common(), quote_shell(pattern), temp1);
+	status = mysystem("findsymbol_1", strbuf_value(sb));
+	if (status != 0) {
+		strbuf_close(sb);
 		return FAILED;
-	snprintf(comline, sizeof(comline), "%s -rs %s >> %s", common(), quote_shell(pattern), temp1);
-	if (system(comline) != 0)
+	}
+	strbuf_reset(sb);
+	strbuf_sprintf(sb, "%s -rs %s >> %s", common(), quote_shell(pattern), temp1);
+	status = mysystem("findsymbol_2", strbuf_value(sb));
+	strbuf_close(sb);
+	if (status != 0)
 		return FAILED;
 	return NULL;
 }
@@ -57,8 +80,12 @@ findsymbol(char *pattern)
 char *
 finddef(char *pattern)
 {
-	snprintf(comline, sizeof(comline), "%s -d %s > %s", common(), quote_shell(pattern), temp1);
-	if (system(comline) != 0)
+	STRBUF  *sb = strbuf_open(0);
+	int status;
+	strbuf_sprintf(sb, "%s -d %s > %s", common(), quote_shell(pattern), temp1);
+	status = mysystem("finddef", strbuf_value(sb));
+	strbuf_close(sb);
+	if (status != 0)
 		return FAILED;
 	return NULL;
 }
@@ -75,6 +102,8 @@ finddef(char *pattern)
 char *
 findcalledby(char *pattern)
 {
+	STRBUF  *sb = strbuf_open(0);
+	int status;
 	char *p;
 
 	/*
@@ -83,8 +112,10 @@ findcalledby(char *pattern)
 	for (p = pattern; *p && *p != ':'; p++)
 		;
 	*p++ = '\0';
-	snprintf(comline, sizeof(comline), "%s --from-here=\"%s\" %s > %s", common(), p, quote_shell(pattern), temp1);
-	if (system(comline) != 0)
+	strbuf_sprintf(sb, "%s --from-here=\"%s\" %s > %s", common(), p, quote_shell(pattern), temp1);
+	status = mysystem("findcalledby", strbuf_value(sb));
+	strbuf_close(sb);
+	if (status != 0)
 		return FAILED;
 	return NULL;
 }
@@ -97,10 +128,15 @@ findcalledby(char *pattern)
 char *
 findcalling(char *pattern)
 {
-	snprintf(comline, sizeof(comline), "%s -r %s > %s", common(), quote_shell(pattern), temp1);
-	if (system(comline) != 0)
-		return FAILED;
-	return NULL;
+	STRBUF  *sb = strbuf_open(0);
+	int status;
+
+	strbuf_sprintf(sb, "%s -r %s > %s", common(), quote_shell(pattern), temp1);
+	status = mysystem("findcalling", strbuf_value(sb));
+        strbuf_close(sb);
+        if (status != 0)
+                return FAILED;
+        return NULL;
 }
 
 /*
@@ -111,10 +147,15 @@ findcalling(char *pattern)
 char *
 findstring(char *pattern)
 {
-	snprintf(comline, sizeof(comline), "%s -g --literal %s > %s", common(), quote_shell(pattern), temp1);
-	if (system(comline) != 0)
-		return FAILED;
-	return NULL;
+	STRBUF  *sb = strbuf_open(0);
+	int status;
+
+	strbuf_sprintf(sb, "%s -g --literal %s > %s", common(), quote_shell(pattern), temp1);
+	status = mysystem("findstring", strbuf_value(sb));
+        strbuf_close(sb);
+        if (status != 0)
+                return FAILED;
+        return NULL;
 }
 
 /*
@@ -130,10 +171,15 @@ findstring(char *pattern)
 char *
 findregexp(char *pattern)
 {
-	snprintf(comline, sizeof(comline), "%s -g %s > %s", common(), quote_shell(pattern), temp1);
-	if (system(comline) != 0)
-		return FAILED;
-	return NULL;
+	STRBUF  *sb = strbuf_open(0);
+        int status;
+
+	strbuf_sprintf(sb, "%s -g %s > %s", common(), quote_shell(pattern), temp1);
+	status = mysystem("findregexp", strbuf_value(sb));
+        strbuf_close(sb);
+        if (status != 0)
+                return FAILED;
+        return NULL;
 }
 
 /*
@@ -144,10 +190,15 @@ findregexp(char *pattern)
 char *
 findfile(char *pattern)
 {
-	snprintf(comline, sizeof(comline), "%s -P %s > %s", common(), quote_shell(pattern), temp1);
-	if (system(comline) != 0)
-		return FAILED;
-	return NULL;
+	STRBUF  *sb = strbuf_open(0);
+	int status;
+
+	strbuf_sprintf(sb, "%s -P %s > %s", common(), quote_shell(pattern), temp1);
+	status = mysystem("findfile", strbuf_value(sb));
+        strbuf_close(sb);
+        if (status != 0)
+                return FAILED;
+        return NULL;
 }
 
 /*
@@ -158,6 +209,8 @@ findfile(char *pattern)
 char *
 findinclude(char *pattern)
 {
+	STRBUF  *sb = strbuf_open(0);
+	int status;
 #if defined(_WIN32) && !defined(__CYGWIN__)
 #define INCLUDE "\"^[ \t]*#[ \t]*include[ \t].*[<\\\"/\\]%s[\\\">]\""
 #elif defined(__DJGPP__)
@@ -165,9 +218,10 @@ findinclude(char *pattern)
 #else
 #define INCLUDE "'^[ \t]*#[ \t]*include[ \t].*[\"</]%s[\">]'"
 #endif
-	snprintf(comline, sizeof(comline), "%s -g " INCLUDE " | sed \"s/<unknown>/<global>/\" > %s",
-		common(), quote_string(pattern), temp1);
-	if (system(comline) != 0)
-		return FAILED;
-	return NULL;
+	strbuf_sprintf(sb, "%s -g " INCLUDE " | sed \"s/<unknown>/<global>/\" > %s", common(), quote_string(pattern), temp1);
+	status = mysystem("findinclude", strbuf_value(sb));
+        strbuf_close(sb);
+        if (status != 0)
+                return FAILED;
+        return NULL;
 }

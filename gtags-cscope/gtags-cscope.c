@@ -38,7 +38,8 @@
  */
 
 #include "global-cscope.h"
-
+#include "char.h"
+#include "strbuf.h"
 #include "build.h"
 #include "version-cscope.h"	/* FILEVERSION and FIXVERSION */
 
@@ -403,12 +404,13 @@ cscope: Could not create private temp dir %s\n",
 
     /* if the cross-reference is to be considered up-to-date */
     if (isuptodate == YES) {
-	char com[80];
-	snprintf(com, sizeof(com), "%s -p >" NULL_DEVICE, global_command);
-	if (system(com) != 0) {
+	STRBUF  *sb = strbuf_open(0);
+	strbuf_sprintf(sb, "%s -p >" NULL_DEVICE, quote_shell(global_command));
+	if (system(strbuf_value(sb)) != 0) {
 	    postfatal("gtags-cscope: GTAGS not found. Please invoke again without -d option.\n");
             /* NOTREACHED */
 	}
+	strbuf_close(sb);
     } else {
 	if (linemode == NO || verbosemode == YES)    /* display if verbose as well */
 	    postmsg("Building cross-reference...");                 

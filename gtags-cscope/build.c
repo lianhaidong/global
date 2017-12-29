@@ -36,6 +36,8 @@
  */
 
 #include "build.h"
+#include "char.h"
+#include "strbuf.h"
 
 BOOL	buildonly = NO;		/**< only build the database */
 
@@ -43,10 +45,10 @@ BOOL	buildonly = NO;		/**< only build the database */
 void
 rebuild(void)
 {
-	char com[16];
+	STRBUF  *sb = strbuf_open(0);
 
-	snprintf(com, sizeof(com), "%s -i", gtags_command);
-	if (system(com) != 0) {
-		postfatal("gtags-cscope: '%s' failed.\n", com);
-	}
+	strbuf_sprintf(sb, "%s -i", quote_shell(gtags_command));
+	if (system(strbuf_value(sb)) != 0)
+		postfatal("gtags-cscope: '%s' failed.\n", system(strbuf_value(sb)));
+	strbuf_close(sb);
 }

@@ -39,6 +39,8 @@
 #include "global-cscope.h"
 #include "gparam.h"
 #include "build.h"		/* for rebuild() */
+#include "strbuf.h"
+#include "char.h"
 #include "alloc.h"
 #include "encodepath.h"
 
@@ -67,7 +69,6 @@ static	char	pipeprompt[] = "Pipe to shell command: ";
 static	char	readprompt[] = "Read from file: ";
 static	char	globalprompt[] = "Read from: global ";
 static	char	globaloption[] = "--encode-path=\" \t\" --result=cscope";
-static	char	globalcommand[MAXFILLEN];
 static	char	toprompt[] = "To: ";
 
 
@@ -82,6 +83,7 @@ static	void	scrollbar(MOUSE *p);
 BOOL
 command(int commandc)
 {
+    STATIC_STRBUF(sb);
     char filename[PATHLEN + 1];	/* file path name */
     MOUSE *p;			/* mouse data */
     int	c, i;
@@ -401,10 +403,11 @@ cscope: cannot open pipe to shell command: %s\n", newpat);
 	    clearprompt();
 	    return(NO);
 	}
-	snprintf(globalcommand, sizeof(globalcommand), "%s %s %s > %s", global_command, globaloption, newpat, temp2);
+	strbuf_clear(sb);
+	strbuf_sprintf(sb, "%s %s %s > %s", quote_shell(global_command), globaloption, quote_shell(newpat), temp2);
 	remove(temp2);
 	postmsg("Searching ...");
-	if (system(globalcommand) != 0) {
+	if (system(strbuf_value(sb)) != 0) {
 	    postmsg("Ignoring failed output of global command");
 	    clearprompt();
 	    return(NO);
