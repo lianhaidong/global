@@ -49,6 +49,6 @@ rebuild(void)
 
 	strbuf_sprintf(sb, "%s -i", quote_shell(gtags_command));
 	if (system(strbuf_value(sb)) != 0)
-		postfatal("gtags-cscope: '%s' failed.\n", system(strbuf_value(sb)));
+		postfatal("gtags-cscope: '%s' failed.\n", strbuf_value(sb));
 	strbuf_close(sb);
 }
