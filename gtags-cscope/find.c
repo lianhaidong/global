@@ -23,8 +23,6 @@
 
 #define FAILED "global command failed"
 
-static char comline[MAXFILLEN];
-
 static char *
 common(void)
 {
