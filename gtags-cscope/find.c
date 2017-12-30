@@ -55,14 +55,16 @@ findsymbol(char *pattern)
 {
 	STRBUF  *sb = strbuf_open(0);
 	int status;
-	strbuf_sprintf(sb, "%s -d %s > %s", common(), quote_shell(pattern), temp1);
+	strbuf_puts(sb, common());
+	strbuf_sprintf(sb, " -d %s > %s", quote_shell(pattern), temp1);
 	status = mysystem("findsymbol_1", strbuf_value(sb));
 	if (status != 0) {
 		strbuf_close(sb);
 		return FAILED;
 	}
 	strbuf_reset(sb);
-	strbuf_sprintf(sb, "%s -rs %s >> %s", common(), quote_shell(pattern), temp1);
+	strbuf_puts(sb, common());
+	strbuf_sprintf(sb, " -rs %s >> %s", quote_shell(pattern), temp1);
 	status = mysystem("findsymbol_2", strbuf_value(sb));
 	strbuf_close(sb);
 	if (status != 0)
@@ -80,7 +82,8 @@ finddef(char *pattern)
 {
 	STRBUF  *sb = strbuf_open(0);
 	int status;
-	strbuf_sprintf(sb, "%s -d %s > %s", common(), quote_shell(pattern), temp1);
+	strbuf_puts(sb, common());
+	strbuf_sprintf(sb, " -d %s > %s", quote_shell(pattern), temp1);
 	status = mysystem("finddef", strbuf_value(sb));
 	strbuf_close(sb);
 	if (status != 0)
@@ -110,7 +113,8 @@ findcalledby(char *pattern)
 	for (p = pattern; *p && *p != ':'; p++)
 		;
 	*p++ = '\0';
-	strbuf_sprintf(sb, "%s --from-here=\"%s\" %s > %s", common(), p, quote_shell(pattern), temp1);
+	strbuf_puts(sb, common());
+	strbuf_sprintf(sb, " --from-here=\"%s\" %s > %s", p, quote_shell(pattern), temp1);
 	status = mysystem("findcalledby", strbuf_value(sb));
 	strbuf_close(sb);
 	if (status != 0)
@@ -129,7 +133,8 @@ findcalling(char *pattern)
 	STRBUF  *sb = strbuf_open(0);
 	int status;
 
-	strbuf_sprintf(sb, "%s -r %s > %s", common(), quote_shell(pattern), temp1);
+	strbuf_puts(sb, common());
+	strbuf_sprintf(sb, " -r %s > %s", quote_shell(pattern), temp1);
 	status = mysystem("findcalling", strbuf_value(sb));
         strbuf_close(sb);
         if (status != 0)
@@ -148,7 +153,8 @@ findstring(char *pattern)
 	STRBUF  *sb = strbuf_open(0);
 	int status;
 
-	strbuf_sprintf(sb, "%s -g --literal %s > %s", common(), quote_shell(pattern), temp1);
+	strbuf_puts(sb, common());
+	strbuf_sprintf(sb, " -g --literal %s > %s", quote_shell(pattern), temp1);
 	status = mysystem("findstring", strbuf_value(sb));
         strbuf_close(sb);
         if (status != 0)
@@ -172,7 +178,8 @@ findregexp(char *pattern)
 	STRBUF  *sb = strbuf_open(0);
         int status;
 
-	strbuf_sprintf(sb, "%s -g %s > %s", common(), quote_shell(pattern), temp1);
+	strbuf_puts(sb, common());
+	strbuf_sprintf(sb, " -g %s > %s", quote_shell(pattern), temp1);
 	status = mysystem("findregexp", strbuf_value(sb));
         strbuf_close(sb);
         if (status != 0)
@@ -191,7 +198,8 @@ findfile(char *pattern)
 	STRBUF  *sb = strbuf_open(0);
 	int status;
 
-	strbuf_sprintf(sb, "%s -P %s > %s", common(), quote_shell(pattern), temp1);
+	strbuf_puts(sb, common());
+	strbuf_sprintf(sb, " -P %s > %s", quote_shell(pattern), temp1);
 	status = mysystem("findfile", strbuf_value(sb));
         strbuf_close(sb);
         if (status != 0)
@@ -216,7 +224,8 @@ findinclude(char *pattern)
 #else
 #define INCLUDE "'^[ \t]*#[ \t]*include[ \t].*[\"</]%s[\">]'"
 #endif
-	strbuf_sprintf(sb, "%s -g " INCLUDE " | sed \"s/<unknown>/<global>/\" > %s", common(), quote_string(pattern), temp1);
+	strbuf_puts(sb, common());
+	strbuf_sprintf(sb, " -g " INCLUDE " | sed \"s/<unknown>/<global>/\" > %s", quote_string(pattern), temp1);
 	status = mysystem("findinclude", strbuf_value(sb));
         strbuf_close(sb);
         if (status != 0)
