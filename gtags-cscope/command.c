@@ -404,7 +404,8 @@ cscope: cannot open pipe to shell command: %s\n", newpat);
 	    return(NO);
 	}
 	strbuf_clear(sb);
-	strbuf_sprintf(sb, "%s %s %s > %s", quote_shell(global_command), globaloption, quote_shell(newpat), temp2);
+	strbuf_puts(sb, quote_shell(global_command));
+	strbuf_sprintf(sb, " %s %s > %s", globaloption, quote_shell(newpat), temp2);
 	remove(temp2);
 	postmsg("Searching ...");
 	if (system(strbuf_value(sb)) != 0) {
