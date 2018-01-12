@@ -43,6 +43,7 @@
 #include "strlimcpy.h"
 
 static DBOP *dbop;
+static int _startkey;
 static int _nextkey;
 static int _mode;
 static int opened;
@@ -133,14 +134,14 @@ gpath_open(const char *dbpath, int mode)
 		return -1;
 	if (mode == 1) {
 		dbop_putversion(dbop, create_version);
-		_nextkey = 1;
+		_startkey = _nextkey = 1;
 	} else {
 		int format_version;
 		const char *path = dbop_get(dbop, NEXTKEY);
 
 		if (path == NULL)
 			die("nextkey not found in GPATH.");
-		_nextkey = atoi(path);
+		_startkey = _nextkey = atoi(path);
 		format_version = dbop_getversion(dbop);
 		if (format_version > support_version)
 			die("GPATH seems new format. Please install the latest GLOBAL.");
@@ -305,8 +306,10 @@ gpath_close(void)
 		return;
 	}
 	if (_mode == 1 || _mode == 2) {
-		snprintf(fid, sizeof(fid), "%d", _nextkey);
-		dbop_update(dbop, NEXTKEY, fid);
+		if (_startkey < _nextkey) {
+			snprintf(fid, sizeof(fid), "%d", _nextkey);
+			dbop_update(dbop, NEXTKEY, fid);
+		}
 	}
 	dbop_close(dbop);
 	if (_mode == 1)
