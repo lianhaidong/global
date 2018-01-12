@@ -205,6 +205,7 @@ WORD		{ALPHA}{ALPHANUM}*
 void
 asm_initscan(void)
 {
+	BEGIN(INITIAL);
 	LEXRESTART(NULL);
 	LEXLINENO = 1;
 }
