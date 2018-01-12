@@ -283,6 +283,7 @@ char	*findallfcns(char *dummy);
 char	*finddef(char *pattern);
 char	*findfile(char *dummy);
 char	*findinclude(char *pattern);
+char	*findassign(char *pattern);
 char	*findsymbol(char *pattern);
 char	*findregexp(char *egreppat);
 char	*findstring(char *pattern);

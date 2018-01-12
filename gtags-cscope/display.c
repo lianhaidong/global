@@ -124,6 +124,7 @@ static	struct	{		/**< text of input fields */
 	{"Find this", "egrep pattern",			findregexp},
 	{"Find this", "file",				findfile},
 	{"Find", "files #including this file",		findinclude},
+	{"Find", "assignments to this symbol (N/A)",	findassign},
 };
 
 /* Internal prototypes: */

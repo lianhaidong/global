@@ -232,3 +232,14 @@ findinclude(char *pattern)
                 return FAILED;
         return NULL;
 }
+/*
+ * [display.c]
+ *
+ * {"Find", "assignments to this symbol (N/A)",    findassign},
+ */
+char *
+findassign(char *pattern)
+{
+	/* Since this function has not yet been implemented, it always returns an error. */
+	return FAILED;
+}

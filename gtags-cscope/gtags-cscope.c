@@ -464,6 +464,7 @@ cscope: Could not create private temp dir %s\n",
 	    case '6':
 	    case '7':
 	    case '8':
+	    case '9':	/* Vim 8.0 calls this function. */
 		field = *buf - '0';
 		strcpy(Pattern, buf + 1);
 		search();
