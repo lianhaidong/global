@@ -184,7 +184,7 @@ start_process(const struct parser_param *param)
 		close(opipe[0]);
 		close(ipipe[1]);
 		execvp(PYGMENTS_PARSER, argv);
-		param->die("execvp failed.");
+		param->die("cannot execute '%s'. (execvp failed)", PYGMENTS_PARSER);
 	}
 	/* parent process */
 	if (pid < 0)

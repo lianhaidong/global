@@ -163,6 +163,7 @@ start_sort_process(DBOP *dbop) {
 		 */
 		set_env("LC_ALL", "C");
 		execvp(POSIX_SORT, argv);
+		die("cannot execute '%s'. (execvp failed)", POSIX_SORT);
 	} else if (dbop->pid < 0)
 		die("fork(2) failed.");
 	/* parent process */

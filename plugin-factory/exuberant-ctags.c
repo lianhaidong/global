@@ -220,7 +220,7 @@ start_ctags(const struct parser_param *param)
 		close(opipe[0]);
 		close(ipipe[1]);
 		execvp(ctagscom, argv);
-		param->die("execvp failed.");
+		param->die("cannot execute '%s'. (execvp failed)", ctagscom);
 	}
 	/* parent process */
 	if (pid < 0)

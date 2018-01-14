@@ -68,7 +68,7 @@ secure_popen(const char *command, const char *type, char *const argv[])
 				die("dup2 failed.");
 		}
 		execvp(command, argv);
-		die("execvp failed.");
+		die("cannot execute '%s'. (execvp failed)", command);
 	}
 	/* parent process */
 	if (pid < 0)
