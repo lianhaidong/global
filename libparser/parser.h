@@ -50,8 +50,6 @@ void parser_exit(void);
 
 typedef void (*PARSER_CALLBACK)(int, const char *, int, const char *, const char *, void *);
 
-void parse_file(const char *, int, PARSER_CALLBACK, void *);
-
 struct parser_param {
 	int size;		/**< size of this structure */
 	int flags;
@@ -65,5 +63,11 @@ struct parser_param {
 	void (*warning)(const char *, ...);
 	void (*message)(const char *, ...);
 };
+
+typedef void (*PARSER)(const struct parser_param *);
+void parse_file(const char *, int, PARSER_CALLBACK, void *);
+const struct lang_entry *get_parser(const char *);
+void execute_parser(const struct lang_entry *, const char *, int, PARSER_CALLBACK, void *);
+const char *get_explain(const char *, const struct lang_entry *);
 
 #endif

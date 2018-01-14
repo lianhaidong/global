@@ -121,7 +121,7 @@ isnotfunction(const char *name)
  */
 struct lang_entry {
 	const char *lang_name;
-	void (*parser)(const struct parser_param *);	/**< parser procedure */
+	PARSER parser;					/**< parser procedure */
 	const char *parser_name;
 	const char *lt_dl_name;
 };
@@ -396,7 +396,6 @@ getconf(const char *name)
 		return NULL;
 	return check_strdup(strbuf_value(sb));
 }
-
 /**
  * parse_file: select and execute a parser.
  *
@@ -409,25 +408,35 @@ getconf(const char *name)
 void
 parse_file(const char *path, int flags, PARSER_CALLBACK put, void *arg)
 {
-	const char *lang;
-	const struct lang_entry *ent;
-	struct parser_param param;
-
-	lang = decide_lang_path(path);
+	const struct lang_entry *ent = get_parser(path);
+	if (ent) {
+		if (flags & PARSER_EXPLAIN)
+			fputs(get_explain(path, ent), stderr);
+		execute_parser(ent, path, flags, put, arg);
+	}
+}
+/**
+ * get_parser: get a parser entry from a path.
+ */
+const struct lang_entry *
+get_parser(const char *path)
+{
+	const char *lang = decide_lang_path(path);
 	if (lang == NULL)
-		return;
+		return NULL;
 	/*
 	 * Select parser.
 	 * If lang == NULL then default parser is selected.
 	 */
-	ent = get_lang_entry(lang);
-	if (flags & PARSER_EXPLAIN) {
-		fprintf(stderr, " - File '%s' is handled as follows:\n", trimpath(path));
-		fprintf(stderr, "\tsuffix:   |%s|\n", get_last_match());
-		fprintf(stderr, "\tlanguage: |%s|\n", lang);
-		fprintf(stderr, "\tparser:   |%s|\n", ent->parser_name);
-		fprintf(stderr, "\tlibrary:  |%s|\n", ent->lt_dl_name ? ent->lt_dl_name : "builtin library");
-	}
+	return get_lang_entry(lang);
+}
+/**
+ * execute_parser: execute parser.
+ */
+void
+execute_parser(const struct lang_entry *ent, const char *path, int flags, PARSER_CALLBACK put, void *arg)
+{
+	struct parser_param param;
 	/*
 	 * call language specific parser.
 	 */
@@ -444,7 +453,22 @@ parse_file(const char *path, int flags, PARSER_CALLBACK put, void *arg)
 	param.message = message;
 	ent->parser(&param);
 }
+/**
+ * get_explain: get explain messages.
+ */
+const char *
+get_explain(const char *path, const struct lang_entry *ent)
+{
+	STATIC_STRBUF(sb);
+	strbuf_clear(sb);
 
+	strbuf_sprintf(sb, " - File '%s' is handled as follows:\n", trimpath(path));
+	strbuf_sprintf(sb, "\tsuffix:   |%s|\n", get_last_match());
+	strbuf_sprintf(sb, "\tlanguage: |%s|\n", ent->lang_name);
+	strbuf_sprintf(sb, "\tparser:   |%s|\n", ent->parser_name);
+	strbuf_sprintf(sb, "\tlibrary:  |%s|\n", ent->lt_dl_name ? ent->lt_dl_name : "builtin library");
+	return strbuf_value(sb);
+}
 void
 dbg_print(int level, const char *s)
 {
