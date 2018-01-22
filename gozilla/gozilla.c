@@ -57,8 +57,6 @@ const char *dos_gozillarc = "_gozillarc";
 #endif
 STRHASH *sh;
 
-static void load_alias(void);
-static const char *alias(const char *);
 int main(int, char **);
 void getdefinitionURL(const char *, const char *, STRBUF *);
 void getURL(const char *, const char *, STRBUF *);
@@ -97,78 +95,6 @@ help(void)
 }
 
 /**
- * load_alias: load alias value.
- *
- * [$HOME/.gozillarc]
- * +-----------------------
- * |a:http://www.gnu.org
- * |f = file:/usr/share/xxx.html
- * |www	http://www.xxx.yyy/
- */
-static void
-load_alias(void)
-{
-	FILE *ip;
-	STRBUF *sb = strbuf_open(0);
-	char *p;
-	int flag = STRBUF_NOCRLF;
-	struct sh_entry *ent;
-
-	sh = strhash_open(10);
-	if (!(p = get_home_directory()))
-		goto end;
-	if (!test("r", makepath(p, gozillarc, NULL)))
-#ifdef __DJGPP__
-		if (!test("r", makepath(p, dos_gozillarc, NULL)))
-#endif
-			goto end;
-	if (!(ip = fopen(makepath(p, gozillarc, NULL), "r")))
-#ifdef __DJGPP__
-		if (!(ip = fopen(makepath(p, dos_gozillarc, NULL), "r")))
-#endif
-			goto end;
-	while ((p = strbuf_fgets(sb, ip, flag)) != NULL) {
-		char *name, *value;
-
-		flag &= ~STRBUF_APPEND;
-		if (*p == '#')
-			continue;
-		if (strbuf_unputc(sb, '\\')) {
-			flag |= STRBUF_APPEND;
-			continue;
-		}
-		while (*p && isblank(*p))				/* skip spaces */
-			p++;
-		name = p;
-		while (*p && !isblank(*p) && *p != '=' && *p != ':')	/* get name */
-			p++;
-		*p++ = 0;
-		while (*p && (isblank(*p) || *p == '=' || *p == ':'))
-			p++;
-		value = p;						/* get value */
-		ent = strhash_assign(sh, name, 1);
-		if (ent->value)
-			(void)free(ent->value);
-		ent->value = check_strdup(value);
-	}
-	fclose(ip);
-end:
-	strbuf_close(sb);
-}
-/**
- * alias: get alias value.
- *
- *	@param[in]	alias_name	alias name
- *	@return			its value
- */
-static const char *
-alias(const char *alias_name)
-{
-	struct sh_entry *ent = strhash_assign(sh, alias_name, 0);
-	return ent ? ent->value : NULL;
-}
-
-/**
  * locate_HTMLdir: locate HTML directory made by htags(1).
  *
  *	@return		HTML directory
@@ -196,7 +122,6 @@ main(int argc, char **argv)
 {
 	char c;
 	const char *p, *browser = NULL, *definition = NULL;
-	STRBUF *arg = strbuf_open(0);
 	STRBUF *URL = strbuf_open(0);
 
 	while (--argc > 0 && ((c = (++argv)[0][0]) == '-' || c == '+')) {
@@ -246,10 +171,12 @@ main(int argc, char **argv)
 	}
 	if (show_version)
 		version(progname, vflag);
-	/*
-	 * Load aliases from .gozillarc.
-	 */
-	load_alias();
+	if (!definition) {
+		if (argc <= 0)
+			usage();
+		if (!test("f", argv[0]))
+			die("file '%s' not found.", argv[0]);
+	}
 	/*
 	 * Open configuration file.
 	 */
@@ -259,8 +186,6 @@ main(int argc, char **argv)
 	 */
 	if (!browser && getenv("BROWSER"))
 		browser = getenv("BROWSER");
-	if (!browser && alias("BROWSER"))
-		browser = alias("BROWSER");
 	/*
 	 * In DOS & Windows, let the file: association handle it.
 	 */
@@ -268,68 +193,27 @@ main(int argc, char **argv)
 	if (!browser)
 		browser = "firefox";
 #endif
-
-	/*
-	 * Replace alias name.
-	 */
-	if (definition == NULL) {
-		if (argc <= 0)
-			usage();
-		strbuf_puts(arg, argv[0]);
-		/*
-		 * Replace with alias value.
-		 */
-		if ((p = alias(strbuf_value(arg))) != NULL) {
-			strbuf_reset(arg);
-			strbuf_puts(arg, p);
-		}
-	}
 	/*
 	 * Get URL.
 	 */
 	{
-		char *argument = strbuf_value(arg);
+		const char *HTMLdir = NULL;
 
+		if (setupdbpath(0) == 0) {
+			cwd = get_cwd();
+			root = get_root();
+			dbpath = get_dbpath();
+			HTMLdir = locate_HTMLdir();
+		} 
 		/*
-		 * Protocol (xxx://...)
+		 * Make a URL of hypertext from the argument.
 		 */
-		if (!definition && isprotocol(argument)) {
-			strbuf_puts(URL, argument);
-		} else {
-			const char *HTMLdir = NULL;
-
-			if (setupdbpath(0) == 0) {
-				cwd = get_cwd();
-				root = get_root();
-				dbpath = get_dbpath();
-				HTMLdir = locate_HTMLdir();
-			} 
-			/*
-			 * Make a URL of hypertext from the argument.
-			 */
-			if (HTMLdir != NULL) {
-				if (definition)
-					getdefinitionURL(definition, HTMLdir, URL);
-				else
-					getURL(argument, HTMLdir, URL);
-			}
-			/*
-			 * Make a file URL.
-			 */
-			else if (test("fr", argument) || test("dr", argument)) {
-				char cwd[MAXPATHLEN];
-				char result[MAXPATHLEN];
-
-				if (vgetcwd(cwd, sizeof(cwd)) == NULL)
-					die("cannot get current directory.");
-				if (rel2abs(argument, cwd, result, sizeof(result)) == NULL)
-					die("rel2abs failed.");
-				strbuf_puts(URL, "file://");
-				strbuf_puts(URL, result);
-			} else {
-				die_with_code(1, "file '%s' not found.", argument);
-			}
-		}
+		if (HTMLdir == NULL)
+			die("HTML directory not found.");
+		if (definition)
+			getdefinitionURL(definition, HTMLdir, URL);
+		else
+			getURL(argv[0], HTMLdir, URL);
 	}
 	if (pflag) {
 		fprintf(stdout, "%s\n", strbuf_value(URL));
@@ -402,8 +286,6 @@ getURL(const char *file, const char *htmldir, STRBUF *URL)
 	char buf[MAXPATHLEN];
 	STRBUF *sb = strbuf_open(0);
 
-	if (!test("f", file) && !test("d", file))
-		die("file '%s' not found.", file);
 	p = normalize(file, get_root_with_slash(), cwd, buf, sizeof(buf));
 	if (p != NULL && convertpath(dbpath, htmldir, p, sb) == 0)
 		makefileurl(strbuf_value(sb), linenumber, URL);
