@@ -23,8 +23,6 @@
 /*
  * This code was derived from /usr/src/usr.bin/fgrep.c in 4.3 Berkeley
  * Software Distribution (4.3BSD) by the University of California.
- * Since GNU grep is very strong, I would like to include its code into
- * global command in near future.
  */
 #ifdef HAVE_CONFIG_H
 #include <config.h>
