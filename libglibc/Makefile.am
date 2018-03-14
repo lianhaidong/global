@@ -15,14 +15,6 @@ noinst_LIBRARIES = libgloglibc.a
 INCS = regex.h getopt.h obstack.h hash-string.h getopt_int.h fnmatch.h
 SRCS = regex.c getopt.c getopt1.c snprintf.c obstack.c hash-string.c fnmatch.c
 
-if USE_SQLITE3
-noinst_HEADERS = $(INCS) sqlite3.h
-libgloglibc_a_SOURCES = $(SRCS) sqlite3.c
-else
 noinst_HEADERS = $(INCS)
 libgloglibc_a_SOURCES = $(SRCS)
-endif
-
 libgloglibc_a_DEPENDENCIES = $(libgloglibc_a_LIBADD)
-
-AM_CPPFLAGS = @AM_CPPFLAGS@ -DSQLITE_THREADSAFE=0 -DSQLITE_OMIT_LOAD_EXTENSION

@@ -25,7 +25,9 @@
 #ifdef STDC_HEADERS
 #include <stdlib.h>
 #endif
-
+#ifdef USE_SQLITE3
+#include "sqlite3.h"
+#endif
 #include "version.h"
 
 const char *copy = "\
@@ -61,6 +63,11 @@ version(const char *name, const int verbose)
 		fprintf(stdout, "%s\n", VERSION);
 	else {
 		fprintf(stdout, "%s (%s) %s\n", name, PACKAGE_NAME, VERSION);
+		fprintf(stdout, "Powered by Berkeley DB 1.85");
+#ifdef USE_SQLITE3
+		fprintf(stdout, " and SQLite3 %s", sqlite3_version);
+#endif
+		fprintf(stdout, ".\n");
 		fprintf(stdout, copy, COPYRIGHT_YEAR);
 	}
 	exit(0);

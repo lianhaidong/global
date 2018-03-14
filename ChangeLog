@@ -19,6 +19,11 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+March 15 2018, Shigio YAMAGUCHI
+
+	Moved sqlite3.c and sqlite3.h from 'libglibc/' to 'libdb/'.
+	It seems to be a more suitable place.
+
 December 12 2017, Shigio YAMAGUCHI
 
 	[plugin-factory/maps2conf.pl]
