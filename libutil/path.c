@@ -163,6 +163,7 @@ canonpath(char *path)
 }
 
 #if (defined(_WIN32) && !defined(__CYGWIN__)) || defined(__DJGPP__)
+#include "checkalloc.h"
 /**
  * realpath: get the complete path
  *
@@ -173,6 +174,8 @@ canonpath(char *path)
 char *
 realpath(const char *in_path, char *out_path)
 {
+	if (out_path == NULL)
+		out_path = check_malloc(MAXPATHLEN);
 #ifdef __DJGPP__
 	/*
 	 * I don't use _fixpath or _truename in LFN because neither guarantee

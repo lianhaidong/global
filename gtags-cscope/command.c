@@ -404,6 +404,13 @@ cscope: cannot open pipe to shell command: %s\n", newpat);
 	    return(NO);
 	}
 	strbuf_clear(sb);
+#if defined(_WIN32) && !defined(__CYGWIN__)
+	/*
+	 * Get around CMD.EXE's weird quoting rules by sticking another
+	 * perceived whitespace in front (also works with Take Command).
+	 */
+	strbuf_putc(sb, ';');
+#endif
 	strbuf_puts(sb, quote_shell(global_command));
 	strbuf_sprintf(sb, " %s %s > %s", globaloption, quote_shell(newpat), temp2);
 	remove(temp2);

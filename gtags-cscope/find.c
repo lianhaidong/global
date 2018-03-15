@@ -28,6 +28,13 @@ common(void)
 {
 	STATIC_STRBUF(sb);
 	strbuf_clear(sb);
+#if defined(_WIN32) && !defined(__CYGWIN__)
+	/*
+	 * Get around CMD.EXE's weird quoting rules by sticking another
+	 * perceived whitespace in front (also works with Take Command).
+	 */
+	strbuf_putc(sb, ';');
+#endif
 	strbuf_sprintf(sb, "%s --encode-path=\" \t\" --result=cscope", quote_shell(global_command));
 	if (caseless == YES)
 		strbuf_puts(sb, " -i");

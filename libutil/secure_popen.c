@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#if !((defined(_WIN32) && !defined(__CYGWIN__)) || defined(__DJGPP__))
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -96,3 +97,4 @@ secure_pclose(FILE *ip)
 
 	return (ppid == -1 ? -1 : status);
 }
+#endif

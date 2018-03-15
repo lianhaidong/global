@@ -38,6 +38,7 @@
 #include "path.h"
 #if defined(_WIN32) || defined(__DJGPP__)
 #include "checkalloc.h"
+#include <ctype.h>
 #define LOCATEFLAG MATCH_AT_FIRST|IGNORE_CASE
 #define PATHCHAR(c) tolower(c)
 #else

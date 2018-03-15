@@ -1097,7 +1097,7 @@ completion_idutils(const char *dbpath, const char *root, const char *prefix)
 	}
 	if (chdir(root) < 0)
 		die("cannot move to '%s' directory.", root);
-#if defined(_WIN32) && !defined(__CYGWIN__)
+#if (defined(_WIN32) && !defined(__CYGWIN__)) || defined(__DJGPP__)
 	strbuf_puts(sb, lid);
 	strbuf_sprintf(sb, " --file=%s/ID", quote_shell(dbpath));
 	strbuf_puts(sb, " --key=token");
@@ -1152,7 +1152,7 @@ completion_idutils(const char *dbpath, const char *root, const char *prefix)
 		*p = '\0';
 		puts(line);
 	}
-#if defined(_WIN32) && !defined(__CYGWIN__)
+#if (defined(_WIN32) && !defined(__CYGWIN__)) || defined(__DJGPP__)
 	if (pclose(ip) != 0)
 		die("terminated abnormally (errno = %d).", errno);
 #else
@@ -1313,7 +1313,7 @@ idutils(const char *pattern, const char *dbpath)
 	 * make lid command line.
 	 * Invoke lid with the --result=grep option to generate grep format.
 	 */
-#if defined(_WIN32) && !defined(__CYGWIN__)
+#if (defined(_WIN32) && !defined(__CYGWIN__)) || defined(__DJGPP__)
 	strbuf_puts(ib, lid);
 	strbuf_sprintf(ib, " --file=%s/ID", quote_shell(dbpath));
 	strbuf_puts(ib, " --separator=newline");
@@ -1411,7 +1411,7 @@ idutils(const char *pattern, const char *dbpath)
 			break;
 		}
 	}
-#if defined(_WIN32) && !defined(__CYGWIN__)
+#if (defined(_WIN32) && !defined(__CYGWIN__)) || defined(__DJGPP__)
 	if (pclose(ip) != 0)
 		die("terminated abnormally (errno = %d).", errno);
 #else
