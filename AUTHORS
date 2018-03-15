@@ -190,7 +190,7 @@ o Pygments plug-in parser by Yoshitaro MAKISE.
 
 o SQLite3 by D. Richard Hipp.
 
-	libglibc/sqlite3.c
-	libglibc/sqlite3.h
+	libdb/sqlite3.c
+	libdb/sqlite3.h
 
 they are considered a separate package, not part of GLOBAL proper.
