@@ -19,7 +19,7 @@ SRCS = bt_close.c bt_conv.c bt_debug.c bt_delete.c bt_get.c bt_open.c bt_overflo
 if USE_SQLITE3
 INCS += sqlite3.h
 SRCS += sqlite3.c
-AM_CPPFLAGS = @AM_CPPFLAGS@ -DSQLITE_THREADSAFE=0 -DSQLITE_OMIT_LOAD_EXTENSION
+AM_CPPFLAGS += -DSQLITE_THREADSAFE=0 -DSQLITE_OMIT_LOAD_EXTENSION
 endif
 
 noinst_HEADERS = $(INCS)
