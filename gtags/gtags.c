@@ -69,11 +69,11 @@ int _CRT_glob = __CRT_GLOB_USE_MINGW__ | __CRT_GLOB_BRACKET_GROUPS__;
 
 static void usage(void);
 static void help(void);
+int printconf(const char *);
 int main(int, char **);
 int incremental(const char *, const char *);
 void updatetags(const char *, const char *, IDSET *, STRBUF *);
 void createtags(const char *, const char *);
-int printconf(const char *);
 
 int cflag;					/**< compact format */
 int iflag;					/**< incremental update */
@@ -119,7 +119,34 @@ help(void)
 	fputs(help_const, stdout);
 	exit(0);
 }
+/**
+ * printconf: print configuration data.
+ *
+ *	@param[in]	name	label of config data
+ *	@return		exit code
+ */
+int
+printconf(const char *name)
+{
+	int num;
+	int exist = 1;
 
+	if (getconfn(name, &num))
+		fprintf(stdout, "%d\n", num);
+	else if (getconfb(name))
+		fprintf(stdout, "1\n");
+	else {
+		STRBUF *sb = strbuf_open(0);
+		if (getconfs(name, sb))
+			fprintf(stdout, "%s\n", strbuf_value(sb));
+		else
+			exist = 0;
+		strbuf_close(sb);
+	}
+	return exist;
+}
+
+static const char *short_options = "cd:f:iIn:oOqvwse";
 static struct option const long_options[] = {
 	/*
 	 * These options have long name and short name.
@@ -234,7 +261,7 @@ main(int argc, char **argv)
 			fprintf(stderr, "gtags-hook failed: %s\n", strbuf_value(sb));
 	}
 	logging_arguments(argc, argv);
-	while ((optchar = getopt_long(argc, argv, "cd:f:iIn:oOqvwse", long_options, &option_index)) != EOF) {
+	while ((optchar = getopt_long(argc, argv, short_options, long_options, &option_index)) != EOF) {
 		switch (optchar) {
 		case 0:
 			/* already flags set */
@@ -570,7 +597,6 @@ main(int argc, char **argv)
 	closeconf();
 	strbuf_close(sb);
 	print_statistics(statistics);
-
 	return 0;
 }
 /**
@@ -1019,30 +1045,4 @@ createtags(const char *dbpath, const char *root)
 		statistics_time_end(tim);
 	}
 	strbuf_close(sb);
-}
-/**
- * printconf: print configuration data.
- *
- *	@param[in]	name	label of config data
- *	@return		exit code
- */
-int
-printconf(const char *name)
-{
-	int num;
-	int exist = 1;
-
-	if (getconfn(name, &num))
-		fprintf(stdout, "%d\n", num);
-	else if (getconfb(name))
-		fprintf(stdout, "1\n");
-	else {
-		STRBUF *sb = strbuf_open(0);
-		if (getconfs(name, sb))
-			fprintf(stdout, "%s\n", strbuf_value(sb));
-		else
-			exist = 0;
-		strbuf_close(sb);
-	}
-	return exist;
 }

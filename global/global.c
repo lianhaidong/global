@@ -187,6 +187,7 @@ help(void)
 #define MATCH_PART_LAST  2
 #define MATCH_PART_ALL   3
 
+static const char *short_options = "acde:EifFgGIlL:MnNoOpPqrsS:tTuvVx";
 static struct option const long_options[] = {
 	{"absolute", no_argument, NULL, 'a'},
 	{"completion", no_argument, NULL, 'c'},
@@ -415,7 +416,7 @@ main(int argc, char **argv)
 	openconf(root);
 	setenv_from_config();
 	logging_arguments(argc, argv);
-	while ((optchar = getopt_long(argc, argv, "acde:EifFgGIlL:MnNoOpPqrsS:tTuvVx", long_options, &option_index)) != EOF) {
+	while ((optchar = getopt_long(argc, argv, short_options, long_options, &option_index)) != EOF) {
 		switch (optchar) {
 		case 0:
 			break;

@@ -253,6 +253,7 @@ const char *include_file_suffixes = DEFAULTINCLUDEFILESUFFIXES;	/**< include_fil
 static const char *langmap = DEFAULTLANGMAP;	/**< langmap */
 int grtags_is_empty = 0;						/**< grtags_is_empty */
 
+static const char *short_options = "acd:DfFghIm:nNoqst:Tvwx";
 static struct option const long_options[] = {
 	/*
 	 * These options have long name and short name.
@@ -1108,7 +1109,7 @@ main(int argc, char **argv)
 		if (env && *env)
 			argv = prepend_options(&argc, argv, env);
 	}
-	while ((optchar = getopt_long(argc, argv, "acd:DfFghIm:nNoqst:Tvwx", long_options, &option_index)) != EOF) {
+	while ((optchar = getopt_long(argc, argv, short_options, long_options, &option_index)) != EOF) {
 		switch (optchar) {
 		case 0:
 			/* already flags set */
