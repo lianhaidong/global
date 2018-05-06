@@ -290,6 +290,7 @@ AC_ARG_WITH(exuberant-ctags,
 	fi
 ],
 [
+	withval=
 	for d in `echo $PATH | sed -e 's/^:/.:/' -e 's/::/:.:/g' -e 's/:$/:./' -e 's/:/ /g'`
 	do
 		if test -x "$d/ctags" && (sh -c "'$d/ctags' --version" | grep "Exuberant Ctags") > /dev/null 2>&1; then
