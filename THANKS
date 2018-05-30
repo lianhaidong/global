@@ -105,6 +105,7 @@ Leo Liu			idea about the --path-style=shorter option.
 			bug report about the combination of -v and -g option.
 			bug report about the --from-here with a path includes symbolic links.
 			Besides very much bug reports and suggestions.
+Lewis Lin		A patch to avoid encountering KeyError exception in pygments_parser.py.
 Marc Herbert		bug fix of libutil/xargs.c.
 Marcello Nuccio		bug report about globash.rc.
 Marco Corvi		advice about Digital Unix 4.0C.

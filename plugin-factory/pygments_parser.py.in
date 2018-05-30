@@ -111,7 +111,7 @@ class PygmentsParser:
 
     def get_lexer_by_langmap(self, path):
         ext = os.path.splitext(path)[1]
-        lang = self.langmap[ext]
+        lang = self.langmap.get(ext, None)
         if lang:
             name = lang.lower()
             if name in LANGUAGE_ALIASES:
