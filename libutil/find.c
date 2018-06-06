@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2005, 2006, 2008,
- *	2009, 2011, 2012, 2014, 2015, 2016, 2017
+ *	2009, 2011, 2012, 2014, 2015, 2016, 2017, 2018
  * Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -99,7 +99,6 @@ static int find_mode;
 static int find_eof;
 #define FIND_OPEN	1
 #define FILELIST_OPEN	2
-
 extern int qflag;
 extern int debug;
 static const int allow_blank = 1;
@@ -107,6 +106,7 @@ static const int check_looplink = 1;
 static int accept_dotfiles = 0;
 static int skip_unreadable = 0;
 static int find_explain = 0;
+static int skip_symlink = 0;
 /**
  * get the reason for skipping
  *
@@ -615,6 +615,24 @@ getdirs(const char *dir, STRBUF *sb)
 			warning("cannot read '%s'. ignored.", trimpath(dp->d_name));
 			continue;
 		}
+		if (skip_symlink > 0) {
+			struct stat st2;
+
+			if (lstat(makepath(dir, dp->d_name, NULL), &st2) < 0) {
+				warning("cannot lstat '%s'. ignored.", trimpath(dp->d_name));
+				continue;
+			}
+			if (S_ISLNK(st2.st_mode)) {
+				if ((skip_symlink & SKIP_SYMLINK_FOR_DIR) && S_ISDIR(st.st_mode) ||
+				    (skip_symlink & SKIP_SYMLINK_FOR_FILE) && S_ISREG(st.st_mode))
+				{
+					if (find_explain)
+						fprintf(stderr, " - Symbolik link '%s' is skipped.\n",
+							trimpath(makepath(dir, dp->d_name, NULL)));
+					continue;
+				}
+			}
+		}
 		if (S_ISDIR(st.st_mode))
 			strbuf_putc(sb, 'd');
 		else if (S_ISREG(st.st_mode))
@@ -642,6 +660,19 @@ void
 set_skip_unreadable(void)
 {
 	skip_unreadable = 1;
+}
+/**
+ * set_skip_symlink: set rules for symbolic links.
+ *
+ *	mode	0: accept symbolink link
+ *		SKIP_SYMLINK_FOR_DIR:  skip symbolic links for a dir
+ *		SKIP_SYMLINK_FOR_FILE: skip symbolic links for a file
+ *		SKIP_SYMLINK_FOR_ALL:  skip symbolic links
+ */
+void
+set_skip_symlink(mode)
+{
+	skip_symlink = mode;
 }
 /**
  * find_open: start iterator without GPATH.

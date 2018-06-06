@@ -21,8 +21,13 @@
 #ifndef _FIND_H_
 #define _FIND_H_
 
+#define SKIP_SYMLINK_FOR_DIR	1
+#define SKIP_SYMLINK_FOR_FILE	2
+#define SKIP_SYMLINK_FOR_ALL	3
+
 void set_accept_dotfiles(void);
 void set_skip_unreadable(void);
+void set_skip_symlink(int);
 int skipthisfile(const char *);
 int issourcefile(const char *);
 void find_open(const char *, int);

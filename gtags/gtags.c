@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005, 2006, 2008,
- *	2009, 2010, 2012, 2014, 2015, 2016
+ *	2009, 2010, 2012, 2014, 2015, 2016, 2018
  *	Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
@@ -86,6 +86,7 @@ int show_version;
 int show_help;
 int show_config;
 int skip_unreadable;
+int skip_symlink;
 int accept_dotfiles;
 char *gtagsconf;
 char *gtagslabel;
@@ -177,6 +178,7 @@ static struct option const long_options[] = {
 #define OPT_SINGLE_UPDATE	132
 #define OPT_ACCEPT_DOTFILES	133
 #define OPT_SKIP_UNREADABLE	134
+#define OPT_GTAGSSKIP_SYMLINK	135
 	/* flag value */
 	{"accept-dotfiles", no_argument, NULL, OPT_ACCEPT_DOTFILES},
 	{"debug", no_argument, &debug, 1},
@@ -193,6 +195,7 @@ static struct option const long_options[] = {
 	{"config", optional_argument, NULL, OPT_CONFIG},
 	{"gtagsconf", required_argument, NULL, OPT_GTAGSCONF},
 	{"gtagslabel", required_argument, NULL, OPT_GTAGSLABEL},
+	{"skip-symlink", optional_argument, NULL, OPT_GTAGSSKIP_SYMLINK},
 	{"path", required_argument, NULL, OPT_PATH},
 	{"single-update", required_argument, NULL, OPT_SINGLE_UPDATE},
 	{ 0 }
@@ -285,6 +288,19 @@ main(int argc, char **argv)
 		case OPT_SKIP_UNREADABLE:
 			skip_unreadable = 1;
 			break;
+		case OPT_GTAGSSKIP_SYMLINK:
+			skip_symlink = SKIP_SYMLINK_FOR_ALL;
+			if (optarg) {
+				if (!strcmp(optarg, "f"))
+					skip_symlink = SKIP_SYMLINK_FOR_FILE;
+				else if (!strcmp(optarg, "d"))
+					skip_symlink = SKIP_SYMLINK_FOR_DIR;
+				else if (!strcmp(optarg, "a"))
+					skip_symlink = SKIP_SYMLINK_FOR_ALL;
+				else
+					die("--skip-symlink: %s: unknown type.", optarg);
+			}
+			break;
 		case 'c':
 			cflag++;
 			break;
@@ -323,6 +339,8 @@ main(int argc, char **argv)
 			break;
 		}
 	}
+	if (skip_symlink)
+		set_skip_symlink(skip_symlink);
 	if (qflag) {
 		vflag = 0;
 		setquiet();
