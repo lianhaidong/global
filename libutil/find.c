@@ -664,13 +664,13 @@ set_skip_unreadable(void)
 /**
  * set_skip_symlink: set rules for symbolic links.
  *
- *	mode	0: accept symbolink link
+ *	mode	0: accept symbolic link
  *		SKIP_SYMLINK_FOR_DIR:  skip symbolic links for a dir
  *		SKIP_SYMLINK_FOR_FILE: skip symbolic links for a file
  *		SKIP_SYMLINK_FOR_ALL:  skip symbolic links
  */
 void
-set_skip_symlink(mode)
+set_skip_symlink(int mode)
 {
 	skip_symlink = mode;
 }
