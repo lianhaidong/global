@@ -623,8 +623,8 @@ getdirs(const char *dir, STRBUF *sb)
 				continue;
 			}
 			if (S_ISLNK(st2.st_mode)) {
-				if ((skip_symlink & SKIP_SYMLINK_FOR_DIR) && S_ISDIR(st.st_mode) ||
-				    (skip_symlink & SKIP_SYMLINK_FOR_FILE) && S_ISREG(st.st_mode))
+				if (((skip_symlink & SKIP_SYMLINK_FOR_DIR) && S_ISDIR(st.st_mode)) ||
+				    ((skip_symlink & SKIP_SYMLINK_FOR_FILE) && S_ISREG(st.st_mode)))
 				{
 					if (find_explain)
 						fprintf(stderr, " - Symbolik link '%s' is skipped.\n",
