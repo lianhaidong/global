@@ -80,10 +80,12 @@
 		Update tag files incrementally.
 		It's better to use @xref{global,1} with the @option{-u} command.
 	@item{@option{-O}, @option{--objdir}}
-		Use BSD-style objdir as the location of tag files.
-		If @file{$MAKEOBJDIRPREFIX} directory exists, @name{gtags} creates
-		@file{$MAKEOBJDIRPREFIX/<current directory>} directory and makes
-		tag files in it.
+		Use BSD-style obj directory as the location of tag files.
+		If @var{GTAGSOBJDIRPREFIX} is set and @file{$GTAGSOBJDIRPREFIX} directory exists,
+		@name{gtags} creates @file{$GTAGSOBJDIRPREFIX/<current directory>} directory
+		and makes tag files in it.
+		Though you can use @var{MAKEOBJDIRPREFIX} instead of @var{GTAGSOBJDIRPREFIX},
+		it is deprecated.
 		If @arg{dbpath} is specified, this option is ignored.
 	@item{@option{--single-update} @arg{file}}
 		Update tag files for a single file.
@@ -164,12 +166,16 @@
 		real whitespace is represented as '%20'. This is read only.
 	@item{@var{GTAGS_OPTIONS}}
 		The value of this variable is inserted in the head of arguments.
-	@item{@var{MAKEOBJDIR}}
-		If this variable is set, @file{$MAKEOBJDIR} is used as the name
-		of BSD-style objdir. The default is @file{obj}.
-	@item{@var{MAKEOBJDIRPREFIX}}
-		If this variable is set, @file{$MAKEOBJDIRPREFIX} is used as the prefix
-		of BSD-style objdir. The default is @file{/usr/obj}.
+	@item{@var{GTAGSOBJDIR}}
+		If this variable is set, it is used as the name of BSD-style objdir.
+		The default is @file{obj}.
+		Though you can use @var{MAKEOBJDIR} instead of @var{GTAGSOBJDIR},
+		it is deprecated.
+	@item{@var{GTAGSOBJDIRPREFIX}}
+		If this variable is set, it is used as the prefix of BSD-style objdir.
+		The default is @file{/usr/obj}.
+		Though you can use @var{MAKEOBJDIRPREFIX} instead of @var{GTAGSOBJDIRPREFIX},
+		it is deprecated.
 	@item{@var{TMPDIR}}
 		The location used to stored temporary files. The default is @file{/tmp}.
 	@end_itemize
