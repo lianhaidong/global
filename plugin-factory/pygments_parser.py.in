@@ -111,7 +111,10 @@ class PygmentsParser:
 
     def get_lexer_by_langmap(self, path):
         ext = os.path.splitext(path)[1]
-        lang = self.langmap.get(ext, None)
+        if sys.platform == 'win32':
+            lang = self.langmap.get(ext.lower(), None)
+        else:
+            lang = self.langmap.get(ext, None)
         if lang:
             name = lang.lower()
             if name in LANGUAGE_ALIASES:
@@ -189,10 +192,10 @@ def parse_langmap(string):
         if not lang[0].islower():  # skip lowercase, that is for builtin parser
             for ext in exts.split('.'):
                 if ext:
-                    langmap['.' + ext] = lang
                     if sys.platform == 'win32':
-                        langmap['.' + ext.upper()] = lang
                         langmap['.' + ext.lower()] = lang
+                    else:
+                        langmap['.' + ext] = lang
     return langmap
 
 def handle_requests(langmap, options):
