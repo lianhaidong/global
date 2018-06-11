@@ -365,9 +365,12 @@ findcalledby(char *pattern)
 	/*
 	 * <symbol>:<line number>:<path>
 	 */
-	strbuf_puts(sb, "--from-here=");
 	for (p = pattern; *p && *p != ':'; p++)
-		strbuf_putc(sb, *p);
+		;
+	*p++ = '\0';
+	strbuf_puts(sb, "--from-here=");
+	strbuf_puts(sb, p);
+
 	secure_open_args();
 	common();
 	secure_add_args(strbuf_value(sb));
