@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011 Tama Communications Corporation
+ * Copyright (c) 2011, 2018 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -23,6 +23,10 @@
 
 #define FAILED "global command failed"
 
+#if defined(_WIN32) || defined(__DJGPP__)
+/*
+ * for Windows
+ */
 static char *
 common(void)
 {
@@ -250,3 +254,284 @@ findassign(char *pattern)
 	/* Since this function has not yet been implemented, it always returns an error. */
 	return FAILED;
 }
+#else /* UNIX */
+/*
+ * for UNIX
+ */
+#include "rewrite.h"
+#include "secure_popen.h"
+
+static void
+common(void)
+{
+	secure_add_args(global_command);
+	secure_add_args("--encode-path= \t");
+	secure_add_args("--result=cscope");
+	if (caseless == YES)
+		secure_add_args("-i");
+	if (absolutepath == YES)
+		secure_add_args("-a");
+}
+void
+writeto(FILE *ip, char *outfile, int append) {
+	FILE *op = fopen(outfile, append ? "a" : "w");
+	STRBUF *sb = strbuf_open(0);
+	const char *line;
+
+	if (op == NULL)
+		return;
+	while ((line = strbuf_fgets(sb, ip, 0)) != NULL) {
+		fputs(line, op);
+	}
+	strbuf_close(sb);
+	fclose(op);
+}
+/*
+ * [display.c]
+ *
+ * {"Find this", "C symbol",                       findsymbol},
+ */
+char *
+findsymbol(char *pattern)
+{
+	char **argv;
+	FILE *ip;
+
+	secure_open_args();
+	common();
+	secure_add_args("-d");
+	secure_add_args(pattern);
+	argv = secure_close_args();
+	if (!(ip = secure_popen(global_command, "r", argv)))
+		return FAILED;
+	writeto(ip, temp1, 0);
+	if (secure_pclose(ip) != 0)
+		return FAILED;
+
+	secure_open_args();
+	common();
+	secure_add_args("-rs");
+	secure_add_args(pattern);
+	argv = secure_close_args();
+	if (!(ip = secure_popen(global_command, "r", argv)))
+		return FAILED;
+	writeto(ip, temp1, 1);
+	if (secure_pclose(ip) != 0)
+		return FAILED;
+	return NULL;
+}
+
+/*
+ * [display.c]
+ *
+ * {"Find this", "global definition",              finddef},
+ */
+char *
+finddef(char *pattern)
+{
+	char **argv;
+	FILE *ip;
+
+	secure_open_args();
+	common();
+	secure_add_args("-d");
+	secure_add_args(pattern);
+	argv = secure_close_args();
+	if (!(ip = secure_popen(global_command, "r", argv)))
+		return FAILED;
+	writeto(ip, temp1, 0);
+	if (secure_pclose(ip) != 0)
+		return FAILED;
+	return NULL;
+}
+
+/*
+ * [display.c]
+ *
+ * {"Find", "functions called by this function (N/A)",     findcalledby},
+ *
+ * This facility is not implemented, because GLOBAL doesn't have such a facility.
+ * Instead, this command is replaced with a more useful one, that is, context jump.
+ * It is available in the line mode (with the -l option) of gtags-cscope.
+ */
+char *
+findcalledby(char *pattern)
+{
+	char **argv;
+	FILE *ip;
+	STRBUF *sb = strbuf_open(0);
+	char *p;
+
+	/*
+	 * <symbol>:<line number>:<path>
+	 */
+	strbuf_puts(sb, "--from-here=");
+	for (p = pattern; *p && *p != ':'; p++)
+		strbuf_putc(sb, *p);
+	secure_open_args();
+	common();
+	secure_add_args(strbuf_value(sb));
+	secure_add_args(pattern);
+	argv = secure_close_args();
+	strbuf_close(sb);
+	if (!(ip = secure_popen(global_command, "r", argv)))
+		return FAILED;
+	writeto(ip, temp1, 0);
+	if (secure_pclose(ip) != 0)
+		return FAILED;
+	return NULL;
+}
+
+/*
+ * [display.c]
+ *
+ * {"Find", "functions calling this function",     findcalling},
+ */
+char *
+findcalling(char *pattern)
+{
+	char **argv;
+	FILE *ip;
+
+	secure_open_args();
+	common();
+	secure_add_args("-r");
+	secure_add_args(pattern);
+	argv = secure_close_args();
+	if (!(ip = secure_popen(global_command, "r", argv)))
+		return FAILED;
+	writeto(ip, temp1, 0);
+	if (secure_pclose(ip) != 0)
+		return FAILED;
+	return NULL;
+}
+
+/*
+ * [display.c]
+ *
+ * {"Find this", "text string",                    findstring},
+ */
+char *
+findstring(char *pattern)
+{
+	char **argv;
+	FILE *ip;
+
+	secure_open_args();
+	common();
+	secure_add_args("-g");
+	secure_add_args("--literal");
+	secure_add_args(pattern);
+	argv = secure_close_args();
+	if (!(ip = secure_popen(global_command, "r", argv)))
+		return FAILED;
+	writeto(ip, temp1, 0);
+	if (secure_pclose(ip) != 0)
+		return FAILED;
+	return NULL;
+}
+
+/*
+ * [display.c]
+ *
+ * {"Change this", "text string",                  findstring},
+ */
+/*
+ * [display.c]
+ *
+        {"Find this", "egrep pattern",                  findregexp},
+ */
+char *
+findregexp(char *pattern)
+{
+	char **argv;
+	FILE *ip;
+
+	secure_open_args();
+	common();
+	secure_add_args("-g");
+	secure_add_args(pattern);
+	argv = secure_close_args();
+	if (!(ip = secure_popen(global_command, "r", argv)))
+		return FAILED;
+	writeto(ip, temp1, 0);
+	if (secure_pclose(ip) != 0)
+		return FAILED;
+	return NULL;
+}
+
+/*
+ * [display.c]
+ *
+ * {"Find this", "file",                           findfile},
+ */
+char *
+findfile(char *pattern)
+{
+	char **argv;
+	FILE *ip;
+
+	secure_open_args();
+	common();
+	secure_add_args("-P");
+	secure_add_args(pattern);
+	argv = secure_close_args();
+	if (!(ip = secure_popen(global_command, "r", argv)))
+		return FAILED;
+	writeto(ip, temp1, 0);
+	if (secure_pclose(ip) != 0)
+		return FAILED;
+	return NULL;
+}
+
+/*
+ * [display.c]
+ *
+ * {"Find", "files #including this file",          findinclude},
+ */
+char *
+findinclude(char *pattern)
+{
+	char **argv;
+	FILE *ip, *op;
+	REWRITE *rw;
+	const char *line;
+	STRBUF *sb = strbuf_open(0);
+
+	secure_open_args();
+	common();
+	secure_add_args("-g");
+	strbuf_puts(sb, "^[ \t]*#[ \t]*include[ \t].*[\"</]");
+	strbuf_puts(sb, quote_string(pattern));
+	strbuf_puts(sb, "[\">]");
+	secure_add_args(strbuf_value(sb));
+	argv = secure_close_args();
+	if (!(ip = secure_popen(global_command, "r", argv)))
+		return FAILED;
+	op = fopen(temp1, "w");
+	if (op == NULL)
+		return FAILED;
+	rw = rewrite_open("<unknown>", "<global>", 0);
+	while ((line = strbuf_fgets(sb, ip, 0)) != NULL) {
+		line = rewrite_string(rw, line, 0);
+		fputs(line, op);
+	}
+	rewrite_close(rw);
+	strbuf_close(sb);
+	fclose(op);
+	if (secure_pclose(ip) != 0)
+		return FAILED;
+	return NULL;
+}
+/*
+ * [display.c]
+ *
+ * {"Find", "assignments to this symbol (N/A)",    findassign},
+ */
+char *
+findassign(char *pattern)
+{
+	/* Since this function has not yet been implemented, it always returns an error. */
+	return FAILED;
+}
+#endif

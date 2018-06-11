@@ -23,7 +23,10 @@
 
 #include <stdio.h>
 
-FILE *secure_popen(const char *, const char *, char *const[]);
+void secure_open_args(void);
+void secure_add_args(char *);
+char **secure_close_args(void);
+FILE *secure_popen(const char *, const char *, char **);
 int secure_pclose(FILE *);
 
 #endif /* ! _POPEN_H */

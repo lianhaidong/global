@@ -19,6 +19,12 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+June 11 2018, Shigio YAMAGUCHI
+
+	[gtags-cscope/find.c]
+	Replaced the system(3) function with the secure_popen utilities (libutil/secure_popen.c)
+	for security and readability.
+
 March 15 2018, Shigio YAMAGUCHI
 
 	Moved sqlite3.c and sqlite3.h from 'libglibc/' to 'libdb/'.
