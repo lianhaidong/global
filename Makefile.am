@@ -15,7 +15,7 @@ if !USE_DB185_COMPAT
         SUBDIRS += libdb
 endif
 SUBDIRS += global gozilla gtags htags htags-refkit htags-server globash \
-	doc icons jquery jquery/images script
+	doc script
 if USE_GTAGSCSCOPE
         SUBDIRS += gtags-cscope
 endif

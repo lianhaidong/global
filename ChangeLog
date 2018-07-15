@@ -19,6 +19,12 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+July 15 2018, Shigio YAMAGUCHI
+
+	[icons, jquery]
+	Moved 'icons/' and 'jquery/' from the root directory of the project to 'htags/'.
+	It seems to be a more suitable place.
+
 June 11 2018, Shigio YAMAGUCHI
 
 	[gtags-cscope/find.c]

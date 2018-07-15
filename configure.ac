@@ -405,6 +405,9 @@ AC_CONFIG_FILES([Makefile
 	libutil/Makefile
 	gtags/Makefile
 	htags/Makefile
+	htags/icons/Makefile
+	htags/jquery/Makefile
+	htags/jquery/images/Makefile
 	libdb/Makefile
 	global/Makefile
 	gozilla/Makefile
@@ -414,9 +417,6 @@ AC_CONFIG_FILES([Makefile
 	htags-server/Makefile
 	libglibc/Makefile
 	doc/Makefile
-	icons/Makefile
-	jquery/Makefile
-	jquery/images/Makefile
 	script/Makefile
 	libparser/Makefile
 	plugin-factory/Makefile
