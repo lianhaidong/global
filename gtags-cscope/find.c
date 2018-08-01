@@ -20,6 +20,7 @@
 #include "char.h"
 #include "gparam.h"
 #include "strbuf.h"
+#include "regex.h"
 
 #define FAILED "global command failed"
 
@@ -64,20 +65,19 @@ mysystem(char *function, char *command)
 char *
 findsymbol(char *pattern)
 {
-	STRBUF  *sb = strbuf_open(0);
 	int status;
+	STATIC_STRBUF(sb);
+	strbuf_clear(sb);
+
 	strbuf_puts(sb, common());
 	strbuf_sprintf(sb, " -d %s > %s", quote_shell(pattern), temp1);
 	status = mysystem("findsymbol_1", strbuf_value(sb));
-	if (status != 0) {
-		strbuf_close(sb);
+	if (status != 0)
 		return FAILED;
-	}
 	strbuf_reset(sb);
 	strbuf_puts(sb, common());
 	strbuf_sprintf(sb, " -rs %s >> %s", quote_shell(pattern), temp1);
 	status = mysystem("findsymbol_2", strbuf_value(sb));
-	strbuf_close(sb);
 	if (status != 0)
 		return FAILED;
 	return NULL;
@@ -91,12 +91,13 @@ findsymbol(char *pattern)
 char *
 finddef(char *pattern)
 {
-	STRBUF  *sb = strbuf_open(0);
 	int status;
+	STATIC_STRBUF(sb);
+	strbuf_clear(sb);
+
 	strbuf_puts(sb, common());
 	strbuf_sprintf(sb, " -d %s > %s", quote_shell(pattern), temp1);
 	status = mysystem("finddef", strbuf_value(sb));
-	strbuf_close(sb);
 	if (status != 0)
 		return FAILED;
 	return NULL;
@@ -114,9 +115,10 @@ finddef(char *pattern)
 char *
 findcalledby(char *pattern)
 {
-	STRBUF  *sb = strbuf_open(0);
 	int status;
 	char *p;
+	STATIC_STRBUF(sb);
+	strbuf_clear(sb);
 
 	/*
 	 * <symbol>:<line number>:<path>
@@ -127,7 +129,6 @@ findcalledby(char *pattern)
 	strbuf_puts(sb, common());
 	strbuf_sprintf(sb, " --from-here=\"%s\" %s > %s", p, quote_shell(pattern), temp1);
 	status = mysystem("findcalledby", strbuf_value(sb));
-	strbuf_close(sb);
 	if (status != 0)
 		return FAILED;
 	return NULL;
@@ -141,13 +142,13 @@ findcalledby(char *pattern)
 char *
 findcalling(char *pattern)
 {
-	STRBUF  *sb = strbuf_open(0);
 	int status;
+	STATIC_STRBUF(sb);
+	strbuf_clear(sb);
 
 	strbuf_puts(sb, common());
 	strbuf_sprintf(sb, " -r %s > %s", quote_shell(pattern), temp1);
 	status = mysystem("findcalling", strbuf_value(sb));
-        strbuf_close(sb);
         if (status != 0)
                 return FAILED;
         return NULL;
@@ -161,13 +162,13 @@ findcalling(char *pattern)
 char *
 findstring(char *pattern)
 {
-	STRBUF  *sb = strbuf_open(0);
 	int status;
+	STATIC_STRBUF(sb);
+	strbuf_clear(sb);
 
 	strbuf_puts(sb, common());
 	strbuf_sprintf(sb, " -g --literal %s > %s", quote_shell(pattern), temp1);
 	status = mysystem("findstring", strbuf_value(sb));
-        strbuf_close(sb);
         if (status != 0)
                 return FAILED;
         return NULL;
@@ -186,13 +187,13 @@ findstring(char *pattern)
 char *
 findregexp(char *pattern)
 {
-	STRBUF  *sb = strbuf_open(0);
         int status;
+	STATIC_STRBUF(sb);
+	strbuf_clear(sb);
 
 	strbuf_puts(sb, common());
 	strbuf_sprintf(sb, " -g %s > %s", quote_shell(pattern), temp1);
 	status = mysystem("findregexp", strbuf_value(sb));
-        strbuf_close(sb);
         if (status != 0)
                 return FAILED;
         return NULL;
@@ -206,13 +207,13 @@ findregexp(char *pattern)
 char *
 findfile(char *pattern)
 {
-	STRBUF  *sb = strbuf_open(0);
 	int status;
+	STATIC_STRBUF(sb);
+	strbuf_clear(sb);
 
 	strbuf_puts(sb, common());
 	strbuf_sprintf(sb, " -P %s > %s", quote_shell(pattern), temp1);
 	status = mysystem("findfile", strbuf_value(sb));
-        strbuf_close(sb);
         if (status != 0)
                 return FAILED;
         return NULL;
@@ -226,8 +227,9 @@ findfile(char *pattern)
 char *
 findinclude(char *pattern)
 {
-	STRBUF  *sb = strbuf_open(0);
 	int status;
+	STATIC_STRBUF(sb);
+	strbuf_clear(sb);
 #if defined(_WIN32) && !defined(__CYGWIN__)
 #define INCLUDE "\"^[ \t]*#[ \t]*include[ \t].*[<\\\"/\\]%s[\\\">]\""
 #elif defined(__DJGPP__)
@@ -238,7 +240,6 @@ findinclude(char *pattern)
 	strbuf_puts(sb, common());
 	strbuf_sprintf(sb, " -g " INCLUDE " | sed \"s/<unknown>/<global>/\" > %s", quote_string(pattern), temp1);
 	status = mysystem("findinclude", strbuf_value(sb));
-        strbuf_close(sb);
         if (status != 0)
                 return FAILED;
         return NULL;
@@ -275,15 +276,15 @@ common(void)
 void
 writeto(FILE *ip, char *outfile, int append) {
 	FILE *op = fopen(outfile, append ? "a" : "w");
-	STRBUF *sb = strbuf_open(0);
 	const char *line;
+	STATIC_STRBUF(sb);
+	strbuf_clear(sb);
 
 	if (op == NULL)
 		return;
 	while ((line = strbuf_fgets(sb, ip, 0)) != NULL) {
 		fputs(line, op);
 	}
-	strbuf_close(sb);
 	fclose(op);
 }
 /*
@@ -359,8 +360,9 @@ findcalledby(char *pattern)
 {
 	char **argv;
 	FILE *ip;
-	STRBUF *sb = strbuf_open(0);
 	char *p;
+	STATIC_STRBUF(sb);
+	strbuf_clear(sb);
 
 	/*
 	 * <symbol>:<line number>:<path>
@@ -376,7 +378,6 @@ findcalledby(char *pattern)
 	secure_add_args(strbuf_value(sb));
 	secure_add_args(pattern);
 	argv = secure_close_args();
-	strbuf_close(sb);
 	if (!(ip = secure_popen(global_command, "r", argv)))
 		return FAILED;
 	writeto(ip, temp1, 0);
@@ -499,7 +500,8 @@ findinclude(char *pattern)
 	FILE *ip, *op;
 	REWRITE *rw;
 	const char *line;
-	STRBUF *sb = strbuf_open(0);
+	STATIC_STRBUF(sb);
+	strbuf_clear(sb);
 
 	secure_open_args();
 	common();
@@ -520,7 +522,6 @@ findinclude(char *pattern)
 		fputs(line, op);
 	}
 	rewrite_close(rw);
-	strbuf_close(sb);
 	fclose(op);
 	if (secure_pclose(ip) != 0)
 		return FAILED;
@@ -534,7 +535,41 @@ findinclude(char *pattern)
 char *
 findassign(char *pattern)
 {
-	/* Since this function has not yet been implemented, it always returns an error. */
-	return FAILED;
+	regex_t reg;
+	const char *line;
+	char **argv;
+	FILE *ip, *op;
+	char *opts[] = {"-d", "-rs", NULL};
+	STATIC_STRBUF(sb);
+	strbuf_clear(sb);
+
+	/*
+	 * For the time being I will support only C-colleagues.
+	 * Lisp, Cobol and etc are out of support.
+	 */
+	strbuf_sprintf(sb, "\\b%s\\b[ \t]*=[^=]", pattern);
+	if (regcomp(&reg, strbuf_value(sb), 0) != 0)
+		return FAILED;
+
+	op = fopen(temp1, "w");
+	if (op == NULL)
+		return FAILED;
+	for (int i = 0; opts[i] != NULL; i++) {
+		secure_open_args();
+		common();
+		secure_add_args(opts[i]);
+		secure_add_args(pattern);
+		argv = secure_close_args();
+		if (!(ip = secure_popen(global_command, "r", argv)))
+			return FAILED;
+		while ((line = strbuf_fgets(sb, ip, 0)) != NULL) {
+			if (regexec(&reg, line, 0, 0, 0) == 0)
+				fputs(line, op);
+		}
+		if (secure_pclose(ip) != 0)
+			return FAILED;
+	}
+	fclose(op);
+	return NULL;
 }
 #endif

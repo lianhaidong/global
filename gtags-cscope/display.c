@@ -114,7 +114,7 @@ static	struct	{		/**< text of input fields */
 	char	*text1;
 	char	*text2;
 	FP	findfcn;
-} fields[FIELDS + 1] = {	/* samuel has a search that is not part of the cscope display */
+} fields[FIELDS] = {
 	{"Find this", "symbol",				findsymbol},
 	{"Find this", "global definition",		finddef},
 	{"Find", "functions called by this function (N/A)",	findcalledby},
@@ -124,7 +124,7 @@ static	struct	{		/**< text of input fields */
 	{"Find this", "egrep pattern",			findregexp},
 	{"Find this", "file",				findfile},
 	{"Find", "files #including this file",		findinclude},
-	{"Find", "assignments to this symbol (N/A)",	findassign},
+	{"Find", "assignments to this symbol",		findassign},
 };
 
 /* Internal prototypes: */

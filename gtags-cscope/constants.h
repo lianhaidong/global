@@ -141,7 +141,8 @@
 #define	REGEXP		6
 #define FILENAME	7
 #define INCLUDES	8
-#define	FIELDS		9
+#define ASSIGN		9
+#define	FIELDS		10
 
 #if (BSD || V9) && !__NetBSD__ && !__FreeBSD__
 	/** no terminfo curses */
