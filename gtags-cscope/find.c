@@ -530,7 +530,7 @@ findinclude(char *pattern)
 /*
  * [display.c]
  *
- * {"Find", "assignments to this symbol (N/A)",    findassign},
+ * {"Find", "assignments to this symbol",    findassign},
  */
 char *
 findassign(char *pattern)
