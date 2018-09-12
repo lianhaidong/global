@@ -193,6 +193,7 @@ Y. Yoshinaga		advice about makefile for Debian GNU/Linux.
 Yun sheng		bug report about global -u, gtags.vim and gtags-cscope.vim.
 Yushi Oka		bug report about config path and improvements of gtags-mode
 			(gtags-select-buffer-single, gtags-ignore-case).
+赵映洁			bug report about pygments_parser.py.in.
 ---------------------------------------------------------------------------
 
 If you cannot find your contributions on this list or you find mistakes,
