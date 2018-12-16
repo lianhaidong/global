@@ -117,7 +117,7 @@
 
 	@begin_verbatim
 	Find this symbol:
-	Find this function definition:
+	Find this global definition:
 	Find functions called by this function (N/A):
 	Find references of this function:
 	Find this text string:
