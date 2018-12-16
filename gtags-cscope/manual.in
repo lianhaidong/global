@@ -125,6 +125,7 @@
 	Find this egrep pattern:
 	Find this file:
 	Find files #including this file:
+	Find assignments to this symbol:
 	@end_verbatim
 
 	Press the <Up> or <Down> keys repeatedly to move to the desired input

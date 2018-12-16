@@ -116,7 +116,7 @@ static	struct	{		/**< text of input fields */
 	FP	findfcn;
 } fields[FIELDS] = {
 	{"Find this", "symbol",				findsymbol},
-	{"Find this", "global definition",		finddef},
+	{"Find this", "function definition",		finddef},
 	{"Find", "functions called by this function (N/A)",	findcalledby},
 	{"Find", "references of this function",	findcalling},
 	{"Find this", "text string",			findstring},
