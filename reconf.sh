@@ -115,7 +115,7 @@ echo "- Clean up config.cache..."
 rm -f config.cache
 
 echo "- Generating configure items..."
-(set -x; autoreconf --symlink --verbose --install) &&
+(set -x; autoreconf --symlink --verbose --force --install) &&
 case $1 in
 '')	echo "You are ready to execute ./configure"
 	;;
