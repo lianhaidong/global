@@ -4,7 +4,7 @@ ___________________________________
 |  |   |  |  |  |  |     |     |  |
 |  ~~  |   ~~|     |  ~  |  |  |   ~~|          for all hackers.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Copyright (c) 2000-2017 Tama Communications Corporation
+ Copyright (c) 2000-2018 Tama Communications Corporation
 
  This file is free software; as a special exception the author gives
  unlimited permission to copy and/or distribute it, with or without
@@ -18,6 +18,26 @@ ___________________________________
 
 GNU GLOBAL NEWS - User visible changes.
 At least, you should search '[INCOMPATIBLE CHANGES]' for each version.
+
+Version 6.6.3 - December 17 2018
+
+[CHANGES]
+New facilities:
+o gtags: New --skip-symlink option.
+  This option skips symbolic links.
+  --skip-symlink[=type]
+  If type is 'f' then skip only symbolic links for file, else if 'd' then skip
+  only symbolic links for directory. The default value is 'a' (all symbolic links).
+o gtags-cscope: 'Find assignments to this symbol:' was implemented.
+  In vim, you can use it as ':cs find a <pattern>' or ':cs find 9 <pattern>'.
+o gtags-cscope.vim: the following key assignment was added.
+	<C-\>a, <C-@>a, <C-@><C-@>a
+
+[FIXED BUGS]
+o pygments_parser.py.in: This plug-in parser failed with the handling of file names
+  with mixed case on Windows. Now it works.
+o gtags-cscope: Fixed a wrong description in the online manual.
+  Find this function definition: -> Find this global definition:
 
 Version 6.6.2 - February 9 2018
 
