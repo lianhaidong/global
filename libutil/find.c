@@ -44,6 +44,11 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
+#if defined(_WIN32) && !defined(__CYGWIN__)
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#undef SLIST_ENTRY
+#endif
 
 #include "gparam.h"
 #include "regex.h"
@@ -615,24 +620,32 @@ getdirs(const char *dir, STRBUF *sb)
 			warning("cannot read '%s'. ignored.", trimpath(dp->d_name));
 			continue;
 		}
+#ifndef __DJGPP__
 		if (skip_symlink > 0) {
+#if defined(_WIN32) && !defined(__CYGWIN__)
+			DWORD attr = GetFileAttributes(makepath(dir, dp->d_name, NULL));
+			if (attr != -1 && (attr & FILE_ATTRIBUTE_REPARSE_POINT))
+#else
 			struct stat st2;
 
 			if (lstat(makepath(dir, dp->d_name, NULL), &st2) < 0) {
 				warning("cannot lstat '%s'. ignored.", trimpath(dp->d_name));
 				continue;
 			}
-			if (S_ISLNK(st2.st_mode)) {
+			if (S_ISLNK(st2.st_mode))
+#endif
+			{
 				if (((skip_symlink & SKIP_SYMLINK_FOR_DIR) && S_ISDIR(st.st_mode)) ||
 				    ((skip_symlink & SKIP_SYMLINK_FOR_FILE) && S_ISREG(st.st_mode)))
 				{
 					if (find_explain)
-						fprintf(stderr, " - Symbolik link '%s' is skipped.\n",
+						fprintf(stderr, " - Symbolic link '%s' is skipped.\n",
 							trimpath(makepath(dir, dp->d_name, NULL)));
 					continue;
 				}
 			}
 		}
+#endif
 		if (S_ISDIR(st.st_mode))
 			strbuf_putc(sb, 'd');
 		else if (S_ISREG(st.st_mode))
