@@ -115,6 +115,7 @@ main(int argc, char **argv)
 	const char *p, *browser = NULL, *definition = NULL;
 	STRBUF *URL = strbuf_open(0);
 
+	logging_arguments(argc, argv);
 	while (--argc > 0 && ((c = (++argv)[0][0]) == '-' || c == '+')) {
 		if (argv[0][1] == '-') {
 			if (!strcmp("--help", argv[0]))

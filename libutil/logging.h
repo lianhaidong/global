@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011 Tama Communications Corporation
+ * Copyright (c) 2011, 2019 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -23,6 +23,7 @@
 #include <stdarg.h>
 
 void logging_printf(const char *s, ...);
+void logging_flush(void);
 void logging_arguments(int, char **);
 
 #endif /* ! _LOGGING_H_ */

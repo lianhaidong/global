@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011 Tama Communications Corporation
+ * Copyright (c) 2011, 2019 Tama Communications Corporation
  *
  * This file is part of GNU GLOBAL.
  *
@@ -96,6 +96,15 @@ logging_printf(const char *s, ...)
 	vfprintf(lp, s, ap);
 	va_end(ap);
 }
+/**
+ * logging_flush: flush the logging buffer.
+ */
+void
+logging_flush(void)
+{
+	if (lp)
+		fflush(lp);
+}
 
 /**
  * logging_arguments: print arguments into the logging file.
@@ -119,4 +128,5 @@ logging_arguments(int argc, char **argv)
 			break;
 		logging_printf("%d: |%s|\n", i, argv[i]);
 	}
+	logging_flush();
 }
