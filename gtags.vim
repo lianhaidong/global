@@ -1,11 +1,11 @@
 " File: gtags.vim
 " Author: Tama Communications Corporation
-" Version: 0.6.8
-" Last Modified: Nov 9, 2015
+" Version: 0.6.9
+" Last Modified: Jan 28, 2019
 "
 " Copyright and license
 " ---------------------
-" Copyright (c) 2004, 2008, 2010, 2011, 2012, 2014, 2015
+" Copyright (c) 2004, 2008, 2010, 2011, 2012, 2014, 2015, 2019
 " Tama Communications Corporation
 "
 " This file is part of GNU GLOBAL.
@@ -190,10 +190,13 @@
 " The following custom variables are available.
 "
 " Gtags_VerticalWindow    open windows vitically
-" Gtags_Auto_Map          use a suggested key-mapping
+" Gtags_Auto_Map          use suggested key-mappings
 " Gtags_Auto_Update       keep tag files up-to-date automatically
 " Gtags_No_Auto_Jump      don't jump to the first tag at the time of search
 " Gtags_Close_When_Single close quickfix windows in case of single tag
+" Gtags_Emacs_Like_Mode   use the tag files of the project to which the current file
+"                         belongs instead of the current project. Every path name is
+"                         always treated as an absolute path name.
 "
 " You can use the variables like follows:
 "
@@ -232,6 +235,10 @@ endif
 
 if !exists("g:Gtags_Auto_Update")
     let g:Gtags_Auto_Update = 0
+endif
+
+if !exists("g:Gtags_Emacs_Like_Mode")
+    let g:Gtags_Emacs_Like_Mode = 0
 endif
 
 " 'Dont_Jump_Automatically' is deprecated.
@@ -375,6 +382,23 @@ function! s:TrimOption(option)
     endwhile
     return l:option
 endfunction
+"
+" Get global command string.
+"
+function! s:GlobalCommand(...)
+    let l:result = ''
+    if a:0 > 0
+        let l:option = ' ' . a:1
+    else
+        let l:option = ''
+    endif
+    if g:Gtags_Emacs_Like_Mode == 1 && expand('%') != ''
+        let l:result = 'cd ' . expand('%:p:h:S') . ' && ' . s:global_command . l:option
+    else
+        let l:result = s:global_command
+    endif
+    return l:result
+endfunction
 
 "
 " Execute global and load the result into quickfix window.
@@ -398,9 +422,9 @@ function! s:ExecLoad(option, long_option, pattern, flags)
     let l:option = l:option . '--result=' . g:Gtags_Result . ' -q'
     let l:option = l:option . s:TrimOption(a:option)
     if l:isfile == 1
-        let l:cmd = s:global_command . ' ' . l:option . ' ' . g:Gtags_Shell_Quote_Char . a:pattern . g:Gtags_Shell_Quote_Char
+        let l:cmd = s:GlobalCommand('--path-style=absolute') . ' ' . l:option . ' ' . g:Gtags_Shell_Quote_Char . a:pattern . g:Gtags_Shell_Quote_Char
     else
-        let l:cmd = s:global_command . ' ' . l:option . 'e ' . g:Gtags_Shell_Quote_Char . a:pattern . g:Gtags_Shell_Quote_Char 
+        let l:cmd = s:GlobalCommand('--path-style=absolute') . ' ' . l:option . 'e ' . g:Gtags_Shell_Quote_Char . a:pattern . g:Gtags_Shell_Quote_Char 
     endif
 
     let l:result = system(l:cmd)
@@ -505,13 +529,18 @@ endfunction
 function! s:Gozilla()
     let l:lineno = line('.')
     let l:filename = expand("%")
-    let l:result = system('gozilla +' . l:lineno . ' ' . l:filename)
+    if g:Gtags_Emacs_Like_Mode == 1 && expand('%') != ''
+        let l:gozilla = 'cd ' . expand('%:p:h:S') . ' && gozilla'
+    else
+        let l:gozilla = 'gozilla'
+    endif
+    let l:result = system(l:gozilla . ' +' . l:lineno . ' ' . l:filename)
 endfunction
 "
 " Auto update of tag files using incremental update facility.
 "
 function! s:GtagsAutoUpdate()
-    let l:result = system(s:global_command . " -u --single-update=\"" . expand("%") . "\"")
+    let l:result = system(s:GlobalCommand() . " -u --single-update=\"" . expand("%") . "\"")
 endfunction
 
 "
@@ -537,7 +566,7 @@ function! GtagsCandidateCore(lead, line, pos)
         endif
         return glob(l:pattern)
     else 
-        return system(s:global_command . ' ' . '-c' . s:option . ' ' . a:lead)
+        return system(s:GlobalCommand() . ' ' . '-c' . s:option . ' ' . a:lead)
     endif
 endfunction
 

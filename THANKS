@@ -23,6 +23,7 @@ Thanks to the following people for their contributions.
 Thanks to:		for his(her):
 ---------------------------------------------------------------------------
 A.E. Brouwer		advice about writing code for generic UNIX.
+Andrey Butirsky		concept of 'Gtags_Emacs_Like_Mode'.
 Andrew Gallatin		bug report about generating wrong path.
 Aneesh Kumar		bug report about beta facility of gtags(1).
 Andrés Azar		Cygwin trouble report.
