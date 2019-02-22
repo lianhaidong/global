@@ -130,6 +130,7 @@ typedef struct {
 	 * Stuff for compact format
 	 */
 	STRBUF *sb;			/**< string buffer */
+	STRBUF *sb_compress;		/**< string buffer */
 
 	/** used for compact format and path name only read */
 	STRHASH *path_hash;

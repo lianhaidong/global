@@ -473,6 +473,7 @@ gtags_open(const char *dbpath, const char *root, int db, int mode, int flags)
 		if (gtop->mode != GTAGS_READ)
 			gtop->path_hash = strhash_open(HASHBUCKETS);
 	}
+	gtop->sb_compress = strbuf_open(0);
 	return gtop;
 }
 /**
@@ -530,11 +531,11 @@ gtags_put_using(GTOP *gtop, const char *tag, int lno, const char *fid, const cha
 	strbuf_reset(gtop->sb);
 	strbuf_puts(gtop->sb, fid);
 	strbuf_putc(gtop->sb, ' ');
-	strbuf_puts(gtop->sb, (gtop->format & GTAGS_COMPNAME) ? compress(tag, key) : tag);
+	strbuf_puts(gtop->sb, (gtop->format & GTAGS_COMPNAME) ? compress(tag, key, gtop->sb_compress) : tag);
 	strbuf_putc(gtop->sb, ' ');
 	strbuf_putn(gtop->sb, lno);
 	strbuf_putc(gtop->sb, ' ');
-	strbuf_puts(gtop->sb, (gtop->format & GTAGS_COMPRESS) ? compress(img, key) : img);
+	strbuf_puts(gtop->sb, (gtop->format & GTAGS_COMPRESS) ? compress(img, key, gtop->sb_compress) : img);
 	dbop_put_tag(gtop->dbop, key, strbuf_value(gtop->sb));
 }
 /**
@@ -978,6 +979,8 @@ gtags_close(GTOP *gtop)
 		free(gtop->path_array);
 	if (gtop->sb)
 		strbuf_close(gtop->sb);
+	if (gtop->sb_compress)
+		strbuf_close(gtop->sb_compress);
 	if (gtop->vb)
 		varray_close(gtop->vb);
 	if (gtop->path_hash)
@@ -1035,7 +1038,7 @@ flush_pool(GTOP *gtop, const char *s_fid)
 		strbuf_puts(gtop->sb, s_fid);
 		strbuf_putc(gtop->sb, ' ');
 		if (gtop->format & GTAGS_COMPNAME) {
-			strbuf_puts(gtop->sb, compress(entry->name, key));
+			strbuf_puts(gtop->sb, compress(entry->name, key, gtop->sb_compress));
 		} else {
 			strbuf_puts(gtop->sb, entry->name);
 		}

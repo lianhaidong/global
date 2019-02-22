@@ -21,6 +21,7 @@
 #ifndef _COMPRESS_H
 #define _COMPRESS_H
 
+#include "strbuf.h"
 /**
  * Please list words which appear in definition line.
  *
@@ -31,7 +32,7 @@
 void abbrev_open(const char *);
 void abbrev_close(void);
 void abbrev_dump(void);
-char *compress(const char *text, const char *name);
-char *uncompress(const char *text, const char *name);
+char *compress(const char *text, const char *name, STRBUF *sb);
+char *uncompress(const char *text, const char *name, STRBUF *sb);
 
 #endif /* ! _COMPRESS_H */

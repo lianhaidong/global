@@ -146,7 +146,7 @@ put_compact_format(CONVERT *cv, GTP *gtp, const char *root, int flags)
 	if (!isdigit(*p))
 		die("invalid compact format.");
 	if (flags & GTAGS_COMPNAME)
-		tagname = (char *)uncompress(tagname, gtp->tag);
+		tagname = (char *)uncompress(tagname, gtp->tag, NULL);
 	if (flags & GTAGS_COMPLINE) {
 		/*
 		 * If GTAGS_COMPLINE flag is set, each line number is expressed as
@@ -240,7 +240,7 @@ put_standard_format(CONVERT *cv, GTP *gtp, int flags)
 		p++;
 	*p++ = '\0';			/* b */
 	if (flags & GTAGS_COMPNAME) {
-		strlimcpy(namebuf, (char *)uncompress(tagname, gtp->tag), sizeof(namebuf));
+		strlimcpy(namebuf, (char *)uncompress(tagname, gtp->tag, NULL), sizeof(namebuf));
 		tagname = namebuf;
 	}
 	if (nosource) {
@@ -250,7 +250,7 @@ put_standard_format(CONVERT *cv, GTP *gtp, int flags)
 			p++;
 		image = p + 1;		/* c + 1 */
 		if (flags & GTAGS_COMPRESS)
-			image = (char *)uncompress(image, gtp->tag);
+			image = (char *)uncompress(image, gtp->tag, NULL);
 	}
 	convert_put_using(cv, tagname, gtp->path, gtp->lineno, image, fid);
 }
