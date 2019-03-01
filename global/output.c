@@ -43,6 +43,8 @@ extern const char *root;
 extern int nosource;
 extern int format;
 
+static STRBUF *sb_uncompress;
+
 /** get next number and seek to the next character */
 #define GET_NEXT_NUMBER(p) do {                                                \
                 if (!isdigit(*p))                                              \
@@ -58,10 +60,13 @@ start_output(void)
 	cur_lineno = last_lineno = 0;
 	fp = NULL;
 	src = "";
+	sb_uncompress = strbuf_open(0);
 }
 void
 end_output(void)
 {
+	if (sb_uncompress)
+		strbuf_close(sb_uncompress);
 	if (fp)
 		fclose(fp);
 }
@@ -146,7 +151,7 @@ put_compact_format(CONVERT *cv, GTP *gtp, const char *root, int flags)
 	if (!isdigit(*p))
 		die("invalid compact format.");
 	if (flags & GTAGS_COMPNAME)
-		tagname = (char *)uncompress(tagname, gtp->tag, NULL);
+		tagname = (char *)uncompress(tagname, gtp->tag, sb_uncompress);
 	if (flags & GTAGS_COMPLINE) {
 		/*
 		 * If GTAGS_COMPLINE flag is set, each line number is expressed as
@@ -240,7 +245,7 @@ put_standard_format(CONVERT *cv, GTP *gtp, int flags)
 		p++;
 	*p++ = '\0';			/* b */
 	if (flags & GTAGS_COMPNAME) {
-		strlimcpy(namebuf, (char *)uncompress(tagname, gtp->tag, NULL), sizeof(namebuf));
+		strlimcpy(namebuf, (char *)uncompress(tagname, gtp->tag, sb_uncompress), sizeof(namebuf));
 		tagname = namebuf;
 	}
 	if (nosource) {
@@ -250,7 +255,7 @@ put_standard_format(CONVERT *cv, GTP *gtp, int flags)
 			p++;
 		image = p + 1;		/* c + 1 */
 		if (flags & GTAGS_COMPRESS)
-			image = (char *)uncompress(image, gtp->tag, NULL);
+			image = (char *)uncompress(image, gtp->tag, sb_uncompress);
 	}
 	convert_put_using(cv, tagname, gtp->path, gtp->lineno, image, fid);
 }

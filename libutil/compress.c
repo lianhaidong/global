@@ -78,7 +78,6 @@ struct abbrmap {
 static struct abbrmap ab2name[26];
 static VARRAY *name2ab;
 static char abbrev_string[1024];
-static STRBUF *sb_compress;
 /**
  * setup two internal tables for abbreviation.
  *
@@ -121,7 +120,6 @@ abbrev_open(const char *abbrev)
 		ab2name[i].name = ab->name;
 		ab2name[i].length = ab->length;
 	}
-	sb_compress = strbuf_open(0);
 }
 /**
  * free allocated memory.
@@ -132,8 +130,6 @@ abbrev_close(void)
 	if (name2ab)
 		varray_close(name2ab);
 	name2ab = NULL;
-	if (sb_compress)
-		strbuf_close(sb_compress);
 }
 /**
  * for debugging.
@@ -179,8 +175,6 @@ compress(const char *in, const char *name, STRBUF *sb)
 	int length = strlen(name);
 	int spaces = 0;
 
-	if (sb == NULL)
-		sb = sb_compress;
 	strbuf_reset(sb);
 	while (*p) {
 		if (*p == ' ') {
@@ -258,8 +252,6 @@ uncompress(const char *in, const char *name, STRBUF *sb)
 	const char *p;
 	int i;
 
-	if (sb == NULL)
-		sb = sb_compress;
 	strbuf_reset(sb);
 	for (p = in;  *p; p++) {
 		if (*p == '@') {
