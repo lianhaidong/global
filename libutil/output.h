@@ -23,7 +23,7 @@
 #include "convert.h"
 #include "gtagsop.h"
 
-void start_output(void);
+void start_output(int, int);
 void end_output(void);
 int output_with_formatting(CONVERT *, GTP *, const char *, int);
 

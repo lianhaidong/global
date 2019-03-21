@@ -948,6 +948,23 @@ main(int argc, char **argv)
 		} else
 			die("invalid path style.");
 	}
+	{
+		int conv_flags = 0;
+
+		if (use_color)
+			conv_flags |= CONVERT_COLOR;
+		if (gflag)
+			conv_flags |= CONVERT_GREP;
+		if (Gflag)
+			conv_flags |= CONVERT_BASIC;
+		if (iflag)
+			conv_flags |= CONVERT_ICASE;
+		if (Iflag)
+			conv_flags |= CONVERT_IDUTILS;
+		if (Pflag)
+			conv_flags |= CONVERT_PATH;
+		set_convert_flags(conv_flags);
+	}
 	/*
 	 * exec lid(idutils).
 	 */
@@ -1852,7 +1869,7 @@ search(const char *pattern, const char *root, const char *cwd, const char *dbpat
 	GTP *gtp;
 	int flags = 0;
 
-	start_output();
+	start_output(format, nosource);
 	/*
 	 * open tag file.
 	 */

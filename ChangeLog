@@ -19,6 +19,10 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+March 21 2019, Shigio YAMAGUCHI
+
+	Moved convert.c, convert.h, output.c, output.h from 'global/' to 'libutil/'.
+
 July 15 2018, Shigio YAMAGUCHI
 
 	[icons, jquery]

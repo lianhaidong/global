@@ -46,7 +46,7 @@
 
 #include "convert.h"
 static int debug = 0;
-extern int use_color, fflag, gflag, Gflag, iflag, Iflag, Pflag;
+int flags;
 
 /**
  * This module converts records before output.
@@ -67,6 +67,14 @@ static char last_pattern[IDENTLEN];
 static int locked;
 static int (*code_fputs)(const char *s, FILE *op) = fputs;
 
+/**
+ * set output flags.
+ */
+void
+set_convert_flags(int a_flags)
+{
+	flags = a_flags;
+}
 /**
  * fputs with coloring.
  */
@@ -131,7 +139,7 @@ static void
 set_color_tag(const char *pattern)
 {
 	STATIC_STRBUF(sb);
-	int flags = 0;
+	int rewrite_flags = 0;
 
 	if (rewrite == NULL)
 		die("set_color_tag: impossible.");
@@ -139,7 +147,7 @@ set_color_tag(const char *pattern)
 		return;		/* nothing to do */
 	strlimcpy(last_pattern, pattern, sizeof(last_pattern));
 	strbuf_clear(sb);
-	if (Iflag) {
+	if (flags & CONVERT_IDUTILS) {
 		/*
 		 * refuse '.*' because it brings confused output.
 		 */
@@ -203,7 +211,7 @@ set_color_tag(const char *pattern)
 		}
 		strbuf_puts(sb, "\\b");
 		locked = 1;
-	} else if (Pflag) {
+	} else if (flags & CONVERT_PATH) {
 		if (*pattern == '^') {
 			strbuf_putc(sb, *pattern++);
 			if (*pattern != '/')
@@ -211,7 +219,7 @@ set_color_tag(const char *pattern)
 		}
 		strbuf_puts(sb, pattern);
 		locked = 1;
-	} else if (gflag || isregex(pattern)) {
+	} else if (flags & CONVERT_GREP || isregex(pattern)) {
 		strbuf_puts(sb, pattern);
 		locked = 1;
 	} else {
@@ -221,12 +229,12 @@ set_color_tag(const char *pattern)
 	}
 	if (debug)
 		fprintf(stdout, "regex: |%s|\n", strbuf_value(sb));
-	if (!Gflag)
-		flags |= REG_EXTENDED;
-	if (iflag)
-		flags |= REG_ICASE;
+	if (!(flags & CONVERT_BASIC))
+		rewrite_flags |= REG_EXTENDED;
+	if (flags & CONVERT_ICASE)
+		rewrite_flags |= REG_ICASE;
 	/* compile the regular expression */
-	if (rewrite_pattern(rewrite, strbuf_value(sb), flags) < 0)
+	if (rewrite_pattern(rewrite, strbuf_value(sb), rewrite_flags) < 0)
 		die("invalid regular expression. '%s'", strbuf_value(sb));
 }
 /**
@@ -250,7 +258,7 @@ convert_pathname(CONVERT *cv, const char *path)
 	static char buf[MAXPATHLEN];
 	const char *a, *b;
 
-	if (use_color && Pflag) {
+	if (flags & CONVERT_COLOR && flags & CONVERT_PATH) {
 		STATIC_STRBUF(sb);
 		const char *p;
 
@@ -384,9 +392,9 @@ convert_open(int type, int format, const char *root, const char *cwd, const char
 	 * setup coloring.
 	 */
 	code_fputs = fputs;
-	if (use_color) {
+	if (flags & CONVERT_COLOR) {
 		set_color_method();
-		if (!Pflag)
+		if (!(flags & CONVERT_PATH))
 			code_fputs = color_code_fputs;
 	}
 	return cv;
@@ -532,7 +540,7 @@ convert_put(CONVERT *cv, const char *ctags_x)
 void
 convert_put_path(CONVERT *cv, const char *pattern, const char *path)
 {
-	if (use_color && !locked && pattern)
+	if (flags & CONVERT_COLOR && !locked && pattern)
 		set_color_tag(pattern);
 	if (cv->format != FORMAT_PATH)
 		die("convert_put_path: internal error.");
@@ -554,7 +562,7 @@ convert_put_using(CONVERT *cv, const char *tag, const char *path, int lineno, co
 {
 	if (rest == NULL)
 		rest = "";	/* for safety */
-	if (use_color && !locked)
+	if (flags & CONVERT_COLOR && !locked)
 		set_color_tag(tag);
 	if (cv->tag_for_display)
 		tag = cv->tag_for_display;

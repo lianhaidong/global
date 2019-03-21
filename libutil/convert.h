@@ -23,6 +23,13 @@
 #include "gparam.h"
 #include "strbuf.h"
 
+#define CONVERT_COLOR		1
+#define CONVERT_GREP		2
+#define CONVERT_BASIC		4
+#define CONVERT_ICASE		8
+#define CONVERT_IDUTILS		16
+#define CONVERT_PATH		32
+
 typedef struct {
 	FILE *op;
 	int type;		/**< PATH_ABSOLUTE, PATH_RELATIVE */
@@ -34,6 +41,7 @@ typedef struct {
 	char *tag_for_display;
 } CONVERT;
 
+void set_convert_flags(int);
 void set_print0(void);
 CONVERT *convert_open(int, int, const char *, const char *, const char *, FILE *, int);
 void convert_put(CONVERT *, const char *);

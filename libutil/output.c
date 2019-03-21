@@ -24,8 +24,23 @@
 #include <sys/types.h>
 #include <ctype.h>
 #include <stdio.h>
-#include "global.h"
+#ifdef STDC_HEADERS
+#include <stdlib.h>
+#endif
+#ifdef HAVE_STRING_H
+#include <string.h>
+#else
+#include <strings.h>
+#endif
+#include "compress.h"
 #include "convert.h"
+#include "die.h"
+#include "format.h"
+#include "gparam.h"
+#include "makepath.h"
+#include "output.h"
+#include "strbuf.h"
+#include "strlimcpy.h"
 
 /**
  * Stuff for the compact format
@@ -39,9 +54,8 @@ static const char *src;			/**< source code */
 
 static int put_compact_format(CONVERT *, GTP *, const char *, int);
 static void put_standard_format(CONVERT *, GTP *, int);
-extern const char *root;
-extern int nosource;
-extern int format;
+static int nosource;
+static int format;
 
 static STRBUF *sb_uncompress;
 
@@ -54,8 +68,10 @@ static STRBUF *sb_uncompress;
         } while (0)
 
 void
-start_output(void)
+start_output(int a_format, int a_nosource)
 {
+	format = a_format;
+	nosource = a_nosource;
 	curpath[0] = curtag[0] = '\0';
 	cur_lineno = last_lineno = 0;
 	fp = NULL;

@@ -19,7 +19,7 @@ strmake.h tab.h test.h token.h usable.h version.h is_unixy.h abs2rel.h \
 split.h strlimcpy.h linetable.h env.h char.h date.h langmap.h \
 varray.h idset.h strhash.h xargs.h format.h encodepath.h rewrite.h \
 compress.h checkalloc.h pool.h fileop.h statistics.h args.h logging.h nearsort.h \
-secure_popen.h
+secure_popen.h convert.h output.h
 
 libgloutil_a_SOURCES = \
 assoc.c conf.c dbop.c defined.c die.c find.c getdbpath.c gtagsop.c locatestring.c \
@@ -27,7 +27,7 @@ makepath.c path.c gpathop.c strbuf.c strmake.c tab.c test.c \
 token.c usable.c version.c is_unixy.c abs2rel.c split.c strlimcpy.c linetable.c \
 env.c char.c date.c langmap.c varray.c idset.c strhash.c xargs.c encodepath.c rewrite.c \
 compress.c checkalloc.c pool.c fileop.c statistics.c args.c logging.c nearsort.c \
-secure_popen.c
+secure_popen.c convert.c output.c
 
 AM_CPPFLAGS = @AM_CPPFLAGS@ \
 	-DBINDIR='"$(bindir)"' \
