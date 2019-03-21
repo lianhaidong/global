@@ -48,6 +48,7 @@ char * strhash_strdup(STRHASH *, const char *, int);
 struct sh_entry *strhash_first(STRHASH *);
 struct sh_entry *strhash_next(STRHASH *);
 void strhash_reset(STRHASH *);
+void strhash_dump(STRHASH *);
 void strhash_close(STRHASH *);
 
 #endif /* ! _STRHASH_H */

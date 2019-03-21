@@ -201,6 +201,17 @@ strhash_reset(STRHASH *sh)
 	sh->entries = 0;
 }
 /**
+ * strhash_dump: dump contents of the string table
+ */
+void
+strhash_dump(STRHASH *sh)
+{
+	struct sh_entry *p;
+
+	for (p = strhash_first(sh); p != NULL; p = strhash_next(sh))
+		fprintf(stderr, "%s => %s\n", p->name, p->value);
+}
+/**
  * strhash_close: close hash array.
  *
  *	@param[in]	sh	STRHASH structure
