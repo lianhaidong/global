@@ -96,12 +96,12 @@ linetable_open(const char *path)
 int
 linetable_read(char *buf, int size)
 {
-	int leaved = endp - curp;
+	int left = endp - curp;
 
-	if (leaved <= 0)
+	if (left <= 0)
 		return -1;	/* EOF */
-	if (size > leaved)
-		size = leaved;
+	if (size > left)
+		size = left;
 	memcpy(buf, curp, size);
 	curp += size;
 
