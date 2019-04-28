@@ -1,7 +1,7 @@
 " File: gtags.vim
 " Author: Tama Communications Corporation
-" Version: 0.6.9
-" Last Modified: Jan 28, 2019
+" Version: 0.6.10
+" Last Modified: April 28, 2019
 "
 " Copyright and license
 " ---------------------
@@ -479,7 +479,7 @@ function! s:ExecLoad(option, long_option, pattern, flags)
     elseif g:Gtags_No_Auto_Jump == 1
         cgete l:result		" does not jump
     else
-        cexpr! l:result		" jump
+        cexpr l:result		" jump
     endif
     let &efm = l:efm_org
 endfunction

@@ -24,6 +24,7 @@ Thanks to:		for his(her):
 ---------------------------------------------------------------------------
 A.E. Brouwer		advice about writing code for generic UNIX.
 Andrey Butirsky		concept of 'Gtags_Emacs_Like_Mode'.
+			bug fix patch for gtags.vim (Gtags command discarded all unsaved changes).
 Andrew Gallatin		bug report about generating wrong path.
 Andrew Ng		bug fix patch for global/output.c (segmentation violation).
 Aneesh Kumar		bug report about beta facility of gtags(1).
