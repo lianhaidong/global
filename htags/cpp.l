@@ -1,4 +1,4 @@
-%{
+%top{
 /*
  * Copyright (c) 2002, 2004 Tama Communications Corporation
  *
@@ -46,7 +46,7 @@
 #define YY_USER_ACTION DEFAULT_YY_USER_ACTION
 
 static int last_directive;
-%}
+}
  /* Definitions */
 H		0[Xx][0-9A-Fa-f]+
 N		[0-9]+

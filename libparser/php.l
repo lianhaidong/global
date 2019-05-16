@@ -1,4 +1,4 @@
-%{
+%top{
 /*
  * Copyright (c) 2003, 2006, 2010 Tama Communications Corporation
  *
@@ -107,7 +107,7 @@ debug_print(const char *s, ...)
 		if ((result = linetable_read(buf, max_size)) == -1) \
 			result = YY_NULL; \
 	} while (0)
-%}
+}
  /* Definitions */
 H		0[Xx][0-9A-Fa-f]+
 N		[0-9]+

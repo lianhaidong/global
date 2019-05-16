@@ -1,4 +1,4 @@
-%{
+%top{
 /*
  * Copyright (c) 2002, 2004, 2005, 2006, 2008 Tama Communications Corporation
  *
@@ -54,7 +54,7 @@
 static int pre_here_document;
 static char end_of_here_document[IDENTLEN];
 
-%}
+}
  /* Definitions */
 H		0[Xx][0-9A-Fa-f]+
 N		[0-9]+

@@ -1,4 +1,4 @@
-%{
+%top{
 /*
  * Copyright (c) 2002, 2004 Tama Communications Corporation
  *
@@ -47,7 +47,7 @@
 
 static int last_directive;
 static int brace_level;
-%}
+}
  /* Definitions */
 H		0[Xx][0-9A-Fa-f]+
 N		[0-9]+

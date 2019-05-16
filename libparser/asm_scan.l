@@ -1,4 +1,4 @@
-%{
+%top{
 /*
  * Copyright (c) 2002, 2004, 2010 Tama Communications Corporation
  *
@@ -71,7 +71,7 @@
 
 static int last_directive;
 
-%}
+}
 
 H		0[Xx][0-9A-Fa-f]+
 N		[0-9]+
