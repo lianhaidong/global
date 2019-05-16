@@ -19,7 +19,11 @@
 #ifndef _ASSOC_H_
 #define _ASSOC_H_
 
+#ifdef USE_DB185_COMPAT
+#include <db_185.h>
+#else
 #include "db.h"
+#endif
 
 typedef struct {
 	DB *db;
