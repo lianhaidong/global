@@ -553,6 +553,7 @@ findassign(char *pattern)
 	const char *line;
 	char **argv;
 	FILE *ip, *op;
+	int i;
 	char *opts[] = {"-d", "-rs", NULL};
 	STATIC_STRBUF(sb);
 	strbuf_clear(sb);
@@ -568,7 +569,7 @@ findassign(char *pattern)
 	op = fopen(temp1, "w");
 	if (op == NULL)
 		return FAILED;
-	for (int i = 0; opts[i] != NULL; i++) {
+	for (i = 0; opts[i] != NULL; i++) {
 		secure_open_args();
 		common();
 		secure_add_args(opts[i]);
