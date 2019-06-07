@@ -19,6 +19,17 @@ ___________________________________
 
 ChangeLog about GNU GLOBAL
 
+June 7 2019, Shigio YAMAGUCHI
+
+	Removed the -T option of perl from the CGI scripts in htags/,
+	because env(1) cannot treat it correctly without -S option on FreeBSD.
+
+	$ cat test.sh
+	#!/usr/bin/env perl -T
+	print "Hello!\n";
+	$ ./test.sh
+	env: perl -T: No such file or directory
+
 March 21 2019, Shigio YAMAGUCHI
 
 	Moved convert.c, convert.h, output.c, output.h from 'global/' to 'libutil/'.
