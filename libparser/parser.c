@@ -311,6 +311,7 @@ get_lang_entry(const char *lang)
 	/*
 	 * if specified language not found, it assumes default language, that is C.
 	 */
+	warning("'%s' parser not found. C parser is used instead.", lang);
 	return DEFAULT_ENTRY;
 }
 
