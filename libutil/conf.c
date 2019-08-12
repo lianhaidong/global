@@ -146,10 +146,10 @@ readrecord(FILE *fp, const char *label)
 			 * pick up candidate.
 			 */
 			if ((candidate = strmake(p, "|:")) == NULL)
-				die("invalid config file format (line %d).", count);
+				die("invalid config file format (%s line: %d).", config_path, count);
 			if (!strcmp(label, candidate)) {
 				if (!(p = locatestring(p, ":", MATCH_FIRST)))
-					die("invalid config file format (line %d).", count);
+					die("invalid config file format (%s line: %d).", config_path, count);
 				return check_strdup(p);
 			}
 			/*
@@ -161,7 +161,7 @@ readrecord(FILE *fp, const char *label)
 			else if (*p == '|')
 				p++;
 			else
-				die("invalid config file format (line %d).", count);
+				die("invalid config file format (%s line: %d).", config_path, count);
 		}
 	}
 	/*
@@ -186,7 +186,7 @@ includelabel(FILE *fp, STRBUF *sb, const char *label, int level)
 	char *file;
 
 	if (++level > allowed_nest_level)
-		die("nested include= (or tc=) over flow.");
+		die("nested include= (or tc=) over flow in '%s'.", config_path);
 	/*
 	 * Label can include a '@' and a following path name.
 	 * Label: <label>[@<path>]
@@ -194,13 +194,13 @@ includelabel(FILE *fp, STRBUF *sb, const char *label, int level)
 	if ((file = locatestring(label, "@", MATCH_FIRST)) != NULL) {
 		*file++ = '\0';
 		if ((p = makepath_with_tilde(file)) == NULL)
-			die("config file must be absolute path. (%s)", file);
+			die("config file must be absolute path in '%s'. (%s)", config_path, file);
 		fp = fopen(p, "r");
 		if (fp == NULL)
 			die("cannot open config file. (%s)", p);
 	}
 	if (!(savep = p = readrecord(fp, label)))
-		die("label '%s' not found.", label);
+		die("label '%s' not found in '%s'.", label, config_path);
 	while ((q = locatestring(p, ":include=", MATCH_FIRST)) || (q = locatestring(p, ":tc=", MATCH_FIRST))) {
 		STRBUF *inc = strbuf_open(0);
 
@@ -390,7 +390,7 @@ replace_variables(STRBUF *sb)
 	 * Simple of detecting infinite loop.
 	 */
 	if (++recursive_call > 32)
-		die("Seems to be a never-ending referring.");
+		die("Seems to be a never-ending referring in '%s'.", config_path);
 	for (;;) {
 		for (; *p; p++) {
 			if (*p == '$')
@@ -410,7 +410,7 @@ replace_variables(STRBUF *sb)
 				for (p++; *p && *p != '}'; p++)
 					strbuf_putc(word, *p);
 				if (*p++ != '}')
-					die("invalid variable.");
+					die("invalid variable in '%s'.", config_path);
 			} else {
 				for (; *p && (isalnum(*p) || *p == '_'); p++)
 					strbuf_putc(word, *p);
