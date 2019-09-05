@@ -157,7 +157,11 @@ C_family(const struct parser_param *param, int type)
 					}
 				}
 			} else {
-				PUT(PARSER_REF_SYM, token, lineno, sp);
+				char pc = peekc(1);
+				if (level == 0 && (pc == ';' || pc == '='))
+					PUT(PARSER_DEF, token, lineno, sp);
+				else
+					PUT(PARSER_REF_SYM, token, lineno, sp);
 			}
 			break;
 		case '{':  /* } */
